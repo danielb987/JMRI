@@ -18,6 +18,11 @@ public class ExpressionHold implements Expression {
     private Expression _holdExpression;
     private Expression _triggerExpression;
     private boolean _isActive = false;
+    
+    public ExpressionHold(Expression holdExpression, Expression triggerExpression) {
+        _holdExpression = holdExpression;
+        _triggerExpression = triggerExpression;
+    }
 
     @Override
     public NewLogixCategory getCategory() {

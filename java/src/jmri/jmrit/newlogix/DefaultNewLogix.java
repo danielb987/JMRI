@@ -12,6 +12,10 @@ public class DefaultNewLogix implements NewLogix {
     
     private Action _action;
     private boolean _isActive = false;
+    
+    public DefaultNewLogix(Action action) {
+        _action = action;
+    }
 
     /**
      * {@inheritDoc}

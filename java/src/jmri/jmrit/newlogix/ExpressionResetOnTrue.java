@@ -20,9 +20,14 @@ import jmri.NewLogixCategory;
  */
 public class ExpressionResetOnTrue implements Expression {
 
-    private Expression primaryExpression;
-    private Expression secondaryExpression;
-    private boolean lastMainResult = false;
+    private Expression _primaryExpression;
+    private Expression _secondaryExpression;
+    private boolean _lastMainResult = false;
+    
+    public ExpressionResetOnTrue(Expression primaryExpression, Expression secondaryExpression) {
+        _primaryExpression = primaryExpression;
+        _secondaryExpression = secondaryExpression;
+    }
     
     @Override
     public NewLogixCategory getCategory() {
@@ -31,19 +36,19 @@ public class ExpressionResetOnTrue implements Expression {
 
     @Override
     public boolean evaluate() {
-        boolean result = primaryExpression.evaluate();
-        if (!lastMainResult && result) {
-            secondaryExpression.reset();
+        boolean result = _primaryExpression.evaluate();
+        if (!_lastMainResult && result) {
+            _secondaryExpression.reset();
         }
-        lastMainResult = result;
-        result |= secondaryExpression.evaluate();
+        _lastMainResult = result;
+        result |= _secondaryExpression.evaluate();
         return result;
     }
 
     @Override
     public void reset() {
-        primaryExpression.reset();
-        secondaryExpression.reset();
+        _primaryExpression.reset();
+        _secondaryExpression.reset();
     }
 
 }

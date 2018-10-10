@@ -15,8 +15,12 @@ import jmri.NewLogixCategory;
  */
 public class ExpressionTriggerOnce implements Expression {
 
-    private Expression childExpression;
-    private boolean childLastState = false;
+    private Expression _childExpression;
+    private boolean _childLastState = false;
+    
+    public ExpressionTriggerOnce(Expression childExpression) {
+        _childExpression = childExpression;
+    }
     
     @Override
     public NewLogixCategory getCategory() {
@@ -25,17 +29,17 @@ public class ExpressionTriggerOnce implements Expression {
 
     @Override
     public boolean evaluate() {
-        if (childExpression.evaluate() && !childLastState) {
-            childLastState = true;
+        if (_childExpression.evaluate() && !_childLastState) {
+            _childLastState = true;
             return true;
         }
-        childLastState = childExpression.evaluate();
+        _childLastState = _childExpression.evaluate();
         return false;
     }
 
     @Override
     public void reset() {
-        childLastState = false;
+        _childLastState = false;
     }
 
 }
