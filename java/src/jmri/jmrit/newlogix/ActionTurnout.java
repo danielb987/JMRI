@@ -11,8 +11,8 @@ import jmri.Turnout;
  */
 public class ActionTurnout implements Action {
 
-    private Turnout _turnout;
-    private int _newState;
+//    private Turnout _turnout;
+//    private int _newState;
     
     @Override
     public NewLogixCategory getCategory() {
