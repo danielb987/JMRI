@@ -1,6 +1,5 @@
 package jmri.jmrit.newlogix;
 
-import jmri.NewLogixCategory;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,20 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ExpressionTimer
+ * Test ExpressionTriggerOnce
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTimerTest {
+public class ExpressionTriggerOnceTest {
 
     @Test
     public void testCtor() {
-        new ExpressionTimer();
-    }
-    
-    @Test
-    public void testGetCategory() {
-        Assert.assertTrue(NewLogixCategory.COMMON.equals(new ExpressionTimer().getCategory()));
+        new ExpressionTriggerOnce(null);
     }
     
     // The minimal setup for log4J

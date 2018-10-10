@@ -6,7 +6,16 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
    jmri.jmrit.newlogix.internal.PackageTest.class,
+   ActionDoIfTest.class,
+   ActionManyTest.class,
+   ActionTurnoutTest.class,
+   DefaultNewLogixTest.class,
+   ExpressionAndTest.class,
+   ExpressionHoldTest.class,
    ExpressionResetOnTrueTest.class,
+   ExpressionTimerTest.class,
+   ExpressionTriggerOnceTest.class,
+   ExpressionTurnoutTest.class,
 })
 
 /**
