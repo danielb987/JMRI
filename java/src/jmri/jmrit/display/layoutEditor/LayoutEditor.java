@@ -511,7 +511,7 @@ public class LayoutEditor extends PanelEditor implements MouseWheelListener {
         menuBar.add(fileMenu);
         StoreXmlUserAction store = new StoreXmlUserAction(Bundle.getMessage("MenuItemStore"));
         int primary_modifier = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-        store.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+        store.putValue(javax.swing.Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(
                 stringsToVTCodes.get(Bundle.getMessage("MenuItemStoreAccelerator")), primary_modifier));
         fileMenu.add(store);
         fileMenu.addSeparator();
