@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import jmri.jmrit.newlogix.log.Log.InvalidFormatException;
+import jmri.jmrit.newlogix.log.Log.UnsupportedVersionException;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -19,6 +20,21 @@ import org.junit.Test;
  */
 public class LogTest {
 
+    @Test
+    public void testLog() {
+        try {
+            throw new InvalidFormatException("Invalid format");
+        } catch (InvalidFormatException e) {
+            // Do nothing
+        }
+        
+        try {
+            throw new UnsupportedVersionException("Unsupported version");
+        } catch (UnsupportedVersionException e) {
+            // Do nothing
+        }
+    }
+    
     @Test
     public void testWriteLog() throws IOException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, IllegalArgumentException,
