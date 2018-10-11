@@ -15,7 +15,7 @@ public class InternalActionTest {
 
     @Test
     public void testCtor() {
-        new InternalAction(null);
+        new InternalAction("IQA55:A321", null);
     }
     
     // The minimal setup for log4J

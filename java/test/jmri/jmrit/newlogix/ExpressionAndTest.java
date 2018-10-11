@@ -15,7 +15,7 @@ public class ExpressionAndTest {
 
     @Test
     public void testCtor() {
-        new ExpressionAnd();
+        new ExpressionAnd("IQA55:E321", null);
     }
     
     // The minimal setup for log4J

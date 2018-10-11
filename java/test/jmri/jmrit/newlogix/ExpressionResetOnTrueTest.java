@@ -15,7 +15,7 @@ public class ExpressionResetOnTrueTest {
 
     @Test
     public void testCtor() {
-        new ExpressionResetOnTrue(null, null);
+        new ExpressionResetOnTrue("IQA55:E321", null, null, null);
     }
     
     // The minimal setup for log4J

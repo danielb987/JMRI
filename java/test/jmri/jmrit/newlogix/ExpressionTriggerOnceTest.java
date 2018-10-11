@@ -15,7 +15,7 @@ public class ExpressionTriggerOnceTest {
 
     @Test
     public void testCtor() {
-        new ExpressionTriggerOnce(null);
+        new ExpressionTriggerOnce("IQA55:E321", null, null);
     }
     
     // The minimal setup for log4J

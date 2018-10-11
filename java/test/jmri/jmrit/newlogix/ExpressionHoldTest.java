@@ -15,7 +15,7 @@ public class ExpressionHoldTest {
 
     @Test
     public void testCtor() {
-        new ExpressionHold(null, null);
+        new ExpressionHold("IQA55:E321", null, null, null);
     }
     
     // The minimal setup for log4J

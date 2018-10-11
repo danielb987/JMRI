@@ -15,7 +15,7 @@ public class InternalExpressionTest {
 
     @Test
     public void testCtor() {
-        new InternalExpression(null);
+        new InternalExpression("IQA55:E321", null);
     }
     
     // The minimal setup for log4J

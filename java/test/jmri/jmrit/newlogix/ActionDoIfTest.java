@@ -15,8 +15,8 @@ public class ActionDoIfTest {
 
     @Test
     public void testCtor() {
-        new ActionDoIf(ActionDoIf.Type.TRIGGER_ACTION, null, null);
-        new ActionDoIf(ActionDoIf.Type.CONTINOUS_ACTION, null, null);
+        new ActionDoIf("IQA55:A321", null, ActionDoIf.Type.TRIGGER_ACTION, null, null);
+        new ActionDoIf("IQA55:A321", null, ActionDoIf.Type.CONTINOUS_ACTION, null, null);
     }
     
     // The minimal setup for log4J

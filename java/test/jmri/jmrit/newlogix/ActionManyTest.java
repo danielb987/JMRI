@@ -15,7 +15,7 @@ public class ActionManyTest {
 
     @Test
     public void testCtor() {
-        new ActionMany();
+        new ActionMany("IQA55:A321", null);
     }
     
     // The minimal setup for log4J

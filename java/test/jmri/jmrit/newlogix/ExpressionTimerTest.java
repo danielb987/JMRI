@@ -16,12 +16,12 @@ public class ExpressionTimerTest {
 
     @Test
     public void testCtor() {
-        new ExpressionTimer();
+        new ExpressionTimer("IQA55:E321", null);
     }
     
     @Test
     public void testGetCategory() {
-        Assert.assertTrue(NewLogixCategory.COMMON.equals(new ExpressionTimer().getCategory()));
+        Assert.assertTrue(NewLogixCategory.COMMON.equals(new ExpressionTimer("IQA55:E321", null).getCategory()));
     }
     
     // The minimal setup for log4J
