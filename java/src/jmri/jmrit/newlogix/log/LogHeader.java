@@ -115,11 +115,6 @@ public class LogHeader {
         StreamReader reader = new StreamReader(input);
         String line;
         while ((line = reader.readLine()) != null) {
-            if (line == null) {
-                // We haven't found section '[data]' yet.
-                throw new InvalidFormatException(String.format("String '%s' is unknown or misplaced in log", line));
-            }
-            
             switch (line) {
                 case "[header]":
                     readHeaderLines(reader);
@@ -135,6 +130,9 @@ public class LogHeader {
                     throw new InvalidFormatException(String.format("String '%s' is unknown or misplaced in log", line));
             }
         }
+        
+        // If we are here, we haven't found section '[data]' yet.
+        throw new InvalidFormatException(String.format("Section [data] is missing. End of stream reached.", line));
     }
     
     /**

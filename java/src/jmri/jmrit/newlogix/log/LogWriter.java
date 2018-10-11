@@ -11,8 +11,6 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class LogWriter {
     
-    private final Log _newLogixLog;
-    private final OutputStream _output;
     private final LogHeader logHeader;
     LogWriterEncoder encoder;
     
@@ -32,8 +30,6 @@ public class LogWriter {
     public LogWriter(Log log, OutputStream output, String name) throws IOException,
             NoSuchMethodException, InstantiationException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {
-        _newLogixLog = log;
-        _output = output;
         
         logHeader = new LogHeader(log);
         logHeader.setName(name);

@@ -12,7 +12,6 @@ import java.lang.reflect.InvocationTargetException;
 public class LogReader {
 
     private final Log _newLogixLog;
-    private final InputStream _input;
     private final LogHeader _logHeader;
     LogReaderDecoder decoder;
     
@@ -21,7 +20,6 @@ public class LogReader {
      * 
      * @param log the log
      * @param input the input stream
-     * @param name the name of the log
      * 
      * @throws java.io.IOException if an I/O error occurs
      * @throws java.lang.NoSuchMethodException
@@ -36,7 +34,6 @@ public class LogReader {
             IllegalArgumentException, InvocationTargetException,
             Log.InvalidFormatException, Log.UnsupportedVersionException {
         _newLogixLog = log;
-        _input = input;
         
         _logHeader = new LogHeader(log);
         _logHeader.readHeader(input);
