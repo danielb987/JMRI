@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.log;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -132,7 +133,7 @@ public class LogHeader {
         }
         
         // If we are here, we haven't found section '[data]' yet.
-        throw new InvalidFormatException(String.format("Section [data] is missing. End of stream reached.", line));
+        throw new InvalidFormatException("Section [data] is missing. End of stream reached.");
     }
     
     /**
@@ -140,6 +141,8 @@ public class LogHeader {
      * @param output the stream to write to
      * @throws IOException 
      */
+    @SuppressFBWarnings(value = "VA_FORMAT_STRING_USES_NEWLINE",
+            justification = "the log file uses \n as new line character which simplifies parsing")
     public void writeHeader(OutputStream output) throws IOException {
         // Note: '\n', ascii 12, must be used as new line separator.
         
@@ -161,7 +164,7 @@ public class LogHeader {
     
     
     
-    private class StreamReader {
+    private static class StreamReader {
         
         private static final int NO_CHAR = -2;
         
