@@ -6,6 +6,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import jmri.InstanceManager;
+import jmri.NewLogix;
+import jmri.Expression;
+import jmri.Action;
+
 /**
  * Test NewLogix
  * 
@@ -13,6 +18,13 @@ import org.junit.Test;
  */
 public class NewLogixTest {
 
+    @Test
+    public void testManagers() {
+        NewLogix newLogix = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewLogix("IQ102", "NewLogix 102");  // NOI18N
+        Expression expression = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewExpression("IQ102:E26", "NewLogix 102, Expression 26");  // NOI18N
+        Action action = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewAction("IQ102:A52", "NewLogix 102, Action 52");  // NOI18N
+    }
+    
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "New Logix".equals(new DefaultNewLogix("IQA55", null, null).getBeanType()));
@@ -27,6 +39,9 @@ public class NewLogixTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initNewLogixManager();
+        JUnitUtil.initExpressionManager();
+        JUnitUtil.initActionManager();
     }
 
     @After

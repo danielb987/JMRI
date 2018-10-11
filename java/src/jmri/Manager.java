@@ -339,7 +339,10 @@ public interface Manager<E extends NamedBean> {
     public static final int IDTAGS = SIGNALMASTLOGICS + 10;
     public static final int LOGIXS = IDTAGS + 10;
     public static final int CONDITIONALS = LOGIXS + 10;
-    public static final int AUDIO = LOGIXS + 10;
+    public static final int NEWLOGIXS = CONDITIONALS + 10;
+    public static final int EXPRESSIONS = NEWLOGIXS + 10;
+    public static final int ACTIONS = EXPRESSIONS + 10;
+    public static final int AUDIO = ACTIONS + 10;
     public static final int TIMEBASE = AUDIO + 10;
     public static final int PANELFILES = TIMEBASE + 10;
     public static final int ENTRYEXIT = PANELFILES + 10;
