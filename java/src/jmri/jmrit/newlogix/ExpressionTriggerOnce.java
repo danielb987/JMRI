@@ -2,6 +2,7 @@ package jmri.jmrit.newlogix;
 
 import jmri.Expression;
 import jmri.NewLogixCategory;
+import jmri.implementation.AbstractExpression;
 
 /**
  * An Expression that returns True only once while its child expression returns
@@ -13,12 +14,15 @@ import jmri.NewLogixCategory;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTriggerOnce implements Expression {
+public class ExpressionTriggerOnce extends AbstractExpression {
 
     private Expression _childExpression;
     private boolean _childLastState = false;
     
-    public ExpressionTriggerOnce(Expression childExpression) {
+    public ExpressionTriggerOnce(String sys, String user, Expression childExpression)
+            throws BadUserNameException, BadSystemNameException {
+        
+        super(sys, user);
         _childExpression = childExpression;
     }
     

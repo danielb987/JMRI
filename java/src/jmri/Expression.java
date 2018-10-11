@@ -6,7 +6,7 @@ package jmri;
  * 
  * @author Daniel Bergqvist 2018
  */
-public interface Expression {
+public interface Expression extends NamedBean {
     
     public enum TriggerCondition {
         TRUE,

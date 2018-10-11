@@ -3,13 +3,14 @@ package jmri.jmrit.newlogix;
 import jmri.Expression;
 import jmri.Action;
 import jmri.NewLogixCategory;
+import jmri.implementation.AbstractAction;
 
 /**
  * Executes an action when the expression is True.
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionDoIf implements Action {
+public class ActionDoIf extends AbstractAction {
 
     /**
      * The type of Action. If the type is changed, the action is aborted if it
@@ -45,7 +46,8 @@ public class ActionDoIf implements Action {
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
     
-    public ActionDoIf(Type type, Expression expression, Action action) {
+    public ActionDoIf(String sys, String user, Type type, Expression expression, Action action) {
+        super(sys, user);
         _type = type;
         _expression = expression;
         _action = action;

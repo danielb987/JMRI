@@ -2,6 +2,7 @@ package jmri.jmrit.newlogix;
 
 import jmri.Expression;
 import jmri.NewLogixCategory;
+import jmri.implementation.AbstractExpression;
 
 /**
  * This Expression has two expressions, the primary expression and the secondary
@@ -18,13 +19,18 @@ import jmri.NewLogixCategory;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionResetOnTrue implements Expression {
+public class ExpressionResetOnTrue extends AbstractExpression {
 
     private Expression _primaryExpression;
     private Expression _secondaryExpression;
     private boolean _lastMainResult = false;
     
-    public ExpressionResetOnTrue(Expression primaryExpression, Expression secondaryExpression) {
+    public ExpressionResetOnTrue(String sys, String user,
+            Expression primaryExpression, Expression secondaryExpression)
+            throws BadUserNameException, BadSystemNameException {
+        
+        super(sys, user);
+        
         _primaryExpression = primaryExpression;
         _secondaryExpression = secondaryExpression;
     }

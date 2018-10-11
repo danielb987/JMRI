@@ -5,7 +5,7 @@ package jmri;
  * 
  * @author Daniel Bergqvist 2018
  */
-public interface NewLogix {
+public interface NewLogix extends NamedBean {
 
     /**
      * Execute the NewLogix.

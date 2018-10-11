@@ -2,13 +2,18 @@ package jmri.jmrit.newlogix;
 
 import jmri.Expression;
 import jmri.NewLogixCategory;
+import jmri.implementation.AbstractExpression;
 
 /**
  * Evaluates the state of a Turnout.
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTurnout implements Expression {
+public class ExpressionTurnout extends AbstractExpression {
+
+    public ExpressionTurnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+    }
 
     @Override
     public NewLogixCategory getCategory() {

@@ -2,13 +2,18 @@ package jmri.jmrit.newlogix;
 
 import jmri.Expression;
 import jmri.NewLogixCategory;
+import jmri.implementation.AbstractExpression;
 
 /**
  * This expression is a timer that evaluates to true then a certain time has passed.
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTimer implements Expression {
+public class ExpressionTimer extends AbstractExpression {
+
+    public ExpressionTimer(String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+    }
 
     @Override
     public NewLogixCategory getCategory() {

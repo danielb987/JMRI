@@ -5,7 +5,7 @@ package jmri;
  * 
  * @author Daniel Bergqvist 2018
  */
-public interface Action {
+public interface Action extends NamedBean {
 
     /**
      * Get the category of this action.

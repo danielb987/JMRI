@@ -3,17 +3,22 @@ package jmri.jmrit.newlogix;
 import jmri.Action;
 import jmri.NewLogixCategory;
 import jmri.Turnout;
+import jmri.implementation.AbstractAction;
 
 /**
  * This action sets the state of a turnout.
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionTurnout implements Action {
+public class ActionTurnout extends AbstractAction {
 
 //    private Turnout _turnout;
 //    private int _newState;
     
+    public ActionTurnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+    }
+
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.ITEM;

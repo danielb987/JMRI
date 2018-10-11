@@ -2,6 +2,7 @@ package jmri.jmrit.newlogix;
 
 import jmri.Expression;
 import jmri.NewLogixCategory;
+import jmri.implementation.AbstractExpression;
 
 /**
  * An Expression that keeps its status even if its child expression doesn't.
@@ -13,13 +14,18 @@ import jmri.NewLogixCategory;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionHold implements Expression {
+public class ExpressionHold extends AbstractExpression {
 
     private Expression _holdExpression;
     private Expression _triggerExpression;
     private boolean _isActive = false;
     
-    public ExpressionHold(Expression holdExpression, Expression triggerExpression) {
+    public ExpressionHold(String sys, String user, Expression holdExpression,
+            Expression triggerExpression) throws BadUserNameException,
+            BadSystemNameException {
+        
+        super(sys, user);
+        
         _holdExpression = holdExpression;
         _triggerExpression = triggerExpression;
     }
