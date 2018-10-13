@@ -35,9 +35,9 @@ public interface NewLogixManager extends Manager<NewLogix> {
      */
     public NewLogix getNewLogix(String name);
 
-    public NewLogix getByUserName(String s);
+    public NewLogix getByUserName(String name);
 
-    public NewLogix getBySystemName(String s);
+    public NewLogix getBySystemName(String name);
 
     /**
      * Activate all NewLogixs that are not currently active. This method is

@@ -15,4 +15,18 @@ public interface NewLogix extends NamedBean {
      */
     public void execute();
     
+    /**
+     * Set enabled status.
+     *
+     * @param state true if NewLogix should be enabled; false otherwise
+     */
+    public void setEnabled(boolean state);
+
+    /**
+     * Get enabled status.
+     *
+     * @return true if enabled; false otherwise
+     */
+    public boolean getEnabled();
+
 }

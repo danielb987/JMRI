@@ -1,10 +1,14 @@
 package jmri.managers;
 
-import jmri.InstanceManager;
-import jmri.InstanceManagerAutoDefault;
-import jmri.Logix;
+import java.text.DecimalFormat;
+import jmri.InvokeOnGuiThread;
 import jmri.NewLogix;
 import jmri.NewLogixManager;
+import jmri.jmrit.newlogix.DefaultNewLogix;
+import jmri.util.Log4JUtil;
+import jmri.util.ThreadingUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class providing the basic logic of the NewLogixManager interface.
@@ -12,11 +16,15 @@ import jmri.NewLogixManager;
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultNewLogixManager extends AbstractManager<NewLogix>
-        implements NewLogixManager, InstanceManagerAutoDefault {
+        implements NewLogixManager {
 
+    DecimalFormat paddedNumber = new DecimalFormat("0000");
+
+    int lastAutoNewLogixRef = 0;
+    
+    
     public DefaultNewLogixManager() {
         super();
-        InstanceManager.getDefault(NewLogixManager.class).addVetoableChangeListener(this);
     }
 
     @Override
@@ -47,7 +55,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.matches("IQ\\d+")) {
+        if (systemName.toUpperCase().matches("IQ\\:[AM]\\:\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -56,28 +64,70 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public NewLogix createNewNewLogix(String systemName, String userName) {
-        apps.gui3.TabbedPreferencesAction a;
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Check that Logix does not already exist
+        NewLogix x;
+        if (userName != null && !userName.equals("")) {
+            x = getByUserName(userName);
+            if (x != null) {
+                return null;
+            }
+        }
+        x = getBySystemName(systemName);
+        if (x != null) {
+            return null;
+        }
+        // Check if system name is valid
+        if (this.validSystemNameFormat(systemName) != NameValidity.VALID) {
+            log.warn("SystemName " + systemName + " is not in the correct format");
+            return null;
+        }
+        // NewLogix does not exist, create a new NewLogix
+        x = new DefaultNewLogix(systemName, userName);
+        // save in the maps
+        register(x);
+
+        /* The following keeps track of the last created auto system name.
+         currently we do not reuse numbers, although there is nothing to stop the
+         user from manually recreating them */
+        if (systemName.startsWith("IQ:A:")) {
+            try {
+                int autoNumber = Integer.parseInt(systemName.substring(5));
+                if (autoNumber > lastAutoNewLogixRef) {
+                    lastAutoNewLogixRef = autoNumber;
+                }
+            } catch (NumberFormatException e) {
+                log.warn("Auto generated SystemName " + systemName + " is not in the correct format");
+            }
+        }
+        return x;
     }
 
     @Override
     public NewLogix createNewNewLogix(String userName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int nextAutoNewLogixRef = lastAutoNewLogixRef + 1;
+        StringBuilder b = new StringBuilder("IQ:A:");
+        String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
+        b.append(nextNumber);
+        return createNewNewLogix(b.toString(), userName);
     }
 
     @Override
     public NewLogix getNewLogix(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        NewLogix x = getByUserName(name);
+        if (x != null) {
+            return x;
+        }
+        return getBySystemName(name);
     }
 
     @Override
-    public NewLogix getByUserName(String s) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public NewLogix getByUserName(String name) {
+        return _tuser.get(name);
     }
 
     @Override
-    public NewLogix getBySystemName(String s) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public NewLogix getBySystemName(String name) {
+        return _tsys.get(name);
     }
 
     @Override
@@ -87,7 +137,9 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public void deleteNewLogix(NewLogix x) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // delete the NewLogix
+        deregister(x);
+        x.dispose();
     }
 
     @Override
@@ -95,4 +147,21 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    static DefaultNewLogixManager _instance = null;
+
+    @InvokeOnGuiThread  // this method is not thread safe
+    static public DefaultNewLogixManager instance() {
+        if (log.isDebugEnabled()) {
+            if (!ThreadingUtil.isGUIThread()) {
+                Log4JUtil.warnOnce(log, "instance() called on wrong thread");
+            }
+        }
+        
+        if (_instance == null) {
+            _instance = new DefaultNewLogixManager();
+        }
+        return (_instance);
+    }
+
+    private final static Logger log = LoggerFactory.getLogger(DefaultNewLogixManager.class);
 }

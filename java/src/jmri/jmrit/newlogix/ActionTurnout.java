@@ -17,6 +17,7 @@ public class ActionTurnout extends AbstractAction {
     
     public ActionTurnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
 
     /** {@inheritDoc} */

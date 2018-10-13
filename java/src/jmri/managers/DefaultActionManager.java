@@ -2,7 +2,6 @@ package jmri.managers;
 
 import jmri.Action;
 import jmri.ActionManager;
-import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 
 /**
@@ -11,12 +10,10 @@ import jmri.InstanceManagerAutoDefault;
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultActionManager extends AbstractManager<Action>
-        implements ActionManager, InstanceManagerAutoDefault {
+        implements ActionManager {
 
     public DefaultActionManager() {
         super();
-        InstanceManager.getDefault(DefaultActionManager.class).addVetoableChangeListener(this);
-//        InstanceManager.getDefault(DefaultNewLogixManager.class).addVetoableChangeListener(this);
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.junit.runners.Suite;
    ActionDoIfTest.class,
    ActionManyTest.class,
    ActionTurnoutTest.class,
+   NewLogixTest.class,
    DefaultNewLogixTest.class,
    ExpressionAndTest.class,
    ExpressionHoldTest.class,

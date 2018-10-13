@@ -2,15 +2,18 @@ package jmri.managers;
 
 import java.util.Arrays;
 import java.util.Set;
+import jmri.ActionManager;
 import jmri.AudioManager;
 import jmri.BlockManager;
 import jmri.ClockControl;
 import jmri.ConditionalManager;
+import jmri.ExpressionManager;
 import jmri.InstanceInitializer;
 import jmri.InstanceManager;
 import jmri.LightManager;
 import jmri.LogixManager;
 import jmri.MemoryManager;
+import jmri.NewLogixManager;
 import jmri.RailComManager;
 import jmri.ReporterManager;
 import jmri.RouteManager;
@@ -27,6 +30,8 @@ import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide the usual default implementations for the
@@ -54,6 +59,9 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
     @Override
     public <T> Object getDefault(Class<T> type) {
+        if (type == ActionManager.class) {
+            return new DefaultActionManager();
+        }
 
         if (type == AudioManager.class) {
             return DefaultAudioManager.instance();
@@ -67,6 +75,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultConditionalManager();
         }
 
+        if (type == ExpressionManager.class) {
+            return new DefaultExpressionManager();
+        }
+
         if (type == LightManager.class) {
             return new jmri.managers.ProxyLightManager();
         }
@@ -77,6 +89,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
         if (type == MemoryManager.class) {
             return new DefaultMemoryManager();
+        }
+
+        if (type == NewLogixManager.class) {
+            return new DefaultNewLogixManager();
         }
 
         if (type == RailComManager.class) {
@@ -142,13 +158,16 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
         set.addAll(Arrays.asList(
+                ActionManager.class,
                 AudioManager.class,
                 BlockManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
+                ExpressionManager.class,
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
+                NewLogixManager.class,
                 RailComManager.class,
                 ReporterManager.class,
                 RouteManager.class,
@@ -165,4 +184,5 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         return set;
     }
 
+    private final static Logger log = LoggerFactory.getLogger(DefaultInstanceInitializer.class);
 }

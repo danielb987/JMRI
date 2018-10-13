@@ -2,7 +2,6 @@ package jmri.managers;
 
 import jmri.Expression;
 import jmri.ExpressionManager;
-import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 
 /**
@@ -15,7 +14,6 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
 
     public DefaultExpressionManager() {
         super();
-        InstanceManager.getDefault(ExpressionManager.class).addVetoableChangeListener(this);
     }
 
     @Override
