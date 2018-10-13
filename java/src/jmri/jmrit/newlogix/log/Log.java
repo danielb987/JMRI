@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  * A NewLogix log.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface Log {
 

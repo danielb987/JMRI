@@ -8,7 +8,7 @@ import jmri.implementation.AbstractAction;
 /**
  * Executes an action when the expression is True.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ActionDoIf extends AbstractAction {
 
@@ -53,11 +53,19 @@ public class ActionDoIf extends AbstractAction {
         _action = action;
     }
     
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.OTHER;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
         _lastExpressionResult = _expression.evaluate();
@@ -70,6 +78,7 @@ public class ActionDoIf extends AbstractAction {
         return _lastActionResult;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeContinue() {
         switch (_type) {
@@ -94,6 +103,7 @@ public class ActionDoIf extends AbstractAction {
         return _lastActionResult;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
         switch (_type) {
@@ -118,26 +128,18 @@ public class ActionDoIf extends AbstractAction {
         return _lastActionResult;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void abort() {
         _action.abort();
     }
     
-    /**
-     * Get the type of the action.
-     * 
-     * @return the type of action
-     */
+    /** {@inheritDoc} */
     public Type getType() {
         return _type;
     }
     
-    /**
-     * Set the type of the NewLogix.
-     * If the type is changed while the action is running, the action is aborted.
-     * 
-     * @param type the type of the action
-     */
+    /** {@inheritDoc} */
     public void setType(Type type) {
         if ((_type != type) && _lastActionResult) {
             _action.abort();

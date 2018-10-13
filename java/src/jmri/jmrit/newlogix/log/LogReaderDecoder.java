@@ -6,6 +6,8 @@ import jmri.jmrit.newlogix.log.Log.InvalidFormatException;
 
 /**
  * Reads the data part of the log from a stream and decodes it.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface LogReaderDecoder {
 

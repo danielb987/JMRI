@@ -20,9 +20,9 @@ public class NewLogixTest {
 
     @Test
     public void testManagers() {
-        NewLogix newLogix = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewLogix("IQ102", "NewLogix 102");  // NOI18N
-        Expression expression = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewExpression("IQ102:E26", "NewLogix 102, Expression 26");  // NOI18N
-        Action action = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewAction("IQ102:A52", "NewLogix 102, Action 52");  // NOI18N
+        NewLogix newLogix = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewNewLogix("IQ102", "NewLogix 102");  // NOI18N
+        Expression expression = InstanceManager.getDefault(jmri.ExpressionManager.class).createNewExpression("IQ102:E26", "NewLogix 102, Expression 26");  // NOI18N
+        Action action = InstanceManager.getDefault(jmri.ActionManager.class).createNewAction("IQ102:A52", "NewLogix 102, Action 52");  // NOI18N
     }
     
     @Test

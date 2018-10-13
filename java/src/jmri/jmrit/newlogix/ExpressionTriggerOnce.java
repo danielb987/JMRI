@@ -12,7 +12,7 @@ import jmri.implementation.AbstractExpression;
  * True. After that, this expression returns False until the child expression
  * returns False and again returns True.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ExpressionTriggerOnce extends AbstractExpression {
 
@@ -26,11 +26,19 @@ public class ExpressionTriggerOnce extends AbstractExpression {
         _childExpression = childExpression;
     }
     
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.OTHER;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         if (_childExpression.evaluate() && !_childLastState) {
@@ -41,6 +49,7 @@ public class ExpressionTriggerOnce extends AbstractExpression {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         _childLastState = false;

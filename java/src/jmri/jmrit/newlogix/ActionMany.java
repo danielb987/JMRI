@@ -9,7 +9,7 @@ import jmri.implementation.AbstractAction;
 /**
  * Execute many Actions in a specific order.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ActionMany extends AbstractAction {
 
@@ -19,11 +19,19 @@ public class ActionMany extends AbstractAction {
         super(sys, user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.COMMON;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
         boolean state = false;
@@ -33,6 +41,7 @@ public class ActionMany extends AbstractAction {
         return state;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
         boolean state = false;
@@ -42,6 +51,7 @@ public class ActionMany extends AbstractAction {
         return state;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeContinue() {
         boolean state = false;
@@ -51,6 +61,7 @@ public class ActionMany extends AbstractAction {
         return state;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void abort() {
         for (Action action : actions) {

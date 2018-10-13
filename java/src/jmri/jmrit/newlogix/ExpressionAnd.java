@@ -9,7 +9,7 @@ import jmri.implementation.AbstractExpression;
 /**
  * Evaluates to True if all the child expressions evaluate to true.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ExpressionAnd extends AbstractExpression {
 
@@ -20,11 +20,19 @@ public class ExpressionAnd extends AbstractExpression {
         super(sys, user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.COMMON;
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         boolean result = true;
@@ -36,6 +44,7 @@ public class ExpressionAnd extends AbstractExpression {
         return result;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         for (Expression e : children) {

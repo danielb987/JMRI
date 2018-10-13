@@ -2,12 +2,22 @@ package jmri.managers;
 
 import jmri.Action;
 import jmri.ActionManager;
+import jmri.InstanceManager;
+import jmri.InstanceManagerAutoDefault;
 
 /**
- *
+ * Class providing the basic logic of the ActionManager interface.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultActionManager extends AbstractManager<Action>
-        implements ActionManager {
+        implements ActionManager, InstanceManagerAutoDefault {
+
+    public DefaultActionManager() {
+        super();
+        InstanceManager.getDefault(DefaultActionManager.class).addVetoableChangeListener(this);
+//        InstanceManager.getDefault(DefaultNewLogixManager.class).addVetoableChangeListener(this);
+    }
 
     @Override
     public int getXMLOrder() {
@@ -42,6 +52,36 @@ public class DefaultActionManager extends AbstractManager<Action>
         } else {
             return NameValidity.INVALID;
         }
+    }
+
+    @Override
+    public Action createNewAction(String systemName, String userName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Action createNewExpression(String userName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Action getExpression(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Action getByUserName(String s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Action getBySystemName(String s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteAction(Action x) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

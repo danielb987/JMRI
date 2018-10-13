@@ -5,6 +5,8 @@ import java.io.OutputStream;
 
 /**
  * Writes the data part of the log to a stream and encodes it.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface LogWriterEncoder {
 

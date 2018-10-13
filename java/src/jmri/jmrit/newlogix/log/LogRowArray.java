@@ -2,6 +2,8 @@ package jmri.jmrit.newlogix.log;
 
 /**
  * One row of log data stored in an array.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public final class LogRowArray implements LogRow {
 

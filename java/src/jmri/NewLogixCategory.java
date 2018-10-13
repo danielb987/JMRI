@@ -6,7 +6,7 @@ package jmri;
  * It's used to group expressions or actions then the user creates a new
  * expression or action.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public enum NewLogixCategory {
 

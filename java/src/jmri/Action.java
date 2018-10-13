@@ -3,7 +3,7 @@ package jmri;
 /**
  * A NewLogix action.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface Action extends NamedBean {
 
@@ -12,6 +12,15 @@ public interface Action extends NamedBean {
      * @return the category
      */
     public NewLogixCategory getCategory();
+    
+    /**
+     * Is this an external action?
+     * Does this action affects on or is dependent on external things, like
+     * turnouts and sensors? Timers are considered as internal since they
+     * behavies the same on every computer on every layout.
+     * @return true if this action is external
+     */
+    public boolean isExternal();
 
     /**
      * Start execution of this Action.

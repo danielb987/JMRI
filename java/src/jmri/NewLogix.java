@@ -3,7 +3,7 @@ package jmri;
 /**
  * NewLogix.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface NewLogix extends NamedBean {
 

@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 /**
  * The default implementation of a NewLogix log
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultLog implements Log {
 

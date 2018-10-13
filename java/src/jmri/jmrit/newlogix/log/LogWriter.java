@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * A writer that writes to a NewLogix log.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class LogWriter {
     

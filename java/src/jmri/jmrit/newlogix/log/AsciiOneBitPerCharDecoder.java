@@ -6,6 +6,8 @@ import jmri.jmrit.newlogix.log.Log.InvalidFormatException;
 
 /**
  * This decoder reads a log where each status bit is a '0' or '1' character.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class AsciiOneBitPerCharDecoder implements LogReaderDecoder {
 

@@ -17,7 +17,7 @@ import jmri.implementation.AbstractExpression;
  * expression is a timer, this expression will evaluate to True if the sensor
  * has had that state during the specified time.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ExpressionResetOnTrue extends AbstractExpression {
 
@@ -35,11 +35,19 @@ public class ExpressionResetOnTrue extends AbstractExpression {
         _secondaryExpression = secondaryExpression;
     }
     
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.OTHER;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         boolean result = _primaryExpression.evaluate();
@@ -51,6 +59,7 @@ public class ExpressionResetOnTrue extends AbstractExpression {
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         _primaryExpression.reset();

@@ -7,7 +7,7 @@ import jmri.implementation.AbstractExpression;
 /**
  * Every Expression has an InternalExpression as its parent.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class InternalExpression extends AbstractExpression {
 
@@ -20,16 +20,25 @@ public class InternalExpression extends AbstractExpression {
         _expression = expression;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return _expression.getCategory();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         return _expression.evaluate();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         _expression.reset();

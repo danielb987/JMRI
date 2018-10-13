@@ -7,7 +7,7 @@ import jmri.implementation.AbstractExpression;
 /**
  * This expression is a timer that evaluates to true then a certain time has passed.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ExpressionTimer extends AbstractExpression {
 
@@ -15,11 +15,19 @@ public class ExpressionTimer extends AbstractExpression {
         super(sys, user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.COMMON;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         // Has timer completed?
@@ -27,6 +35,7 @@ public class ExpressionTimer extends AbstractExpression {
         return true;    // Mockup code for now.
     }
 
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         // Reset timer.

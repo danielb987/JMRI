@@ -1,13 +1,23 @@
 package jmri.managers;
 
+import jmri.InstanceManager;
+import jmri.InstanceManagerAutoDefault;
+import jmri.Logix;
 import jmri.NewLogix;
 import jmri.NewLogixManager;
 
 /**
- *
+ * Class providing the basic logic of the NewLogixManager interface.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultNewLogixManager extends AbstractManager<NewLogix>
-        implements NewLogixManager {
+        implements NewLogixManager, InstanceManagerAutoDefault {
+
+    public DefaultNewLogixManager() {
+        super();
+        InstanceManager.getDefault(NewLogixManager.class).addVetoableChangeListener(this);
+    }
 
     @Override
     public int getXMLOrder() {
@@ -42,6 +52,47 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         } else {
             return NameValidity.INVALID;
         }
+    }
+
+    @Override
+    public NewLogix createNewNewLogix(String systemName, String userName) {
+        apps.gui3.TabbedPreferencesAction a;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NewLogix createNewNewLogix(String userName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NewLogix getNewLogix(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NewLogix getByUserName(String s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NewLogix getBySystemName(String s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void activateAllNewLogixs() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteNewLogix(NewLogix x) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setLoadDisabled(boolean s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

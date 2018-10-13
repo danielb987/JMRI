@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * A reader that reads from a NewLogix log.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class LogReader {
 

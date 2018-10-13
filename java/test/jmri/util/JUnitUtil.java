@@ -709,21 +709,21 @@ public class JUnitUtil {
     }
 
     public static void initNewLogixManager() {
-        LogixManager m = new DefaultNewLogixManager();
+        NewLogixManager m = new DefaultNewLogixManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.NEWLOGIXS);
         }
     }
 
     public static void initExpressionManager() {
-        LogixManager m = new DefaultExpressionManager();
+        ExpressionManager m = new DefaultExpressionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
         }
     }
 
     public static void initActionManager() {
-        LogixManager m = new DefaultActionManager();
+        ActionManager m = new DefaultActionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
         }

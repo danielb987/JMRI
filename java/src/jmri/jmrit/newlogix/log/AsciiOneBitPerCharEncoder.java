@@ -5,6 +5,8 @@ import java.io.OutputStream;
 
 /**
  * This encoder writes a log where each status bit is a '0' or '1' character.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class AsciiOneBitPerCharEncoder implements LogWriterEncoder {
 

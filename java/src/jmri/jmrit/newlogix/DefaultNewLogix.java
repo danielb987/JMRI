@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The default implementation of NewLogix.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultNewLogix extends AbstractNamedBean
         implements NewLogix {

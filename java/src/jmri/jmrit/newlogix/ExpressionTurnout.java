@@ -7,7 +7,7 @@ import jmri.implementation.AbstractExpression;
 /**
  * Evaluates the state of a Turnout.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ExpressionTurnout extends AbstractExpression {
 
@@ -15,16 +15,26 @@ public class ExpressionTurnout extends AbstractExpression {
         super(sys, user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.ITEM;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return true;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
+        // Do this on the correct thread??
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         // Do nothing.

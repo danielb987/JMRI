@@ -2,6 +2,8 @@ package jmri.jmrit.newlogix.log;
 
 /**
  * The states of the items in one row in the log.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface LogRow {
 

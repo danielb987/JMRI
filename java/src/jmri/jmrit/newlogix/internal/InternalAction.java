@@ -7,7 +7,7 @@ import jmri.implementation.AbstractAction;
 /**
  * Every Action has an InternalAction as its parent.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class InternalAction extends AbstractAction {
 
@@ -19,11 +19,19 @@ public class InternalAction extends AbstractAction {
         _action = child;
     }
     
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return _action.getCategory();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
         if (_isActive) {
@@ -33,6 +41,7 @@ public class InternalAction extends AbstractAction {
         return _isActive;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeContinue() {
         if (!_isActive) {
@@ -42,6 +51,7 @@ public class InternalAction extends AbstractAction {
         return _isActive;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
         if (_isActive) {
@@ -52,6 +62,7 @@ public class InternalAction extends AbstractAction {
         return _isActive;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void abort() {
         _action.abort();

@@ -8,7 +8,7 @@ import jmri.implementation.AbstractAction;
 /**
  * This action sets the state of a turnout.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ActionTurnout extends AbstractAction {
 
@@ -19,18 +19,28 @@ public class ActionTurnout extends AbstractAction {
         super(sys, user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.ITEM;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return true;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
         throw new UnsupportedOperationException("Not supported yet.");
+        // Do this on the LayoutThread
 //        _turnout.setState(_newState);
 //        return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeContinue() {
         // The executeStart() metod never return True from this action and
@@ -38,6 +48,7 @@ public class ActionTurnout extends AbstractAction {
         throw new RuntimeException("ActionTurnout don't support executeContinue()");
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
         // The executeStart() metod never return True from this action and
@@ -45,6 +56,7 @@ public class ActionTurnout extends AbstractAction {
         throw new RuntimeException("ActionTurnout don't support executeRestart()");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void abort() {
         // The executeStart() metod never return True from this action and

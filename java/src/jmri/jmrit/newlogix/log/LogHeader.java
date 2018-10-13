@@ -12,6 +12,8 @@ import jmri.jmrit.newlogix.log.Log.InvalidFormatException;
  * The header of the log, including the list of items.
  * The header must always be written using UTF-8, StandardCharsets.UTF_8.
  * '\n', ascii 12, is used as new line separator.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class LogHeader {
     

@@ -2,6 +2,8 @@ package jmri.jmrit.newlogix.log;
 
 /**
  * The encodings that are supported in the NewLogix log.
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public enum Encodings {
     

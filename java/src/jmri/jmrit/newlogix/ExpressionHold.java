@@ -12,7 +12,7 @@ import jmri.implementation.AbstractExpression;
  * False. The 'trigger' expression can for example be a push button that stays
  * True for a short time.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public class ExpressionHold extends AbstractExpression {
 
@@ -30,11 +30,19 @@ public class ExpressionHold extends AbstractExpression {
         _triggerExpression = triggerExpression;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
         return NewLogixCategory.OTHER;
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         if (_isActive) {
@@ -45,6 +53,7 @@ public class ExpressionHold extends AbstractExpression {
         return _isActive;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         _holdExpression.reset();

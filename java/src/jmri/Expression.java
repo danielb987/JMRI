@@ -4,7 +4,7 @@ package jmri;
  * Expression is used in NewLogix to answer a question that can give the answers
  * 'true' or 'false'.
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist Copyright 2018
  */
 public interface Expression extends NamedBean {
     
@@ -19,6 +19,15 @@ public interface Expression extends NamedBean {
      * @return the category
      */
     public NewLogixCategory getCategory();
+
+    /**
+     * Is this an external expression?
+     * Does this action affects on or is dependent on external things, like
+     * turnouts and sensors? Timers are considered as internal since they
+     * behavies the same on every computer on every layout.
+     * @return true if this expression is external
+     */
+    public boolean isExternal();
 
     /**
      * Evaluate this expression.
