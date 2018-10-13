@@ -184,5 +184,4 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         return set;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultInstanceInitializer.class);
 }
