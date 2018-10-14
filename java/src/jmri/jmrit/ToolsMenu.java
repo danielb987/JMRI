@@ -130,6 +130,10 @@ public class ToolsMenu extends JMenu {
         add(new JSeparator());
         // add start web server
         add(new jmri.web.server.WebServerAction());
+
+        add(new JSeparator());
+        // operations menu
+        add(new jmri.jmrit.newlogix.swing.NewLogixMenu());
     }
 
 }

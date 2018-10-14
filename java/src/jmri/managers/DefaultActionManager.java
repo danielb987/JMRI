@@ -3,7 +3,10 @@ package jmri.managers;
 import java.text.DecimalFormat;
 import jmri.Action;
 import jmri.ActionManager;
+import jmri.InvokeOnGuiThread;
 import jmri.NewLogix;
+import jmri.util.Log4JUtil;
+import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +101,22 @@ public class DefaultActionManager extends AbstractManager<Action>
     @Override
     public void deleteAction(Action x) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    static DefaultActionManager _instance = null;
+
+    @InvokeOnGuiThread  // this method is not thread safe
+    static public DefaultActionManager instance() {
+        if (log.isDebugEnabled()) {
+            if (!ThreadingUtil.isGUIThread()) {
+                Log4JUtil.warnOnce(log, "instance() called on wrong thread");
+            }
+        }
+        
+        if (_instance == null) {
+            _instance = new DefaultActionManager();
+        }
+        return (_instance);
     }
     
     private final static Logger log = LoggerFactory.getLogger(DefaultActionManager.class);

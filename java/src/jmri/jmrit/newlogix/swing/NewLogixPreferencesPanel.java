@@ -55,6 +55,7 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
     }
 
     private void setGUI() {
+        _startNewLogixOnLoadCheckBox.setSelected(preferences.getStartNewLogixOnStartup());
     }
 
     /**
@@ -65,7 +66,7 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
      */
     private boolean setValues() {
         boolean didSet = true;
-        // Do something
+        preferences.setStartNewLogixOnStartup(_startNewLogixOnLoadCheckBox.isSelected());
         return didSet;
     }
     

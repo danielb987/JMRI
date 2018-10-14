@@ -4,7 +4,10 @@ import java.text.DecimalFormat;
 import jmri.Expression;
 import jmri.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
+import jmri.InvokeOnGuiThread;
 import jmri.NewLogix;
+import jmri.util.Log4JUtil;
+import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,5 +104,21 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    static DefaultExpressionManager _instance = null;
+
+    @InvokeOnGuiThread  // this method is not thread safe
+    static public DefaultExpressionManager instance() {
+        if (log.isDebugEnabled()) {
+            if (!ThreadingUtil.isGUIThread()) {
+                Log4JUtil.warnOnce(log, "instance() called on wrong thread");
+            }
+        }
+        
+        if (_instance == null) {
+            _instance = new DefaultExpressionManager();
+        }
+        return (_instance);
+    }
+
     private final static Logger log = LoggerFactory.getLogger(DefaultExpressionManager.class);
 }
