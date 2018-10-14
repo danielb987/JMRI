@@ -44,13 +44,13 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
 
             // store the Logix
 //            while (iter.hasNext()) {
-            for (Expression e : tm.getNamedBeanSet()) {
+/*            for (Expression e : tm.getNamedBeanSet()) {
 //                String sname = iter.next();
 //                if (sname == null) {
 //                    log.error("System name null during store");  // NOI18N
 //                }
 //                Expression x = tm.getBySystemName(sname);
-/*
+
                 log.debug("logix system name is " + e.getSystemName());  // NOI18N
                 boolean enabled = e.getEnabled();
                 Element elem = new Element("expression");  // NOI18N
@@ -85,9 +85,10 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
                         elem.addContent(cElem);
                     }
                 }
-*/                
+                
 //                expressions.addContent(elem);
             }
+*/
         }
         return (expressions);
     }

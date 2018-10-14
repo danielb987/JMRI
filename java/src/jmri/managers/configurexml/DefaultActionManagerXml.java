@@ -44,7 +44,7 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
             if (!iter.hasNext()) {
                 return null;
             }
-
+/*
             // store the Action
 //            while (iter.hasNext()) {
             for (Action a : tm.getNamedBeanSet()) {
@@ -87,9 +87,10 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
                         elem.addContent(cElem);
                     }
                 }
-*/                
+                
                 actions.addContent(elem);
             }
+*/            
         }
         return (actions);
     }
