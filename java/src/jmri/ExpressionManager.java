@@ -8,23 +8,21 @@ package jmri;
 public interface ExpressionManager extends Manager<Expression> {
 
     /**
-     * Create a new Expression if the Expression does not exist.
+     * Create a new system name for an Expression.
      *
-     * @param systemName the system name
-     * @param userName   the user name
-     * @return a new Expression or null if unable to create: An error, or the
-     * Expression already exists
+     * @param newLogix the NewLogix that this expression belongs to
+     * @return a new system name
      */
-    public Expression createNewExpression(String systemName, String userName);
+    public String getNewSystemName(NewLogix newLogix);
 
     /**
-     * For use with User GUI, to allow the auto generation of systemNames, where
-     * the user can optionally supply a username.
+     * Add an Expression.
      *
-     * @param userName the user name
-     * @return a new NewLogix or null if unable to create
+     * @param expression the expression to add
+     * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public Expression createNewExpression(String userName);
+    public void addExpression(Expression expression)
+            throws IllegalArgumentException;
 
     /**
      * Locate via user name, then system name if needed. Does not create a new

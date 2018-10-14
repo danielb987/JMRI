@@ -11,6 +11,10 @@ import jmri.implementation.AbstractExpression;
  */
 public class ExpressionTurnout extends AbstractExpression {
 
+    public ExpressionTurnout(String sys) throws BadUserNameException, BadSystemNameException {
+        super(sys);
+    }
+
     public ExpressionTurnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }

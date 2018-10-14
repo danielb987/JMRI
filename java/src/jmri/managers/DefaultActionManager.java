@@ -1,8 +1,11 @@
 package jmri.managers;
 
+import java.text.DecimalFormat;
 import jmri.Action;
 import jmri.ActionManager;
-import jmri.InstanceManagerAutoDefault;
+import jmri.NewLogix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -12,6 +15,11 @@ import jmri.InstanceManagerAutoDefault;
 public class DefaultActionManager extends AbstractManager<Action>
         implements ActionManager {
 
+    DecimalFormat paddedNumber = new DecimalFormat("0000");
+
+    int lastAutoActionRef = 0;
+    
+    
     public DefaultActionManager() {
         super();
     }
@@ -44,7 +52,7 @@ public class DefaultActionManager extends AbstractManager<Action>
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.matches("IQ\\d+\\:A\\d+")) {
+        if (systemName.matches("IQ\\:[AM]\\:\\d+:[AM]\\:A\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -52,33 +60,45 @@ public class DefaultActionManager extends AbstractManager<Action>
     }
 
     @Override
-    public Action createNewAction(String systemName, String userName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getNewSystemName(NewLogix newLogix) {
+        int nextAutoNewLogixRef = lastAutoActionRef + 1;
+        StringBuilder b = new StringBuilder(newLogix.getSystemName());
+        b.append(":A:A");
+        String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
+        b.append(nextNumber);
+        return b.toString();
     }
 
     @Override
-    public Action createNewExpression(String userName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addAction(Action action) throws IllegalArgumentException {
+        // Check if system name is valid
+        if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
+            log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
+            throw new IllegalArgumentException("System name is invalid");
+        }
+        // save in the maps
+        register(action);
     }
 
     @Override
-    public Action getExpression(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Action getAction(String name) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Action getByUserName(String s) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Action getBySystemName(String s) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void deleteAction(Action x) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    private final static Logger log = LoggerFactory.getLogger(DefaultActionManager.class);
 }

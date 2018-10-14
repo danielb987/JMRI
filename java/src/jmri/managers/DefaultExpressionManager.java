@@ -1,8 +1,12 @@
 package jmri.managers;
 
+import java.text.DecimalFormat;
 import jmri.Expression;
 import jmri.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
+import jmri.NewLogix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -12,6 +16,11 @@ import jmri.InstanceManagerAutoDefault;
 public class DefaultExpressionManager extends AbstractManager<Expression>
         implements ExpressionManager, InstanceManagerAutoDefault {
 
+    DecimalFormat paddedNumber = new DecimalFormat("0000");
+
+    int lastAutoExpressionRef = 0;
+    
+    
     public DefaultExpressionManager() {
         super();
     }
@@ -44,7 +53,7 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.matches("IQ\\d+\\:E\\d+")) {
+        if (systemName.matches("IQ\\:[AM]\\:\\d+:[AM]\\:E\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -52,13 +61,24 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
     }
 
     @Override
-    public Expression createNewExpression(String systemName, String userName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getNewSystemName(NewLogix newLogix) {
+        int nextAutoNewLogixRef = lastAutoExpressionRef + 1;
+        StringBuilder b = new StringBuilder(newLogix.getSystemName());
+        b.append(":A:E");
+        String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
+        b.append(nextNumber);
+        return b.toString();
     }
 
     @Override
-    public Expression createNewExpression(String userName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addExpression(Expression expression) throws IllegalArgumentException {
+        // Check if system name is valid
+        if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
+            log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
+            throw new IllegalArgumentException("System name is invalid");
+        }
+        // save in the maps
+        register(expression);
     }
 
     @Override
@@ -81,4 +101,5 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    private final static Logger log = LoggerFactory.getLogger(DefaultExpressionManager.class);
 }

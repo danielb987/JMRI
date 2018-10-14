@@ -8,23 +8,21 @@ package jmri;
 public interface ActionManager extends Manager<Action> {
 
     /**
-     * Create a new Action if the Action does not exist.
+     * Create a new system name for an Action.
      *
-     * @param systemName the system name
-     * @param userName   the user name
-     * @return a new Action or null if unable to create: An error, or the
-     * Action already exists
+     * @param newLogix the NewLogix that this expression belongs to
+     * @return a new system name
      */
-    public Action createNewAction(String systemName, String userName);
+    public String getNewSystemName(NewLogix newLogix);
 
     /**
-     * For use with User GUI, to allow the auto generation of systemNames, where
-     * the user can optionally supply a username.
+     * Add an Action.
      *
-     * @param userName the user name
-     * @return a new NewLogix or null if unable to create
+     * @param action the action to add
+     * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public Action createNewExpression(String userName);
+    public void addAction(Action action)
+            throws IllegalArgumentException;
 
     /**
      * Locate via user name, then system name if needed. Does not create a new
@@ -33,7 +31,7 @@ public interface ActionManager extends Manager<Action> {
      * @param name User name or system name to match
      * @return null if no match found
      */
-    public Action getExpression(String name);
+    public Action getAction(String name);
 
     public Action getByUserName(String s);
 
