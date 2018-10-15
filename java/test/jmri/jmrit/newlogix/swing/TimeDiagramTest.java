@@ -1,8 +1,10 @@
 package jmri.jmrit.newlogix.swing;
 
+import java.awt.GraphicsEnvironment;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,6 +17,8 @@ public class TimeDiagramTest {
 
     @Test
     public void testCTor() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        
         TimeDiagram t = new TimeDiagram();
         Assert.assertNotNull("exists",t);
     }
