@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
    jmri.jmrit.newlogix.internal.PackageTest.class,
    jmri.jmrit.newlogix.log.PackageTest.class,
+   jmri.jmrit.newlogix.swing.PackageTest.class,
    ActionDoIfTest.class,
    ActionManyTest.class,
    ActionTurnoutTest.class,
