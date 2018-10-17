@@ -1,0 +1,19 @@
+package jmri.jmrit.newlogix.configurexml;
+
+import jmri.jmrit.newlogix.internal.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+   ActionDoIfXmlTest.class,
+})
+
+/**
+ * Invokes complete set of tests in the jmri.jmrit.newlogix.internal tree
+ *
+ * @author Daniel Bergqvist 2018
+ */
+public class PackageTest {
+
+}

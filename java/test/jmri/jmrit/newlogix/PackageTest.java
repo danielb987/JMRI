@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+   jmri.jmrit.newlogix.configurexml.PackageTest.class,
    jmri.jmrit.newlogix.internal.PackageTest.class,
    jmri.jmrit.newlogix.log.PackageTest.class,
    jmri.jmrit.newlogix.swing.PackageTest.class,
