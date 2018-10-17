@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.swing;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -77,6 +78,7 @@ public class TimeDiagram extends JmriJFrame {
         setVisible(true);
     }
     
+    @SuppressFBWarnings(value="DMI_HARDCODED_ABSOLUTE_FILENAME", justification="Only temporary for testing. Must be removed later.")
     public void testLoadExpression() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
         
         String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\JMRI_NewLogixPlugins.jar";
