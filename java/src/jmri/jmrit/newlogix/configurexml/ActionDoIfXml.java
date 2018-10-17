@@ -75,7 +75,7 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
         String uname = getUserName(shared);
         Action h;
         if (uname == null) {
-            h = new ActionDoIf(sys, uname, ActionDoIf.Type.TRIGGER_ACTION, null, null);
+            h = new ActionDoIf(sys, ActionDoIf.Type.TRIGGER_ACTION, null, null);
         } else {
             h = new ActionDoIf(sys, uname, ActionDoIf.Type.TRIGGER_ACTION, null, null);
 //            h = new ActionDoIf(sys, low, high, uname);

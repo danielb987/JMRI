@@ -46,6 +46,13 @@ public class ActionDoIf extends AbstractAction {
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
     
+    public ActionDoIf(String sys, Type type, Expression expression, Action action) {
+        super(sys);
+        _type = type;
+        _expression = expression;
+        _action = action;
+    }
+    
     public ActionDoIf(String sys, String user, Type type, Expression expression, Action action) {
         super(sys, user);
         _type = type;

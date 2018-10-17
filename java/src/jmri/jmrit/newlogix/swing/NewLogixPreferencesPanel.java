@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.swing;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import jmri.jmrit.newlogix.NewLogixPreferences;
 import java.awt.FlowLayout;
@@ -102,7 +103,7 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         return panel;
     }
 
-    class ClassListModel implements ListModel<String> {
+    private static class ClassListModel implements ListModel<String> {
         
         Set<ListDataListener> listeners = new HashSet<>();
         
@@ -127,6 +128,7 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         }
     }
 
+    @SuppressFBWarnings(value="DMI_HARDCODED_ABSOLUTE_FILENAME", justification="Only temporary for testing. Must be removed later.")
     private JPanel getJarFilePanel(String jarFileName) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

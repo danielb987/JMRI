@@ -82,22 +82,21 @@ public class TimeDiagram extends JmriJFrame {
         String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\JMRI_NewLogixPlugins.jar";
         
         List<String> classList = new ArrayList<>();
-        JarInputStream jarFile = new JarInputStream(new FileInputStream(jarFileName));
-        JarEntry jarEntry;
-        
-        while (true) {
-            jarEntry = jarFile.getNextJarEntry();
-            if (jarEntry == null) {
-                break;
-            }
-            if ((jarEntry.getName().endsWith(".class"))) {
-                String className = jarEntry.getName().replaceAll("/", "\\.");
-                String myClass = className.substring(0, className.lastIndexOf('.'));
-                classList.add(myClass);
+        try (JarInputStream jarFile = new JarInputStream(new FileInputStream(jarFileName))) {
+            JarEntry jarEntry;
+
+            while (true) {
+                jarEntry = jarFile.getNextJarEntry();
+                if (jarEntry == null) {
+                    break;
+                }
+                if ((jarEntry.getName().endsWith(".class"))) {
+                    String className = jarEntry.getName().replaceAll("/", "\\.");
+                    String myClass = className.substring(0, className.lastIndexOf('.'));
+                    classList.add(myClass);
+                }
             }
         }
-        
-        jarFile.close();
         
         
 //        File file = new File("F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\");
