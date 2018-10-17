@@ -132,6 +132,12 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public void activateAllNewLogixs() {
+//        jmri.configurexml.ConfigXmlManager a;
+//        jmri.managers.configurexml.AbstractSignalHeadManagerXml b;
+        jmri.implementation.configurexml.SE8cSignalHeadXml c;
+        for (NewLogix newLogix : _tsys.values()) {
+            System.out.format("NewLogix loaded: %s, %s%n", newLogix.getSystemName(), newLogix.getUserName());
+        }
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

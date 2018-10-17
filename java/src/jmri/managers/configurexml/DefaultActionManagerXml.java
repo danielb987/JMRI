@@ -37,60 +37,40 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
         setStoreElementClass(actions);
         ActionManager tm = (ActionManager) o;
         if (tm != null) {
-            java.util.Iterator<String> iter
-                    = tm.getSystemNameList().iterator();
-
-            // don't return an element if there are not Action to include
-            if (!iter.hasNext()) {
-                return null;
-            }
-/*
-            // store the Action
-//            while (iter.hasNext()) {
-            for (Action a : tm.getNamedBeanSet()) {
-//                String sname = iter.next();
-//                if (sname == null) {
-//                    log.error("System name null during store");  // NOI18N
-//                }
-//                Action x = tm.getBySystemName(sname);
-                log.debug("action system name is " + a.getSystemName());  // NOI18N
-//                boolean enabled = a.getEnabled();
-                Element elem = new Element("action");  // NOI18N
-                elem.addContent(new Element("systemName").addContent(a.getSystemName()));  // NOI18N
+            for (Action action : tm.getNamedBeanSet()) {
+                log.debug("logix system name is " + action.getSystemName());  // NOI18N
+                try {
+                    Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(action);
+                    if (e != null) {
+                        actions.addContent(e);
+                    }
+                } catch (Exception e) {
+                    log.error("Error storing signalhead: {}", e, e);
+                }
+/*                
+                boolean enabled = action.getEnabled();
+                Element elem = new Element("newlogix");  // NOI18N
+                elem.addContent(new Element("systemName").addContent(action.getSystemName()));  // NOI18N
 
                 // As a work-around for backward compatibility, store systemName and username as attribute.
                 // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-                String uName = a.getUserName();
+                String uName = action.getUserName();
                 if (uName != null && !uName.isEmpty()) {
                     elem.setAttribute("userName", uName);  // NOI18N
                 }
 
                 // store common part
-                storeCommon(a, elem);
+                storeCommon(action, elem);
 
-//                if (enabled) {
-//                    elem.setAttribute("enabled", "yes");  // NOI18N
-//                } else {
-//                    elem.setAttribute("enabled", "no");  // NOI18N
-//                }
-/*                
-                // save child Conditionals
-                int numConditionals = x.getNumConditionals();
-                if (numConditionals > 0) {
-                    String cSysName = "";
-                    Element cElem = null;
-                    for (int k = 0; k < numConditionals; k++) {
-                        cSysName = x.getConditionalByNumberOrder(k);
-                        cElem = new Element("actionConditional");  // NOI18N
-                        cElem.setAttribute("systemName", cSysName);  // NOI18N
-                        cElem.setAttribute("order", Integer.toString(k));  // NOI18N
-                        elem.addContent(cElem);
-                    }
+                if (enabled) {
+                    elem.setAttribute("enabled", "yes");  // NOI18N
+                } else {
+                    elem.setAttribute("enabled", "no");  // NOI18N
                 }
                 
-                actions.addContent(elem);
+                newLogixs.addContent(elem);
+*/                
             }
-*/            
         }
         return (actions);
     }

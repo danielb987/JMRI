@@ -34,57 +34,28 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
         setStoreElementClass(newLogixs);
         NewLogixManager tm = (NewLogixManager) o;
         if (tm != null) {
-            java.util.Iterator<String> iter
-                    = tm.getSystemNameList().iterator();
-
-            // don't return an element if there are not Logix to include
-            if (!iter.hasNext()) {
-                return null;
-            }
-
-            // store the Logix
-//            while (iter.hasNext()) {
-            for (NewLogix x : tm.getNamedBeanSet()) {
-//                String sname = iter.next();
-//                if (sname == null) {
-//                    log.error("System name null during store");  // NOI18N
-//                }
-//                NewLogix x = tm.getBySystemName(sname);
-                log.debug("logix system name is " + x.getSystemName());  // NOI18N
-                boolean enabled = x.getEnabled();
+            for (NewLogix newLogix : tm.getNamedBeanSet()) {
+                log.debug("logix system name is " + newLogix.getSystemName());  // NOI18N
+                boolean enabled = newLogix.getEnabled();
                 Element elem = new Element("newlogix");  // NOI18N
-                elem.addContent(new Element("systemName").addContent(x.getSystemName()));  // NOI18N
+                elem.addContent(new Element("systemName").addContent(newLogix.getSystemName()));  // NOI18N
 
                 // As a work-around for backward compatibility, store systemName and username as attribute.
                 // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-                String uName = x.getUserName();
+                String uName = newLogix.getUserName();
                 if (uName != null && !uName.isEmpty()) {
                     elem.setAttribute("userName", uName);  // NOI18N
                 }
 
                 // store common part
-                storeCommon(x, elem);
+                storeCommon(newLogix, elem);
 
                 if (enabled) {
                     elem.setAttribute("enabled", "yes");  // NOI18N
                 } else {
                     elem.setAttribute("enabled", "no");  // NOI18N
                 }
-/*                
-                // save child Conditionals
-                int numConditionals = x.getNumConditionals();
-                if (numConditionals > 0) {
-                    String cSysName = "";
-                    Element cElem = null;
-                    for (int k = 0; k < numConditionals; k++) {
-                        cSysName = x.getConditionalByNumberOrder(k);
-                        cElem = new Element("newlogixConditional");  // NOI18N
-                        cElem.setAttribute("systemName", cSysName);  // NOI18N
-                        cElem.setAttribute("order", Integer.toString(k));  // NOI18N
-                        elem.addContent(cElem);
-                    }
-                }
-*/                
+                
                 newLogixs.addContent(elem);
             }
         }

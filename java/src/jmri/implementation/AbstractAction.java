@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * The base class for NewLogix Actions
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
 public abstract class AbstractAction extends AbstractNamedBean
         implements Action {

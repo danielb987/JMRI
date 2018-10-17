@@ -1,0 +1,54 @@
+package jmri.jmrit.newlogix;
+
+import java.util.Map;
+import jmri.NewLogixCategory;
+import jmri.implementation.AbstractAction;
+
+/**
+ * This class has a plugin class.
+ */
+public class ActionPluginSocket extends AbstractAction {
+
+    private final ActionPluginInterface _actionPlugin;
+    
+    public ActionPluginSocket(String sys, ActionPluginInterface actionPlugin) {
+        super(sys);
+        _actionPlugin = actionPlugin;
+    }
+    
+    public ActionPluginSocket(String sys, String user, ActionPluginInterface action) {
+        super(sys, user);
+        _actionPlugin = action;
+    }
+    
+    @Override
+    public NewLogixCategory getCategory() {
+        return _actionPlugin.getCategory();
+    }
+
+    @Override
+    public boolean isExternal() {
+        return _actionPlugin.isExternal();
+    }
+
+    @Override
+    public boolean executeStart() {
+        return _actionPlugin.executeStart();
+    }
+
+    @Override
+    public boolean executeContinue() {
+        return _actionPlugin.executeContinue();
+    }
+
+    @Override
+    public boolean executeRestart() {
+        return _actionPlugin.executeRestart();
+    }
+
+    @Override
+    public void abort() {
+        _actionPlugin.abort();
+    }
+    
+}
