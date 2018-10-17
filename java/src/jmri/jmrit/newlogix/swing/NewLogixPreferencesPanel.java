@@ -5,10 +5,15 @@ import java.awt.Dimension;
 import jmri.jmrit.newlogix.NewLogixPreferences;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Color;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.openide.util.lookup.ServiceProvider;
+import javax.swing.border.Border;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,13 +23,18 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import jmri.InstanceManager;
 import jmri.swing.JTitledSeparator;
 import jmri.swing.PreferencesPanel;
@@ -103,83 +113,90 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         return panel;
     }
 
-    private static class ClassListModel implements ListModel<String> {
+    private enum ClassType {
+        EXPRESSION,
+        EXPRESSION_NOT_PLUGIN,
+        ACTION,
+        ACTION_NOT_PLUGIN,
+        OTHER
+    }
+    
+    private static class ClassTableEntry {
+        private boolean _enabled;
+        private final ClassType _type;
+        private final String _name;
         
-        Set<ListDataListener> listeners = new HashSet<>();
-        
-        @Override
-        public int getSize() {
-            return 5;
-        }
-
-        @Override
-        public String getElementAt(int index) {
-            return String.format("Element no %d", index);
-        }
-
-        @Override
-        public void addListDataListener(ListDataListener l) {
-            listeners.add(l);
-        }
-
-        @Override
-        public void removeListDataListener(ListDataListener l) {
-            listeners.remove(l);
+        ClassTableEntry(boolean enabled, ClassType type, String name) {
+            _enabled = enabled;
+            _type = type;
+            _name = name;
         }
     }
+    private static class ClassTableModel extends AbstractTableModel {
+        
+        List<ClassTableEntry> classList = new ArrayList<>();
 
-    @SuppressFBWarnings(value="DMI_HARDCODED_ABSOLUTE_FILENAME", justification="Only temporary for testing. Must be removed later.")
-    private JPanel getJarFilePanel(String jarFileName) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        @Override
+        public int getRowCount() {
+            return classList.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 3;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0: return classList.get(rowIndex)._enabled;
+                case 1: return classList.get(rowIndex)._type.name();
+                case 2: return classList.get(rowIndex)._name;
+                default: return null;
+            }
+        }
         
-        ClassListModel expressionListModel = new ClassListModel();
-        JList<String> expressionsList = new JList<>(expressionListModel);
-        panel.add(expressionsList);
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0: return Boolean.class;
+                case 1: return String.class;
+                case 2: return String.class;
+                default: return null;
+            }
+        }
         
-        JPanel addRemoveExpressionButtonPanel = new JPanel();
-        addRemoveExpressionButtonPanel.setLayout(
-                new BoxLayout(addRemoveExpressionButtonPanel, BoxLayout.X_AXIS));
-        JButton addExpressionButton = new JButton(
-                Bundle.getMessage("LabelButtonAddExpressionPlugin"));
-        JButton removeExpressionButton = new JButton(
-                Bundle.getMessage("LabelButtonRemoveExpressionPlugin"));
-        addRemoveExpressionButtonPanel.add(addExpressionButton);
-        addRemoveExpressionButtonPanel.add(removeExpressionButton);
-        panel.add(addRemoveExpressionButtonPanel);
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 0;
+        }
         
-        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-        separator.setPreferredSize(new Dimension(3,50));
-        
-        ClassListModel actionListModel = new ClassListModel();
-        JList<String> actionList = new JList<>(actionListModel);
-        panel.add(actionList);
-        
-        JPanel addRemoveActionButtonPanel = new JPanel();
-        addRemoveActionButtonPanel.setLayout(
-                new BoxLayout(addRemoveActionButtonPanel, BoxLayout.X_AXIS));
-        JButton addActionButton = new JButton(
-                Bundle.getMessage("LabelButtonAddActionPlugin"));
-        JButton removeActionButton = new JButton(
-                Bundle.getMessage("LabelButtonRemoveActionPlugin"));
-        addRemoveActionButtonPanel.add(addActionButton);
-        addRemoveActionButtonPanel.add(removeActionButton);
-        panel.add(addRemoveActionButtonPanel);
-        
-        return panel;
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            classList.get(rowIndex)._enabled = (Boolean) aValue;
+        }
     }
     
     private JPanel getPluginClassesPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         
-        JPanel jarPanel1 = getJarFilePanel("File 1");
-        JPanel jarPanel2 = getJarFilePanel("File 2");
-//        JPanel jarPanel1 = new JPanel();
-        
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("JAR file 1", jarPanel1);
-        tabbedPane.addTab("JAR file 2", jarPanel2);
+        
+        ClassTableModel jarTableModel1 = new ClassTableModel();
+        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION, "Test"));
+        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.ACTION_NOT_PLUGIN, "TestAA"));
+        jarTableModel1.classList.add(new ClassTableEntry(true, ClassType.ACTION, "Test bla vla"));
+        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION, "Test"));
+        jarTableModel1.classList.add(new ClassTableEntry(true, ClassType.OTHER, "Test test test"));
+        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION_NOT_PLUGIN, "Test"));
+        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION, "Test"));
+        JTable jarTable1 = new JTable(jarTableModel1);
+        tabbedPane.addTab("JAR file 1", jarTable1);
+        
+        ClassTableModel jarTableModel2 = new ClassTableModel();
+        JTable jarTable2 = new JTable(jarTableModel2);
+        tabbedPane.addTab("JAR file 2", jarTable2);
         
         panel.add(tabbedPane);
         
