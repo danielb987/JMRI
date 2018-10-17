@@ -97,6 +97,8 @@ public class TimeDiagram extends JmriJFrame {
             }
         }
         
+        jarFile.close();
+        
         
 //        File file = new File("F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\");
         File file = new File(jarFileName);
@@ -137,6 +139,8 @@ public class TimeDiagram extends JmriJFrame {
         System.out.format("Class from: %s%n", urlfrom.getFile());
         
         cls.newInstance();
+        
+        cl.close();
     }
     
     

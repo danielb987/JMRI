@@ -125,7 +125,7 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         public void removeListDataListener(ListDataListener l) {
             listeners.remove(l);
         }
-    };
+    }
 
     private JPanel getJarFilePanel(String jarFileName) {
         JPanel panel = new JPanel();

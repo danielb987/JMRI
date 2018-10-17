@@ -134,7 +134,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     public void activateAllNewLogixs() {
 //        jmri.configurexml.ConfigXmlManager a;
 //        jmri.managers.configurexml.AbstractSignalHeadManagerXml b;
-        jmri.implementation.configurexml.SE8cSignalHeadXml c;
+//        jmri.implementation.configurexml.SE8cSignalHeadXml c;
         for (NewLogix newLogix : _tsys.values()) {
             System.out.format("NewLogix loaded: %s, %s%n", newLogix.getSystemName(), newLogix.getUserName());
         }

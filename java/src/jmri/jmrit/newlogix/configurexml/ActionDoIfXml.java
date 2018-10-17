@@ -62,7 +62,7 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
 */
     @Override
     public boolean load(Element shared, Element perNode) {
-        List<Element> l = shared.getChildren("turnoutname");
+//        List<Element> l = shared.getChildren("turnoutname");
 /*        
         if (l.size() == 0) {
             l = shared.getChildren("turnout");  // older form
