@@ -10,24 +10,31 @@ import jmri.profile.ProfileUtils;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class NewLogixPreferences extends PreferencesBean {
+public final class NewLogixPreferences extends PreferencesBean {
 
     public static final String START_NEW_LOGIX_ON_LOAD = "startNewLogixOnStartup";
     public static final String ALLOW_DEBUG_MODE = "allowDebugMode";
     
-    private boolean startNewLogixOnLoad = false;
-    private boolean allowDebugMode = false;
+    private boolean _startNewLogixOnLoad = false;
+    private boolean _allowDebugMode = false;
+    
+    private final PluginManager _pluginManager;
     
     public NewLogixPreferences() {
         super(ProfileManager.getDefault().getActiveProfile());
+        System.out.format("New logix preferences%n");
         Preferences sharedPreferences = ProfileUtils.getPreferences(
                 super.getProfile(), this.getClass(), true);
+        _pluginManager = new PluginManager(this);
         this.readPreferences(sharedPreferences);
     }
 
     private void readPreferences(Preferences sharedPreferences) {
-        this.startNewLogixOnLoad = sharedPreferences.getBoolean(START_NEW_LOGIX_ON_LOAD, this.startNewLogixOnLoad);
-        this.allowDebugMode = sharedPreferences.getBoolean(ALLOW_DEBUG_MODE, this.allowDebugMode);
+        this._startNewLogixOnLoad = sharedPreferences.getBoolean(START_NEW_LOGIX_ON_LOAD, this._startNewLogixOnLoad);
+        this._allowDebugMode = sharedPreferences.getBoolean(ALLOW_DEBUG_MODE, this._allowDebugMode);
+        
+        String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\JMRI_NewLogixPlugins.jar";
+        _pluginManager.addJarFile(jarFileName);
 /*        
         this.allowRemoteConfig = sharedPreferences.getBoolean(ALLOW_REMOTE_CONFIG, this.allowRemoteConfig);
         this.clickDelay = sharedPreferences.getInt(CLICK_DELAY, this.clickDelay);
@@ -135,19 +142,19 @@ public class NewLogixPreferences extends PreferencesBean {
     }
     
     public void setStartNewLogixOnStartup(boolean value) {
-        startNewLogixOnLoad = value;
+        _startNewLogixOnLoad = value;
     }
 
     public boolean getStartNewLogixOnStartup() {
-        return startNewLogixOnLoad;
+        return _startNewLogixOnLoad;
     }
 
     public void setAllowDebugMode(boolean value) {
-        allowDebugMode = value;
+        _allowDebugMode = value;
     }
 
     public boolean getAllowDebugMode() {
-        return allowDebugMode;
+        return _allowDebugMode;
     }
 
 }

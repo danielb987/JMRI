@@ -1,10 +1,12 @@
 package jmri.managers;
 
 import java.text.DecimalFormat;
+import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.NewLogix;
 import jmri.NewLogixManager;
 import jmri.jmrit.newlogix.DefaultNewLogix;
+import jmri.jmrit.newlogix.NewLogixPreferences;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
@@ -25,6 +27,10 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     
     public DefaultNewLogixManager() {
         super();
+        
+        // The NewLogixPreferences class may load plugins so we must ensure
+        // it's loaded here.
+        InstanceManager.getDefault(NewLogixPreferences.class);
     }
 
     @Override

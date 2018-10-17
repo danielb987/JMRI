@@ -36,6 +36,9 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import jmri.InstanceManager;
+import jmri.jmrit.newlogix.PluginManager;
+import jmri.jmrit.newlogix.PluginManager.ClassDefinition;
+import jmri.jmrit.newlogix.PluginManager.ClassType;
 import jmri.swing.JTitledSeparator;
 import jmri.swing.PreferencesPanel;
 
@@ -47,7 +50,7 @@ import jmri.swing.PreferencesPanel;
 @ServiceProvider(service = PreferencesPanel.class)
 public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel {
     
-    private NewLogixPreferences preferences;
+    private final NewLogixPreferences preferences;
 //    private jmri.web.server.WebServerPreferences apreferences;
     
     JCheckBox _startNewLogixOnLoadCheckBox;
@@ -113,28 +116,9 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         return panel;
     }
 
-    private enum ClassType {
-        EXPRESSION,
-        EXPRESSION_NOT_PLUGIN,
-        ACTION,
-        ACTION_NOT_PLUGIN,
-        OTHER
-    }
-    
-    private static class ClassTableEntry {
-        private boolean _enabled;
-        private final ClassType _type;
-        private final String _name;
-        
-        ClassTableEntry(boolean enabled, ClassType type, String name) {
-            _enabled = enabled;
-            _type = type;
-            _name = name;
-        }
-    }
     private static class ClassTableModel extends AbstractTableModel {
         
-        List<ClassTableEntry> classList = new ArrayList<>();
+        List<ClassDefinition> classList = new ArrayList<>();
 
         @Override
         public int getRowCount() {
@@ -149,9 +133,9 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch (columnIndex) {
-                case 0: return classList.get(rowIndex)._enabled;
-                case 1: return classList.get(rowIndex)._type.name();
-                case 2: return classList.get(rowIndex)._name;
+                case 0: return classList.get(rowIndex).getEnabled();
+                case 1: return classList.get(rowIndex).getType().name();
+                case 2: return classList.get(rowIndex).getName();
                 default: return null;
             }
         }
@@ -168,14 +152,14 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            ClassType type = classList.get(rowIndex)._type;
+            ClassType type = classList.get(rowIndex).getType();
             return (columnIndex == 0)
                     && ((type == ClassType.EXPRESSION) || (type == ClassType.ACTION));
         }
         
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            classList.get(rowIndex)._enabled = (Boolean) aValue;
+            classList.get(rowIndex).setEnabled((Boolean) aValue);
         }
     }
     
@@ -186,13 +170,13 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         JTabbedPane tabbedPane = new JTabbedPane();
         
         ClassTableModel jarTableModel1 = new ClassTableModel();
-        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION, "Test"));
-        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.ACTION_NOT_PLUGIN, "TestAA"));
-        jarTableModel1.classList.add(new ClassTableEntry(true, ClassType.ACTION, "Test bla vla"));
-        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION, "Test"));
-        jarTableModel1.classList.add(new ClassTableEntry(true, ClassType.OTHER, "Test test test"));
-        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION_NOT_PLUGIN, "Test"));
-        jarTableModel1.classList.add(new ClassTableEntry(false, ClassType.EXPRESSION, "Test"));
+        jarTableModel1.classList.add(new ClassDefinition(false, ClassType.EXPRESSION, "Test"));
+        jarTableModel1.classList.add(new ClassDefinition(false, ClassType.ACTION_NOT_PLUGIN, "TestAA"));
+        jarTableModel1.classList.add(new ClassDefinition(true, ClassType.ACTION, "Test bla vla"));
+        jarTableModel1.classList.add(new ClassDefinition(false, ClassType.EXPRESSION, "Test"));
+        jarTableModel1.classList.add(new ClassDefinition(true, ClassType.OTHER, "Test test test"));
+        jarTableModel1.classList.add(new ClassDefinition(false, ClassType.EXPRESSION_NOT_PLUGIN, "Test"));
+        jarTableModel1.classList.add(new ClassDefinition(false, ClassType.EXPRESSION, "Test"));
         JTable jarTable1 = new JTable(jarTableModel1);
         tabbedPane.addTab("JAR file 1", jarTable1);
         

@@ -96,6 +96,7 @@ public class TimeDiagram extends JmriJFrame {
                     String className = jarEntry.getName().replaceAll("/", "\\.");
                     String myClass = className.substring(0, className.lastIndexOf('.'));
                     classList.add(myClass);
+                    System.out.format("AAAAAA: %s - %s%n", className, myClass);
                 }
             }
         }

@@ -12,9 +12,13 @@ public interface PluginConfiguratorInterface {
     /**
      * Get a configuration panel for this plugin.
      * 
+     * @param className the name of the class for which to return
+     * a configuration panel
      * @return a panel that configures this plugin
+     * @throws IllegalArgumentException if this class does not support the class
+     * with the name given in parameter 'className'
      */
-    public JPanel getConfigPanel();
+    public JPanel getConfigPanel(String className) throws IllegalArgumentException;
     
     /**
      * Update the configuration.
