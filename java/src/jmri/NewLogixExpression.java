@@ -7,7 +7,13 @@ package jmri;
  * @author Daniel Bergqvist Copyright 2018
  */
 public interface NewLogixExpression extends NamedBean {
-
+    
+    public enum TriggerCondition {
+        TRUE,
+        FALSE,
+        CHANGE
+    }
+    
     /**
      * Get the category of this expression.
      * @return the category
