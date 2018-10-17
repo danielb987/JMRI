@@ -1,14 +1,14 @@
 package jmri;
 
 /**
- * Manager for Expression
+ * Manager for NewLogixExpression
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ExpressionManager extends Manager<Expression> {
+public interface ExpressionManager extends Manager<NewLogixExpression> {
 
     /**
-     * Create a new system name for an Expression.
+     * Create a new system name for an NewLogixExpression.
      *
      * @param newLogix the NewLogix that this expression belongs to
      * @return a new system name
@@ -16,12 +16,12 @@ public interface ExpressionManager extends Manager<Expression> {
     public String getNewSystemName(NewLogix newLogix);
 
     /**
-     * Add an Expression.
+     * Add an NewLogixExpression.
      *
      * @param expression the expression to add
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public void addExpression(Expression expression)
+    public void addExpression(NewLogixExpression expression)
             throws IllegalArgumentException;
 
     /**
@@ -31,18 +31,18 @@ public interface ExpressionManager extends Manager<Expression> {
      * @param name User name or system name to match
      * @return null if no match found
      */
-    public Expression getExpression(String name);
+    public NewLogixExpression getExpression(String name);
 
-    public Expression getByUserName(String s);
+    public NewLogixExpression getByUserName(String s);
 
-    public Expression getBySystemName(String s);
+    public NewLogixExpression getBySystemName(String s);
 
     /**
-     * Delete Expression by removing it from the manager. The Expression must
-     * first be deactivated so it stops processing.
+     * Delete NewLogixExpression by removing it from the manager. The NewLogixExpression must
+ first be deactivated so it stops processing.
      *
-     * @param x the Expression to delete
+     * @param x the NewLogixExpression to delete
      */
-    void deleteExpression(Expression x);
+    void deleteExpression(NewLogixExpression x);
 
 }

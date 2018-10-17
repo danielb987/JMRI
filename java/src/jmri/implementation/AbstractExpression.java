@@ -1,15 +1,15 @@
 package jmri.implementation;
 
 import jmri.JmriException;
-import jmri.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.NewLogixExpression;
 
 /**
  *
  */
 public abstract class AbstractExpression extends AbstractNamedBean
-        implements Expression {
+        implements NewLogixExpression {
 
     public AbstractExpression(String sys) throws BadSystemNameException {
         super(sys);

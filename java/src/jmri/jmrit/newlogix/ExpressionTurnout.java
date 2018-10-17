@@ -1,8 +1,8 @@
 package jmri.jmrit.newlogix;
 
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractExpression;
+import jmri.NewLogixExpression;
 
 /**
  * Evaluates the state of a Turnout.

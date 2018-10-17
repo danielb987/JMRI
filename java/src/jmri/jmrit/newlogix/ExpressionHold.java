@@ -1,11 +1,11 @@
 package jmri.jmrit.newlogix;
 
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractExpression;
+import jmri.NewLogixExpression;
 
 /**
- * An Expression that keeps its status even if its child expression doesn't.
+ * An NewLogixExpression that keeps its status even if its child expression doesn't.
  * 
  * This expression stays False until both the 'hold' expression and the 'trigger'
  * expression becomes True. It stays true until the 'hold' expression goes to
@@ -16,12 +16,12 @@ import jmri.implementation.AbstractExpression;
  */
 public class ExpressionHold extends AbstractExpression {
 
-    private Expression _holdExpression;
-    private Expression _triggerExpression;
+    private NewLogixExpression _holdExpression;
+    private NewLogixExpression _triggerExpression;
     private boolean _isActive = false;
     
-    public ExpressionHold(String sys, String user, Expression holdExpression,
-            Expression triggerExpression) throws BadUserNameException,
+    public ExpressionHold(String sys, String user, NewLogixExpression holdExpression,
+            NewLogixExpression triggerExpression) throws BadUserNameException,
             BadSystemNameException {
         
         super(sys, user);

@@ -1,7 +1,6 @@
 package jmri.managers;
 
 import java.text.DecimalFormat;
-import jmri.Expression;
 import jmri.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
@@ -10,13 +9,14 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.NewLogixExpression;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultExpressionManager extends AbstractManager<Expression>
+public class DefaultExpressionManager extends AbstractManager<NewLogixExpression>
         implements ExpressionManager, InstanceManagerAutoDefault {
 
     DecimalFormat paddedNumber = new DecimalFormat("0000");
@@ -74,7 +74,7 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
     }
 
     @Override
-    public void addExpression(Expression expression) throws IllegalArgumentException {
+    public void addExpression(NewLogixExpression expression) throws IllegalArgumentException {
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
@@ -85,22 +85,22 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
     }
 
     @Override
-    public Expression getExpression(String name) {
+    public NewLogixExpression getExpression(String name) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Expression getByUserName(String s) {
+    public NewLogixExpression getByUserName(String s) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Expression getBySystemName(String s) {
+    public NewLogixExpression getBySystemName(String s) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void deleteExpression(Expression x) {
+    public void deleteExpression(NewLogixExpression x) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

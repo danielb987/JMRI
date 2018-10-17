@@ -2,9 +2,9 @@ package jmri.jmrit.newlogix;
 
 import java.util.List;
 import java.util.ArrayList;
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractExpression;
+import jmri.NewLogixExpression;
 
 /**
  * Evaluates to True if all the child expressions evaluate to true.
@@ -13,7 +13,7 @@ import jmri.implementation.AbstractExpression;
  */
 public class ExpressionAnd extends AbstractExpression {
 
-    List<Expression> children = new ArrayList<>();
+    List<NewLogixExpression> children = new ArrayList<>();
     
     public ExpressionAnd(String sys, String user) throws BadUserNameException,
             BadSystemNameException {
@@ -36,7 +36,7 @@ public class ExpressionAnd extends AbstractExpression {
     @Override
     public boolean evaluate() {
         boolean result = true;
-        for (Expression e : children) {
+        for (NewLogixExpression e : children) {
             if (! e.evaluate()) {
                 result = false;
             }
@@ -47,7 +47,7 @@ public class ExpressionAnd extends AbstractExpression {
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        for (Expression e : children) {
+        for (NewLogixExpression e : children) {
             e.reset();
         }
     }

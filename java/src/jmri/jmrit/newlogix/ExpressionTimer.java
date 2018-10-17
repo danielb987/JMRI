@@ -1,8 +1,8 @@
 package jmri.jmrit.newlogix;
 
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractExpression;
+import jmri.NewLogixExpression;
 
 /**
  * This expression is a timer that evaluates to true then a certain time has passed.

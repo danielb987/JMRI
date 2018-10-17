@@ -1,19 +1,19 @@
 package jmri.jmrit.newlogix.internal;
 
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractExpression;
+import jmri.NewLogixExpression;
 
 /**
- * Every Expression has an InternalExpression as its parent.
+ * Every NewLogixExpression has an InternalExpression as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class InternalExpression extends AbstractExpression {
 
-    private final Expression _expression;
+    private final NewLogixExpression _expression;
     
-    public InternalExpression(String sys, Expression expression)
+    public InternalExpression(String sys, NewLogixExpression expression)
             throws BadUserNameException, BadSystemNameException {
         
         super(sys);

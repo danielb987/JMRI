@@ -1,12 +1,12 @@
 package jmri.jmrit.newlogix;
 
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractExpression;
+import jmri.NewLogixExpression;
 
 /**
- * This Expression has two expressions, the primary expression and the secondary
- * expression. When the primary expression becomes True after have been False,
+ * This NewLogixExpression has two expressions, the primary expression and the secondary
+ expression. When the primary expression becomes True after have been False,
  * the secondary expression is reset.
  * 
  * The result of the evaluation of this expression is True if both the
@@ -21,12 +21,12 @@ import jmri.implementation.AbstractExpression;
  */
 public class ExpressionResetOnTrue extends AbstractExpression {
 
-    private Expression _primaryExpression;
-    private Expression _secondaryExpression;
+    private NewLogixExpression _primaryExpression;
+    private NewLogixExpression _secondaryExpression;
     private boolean _lastMainResult = false;
     
     public ExpressionResetOnTrue(String sys, String user,
-            Expression primaryExpression, Expression secondaryExpression)
+            NewLogixExpression primaryExpression, NewLogixExpression secondaryExpression)
             throws BadUserNameException, BadSystemNameException {
         
         super(sys, user);

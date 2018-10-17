@@ -1,9 +1,9 @@
 package jmri.jmrit.newlogix;
 
-import jmri.Expression;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractAction;
 import jmri.NewLogixAction;
+import jmri.NewLogixExpression;
 
 /**
  * Executes an action when the expression is True.
@@ -41,19 +41,19 @@ public class ActionDoIf extends AbstractAction {
     }
 
     private Type _type;
-    private final Expression _expression;
+    private final NewLogixExpression _expression;
     private final NewLogixAction _action;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
     
-    public ActionDoIf(String sys, Type type, Expression expression, NewLogixAction action) {
+    public ActionDoIf(String sys, Type type, NewLogixExpression expression, NewLogixAction action) {
         super(sys);
         _type = type;
         _expression = expression;
         _action = action;
     }
     
-    public ActionDoIf(String sys, String user, Type type, Expression expression, NewLogixAction action) {
+    public ActionDoIf(String sys, String user, Type type, NewLogixExpression expression, NewLogixAction action) {
         super(sys, user);
         _type = type;
         _expression = expression;
