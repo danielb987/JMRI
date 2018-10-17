@@ -1,9 +1,9 @@
 package jmri.implementation;
 
 import jmri.JmriException;
-import jmri.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.NewLogixAction;
 
 /**
  * The base class for NewLogix Actions
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2018
  */
 public abstract class AbstractAction extends AbstractNamedBean
-        implements Action {
+        implements NewLogixAction {
 
     public AbstractAction(String sys) throws BadSystemNameException {
         super(sys);

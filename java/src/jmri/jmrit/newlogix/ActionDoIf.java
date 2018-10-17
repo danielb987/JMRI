@@ -1,9 +1,9 @@
 package jmri.jmrit.newlogix;
 
 import jmri.Expression;
-import jmri.Action;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractAction;
+import jmri.NewLogixAction;
 
 /**
  * Executes an action when the expression is True.
@@ -13,12 +13,12 @@ import jmri.implementation.AbstractAction;
 public class ActionDoIf extends AbstractAction {
 
     /**
-     * The type of Action. If the type is changed, the action is aborted if it
+     * The type of NewLogixAction. If the type is changed, the action is aborted if it
      * is currently running.
      */
     public enum Type {
         /**
-         * Action is triggered when the expression is True. The action may
+         * NewLogixAction is triggered when the expression is True. The action may
          * continue even if the expression becomes False.
          * 
          * If the expression is False and then True again before the action
@@ -33,8 +33,8 @@ public class ActionDoIf extends AbstractAction {
         TRIGGER_ACTION,
         
         /**
-         * Action is executed when the expression is True but only as long as
-         * the expression stays True. If the expression becomes False, the
+         * NewLogixAction is executed when the expression is True but only as long as
+ the expression stays True. If the expression becomes False, the
          * action is aborted.
          */
         CONTINOUS_ACTION,
@@ -42,18 +42,18 @@ public class ActionDoIf extends AbstractAction {
 
     private Type _type;
     private final Expression _expression;
-    private final Action _action;
+    private final NewLogixAction _action;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
     
-    public ActionDoIf(String sys, Type type, Expression expression, Action action) {
+    public ActionDoIf(String sys, Type type, Expression expression, NewLogixAction action) {
         super(sys);
         _type = type;
         _expression = expression;
         _action = action;
     }
     
-    public ActionDoIf(String sys, String user, Type type, Expression expression, Action action) {
+    public ActionDoIf(String sys, String user, Type type, Expression expression, NewLogixAction action) {
         super(sys, user);
         _type = type;
         _expression = expression;

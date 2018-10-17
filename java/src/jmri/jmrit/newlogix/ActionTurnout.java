@@ -1,9 +1,9 @@
 package jmri.jmrit.newlogix;
 
-import jmri.Action;
 import jmri.NewLogixCategory;
 import jmri.Turnout;
 import jmri.implementation.AbstractAction;
+import jmri.NewLogixAction;
 
 /**
  * This action sets the state of a turnout.

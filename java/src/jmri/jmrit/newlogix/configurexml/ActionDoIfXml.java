@@ -1,7 +1,6 @@
 package jmri.jmrit.newlogix.configurexml;
 
 import java.util.List;
-import jmri.Action;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.jmrit.newlogix.ActionDoIf;
@@ -9,6 +8,7 @@ import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.NewLogixAction;
 
 /**
  *
@@ -73,7 +73,7 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        Action h;
+        NewLogixAction h;
         if (uname == null) {
             h = new ActionDoIf(sys, ActionDoIf.Type.TRIGGER_ACTION, null, null);
         } else {

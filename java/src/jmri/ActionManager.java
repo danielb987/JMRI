@@ -1,14 +1,14 @@
 package jmri;
 
 /**
- * Manager for Action
+ * Manager for NewLogixAction
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionManager extends Manager<Action> {
+public interface ActionManager extends Manager<NewLogixAction> {
 
     /**
-     * Create a new system name for an Action.
+     * Create a new system name for an NewLogixAction.
      *
      * @param newLogix the NewLogix that this expression belongs to
      * @return a new system name
@@ -16,12 +16,12 @@ public interface ActionManager extends Manager<Action> {
     public String getNewSystemName(NewLogix newLogix);
 
     /**
-     * Add an Action.
+     * Add an NewLogixAction.
      *
      * @param action the action to add
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public void addAction(Action action)
+    public void addAction(NewLogixAction action)
             throws IllegalArgumentException;
 
     /**
@@ -31,18 +31,18 @@ public interface ActionManager extends Manager<Action> {
      * @param name User name or system name to match
      * @return null if no match found
      */
-    public Action getAction(String name);
+    public NewLogixAction getAction(String name);
 
-    public Action getByUserName(String s);
+    public NewLogixAction getByUserName(String s);
 
-    public Action getBySystemName(String s);
+    public NewLogixAction getBySystemName(String s);
 
     /**
-     * Delete Action by removing it from the manager. The Action must
-     * first be deactivated so it stops processing.
+     * Delete NewLogixAction by removing it from the manager. The NewLogixAction must
+ first be deactivated so it stops processing.
      *
-     * @param x the Action to delete
+     * @param x the NewLogixAction to delete
      */
-    void deleteAction(Action x);
+    void deleteAction(NewLogixAction x);
     
 }

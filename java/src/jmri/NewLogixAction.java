@@ -5,7 +5,7 @@ package jmri;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface Action extends NamedBean {
+public interface NewLogixAction extends NamedBean {
 
     /**
      * Get the category of this action.
@@ -23,14 +23,14 @@ public interface Action extends NamedBean {
     public boolean isExternal();
 
     /**
-     * Start execution of this Action.
+     * Start execution of this NewLogixAction.
      * 
      * @return true if this action is not finished.
      */
     public boolean executeStart();
     
     /**
-     * Continue execution of this Action.
+     * Continue execution of this NewLogixAction.
      * This method is called if Type == TRIGGER_ACTION, the previous call to
      * one of the execute???() methods returned True and the expression is
      * still True.
@@ -40,7 +40,7 @@ public interface Action extends NamedBean {
     public boolean executeContinue();
     
     /**
-     * Restart the execute of this Action.
+     * Restart the execute of this NewLogixAction.
      * This method is called if Type == TRIGGER_ACTION and the expression has
      * become False and then True again.
      * 

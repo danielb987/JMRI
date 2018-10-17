@@ -9,7 +9,7 @@ import org.junit.Test;
 import jmri.InstanceManager;
 import jmri.NewLogix;
 import jmri.Expression;
-import jmri.Action;
+import jmri.NewLogixAction;
 
 /**
  * Test NewLogix
@@ -27,7 +27,7 @@ public class NewLogixTest {
         InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(expression);
 //        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "NewLogix 102, Expression 26"));  // NOI18N
         systemName = InstanceManager.getDefault(jmri.ActionManager.class).getNewSystemName(newLogix);
-        Action action = new ActionTurnout(systemName, "An action for test");  // NOI18N
+        NewLogixAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         InstanceManager.getDefault(jmri.ActionManager.class).addAction(action);
     }
     

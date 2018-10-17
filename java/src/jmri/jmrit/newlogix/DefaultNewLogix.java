@@ -3,11 +3,11 @@ package jmri.jmrit.newlogix;
 import static jmri.NamedBean.UNKNOWN;
 
 import jmri.NewLogix;
-import jmri.Action;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.NewLogixAction;
 
 /**
  * The default implementation of NewLogix.
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultNewLogix extends AbstractNamedBean
         implements NewLogix {
     
-    private Action _action;
+    private NewLogixAction _action;
     private boolean _enabled = false;
     
     public DefaultNewLogix(String sys, String user) throws BadUserNameException, BadSystemNameException  {
@@ -25,7 +25,7 @@ public class DefaultNewLogix extends AbstractNamedBean
         _action = null;
     }
 
-    public DefaultNewLogix(String sys, String user, Action action) throws BadUserNameException, BadSystemNameException  {
+    public DefaultNewLogix(String sys, String user, NewLogixAction action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
         _action = action;
     }

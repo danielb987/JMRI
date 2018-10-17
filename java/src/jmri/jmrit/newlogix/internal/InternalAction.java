@@ -1,20 +1,20 @@
 package jmri.jmrit.newlogix.internal;
 
-import jmri.Action;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractAction;
+import jmri.NewLogixAction;
 
 /**
- * Every Action has an InternalAction as its parent.
+ * Every NewLogixAction has an InternalAction as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class InternalAction extends AbstractAction {
 
-    private final Action _action;
+    private final NewLogixAction _action;
     private boolean _isActive = false;
     
-    public InternalAction(String sys, Action child) throws BadSystemNameException {
+    public InternalAction(String sys, NewLogixAction child) throws BadSystemNameException {
         super(sys);
         _action = child;
     }

@@ -1,16 +1,16 @@
 package jmri.jmrit.newlogix;
 
 import java.util.Map;
-import jmri.Action;
+import jmri.NewLogixAction;
 
 /**
- * The parent interface for plugin Action classes.
- * A plugin Action class is a class that implements the Action interface and
- * can be loaded from a JAR file.
+ * The parent interface for plugin NewLogixAction classes.
+ * A plugin NewLogixAction class is a class that implements the NewLogixAction interface and
+ can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionPluginInterface extends Action {
+public interface ActionPluginInterface extends NewLogixAction {
     
     /**
      * Initialize the object.

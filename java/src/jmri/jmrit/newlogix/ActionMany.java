@@ -2,9 +2,9 @@ package jmri.jmrit.newlogix;
 
 import java.util.List;
 import java.util.ArrayList;
-import jmri.Action;
 import jmri.NewLogixCategory;
 import jmri.implementation.AbstractAction;
+import jmri.NewLogixAction;
 
 /**
  * Execute many Actions in a specific order.
@@ -13,7 +13,7 @@ import jmri.implementation.AbstractAction;
  */
 public class ActionMany extends AbstractAction {
 
-    private final List<Action> actions = new ArrayList<>();
+    private final List<NewLogixAction> actions = new ArrayList<>();
     
     public ActionMany(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
@@ -35,7 +35,7 @@ public class ActionMany extends AbstractAction {
     @Override
     public boolean executeStart() {
         boolean state = false;
-        for (Action action : actions) {
+        for (NewLogixAction action : actions) {
             state |= action.executeStart();
         }
         return state;
@@ -45,7 +45,7 @@ public class ActionMany extends AbstractAction {
     @Override
     public boolean executeRestart() {
         boolean state = false;
-        for (Action action : actions) {
+        for (NewLogixAction action : actions) {
             state |= action.executeRestart();
         }
         return state;
@@ -55,7 +55,7 @@ public class ActionMany extends AbstractAction {
     @Override
     public boolean executeContinue() {
         boolean state = false;
-        for (Action action : actions) {
+        for (NewLogixAction action : actions) {
             state |= action.executeContinue();
         }
         return state;
@@ -64,7 +64,7 @@ public class ActionMany extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     public void abort() {
-        for (Action action : actions) {
+        for (NewLogixAction action : actions) {
             action.abort();
         }
     }
