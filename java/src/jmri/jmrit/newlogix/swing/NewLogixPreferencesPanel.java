@@ -168,7 +168,9 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex == 0;
+            ClassType type = classList.get(rowIndex)._type;
+            return (columnIndex == 0)
+                    && ((type == ClassType.EXPRESSION) || (type == ClassType.ACTION));
         }
         
         @Override
