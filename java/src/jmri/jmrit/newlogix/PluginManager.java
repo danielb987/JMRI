@@ -61,7 +61,7 @@ public class PluginManager {
         
     }
     
-    public class JarFile {
+    public static class JarFile {
         private final String _filename;
         private final List<String> classNameList = new ArrayList<>();
         private final List<ClassDefinition> classList = new ArrayList<>();
