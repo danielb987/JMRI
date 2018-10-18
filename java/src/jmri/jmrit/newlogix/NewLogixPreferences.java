@@ -25,7 +25,7 @@ public final class NewLogixPreferences extends PreferencesBean {
         System.out.format("New logix preferences%n");
         Preferences sharedPreferences = ProfileUtils.getPreferences(
                 super.getProfile(), this.getClass(), true);
-        _pluginManager = new PluginManager(this);
+        _pluginManager = new PluginManager();
         this.readPreferences(sharedPreferences);
     }
 
