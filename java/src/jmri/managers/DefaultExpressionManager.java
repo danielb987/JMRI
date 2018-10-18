@@ -1,15 +1,22 @@
 package jmri.managers;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 import jmri.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
 import jmri.NewLogix;
+import jmri.NewLogixCategory;
+import jmri.NewLogixExpression;
+import jmri.NewLogixExpressionFactory;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.NewLogixExpression;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -19,13 +26,25 @@ import jmri.NewLogixExpression;
 public class DefaultExpressionManager extends AbstractManager<NewLogixExpression>
         implements ExpressionManager, InstanceManagerAutoDefault {
 
-    DecimalFormat paddedNumber = new DecimalFormat("0000");
-
+    private final Map<NewLogixCategory, List<Class<? extends NewLogixExpression>>> expressionClassList = new HashMap<>();
     int lastAutoExpressionRef = 0;
     
+    DecimalFormat paddedNumber = new DecimalFormat("0000");
+
     
     public DefaultExpressionManager() {
         super();
+        
+        for (NewLogixCategory category : NewLogixCategory.values()) {
+            expressionClassList.put(category, new ArrayList<>());
+        }
+        
+        for (NewLogixExpressionFactory actionFactory : ServiceLoader.load(NewLogixExpressionFactory.class)) {
+            actionFactory.getExpressionClasses().forEach((entry) -> {
+                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+                expressionClassList.get(entry.getKey()).add(entry.getValue());
+            });
+        }
     }
 
     @Override

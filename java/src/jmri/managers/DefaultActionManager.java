@@ -1,6 +1,11 @@
 package jmri.managers;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ServiceLoader;
 import jmri.ActionManager;
 import jmri.InvokeOnGuiThread;
 import jmri.NewLogix;
@@ -9,6 +14,8 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.NewLogixAction;
+import jmri.NewLogixActionFactory;
+import jmri.NewLogixCategory;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -18,13 +25,26 @@ import jmri.NewLogixAction;
 public class DefaultActionManager extends AbstractManager<NewLogixAction>
         implements ActionManager {
 
+    private final Map<NewLogixCategory, List<Class<? extends NewLogixAction>>> actionClassList = new HashMap<>();
+    private int lastAutoActionRef = 0;
+    
+    // This is for testing only!!!
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
-    int lastAutoActionRef = 0;
-    
     
     public DefaultActionManager() {
         super();
+        
+        for (NewLogixCategory category : NewLogixCategory.values()) {
+            actionClassList.put(category, new ArrayList<>());
+        }
+        
+        for (NewLogixActionFactory actionFactory : ServiceLoader.load(NewLogixActionFactory.class)) {
+            actionFactory.getActionClasses().forEach((entry) -> {
+                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+                actionClassList.get(entry.getKey()).add(entry.getValue());
+            });
+        }
     }
 
     @Override
@@ -64,7 +84,7 @@ public class DefaultActionManager extends AbstractManager<NewLogixAction>
 
     @Override
     public String getNewSystemName(NewLogix newLogix) {
-        int nextAutoNewLogixRef = lastAutoActionRef + 1;
+        int nextAutoNewLogixRef = ++lastAutoActionRef;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
         b.append(":A:A");
         String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
