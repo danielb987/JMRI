@@ -105,11 +105,11 @@
 
 		<h3>Methods</h3>
 
-		<h4>getCategory</h4>
+		<p><strong>getCategory()</strong></p>
 
 		<p>Returns which category this action belongs to.</p>
 
-		<h4>isExternal</h4>
+		<p><strong>isExternal()</strong></p>
 
 		<p>Returns <strong>true</strong> if the action has external consequence, for
 		example if it sets the the state of a turnout. An action is considered internal
@@ -117,11 +117,11 @@
 		ActionTurnout and ActionSignalHead. Examples of internal expressions are
 		ActionMany and ActionDoIf.</p>
 
-		<h4>evaluate</h4>
+		<p><strong>evaluate()</strong></p>
 
 		<p>Evaluates the expression and returns the result of the expression.</p>
 
-		<h4>reset</h4>
+		<p><strong>reset()</strong></p>
 
 		<p>Resets the evaluation. The method <strong>reset()</strong> is called then when
 		the closest ancestor Action is activated. An example is a timer who is used to
@@ -133,7 +133,31 @@
 
         <h2>AbstractExpression and AbstractAction vs AbstractNamedBean</h2>
 
-		<p>The <strong>NamedBean</strong> interface has the methods <strong>setState()</strong></p>
+		<p>The <strong>NamedBean</strong> interface has the methods <strong>setState()</strong>
+		and <strong>getState()</strong>. These should never be implemented in expressions
+		and actions.</p>
+		<p>For expressions, <strong>getState()</strong> returns
+		<strong>NewLogixExpression.TRUE</strong> or <strong>NewLogixExpression.FALSE</strong>
+		dependent on the last result of the expression, but this is handled automaticly by
+		<strong>InternalExpression</strong>. The method <strong>setState()</strong> has no
+		impact on expressions.</p>
+		<p>For actions, neither of <strong>setState()</strong> or <strong>getState()</strong>
+		will ever be called since <strong>InternalAction</strong> will prevent that.</p>
+
+
+
+		<h2>The invisible layer around expressions and actions</h2>
+
+		<p>Expressions and actions are never used directly. When an expression is requested from
+		the expression manager or an action is requested from the action manager, an invisible
+		layer are created around the expression or action. This layer allows NewLogix to be aware
+		what is happening without knowing the details of each expression or action. For example,
+		this layer is responsible for logging the status of each expression and action.</p>
+
+		<p>The invisible layer consists of the classes <strong>InternalExpression</strong> and
+		<strong>InternalAction</strong>. Expressions and actions should <u>never</u> do any
+		assumptions about these classes. They are internal and and should stay completely unknown
+		to the expressions and actions.</p>
 
 
 
@@ -153,77 +177,51 @@
 		prototypical usage but can be used to play a joke with a fellow model
 		railroader...
 
-        <h2></h2>
-        <h2></h2>
-        <h2></h2>
-        <h2></h2>
+		<h3>Implementing an expression or action plugin</h3>
 
-		<p>The main building blocks in NewLogix is Expressions and
-		Actions. Expressions ask a question while Actions do somethings.
-		It can be described as:</p>
+		<p>In order to be able to save the configuration of the plugin in the panel XML files,
+		the plugin saves and restores the configuration in a <strong>Map&lt;String, String&gt;</strong>.
+		The developer of the plugin decides on how to store its configuration in this map.</p>
 
-        <div style="margin-left: 2em;">
-		<p><code>if (expression) then (action).
-        </code></p></div>
+		<p>An expression or action that is a plugin must implement the
+		<strong>ExpressionPluginInterface</strong> or the <strong>ActionPluginInterface</strong>.
+		These interfaces has three additional methods.</p>
 
-		<p>An expression ask a question which can be true or False.
-		"Is turnout LT20 thrown?" If it is, the answer is True,
-		else it's False. Some expressions depends on other expressions.
-		Like the "And" expression, which is True if all of its expressions
-		are True. There is a timer expression which becomes true when
-		a certain time has passed.</p>
+		<p><strong>init()</strong></p>
 
-		<p>Actions do something. It can set a turnout or a signal. Some
-		actions activates other actions, which in turn do something.</p>
+		<p>Initializes the plugin. This method is called after an instance of the plugin is
+		created if there exists a configuration. Note that this method is not called the
+		first time an instance has been created, before it has been configured by the
+		configurator.</p>
 
-		<h3>Expressions</h3>
+		<p><strong>getConfig()</strong></p>
 
-		<p><strong>And</strong> - True if all of its expressions
-		are true.</p>
+		<p>Returns the configuration for this plugin to be stored in for example a panel file.</p>
 
-		<p><strong>Hold</strong> - This expression has expressions,
-		the hold expression and the trigger expression. The expression.
-		becomes true when both the hold and the trigger expression
-		is true and it then stays true as long as the hold expression
-		remains true. This expression can be used then a condition is
-		true under a short period of time, for example a button that
-		the user presses, and there the expression needs to stay true.</p>
+		<p><strong>getConfiguratorClassName()</strong></p>
 
-		<p><strong>Reset On True</strong> - This Expression has two
-		expressions, the primary expression and the secondary
-		expression. When the primary expression becomes True after
-		have been False, the secondary expression is reset.<br>
-		The result of the evaluation of this expression is True if
-		both the expressions evaluates to True.<br>
-		This expression is used for example if one expression should
-		trigger a timer. If the primary expression is a sensor having a
-		certain state and the secondary expression is a timer, this
-		expression will evaluate to True if the sensor has had that
-		state during the specified time.</p>
+		<p>Returns the class name of the configurator class. In order to be able to use the
+		plugin in a headless environment, the plugin itself is recommended to not use any
+		swing code. This method is called then this plugin needs to be configurated and
+		a class is needed that can configure this plugin. That class needs to be in the same
+		jar file as this plugin and it needs to implement the <strong>PluginConfiguratorInterface</strong>.
+		One configurator class may be the configurator for many plugins.</p>
 
-		<p><strong>Timer</strong> - This expression has a timer. The
-		expression is true if the time has passed.</p>
+		<h3>The PluginConfiguratorInterface interface</h3>
 
-		<p><strong>Trigger Once</strong> - An expression that has
-		another expression. It is true the first time the child
-		expression is true and then becomes false. It stays false
-		until the child expression becomes false and then true again.</p>
+		<p>A class that is able to configure one or many plugins is called a configurator.
+		It generates a <strong>JPanel</strong> with the controls that are needed to configure
+		the plugin.</p>
 
-		<p><strong>Turnout</strong> - True if a turnout has a certain
-		state.</p>
+		<p>The PluginConfiguratorInterface interface has these methods.</p>
 
-		<h3>Actions</h3>
+		<p><strong>getConfigPanel()</strong></p>
 
-		<p><strong>Do If</strong> - This action ask an expression if its
-		condition is true. If it is, it activates an other action.</p>
+		<p>Returns a <strong>JPanel</strong> that can configure this plugin.</p>
 
-		<p><strong>Many</strong> - This action activates many other actions.</p>
+		<p><strong>getConfigFromPanel()</strong></p>
 
-		<p><strong>Turnout</strong> - Set the state of a turnout.</p>
-
-        <h2>How to setup NewLogixs</h2>
-
-        <h2>Time Diagram</h2>
+		<p>Returns the configuration for this plugin to be stored in for example a panel file.</p>
 
         <!--#include virtual="/Footer" -->
       </div><!-- closes #mainContent-->
