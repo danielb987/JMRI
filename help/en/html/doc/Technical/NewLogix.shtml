@@ -33,7 +33,9 @@
         <h1>JMRI Code: NewLogix</h1>
 
         <p>This page describes the technical aspects of NewLogix and
-		how to add new features to NewLogix</p>
+		how to add new features to NewLogix. It's recommended to read
+		the <a href="../../tools/NewLogix.shtml">User manual</a>
+		first which describes the concept of NewLogix.</p>
 
 		<p>The main building blocks in NewLogix is Expressions and
 		Actions. Expressions ask a question while Actions do somethings.

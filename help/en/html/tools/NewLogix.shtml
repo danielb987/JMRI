@@ -32,6 +32,11 @@
 
         <h1>JMRI: NewLogix Documentation</h1>
 
+        <p>This page is the user manual for NewLogix. For the technical
+		aspects and how to extend NewLogix with new features, see the
+		<a href="../doc/Technical/NewLogix.shtml">Technical documentation</a>
+		of NewLogix.</p>
+
         <p>NewLogix provide a powerful capability for JMRI to monitor
 		one or more conditions on a layout, and take action when these
 		conditions change in a user-specified way. Logix can be used
