@@ -88,9 +88,9 @@ public class PluginManager {
 
             // Load this jar file into Class loader
             try (URLClassLoader cl = new URLClassLoader(urls)) {
-                for (String c : classNameList) {
+                for (String className : classNameList) {
                     // Load the class se.bergqvist.jmri_newlogix_plugin.ExpressionXor
-                    Class cls = cl.loadClass(c);
+                    Class cls = cl.loadClass(className);
                     
 //                    System.out.format("%s extends %s%n", cls.getName(), cls.getSuperclass());
 //                    System.out.format("AA: %b%n", cls.isAssignableFrom(NewLogixAction.class));
@@ -129,10 +129,10 @@ public class PluginManager {
                         System.out.format("Class %s is an unknown class%n", cls.getName());
                         type = ClassType.OTHER;
                     }
-
-//                    cls.newInstance();
+                    
+                    classList.add(new ClassDefinition(false, type, className));
                 }
-
+/*
                 // Load the class se.bergqvist.jmri_newlogix_plugin.ExpressionXor
                 Class cls = cl.loadClass("se.bergqvist.jmri_newlogix_plugin.ExpressionXor");
 
@@ -143,7 +143,7 @@ public class PluginManager {
                 System.out.format("Class from: %s%n", urlfrom.getFile());
 
 //                cls.newInstance();
-
+*/
                 cl.close();
             }
         }
@@ -177,12 +177,15 @@ public class PluginManager {
         }
     }
     
-    private final NewLogixPreferences _preferences;
+//    private final NewLogixPreferences _preferences;
     private final List<JarFile> jarFileList = new ArrayList<>();
     
-    public PluginManager(NewLogixPreferences preferences) {
-        _preferences = preferences;
+    public PluginManager() {
     }
+    
+//    public PluginManager(NewLogixPreferences preferences) {
+//        _preferences = preferences;
+//    }
     
     /**
      * Init the plugin manager.
