@@ -68,7 +68,8 @@ public class LogHeader {
         return _name;
     }
     
-    private void readHeaderLines(StreamReader reader) throws IOException, InvalidFormatException, UnsupportedVersionException {
+    private void readHeaderLines(StreamReader reader) throws IOException,
+            InvalidFormatException, UnsupportedVersionException {
         String line;
         while ((line = reader.readLine('[')) != null) {
             String[] parts = line.split("=", 2);
@@ -90,7 +91,8 @@ public class LogHeader {
                     _encoding = Encodings.getEncodingFromName(parts[1]);
                     break;
                 default:
-                    throw new InvalidFormatException(String.format("String '%s' is unknown or misplaced in log", line));
+                    throw new InvalidFormatException(String.format(
+                            "String '%s' is unknown or misplaced in log", line));
             }
         }
     }
@@ -109,9 +111,9 @@ public class LogHeader {
     /**
      * Read the header of this log from an InputStream.
      * @param input the input stream to read from
-     * @throws IOException
-     * @throws jmri.jmrit.newlogix.log.Log.InvalidFormatException
-     * @throws jmri.jmrit.newlogix.log.Log.UnsupportedVersionException 
+     * @throws IOException if an I/O error occurs
+     * @throws jmri.jmrit.newlogix.log.Log.InvalidFormatException invalid format of the header
+     * @throws jmri.jmrit.newlogix.log.Log.UnsupportedVersionException invalid version of the file
      */
     public void readHeader(InputStream input) throws IOException,
             InvalidFormatException, UnsupportedVersionException {
@@ -130,7 +132,8 @@ public class LogHeader {
                     return;
                 default:
                     System.out.format("Line: '%s'%n", line);
-                    throw new InvalidFormatException(String.format("String '%s' is unknown or misplaced in log", line));
+                    throw new InvalidFormatException(String.format(
+                            "String '%s' is unknown or misplaced in log", line));
             }
         }
         
@@ -141,7 +144,7 @@ public class LogHeader {
     /**
      * Write the header of this log to an OutputStream.
      * @param output the stream to write to
-     * @throws IOException 
+     * @throws IOException if an I/O error occurs
      */
     @SuppressFBWarnings(value = "VA_FORMAT_STRING_USES_NEWLINE",
             justification = "the log file uses \n as new line character which simplifies parsing")

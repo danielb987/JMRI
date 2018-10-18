@@ -22,12 +22,12 @@ public class LogReader {
      * @param input the input stream
      * 
      * @throws java.io.IOException if an I/O error occurs
-     * @throws java.lang.NoSuchMethodException
-     * @throws java.lang.InstantiationException
-     * @throws java.lang.IllegalAccessException
-     * @throws java.lang.reflect.InvocationTargetException
-     * @throws jmri.jmrit.newlogix.log.Log.InvalidFormatException
-     * @throws jmri.jmrit.newlogix.log.Log.UnsupportedVersionException
+     * @throws java.lang.NoSuchMethodException if an instance of the decoder class cannot be instansiated
+     * @throws java.lang.InstantiationException if an instance of the decoder class cannot be instansiated
+     * @throws java.lang.IllegalAccessException if an instance of the decoder class cannot be instansiated
+     * @throws java.lang.reflect.InvocationTargetException if a method on the instance of the decoder class cannot be called
+     * @throws jmri.jmrit.newlogix.log.Log.InvalidFormatException invalid format of the header
+     * @throws jmri.jmrit.newlogix.log.Log.UnsupportedVersionException invalid version of the file
      */
     public LogReader(Log log, InputStream input) throws IOException,
             NoSuchMethodException, InstantiationException, IllegalAccessException,

@@ -22,10 +22,10 @@ public class LogWriter {
      * @param name the name of the log
      * 
      * @throws java.io.IOException if an I/O error occurs
-     * @throws java.lang.NoSuchMethodException
-     * @throws java.lang.InstantiationException
-     * @throws java.lang.IllegalAccessException
-     * @throws java.lang.reflect.InvocationTargetException
+     * @throws java.lang.NoSuchMethodException if an instance of the decoder class cannot be instansiated
+     * @throws java.lang.InstantiationException if an instance of the decoder class cannot be instansiated
+     * @throws java.lang.IllegalAccessException if an instance of the decoder class cannot be instansiated
+     * @throws java.lang.reflect.InvocationTargetException if a method on the instance of the decoder class cannot be called
      */
     public LogWriter(Log log, OutputStream output, String name) throws IOException,
             NoSuchMethodException, InstantiationException, IllegalAccessException,
