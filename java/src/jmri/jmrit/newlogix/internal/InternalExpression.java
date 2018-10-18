@@ -12,6 +12,7 @@ import jmri.NewLogixExpression;
 public class InternalExpression extends AbstractExpression {
 
     private final NewLogixExpression _expression;
+    private boolean lastEvaluationResult = false;
     
     public InternalExpression(String sys, NewLogixExpression expression)
             throws BadUserNameException, BadSystemNameException {
@@ -35,13 +36,19 @@ public class InternalExpression extends AbstractExpression {
     /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
-        return _expression.evaluate();
+        lastEvaluationResult = _expression.evaluate();
+        return lastEvaluationResult;
     }
 
     /** {@inheritDoc} */
     @Override
     public void reset() {
         _expression.reset();
+    }
+
+    @Override
+    public int getState() {
+        return lastEvaluationResult ? NewLogixExpression.TRUE : NewLogixExpression.FALSE;
     }
 
 }

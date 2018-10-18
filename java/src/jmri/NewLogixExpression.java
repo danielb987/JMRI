@@ -15,6 +15,20 @@ public interface NewLogixExpression extends NamedBean {
     }
     
     /**
+     * Constant representing an "false" state. It's returned from the method
+     * getState() if the method evaluate() returned false the last time it was
+     * called.
+     */
+    public static final int FALSE = 0x02;
+
+    /**
+     * Constant representing an "false" state. It's returned from the method
+     * getState() if the method evaluate() returned false the last time it was
+     * called.
+     */
+    public static final int TRUE = 0x04;
+    
+    /**
      * Get the category of this expression.
      * @return the category
      */

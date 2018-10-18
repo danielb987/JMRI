@@ -97,6 +97,46 @@
 
 		<h2>Creating an Action</h2>
 
+		<p>An action must implement the <strong>NewLogixAction</strong>
+		interface, that in turn inherits the <strong>NamedBean</strong> interface.
+		It's recommended that action classes extends the
+		<strong>AbstractAction</strong> class which has a default implementation
+		of the NamedBean interface.</p>
+
+		<h3>Methods</h3>
+
+		<h4>getCategory</h4>
+
+		<p>Returns which category this action belongs to.</p>
+
+		<h4>isExternal</h4>
+
+		<p>Returns <strong>true</strong> if the action has external consequence, for
+		example if it sets the the state of a turnout. An action is considered internal
+		if it only acts on other actions. Examples of external actions are
+		ActionTurnout and ActionSignalHead. Examples of internal expressions are
+		ActionMany and ActionDoIf.</p>
+
+		<h4>evaluate</h4>
+
+		<p>Evaluates the expression and returns the result of the expression.</p>
+
+		<h4>reset</h4>
+
+		<p>Resets the evaluation. The method <strong>reset()</strong> is called then when
+		the closest ancestor Action is activated. An example is a timer who is used to
+		delay the execution of an action's child action.</p>
+		<p>A parent expression must to call <strong>reset()</strong> on its child when the
+		method <strong>reset()</strong> is called on the parent.</p>
+
+
+
+        <h2>AbstractExpression and AbstractAction vs AbstractNamedBean</h2>
+
+		<p>The <strong>NamedBean</strong> interface has the methods <strong>setState()</strong></p>
+
+
+
         <h2>Plugins for NewLogix</h2>
 
 		<p>NewLogix supports expression and action plugins.</p>
