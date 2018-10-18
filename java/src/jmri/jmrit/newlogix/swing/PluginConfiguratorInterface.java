@@ -32,7 +32,8 @@ public interface PluginConfiguratorInterface {
      * @throws IllegalArgumentException if this class does not support the class
      * with the name given in parameter 'className'
      */
-    public JPanel getConfigPanel(String className, Map<String, String> config) throws IllegalArgumentException;
+    public JPanel getConfigPanel(String className, Map<String, String> config)
+            throws IllegalArgumentException;
     
     /**
      * Update the configuration.
