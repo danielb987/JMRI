@@ -33,9 +33,9 @@ public class ActionDoIf extends AbstractAction {
         TRIGGER_ACTION,
         
         /**
-         * NewLogixAction is executed when the expression is True but only as long as
- the expression stays True. If the expression becomes False, the
-         * action is aborted.
+         * NewLogixAction is executed when the expression is True but only as
+         * long as the expression stays True. If the expression becomes False,
+         * the action is aborted.
          */
         CONTINOUS_ACTION,
     }

@@ -110,6 +110,10 @@
 
         <h2>Time Diagram</h2>
 
+        <h2>Plugins for NewLogix</h2>
+
+		<p>NewLogix supports expression and action plugins.</p>
+
         <!--#include virtual="/Footer" -->
       </div><!-- closes #mainContent-->
     </div><!-- closes #mBody-->

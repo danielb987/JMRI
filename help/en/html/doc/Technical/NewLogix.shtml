@@ -37,6 +37,87 @@
 		the <a href="../../tools/NewLogix.shtml">User manual</a>
 		first which describes the concept of NewLogix.</p>
 
+
+
+		<h2>The enum Categories</h2>
+
+		<p>Every type of expression and action has a predefined category to
+		which this expression or action belongs to. The main use of
+		category is to sort expressions by category when the user adds a new
+		expression and therefore selects the type of expression to add.</p>
+
+		<ul>
+		<li><strong>ITEM</strong><br>A item on the layout, for example turnout,
+		sensor and signal mast</li>
+		<li><strong>COMMON</strong><br>Commonly used items. Common expressions
+		are for example ExpressionAnd, ExpressionOr and ExpressionTimer.<br>
+		Common actions are for example ActionMany and ActionDoIf.</li>
+		<li><strong>OTHER</strong><br>All other expressions and actions which
+		don't fit in the above categories.</li>
+		</ul>
+
+
+
+		<h2>Creating an Expression</h2>
+
+		<p>An expression must implement the <strong>NewLogixExpression</strong>
+		interface, that in turn inherits the <strong>NamedBean</strong> interface.
+		It's recommended that expression classes extends the
+		<strong>AbstractExpression</strong> class which has a default implementation
+		of the NamedBean interface.</p>
+
+		<h3>Methods</h3>
+
+		<h4>getCategory</h4>
+
+		<p>Returns which category this expression belongs to.</p>
+
+		<h4>isExternal</h4>
+
+		<p>Returns <strong>true</strong> if the expression is dependent on an external
+		condition, for example the state of a turnout. An expression is considered
+		internal if it only depends on other expressions or is static. Examples of
+		external expressions are ExpressionTurnout and ExpressionSignalHead.
+		Examples of internal expressions are ExpressionAnd, ExpressionOr and
+		ExpressionTrue.</p>
+
+		<h4>evaluate</h4>
+
+		<p>Evaluates the expression and returns the result of the expression.</p>
+
+		<h4>reset</h4>
+
+		<p>Resets the evaluation. The method <strong>reset()</strong> is called then when
+		the closest ancestor Action is activated. An example is a timer who is used to
+		delay the execution of an action's child action.</p>
+		<p>A parent expression must to call <strong>reset()</strong> on its child when the
+		method <strong>reset()</strong> is called on the parent.</p>
+
+
+
+		<h2>Creating an Action</h2>
+
+        <h2>Plugins for NewLogix</h2>
+
+		<p>NewLogix supports expression and action plugins.</p>
+
+		<p><a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
+		is an example project with some expression plugins and action plugins.
+		The project has <a href="https://danielb987.github.io/JMRI_NewLogixPlugins.Documentation/javadoc/">Javadoc</a>.
+		The file
+		<a href="https://github.com/danielb987/JMRI_NewLogixPlugins.Documentation/raw/master/docs/distribution/JMRI_NewLogixPlugins.jar">JMRI_NewLogixPlugins.jar</a>
+		is the current version of the plugin. The classes in JMRI_NewLogixPlugins
+		are not considered useful but intended to demonstrate the possibilities
+		with NewLogix. For example, ExpressionBlink and ActionHideAndShowPanel
+		can be used to repeatedly hide and show a selected panel. It has no
+		prototypical usage but can be used to play a joke with a fellow model
+		railroader...
+
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+
 		<p>The main building blocks in NewLogix is Expressions and
 		Actions. Expressions ask a question while Actions do somethings.
 		It can be described as:</p>

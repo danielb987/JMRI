@@ -38,11 +38,11 @@ public interface NewLogixExpression extends NamedBean {
     
     /**
      * Reset the evaluation.
-     * This method is called when the closest ancestor Action is activated, if
-     * this NewLogixExpression is used by an Action. An example is a timer who
-     * is used to delay the execution of an action's child action.
+     * This method is called when the closest ancestor Action is activated. An
+     * example is a timer who is used to delay the execution of an action's
+     * child action.
      * 
-     * A parent expression needs to call reset() on its child when the parent
+     * A parent expression must to call reset() on its child when the parent
      * is reset().
      */
     public void reset();
