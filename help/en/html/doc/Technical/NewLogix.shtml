@@ -175,15 +175,10 @@
 
         <h2>Plugins for NewLogix</h2>
 
-		<p>NewLogix supports expression and action plugins. This can be done
-		in two different ways, native plugin or external plugin.</p>
-
-		<h3>Native plugins</h3>
-
-		Native plugins works exactly like the expressions and actions already supplied with JMRI.
-		The only difference is that they are in a different jar file, located on the JMRI classpath.
-
-		<h3>External plugins</h3>
+		<p>JMRI supports extending JMRI in several ways by adding a jar file with classes to the
+		JMRI class path. But NewLogix is stored in the panel xml files and these are validated when
+		they are loaded, so when adding native expressions and actions, the newlogix xml schema
+		must be updated.</p>
 
 		<p><a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
 		is an example project with some expression plugins and action plugins.
@@ -242,6 +237,15 @@
 		<p><strong>getConfigFromPanel()</strong></p>
 
 		<p>Returns the configuration for this plugin to be stored in for example a panel file.</p>
+
+		<h3>Plugin in the JMRI classpath</h3>
+
+		<p>JMRI can automaticly load plugins in the JMRI classpath. That is done by implementing
+		a <strong>ExpressionPluginFactory</strong> or a <strong>ActionPluginFactory</strong> that
+		can tell JMRI about the expressions or actions and then mark it with the
+		<a href="plugins.shtml">@ServiceProvider</a> annotation. A single factory can register
+		many classes. The <a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
+		has an example.
 
         <!--#include virtual="/Footer" -->
       </div><!-- closes #mainContent-->

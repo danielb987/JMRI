@@ -17,14 +17,14 @@ public class DefaultExpressionFactory implements NewLogixExpressionFactory {
 
     @Override
     public Set<Map.Entry<NewLogixCategory, Class<? extends NewLogixExpression>>> getExpressionClasses() {
-        Set<Map.Entry<NewLogixCategory, Class<? extends NewLogixExpression>>> actionClasses = new HashSet<>();
-        actionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.COMMON, ExpressionAnd.class));
-        actionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.OTHER, ExpressionHold.class));
-        actionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.OTHER, ExpressionResetOnTrue.class));
-        actionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.COMMON, ExpressionTimer.class));
-        actionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.OTHER, ExpressionTriggerOnce.class));
-        actionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.ITEM, ExpressionTurnout.class));
-        return actionClasses;
+        Set<Map.Entry<NewLogixCategory, Class<? extends NewLogixExpression>>> expressionClasses = new HashSet<>();
+        expressionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.COMMON, ExpressionAnd.class));
+        expressionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.OTHER, ExpressionHold.class));
+        expressionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.OTHER, ExpressionResetOnTrue.class));
+        expressionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.COMMON, ExpressionTimer.class));
+        expressionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.OTHER, ExpressionTriggerOnce.class));
+        expressionClasses.add(new AbstractMap.SimpleEntry<>(NewLogixCategory.ITEM, ExpressionTurnout.class));
+        return expressionClasses;
     }
 
 }
