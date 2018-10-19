@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Insets;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -163,7 +165,18 @@ public class NewLogixPreferencesPanel extends JPanel implements PreferencesPanel
         }
     }
     
+//    private void printClassPath() {
+//        ClassLoader cl = ClassLoader.getSystemClassLoader();
+//        URL[] urls = ((URLClassLoader)cl).getURLs();
+//        for(URL url: urls){
+//        	System.out.println(url.getFile());
+//        }
+//    }
+    
     private JPanel getPluginClassesPanel() {
+        // For testing only
+//        printClassPath();
+        
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         

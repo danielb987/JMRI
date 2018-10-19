@@ -13,6 +13,7 @@ import jmri.NewLogix;
 import jmri.NewLogixCategory;
 import jmri.NewLogixExpression;
 import jmri.NewLogixExpressionFactory;
+import jmri.NewLogixPluginFactory;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
@@ -39,9 +40,16 @@ public class DefaultExpressionManager extends AbstractManager<NewLogixExpression
             expressionClassList.put(category, new ArrayList<>());
         }
         
-        for (NewLogixExpressionFactory actionFactory : ServiceLoader.load(NewLogixExpressionFactory.class)) {
-            actionFactory.getExpressionClasses().forEach((entry) -> {
+        for (NewLogixExpressionFactory expressionFactory : ServiceLoader.load(NewLogixExpressionFactory.class)) {
+            expressionFactory.getExpressionClasses().forEach((entry) -> {
                 System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+                expressionClassList.get(entry.getKey()).add(entry.getValue());
+            });
+        }
+        
+        for (NewLogixPluginFactory expressionFactory : ServiceLoader.load(NewLogixPluginFactory.class)) {
+            expressionFactory.getExpressionClasses().forEach((entry) -> {
+                System.out.format("Add expression plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }

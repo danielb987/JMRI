@@ -1,5 +1,7 @@
 package jmri.jmrit.newlogix;
 
+import jmri.NewLogixExpressionPlugin;
+import jmri.NewLogixActionPlugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -108,11 +110,11 @@ public class PluginManager {
 //                    if (cls.isInstance(NewLogixExpression.class)) {
 //                    ClassType type = ClassType.OTHER;
                     ClassType type;
-                    if (ExpressionPluginInterface.class.isAssignableFrom(cls)) {
+                    if (NewLogixExpressionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression%n", cls.getName());
                         type = ClassType.EXPRESSION;
 //                    } else if (cls.isInstance(NewLogixAction.class)) {
-                    } else if (ActionPluginInterface.class.isAssignableFrom(cls)) {
+                    } else if (NewLogixActionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
                     } else if (PluginConfiguratorInterface.class.isAssignableFrom(cls)) {

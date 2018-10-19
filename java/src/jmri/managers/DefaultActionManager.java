@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import jmri.NewLogixAction;
 import jmri.NewLogixActionFactory;
 import jmri.NewLogixCategory;
+import jmri.NewLogixPluginFactory;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -42,6 +43,13 @@ public class DefaultActionManager extends AbstractManager<NewLogixAction>
         for (NewLogixActionFactory actionFactory : ServiceLoader.load(NewLogixActionFactory.class)) {
             actionFactory.getActionClasses().forEach((entry) -> {
                 System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+                actionClassList.get(entry.getKey()).add(entry.getValue());
+            });
+        }
+        
+        for (NewLogixPluginFactory actionFactory : ServiceLoader.load(NewLogixPluginFactory.class)) {
+            actionFactory.getActionClasses().forEach((entry) -> {
+                System.out.format("Add action plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }

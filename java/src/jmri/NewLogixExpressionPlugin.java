@@ -1,7 +1,7 @@
-package jmri.jmrit.newlogix;
+package jmri;
 
 import java.util.Map;
-import jmri.NewLogixAction;
+import jmri.NewLogixExpression;
 
 /**
  * The parent interface for plugin NewLogixAction classes.
@@ -10,8 +10,8 @@ import jmri.NewLogixAction;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionPluginInterface extends NewLogixAction {
-    
+public interface NewLogixExpressionPlugin extends NewLogixExpression {
+
     /**
      * Initialize the object.
      * 
