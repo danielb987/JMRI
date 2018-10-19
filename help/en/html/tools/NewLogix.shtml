@@ -112,7 +112,21 @@
 
         <h2>Plugins for NewLogix</h2>
 
-		<p>NewLogix supports expression and action plugins.</p>
+		<p>NewLogix supports expression and action plugins. This can be done
+		in two different ways, native plugin or external plugin.</p>
+
+		<p>A <strong>native plugin</strong> is a class that implements the
+		NewLogixExpression interface or the NewLogixAction interface. The
+		downside is that the jar file with these classes needs to be placed
+		in the <a href="../../Technical/StartUpScripts.shtml">JMRI classpath</a>
+		to be accessible for JMRI. But as long as they are located at the
+		JMRI classpath, they will be included automaticly.</p>
+
+		<p>A <strong>external plugin</strong> is a class that implements the
+		ExpressionPluginInterface interface or the ActionPluginInterface
+		interface. These classes can be placed anywhere, but they needs to
+		be configured by the user. That is, the user has to point JMRI to the
+		jar file and select which classes in the jar file to use with JMRI.</p>
 
         <!--#include virtual="/Footer" -->
       </div><!-- closes #mainContent-->

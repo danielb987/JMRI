@@ -131,6 +131,18 @@
 
 
 
+		<h2>Register an expression or an action</h2>
+
+		<p>In order for JMRI to be able to use the expression or the action, it needs to be
+		told about it. That is done by implementing a NewLogixExpressionFactory or a
+		NewLogixActionFactory that can tell JMRI about the expressions or actions and then
+		mark it with the <a href="plugins.shtml">@ServiceProvider</a>
+		annotation. A single factory can register many classes. For classes that are supplied
+		with JMRI, it's recommended to use the <strong>DefaultExpressionFactory</strong>
+		and the <strong>DefaultActionFactory</strong>.
+
+
+
         <h2>AbstractExpression and AbstractAction vs AbstractNamedBean</h2>
 
 		<p>The <strong>NamedBean</strong> interface has the methods <strong>setState()</strong>
@@ -163,7 +175,15 @@
 
         <h2>Plugins for NewLogix</h2>
 
-		<p>NewLogix supports expression and action plugins.</p>
+		<p>NewLogix supports expression and action plugins. This can be done
+		in two different ways, native plugin or external plugin.</p>
+
+		<h3>Native plugins</h3>
+
+		Native plugins works exactly like the expressions and actions already supplied with JMRI.
+		The only difference is that they are in a different jar file, located on the JMRI classpath.
+
+		<h3>External plugins</h3>
 
 		<p><a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
 		is an example project with some expression plugins and action plugins.
