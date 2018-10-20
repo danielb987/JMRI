@@ -199,7 +199,7 @@
 		The developer of the plugin decides on how to store its configuration in this map.</p>
 
 		<p>An expression or action that is a plugin must implement the
-		<strong>ExpressionPluginInterface</strong> or the <strong>ActionPluginInterface</strong>.
+		<strong>NewLogixExpressionPlugin</strong> or the <strong>NewLogixActionPlugin</strong>.
 		These interfaces has three additional methods.</p>
 
 		<p><strong>init()</strong></p>
@@ -241,10 +241,10 @@
 		<h3>Plugin in the JMRI classpath</h3>
 
 		<p>JMRI can automaticly load plugins in the JMRI classpath. That is done by implementing
-		a <strong>ExpressionPluginFactory</strong> or a <strong>ActionPluginFactory</strong> that
-		can tell JMRI about the expressions or actions and then mark it with the
-		<a href="plugins.shtml">@ServiceProvider</a> annotation. A single factory can register
-		many classes. The <a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
+		a <strong>NewLogixPluginFactory</strong> that can tell JMRI about the expressions or
+		actions and then mark it with the <a href="plugins.shtml">@ServiceProvider</a> annotation.
+		A single factory can register many classes. The
+		<a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
 		has an example.
 
         <!--#include virtual="/Footer" -->
