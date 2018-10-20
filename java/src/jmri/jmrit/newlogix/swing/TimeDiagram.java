@@ -65,10 +65,12 @@ public class TimeDiagram extends JmriJFrame {
 
         initMinimumSize(new Dimension(panelWidth700, panelHeight500));
         
-        try {
-            testLoadExpression();
-        } catch (Throwable e) {
-            e.printStackTrace();
+        if (1==0) {
+            try {
+                testLoadExpression();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
     }
 
