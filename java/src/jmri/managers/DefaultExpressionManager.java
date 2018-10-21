@@ -40,6 +40,7 @@ public class DefaultExpressionManager extends AbstractManager<NewLogixExpression
             expressionClassList.put(category, new ArrayList<>());
         }
         
+        System.out.format("Read expressions%n");
         for (NewLogixExpressionFactory expressionFactory : ServiceLoader.load(NewLogixExpressionFactory.class)) {
             expressionFactory.getExpressionClasses().forEach((entry) -> {
                 System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
@@ -47,7 +48,9 @@ public class DefaultExpressionManager extends AbstractManager<NewLogixExpression
             });
         }
         
+        System.out.format("Read plugin expressions%n");
         for (NewLogixPluginFactory expressionFactory : ServiceLoader.load(NewLogixPluginFactory.class)) {
+            System.out.format("Read plugin factory: %s%n", expressionFactory.getClass().getName());
             expressionFactory.getExpressionClasses().forEach((entry) -> {
                 System.out.format("Add expression plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
