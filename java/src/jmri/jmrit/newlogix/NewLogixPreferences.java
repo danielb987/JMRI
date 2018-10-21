@@ -33,8 +33,9 @@ public final class NewLogixPreferences extends PreferencesBean {
         this._startNewLogixOnLoad = sharedPreferences.getBoolean(START_NEW_LOGIX_ON_LOAD, this._startNewLogixOnLoad);
         this._allowDebugMode = sharedPreferences.getBoolean(ALLOW_DEBUG_MODE, this._allowDebugMode);
         
-        String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\JMRI_NewLogixPlugins.jar";
-        _pluginManager.addJarFile(jarFileName);
+//        String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_NewLogixPlugins\\dist\\JMRI_NewLogixPlugins.jar";
+//        _pluginManager.addJarFile(jarFileName);
+        
 /*        
         this.allowRemoteConfig = sharedPreferences.getBoolean(ALLOW_REMOTE_CONFIG, this.allowRemoteConfig);
         this.clickDelay = sharedPreferences.getInt(CLICK_DELAY, this.clickDelay);
