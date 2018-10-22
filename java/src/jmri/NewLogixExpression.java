@@ -6,7 +6,7 @@ package jmri;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface NewLogixExpression extends NamedBean {
+public interface NewLogixExpression extends NamedBean, NewLogixCommon {
     
     public enum TriggerCondition {
         TRUE,

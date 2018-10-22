@@ -5,28 +5,31 @@ import jmri.implementation.AbstractExpression;
 import jmri.NewLogixExpression;
 
 /**
- * Every NewLogixExpression has an InternalExpression as its parent.
+ * Adapter for expression plugins.
+ * Every expression needs to have a configurator class that delivers a JPanel
+ * used for configuration. Since plugin expressions has 
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class InternalExpression extends AbstractExpression {
+public class ExpressionPluginAdapter extends AbstractExpression {
 
-    private final NewLogixExpression _expression;
-    private boolean lastEvaluationResult = false;
+    private NewLogixExpression _pluginExpression;
     
-    public InternalExpression(String sys, NewLogixExpression expression)
-            throws BadUserNameException, BadSystemNameException {
+    public ExpressionPluginAdapter(String sys, NewLogixExpression pluginExpression)
+            throws BadUserNameException,
+            BadSystemNameException {
         
         super(sys);
-        _expression = expression;
+        jmri.jmrix.ConnectionConfig cc;
+        _pluginExpression = pluginExpression;
     }
 
     /** {@inheritDoc} */
     @Override
     public NewLogixCategory getCategory() {
-        return _expression.getCategory();
+        return _pluginExpression.getCategory();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
@@ -36,19 +39,13 @@ public class InternalExpression extends AbstractExpression {
     /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
-        lastEvaluationResult = _expression.evaluate();
-        return lastEvaluationResult;
+        return _pluginExpression.evaluate();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        _expression.reset();
-    }
-
-    @Override
-    public int getState() {
-        return lastEvaluationResult ? NewLogixExpression.TRUE : NewLogixExpression.FALSE;
+        _pluginExpression.reset();
     }
 
     @Override
@@ -60,5 +57,5 @@ public class InternalExpression extends AbstractExpression {
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
 }

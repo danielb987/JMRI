@@ -2,7 +2,6 @@ package jmri.jmrit.newlogix.swing;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;

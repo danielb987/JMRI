@@ -34,6 +34,43 @@ public abstract class AbstractExpression extends AbstractNamedBean
         log.warn("Unexpected call to getState in AbstractAction.");  // NOI18N
         return UNKNOWN;
     }
+    
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getConfiguratorClassName() {
+        String className = this.getClass().getName();
+        log.trace("handle object of class {}", className);
+        int lastDot = className.lastIndexOf(".");
+        if (lastDot > 0) {
+            // found package-class boundary OK
+            String result = className.substring(0, lastDot)
+                    + ".swing."
+                    + className.substring(lastDot + 1, className.length())
+                    + "Configurator";
+            log.trace("adapter class name is {}", result);
+            return result;
+        } else {
+            // no last dot found!
+            log.error("No package name found, which is not yet handled!");
+            return null;
+        }
+    }
+    
+    
+    //************************************************************************
+    // For testing only
+    //************************************************************************
+    
+    @Override
+    public String getShortDescription() {
+        return this.getClass().getSimpleName();
+    }
+    
+    @Override
+    public String getLongDescription() {
+        return this.getClass().getName();
+    }
 
     private final static Logger log = LoggerFactory.getLogger(AbstractExpression.class);
 }

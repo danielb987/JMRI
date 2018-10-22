@@ -5,7 +5,7 @@ package jmri;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface NewLogixAction extends NamedBean {
+public interface NewLogixAction extends NamedBean, NewLogixCommon {
 
     /**
      * Get the category of this action.

@@ -23,6 +23,7 @@ public class NewLogixMenu extends JMenu {
 
         setText(Bundle.getMessage("MenuNewLogix"));
 
+        add(new NewLogixEditorAction());
         add(new TimeDiagramAction());
 //        add(new jmri.jmrit.operations.setup.OperationsSetupAction());
 //        add(new jmri.jmrit.operations.locations.LocationsTableAction());

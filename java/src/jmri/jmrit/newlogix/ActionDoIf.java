@@ -12,6 +12,16 @@ import jmri.NewLogixExpression;
  */
 public class ActionDoIf extends AbstractAction {
 
+    @Override
+    public NewLogixSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getChildCount() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * The type of NewLogixAction. If the type is changed, the action is aborted if it
      * is currently running.
