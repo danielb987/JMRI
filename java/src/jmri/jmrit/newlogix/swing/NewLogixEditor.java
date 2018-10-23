@@ -118,7 +118,7 @@ public class NewLogixEditor extends JmriJFrame {
      * The methods in this class allow the JTree component to traverse the file
      * system tree and display the files and directories.
      */
-    class FileTreeModel implements TreeModel {
+    private static class FileTreeModel implements TreeModel {
         // We specify the root directory when we create the model.
 
         protected File root;
