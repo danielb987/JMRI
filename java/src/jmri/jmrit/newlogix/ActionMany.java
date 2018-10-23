@@ -15,6 +15,10 @@ public class ActionMany extends AbstractAction {
 
     private final List<NewLogixAction> actions = new ArrayList<>();
     
+    public ActionMany(String sys) throws BadUserNameException, BadSystemNameException {
+        super(sys);
+    }
+
     public ActionMany(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
@@ -71,12 +75,12 @@ public class ActionMany extends AbstractAction {
 
     @Override
     public NewLogixSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

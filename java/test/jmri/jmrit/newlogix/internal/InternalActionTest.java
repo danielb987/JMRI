@@ -5,6 +5,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.NewLogixAction;
+import jmri.jmrit.newlogix.ActionMany;
 
 /**
  * Test ExpressionTimer
@@ -15,7 +17,8 @@ public class InternalActionTest {
 
     @Test
     public void testCtor() {
-        new InternalAction("IQA55:A321", null);
+        NewLogixAction action = new ActionMany("IQA55:A321");
+        new InternalAction(action);
     }
     
     // The minimal setup for log4J

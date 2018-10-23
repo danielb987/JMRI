@@ -152,7 +152,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         for (NewLogix newLogix : _tsys.values()) {
             System.out.format("NewLogix loaded: %s, %s%n", newLogix.getSystemName(), newLogix.getUserName());
         }
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -164,7 +164,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public void setLoadDisabled(boolean s) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     static DefaultNewLogixManager _instance = null;

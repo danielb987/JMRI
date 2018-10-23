@@ -15,6 +15,11 @@ public class ExpressionAnd extends AbstractExpression {
 
     List<NewLogixExpression> children = new ArrayList<>();
     
+    public ExpressionAnd(String sys) throws BadUserNameException,
+            BadSystemNameException {
+        super(sys);
+    }
+
     public ExpressionAnd(String sys, String user) throws BadUserNameException,
             BadSystemNameException {
         super(sys, user);
@@ -54,12 +59,12 @@ public class ExpressionAnd extends AbstractExpression {
 
     @Override
     public NewLogixSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

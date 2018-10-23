@@ -5,6 +5,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.NewLogixExpression;
+import jmri.jmrit.newlogix.ExpressionAnd;
 
 /**
  * Test ExpressionTimer
@@ -15,13 +17,15 @@ public class InternalExpressionTest {
 
     @Test
     public void testCtor() {
-        new InternalExpression("IQA55:E321", null);
+        NewLogixExpression expression = new ExpressionAnd("IQA55:E321");
+        new InternalExpression(expression);
     }
     
     // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
