@@ -20,7 +20,7 @@ public class ExpressionPluginAdapter extends AbstractExpression {
             BadSystemNameException {
         
         super(sys);
-        jmri.jmrix.ConnectionConfig cc;
+//        jmri.jmrix.ConnectionConfig cc;
         _pluginExpression = pluginExpression;
     }
 

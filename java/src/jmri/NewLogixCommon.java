@@ -53,6 +53,6 @@ public interface NewLogixCommon {
      * use these directly but instead use a NewLogixExpressionSocket or a
      * NewLogixActionSocket.
      */
-    public interface NewLogixSocket extends NewLogixCommon {};
+    public interface NewLogixSocket extends NewLogixCommon {}
     
 }
