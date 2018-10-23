@@ -14,7 +14,7 @@ import jmri.NewLogixCommon.NewLogixSocket;
 /**
  *
  */
-public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSocket {
+public class ExpressionSocket implements NewLogixExpression, NewLogixSocket {
 
     private NewLogixExpression _expression;
 

@@ -14,7 +14,7 @@ import jmri.NewLogixCommon.NewLogixSocket;
 /**
  *
  */
-public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
+public class ActionSocket implements NewLogixAction, NewLogixSocket {
 
     private NewLogixAction _action;
 

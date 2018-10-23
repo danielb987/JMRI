@@ -5,8 +5,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   InternalActionTest.class,
-   InternalExpressionTest.class,
+    InternalActionTest.class,
+    InternalExpressionTest.class,
+    ExpressionPluginAdapterTest.class,
 })
 
 /**

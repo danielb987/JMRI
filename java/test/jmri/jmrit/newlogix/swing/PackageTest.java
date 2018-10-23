@@ -5,7 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   TimeDiagramTest.class,
+    NewLogixEditorTest.class,
+    TimeDiagramTest.class,
 })
 
 /**
