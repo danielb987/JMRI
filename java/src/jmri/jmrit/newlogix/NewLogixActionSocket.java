@@ -9,7 +9,6 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.NewLogixAction;
 import jmri.NewLogixCategory;
-import jmri.NewLogixCommon;
 import jmri.NewLogixCommon.NewLogixSocket;
 
 /**
@@ -104,7 +103,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getUserName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -112,6 +111,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void setUserName(String s) throws BadUserNameException {
         if (_action != null) {
             _action.setUserName(s);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -120,7 +121,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getSystemName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -129,7 +130,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getDisplayName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -138,7 +139,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getFullyFormattedDisplayName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -146,6 +147,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
         if (_action != null) {
             _action.addPropertyChangeListener(l, name, listenerRef);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -153,6 +156,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void addPropertyChangeListener(PropertyChangeListener l) {
         if (_action != null) {
             _action.addPropertyChangeListener(l);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -160,6 +165,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void removePropertyChangeListener(PropertyChangeListener l) {
         if (_action != null) {
             _action.removePropertyChangeListener(l);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -167,6 +174,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void updateListenerRef(PropertyChangeListener l, String newName) {
         if (_action != null) {
             _action.updateListenerRef(l, newName);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -174,6 +183,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
         if (_action != null) {
             _action.vetoableChange(evt);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -182,7 +193,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getListenerRef(l);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -191,7 +202,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getListenerRefs();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -200,7 +211,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getNumPropertyChangeListeners();
         } else {
-            return 0;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -209,7 +220,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getPropertyChangeListenersByReference(name);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -224,6 +235,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void setState(int s) throws JmriException {
         if (_action != null) {
             _action.setState(s);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -232,7 +245,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getState();
         } else {
-            return NamedBean.UNKNOWN;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -241,7 +254,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.describeState(state);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -250,7 +263,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getComment();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -258,6 +271,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void setComment(String comment) {
         if (_action != null) {
             _action.setComment(comment);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -265,6 +280,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void setProperty(String key, Object value) {
         if (_action != null) {
             _action.setProperty(key, value);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -273,7 +290,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getProperty(key);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -281,6 +298,8 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
     public void removeProperty(String key) {
         if (_action != null) {
             _action.removeProperty(key);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -289,7 +308,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getPropertyKeys();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -298,7 +317,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getBeanType();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -307,7 +326,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.compareSystemNameSuffix(suffix1, suffix2, n2);
         } else {
-            return 0;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -316,7 +335,7 @@ public class NewLogixActionSocket implements NewLogixAction, NewLogixSocket {
         if (_action != null) {
             return _action.getConfiguratorClassName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 

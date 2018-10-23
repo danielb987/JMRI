@@ -54,12 +54,12 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
 
     @Override
     public NewLogixSocket getChild(int index) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
@@ -67,7 +67,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getShortDescription();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -76,7 +76,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getLongDescription();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -85,7 +85,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getUserName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -93,6 +93,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void setUserName(String s) throws BadUserNameException {
         if (_expression != null) {
             _expression.setUserName(s);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -101,7 +103,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getSystemName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -110,7 +112,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getDisplayName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -119,7 +121,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getFullyFormattedDisplayName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -127,6 +129,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
         if (_expression != null) {
             _expression.addPropertyChangeListener(l, name, listenerRef);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -134,6 +138,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void addPropertyChangeListener(PropertyChangeListener l) {
         if (_expression != null) {
             _expression.addPropertyChangeListener(l);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -141,6 +147,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void removePropertyChangeListener(PropertyChangeListener l) {
         if (_expression != null) {
             _expression.removePropertyChangeListener(l);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -148,6 +156,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void updateListenerRef(PropertyChangeListener l, String newName) {
         if (_expression != null) {
             _expression.updateListenerRef(l, newName);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -155,6 +165,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
         if (_expression != null) {
             _expression.vetoableChange(evt);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -163,7 +175,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getListenerRef(l);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -172,7 +184,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getListenerRefs();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -181,7 +193,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getNumPropertyChangeListeners();
         } else {
-            return 0;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -190,7 +202,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getPropertyChangeListenersByReference(name);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -205,6 +217,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void setState(int s) throws JmriException {
         if (_expression != null) {
             _expression.setState(s);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -213,7 +227,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getState();
         } else {
-            return NamedBean.UNKNOWN;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -222,7 +236,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.describeState(state);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -231,7 +245,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getComment();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -239,6 +253,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void setComment(String comment) {
         if (_expression != null) {
             _expression.setComment(comment);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -246,6 +262,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void setProperty(String key, Object value) {
         if (_expression != null) {
             _expression.setProperty(key, value);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -254,7 +272,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getProperty(key);
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -262,6 +280,8 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
     public void removeProperty(String key) {
         if (_expression != null) {
             _expression.removeProperty(key);
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -270,7 +290,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getPropertyKeys();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -279,7 +299,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getBeanType();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -288,7 +308,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.compareSystemNameSuffix(suffix1, suffix2, n2);
         } else {
-            return 0;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
@@ -297,7 +317,7 @@ public class NewLogixExpressionSocket implements NewLogixExpression, NewLogixSoc
         if (_expression != null) {
             return _expression.getConfiguratorClassName();
         } else {
-            return null;
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 
