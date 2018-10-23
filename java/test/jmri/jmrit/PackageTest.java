@@ -56,6 +56,7 @@ import org.junit.runners.Suite;
         jmri.jmrit.simplelightctrl.PackageTest.class,
         jmri.jmrit.simpleturnoutctrl.PackageTest.class,
         jmri.jmrit.newlogix.PackageTest.class,
+        jmri.jmrit.timetable.PackageTest.class,
         MemoryFrameActionTest.class,
         ToolsMenuTest.class,
         XmlFileLocationActionTest.class,
