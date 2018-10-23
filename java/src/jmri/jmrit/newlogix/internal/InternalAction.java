@@ -9,6 +9,7 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.NewLogixCategory;
 import jmri.NewLogixAction;
+import javax.annotation.Nonnull;
 
 /**
  * Every NewLogixAction has an InternalAction as its parent.
@@ -20,8 +21,8 @@ public class InternalAction implements NewLogixAction {
     private final NewLogixAction _action;
     private boolean _isActive = false;
     
-    public InternalAction(NewLogixAction child) {
-        _action = child;
+    public InternalAction(@Nonnull NewLogixAction action) {
+        _action = action;
     }
     
     /** {@inheritDoc} */
@@ -96,243 +97,137 @@ public class InternalAction implements NewLogixAction {
 
     @Override
     public String getUserName() {
-        if (_action != null) {
-            return _action.getUserName();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getUserName();
     }
 
     @Override
     public void setUserName(String s) throws BadUserNameException {
-        if (_action != null) {
-            _action.setUserName(s);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.setUserName(s);
     }
 
     @Override
     public String getSystemName() {
-        if (_action != null) {
-            return _action.getSystemName();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getSystemName();
     }
 
     @Override
     public String getDisplayName() {
-        if (_action != null) {
-            return _action.getDisplayName();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getDisplayName();
     }
 
     @Override
     public String getFullyFormattedDisplayName() {
-        if (_action != null) {
-            return _action.getFullyFormattedDisplayName();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getFullyFormattedDisplayName();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        if (_action != null) {
-            _action.addPropertyChangeListener(l, name, listenerRef);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.addPropertyChangeListener(l, name, listenerRef);
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        if (_action != null) {
-            _action.addPropertyChangeListener(l);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.addPropertyChangeListener(l);
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
-        if (_action != null) {
-            _action.removePropertyChangeListener(l);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.removePropertyChangeListener(l);
     }
 
     @Override
     public void updateListenerRef(PropertyChangeListener l, String newName) {
-        if (_action != null) {
-            _action.updateListenerRef(l, newName);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.updateListenerRef(l, newName);
     }
 
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        if (_action != null) {
-            _action.vetoableChange(evt);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.vetoableChange(evt);
     }
 
     @Override
     public String getListenerRef(PropertyChangeListener l) {
-        if (_action != null) {
-            return _action.getListenerRef(l);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getListenerRef(l);
     }
 
     @Override
     public ArrayList<String> getListenerRefs() {
-        if (_action != null) {
-            return _action.getListenerRefs();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getListenerRefs();
     }
 
     @Override
     public int getNumPropertyChangeListeners() {
-        if (_action != null) {
-            return _action.getNumPropertyChangeListeners();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getNumPropertyChangeListeners();
     }
 
     @Override
     public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        if (_action != null) {
-            return _action.getPropertyChangeListenersByReference(name);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getPropertyChangeListenersByReference(name);
     }
 
     @Override
     public void dispose() {
-        if (_action != null) {
-            _action.dispose();
-        }
+        _action.dispose();
     }
 
     @Override
     public void setState(int s) throws JmriException {
-        if (_action != null) {
-            _action.setState(s);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.setState(s);
     }
 
     @Override
     public int getState() {
-        if (_action != null) {
-            return _action.getState();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getState();
     }
 
     @Override
     public String describeState(int state) {
-        if (_action != null) {
-            return _action.describeState(state);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.describeState(state);
     }
 
     @Override
     public String getComment() {
-        if (_action != null) {
-            return _action.getComment();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getComment();
     }
 
     @Override
     public void setComment(String comment) {
-        if (_action != null) {
-            _action.setComment(comment);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.setComment(comment);
     }
 
     @Override
     public void setProperty(String key, Object value) {
-        if (_action != null) {
-            _action.setProperty(key, value);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.setProperty(key, value);
     }
 
     @Override
     public Object getProperty(String key) {
-        if (_action != null) {
-            return _action.getProperty(key);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getProperty(key);
     }
 
     @Override
     public void removeProperty(String key) {
-        if (_action != null) {
-            _action.removeProperty(key);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        _action.removeProperty(key);
     }
 
     @Override
     public Set<String> getPropertyKeys() {
-        if (_action != null) {
-            return _action.getPropertyKeys();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getPropertyKeys();
     }
 
     @Override
     public String getBeanType() {
-        if (_action != null) {
-            return _action.getBeanType();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getBeanType();
     }
 
     @Override
     public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        if (_action != null) {
-            return _action.compareSystemNameSuffix(suffix1, suffix2, n2);
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
     @Override
     public String getConfiguratorClassName() {
-        if (_action != null) {
-            return _action.getConfiguratorClassName();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        return _action.getConfiguratorClassName();
     }
 
 }
