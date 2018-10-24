@@ -7,6 +7,34 @@ package jmri;
  * @author Daniel Bergqvist Copyright 2018
  */
 public interface NewLogixCommon {
+    
+    /**
+     * The name of the property child count.
+     * To get the number of children, use the method getChildCount().
+     * This constant is used in calls to firePropertyChange().
+     * The class fires a property change then a child is added or removed.
+     */
+    public static final String PROPERTY_CHILD_COUNT = "ChildCount";
+
+    /**
+     * The status of the socket, if it is connected or not.
+     * This constant is used in calls to firePropertyChange().
+     * The socket fires a property change to its _parent_ when it is connected
+     * or disconnected. Note that the parent does not need to register a
+     * listener for this.
+     */
+    public static final String PROPERTY_SOCKET_CONNECTED = "SocketConnected";
+
+    /**
+     * Constant representing an "connected" state of the socket
+     */
+    public static final int SOCKET_CONNECTED = 0x02;
+
+    /**
+     * Constant representing an "disconnected" state of the socket
+     */
+    public static final int SOCKET_DISCONNECTED = 0x04;
+
 
     /**
      * Return the class name of the configurator class.
