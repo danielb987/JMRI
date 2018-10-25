@@ -98,9 +98,13 @@
 		<h3>Exceptions to the above rules</h3>
 
 		<p>The ImportLogix tool uses many expressions in the jmri.jmrit.newlogix.expressions
-		package and many actions in the jmri.jmrit.newlogix.actions package.
+		package and many actions in the jmri.jmrit.newlogix.actions package.</p>
+
+		<p>jmri.managers.DefaultInstanceInitializer uses the default managers in the
+		jmri.jmrit.newlogix.engine package.</p>
 		
-		XML schema???</p>
+		<p>The XML schema xml/schema/types/newlogix-4.13.4.xsd uses the default managers
+		in the jmri.jmrit.newlogix.engine package.</p>
 
 
 

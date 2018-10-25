@@ -1,16 +1,11 @@
 package jmri.managers;
 
-import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
-import jmri.jmrit.newlogix.engine.DefaultActionManager;
-import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import java.util.Arrays;
 import java.util.Set;
-import jmri.jmrit.newlogix.ActionManager;
 import jmri.AudioManager;
 import jmri.BlockManager;
 import jmri.ClockControl;
 import jmri.ConditionalManager;
-import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.InstanceInitializer;
 import jmri.InstanceManager;
 import jmri.LightManager;
@@ -31,10 +26,13 @@ import jmri.TurnoutManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
+import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.ExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultActionManager;
+import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provide the usual default implementations for the
