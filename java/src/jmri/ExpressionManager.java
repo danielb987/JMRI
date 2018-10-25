@@ -1,14 +1,17 @@
 package jmri;
 
+import jmri.jmrit.newlogix.NewLogix;
+import jmri.jmrit.newlogix.Expression;
+
 /**
- * Manager for NewLogixExpression
+ * Manager for Expression
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ExpressionManager extends Manager<NewLogixExpression> {
+public interface ExpressionManager extends Manager<Expression> {
 
     /**
-     * Create a new system name for an NewLogixExpression.
+     * Create a new system name for an Expression.
      *
      * @param newLogix the NewLogix that this expression belongs to
      * @return a new system name
@@ -16,12 +19,12 @@ public interface ExpressionManager extends Manager<NewLogixExpression> {
     public String getNewSystemName(NewLogix newLogix);
 
     /**
-     * Add an NewLogixExpression.
+     * Add an Expression.
      *
      * @param expression the expression to add
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public void addExpression(NewLogixExpression expression)
+    public void addExpression(Expression expression)
             throws IllegalArgumentException;
 
     /**
@@ -31,18 +34,18 @@ public interface ExpressionManager extends Manager<NewLogixExpression> {
      * @param name User name or system name to match
      * @return null if no match found
      */
-    public NewLogixExpression getExpression(String name);
+    public Expression getExpression(String name);
 
-    public NewLogixExpression getByUserName(String s);
+    public Expression getByUserName(String s);
 
-    public NewLogixExpression getBySystemName(String s);
+    public Expression getBySystemName(String s);
 
     /**
-     * Delete NewLogixExpression by removing it from the manager. The NewLogixExpression must
+     * Delete Expression by removing it from the manager. The Expression must
  first be deactivated so it stops processing.
      *
-     * @param x the NewLogixExpression to delete
+     * @param x the Expression to delete
      */
-    void deleteExpression(NewLogixExpression x);
+    void deleteExpression(Expression x);
 
 }

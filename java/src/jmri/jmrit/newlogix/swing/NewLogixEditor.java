@@ -12,15 +12,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import jmri.NewLogix;
+import jmri.jmrit.newlogix.NewLogix;
 import jmri.util.JmriJFrame;
-import jmri.NewLogixAction;
-import jmri.NewLogixExpression;
-import jmri.jmrit.newlogix.ActionTurnout;
-import jmri.jmrit.newlogix.ExpressionTurnout;
+import jmri.jmrit.newlogix.actions.ActionTurnout;
+import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
 
 import java.io.File;
 import javax.swing.tree.TreePath;
+import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.Action;
 
 /**
  * Editor of NewLogix

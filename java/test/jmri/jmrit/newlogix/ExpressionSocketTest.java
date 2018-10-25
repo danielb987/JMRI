@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix;
 
+import jmri.jmrit.newlogix.expressions.ExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;

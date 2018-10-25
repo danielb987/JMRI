@@ -1,5 +1,8 @@
 package jmri.managers;
 
+import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultActionManager;
+import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import java.util.Arrays;
 import java.util.Set;
 import jmri.ActionManager;
@@ -13,7 +16,7 @@ import jmri.InstanceManager;
 import jmri.LightManager;
 import jmri.LogixManager;
 import jmri.MemoryManager;
-import jmri.NewLogixManager;
+import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.RailComManager;
 import jmri.ReporterManager;
 import jmri.RouteManager;

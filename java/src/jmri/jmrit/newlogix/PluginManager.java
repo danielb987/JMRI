@@ -1,7 +1,5 @@
 package jmri.jmrit.newlogix;
 
-import jmri.NewLogixExpressionPlugin;
-import jmri.NewLogixActionPlugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import jmri.NewLogixAction;
-import jmri.NewLogixExpression;
 import jmri.jmrit.newlogix.swing.PluginConfiguratorInterface;
 
 /**
@@ -95,36 +91,36 @@ public class PluginManager {
                     Class cls = cl.loadClass(className);
                     
 //                    System.out.format("%s extends %s%n", cls.getName(), cls.getSuperclass());
-//                    System.out.format("AA: %b%n", cls.isAssignableFrom(NewLogixAction.class));
-//                    System.out.format("BB: %b%n", NewLogixAction.class.isAssignableFrom(cls));
-//                    System.out.format("EE: %b%n", NewLogixExpression.class.isAssignableFrom(cls));
-//                    System.out.format("CCC: %b%n", cls.newInstance() instanceof NewLogixAction);
+//                    System.out.format("AA: %b%n", cls.isAssignableFrom(Action.class));
+//                    System.out.format("BB: %b%n", Action.class.isAssignableFrom(cls));
+//                    System.out.format("EE: %b%n", Expression.class.isAssignableFrom(cls));
+//                    System.out.format("CCC: %b%n", cls.newInstance() instanceof Action);
                     
 //                    for (Class<?> temp : cls.getInterfaces()) {
 //                        System.out.format("%s implements %s%n", cls.getName(), temp.getName());
 //                    }
 
-//                    if (cls.newInstance() instanceof NewLogixExpression) {
+//                    if (cls.newInstance() instanceof Expression) {
 //                        System.out.format("AAA: Class %s is an Expression%n", cls.getName());
-//                    } else if (cls.isInstance(NewLogixExpression.class)) {
-//                    if (cls.isInstance(NewLogixExpression.class)) {
+//                    } else if (cls.isInstance(Expression.class)) {
+//                    if (cls.isInstance(Expression.class)) {
 //                    ClassType type = ClassType.OTHER;
                     ClassType type;
                     if (NewLogixExpressionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression%n", cls.getName());
                         type = ClassType.EXPRESSION;
-//                    } else if (cls.isInstance(NewLogixAction.class)) {
+//                    } else if (cls.isInstance(Action.class)) {
                     } else if (NewLogixActionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
                     } else if (PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is a plugin configurator%n", cls.getName());
                         type = ClassType.CONFIGURATOR;
-                    } else if (NewLogixExpression.class.isAssignableFrom(cls)) {
+                    } else if (Expression.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
                         type = ClassType.EXPRESSION_NOT_PLUGIN;
-//                    } else if (cls.isInstance(NewLogixAction.class)) {
-                    } else if (NewLogixAction.class.isAssignableFrom(cls)) {
+//                    } else if (cls.isInstance(Action.class)) {
+                    } else if (Action.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action but not a plugin%n", cls.getName());
                         type = ClassType.ACTION_NOT_PLUGIN;
                     } else {

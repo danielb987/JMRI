@@ -1,6 +1,6 @@
 package jmri.jmrit.newlogix;
 
-import jmri.NewLogixCategory;
+import jmri.jmrit.newlogix.expressions.ExpressionTimer;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -21,7 +21,7 @@ public class ExpressionTimerTest {
     
     @Test
     public void testGetCategory() {
-        Assert.assertTrue(NewLogixCategory.COMMON.equals(new ExpressionTimer("IQA55:E321", null).getCategory()));
+        Assert.assertTrue(Category.COMMON.equals(new ExpressionTimer("IQA55:E321", null).getCategory()));
     }
     
     // The minimal setup for log4J

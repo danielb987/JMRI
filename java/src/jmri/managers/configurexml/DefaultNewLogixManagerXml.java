@@ -3,9 +3,9 @@ package jmri.managers.configurexml;
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.NewLogix;
-import jmri.NewLogixManager;
-import jmri.managers.DefaultNewLogixManager;
+import jmri.jmrit.newlogix.NewLogix;
+import jmri.jmrit.newlogix.NewLogixManager;
+import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
         if (log.isDebugEnabled()) {
             log.debug("Found " + newLogixList.size() + " newlogixs");  // NOI18N
         }
-        NewLogixManager tm = InstanceManager.getDefault(jmri.NewLogixManager.class);
+        NewLogixManager tm = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class);
 
         for (int i = 0; i < newLogixList.size(); i++) {
 
@@ -196,7 +196,7 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
 
     @Override
     public int loadOrder() {
-        return InstanceManager.getDefault(jmri.NewLogixManager.class).getXMLOrder();
+        return InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getXMLOrder();
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultNewLogixManagerXml.class);

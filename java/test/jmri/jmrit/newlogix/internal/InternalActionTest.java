@@ -1,12 +1,13 @@
 package jmri.jmrit.newlogix.internal;
 
+import jmri.jmrit.newlogix.engine.InternalAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.NewLogixAction;
-import jmri.jmrit.newlogix.ActionMany;
+import jmri.jmrit.newlogix.actions.ActionMany;
+import jmri.jmrit.newlogix.Action;
 
 /**
  * Test ExpressionTimer
@@ -17,7 +18,7 @@ public class InternalActionTest {
 
     @Test
     public void testCtor() {
-        NewLogixAction action = new ActionMany("IQA55:A321");
+        Action action = new ActionMany("IQA55:A321");
         new InternalAction(action);
     }
     

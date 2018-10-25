@@ -1,6 +1,5 @@
 package jmri.jmrit.newlogix.configurexml;
 
-import jmri.jmrit.newlogix.internal.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

@@ -4,11 +4,11 @@ import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.ExpressionManager;
-import jmri.managers.DefaultExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.NewLogixExpression;
+import jmri.jmrit.newlogix.Expression;
 
 /**
  * Provides the functionality for configuring NewLogixManagers
@@ -44,12 +44,12 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
 
             // store the Logix
 //            while (iter.hasNext()) {
-/*            for (NewLogixExpression e : tm.getNamedBeanSet()) {
+/*            for (Expression e : tm.getNamedBeanSet()) {
 //                String sname = iter.next();
 //                if (sname == null) {
 //                    log.error("System name null during store");  // NOI18N
 //                }
-//                NewLogixExpression x = tm.getBySystemName(sname);
+//                Expression x = tm.getBySystemName(sname);
 
                 log.debug("logix system name is " + e.getSystemName());  // NOI18N
                 boolean enabled = e.getEnabled();
@@ -160,7 +160,7 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            NewLogixExpression x = tm.createNewExpression(sysName, userName);
+            Expression x = tm.createNewExpression(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, expressionList.get(i));

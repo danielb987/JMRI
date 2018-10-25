@@ -19,12 +19,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import jmri.InstanceManager;
-import jmri.NewLogix;
-import jmri.jmrit.newlogix.ActionTurnout;
-import jmri.jmrit.newlogix.ExpressionTurnout;
+import jmri.jmrit.newlogix.NewLogix;
+import jmri.jmrit.newlogix.actions.ActionTurnout;
+import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
-import jmri.NewLogixAction;
-import jmri.NewLogixExpression;
+import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.Action;
 
 /**
  *
@@ -119,11 +119,11 @@ public class TimeDiagram extends JmriJFrame {
             // Load the class se.bergqvist.jmri_newlogix_plugin.ExpressionXor
             Class cls = cl.loadClass(c);
             
-            if (cls.newInstance() instanceof NewLogixExpression) {
+            if (cls.newInstance() instanceof Expression) {
                 System.out.format("AAA: Class %s is an Expression%n", cls.getName());
-            } else if (cls.isInstance(NewLogixExpression.class)) {
+            } else if (cls.isInstance(Expression.class)) {
                 System.out.format("Class %s is an Expression%n", cls.getName());
-            } else if (cls.isInstance(NewLogixAction.class)) {
+            } else if (cls.isInstance(Action.class)) {
                 System.out.format("Class %s is an Action%n", cls.getName());
             } else {
                 System.out.format("Class %s is an unknown class%n", cls.getName());
@@ -165,13 +165,13 @@ public class TimeDiagram extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
             
             String systemName;
-            NewLogix newLogix = InstanceManager.getDefault(jmri.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
+            NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
             systemName = InstanceManager.getDefault(jmri.ExpressionManager.class).getNewSystemName(newLogix);
-            NewLogixExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
+            Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
             InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(expression);
-//            InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "NewLogix 102, NewLogixExpression 26"));  // NOI18N
+//            InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "NewLogix 102, Expression 26"));  // NOI18N
             systemName = InstanceManager.getDefault(jmri.ActionManager.class).getNewSystemName(newLogix);
-            NewLogixAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
+            Action action = new ActionTurnout(systemName, "An action for test");  // NOI18N
             InstanceManager.getDefault(jmri.ActionManager.class).addAction(action);
 /*            
             if (f == null || !f.isVisible()) {

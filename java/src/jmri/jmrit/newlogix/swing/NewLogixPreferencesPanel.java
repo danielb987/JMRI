@@ -2,7 +2,7 @@ package jmri.jmrit.newlogix.swing;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
-import jmri.jmrit.newlogix.NewLogixPreferences;
+import jmri.jmrit.newlogix.engine.NewLogixPreferences;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Color;

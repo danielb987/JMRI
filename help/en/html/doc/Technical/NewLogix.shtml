@@ -39,6 +39,69 @@
 
 
 
+		<h2>The package structure of NewLogix</h2>
+
+		<p>A major design principle for NewLogix is modularity. In order to
+		achieve that, NewLogix has the following structure.</p>
+
+		<h3>jmri.jmrit.newlogix</h3>
+
+		<p>The package jmri.jmrit.newlogix is the public interface of NewLogix.
+		Every part of JMRI may use everything in this package.</p>
+
+		<h3>jmri.jmrit.newlogix.actions</h3>
+
+		<p>The package jmri.jmrit.newlogix.actions has the actions that are
+		shipped with JMRI. These are registered by a factory class and should
+		not be accessed directly. Each action is to be considered as its own
+		'package' and an action should not use another action directly.</p>
+		
+		<p>There should not be any assumptions on which actions are included
+		in JMRI. The list of action classes is supplied by the ActionManager.
+		This ensures that action classes can be added later, either to the JMRI
+		source code or at runtime as plugins.</p>
+
+		<h3>jmri.jmrit.newlogix.actions.swing</h3>
+
+		<p>The package jmri.jmrit.newlogix.actions.swing has the action
+		configuration classes that uses Swing.</p>
+
+		<h3>jmri.jmrit.newlogix.expressions</h3>
+
+		<p>The package jmri.jmrit.newlogix.expressions has the expressions that
+		are shipped with JMRI. These are registered by a factory class and should
+		not be accessed directly. Each expression is to be considered as its own
+		'package' and an expression should not use another expression directly.</p>
+		
+		<p>There should not be any assumptions on which expressions are included
+		in JMRI. The list of expression classes is supplied by the ExpressionManager.
+		This ensures that expression classes can be added later, either to the JMRI
+		source code or at runtime as plugins.</p>
+
+		<h3>jmri.jmrit.newlogix.expressions.swing</h3>
+
+		<p>The package jmri.jmrit.newlogix.expressions.swing has the expression
+		configuration classes that uses Swing.</p>
+
+		<h3>jmri.jmrit.newlogix.engine</h3>
+
+		<p>The package jmri.jmrit.newlogix.engine is the brain which makes NewLogix
+		to run. It handles all the internal stuff.</p>
+
+		<h3>jmri.jmrit.tools.swing</h3>
+
+		<p>The package jmri.jmrit.newlogix.tools.swing has the editor, debugger and
+		time diagram of NewLogix.
+		Every part of JMRI may use this package.</p>
+
+		<h3>jmri.jmrit.newlogix</h3>
+
+		<p>The package jmri.jmrit.newlogix is the public interface of NewLogix.
+		Every part of JMRI may use everything in this package.</p>
+
+
+
+
 		<h2>The enum Categories</h2>
 
 		<p>Every type of expression and action has a predefined category to

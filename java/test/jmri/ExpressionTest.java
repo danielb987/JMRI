@@ -5,9 +5,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.newlogix.Expression;
 
 /**
- * Test NewLogixExpression
+ * Test Expression
  * 
  * @author Daniel Bergqvist 2018
  */
@@ -15,9 +16,9 @@ public class ExpressionTest {
 
     @Test
     public void testEnum() {
-        Assert.assertTrue("TRUE".equals(NewLogixExpression.TriggerCondition.TRUE.name()));
-        Assert.assertTrue("FALSE".equals(NewLogixExpression.TriggerCondition.FALSE.name()));
-        Assert.assertTrue("CHANGE".equals(NewLogixExpression.TriggerCondition.CHANGE.name()));
+        Assert.assertTrue("TRUE".equals(Expression.TriggerCondition.TRUE.name()));
+        Assert.assertTrue("FALSE".equals(Expression.TriggerCondition.FALSE.name()));
+        Assert.assertTrue("CHANGE".equals(Expression.TriggerCondition.CHANGE.name()));
     }
     
     // The minimal setup for log4J

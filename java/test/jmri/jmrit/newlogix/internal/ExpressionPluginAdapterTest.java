@@ -1,12 +1,13 @@
 package jmri.jmrit.newlogix.internal;
 
+import jmri.jmrit.newlogix.engine.ExpressionPluginAdapter;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.NewLogixExpression;
-import jmri.jmrit.newlogix.ExpressionAnd;
+import jmri.jmrit.newlogix.expressions.ExpressionAnd;
+import jmri.jmrit.newlogix.Expression;
 
 /**
  * Test ExpressionTimer
@@ -17,7 +18,7 @@ public class ExpressionPluginAdapterTest {
 
     @Test
     public void testCtor() {
-        NewLogixExpression expression = new ExpressionAnd("IQA55:E321");
+        Expression expression = new ExpressionAnd("IQA55:E321");
         new ExpressionPluginAdapter("SystemName", expression);
     }
     

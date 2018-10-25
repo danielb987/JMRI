@@ -5,13 +5,13 @@ import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.ActionManager;
 import jmri.InvokeOnGuiThread;
-import jmri.managers.DefaultActionManager;
+import jmri.jmrit.newlogix.engine.DefaultActionManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.NewLogixAction;
+import jmri.jmrit.newlogix.Action;
 
 /**
  * Provides the functionality for configuring ActionManagers
@@ -37,7 +37,7 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
         setStoreElementClass(actions);
         ActionManager tm = (ActionManager) o;
         if (tm != null) {
-            for (NewLogixAction action : tm.getNamedBeanSet()) {
+            for (Action action : tm.getNamedBeanSet()) {
                 log.debug("logix system name is " + action.getSystemName());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(action);
@@ -109,11 +109,11 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
     }
 
     /**
-     * Utility method to load the individual NewLogixAction objects. If there's no
+     * Utility method to load the individual Action objects. If there's no
  additional info needed for a specific action type, invoke this with the
- parent of the set of NewLogixAction elements.
+ parent of the set of Action elements.
      *
-     * @param actions Element containing the NewLogixAction elements to load.
+     * @param actions Element containing the Action elements to load.
      */
     public void loadActions(Element actions) {
 /*        
@@ -142,7 +142,7 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            NewLogixAction x = tm.createNewAction(sysName, userName);
+            Action x = tm.createNewAction(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, actionList.get(i));

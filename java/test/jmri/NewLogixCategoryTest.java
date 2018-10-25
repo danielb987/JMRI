@@ -1,5 +1,6 @@
 package jmri;
 
+import jmri.jmrit.newlogix.Category;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -7,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test NewLogixCategory
+ * Test Category
  * 
  * @author Daniel Bergqvist 2018
  */
@@ -15,9 +16,9 @@ public class NewLogixCategoryTest {
 
     @Test
     public void testEnum() {
-        Assert.assertTrue("ITEM".equals(NewLogixCategory.ITEM.name()));
-        Assert.assertTrue("COMMON".equals(NewLogixCategory.COMMON.name()));
-        Assert.assertTrue("OTHER".equals(NewLogixCategory.OTHER.name()));
+        Assert.assertTrue("ITEM".equals(Category.ITEM.name()));
+        Assert.assertTrue("COMMON".equals(Category.COMMON.name()));
+        Assert.assertTrue("OTHER".equals(Category.OTHER.name()));
     }
     
     // The minimal setup for log4J

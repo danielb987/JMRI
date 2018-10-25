@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.configurexml;
 
+import jmri.jmrit.newlogix.actions.configurexml.ActionDoIfXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
