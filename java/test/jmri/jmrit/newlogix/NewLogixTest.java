@@ -24,13 +24,13 @@ public class NewLogixTest {
     public void testManagers() {
         String systemName;
         NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.ExpressionManager.class).getNewSystemName(newLogix);
+        systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(expression);
+        InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).addExpression(expression);
 //        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "NewLogix 102, Expression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.ActionManager.class).getNewSystemName(newLogix);
+        systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getNewSystemName(newLogix);
         Action action = new ActionTurnout(systemName, "An action for test");  // NOI18N
-        InstanceManager.getDefault(jmri.ActionManager.class).addAction(action);
+        InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).addAction(action);
     }
     
     @Test

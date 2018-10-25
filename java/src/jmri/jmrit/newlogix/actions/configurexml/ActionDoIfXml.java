@@ -83,7 +83,7 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.ActionManager.class).register(h);
+        InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(h);
         return true;
     }
 /*

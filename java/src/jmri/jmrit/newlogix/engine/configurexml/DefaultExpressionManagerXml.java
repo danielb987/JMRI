@@ -1,14 +1,14 @@
-package jmri.managers.configurexml;
+package jmri.jmrit.newlogix.engine.configurexml;
 
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.jmrit.newlogix.NewLogix;
-import jmri.jmrit.newlogix.NewLogixManager;
-import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
+import jmri.jmrit.newlogix.ExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.newlogix.Expression;
 
 /**
  * Provides the functionality for configuring NewLogixManagers
@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultExpressionManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public DefaultNewLogixManagerXml() {
+    public DefaultExpressionManagerXml() {
     }
 
     /**
@@ -30,36 +30,67 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
      */
     @Override
     public Element store(Object o) {
-        Element newLogixs = new Element("newlogixs");
-        setStoreElementClass(newLogixs);
-        NewLogixManager tm = (NewLogixManager) o;
+        Element expressions = new Element("newlogixs");
+        setStoreElementClass(expressions);
+        ExpressionManager tm = (ExpressionManager) o;
         if (tm != null) {
-            for (NewLogix newLogix : tm.getNamedBeanSet()) {
-                log.debug("logix system name is " + newLogix.getSystemName());  // NOI18N
-                boolean enabled = newLogix.getEnabled();
-                Element elem = new Element("newlogix");  // NOI18N
-                elem.addContent(new Element("systemName").addContent(newLogix.getSystemName()));  // NOI18N
+            java.util.Iterator<String> iter
+                    = tm.getSystemNameList().iterator();
+
+            // don't return an element if there are not Logix to include
+            if (!iter.hasNext()) {
+                return null;
+            }
+
+            // store the Logix
+//            while (iter.hasNext()) {
+/*            for (Expression e : tm.getNamedBeanSet()) {
+//                String sname = iter.next();
+//                if (sname == null) {
+//                    log.error("System name null during store");  // NOI18N
+//                }
+//                Expression x = tm.getBySystemName(sname);
+
+                log.debug("logix system name is " + e.getSystemName());  // NOI18N
+                boolean enabled = e.getEnabled();
+                Element elem = new Element("expression");  // NOI18N
+                elem.addContent(new Element("systemName").addContent(e.getSystemName()));  // NOI18N
 
                 // As a work-around for backward compatibility, store systemName and username as attribute.
                 // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-                String uName = newLogix.getUserName();
+                String uName = e.getUserName();
                 if (uName != null && !uName.isEmpty()) {
                     elem.setAttribute("userName", uName);  // NOI18N
                 }
 
                 // store common part
-                storeCommon(newLogix, elem);
+                storeCommon(e, elem);
 
                 if (enabled) {
                     elem.setAttribute("enabled", "yes");  // NOI18N
                 } else {
                     elem.setAttribute("enabled", "no");  // NOI18N
                 }
+/*                
+                // save child Conditionals
+                int numConditionals = x.getNumConditionals();
+                if (numConditionals > 0) {
+                    String cSysName = "";
+                    Element cElem = null;
+                    for (int k = 0; k < numConditionals; k++) {
+                        cSysName = x.getConditionalByNumberOrder(k);
+                        cElem = new Element("expressionConditional");  // NOI18N
+                        cElem.setAttribute("systemName", cSysName);  // NOI18N
+                        cElem.setAttribute("order", Integer.toString(k));  // NOI18N
+                        elem.addContent(cElem);
+                    }
+                }
                 
-                newLogixs.addContent(elem);
+//                expressions.addContent(elem);
             }
+*/
         }
-        return (newLogixs);
+        return (expressions);
     }
 
     /**
@@ -67,10 +98,10 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
      * including the type information. Default implementation is to use the
      * local class here.
      *
-     * @param newlogixs The top-level element being created
+     * @param expressions The top-level element being created
      */
-    public void setStoreElementClass(Element newlogixs) {
-        newlogixs.setAttribute("class", this.getClass().getName());  // NOI18N
+    public void setStoreElementClass(Element expressions) {
+        expressions.setAttribute("class", this.getClass().getName());  // NOI18N
     }
 
     @Override
@@ -79,19 +110,19 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
     }
 
     /**
-     * Create a NewLogixManager object of the correct class, then register and
+     * Create a ExpressionManager object of the correct class, then register and
      * fill it.
      *
-     * @param sharedNewLogix  Shared top level Element to unpack.
-     * @param perNodeNewLogix Per-node top level Element to unpack.
+     * @param sharedExpression  Shared top level Element to unpack.
+     * @param perNodeExpression Per-node top level Element to unpack.
      * @return true if successful
      */
     @Override
-    public boolean load(Element sharedNewLogix, Element perNodeNewLogix) {
+    public boolean load(Element sharedExpression, Element perNodeExpression) {
         // create the master object
-        replaceNewLogixManager();
+        replaceExpressionManager();
         // load individual sharedLogix
-        loadNewLogixs(sharedNewLogix);
+        loadExpressions(sharedExpression);
         return true;
     }
 
@@ -100,38 +131,39 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
      * additional info needed for a specific logix type, invoke this with the
      * parent of the set of Logix elements.
      *
-     * @param newLogixs Element containing the Logix elements to load.
+     * @param expressions Element containing the Logix elements to load.
      */
-    public void loadNewLogixs(Element newLogixs) {
-        List<Element> newLogixList = newLogixs.getChildren("newlogix");  // NOI18N
+    public void loadExpressions(Element expressions) {
+/*        
+        List<Element> expressionList = expressions.getChildren("expression");  // NOI18N
         if (log.isDebugEnabled()) {
-            log.debug("Found " + newLogixList.size() + " newlogixs");  // NOI18N
+            log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
         }
-        NewLogixManager tm = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class);
+        ExpressionManager tm = InstanceManager.getDefault(jmri.ExpressionManager.class);
 
-        for (int i = 0; i < newLogixList.size(); i++) {
+        for (int i = 0; i < expressionList.size(); i++) {
 
-            String sysName = getSystemName(newLogixList.get(i));
+            String sysName = getSystemName(expressionList.get(i));
             if (sysName == null) {
-                log.warn("unexpected null in systemName " + newLogixList.get(i));  // NOI18N
+                log.warn("unexpected null in systemName " + expressionList.get(i));  // NOI18N
                 break;
             }
 
-            String userName = getUserName(newLogixList.get(i));
+            String userName = getUserName(expressionList.get(i));
 
             String yesno = "";
-            if (newLogixList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = newLogixList.get(i).getAttribute("enabled").getValue();  // NOI18N
+            if (expressionList.get(i).getAttribute("enabled") != null) {  // NOI18N
+                yesno = expressionList.get(i).getAttribute("enabled").getValue();  // NOI18N
             }
             if (log.isDebugEnabled()) {
-                log.debug("create newlogix: (" + sysName + ")("  // NOI18N
+                log.debug("create expression: (" + sysName + ")("  // NOI18N
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            NewLogix x = tm.createNewNewLogix(sysName, userName);
+            Expression x = tm.createNewExpression(sysName, userName);
             if (x != null) {
                 // load common part
-                loadCommon(x, newLogixList.get(i));
+                loadCommon(x, expressionList.get(i));
 
                 // set enabled/disabled if attribute was present
                 if ((yesno != null) && (!yesno.equals(""))) {
@@ -143,7 +175,7 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
                 }
 /*                
                 // load conditionals, if there are any
-                List<Element> logixConditionalList = newLogixList.get(i).getChildren("logixConditional");  // NOI18N
+                List<Element> logixConditionalList = expressionList.get(i).getChildren("logixConditional");  // NOI18N
                 if (logixConditionalList.size() > 0) {
                     // add conditionals
                     for (int n = 0; n < logixConditionalList.size(); n++) {
@@ -160,9 +192,10 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
                         x.addConditional(cSysName, cOrder);
                     }
                 }
-*/                
+*./                
             }
         }
+*/
     }
 
     /**
@@ -170,9 +203,9 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
      * during a load operation. This is skipped if they are of the same absolute
      * type.
      */
-    protected void replaceNewLogixManager() {
+    protected void replaceExpressionManager() {
         if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
-                .equals(DefaultNewLogixManager.class.getName())) {
+                .equals(DefaultExpressionManager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
@@ -185,8 +218,8 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
         }
 
         // register new one with InstanceManager
-        DefaultNewLogixManager pManager = DefaultNewLogixManager.instance();
-        InstanceManager.store(pManager, NewLogixManager.class);
+        DefaultExpressionManager pManager = DefaultExpressionManager.instance();
+        InstanceManager.store(pManager, ExpressionManager.class);
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
@@ -196,8 +229,8 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
 
     @Override
     public int loadOrder() {
-        return InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getXMLOrder();
+        return InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getXMLOrder();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultNewLogixManagerXml.class);
+    private final static Logger log = LoggerFactory.getLogger(DefaultExpressionManagerXml.class);
 }

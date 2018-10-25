@@ -1,5 +1,6 @@
-package jmri;
+package jmri.jmrit.newlogix;
 
+import jmri.Manager;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.Action;
 

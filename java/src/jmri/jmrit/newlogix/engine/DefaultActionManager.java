@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ServiceLoader;
-import jmri.ActionManager;
+import jmri.jmrit.newlogix.ActionManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.util.Log4JUtil;

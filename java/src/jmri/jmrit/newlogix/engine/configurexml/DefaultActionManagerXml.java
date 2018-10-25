@@ -1,9 +1,9 @@
-package jmri.managers.configurexml;
+package jmri.jmrit.newlogix.engine.configurexml;
 
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.ActionManager;
+import jmri.jmrit.newlogix.ActionManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.engine.DefaultActionManager;
 import jmri.util.Log4JUtil;
@@ -186,15 +186,15 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
      * type.
      */
     protected void replaceActionManager() {
-        if (InstanceManager.getDefault(jmri.ActionManager.class).getClass().getName()
+        if (InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getClass().getName()
                 .equals(DefaultActionManager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
-        if (InstanceManager.getNullableDefault(jmri.ActionManager.class) != null) {
+        if (InstanceManager.getNullableDefault(jmri.jmrit.newlogix.ActionManager.class) != null) {
             ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
             if (cmOD != null) {
-                cmOD.deregister(InstanceManager.getDefault(jmri.ActionManager.class));
+                cmOD.deregister(InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class));
             }
 
         }
@@ -211,7 +211,7 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
 
     @Override
     public int loadOrder() {
-        return InstanceManager.getDefault(jmri.ActionManager.class).getXMLOrder();
+        return InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getXMLOrder();
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultActionManagerXml.class);

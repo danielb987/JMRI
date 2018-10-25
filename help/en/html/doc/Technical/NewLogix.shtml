@@ -86,7 +86,8 @@
 		<h3>jmri.jmrit.newlogix.engine</h3>
 
 		<p>The package jmri.jmrit.newlogix.engine is the brain which makes NewLogix
-		to run. It handles all the internal stuff.</p>
+		to run. It handles all the internal stuff. No other parts of JMRI nor NewLogix
+		should access this package directly.</p>
 
 		<h3>jmri.jmrit.tools.swing</h3>
 
@@ -94,10 +95,12 @@
 		time diagram of NewLogix.
 		Every part of JMRI may use this package.</p>
 
-		<h3>jmri.jmrit.newlogix</h3>
+		<h3>Exceptions to the above rules</h3>
 
-		<p>The package jmri.jmrit.newlogix is the public interface of NewLogix.
-		Every part of JMRI may use everything in this package.</p>
+		<p>The ImportLogix tool uses many expressions in the jmri.jmrit.newlogix.expressions
+		package and many actions in the jmri.jmrit.newlogix.actions package.
+		
+		XML schema???</p>
 
 
 

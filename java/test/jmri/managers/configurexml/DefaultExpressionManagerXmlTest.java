@@ -1,5 +1,6 @@
 package jmri.managers.configurexml;
 
+import jmri.jmrit.newlogix.engine.configurexml.DefaultExpressionManagerXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;

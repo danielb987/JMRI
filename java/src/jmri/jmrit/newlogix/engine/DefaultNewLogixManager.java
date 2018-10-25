@@ -1,8 +1,8 @@
 package jmri.jmrit.newlogix.engine;
 
 import java.text.DecimalFormat;
-import jmri.ActionManager;
-import jmri.ExpressionManager;
+import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.NewLogix;

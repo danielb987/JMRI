@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import jmri.ExpressionManager;
+import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.NewLogix;
