@@ -134,7 +134,7 @@ public class ToolsMenu extends JMenu {
 
         add(new JSeparator());
         // operations menu
-        add(new jmri.jmrit.newlogix.swing.NewLogixMenu());
+        add(new jmri.jmrit.newlogix.tools.swing.NewLogixMenu());
     }
 
 }

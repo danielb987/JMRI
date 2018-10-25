@@ -1,4 +1,4 @@
-package jmri.jmrit.newlogix.swing;
+package jmri.jmrit.newlogix.tools.swing;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Locale;

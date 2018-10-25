@@ -1,7 +1,7 @@
 /**
  * OperationsMenu.java
  */
-package jmri.jmrit.newlogix.swing;
+package jmri.jmrit.newlogix.tools.swing;
 
 import javax.swing.JMenu;
 

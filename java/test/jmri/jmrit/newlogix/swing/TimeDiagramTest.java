@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.swing;
 
+import jmri.jmrit.newlogix.tools.swing.TimeDiagram;
 import java.awt.GraphicsEnvironment;
 import jmri.util.JUnitUtil;
 import org.junit.After;

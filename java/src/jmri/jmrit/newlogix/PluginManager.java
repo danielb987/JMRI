@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import jmri.jmrit.newlogix.swing.PluginConfiguratorInterface;
+import jmri.jmrit.newlogix.tools.swing.PluginConfiguratorInterface;
 
 /**
  * Manages plugin classes for NewLogix.
