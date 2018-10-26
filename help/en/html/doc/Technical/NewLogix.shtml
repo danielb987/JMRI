@@ -25,7 +25,7 @@
     <!--#include virtual="/Header" -->
 
     <div id="mBody">
-      <!--#include virtual="Sidebar" -->
+      <!--#include virtual="Sidebar.shtml" -->
 
       <div id="mainContent">
         <!-- Page Body -->
@@ -92,8 +92,7 @@
 		<h3>jmri.jmrit.tools.swing</h3>
 
 		<p>The package jmri.jmrit.newlogix.tools.swing has the editor, debugger and
-		time diagram of NewLogix.
-		Every part of JMRI may use this package.</p>
+		time diagram of NewLogix.</p>
 
 		<h3>Exceptions to the above rules</h3>
 
@@ -112,16 +111,15 @@
 		<h2>The enum Categories</h2>
 
 		<p>Every type of expression and action has a predefined category to
-		which this expression or action belongs to. The main use of
-		category is to sort expressions by category when the user adds a new
-		expression and therefore selects the type of expression to add.</p>
+		which the expression or action belongs to. The main usage of
+		categories is to sort expressions by category when the user adds a new
+		expression or action and therefore selects which to add.</p>
 
 		<ul>
-		<li><strong>ITEM</strong><br>A item on the layout, for example turnout,
-		sensor and signal mast</li>
-		<li><strong>COMMON</strong><br>Commonly used items. Common expressions
-		are for example ExpressionAnd, ExpressionOr and ExpressionTimer.<br>
-		Common actions are for example ActionMany and ActionDoIf.</li>
+		<li><strong>ITEM</strong><br>An item on the layout, for example turnout,
+		sensor or signal mast.</li>
+		<li><strong>COMMON</strong><br>Commonly used items. For example
+		ExpressionAnd, ExpressionOr, ExpressionTimer, ActionMany and ActionDoIf.</li>
 		<li><strong>OTHER</strong><br>All other expressions and actions which
 		don't fit in the above categories.</li>
 		</ul>
