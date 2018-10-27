@@ -16,6 +16,8 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import jmri.jmrit.sound.SoundClip;
+import jmri.jmrit.sound.SoundClipPool;
 import jmri.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +43,8 @@ public class Sound {
     private final URL url;
     private boolean streaming = false;
     private boolean streamingStop = false;
-    private Clip clip = null;
+//    private Clip clip = null;
+    private SoundClip clip = null;
     private final static Logger log = LoggerFactory.getLogger(Sound.class);
 
     /**
@@ -78,19 +81,20 @@ public class Sound {
         }
         this.url = url;
         try {
-            this.clip = AudioSystem.getClip();
             streaming = this.needStreaming();
             if (!streaming) {
-                this.clip.open(AudioSystem.getAudioInputStream(this.url));
+//                this.clip = SoundClipPool.instance().getClip(this.url);
+//                this.clip = AudioSystem.getClip();
+//                this.clip.open(AudioSystem.getAudioInputStream(this.url));
             }
         } catch (URISyntaxException ex) {
             streaming = false;
         } catch (IOException ex) {
             log.error("Unable to open {}", url);
-        } catch (LineUnavailableException ex) {
-            log.error("Unable to provide audio playback", ex);
-        } catch (UnsupportedAudioFileException ex) {
-            log.error("{} is not a recognised audio format", url);
+//        } catch (LineUnavailableException ex) {
+//            log.error("Unable to provide audio playback", ex);
+//        } catch (UnsupportedAudioFileException ex) {
+//            log.error("{} is not a recognised audio format", url);
         }
     }
 
@@ -103,7 +107,12 @@ public class Sound {
             Thread tStream = new Thread(streamSound);
             tStream.start();
         } else {
-            this.clip.start();
+            if (this.clip == null) {
+                this.clip = SoundClipPool.instance().getClip(this.url);
+            }
+            if (this.clip != null) {
+                this.clip.start();
+            }
         }
     }
 
