@@ -7,12 +7,9 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         AbstractNamedBeanManagerConfigXMLTest.class,
         AbstractSignalHeadManagerXmlTest.class,
-	DefaultActionManagerXmlTest.class,
 	DefaultConditionalManagerXmlTest.class,
-	DefaultExpressionManagerXmlTest.class,
 	DefaultLogixManagerXmlTest.class,
 	DefaultMemoryManagerXmlTest.class,
-	DefaultNewLogixManagerXmlTest.class,
 	DefaultRouteManagerXmlTest.class,
 	DefaultSignalGroupManagerXmlTest.class,
 	DefaultSignalMastLogicManagerXmlTest.class,

@@ -5,23 +5,13 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    jmri.jmrit.newlogix.configurexml.PackageTest.class,
-    jmri.jmrit.newlogix.internal.PackageTest.class,
+    jmri.jmrit.newlogix.actions.PackageTest.class,
+    jmri.jmrit.newlogix.engine.PackageTest.class,
+    jmri.jmrit.newlogix.expressions.PackageTest.class,
     jmri.jmrit.newlogix.log.PackageTest.class,
-    jmri.jmrit.newlogix.swing.PackageTest.class,
-    ActionDoIfTest.class,
-    ActionManyTest.class,
-    ActionSocketTest.class,
-    ActionTurnoutTest.class,
+    jmri.jmrit.newlogix.tools.swing.PackageTest.class,
     NewLogixTest.class,
     DefaultNewLogixTest.class,
-    ExpressionAndTest.class,
-    ExpressionHoldTest.class,
-    ExpressionResetOnTrueTest.class,
-    ExpressionSocketTest.class,
-    ExpressionTimerTest.class,
-    ExpressionTriggerOnceTest.class,
-    ExpressionTurnoutTest.class,
 })
 
 /**

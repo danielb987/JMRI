@@ -14,7 +14,6 @@ import org.junit.runners.Suite;
     ExpressionTest.class,
     InstanceManagerTest.class,
     NamedBeanTest.class,
-    NewLogixCategoryTest.class,
     LightTest.class,
     ManagerTest.class,
     NmraPacketTest.class,

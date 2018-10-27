@@ -26,5 +26,17 @@ public interface FemaleSocket {
      * @return true if the male socket can be connected to this female socket
      */
     public boolean isCompatible(MaleSocket socket);
+    
+    /**
+     * Set the name of this socket.
+     * @param name the name
+     */
+    public void setName(String name);
+    
+    /**
+     * Get the name of this socket.
+     * @return the name
+     */
+    public String getName();
 
 }
