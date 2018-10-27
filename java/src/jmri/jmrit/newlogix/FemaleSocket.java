@@ -1,9 +1,11 @@
 package jmri.jmrit.newlogix;
 
+import javax.annotation.CheckForNull;
+
 /**
  * A NewLogix female expression socket.
- * A NewLogixExpression or a NewLogixAction that has children must not
- use these directly but instead use a FemaleSocket.
+ * A NewLogixExpression or a NewLogixAction that has children must not use
+ * these directly but instead use a FemaleSocket.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
@@ -37,6 +39,7 @@ public interface FemaleSocket {
      * Get the name of this socket.
      * @return the name
      */
+    @CheckForNull
     public String getName();
-
+    
 }

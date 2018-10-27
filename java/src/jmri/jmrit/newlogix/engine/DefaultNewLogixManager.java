@@ -1,14 +1,14 @@
 package jmri.jmrit.newlogix.engine;
 
 import java.text.DecimalFormat;
-import jmri.jmrit.newlogix.ActionManager;
-import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
+import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.ExpressionManager;
+import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
-import jmri.jmrit.newlogix.FemaleSocket;
-import jmri.jmrit.newlogix.SocketListener;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -146,12 +146,12 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     @Override
-    public FemaleSocket createFemaleActionSocket(SocketListener listener) {
+    public FemaleSocket createFemaleActionSocket(FemaleSocketListener listener) {
         return null;
     }
 
     @Override
-    public FemaleSocket createFemaleExpressionSocket(SocketListener listener) {
+    public FemaleSocket createFemaleExpressionSocket(FemaleSocketListener listener) {
         return null;
     }
     

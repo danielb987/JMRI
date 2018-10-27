@@ -1,6 +1,6 @@
 package jmri.jmrit.newlogix.actions;
 
-import jmri.jmrit.newlogix.actions.ActionSocket;
+import jmri.jmrit.newlogix.engine.FemaleActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -16,7 +16,7 @@ public class ActionSocketTest {
 
     @Test
     public void testCtor() {
-        new ActionSocket();
+        new FemaleActionSocket();
     }
     
     // The minimal setup for log4J

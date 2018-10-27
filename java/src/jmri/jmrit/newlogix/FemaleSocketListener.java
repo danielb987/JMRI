@@ -5,18 +5,18 @@ package jmri.jmrit.newlogix;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface SocketListener {
+public interface FemaleSocketListener {
 
     /**
      * The socket is connected.
      * @param socket the socket
      */
-    public void socketConnected(FemaleSocket socket);
+    public void connected(FemaleSocket socket);
 
     /**
      * The socket is disconnected.
      * @param socket the socket
      */
-    public void socketDisconnected(FemaleSocket socket);
+    public void disconnected(FemaleSocket socket);
 
 }

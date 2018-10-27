@@ -1,6 +1,6 @@
 package jmri.jmrit.newlogix.expressions;
 
-import jmri.jmrit.newlogix.expressions.ExpressionSocket;
+import jmri.jmrit.newlogix.engine.FemaleExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -16,7 +16,7 @@ public class ExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        new ExpressionSocket();
+        new FemaleExpressionSocket();
     }
     
     // The minimal setup for log4J

@@ -1,4 +1,4 @@
-package jmri.jmrit.newlogix.expressions;
+package jmri.jmrit.newlogix.engine;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -7,37 +7,32 @@ import java.util.ArrayList;
 import java.util.Set;
 import jmri.JmriException;
 import jmri.NamedBean;
+import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleSocket;
 
 /**
  *
  */
-public class ExpressionSocket implements Expression, FemaleSocket {
+public class FemaleActionSocket extends AbstractFemaleSocket implements Action {
 
-    private Expression _expression;
-
-    @Override
-    public void connect(MaleSocket socket) {
-        throw new RuntimeException("Implement this!!!");
-    }
-
-    @Override
-    public void disconnect() {
-        throw new RuntimeException("Implement this!!!");
+    private Action _action;
+    
+    public FemaleActionSocket(FemaleSocketListener listener) {
+        super(listener);
     }
     
     @Override
     public boolean isCompatible(MaleSocket socket) {
-        return socket instanceof ExpressionSocket;
+        return socket instanceof FemaleActionSocket;
     }
     
     @Override
     public Category getCategory() {
-        if (_expression != null) {
-            return _expression.getCategory();
+        if (_action != null) {
+            return _action.getCategory();
         } else {
             return null;
         }
@@ -45,61 +40,79 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public boolean isExternal() {
-        if (_expression != null) {
-            return _expression.isExternal();
+        if (_action != null) {
+            return _action.isExternal();
         } else {
             return false;
         }
     }
 
     @Override
-    public boolean evaluate() {
-        if (_expression != null) {
-            return _expression.evaluate();
+    public boolean executeStart() {
+        if (_action != null) {
+            return _action.executeStart();
         } else {
             return false;
         }
     }
 
     @Override
-    public void reset() {
-        if (_expression != null) {
-            _expression.reset();
+    public boolean executeContinue() {
+        if (_action != null) {
+            return _action.executeContinue();
+        } else {
+            return false;
         }
     }
 
     @Override
-    public FemaleSocket getChild(int index) {
-        throw new UnsupportedOperationException("Not supported.");
+    public boolean executeRestart() {
+        if (_action != null) {
+            return _action.executeRestart();
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported.");
+    public void abort() {
+        if (_action != null) {
+            _action.abort();
+        }
     }
 
     @Override
     public String getShortDescription() {
-        if (_expression != null) {
-            return _expression.getShortDescription();
+        if (_action != null) {
+            return _action.getShortDescription();
         } else {
-            throw new UnsupportedOperationException("Not supported.");
+            return null;
         }
     }
 
     @Override
     public String getLongDescription() {
-        if (_expression != null) {
-            return _expression.getLongDescription();
+        if (_action != null) {
+            return _action.getLongDescription();
         } else {
-            throw new UnsupportedOperationException("Not supported.");
+            return null;
         }
     }
 
     @Override
+    public FemaleSocket getChild(int index) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getChildCount() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public String getUserName() {
-        if (_expression != null) {
-            return _expression.getUserName();
+        if (_action != null) {
+            return _action.getUserName();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -107,8 +120,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void setUserName(String s) throws BadUserNameException {
-        if (_expression != null) {
-            _expression.setUserName(s);
+        if (_action != null) {
+            _action.setUserName(s);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -116,8 +129,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getSystemName() {
-        if (_expression != null) {
-            return _expression.getSystemName();
+        if (_action != null) {
+            return _action.getSystemName();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -125,8 +138,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getDisplayName() {
-        if (_expression != null) {
-            return _expression.getDisplayName();
+        if (_action != null) {
+            return _action.getDisplayName();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -134,8 +147,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getFullyFormattedDisplayName() {
-        if (_expression != null) {
-            return _expression.getFullyFormattedDisplayName();
+        if (_action != null) {
+            return _action.getFullyFormattedDisplayName();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -143,8 +156,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        if (_expression != null) {
-            _expression.addPropertyChangeListener(l, name, listenerRef);
+        if (_action != null) {
+            _action.addPropertyChangeListener(l, name, listenerRef);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -152,8 +165,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        if (_expression != null) {
-            _expression.addPropertyChangeListener(l);
+        if (_action != null) {
+            _action.addPropertyChangeListener(l);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -161,8 +174,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
-        if (_expression != null) {
-            _expression.removePropertyChangeListener(l);
+        if (_action != null) {
+            _action.removePropertyChangeListener(l);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -170,8 +183,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void updateListenerRef(PropertyChangeListener l, String newName) {
-        if (_expression != null) {
-            _expression.updateListenerRef(l, newName);
+        if (_action != null) {
+            _action.updateListenerRef(l, newName);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -179,8 +192,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        if (_expression != null) {
-            _expression.vetoableChange(evt);
+        if (_action != null) {
+            _action.vetoableChange(evt);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -188,8 +201,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getListenerRef(PropertyChangeListener l) {
-        if (_expression != null) {
-            return _expression.getListenerRef(l);
+        if (_action != null) {
+            return _action.getListenerRef(l);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -197,8 +210,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public ArrayList<String> getListenerRefs() {
-        if (_expression != null) {
-            return _expression.getListenerRefs();
+        if (_action != null) {
+            return _action.getListenerRefs();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -206,8 +219,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public int getNumPropertyChangeListeners() {
-        if (_expression != null) {
-            return _expression.getNumPropertyChangeListeners();
+        if (_action != null) {
+            return _action.getNumPropertyChangeListeners();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -215,8 +228,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        if (_expression != null) {
-            return _expression.getPropertyChangeListenersByReference(name);
+        if (_action != null) {
+            return _action.getPropertyChangeListenersByReference(name);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -224,15 +237,15 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void dispose() {
-        if (_expression != null) {
-            _expression.dispose();
+        if (_action != null) {
+            _action.dispose();
         }
     }
 
     @Override
     public void setState(int s) throws JmriException {
-        if (_expression != null) {
-            _expression.setState(s);
+        if (_action != null) {
+            _action.setState(s);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -240,8 +253,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public int getState() {
-        if (_expression != null) {
-            return _expression.getState();
+        if (_action != null) {
+            return _action.getState();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -249,8 +262,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String describeState(int state) {
-        if (_expression != null) {
-            return _expression.describeState(state);
+        if (_action != null) {
+            return _action.describeState(state);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -258,8 +271,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getComment() {
-        if (_expression != null) {
-            return _expression.getComment();
+        if (_action != null) {
+            return _action.getComment();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -267,8 +280,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void setComment(String comment) {
-        if (_expression != null) {
-            _expression.setComment(comment);
+        if (_action != null) {
+            _action.setComment(comment);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -276,8 +289,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void setProperty(String key, Object value) {
-        if (_expression != null) {
-            _expression.setProperty(key, value);
+        if (_action != null) {
+            _action.setProperty(key, value);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -285,8 +298,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public Object getProperty(String key) {
-        if (_expression != null) {
-            return _expression.getProperty(key);
+        if (_action != null) {
+            return _action.getProperty(key);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -294,8 +307,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public void removeProperty(String key) {
-        if (_expression != null) {
-            _expression.removeProperty(key);
+        if (_action != null) {
+            _action.removeProperty(key);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -303,8 +316,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public Set<String> getPropertyKeys() {
-        if (_expression != null) {
-            return _expression.getPropertyKeys();
+        if (_action != null) {
+            return _action.getPropertyKeys();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -312,8 +325,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getBeanType() {
-        if (_expression != null) {
-            return _expression.getBeanType();
+        if (_action != null) {
+            return _action.getBeanType();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -321,8 +334,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        if (_expression != null) {
-            return _expression.compareSystemNameSuffix(suffix1, suffix2, n2);
+        if (_action != null) {
+            return _action.compareSystemNameSuffix(suffix1, suffix2, n2);
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -330,8 +343,8 @@ public class ExpressionSocket implements Expression, FemaleSocket {
 
     @Override
     public String getConfiguratorClassName() {
-        if (_expression != null) {
-            return _expression.getConfiguratorClassName();
+        if (_action != null) {
+            return _action.getConfiguratorClassName();
         } else {
             throw new UnsupportedOperationException("Not supported.");
         }

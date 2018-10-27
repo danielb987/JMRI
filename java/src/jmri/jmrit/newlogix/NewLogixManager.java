@@ -41,9 +41,9 @@ public interface NewLogixManager extends Manager<NewLogix> {
 
     public NewLogix getBySystemName(String name);
     
-    public FemaleSocket createFemaleActionSocket(SocketListener listener);
+    public FemaleSocket createFemaleActionSocket(FemaleSocketListener listener);
 
-    public FemaleSocket createFemaleExpressionSocket(SocketListener listener);
+    public FemaleSocket createFemaleExpressionSocket(FemaleSocketListener listener);
 
     /**
      * Activate all NewLogixs that are not currently active. This method is
