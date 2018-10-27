@@ -1,5 +1,7 @@
 package jmri.jmrit.newlogix.expressions;
 
+import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.engine.FemaleExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -16,7 +18,19 @@ public class ExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        new FemaleExpressionSocket();
+        FemaleSocketListener listener = new FemaleSocketListener() {
+            @Override
+            public void connected(FemaleSocket socket) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void disconnected(FemaleSocket socket) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        
+        new FemaleExpressionSocket(listener);
     }
     
     // The minimal setup for log4J

@@ -1,5 +1,7 @@
 package jmri.jmrit.newlogix.actions;
 
+import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.engine.FemaleActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -16,7 +18,19 @@ public class ActionSocketTest {
 
     @Test
     public void testCtor() {
-        new FemaleActionSocket();
+        FemaleSocketListener listener = new FemaleSocketListener() {
+            @Override
+            public void connected(FemaleSocket socket) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void disconnected(FemaleSocket socket) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        
+        new FemaleActionSocket(listener);
     }
     
     // The minimal setup for log4J
