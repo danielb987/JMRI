@@ -24,7 +24,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class Bundle extends jmri.jmrit.Bundle {
 
     @Nullable
-    private static final String name = "jmri.jmrit.newlogix.swing.NewLogixSwingBundle";
+    private static final String name = "jmri.jmrit.newlogix.tools.swing.NewLogixSwingBundle";
 
     //
     // below here is boilerplate to be copied exactly
