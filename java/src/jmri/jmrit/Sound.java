@@ -94,8 +94,10 @@ public class Sound {
     
     private void openClip() {
         try {
+            System.out.format("My thread, openClip: %d, %s%n", Thread.currentThread().getId(), Thread.currentThread().getName());
             clip = AudioSystem.getClip();
             clip.addLineListener(event -> {
+                System.out.format("Line thread: %d, %s%n", Thread.currentThread().getId(), Thread.currentThread().getName());
                 if (LineEvent.Type.STOP.equals(event.getType())) {
                     if (autoClose) {
                         synchronized(lock) {
@@ -171,6 +173,7 @@ public class Sound {
             Thread tStream = new Thread(streamSound);
             tStream.start();
         } else {
+            System.out.format("My thread, play: %d, %s%n", Thread.currentThread().getId(), Thread.currentThread().getName());
             synchronized(lock) {
                 if (clip == null) {
                     openClip();
