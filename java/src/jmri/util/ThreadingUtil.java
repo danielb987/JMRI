@@ -63,7 +63,6 @@ public class ThreadingUtil {
     }
     
     private static Thread layoutThread = null;
-    private static final Object layoutThreadLock = new Object();
     private static BlockingQueue<LayoutEvent> layoutEventQueue = null;
 
     @InvokeOnGuiThread
