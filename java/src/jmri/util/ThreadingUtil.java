@@ -5,6 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.annotation.Nonnull;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import jmri.InvokeOnGuiThread;
 
 /**
  * Utilities for handling JMRI's threading conventions.
@@ -20,6 +26,15 @@ import javax.annotation.Nonnull;
  */
 public class ThreadingUtil {
 
+    /**
+     * Should GUI and layout be separate threads?
+     * 
+     * WARNING: Setting this variable to true will probably break things.
+     * It's only intended for testing.
+     */
+//    private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = false;
+    private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = true;
+
     static public interface ThreadAction extends Runnable {
 
         /**
@@ -30,7 +45,51 @@ public class ThreadingUtil {
         @Override
         public void run();
     }
+    
+    static private class LayoutEvent {
+        private final ThreadAction _threadAction;
+        private final Condition _wait;
+        
+        public LayoutEvent(ThreadAction threadAction) {
+            _threadAction = threadAction;
+            _wait = null;
+        }
+        
+        public LayoutEvent(ThreadAction threadAction,
+                Condition wait) {
+            _threadAction = threadAction;
+            _wait = wait;
+        }
+    }
+    
+    private static Thread layoutThread = null;
+    private static final Object layoutThreadLock = new Object();
+    private static BlockingQueue<LayoutEvent> layoutEventQueue = null;
 
+    @InvokeOnGuiThread
+    public static void launchLayoutThread() {
+        if (!SEPARATE_GUI_AND_LAYOUT_THREADS) {
+            return;
+        }
+        
+        layoutEventQueue = new ArrayBlockingQueue<>(1024);
+        layoutThread = new Thread(() -> {
+            while (true) {
+                try {
+                    LayoutEvent event = layoutEventQueue.take();
+                    event._threadAction.run();
+                    if (event._wait != null) {
+                        event._wait.signalAll();
+                    }
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }, "JMRI LayoutThread");
+        layoutThread.setDaemon(true);
+        layoutThread.start();
+    }
+    
     /**
      * Run some layout-specific code before returning.
      * <p>
@@ -44,7 +103,19 @@ public class ThreadingUtil {
      * @param ta What to run, usually as a lambda expression
      */
     static public void runOnLayout(@Nonnull ThreadAction ta) {
-        runOnGUI(ta);
+        System.out.format("runOnLayout%n");
+        if (layoutThread != null) {
+            Lock lock = new ReentrantLock();
+            Condition wait = lock.newCondition();
+            layoutEventQueue.add(new LayoutEvent(ta, wait));
+            try {
+                wait.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        } else {
+            runOnGUI(ta);
+        }
     }
 
     /**
@@ -63,7 +134,11 @@ public class ThreadingUtil {
      * @param ta What to run, usually as a lambda expression
      */
     static public void runOnLayoutEventually(@Nonnull ThreadAction ta) {
-        runOnGUIEventually(ta);
+        if (layoutThread != null) {
+            layoutEventQueue.add(new LayoutEvent(ta));
+        } else {
+            runOnGUIEventually(ta);
+        }
     }
 
     /**
@@ -85,7 +160,8 @@ public class ThreadingUtil {
      */
     @Nonnull 
     static public Timer runOnLayoutDelayed(@Nonnull ThreadAction ta, int delay) {
-        return runOnGUIDelayed(ta, delay);
+        throw new RuntimeException("Not implemented yet");
+//        return runOnGUIDelayed(ta, delay);
     }
 
     /**
@@ -94,7 +170,11 @@ public class ThreadingUtil {
      * @return true if on the layout-operation thread
      */
     static public boolean isLayoutThread() {
-        return isGUIThread();
+        if (layoutThread != null) {
+            return layoutThread == Thread.currentThread();
+        } else {
+            return isGUIThread();
+        }
     }
 
     /**

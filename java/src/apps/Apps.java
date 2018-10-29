@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EventObject;
 import java.util.Locale;
+import jmri.util.ThreadingUtil;
 import javax.help.SwingHelpUtilities;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -195,6 +196,9 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         } catch (IOException ex) {
             log.info("Profiles not configurable. Using fallback per-application configuration. Error: {}", ex.getMessage());
         }
+
+        // Start the layout thread
+        ThreadingUtil.launchLayoutThread();
 
         // install shutdown manager
         log.trace("about to install ShutDownManager");
