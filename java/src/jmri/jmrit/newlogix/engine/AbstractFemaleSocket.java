@@ -13,8 +13,9 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     private MaleSocket _socket = null;
     private String _name = null;
     
-    public AbstractFemaleSocket(FemaleSocketListener listener) {
+    public AbstractFemaleSocket(FemaleSocketListener listener, String name) {
         _listener = listener;
+        _name = name;
     }
     
     @Override

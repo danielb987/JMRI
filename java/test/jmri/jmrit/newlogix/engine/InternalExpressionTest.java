@@ -1,6 +1,6 @@
 package jmri.jmrit.newlogix.engine;
 
-import jmri.jmrit.newlogix.engine.InternalExpression;
+import jmri.jmrit.newlogix.engine.DefaultMaleExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -19,7 +19,7 @@ public class InternalExpressionTest {
     @Test
     public void testCtor() {
         Expression expression = new ExpressionAnd("IQA55:E321");
-        new InternalExpression(expression);
+        new DefaultMaleExpressionSocket(expression);
     }
     
     // The minimal setup for log4J

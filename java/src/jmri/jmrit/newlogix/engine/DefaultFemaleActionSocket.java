@@ -9,6 +9,7 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.Category;
+import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleSocket;
@@ -16,17 +17,18 @@ import jmri.jmrit.newlogix.MaleSocket;
 /**
  *
  */
-public class FemaleActionSocket extends AbstractFemaleSocket implements Action {
+public class DefaultFemaleActionSocket extends AbstractFemaleSocket
+        implements FemaleActionSocket {
 
     private Action _action;
     
-    public FemaleActionSocket(FemaleSocketListener listener) {
-        super(listener);
+    public DefaultFemaleActionSocket(FemaleSocketListener listener, String name) {
+        super(listener, name);
     }
     
     @Override
     public boolean isCompatible(MaleSocket socket) {
-        return socket instanceof FemaleActionSocket;
+        return socket instanceof DefaultFemaleActionSocket;
     }
     
     @Override

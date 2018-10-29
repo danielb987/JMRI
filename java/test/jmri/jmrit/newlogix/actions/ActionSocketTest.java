@@ -2,7 +2,7 @@ package jmri.jmrit.newlogix.actions;
 
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
-import jmri.jmrit.newlogix.engine.FemaleActionSocket;
+import jmri.jmrit.newlogix.engine.DefaultFemaleActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -30,7 +30,7 @@ public class ActionSocketTest {
             }
         };
         
-        new FemaleActionSocket(listener);
+        new DefaultFemaleActionSocket(listener, "A1");
     }
     
     // The minimal setup for log4J

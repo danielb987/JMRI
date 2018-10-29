@@ -3,10 +3,15 @@ package jmri.jmrit.newlogix.engine;
 import java.text.DecimalFormat;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
+import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.ExpressionManager;
-import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleActionSocket;
+import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleActionSocket;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.managers.AbstractManager;
@@ -146,15 +151,47 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     @Override
-    public FemaleSocket createFemaleActionSocket(FemaleSocketListener listener) {
-        return null;
+    public MaleActionSocket createMaleActionSocket(Action action) {
+        return new DefaultMaleActionSocket(action);
     }
 
     @Override
-    public FemaleSocket createFemaleExpressionSocket(FemaleSocketListener listener) {
-        return null;
+    public MaleExpressionSocket createMaleExpressionSocket(Expression expression) {
+        return new DefaultMaleExpressionSocket(expression);
     }
-    
+
+    @Override
+    public FemaleActionSocket createFemaleActionSocket(
+            FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleActionSocket(listener, socketName);
+    }
+
+    @Override
+    public FemaleActionSocket createFemaleActionSocket(
+            FemaleSocketListener listener, String socketName, Action action){
+        
+        FemaleActionSocket socket =
+                new DefaultFemaleActionSocket(listener, socketName);
+        socket.connect(createMaleActionSocket(action));
+        return socket;
+    }
+
+    @Override
+    public FemaleExpressionSocket createFemaleExpressionSocket(
+            FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleExpressionSocket(listener, socketName);
+    }
+
+    @Override
+    public FemaleExpressionSocket createFemaleExpressionSocket(
+            FemaleSocketListener listener, String socketName, Expression expression) {
+        
+        FemaleExpressionSocket socket =
+                new DefaultFemaleExpressionSocket(listener, socketName);
+        socket.connect(createMaleExpressionSocket(expression));
+        return socket;
+    }
+
     @Override
     public void activateAllNewLogixs() {
 //        jmri.configurexml.ConfigXmlManager a;

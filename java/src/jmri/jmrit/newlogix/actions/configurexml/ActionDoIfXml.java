@@ -3,7 +3,7 @@ package jmri.jmrit.newlogix.actions.configurexml;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.newlogix.actions.ActionDoIf;
+import jmri.jmrit.newlogix.actions.ActionIfThen;
 import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
      */
     @Override
     public Element store(Object o) {
-        ActionDoIf p = (ActionDoIf) o;
+        ActionIfThen p = (ActionIfThen) o;
 
         Element element = new Element("action");
         element.setAttribute("class", this.getClass().getName());
@@ -75,10 +75,10 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
         String uname = getUserName(shared);
         Action h;
         if (uname == null) {
-            h = new ActionDoIf(sys, ActionDoIf.Type.TRIGGER_ACTION, null, null);
+            h = new ActionIfThen(sys, ActionIfThen.Type.TRIGGER_ACTION);
         } else {
-            h = new ActionDoIf(sys, uname, ActionDoIf.Type.TRIGGER_ACTION, null, null);
-//            h = new ActionDoIf(sys, low, high, uname);
+            h = new ActionIfThen(sys, uname, ActionIfThen.Type.TRIGGER_ACTION);
+//            h = new ActionIfThen(sys, low, high, uname);
         }
 
         loadCommon(h, shared);

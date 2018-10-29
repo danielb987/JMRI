@@ -9,6 +9,7 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleSocket;
@@ -16,18 +17,18 @@ import jmri.jmrit.newlogix.MaleSocket;
 /**
  *
  */
-public class FemaleExpressionSocket extends AbstractFemaleSocket
-        implements Expression {
+public class DefaultFemaleExpressionSocket extends AbstractFemaleSocket
+        implements FemaleExpressionSocket {
 
     private Expression _expression;
     
-    public FemaleExpressionSocket(FemaleSocketListener listener) {
-        super(listener);
+    public DefaultFemaleExpressionSocket(FemaleSocketListener listener, String name) {
+        super(listener, name);
     }
     
     @Override
     public boolean isCompatible(MaleSocket socket) {
-        return socket instanceof FemaleExpressionSocket;
+        return socket instanceof DefaultFemaleExpressionSocket;
     }
     
     @Override

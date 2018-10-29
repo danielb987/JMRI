@@ -11,18 +11,19 @@ import jmri.jmrit.newlogix.Category;
 import javax.annotation.Nonnull;
 import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.MaleActionSocket;
 
 /**
- * Every Action has an InternalAction as its parent.
+ * Every Action has an DefaultMaleActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class InternalAction implements Action {
+public class DefaultMaleActionSocket implements MaleActionSocket {
 
     private final Action _action;
     private boolean _isActive = false;
     
-    public InternalAction(@Nonnull Action action) {
+    public DefaultMaleActionSocket(@Nonnull Action action) {
         _action = action;
     }
     

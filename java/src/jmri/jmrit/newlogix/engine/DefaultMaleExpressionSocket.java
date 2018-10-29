@@ -11,18 +11,19 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
 
 /**
- * Every Expression has an InternalExpression as its parent.
+ * Every Expression has an DefaultMaleExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class InternalExpression implements Expression {
+public class DefaultMaleExpressionSocket implements MaleExpressionSocket {
 
     private final Expression _expression;
     private boolean lastEvaluationResult = false;
     
-    public InternalExpression(@Nonnull Expression expression) {
+    public DefaultMaleExpressionSocket(@Nonnull Expression expression) {
         _expression = expression;
     }
 

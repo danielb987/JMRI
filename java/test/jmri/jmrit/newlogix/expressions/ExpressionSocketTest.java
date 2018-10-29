@@ -2,7 +2,7 @@ package jmri.jmrit.newlogix.expressions;
 
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
-import jmri.jmrit.newlogix.engine.FemaleExpressionSocket;
+import jmri.jmrit.newlogix.engine.DefaultFemaleExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -30,7 +30,7 @@ public class ExpressionSocketTest {
             }
         };
         
-        new FemaleExpressionSocket(listener);
+        new DefaultFemaleExpressionSocket(listener, "E1");
     }
     
     // The minimal setup for log4J

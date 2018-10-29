@@ -1,7 +1,7 @@
 package jmri.jmrit.newlogix;
 
 import jmri.jmrit.newlogix.engine.DefaultNewLogix;
-import jmri.jmrit.newlogix.actions.ActionDoIf;
+import jmri.jmrit.newlogix.actions.ActionIfThen;
 import jmri.jmrit.newlogix.actions.ActionTurnout;
 import jmri.jmrit.newlogix.expressions.ExpressionAnd;
 import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
@@ -36,7 +36,7 @@ public class NewLogixTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "New Logix".equals(new DefaultNewLogix("IQA55", null, null).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Action".equals(new ActionDoIf("IQA55:A321", null, ActionDoIf.Type.TRIGGER_ACTION, null, null).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Action".equals(new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.TRIGGER_ACTION).getBeanType()));
         Assert.assertTrue("bean type is correct", "Expression".equals(new ExpressionAnd("IQA55:E321", null).getBeanType()));
     }
     

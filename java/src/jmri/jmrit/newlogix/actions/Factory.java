@@ -1,7 +1,7 @@
 package jmri.jmrit.newlogix.actions;
 
 import jmri.jmrit.newlogix.actions.ActionTurnout;
-import jmri.jmrit.newlogix.actions.ActionDoIf;
+import jmri.jmrit.newlogix.actions.ActionIfThen;
 import jmri.jmrit.newlogix.actions.ActionMany;
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -21,7 +21,7 @@ public class Factory implements NewLogixActionFactory {
     @Override
     public Set<Map.Entry<Category, Class<? extends Action>>> getActionClasses() {
         Set<Map.Entry<Category, Class<? extends Action>>> actionClasses = new HashSet<>();
-        actionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, ActionDoIf.class));
+        actionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, ActionIfThen.class));
         actionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, ActionMany.class));
         actionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, ActionTurnout.class));
         return actionClasses;

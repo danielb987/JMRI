@@ -1,6 +1,6 @@
 package jmri.jmrit.newlogix.engine;
 
-import jmri.jmrit.newlogix.engine.InternalAction;
+import jmri.jmrit.newlogix.engine.DefaultMaleActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -19,7 +19,7 @@ public class InternalActionTest {
     @Test
     public void testCtor() {
         Action action = new ActionMany("IQA55:A321");
-        new InternalAction(action);
+        new DefaultMaleActionSocket(action);
     }
     
     // The minimal setup for log4J
