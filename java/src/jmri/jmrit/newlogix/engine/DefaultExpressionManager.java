@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
-import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.Category;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
+import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixExpressionFactory;
 import jmri.jmrit.newlogix.NewLogixPluginFactory;
 import jmri.util.Log4JUtil;
@@ -18,6 +21,7 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.managers.AbstractManager;
 
 /**
@@ -25,7 +29,7 @@ import jmri.managers.AbstractManager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultExpressionManager extends AbstractManager<Expression>
+public class DefaultExpressionManager extends AbstractManager<MaleExpressionSocket>
         implements ExpressionManager, InstanceManagerAutoDefault {
 
     private final Map<Category, List<Class<? extends Expression>>> expressionClassList = new HashMap<>();
@@ -59,6 +63,18 @@ public class DefaultExpressionManager extends AbstractManager<Expression>
         }
     }
 
+    /**
+     * Remember a NamedBean Object created outside the manager.
+     * This method creates a MaleActionSocket for the action.
+     *
+     * @param n the bean
+     */
+    @Override
+    public void register(@Nonnull Expression n) {
+        register(InstanceManager.getDefault(NewLogixManager.class)
+                .createMaleExpressionSocket(n));
+    }
+    
     @Override
     public int getXMLOrder() {
         return NEWLOGIXS;

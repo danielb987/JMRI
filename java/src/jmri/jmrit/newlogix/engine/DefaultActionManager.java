@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ServiceLoader;
+import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.jmrit.newlogix.ActionManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.NewLogix;
@@ -13,10 +15,12 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.newlogix.NewLogixActionFactory;
-import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.NewLogixPluginFactory;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.Category;
+import jmri.jmrit.newlogix.MaleActionSocket;
+import jmri.jmrit.newlogix.NewLogixActionFactory;
+import jmri.jmrit.newlogix.NewLogixPluginFactory;
+import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.managers.AbstractManager;
 
 /**
@@ -24,7 +28,7 @@ import jmri.managers.AbstractManager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultActionManager extends AbstractManager<Action>
+public class DefaultActionManager extends AbstractManager<MaleActionSocket>
         implements ActionManager {
 
     private final Map<Category, List<Class<? extends Action>>> actionClassList = new HashMap<>();
@@ -56,6 +60,18 @@ public class DefaultActionManager extends AbstractManager<Action>
         }
     }
 
+    /**
+     * Remember a NamedBean Object created outside the manager.
+     * This method creates a MaleActionSocket for the action.
+     *
+     * @param n the bean
+     */
+    @Override
+    public void register(@Nonnull Action n) {
+        register(InstanceManager.getDefault(NewLogixManager.class)
+                .createMaleActionSocket(n));
+    }
+    
     @Override
     public int getXMLOrder() {
         return NEWLOGIXS;
@@ -111,7 +127,7 @@ public class DefaultActionManager extends AbstractManager<Action>
         // save in the maps
         register(action);
     }
-
+/*
     @Override
     public Action getAction(String name) {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -131,7 +147,7 @@ public class DefaultActionManager extends AbstractManager<Action>
     public void deleteAction(Action x) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+*/    
     static DefaultActionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe

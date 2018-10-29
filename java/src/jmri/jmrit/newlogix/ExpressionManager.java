@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix;
 
+import javax.annotation.Nonnull;
 import jmri.Manager;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.Expression;
@@ -9,8 +10,16 @@ import jmri.jmrit.newlogix.Expression;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ExpressionManager extends Manager<Expression> {
+public interface ExpressionManager extends Manager<MaleExpressionSocket> {
 
+    /**
+     * Remember a NamedBean Object created outside the manager.
+     * This method creates a MaleActionSocket for the action.
+     *
+     * @param n the bean
+     */
+    public void register(@Nonnull Expression n);
+    
     /**
      * Create a new system name for an Expression.
      *

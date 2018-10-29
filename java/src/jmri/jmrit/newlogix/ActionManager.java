@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix;
 
+import javax.annotation.Nonnull;
 import jmri.Manager;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.Action;
@@ -9,8 +10,16 @@ import jmri.jmrit.newlogix.Action;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionManager extends Manager<Action> {
+public interface ActionManager extends Manager<MaleActionSocket> {
 
+    /**
+     * Remember a NamedBean Object created outside the manager.
+     * This method creates a MaleActionSocket for the action.
+     *
+     * @param n the bean
+     */
+    public void register(@Nonnull Action n);
+    
     /**
      * Create a new system name for an Action.
      *
@@ -28,25 +37,25 @@ public interface ActionManager extends Manager<Action> {
     public void addAction(Action action)
             throws IllegalArgumentException;
 
-    /**
+    /*.*
      * Locate via user name, then system name if needed. Does not create a new
      * one if nothing found
      *
      * @param name User name or system name to match
      * @return null if no match found
      */
-    public Action getAction(String name);
+//    public Action getAction(String name);
 
-    public Action getByUserName(String s);
+//    public Action getByUserName(String s);
 
-    public Action getBySystemName(String s);
+//    public Action getBySystemName(String s);
 
-    /**
-     * Delete Action by removing it from the manager. The Action must
- first be deactivated so it stops processing.
+    /*.*
+     * Delete Action by removing it from the manager. The Action must first be
+     * deactivated so it stops processing.
      *
      * @param x the Action to delete
      */
-    void deleteAction(Action x);
+//    void deleteAction(Action x);
     
 }
