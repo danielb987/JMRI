@@ -197,6 +197,18 @@ public class ThreadingUtil {
     }
 
     /**
+     * Checks if the the current thread is the layout thread.
+     * The check is only done if debug is enabled.
+     */
+    static public void checkIsLayoutThread() {
+        if (log.isDebugEnabled()) {
+            if (!isLayoutThread()) {
+                Log4JUtil.warnOnce(log, "checkIsLayoutThread() called on wrong thread", new Exception());
+            }
+        }
+    }
+
+    /**
      * Run some GUI-specific code before returning
      * <p>
      * Typical uses:
@@ -330,6 +342,18 @@ public class ThreadingUtil {
      */
     static public boolean isGUIThread() {
         return SwingUtilities.isEventDispatchThread();
+    }
+
+    /**
+     * Checks if the the current thread is the GUI thread.
+     * The check is only done if debug is enabled.
+     */
+    static public void checkIsGUIThread() {
+        if (log.isDebugEnabled()) {
+            if (!isGUIThread()) {
+                Log4JUtil.warnOnce(log, "checkIsGUIThread() called on wrong thread", new Exception());
+            }
+        }
     }
 
     /**
