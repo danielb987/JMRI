@@ -76,9 +76,13 @@ public class ThreadingUtil {
             while (true) {
                 try {
                     LayoutEvent event = layoutEventQueue.take();
-                    event._threadAction.run();
                     if (event._wait != null) {
-                        event._wait.signalAll();
+                        synchronized(event._wait) {
+                            event._threadAction.run();
+                            event._wait.signalAll();
+                        }
+                    } else {
+                        event._threadAction.run();
                     }
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
@@ -106,11 +110,13 @@ public class ThreadingUtil {
         if (layoutThread != null) {
             Lock lock = new ReentrantLock();
             Condition wait = lock.newCondition();
-            layoutEventQueue.add(new LayoutEvent(ta, wait));
-            try {
-                wait.await();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            synchronized(wait) {
+                layoutEventQueue.add(new LayoutEvent(ta, wait));
+                try {
+                    wait.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         } else {
             runOnGUI(ta);
@@ -159,8 +165,21 @@ public class ThreadingUtil {
      */
     @Nonnull 
     static public Timer runOnLayoutDelayed(@Nonnull ThreadAction ta, int delay) {
-        throw new RuntimeException("Not implemented yet");
-//        return runOnGUIDelayed(ta, delay);
+        if (layoutThread != null) {
+            // dispatch to Swing via timer. We are forced to use a Swing Timer
+            // since the method returns a Timer object and we don't want to
+            // change the method interface.
+            Timer timer = new Timer(delay, (ActionEvent e) -> {
+                // Dispatch the event to the layout event handler once the time
+                // has passed.
+                layoutEventQueue.add(new LayoutEvent(ta));
+            });
+            timer.setRepeats(false);
+            timer.start();
+            return timer;
+        } else {
+            return runOnGUIDelayed(ta, delay);
+        }
     }
 
     /**
