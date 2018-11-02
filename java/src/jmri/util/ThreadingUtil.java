@@ -102,6 +102,8 @@ public class ThreadingUtil {
      *
      * @param ta What to run, usually as a lambda expression
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "WA_NOT_IN_LOOP",
+            justification="Method runOnGUI() doesn't have a loop. Waiting for single possible event.")
     static public void runOnLayout(@Nonnull ThreadAction ta) {
         System.out.format("runOnLayout%n");
         if (layoutThread != null) {
@@ -111,6 +113,7 @@ public class ThreadingUtil {
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
+                    log.debug("Interrupted while running on Layout thread");
                     Thread.currentThread().interrupt();
                 }
             }
