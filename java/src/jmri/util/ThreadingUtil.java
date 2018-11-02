@@ -7,9 +7,6 @@ import javax.swing.Timer;
 import javax.annotation.Nonnull;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import jmri.InvokeOnGuiThread;
 
 /**
@@ -48,17 +45,17 @@ public class ThreadingUtil {
     
     static private class LayoutEvent {
         private final ThreadAction _threadAction;
-        private final Condition _wait;
+        private final Object _lock;
         
         public LayoutEvent(ThreadAction threadAction) {
             _threadAction = threadAction;
-            _wait = null;
+            _lock = null;
         }
         
         public LayoutEvent(ThreadAction threadAction,
-                Condition wait) {
+                Object lock) {
             _threadAction = threadAction;
-            _wait = wait;
+            _lock = lock;
         }
     }
     
@@ -76,10 +73,10 @@ public class ThreadingUtil {
             while (true) {
                 try {
                     LayoutEvent event = layoutEventQueue.take();
-                    if (event._wait != null) {
-                        synchronized(event._wait) {
+                    if (event._lock != null) {
+                        synchronized(event._lock) {
                             event._threadAction.run();
-                            event._wait.signalAll();
+                            event._lock.notify();
                         }
                     } else {
                         event._threadAction.run();
@@ -108,12 +105,11 @@ public class ThreadingUtil {
     static public void runOnLayout(@Nonnull ThreadAction ta) {
         System.out.format("runOnLayout%n");
         if (layoutThread != null) {
-            Lock lock = new ReentrantLock();
-            Condition wait = lock.newCondition();
-            synchronized(wait) {
-                layoutEventQueue.add(new LayoutEvent(ta, wait));
+            Object lock = new Object();
+            synchronized(lock) {
+                layoutEventQueue.add(new LayoutEvent(ta, lock));
                 try {
-                    wait.await();
+                    lock.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
