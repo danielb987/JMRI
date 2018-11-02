@@ -32,6 +32,7 @@ public class ThreadingUtil {
 //    private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = false;
     private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = true;
 
+
     static public interface ThreadAction extends Runnable {
 
         /**
@@ -59,8 +60,10 @@ public class ThreadingUtil {
         }
     }
     
+    
     private static Thread layoutThread = null;
     private static BlockingQueue<LayoutEvent> layoutEventQueue = null;
+
 
     @InvokeOnGuiThread
     public static void launchLayoutThread() {
@@ -105,7 +108,6 @@ public class ThreadingUtil {
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "WA_NOT_IN_LOOP",
             justification="Method runOnGUI() doesn't have a loop. Waiting for single possible event.")
     static public void runOnLayout(@Nonnull ThreadAction ta) {
-        System.out.format("runOnLayout%n");
         if (layoutThread != null) {
             Object lock = new Object();
             synchronized(lock) {
