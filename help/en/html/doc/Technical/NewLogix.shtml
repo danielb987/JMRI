@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.17), see www.w3.org">
+
+  <title>JMRI: New Logix Documentation</title>
+  <meta name="author" content="Daniel Bergqvist">
+  <meta name="keywords" content=
+  "newlogix model railroad JMRI NewLogix PanelPro"><!-- Style -->
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="/css/default.css"
+  media="screen">
+  <link rel="stylesheet" type="text/css" href="/css/print.css"
+  media="print">
+  <link rel="icon" href="/images/jmri.ico" type="image/png">
+  <link rel="home" title="Home" href="/"><!-- /Style -->
+</head>
+
+<body>
+  <div id="container">
+    <!--#include virtual="/Header" -->
+
+    <div id="mBody">
+      <!--#include virtual="Sidebar.shtml" -->
+
+      <div id="mainContent">
+        <!-- Page Body -->
+
+        <h1>JMRI Code: NewLogix</h1>
+
+        <p>This page describes the technical aspects of NewLogix and
+		how to add new features to NewLogix. It's recommended to read
+		the <a href="../../tools/NewLogix.shtml">User manual</a>
+		first which describes the concept of NewLogix.</p>
+
+
+
+		<h2>The package structure of NewLogix</h2>
+
+		<p>A major design principle for NewLogix is modularity. In order to
+		achieve that, NewLogix has the following structure.</p>
+
+		<h3>jmri.jmrit.newlogix</h3>
+
+		<p>The package jmri.jmrit.newlogix is the public interface of NewLogix.
+		Every part of JMRI may use everything in this package.</p>
+
+		<h3>jmri.jmrit.newlogix.actions</h3>
+
+		<p>The package jmri.jmrit.newlogix.actions has the actions that are
+		shipped with JMRI. These are registered by a factory class and should
+		not be accessed directly. Each action is to be considered as its own
+		'package' and an action should not use another action directly.</p>
+		
+		<p>There should not be any assumptions on which actions are included
+		in JMRI. The list of action classes is supplied by the ActionManager.
+		This ensures that action classes can be added later, either to the JMRI
+		source code or at runtime as plugins.</p>
+
+		<h3>jmri.jmrit.newlogix.actions.swing</h3>
+
+		<p>The package jmri.jmrit.newlogix.actions.swing has the action
+		configuration classes that uses Swing.</p>
+
+		<h3>jmri.jmrit.newlogix.expressions</h3>
+
+		<p>The package jmri.jmrit.newlogix.expressions has the expressions that
+		are shipped with JMRI. These are registered by a factory class and should
+		not be accessed directly. Each expression is to be considered as its own
+		'package' and an expression should not use another expression directly.</p>
+		
+		<p>There should not be any assumptions on which expressions are included
+		in JMRI. The list of expression classes is supplied by the ExpressionManager.
+		This ensures that expression classes can be added later, either to the JMRI
+		source code or at runtime as plugins.</p>
+
+		<h3>jmri.jmrit.newlogix.expressions.swing</h3>
+
+		<p>The package jmri.jmrit.newlogix.expressions.swing has the expression
+		configuration classes that uses Swing.</p>
+
+		<h3>jmri.jmrit.newlogix.engine</h3>
+
+		<p>The package jmri.jmrit.newlogix.engine is the brain which makes NewLogix
+		to run. It handles all the internal stuff. No other parts of JMRI nor NewLogix
+		should access this package directly.</p>
+
+		<h3>jmri.jmrit.tools.swing</h3>
+
+		<p>The package jmri.jmrit.newlogix.tools.swing has the editor, debugger and
+		time diagram of NewLogix.</p>
+
+		<h3>Exceptions to the above rules</h3>
+
+		<p>The ImportLogix tool uses many expressions in the jmri.jmrit.newlogix.expressions
+		package and many actions in the jmri.jmrit.newlogix.actions package.</p>
+
+		<p>jmri.managers.DefaultInstanceInitializer uses the default managers in the
+		jmri.jmrit.newlogix.engine package.</p>
+		
+		<p>The XML schema xml/schema/types/newlogix-4.13.4.xsd uses the default managers
+		in the jmri.jmrit.newlogix.engine package.</p>
+
+
+
+
+		<h2>The enum Categories</h2>
+
+		<p>Every type of expression and action has a predefined category to
+		which the expression or action belongs to. The main usage of
+		categories is to sort expressions by category when the user adds a new
+		expression or action and therefore selects which to add.</p>
+
+		<ul>
+		<li><strong>ITEM</strong><br>An item on the layout, for example turnout,
+		sensor or signal mast.</li>
+		<li><strong>COMMON</strong><br>Commonly used items. For example
+		ExpressionAnd, ExpressionOr, ExpressionTimer, ActionMany and ActionDoIf.</li>
+		<li><strong>OTHER</strong><br>All other expressions and actions which
+		don't fit in the above categories.</li>
+		</ul>
+
+
+
+		<h2>Creating an Expression</h2>
+
+		<p>An expression must implement the <strong>NewLogixExpression</strong>
+		interface, that in turn inherits the <strong>NamedBean</strong> interface.
+		It's recommended that expression classes extends the
+		<strong>AbstractExpression</strong> class which has a default implementation
+		of the NamedBean interface.</p>
+
+		<h3>Methods</h3>
+
+		<h4>getCategory</h4>
+
+		<p>Returns which category this expression belongs to.</p>
+
+		<h4>isExternal</h4>
+
+		<p>Returns <strong>true</strong> if the expression is dependent on an external
+		condition, for example the state of a turnout. An expression is considered
+		internal if it only depends on other expressions or is static. Examples of
+		external expressions are ExpressionTurnout and ExpressionSignalHead.
+		Examples of internal expressions are ExpressionAnd, ExpressionOr and
+		ExpressionTrue.</p>
+
+		<h4>evaluate</h4>
+
+		<p>Evaluates the expression and returns the result of the expression.</p>
+
+		<h4>reset</h4>
+
+		<p>Resets the evaluation. The method <strong>reset()</strong> is called then when
+		the closest ancestor Action is activated. An example is a timer who is used to
+		delay the execution of an action's child action.</p>
+		<p>A parent expression must to call <strong>reset()</strong> on its child when the
+		method <strong>reset()</strong> is called on the parent.</p>
+
+
+
+		<h2>Creating an Action</h2>
+
+		<p>An action must implement the <strong>NewLogixAction</strong>
+		interface, that in turn inherits the <strong>NamedBean</strong> interface.
+		It's recommended that action classes extends the
+		<strong>AbstractAction</strong> class which has a default implementation
+		of the NamedBean interface.</p>
+
+		<h3>Methods</h3>
+
+		<p><strong>getCategory()</strong></p>
+
+		<p>Returns which category this action belongs to.</p>
+
+		<p><strong>isExternal()</strong></p>
+
+		<p>Returns <strong>true</strong> if the action has external consequence, for
+		example if it sets the the state of a turnout. An action is considered internal
+		if it only acts on other actions. Examples of external actions are
+		ActionTurnout and ActionSignalHead. Examples of internal expressions are
+		ActionMany and ActionDoIf.</p>
+
+		<p><strong>evaluate()</strong></p>
+
+		<p>Evaluates the expression and returns the result of the expression.</p>
+
+		<p><strong>reset()</strong></p>
+
+		<p>Resets the evaluation. The method <strong>reset()</strong> is called then when
+		the closest ancestor Action is activated. An example is a timer who is used to
+		delay the execution of an action's child action.</p>
+		<p>A parent expression must to call <strong>reset()</strong> on its child when the
+		method <strong>reset()</strong> is called on the parent.</p>
+
+
+
+		<h2>Register an expression or an action</h2>
+
+		<p>In order for JMRI to be able to use the expression or the action, it needs to be
+		told about it. That is done by implementing a NewLogixExpressionFactory or a
+		NewLogixActionFactory that can tell JMRI about the expressions or actions and then
+		mark it with the <a href="plugins.shtml">@ServiceProvider</a>
+		annotation. A single factory can register many classes. For classes that are supplied
+		with JMRI, it's recommended to use the <strong>DefaultExpressionFactory</strong>
+		and the <strong>DefaultActionFactory</strong>.
+
+
+
+        <h2>AbstractExpression and AbstractAction vs AbstractNamedBean</h2>
+
+		<p>The <strong>NamedBean</strong> interface has the methods <strong>setState()</strong>
+		and <strong>getState()</strong>. These should never be implemented in expressions
+		and actions.</p>
+		<p>For expressions, <strong>getState()</strong> returns
+		<strong>NewLogixExpression.TRUE</strong> or <strong>NewLogixExpression.FALSE</strong>
+		dependent on the last result of the expression, but this is handled automaticly by
+		<strong>InternalExpression</strong>. The method <strong>setState()</strong> has no
+		impact on expressions.</p>
+		<p>For actions, neither of <strong>setState()</strong> or <strong>getState()</strong>
+		will ever be called since <strong>InternalAction</strong> will prevent that.</p>
+
+
+
+		<h2>The invisible layer around expressions and actions</h2>
+
+		<p>Expressions and actions are never used directly. When an expression is requested from
+		the expression manager or an action is requested from the action manager, an invisible
+		layer are created around the expression or action. This layer allows NewLogix to be aware
+		what is happening without knowing the details of each expression or action. For example,
+		this layer is responsible for logging the status of each expression and action.</p>
+
+		<p>The invisible layer consists of the classes <strong>InternalExpression</strong> and
+		<strong>InternalAction</strong>. Expressions and actions should <u>never</u> do any
+		assumptions about these classes. They are internal and and should stay completely unknown
+		to the expressions and actions.</p>
+
+
+
+        <h2>Plugins for NewLogix</h2>
+
+		<p>JMRI supports extending JMRI in several ways by adding a jar file with classes to the
+		JMRI class path. But NewLogix is stored in the panel xml files and these are validated when
+		they are loaded, so when adding native expressions and actions, the newlogix xml schema
+		must be updated.</p>
+
+		<p><a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
+		is an example project with some expression plugins and action plugins.
+		The project has <a href="https://danielb987.github.io/JMRI_NewLogixPlugins.Documentation/javadoc/">Javadoc</a>.
+		The file
+		<a href="https://github.com/danielb987/JMRI_NewLogixPlugins.Documentation/raw/master/docs/distribution/JMRI_NewLogixPlugins.jar">JMRI_NewLogixPlugins.jar</a>
+		is the current version of the plugin. The classes in JMRI_NewLogixPlugins
+		are not considered useful but intended to demonstrate the possibilities
+		with NewLogix. For example, ExpressionBlink and ActionHideAndShowPanel
+		can be used to repeatedly hide and show a selected panel. It has no
+		prototypical usage but can be used to play a joke with a fellow model
+		railroader...
+
+		<h3>Implementing an expression or action plugin</h3>
+
+		<p>In order to be able to save the configuration of the plugin in the panel XML files,
+		the plugin saves and restores the configuration in a <strong>Map&lt;String, String&gt;</strong>.
+		The developer of the plugin decides on how to store its configuration in this map.</p>
+
+		<p>An expression or action that is a plugin must implement the
+		<strong>NewLogixExpressionPlugin</strong> or the <strong>NewLogixActionPlugin</strong>.
+		These interfaces has three additional methods.</p>
+
+		<p><strong>init()</strong></p>
+
+		<p>Initializes the plugin. This method is called after an instance of the plugin is
+		created if there exists a configuration. Note that this method is not called the
+		first time an instance has been created, before it has been configured by the
+		configurator.</p>
+
+		<p><strong>getConfig()</strong></p>
+
+		<p>Returns the configuration for this plugin to be stored in for example a panel file.</p>
+
+		<p><strong>getConfiguratorClassName()</strong></p>
+
+		<p>Returns the class name of the configurator class. In order to be able to use the
+		plugin in a headless environment, the plugin itself is recommended to not use any
+		swing code. This method is called then this plugin needs to be configurated and
+		a class is needed that can configure this plugin. That class needs to be in the same
+		jar file as this plugin and it needs to implement the <strong>PluginConfiguratorInterface</strong>.
+		One configurator class may be the configurator for many plugins.</p>
+
+		<h3>The PluginConfiguratorInterface interface</h3>
+
+		<p>A class that is able to configure one or many plugins is called a configurator.
+		It generates a <strong>JPanel</strong> with the controls that are needed to configure
+		the plugin.</p>
+
+		<p>The PluginConfiguratorInterface interface has these methods.</p>
+
+		<p><strong>getConfigPanel()</strong></p>
+
+		<p>Returns a <strong>JPanel</strong> that can configure this plugin.</p>
+
+		<p><strong>getConfigFromPanel()</strong></p>
+
+		<p>Returns the configuration for this plugin to be stored in for example a panel file.</p>
+
+		<h3>Plugin in the JMRI classpath</h3>
+
+		<p>JMRI can automaticly load plugins in the JMRI classpath. That is done by implementing
+		a <strong>NewLogixPluginFactory</strong> that can tell JMRI about the expressions or
+		actions and then mark it with the <a href="plugins.shtml">@ServiceProvider</a> annotation.
+		A single factory can register many classes. The
+		<a href="https://github.com/danielb987/JMRI_NewLogixPlugins">JMRI_NewLogixPlugins</a>
+		has an example.
+
+        <!--#include virtual="/Footer" -->
+      </div><!-- closes #mainContent-->
+    </div><!-- closes #mBody-->
+  </div><!-- closes #container -->
+</body>
+</html>

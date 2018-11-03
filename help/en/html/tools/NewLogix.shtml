@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.17), see www.w3.org">
+
+  <title>JMRI: New Logix Documentation</title>
+  <meta name="author" content="Daniel Bergqvist">
+  <meta name="keywords" content=
+  "newlogix model railroad JMRI NewLogix PanelPro"><!-- Style -->
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <link rel="stylesheet" type="text/css" href="/css/default.css"
+  media="screen">
+  <link rel="stylesheet" type="text/css" href="/css/print.css"
+  media="print">
+  <link rel="icon" href="/images/jmri.ico" type="image/png">
+  <link rel="home" title="Home" href="/"><!-- /Style -->
+</head>
+
+<body>
+  <div id="container">
+    <!--#include virtual="/Header" -->
+
+    <div id="mBody">
+      <!--#include virtual="Sidebar" -->
+
+      <div id="mainContent">
+        <!-- Page Body -->
+
+        <h1>JMRI: NewLogix Documentation</h1>
+
+        <p>This page is the user manual for NewLogix. For the technical
+		aspects and how to extend NewLogix with new features, see the
+		<a href="../doc/Technical/NewLogix.shtml">Technical documentation</a>
+		of NewLogix.</p>
+
+        <p>NewLogix provide a powerful capability for JMRI to monitor
+		one or more conditions on a layout, and take action when these
+		conditions change in a user-specified way. Logix can be used
+		to control signals, crossing gates, and other types of
+		automation on the layout.</p>
+
+		<p>The main building blocks in NewLogix is Expressions and
+		Actions. Expressions ask a question while Actions do somethings.
+		It can be described as:</p>
+
+        <div style="margin-left: 2em;">
+		<p><code>if (expression) then (action).
+        </code></p></div>
+
+		<p>An expression ask a question which can be true or False.
+		"Is turnout LT20 thrown?" If it is, the answer is True,
+		else it's False. Some expressions depends on other expressions.
+		Like the "And" expression, which is True if all of its expressions
+		are True. There is a timer expression which becomes true when
+		a certain time has passed.</p>
+
+		<p>Actions do something. It can set a turnout or a signal. Some
+		actions activates other actions, which in turn do something.</p>
+
+		<h3>Expressions</h3>
+
+		<p><strong>And</strong> - True if all of its expressions
+		are true.</p>
+
+		<p><strong>Hold</strong> - This expression has expressions,
+		the hold expression and the trigger expression. The expression.
+		becomes true when both the hold and the trigger expression
+		is true and it then stays true as long as the hold expression
+		remains true. This expression can be used then a condition is
+		true under a short period of time, for example a button that
+		the user presses, and there the expression needs to stay true.</p>
+
+		<p><strong>Reset On True</strong> - This Expression has two
+		expressions, the primary expression and the secondary
+		expression. When the primary expression becomes True after
+		have been False, the secondary expression is reset.<br>
+		The result of the evaluation of this expression is True if
+		both the expressions evaluates to True.<br>
+		This expression is used for example if one expression should
+		trigger a timer. If the primary expression is a sensor having a
+		certain state and the secondary expression is a timer, this
+		expression will evaluate to True if the sensor has had that
+		state during the specified time.</p>
+
+		<p><strong>Timer</strong> - This expression has a timer. The
+		expression is true if the time has passed.</p>
+
+		<p><strong>Trigger Once</strong> - An expression that has
+		another expression. It is true the first time the child
+		expression is true and then becomes false. It stays false
+		until the child expression becomes false and then true again.</p>
+
+		<p><strong>Turnout</strong> - True if a turnout has a certain
+		state.</p>
+
+		<h3>Actions</h3>
+
+		<p><strong>Do If</strong> - This action ask an expression if its
+		condition is true. If it is, it activates an other action.</p>
+
+		<p><strong>Many</strong> - This action activates many other actions.</p>
+
+		<p><strong>Turnout</strong> - Set the state of a turnout.</p>
+
+        <h2>How to setup NewLogixs</h2>
+
+        <h2>Time Diagram</h2>
+
+        <h2>Plugins for NewLogix</h2>
+
+		<p>NewLogix supports expression and action plugins. This can be done
+		in two different ways, native plugin or external plugin.</p>
+
+		<p>A <strong>native plugin</strong> is a class that implements the
+		NewLogixExpression interface or the NewLogixAction interface. The
+		downside is that the jar file with these classes needs to be placed
+		in the <a href="../../Technical/StartUpScripts.shtml">JMRI classpath</a>
+		to be accessible for JMRI. But as long as they are located at the
+		JMRI classpath, they will be included automaticly.</p>
+
+		<p>A <strong>external plugin</strong> is a class that implements the
+		ExpressionPluginInterface interface or the ActionPluginInterface
+		interface. These classes can be placed anywhere, but they needs to
+		be configured by the user. That is, the user has to point JMRI to the
+		jar file and select which classes in the jar file to use with JMRI.</p>
+
+        <!--#include virtual="/Footer" -->
+      </div><!-- closes #mainContent-->
+    </div><!-- closes #mBody-->
+  </div><!-- closes #container -->
+</body>
+</html>

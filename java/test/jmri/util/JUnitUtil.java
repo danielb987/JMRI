@@ -12,8 +12,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Nonnull;
+import jmri.jmrit.newlogix.ActionManager;
 import jmri.ConditionalManager;
 import jmri.ConfigureManager;
+import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.GlobalProgrammerManager;
 import jmri.InstanceManager;
 import jmri.JmriException;
@@ -21,6 +23,7 @@ import jmri.LightManager;
 import jmri.LogixManager;
 import jmri.MemoryManager;
 import jmri.NamedBean;
+import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.PowerManager;
 import jmri.PowerManagerScaffold;
 import jmri.ReporterManager;
@@ -40,6 +43,9 @@ import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.WarrantManager;
 import jmri.jmrix.ConnectionConfigManager;
 import jmri.jmrix.debugthrottle.DebugThrottleManager;
+import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
+import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultActionManager;
 import jmri.jmrix.internal.InternalReporterManager;
 import jmri.jmrix.internal.InternalSensorManager;
 import jmri.managers.AbstractSignalHeadManager;
@@ -722,6 +728,27 @@ public class JUnitUtil {
         ConditionalManager m = new DefaultConditionalManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.CONDITIONALS);
+        }
+    }
+
+    public static void initNewLogixManager() {
+        NewLogixManager m = new DefaultNewLogixManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.NEWLOGIXS);
+        }
+    }
+
+    public static void initExpressionManager() {
+        ExpressionManager m = new DefaultExpressionManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
+        }
+    }
+
+    public static void initActionManager() {
+        ActionManager m = new DefaultActionManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
         }
     }
 

@@ -25,6 +25,12 @@ import jmri.TurnoutManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
+import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.ExpressionManager;
+import jmri.jmrit.newlogix.NewLogixManager;
+import jmri.jmrit.newlogix.engine.DefaultActionManager;
+import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -54,6 +60,9 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
     @Override
     public <T> Object getDefault(Class<T> type) {
+        if (type == ActionManager.class) {
+            return new DefaultActionManager();
+        }
 
         if (type == AudioManager.class) {
             return DefaultAudioManager.instance();
@@ -67,6 +76,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultConditionalManager();
         }
 
+        if (type == ExpressionManager.class) {
+            return new DefaultExpressionManager();
+        }
+
         if (type == LightManager.class) {
             return new jmri.managers.ProxyLightManager();
         }
@@ -77,6 +90,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
         if (type == MemoryManager.class) {
             return new DefaultMemoryManager();
+        }
+
+        if (type == NewLogixManager.class) {
+            return new DefaultNewLogixManager();
         }
 
         if (type == RailComManager.class) {
@@ -142,13 +159,16 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
         set.addAll(Arrays.asList(
+                ActionManager.class,
                 AudioManager.class,
                 BlockManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
+                ExpressionManager.class,
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
+                NewLogixManager.class,
                 RailComManager.class,
                 ReporterManager.class,
                 RouteManager.class,
