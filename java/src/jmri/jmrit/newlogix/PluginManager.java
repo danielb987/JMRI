@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import jmri.jmrit.newlogix.tools.swing.PluginConfiguratorInterface;
 
 /**
  * Manages plugin classes for NewLogix.
@@ -113,7 +112,7 @@ public class PluginManager {
                     } else if (NewLogixActionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
-                    } else if (PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
+                    } else if (jmri.jmrit.newlogix.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is a plugin configurator%n", cls.getName());
                         type = ClassType.CONFIGURATOR;
                     } else if (Expression.class.isAssignableFrom(cls)) {

@@ -1,4 +1,4 @@
-package jmri.jmrit.newlogix.tools.swing;
+package jmri.jmrit.newlogix.swing;
 
 import java.util.Map;
 import javax.swing.JPanel;
