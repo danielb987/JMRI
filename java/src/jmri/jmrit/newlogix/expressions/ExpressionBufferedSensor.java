@@ -1,5 +1,9 @@
 package jmri.jmrit.newlogix.expressions;
 
+import jmri.jmrit.newlogix.AbstractExpression;
+import jmri.jmrit.newlogix.Category;
+import jmri.jmrit.newlogix.FemaleSocket;
+
 /**
  * An expression that buffers the changes of a sensor.
  * 
@@ -16,7 +20,46 @@ package jmri.jmrit.newlogix.expressions;
  * The expression remembers the state of the sensor until the NewLogixs has been
  * run.
  */
-public class ExpressionBufferedSensor {
+public class ExpressionBufferedSensor extends AbstractExpression {
+
+    public ExpressionBufferedSensor(String sys) throws BadUserNameException, BadSystemNameException {
+        super(sys);
+    }
+
+    public ExpressionBufferedSensor(String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Category getCategory() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isExternal() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean evaluate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void reset() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getChildCount() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     // For this expression to work, the NewLogix engine needs to notify those
     // who wants to be notified when all NewLogixs are finished running.
