@@ -12,6 +12,7 @@ import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.MaleSocket;
 
 /**
@@ -28,7 +29,7 @@ public class DefaultFemaleExpressionSocket extends AbstractFemaleSocket
     
     @Override
     public boolean isCompatible(MaleSocket socket) {
-        return socket instanceof DefaultFemaleExpressionSocket;
+        return socket instanceof MaleExpressionSocket;
     }
     
     @Override

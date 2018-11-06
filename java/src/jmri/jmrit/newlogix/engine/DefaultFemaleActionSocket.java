@@ -12,6 +12,7 @@ import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleSocket;
 
 /**
@@ -29,7 +30,7 @@ public class DefaultFemaleActionSocket
     
     @Override
     public boolean isCompatible(MaleSocket socket) {
-        return socket instanceof DefaultFemaleActionSocket;
+        return socket instanceof MaleActionSocket;
     }
     
     @Override

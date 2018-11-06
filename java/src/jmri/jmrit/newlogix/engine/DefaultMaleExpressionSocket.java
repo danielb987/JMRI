@@ -59,12 +59,12 @@ public class DefaultMaleExpressionSocket implements MaleExpressionSocket {
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _expression.getChild(index);
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _expression.getChildCount();
     }
 
     @Override

@@ -78,23 +78,23 @@ public class DefaultMaleActionSocket implements MaleActionSocket {
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported.");
+        return _action.getShortDescription();
     }
 
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported.");
+        return _action.getLongDescription();
     }
 
     @Override
     public FemaleSocket getChild(int index)
             throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported.");
+        return _action.getChild(index);
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported.");
+        return _action.getChildCount();
     }
 
     @Override
