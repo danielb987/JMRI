@@ -1,8 +1,9 @@
 package jmri.jmrit.newlogix.tools.swing;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import javax.swing.event.TreeModelListener;
+import java.util.SortedSet;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JMenu;
@@ -10,25 +11,24 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
-import jmri.util.JmriJFrame;
-import jmri.jmrit.newlogix.actions.ActionTurnout;
-import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
-
-import java.io.File;
-import java.util.SortedSet;
-import javax.swing.tree.TreePath;
 import jmri.InstanceManager;
-import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.MaleSocket;
 import jmri.jmrit.newlogix.actions.ActionIfThen;
+import jmri.jmrit.newlogix.actions.ActionTurnout;
+import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
+import jmri.util.JmriJFrame;
 
 /**
  * Editor of NewLogix
@@ -101,6 +101,9 @@ public class NewLogixEditor extends JmriJFrame {
         // Create a JTree and tell it to display our model
         JTree tree = new JTree();
         tree.setModel(model);
+        tree.setCellRenderer(new FemaleSocketTreeRenderer());
+        
+        tree.setShowsRootHandles(true);
 
         // The JTree can get big, so allow it to scroll
         JScrollPane scrollpane = new JScrollPane(tree);
@@ -226,6 +229,26 @@ public class NewLogixEditor extends JmriJFrame {
 
         @Override
         public void removeTreeModelListener(TreeModelListener l) {
+        }
+        
+    }
+    
+    
+    private static final class FemaleSocketTreeRenderer implements TreeCellRenderer {
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            javax.swing.JPanel panel = new javax.swing.JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+            javax.swing.JCheckBox checkbox = new javax.swing.JCheckBox();
+            checkbox.setSelected((row%2)==1);
+            javax.swing.JTextField field = new javax.swing.JTextField();
+            field.setText(value.toString());
+            panel.add(checkbox);
+            panel.add(field);
+            return panel;
+//            return field;
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         
     }
