@@ -7,6 +7,7 @@ import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.NewLogixManager;
 
 /**
@@ -47,34 +48,44 @@ public class ExpressionHold extends AbstractExpression implements FemaleSocketLi
                 .createFemaleExpressionSocket(this, "E2");
     }
 
-    public ExpressionHold(String sys, String holdExpressionSocketName,
-            String triggerExpressionSocketName, Expression holdExpression,
-            Expression triggerExpression) throws BadUserNameException,
+    public ExpressionHold(
+            String sys,
+            String holdExpressionSocketName,
+            String triggerExpressionSocketName,
+            MaleExpressionSocket holdExpression,
+            MaleExpressionSocket triggerExpression)
+            
+            throws BadUserNameException,
             BadSystemNameException {
         
         super(sys);
         
         _holdExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
-                .createFemaleExpressionSocket(this, holdExpressionSocketName,
-                        holdExpression);
+                .createFemaleExpressionSocket(
+                        this, holdExpressionSocketName, holdExpression);
         _triggerExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
-                .createFemaleExpressionSocket(this, triggerExpressionSocketName,
-                        triggerExpression);
+                .createFemaleExpressionSocket(
+                        this, triggerExpressionSocketName, triggerExpression);
     }
 
-    public ExpressionHold(String sys, String user, String holdExpressionSocketName,
-            String triggerExpressionSocketName, Expression holdExpression,
-            Expression triggerExpression) throws BadUserNameException,
+    public ExpressionHold(
+            String sys, String user,
+            String holdExpressionSocketName,
+            String triggerExpressionSocketName,
+            MaleExpressionSocket holdExpression,
+            MaleExpressionSocket triggerExpression)
+            
+            throws BadUserNameException,
             BadSystemNameException {
         
         super(sys, user);
         
         _holdExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
-                .createFemaleExpressionSocket(this, holdExpressionSocketName,
-                        holdExpression);
+                .createFemaleExpressionSocket(
+                        this, holdExpressionSocketName, holdExpression);
         _triggerExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
-                .createFemaleExpressionSocket(this, triggerExpressionSocketName,
-                        triggerExpression);
+                .createFemaleExpressionSocket(
+                        this, triggerExpressionSocketName, triggerExpression);
     }
 
     /** {@inheritDoc} */

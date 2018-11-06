@@ -150,15 +150,15 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         return _tsys.get(name);
     }
 
-    @Override
-    public MaleActionSocket createMaleActionSocket(Action action) {
-        return new DefaultMaleActionSocket(action);
-    }
+//    @Override
+//    public MaleActionSocket createMaleActionSocket(Action action) {
+//        return new DefaultMaleActionSocket(action);
+//    }
 
-    @Override
-    public MaleExpressionSocket createMaleExpressionSocket(Expression expression) {
-        return new DefaultMaleExpressionSocket(expression);
-    }
+//    @Override
+//    public MaleExpressionSocket createMaleExpressionSocket(Expression expression) {
+//        return new DefaultMaleExpressionSocket(expression);
+//    }
 
     @Override
     public FemaleActionSocket createFemaleActionSocket(
@@ -168,11 +168,12 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public FemaleActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName, Action action){
+            FemaleSocketListener listener, String socketName,
+            MaleActionSocket maleSocket){
         
         FemaleActionSocket socket =
                 new DefaultFemaleActionSocket(listener, socketName);
-        socket.connect(createMaleActionSocket(action));
+        socket.connect(maleSocket);
         return socket;
     }
 
@@ -184,11 +185,12 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public FemaleExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName, Expression expression) {
+            FemaleSocketListener listener, String socketName,
+            MaleExpressionSocket maleSocket) {
         
         FemaleExpressionSocket socket =
                 new DefaultFemaleExpressionSocket(listener, socketName);
-        socket.connect(createMaleExpressionSocket(expression));
+        socket.connect(maleSocket);
         return socket;
     }
 

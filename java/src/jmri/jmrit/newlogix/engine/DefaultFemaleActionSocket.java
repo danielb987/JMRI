@@ -17,7 +17,8 @@ import jmri.jmrit.newlogix.MaleSocket;
 /**
  *
  */
-public class DefaultFemaleActionSocket extends AbstractFemaleSocket
+public class DefaultFemaleActionSocket
+        extends AbstractFemaleSocket
         implements FemaleActionSocket {
 
     private Action _action;

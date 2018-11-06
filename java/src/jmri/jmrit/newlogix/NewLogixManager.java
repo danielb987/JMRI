@@ -41,21 +41,23 @@ public interface NewLogixManager extends Manager<NewLogix> {
 
     public NewLogix getBySystemName(String name);
     
-    public MaleActionSocket createMaleActionSocket(Action action);
+//    public MaleActionSocket createMaleActionSocket(Action action);
 
-    public MaleExpressionSocket createMaleExpressionSocket(Expression expression);
+//    public MaleExpressionSocket createMaleExpressionSocket(Expression expression);
     
     public FemaleActionSocket createFemaleActionSocket(
             FemaleSocketListener listener, String socketName);
 
     public FemaleActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName, Action action);
+            FemaleSocketListener listener, String socketName,
+            MaleActionSocket maleSocket);
 
     public FemaleExpressionSocket createFemaleExpressionSocket(
             FemaleSocketListener listener, String socketName);
 
     public FemaleExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName, Expression expression);
+            FemaleSocketListener listener, String socketName,
+            MaleExpressionSocket maleSocket);
 
     /**
      * Activate all NewLogixs that are not currently active. This method is

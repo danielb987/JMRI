@@ -26,16 +26,16 @@ public class NewLogixTest {
         NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-        InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).addExpression(expression);
+        InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "NewLogix 102, Expression 26"));  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getNewSystemName(newLogix);
         Action action = new ActionTurnout(systemName, "An action for test");  // NOI18N
-        InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).addAction(action);
+        InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(action);
     }
     
     @Test
     public void testBundle() {
-        Assert.assertTrue("bean type is correct", "New Logix".equals(new DefaultNewLogix("IQA55", null, null).getBeanType()));
+        Assert.assertTrue("bean type is correct", "New Logix".equals(new DefaultNewLogix("IQA55", null).getBeanType()));
         Assert.assertTrue("bean type is correct", "Action".equals(new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.TRIGGER_ACTION).getBeanType()));
         Assert.assertTrue("bean type is correct", "Expression".equals(new ExpressionAnd("IQA55:E321", null).getBeanType()));
     }

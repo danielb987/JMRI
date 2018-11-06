@@ -23,6 +23,18 @@ public interface FemaleSocket {
     public void disconnect();
     
     /**
+     * Get the connected socket.
+     * @return the male socket or null if not connected
+     */
+    public MaleSocket getConnectedSocket();
+    
+    /**
+     * Is a male socket connected to this female socket?
+     * @return true if connected
+     */
+    public boolean isConnected();
+    
+    /**
      * Is a particular male socket compatible with this female socket?
      * @param socket the male socket
      * @return true if the male socket can be connected to this female socket

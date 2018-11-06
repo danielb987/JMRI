@@ -2,10 +2,17 @@ package jmri.jmrit.newlogix.engine;
 
 import static jmri.NamedBean.UNKNOWN;
 
+import java.util.SortedSet;
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.FemaleActionSocket;
+import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.NewLogix;
+import jmri.jmrit.newlogix.NewLogixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,31 +21,36 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultNewLogix extends AbstractNamedBean
-        implements NewLogix {
+public final class DefaultNewLogix extends AbstractNamedBean
+        implements NewLogix, FemaleSocketListener {
     
-    private Action _action;
+//    private Action _action;
+    private final FemaleActionSocket _femaleActionSocket;
     private boolean _enabled = false;
     
     public DefaultNewLogix(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _action = null;
+        _femaleActionSocket = InstanceManager.getDefault(NewLogixManager.class).createFemaleActionSocket(this, "");
     }
 
-    public DefaultNewLogix(String sys, String user, Action action) throws BadUserNameException, BadSystemNameException  {
+    public DefaultNewLogix(String sys, String user, MaleActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _action = action;
+        _femaleActionSocket = InstanceManager.getDefault(NewLogixManager.class).createFemaleActionSocket(this, "", action);
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
+    /** {@inheritDoc} */
+    @Override
+    public FemaleSocket getFemaleSocket() {
+        return _femaleActionSocket;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public void execute() {
         if (_enabled) {
-            _enabled = _action.executeStart();
+            _enabled = _femaleActionSocket.executeStart();
         } else {
-            _enabled = _action.executeContinue();
+            _enabled = _femaleActionSocket.executeContinue();
         }
     }
 
@@ -91,4 +103,14 @@ public class DefaultNewLogix extends AbstractNamedBean
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultNewLogix.class);
+
+    @Override
+    public void connected(FemaleSocket socket) {
+        // Do nothing
+    }
+
+    @Override
+    public void disconnected(FemaleSocket socket) {
+        // Do nothing
+    }
 }

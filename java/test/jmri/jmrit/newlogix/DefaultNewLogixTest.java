@@ -16,7 +16,7 @@ public class DefaultNewLogixTest {
 
     @Test
     public void testCtor() {
-        new DefaultNewLogix("IQA55", null, null);
+        new DefaultNewLogix("IQA55", null);
     }
     
     // The minimal setup for log4J

@@ -63,16 +63,29 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
         }
     }
 
+    protected MaleExpressionSocket createMaleExpressionSocket(Expression expression) {
+        return new DefaultMaleExpressionSocket(expression);
+    }
+    
     /**
      * Remember a NamedBean Object created outside the manager.
      * This method creates a MaleActionSocket for the action.
      *
-     * @param n the bean
+     * @param expression the bean
      */
     @Override
-    public void register(@Nonnull Expression n) {
-        register(InstanceManager.getDefault(NewLogixManager.class)
-                .createMaleExpressionSocket(n));
+    public MaleExpressionSocket register(@Nonnull Expression expression)
+            throws IllegalArgumentException {
+        
+        // Check if system name is valid
+        if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
+            log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
+            throw new IllegalArgumentException("System name is invalid");
+        }
+        // save in the maps
+        MaleExpressionSocket maleSocket = createMaleExpressionSocket(expression);
+        register(maleSocket);
+        return maleSocket;
     }
     
     @Override
@@ -119,7 +132,7 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
         b.append(nextNumber);
         return b.toString();
     }
-
+/*
     @Override
     public void addExpression(Expression expression) throws IllegalArgumentException {
         // Check if system name is valid
@@ -150,7 +163,7 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
     public void deleteExpression(Expression x) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+*/    
     static DefaultExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe

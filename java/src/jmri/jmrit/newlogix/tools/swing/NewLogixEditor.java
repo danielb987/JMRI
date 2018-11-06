@@ -12,15 +12,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.NewLogix;
+import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.newlogix.actions.ActionTurnout;
 import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
 
 import java.io.File;
+import java.util.SortedSet;
 import javax.swing.tree.TreePath;
+import jmri.InstanceManager;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.MaleActionSocket;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
+import jmri.jmrit.newlogix.MaleSocket;
+import jmri.jmrit.newlogix.actions.ActionIfThen;
 
 /**
  * Editor of NewLogix
@@ -56,13 +64,39 @@ public class NewLogixEditor extends JmriJFrame {
 
         setJMenuBar(menuBar);
 //        addHelpMenu("package.jmri.jmrit.operations.Operations_Settings", true); // NOI18N
-
+        
+        
+        // For testing only
+        String systemName;
+        NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
+        systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
+        Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
+        MaleExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).register(expression);
+//        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "NewLogix 102, Expression 26"));  // NOI18N
+        systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getNewSystemName(newLogix);
+        Action actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
+        MaleActionSocket actionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(actionTurnout);
+        systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getNewSystemName(newLogix);
+        Action actionIfThen = new ActionIfThen(systemName, ActionIfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
+        actionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(actionIfThen);
+        newLogix.getFemaleSocket().connect(actionSocket);
+        
+        
         // Figure out where in the filesystem to start displaying
-        File root;
-        root = new File(System.getProperty("user.home"));
+//        File root;
+//        root = new File(System.getProperty("user.home"));
+        FemaleSocket root;
+        SortedSet<NewLogix> newLogixSet = InstanceManager.getDefault(NewLogixManager.class).getNamedBeanSet();
+        for (NewLogix nl : newLogixSet) {
+            System.out.format("NewLogix: %s%n", nl.toString());
+            System.out.format("NewLogix female socket: %s. Connected: %b%n", nl.getFemaleSocket().toString(), nl.getFemaleSocket().isConnected());
+        }
+        root = newLogixSet.first().getFemaleSocket();
 
         // Create a TreeModel object to represent our tree of files
-        FileTreeModel model = new FileTreeModel(root);
+//        FileTreeModel model = new FileTreeModel(root);
+//        // Create a TreeModel object to represent our tree of files
+        FemaleSocketTreeModel model = new FemaleSocketTreeModel(root);
 
         // Create a JTree and tell it to display our model
         JTree tree = new JTree();
@@ -106,6 +140,107 @@ public class NewLogixEditor extends JmriJFrame {
         pack();
         setVisible(true);
     }
+    
+    
+    
+    
+    /**
+     * The methods in this class allow the JTree component to traverse the file
+     * system tree and display the files and directories.
+     */
+    private static class FemaleSocketTreeModel implements TreeModel {
+        // We specify the root directory when we create the model.
+
+        protected FemaleSocket root;
+
+        public FemaleSocketTreeModel(FemaleSocket root) {
+            this.root = root;
+        }
+
+        // The model knows how to return the root object of the tree
+        @Override
+        public Object getRoot() {
+            return root;
+        }
+
+        // Tell JTree whether an object in the tree is a leaf
+        @Override
+        public boolean isLeaf(Object node) {
+            FemaleSocket socket = (FemaleSocket) node;
+            if (!socket.isConnected()) {
+                return true;
+            }
+            return socket.getConnectedSocket().getChildCount() == 0;
+        }
+
+        // Tell JTree how many children a node has
+        @Override
+        public int getChildCount(Object parent) {
+            FemaleSocket socket = (FemaleSocket) parent;
+            if (!socket.isConnected()) {
+                return 0;
+            }
+            return socket.getConnectedSocket().getChildCount();
+        }
+
+        // Fetch any numbered child of a node for the JTree.
+        // Our model returns File objects for all nodes in the tree.  The
+        // JTree displays these by calling the File.toString() method.
+        @Override
+        public Object getChild(Object parent, int index) {
+            FemaleSocket socket = (FemaleSocket) parent;
+            if (!socket.isConnected()) {
+                return null;
+            }
+            return socket.getConnectedSocket().getChild(index);
+        }
+
+        // Figure out a child's position in its parent node.
+        @Override
+        public int getIndexOfChild(Object parent, Object child) {
+            FemaleSocket socket = (FemaleSocket) parent;
+            if (!socket.isConnected()) {
+                return -1;
+            }
+            MaleSocket maleSocket = socket.getConnectedSocket();
+            for (int i = 0; i < maleSocket.getChildCount(); i++) {
+                if (child == maleSocket.getChild(i)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // This method is invoked by the JTree only for editable trees.  
+        // This TreeModel does not allow editing, so we do not implement 
+        // this method.  The JTree editable property is false by default.
+        @Override
+        public void valueForPathChanged(TreePath path, Object newvalue) {
+        }
+
+        // Since this is not an editable tree model, we never fire any events,
+        // so we don't actually have to keep track of interested listeners
+        @Override
+        public void addTreeModelListener(TreeModelListener l) {
+        }
+
+        @Override
+        public void removeTreeModelListener(TreeModelListener l) {
+        }
+        
+    }
+    
+    
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    //************************************************************************************************************
+    
     
     
     

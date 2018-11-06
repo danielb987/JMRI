@@ -16,9 +16,12 @@ public interface ActionManager extends Manager<MaleActionSocket> {
      * Remember a NamedBean Object created outside the manager.
      * This method creates a MaleActionSocket for the action.
      *
-     * @param n the bean
+     * @param action the bean
+     * @return the male socket for this action
+     * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public void register(@Nonnull Action n);
+    public MaleActionSocket register(@Nonnull Action action)
+            throws IllegalArgumentException;
     
     /**
      * Create a new system name for an Action.
@@ -28,14 +31,14 @@ public interface ActionManager extends Manager<MaleActionSocket> {
      */
     public String getNewSystemName(NewLogix newLogix);
 
-    /**
+    /*.*
      * Add an Action.
      *
      * @param action the action to add
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public void addAction(Action action)
-            throws IllegalArgumentException;
+//    public void addAction(Action action)
+//            throws IllegalArgumentException;
 
     /*.*
      * Locate via user name, then system name if needed. Does not create a new

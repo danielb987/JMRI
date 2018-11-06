@@ -18,6 +18,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         _name = name;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void connect(MaleSocket socket) {
         if (!isCompatible(socket)) {
@@ -32,17 +33,32 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         _listener.connected(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void disconnect() {
         _socket = null;
         _listener.disconnected(this);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public MaleSocket getConnectedSocket() {
+        return _socket;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConnected() {
+        return _socket != null;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public void setName(String name) {
         _name = name;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return _name;

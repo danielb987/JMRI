@@ -60,16 +60,28 @@ public class DefaultActionManager extends AbstractManager<MaleActionSocket>
         }
     }
 
+    protected MaleActionSocket createMaleActionSocket(Action action) {
+        return new DefaultMaleActionSocket(action);
+    }
+    
     /**
      * Remember a NamedBean Object created outside the manager.
      * This method creates a MaleActionSocket for the action.
      *
-     * @param n the bean
+     * @param action the bean
      */
     @Override
-    public void register(@Nonnull Action n) {
-        register(InstanceManager.getDefault(NewLogixManager.class)
-                .createMaleActionSocket(n));
+    public MaleActionSocket register(@Nonnull Action action)
+            throws IllegalArgumentException {
+        
+        // Check if system name is valid
+        if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
+            log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
+            throw new IllegalArgumentException("System name is invalid");
+        }
+        MaleActionSocket maleSocket = createMaleActionSocket(action);
+        register(maleSocket);
+        return maleSocket;
     }
     
     @Override
@@ -116,7 +128,7 @@ public class DefaultActionManager extends AbstractManager<MaleActionSocket>
         b.append(nextNumber);
         return b.toString();
     }
-
+/*
     @Override
     public void addAction(Action action) throws IllegalArgumentException {
         // Check if system name is valid

@@ -9,6 +9,8 @@ import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleActionSocket;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.NewLogixManager;
 
 /**
@@ -70,8 +72,11 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
                 .createFemaleActionSocket(this, "A1");
     }
     
-    public ActionIfThen(String sys, Type type, String expressionSocketName,
-            String actionSocketName, Expression expression, Action action) {
+    public ActionIfThen(
+            String sys, Type type,
+            String expressionSocketName, String actionSocketName,
+            MaleExpressionSocket expression, MaleActionSocket action) {
+        
         super(sys);
         _type = type;
         _expressionSocket = InstanceManager.getDefault(NewLogixManager.class)
@@ -80,9 +85,11 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
                 .createFemaleActionSocket(this, actionSocketName, action);
     }
     
-    public ActionIfThen(String sys, String user, Type type,
+    public ActionIfThen(
+            String sys, String user, Type type,
             String expressionSocketName, String actionSocketName, 
-            Expression expression, Action action) {
+            MaleExpressionSocket expression, MaleActionSocket action) {
+        
         super(sys, user);
         _type = type;
         _expressionSocket = InstanceManager.getDefault(NewLogixManager.class)
