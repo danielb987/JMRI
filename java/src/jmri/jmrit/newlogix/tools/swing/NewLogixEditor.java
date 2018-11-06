@@ -241,7 +241,7 @@ public class NewLogixEditor extends JmriJFrame {
             javax.swing.JPanel panel = new javax.swing.JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
             javax.swing.JCheckBox checkbox = new javax.swing.JCheckBox();
-            checkbox.setSelected((row%2)==1);
+            checkbox.setSelected((row%2)==0);
             javax.swing.JTextField field = new javax.swing.JTextField();
             field.setText(value.toString());
             panel.add(checkbox);
