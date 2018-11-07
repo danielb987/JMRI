@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.engine;
 
+import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleSocket;
@@ -52,6 +53,25 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return _socket != null;
     }
     
+
+    @Override
+    public String getShortDescription() {
+        if (_socket != null) {
+            return _socket.getShortDescription();
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+    }
+
+    @Override
+    public String getLongDescription() {
+        if (_socket != null) {
+            return _socket.getLongDescription();
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void setName(String name) {
@@ -62,6 +82,24 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     @Override
     public String getName() {
         return _name;
+    }
+
+    @Override
+    public Category getCategory() {
+        if (_socket != null) {
+            return _socket.getCategory();
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+    }
+
+    @Override
+    public boolean isExternal() {
+        if (_socket != null) {
+            return _socket.isExternal();
+        } else {
+            throw new UnsupportedOperationException("Not supported.");
+        }
     }
 
 }

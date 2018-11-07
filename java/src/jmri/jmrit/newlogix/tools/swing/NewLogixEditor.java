@@ -247,7 +247,12 @@ public class NewLogixEditor extends JmriJFrame {
             field.setText(value.toString());
             panel.add(field);
             javax.swing.JTextField field2 = new javax.swing.JTextField();
-            field2.setText(((FemaleSocket)value).getLongDescription());
+            FemaleSocket socket = (FemaleSocket)value;
+            if (socket.isConnected()) {
+                field2.setText(socket.getLongDescription());
+            } else {
+                field2.setText("Not connected");
+            }
             panel.add(field2);
             return panel;
 //            return field;

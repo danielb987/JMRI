@@ -31,21 +31,6 @@ public interface Expression extends NamedBean, Base {
     public static final int TRUE = 0x04;
     
     /**
-     * Get the category of this expression.
-     * @return the category
-     */
-    public Category getCategory();
-
-    /**
-     * Is this an external expression?
-     * Does this action affects on or is dependent on external things, like
-     * turnouts and sensors? Timers are considered as internal since they
-     * behavies the same on every computer on every layout.
-     * @return true if this expression is external
-     */
-    public boolean isExternal();
-
-    /**
      * Evaluate this expression.
      * 
      * @return the result of the evaluation

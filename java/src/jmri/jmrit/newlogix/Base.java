@@ -74,4 +74,18 @@ public interface Base {
      */
     public int getChildCount();
     
+    /**
+     * Get the category.
+     */
+    public Category getCategory();
+    
+    /**
+     * Is this external?
+     * Does it affects or is dependent on external things, like
+     * turnouts and sensors? Timers are considered as internal since they
+     * behavies the same on every computer on every layout.
+     * @return true if this is external
+     */
+    public boolean isExternal();
+
 }

@@ -10,21 +10,6 @@ import jmri.NamedBean;
 public interface Action extends NamedBean, Base {
 
     /**
-     * Get the category of this action.
-     * @return the category
-     */
-    public Category getCategory();
-    
-    /**
-     * Is this an external action?
-     * Does this action affects on or is dependent on external things, like
-     * turnouts and sensors? Timers are considered as internal since they
-     * behavies the same on every computer on every layout.
-     * @return true if this action is external
-     */
-    public boolean isExternal();
-
-    /**
      * Start execution of this Action.
      * 
      * @return true if this action is not finished.
