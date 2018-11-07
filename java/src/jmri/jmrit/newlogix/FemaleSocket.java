@@ -9,7 +9,7 @@ import javax.annotation.CheckForNull;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface FemaleSocket {
+public interface FemaleSocket extends Base {
 
     /**
      * Connect the male socket to this female socket.

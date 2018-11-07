@@ -242,10 +242,13 @@ public class NewLogixEditor extends JmriJFrame {
             panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
             javax.swing.JCheckBox checkbox = new javax.swing.JCheckBox();
             checkbox.setSelected((row%2)==0);
+            panel.add(checkbox);
             javax.swing.JTextField field = new javax.swing.JTextField();
             field.setText(value.toString());
-            panel.add(checkbox);
             panel.add(field);
+            javax.swing.JTextField field2 = new javax.swing.JTextField();
+            field2.setText(((FemaleSocket)value).getLongDescription());
+            panel.add(field2);
             return panel;
 //            return field;
 //            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
