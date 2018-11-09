@@ -116,6 +116,21 @@ public final class InstanceManager {
     }
 
     /**
+     * Retrieve a list of all objects of type T that were registered with
+     * {@link #store}.
+     *
+     * @param <T>  The type of the class
+     * @param instanceManager The instance manager to get the list from.
+     * @param type The class Object for the items' type.
+     * @return A list of type Objects registered with the manager or an empty
+     *         list.
+     */
+    @Nonnull
+    static public <T> List<T> getList(InstanceManager instanceManager, @Nonnull Class<T> type) {
+        return instanceManager.getInstances(type);
+    }
+
+    /**
      * Deregister all objects of a particular type.
      *
      * @param <T>  The type of the class
@@ -154,7 +169,7 @@ public final class InstanceManager {
      */
     public <T> void remove(@Nonnull T item, @Nonnull Class<T> type) {
         log.debug("Remove item type {}", type.getName());
-        List<T> l = getList(type);
+        List<T> l = getList(this, type);
         int index = l.indexOf(item);
         if (index != -1) { // -1 means items was not in list, and therefor, not registered
             l.remove(item);
@@ -772,6 +787,22 @@ public final class InstanceManager {
     }
 
     /**
+     * Get a list of all the managers.
+     *
+     * @return a list of all the managers or an empty list
+     */
+    @Nonnull
+    public List<Class<?>> getAllManagers() {
+        log.trace("Get list of all managers");
+        
+        List<Class<?>> list = new ArrayList<>();
+        
+        list.addAll(managerLists.keySet());
+        
+        return list;
+    }
+
+    /**
      * Call {@link jmri.Disposable#dispose()} on the passed in Object if and
      * only if the passed in Object is not held in any lists.
      * <p>
@@ -804,9 +835,6 @@ public final class InstanceManager {
         log.debug("Clearing InstanceManager");
         if (traceFileActive) traceFileWriter.println("clearAll");
         
-        // replace the instance manager, so future calls will invoke the new one
-        LazyInstanceManager.instanceManager = new InstanceManager();
-        
         // continue to clean up this one
         new HashSet<>(managerLists.keySet()).forEach((type) -> {
             clear(type);
@@ -825,6 +853,9 @@ public final class InstanceManager {
             traceFileWriter.println(""); // marks new InstanceManager
             traceFileWriter.flush();
         }
+        
+        // replace the instance manager, so future calls will invoke the new one
+        LazyInstanceManager.instanceManager = new InstanceManager();
     }
 
     /**
