@@ -9,8 +9,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import jmri.ConditionalManager;
 import jmri.ConfigureManager;
@@ -19,6 +22,7 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.LightManager;
 import jmri.LogixManager;
+import jmri.Manager;
 import jmri.MemoryManager;
 import jmri.NamedBean;
 import jmri.PowerManager;
@@ -35,6 +39,7 @@ import jmri.TurnoutManager;
 import jmri.TurnoutOperationManager;
 import jmri.UserPreferencesManager;
 import jmri.implementation.JmriConfigurationManager;
+import jmri.implementation.SignalSpeedMap;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.WarrantManager;
@@ -553,6 +558,331 @@ public class JUnitUtil {
         }, "setAndWait " + bean.getSystemName() + ": " + state);
     }
 
+    /**
+     * Get a set of all named beans from managers that inherits from jmri.Manager,
+     * like Turnouts, Sensors, Memories, etc.
+     * Note that this method only returns named beans from those managers that
+     * inherit jmri.Manager, not from other types of managers.
+     *
+     * @param instanceManager the instance manager that has the named beans
+     * @return a set of the named beans from the managers or an empty set
+     */
+    @Nonnull
+    private static Set<NamedBean> getAllNamedBeansFromManagerManagers(
+            InstanceManager instanceManager) {
+        
+        log.trace("Get list of all instances");
+        
+        Set<NamedBean> set = new HashSet<>();
+        for (Class<?> type : instanceManager.getAllManagers()) {
+            synchronized (type) {
+                for (Object manager : instanceManager.getInstances(type)) {
+                    if (manager instanceof jmri.Manager) {
+                        Manager<?> mngr = (Manager<?>)manager;
+                        set.addAll(mngr.getNamedBeanSet());
+                    }
+                }
+            }
+        }
+        
+        return set;
+    }
+    
+    static private class InstanceManagerItemComparator implements Comparator<Object> 
+    { 
+        // Used for sorting in ascending order of
+        // roll number
+        @Override
+        public int compare(Object a, Object b)
+        {
+            NamedBean beanA = (NamedBean)a;
+            NamedBean beanB = (NamedBean)b;
+            
+            // Same class?
+            if (beanA.getClass().getName().equals(
+                    beanB.getClass().getName())) {
+                
+                // Different system name?
+                if (! beanA.getSystemName().equals(beanB.getSystemName())) {
+                    return beanA.getSystemName().compareTo(beanB.getSystemName());
+                    
+                // Different user name?
+                } else if (! beanA.getDisplayName().equals(beanB.getDisplayName())) {
+                    return beanA.getDisplayName().compareTo(beanB.getDisplayName());
+                } else {
+                    // Compare state
+                    if (beanA.getState() == beanB.getState()) {
+                        return 0;
+                    } else {
+                        return (beanA.getState() < beanB.getState()) ? -1 : 1;
+                    }
+                }
+            } else {
+                return beanA.getClass().getName().compareTo(
+                        beanB.getClass().getName());
+            }
+        }
+    }
+    
+    /**
+     * This method verifies that all the items in both of the instance managers
+     * are equal. See the method setInstanceManager().
+     * @param instanceManagerA one of the instance managers
+     * @param instanceManagerB one of the instance managers
+     * @return true if the items match in both instance managers
+     */
+    public static boolean verifyInstanceManagerBeansAreEqual(
+            InstanceManager instanceManagerA,
+            InstanceManager instanceManagerB) {
+        
+        boolean isEqual = true;
+        
+        InstanceManagerItemComparator instanceManagerNamedBeanComparator
+                = new InstanceManagerItemComparator();
+        
+        Set<NamedBean> instanceSetA = getAllNamedBeansFromManagerManagers(instanceManagerA);
+        List<NamedBean> instanceListA = new ArrayList<>();
+        instanceListA.addAll(instanceSetA);
+        instanceListA.sort(instanceManagerNamedBeanComparator);
+        
+        Set<NamedBean> instanceSetB = getAllNamedBeansFromManagerManagers(instanceManagerB);
+        List<NamedBean> instanceListB = new ArrayList<>();
+        instanceListB.addAll(instanceSetB);
+        instanceListB.sort(instanceManagerNamedBeanComparator);
+        
+        int instanceIndexA = 0;
+        int instanceIndexB = 0;
+        while ((instanceIndexA < instanceListA.size())
+                || (instanceIndexB < instanceListB.size())) {
+            
+            NamedBean beanA = null;
+            NamedBean beanB = null;
+            if (instanceIndexA < instanceListA.size()) {
+                beanA = instanceListA.get(instanceIndexA);
+            }
+            if (instanceIndexB < instanceListB.size()) {
+                beanB = instanceListB.get(instanceIndexB);
+            }
+            
+            if ((beanA != null) && (beanB != null)) {
+                int compare = beanA.getClass().getName().compareTo(beanB.getClass().getName());
+                if (compare == 0) {
+                    compare = beanA.getSystemName().compareTo(beanB.getSystemName());
+                }
+                if (compare == 0) {
+                    compare = beanA.getDisplayName().compareTo(beanB.getDisplayName());
+                }
+                
+                if (compare < 0) {
+                    log.error("InstanceManagerA has item {} which is missing in instanceManagerB",
+                            beanA.toString());  // NOI18N
+                    isEqual = false;
+                    instanceIndexA++;
+                } else if (compare > 0) {
+                    log.error("InstanceManagerB has item {} which is missing in instanceManagerA",
+                            beanB.toString());  // NOI18N
+                    isEqual = false;
+                    instanceIndexB++;
+                } else if (beanA.getState() != beanB.getState()) {
+                    log.error("InstanceManagerA has item {} with state {} and InstanceManagerB has item {} with state {} but they differ in state",
+                            beanA.toString(), beanA.getState(), beanB.toString(), beanB.getState());  // NOI18N
+                    isEqual = false;
+                    instanceIndexA++;
+                    instanceIndexB++;
+                } else {
+                    // Items are equal
+                    instanceIndexA++;
+                    instanceIndexB++;
+                }
+            } else if (beanA != null) {
+                log.error("InstanceManagerA has item {} which is missing in instanceManagerB", beanA.toString());  // NOI18N
+                isEqual = false;
+                instanceIndexA++;
+            } else if (beanB != null) {
+                log.error("InstanceManagerB has item {} which is missing in instanceManagerA", beanB.toString());  // NOI18N
+                isEqual = false;
+                instanceIndexB++;
+            }
+        }
+        
+        return isEqual;
+    }
+    
+    private static boolean verifySameNumberOfManagers(
+            String managerClassName,
+            int numManagersA,
+            int numManagersB) {
+        
+        if (numManagersA != numManagersB) {
+            log.error("InstanceManagerA has {} managers and instanceManagerB has {} of type {}",
+                    numManagersA, numManagersB, managerClassName);  // NOI18N
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    /**
+     * This method verifies that all the items in both of the instance managers
+     * are equal. See the method setInstanceManager().
+     * @param instanceManagerA one of the instance managers
+     * @param instanceManagerB one of the instance managers
+     * @return true if the items match in both instance managers
+     */
+    public static boolean verifyInstanceManagersHasSameNumberOfManangersOfEachType(
+            InstanceManager instanceManagerA,
+            InstanceManager instanceManagerB) {
+        
+        boolean isEqual = true;
+        
+        // Verify that the both instance managers has the same number of managers of each type
+        List<String> managerListA = new ArrayList<>();
+        for (Class<?> type : instanceManagerA.getAllManagers()) {
+            managerListA.add(type.getName());
+        }
+        java.util.Collections.sort(managerListA);
+        List<String> managerListB = new ArrayList<>();
+        for (Class<?> type : instanceManagerB.getAllManagers()) {
+            managerListB.add(type.getName());
+        }
+        java.util.Collections.sort(managerListB);
+        
+        int managerIndexA = 0;
+        int managerIndexB = 0;
+        
+        String currentManager = "";
+        int numCurrentManagersA = 0;
+        int numCurrentManagersB = 0;
+        
+        while ((managerIndexA < managerListA.size())
+                || (managerIndexB < managerListB.size())) {
+            
+            String classNameA = null;
+            String classNameB = null;
+            if (managerIndexA < managerListA.size()) {
+                classNameA = managerListA.get(managerIndexA);
+            }
+            if (managerIndexB < managerListB.size()) {
+                classNameB = managerListB.get(managerIndexB);
+            }
+            
+            if ((classNameA != null) && (classNameB != null)) {
+                int compare = classNameA.compareTo(classNameB);
+                
+                if (compare < 0) {
+                    numCurrentManagersA++;
+                    if (currentManager.isEmpty()) {
+                        currentManager = classNameA;
+                    } else if (!currentManager.equals(classNameA)) {
+                        isEqual &= verifySameNumberOfManagers(currentManager, numCurrentManagersA, numCurrentManagersB);
+                        currentManager = classNameA;
+                        numCurrentManagersA = 0;
+                        numCurrentManagersB = 0;
+                    }
+                    managerIndexA++;
+                    
+                } else if (compare > 0) {
+                    numCurrentManagersB++;
+                    if (currentManager.isEmpty()) {
+                        currentManager = classNameB;
+                    } else if (!currentManager.equals(classNameB)) {
+                        isEqual &= verifySameNumberOfManagers(currentManager, numCurrentManagersA, numCurrentManagersB);
+                        currentManager = classNameB;
+                        numCurrentManagersA = 0;
+                        numCurrentManagersB = 0;
+                    }
+                    managerIndexB++;
+                    
+                } else {
+                    numCurrentManagersA++;
+                    numCurrentManagersB++;
+                    // The class names are equal
+                    if (!currentManager.equals(classNameA)) {
+                        isEqual &= verifySameNumberOfManagers(currentManager, numCurrentManagersA, numCurrentManagersB);
+                        currentManager = classNameA;
+                        numCurrentManagersA = 0;
+                        numCurrentManagersB = 0;
+                    }
+                    // Items are equal
+                    managerIndexA++;
+                    managerIndexB++;
+                }
+            } else if (classNameA != null) {
+                if (currentManager.isEmpty()) {
+                    currentManager = classNameA;
+                }
+                numCurrentManagersA++;
+                managerIndexA++;
+            } else if (classNameB != null) {
+                if (currentManager.isEmpty()) {
+                    currentManager = classNameB;
+                }
+                numCurrentManagersB++;
+                managerIndexB++;
+            }
+        }
+        
+        isEqual &= verifySameNumberOfManagers(currentManager, numCurrentManagersA, numCurrentManagersB);
+        
+        return isEqual;
+    }
+    
+    /**
+     * This method verifies that all the items in both of the instance managers
+     * are equal. See the method setInstanceManager().
+     * @param instanceManagerA one of the instance managers
+     * @param instanceManagerB one of the instance managers
+     * @return true if the items match in both instance managers
+     */
+    public static boolean verifyInstanceManagersAreEqual(
+            InstanceManager instanceManagerA,
+            InstanceManager instanceManagerB) {
+        
+        // Run both tests always in order to get all errors written to the log
+        boolean res1 =
+                verifyInstanceManagerBeansAreEqual(instanceManagerA, instanceManagerB);
+        boolean res2 =
+                verifyInstanceManagersHasSameNumberOfManangersOfEachType(
+                        instanceManagerA, instanceManagerB);
+        
+        return res1 && res2;
+    }
+    
+    /**
+     * This method allows a test to use two different instance managers and
+     * switch between them. It is useful for testing complex features like
+     * the LayoutManager.
+     * @param instanceManager the instance manager to set
+     */
+    public static void setInstanceManager(InstanceManager instanceManager) {
+        Class<?>[] instanceManagerSubClasses = InstanceManager.class.getDeclaredClasses();
+        Class<?> instanceManager_LazyInstanceManagerClass = null;
+        
+        for (Class<?> subClass : instanceManagerSubClasses) {
+            if ("jmri.InstanceManager$LazyInstanceManager".equals(subClass.getName())) {
+                instanceManager_LazyInstanceManagerClass = subClass;
+            }
+        }
+        
+        if (instanceManager_LazyInstanceManagerClass == null) {
+            throw new RuntimeException("Cannot find private internal class 'InstanceManager.LazyInstanceManager'");
+        }
+        
+        try {
+            Field instanceManagerField = instanceManager_LazyInstanceManagerClass.getDeclaredField("instanceManager");
+            instanceManagerField.setAccessible(true);
+            instanceManagerField.set(instanceManager_LazyInstanceManagerClass, instanceManager);
+        } catch (NoSuchFieldException ex) {
+            throw new RuntimeException(
+                    "Cannot find private field 'instanceManager' in private internal class 'InstanceManager.LazyInstanceManager'",
+                    ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(
+                    "Cannot access private field 'instanceManager' in private internal class 'InstanceManager.LazyInstanceManager'",
+                    ex);
+        }
+    }
+    
     public static void resetInstanceManager() {
         // clear all instances from the static InstanceManager
         InstanceManager.getDefault().clearAll();
@@ -634,6 +964,11 @@ public class JUnitUtil {
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(w, jmri.Manager.SIGNALMASTLOGICS);
         }
+    }
+
+    public static void initSignalSpeedMap() {
+        // now done automatically by InstanceManager's autoinit
+        InstanceManager.getDefault(SignalSpeedMap.class);
     }
 
     public static void initLayoutBlockManager() {
