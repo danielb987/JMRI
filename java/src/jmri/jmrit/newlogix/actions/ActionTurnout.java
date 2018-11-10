@@ -2,7 +2,6 @@ package jmri.jmrit.newlogix.actions;
 
 import jmri.jmrit.newlogix.Category;
 import jmri.Turnout;
-import jmri.jmrit.newlogix.AbstractAction;
 import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.FemaleSocket;
 

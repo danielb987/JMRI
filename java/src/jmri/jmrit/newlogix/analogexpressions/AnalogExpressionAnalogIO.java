@@ -1,34 +1,35 @@
-package jmri.jmrit.newlogix.engine;
+package jmri.jmrit.newlogix.analogexpressions;
 
+import java.util.List;
+import java.util.ArrayList;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.expressions.AbstractExpression;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
 
 /**
- * Adapter for expression plugins.
- * Every expression needs to have a configurator class that delivers a JPanel
- * used for configuration. Since plugin expressions has 
+ * Evaluates to True if all the child expressions evaluate to true.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionPluginAdapter extends AbstractExpression {
+public class AnalogExpressionAnalogIO extends AbstractExpression {
 
-    private Expression _pluginExpression;
+    List<Expression> children = new ArrayList<>();
     
-    public ExpressionPluginAdapter(String sys, Expression pluginExpression)
-            throws BadUserNameException,
+    public AnalogExpressionAnalogIO(String sys) throws BadUserNameException,
             BadSystemNameException {
-        
         super(sys);
-//        jmri.jmrix.ConnectionConfig cc;
-        _pluginExpression = pluginExpression;
+    }
+
+    public AnalogExpressionAnalogIO(String sys, String user) throws BadUserNameException,
+            BadSystemNameException {
+        super(sys, user);
     }
 
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return _pluginExpression.getCategory();
+        return Category.COMMON;
     }
     
     /** {@inheritDoc} */
@@ -40,13 +41,21 @@ public class ExpressionPluginAdapter extends AbstractExpression {
     /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
-        return _pluginExpression.evaluate();
+        boolean result = true;
+        for (Expression e : children) {
+            if (! e.evaluate()) {
+                result = false;
+            }
+        }
+        return result;
     }
     
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        _pluginExpression.reset();
+        for (Expression e : children) {
+            e.reset();
+        }
     }
 
     @Override
@@ -58,5 +67,5 @@ public class ExpressionPluginAdapter extends AbstractExpression {
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
 }

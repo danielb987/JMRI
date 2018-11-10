@@ -3,7 +3,6 @@ package jmri.jmrit.newlogix.actions;
 import jmri.jmrit.newlogix.NewLogixActionPlugin;
 import java.util.Map;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.AbstractAction;
 import jmri.jmrit.newlogix.FemaleSocket;
 
 /**

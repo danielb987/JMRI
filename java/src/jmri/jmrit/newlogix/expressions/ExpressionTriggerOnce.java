@@ -1,7 +1,6 @@
 package jmri.jmrit.newlogix.expressions;
 
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.AbstractExpression;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
 

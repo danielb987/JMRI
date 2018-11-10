@@ -3,7 +3,6 @@ package jmri.jmrit.newlogix.actions;
 import java.util.List;
 import java.util.ArrayList;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.AbstractAction;
 import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.FemaleSocket;
 

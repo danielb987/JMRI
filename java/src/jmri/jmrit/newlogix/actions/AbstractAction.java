@@ -1,7 +1,8 @@
-package jmri.jmrit.newlogix;
+package jmri.jmrit.newlogix.actions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.newlogix.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
