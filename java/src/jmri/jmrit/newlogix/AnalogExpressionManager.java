@@ -10,7 +10,7 @@ import jmri.jmrit.newlogix.Expression;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ExpressionManager extends Manager<MaleExpressionSocket> {
+public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSocket> {
 
     /**
      * Remember a NamedBean Object created outside the manager.
@@ -20,23 +20,23 @@ public interface ExpressionManager extends Manager<MaleExpressionSocket> {
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleExpressionSocket register(@Nonnull Expression expression)
+    public MaleAnalogExpressionSocket register(@Nonnull AnalogExpression expression)
             throws IllegalArgumentException;
     
     /**
      * Create a new system name for an Expression.
      *
-     * @param newLogix the NewLogix that this expression belongs to
+     * @param newLogix the NewLogix that this analog expression belongs to
      * @return a new system name
      */
     public String getNewSystemName(NewLogix newLogix);
 
-    public FemaleExpressionSocket createFemaleExpressionSocket(
+    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             FemaleSocketListener listener, String socketName);
 
-    public FemaleExpressionSocket createFemaleExpressionSocket(
+    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             FemaleSocketListener listener, String socketName,
-            MaleExpressionSocket maleSocket);
+            MaleAnalogExpressionSocket maleSocket);
 
     /*.*
      * Add an Expression.

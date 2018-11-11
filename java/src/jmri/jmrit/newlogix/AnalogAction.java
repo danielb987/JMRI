@@ -1,11 +1,13 @@
 package jmri.jmrit.newlogix;
 
+import jmri.NamedBean;
+
 /**
  * A NewLogix analog action.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface AnalogAction {
+public interface AnalogAction extends NamedBean, Base {
 
     /**
      * Start execution of this Action.

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
-import jmri.InstanceManager;
 import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
@@ -21,7 +20,8 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.newlogix.Expression;
-import jmri.jmrit.newlogix.NewLogixManager;
+import jmri.jmrit.newlogix.FemaleExpressionSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.managers.AbstractManager;
 
 /**
@@ -35,6 +35,8 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
     private final Map<Category, List<Class<? extends Expression>>> expressionClassList = new HashMap<>();
     int lastAutoExpressionRef = 0;
     
+    // This is for testing only!!!
+    // This number needs to be saved and restored.
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
@@ -131,6 +133,23 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
         String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
         b.append(nextNumber);
         return b.toString();
+    }
+
+    @Override
+    public FemaleExpressionSocket createFemaleExpressionSocket(
+            FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleExpressionSocket(listener, socketName);
+    }
+
+    @Override
+    public FemaleExpressionSocket createFemaleExpressionSocket(
+            FemaleSocketListener listener, String socketName,
+            MaleExpressionSocket maleSocket) {
+        
+        FemaleExpressionSocket socket =
+                new DefaultFemaleExpressionSocket(listener, socketName);
+        socket.connect(maleSocket);
+        return socket;
     }
 /*
     @Override

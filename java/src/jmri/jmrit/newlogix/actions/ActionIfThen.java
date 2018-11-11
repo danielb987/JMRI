@@ -4,6 +4,8 @@ import jmri.InstanceManager;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
@@ -56,18 +58,18 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     public ActionIfThen(String sys, Type type) {
         super(sys);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E1");
-        _actionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _actionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, "A1");
     }
     
     public ActionIfThen(String sys, String user, Type type) {
         super(sys, user);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E1");
-        _actionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _actionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, "A1");
     }
     
@@ -78,9 +80,9 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
         
         super(sys);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, expressionSocketName, expression);
-        _actionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _actionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, actionSocketName, action);
     }
     
@@ -91,9 +93,9 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
         
         super(sys, user);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, expressionSocketName, expression);
-        _actionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _actionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, actionSocketName, action);
     }
     

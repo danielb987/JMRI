@@ -161,40 +161,6 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 //    }
 
     @Override
-    public FemaleActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleActionSocket(listener, socketName);
-    }
-
-    @Override
-    public FemaleActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName,
-            MaleActionSocket maleSocket){
-        
-        FemaleActionSocket socket =
-                new DefaultFemaleActionSocket(listener, socketName);
-        socket.connect(maleSocket);
-        return socket;
-    }
-
-    @Override
-    public FemaleExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleExpressionSocket(listener, socketName);
-    }
-
-    @Override
-    public FemaleExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName,
-            MaleExpressionSocket maleSocket) {
-        
-        FemaleExpressionSocket socket =
-                new DefaultFemaleExpressionSocket(listener, socketName);
-        socket.connect(maleSocket);
-        return socket;
-    }
-
-    @Override
     public void activateAllNewLogixs() {
 //        jmri.configurexml.ConfigXmlManager a;
 //        jmri.managers.configurexml.AbstractSignalHeadManagerXml b;

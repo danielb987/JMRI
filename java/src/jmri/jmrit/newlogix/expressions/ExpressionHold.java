@@ -3,11 +3,11 @@ package jmri.jmrit.newlogix.expressions;
 import jmri.InstanceManager;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
-import jmri.jmrit.newlogix.NewLogixManager;
 
 /**
  * An Expression that keeps its status even if its child expression doesn't.
@@ -30,9 +30,9 @@ public class ExpressionHold extends AbstractExpression implements FemaleSocketLi
         
         super(sys);
         
-        _holdExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _holdExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E1");
-        _triggerExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _triggerExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E2");
     }
 
@@ -41,9 +41,9 @@ public class ExpressionHold extends AbstractExpression implements FemaleSocketLi
         
         super(sys, user);
         
-        _holdExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _holdExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E1");
-        _triggerExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _triggerExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E2");
     }
 
@@ -59,10 +59,10 @@ public class ExpressionHold extends AbstractExpression implements FemaleSocketLi
         
         super(sys);
         
-        _holdExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _holdExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(
                         this, holdExpressionSocketName, holdExpression);
-        _triggerExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _triggerExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(
                         this, triggerExpressionSocketName, triggerExpression);
     }
@@ -79,10 +79,10 @@ public class ExpressionHold extends AbstractExpression implements FemaleSocketLi
         
         super(sys, user);
         
-        _holdExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _holdExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(
                         this, holdExpressionSocketName, holdExpression);
-        _triggerExpressionSocket = InstanceManager.getDefault(NewLogixManager.class)
+        _triggerExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
                 .createFemaleExpressionSocket(
                         this, triggerExpressionSocketName, triggerExpression);
     }

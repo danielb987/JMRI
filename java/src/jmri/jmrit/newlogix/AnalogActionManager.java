@@ -2,15 +2,13 @@ package jmri.jmrit.newlogix;
 
 import javax.annotation.Nonnull;
 import jmri.Manager;
-import jmri.jmrit.newlogix.NewLogix;
-import jmri.jmrit.newlogix.Action;
 
 /**
- * Manager for Action
+ * Manager for AnalogAction
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionManager extends Manager<MaleActionSocket> {
+public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
 
     /**
      * Remember a NamedBean Object created outside the manager.
@@ -20,23 +18,23 @@ public interface ActionManager extends Manager<MaleActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleActionSocket register(@Nonnull Action action)
+    public MaleAnalogActionSocket register(@Nonnull AnalogAction action)
             throws IllegalArgumentException;
     
     /**
-     * Create a new system name for an Action.
+     * Create a new system name for an AnalogAction.
      *
-     * @param newLogix the NewLogix that this expression belongs to
+     * @param newLogix the NewLogix that this analog action belongs to
      * @return a new system name
      */
     public String getNewSystemName(NewLogix newLogix);
 
-    public FemaleActionSocket createFemaleActionSocket(
+    public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
             FemaleSocketListener listener, String socketName);
 
-    public FemaleActionSocket createFemaleActionSocket(
+    public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
             FemaleSocketListener listener, String socketName,
-            MaleActionSocket maleSocket);
+            MaleAnalogActionSocket maleSocket);
 
     /*.*
      * Add an Action.

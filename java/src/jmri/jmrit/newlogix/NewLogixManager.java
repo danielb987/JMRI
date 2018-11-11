@@ -45,20 +45,6 @@ public interface NewLogixManager extends Manager<NewLogix> {
 
 //    public MaleExpressionSocket createMaleExpressionSocket(Expression expression);
     
-    public FemaleActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName);
-
-    public FemaleActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName,
-            MaleActionSocket maleSocket);
-
-    public FemaleExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName);
-
-    public FemaleExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName,
-            MaleExpressionSocket maleSocket);
-
     /**
      * Activate all NewLogixs that are not currently active. This method is
      * called after a configuration file is loaded.

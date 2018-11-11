@@ -7,6 +7,7 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.ActionManager;
 import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
@@ -30,12 +31,12 @@ public final class DefaultNewLogix extends AbstractNamedBean
     
     public DefaultNewLogix(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(NewLogixManager.class).createFemaleActionSocket(this, "");
+        _femaleActionSocket = InstanceManager.getDefault(ActionManager.class).createFemaleActionSocket(this, "");
     }
 
     public DefaultNewLogix(String sys, String user, MaleActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(NewLogixManager.class).createFemaleActionSocket(this, "", action);
+        _femaleActionSocket = InstanceManager.getDefault(ActionManager.class).createFemaleActionSocket(this, "", action);
     }
     
     /** {@inheritDoc} */

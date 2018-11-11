@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
-import jmri.InstanceManager;
 import jmri.jmrit.newlogix.ActionManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.NewLogix;
@@ -17,10 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.Category;
+import jmri.jmrit.newlogix.FemaleActionSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.NewLogixActionFactory;
 import jmri.jmrit.newlogix.NewLogixPluginFactory;
-import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.managers.AbstractManager;
 
 /**
@@ -35,6 +35,7 @@ public class DefaultActionManager extends AbstractManager<MaleActionSocket>
     private int lastAutoActionRef = 0;
     
     // This is for testing only!!!
+    // This number needs to be saved and restored.
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
@@ -127,6 +128,23 @@ public class DefaultActionManager extends AbstractManager<MaleActionSocket>
         String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
         b.append(nextNumber);
         return b.toString();
+    }
+
+    @Override
+    public FemaleActionSocket createFemaleActionSocket(
+            FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleActionSocket(listener, socketName);
+    }
+
+    @Override
+    public FemaleActionSocket createFemaleActionSocket(
+            FemaleSocketListener listener, String socketName,
+            MaleActionSocket maleSocket){
+        
+        FemaleActionSocket socket =
+                new DefaultFemaleActionSocket(listener, socketName);
+        socket.connect(maleSocket);
+        return socket;
     }
 /*
     @Override
