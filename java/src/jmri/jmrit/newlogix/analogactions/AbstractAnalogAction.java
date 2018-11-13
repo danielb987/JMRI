@@ -1,38 +1,40 @@
-package jmri.jmrit.newlogix.expressions;
+package jmri.jmrit.newlogix.analogactions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
-import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.AnalogAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * The base class for NewLogix Actions
+ * 
+ * @author Daniel Bergqvist Copyright 2018
  */
-public abstract class AbstractExpression extends AbstractNamedBean
-        implements Expression {
+public abstract class AbstractAnalogAction extends AbstractNamedBean
+        implements AnalogAction {
 
-    public AbstractExpression(String sys) throws BadSystemNameException {
+    public AbstractAnalogAction(String sys) throws BadSystemNameException {
         super(sys);
     }
 
-    public AbstractExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractAnalogAction(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
 
     @Override
     public String getBeanType() {
-        return Bundle.getMessage("BeanNameExpression");
+        return Bundle.getMessage("BeanNameAnalogAction");
     }
 
     @Override
     public void setState(int s) throws JmriException {
-        log.warn("Unexpected call to setState in AbstractExpression.");  // NOI18N
+        log.warn("Unexpected call to setState in AbstractAnalogAction.");  // NOI18N
     }
 
     @Override
     public int getState() {
-        log.warn("Unexpected call to getState in AbstractExpression.");  // NOI18N
+        log.warn("Unexpected call to getState in AbstractAnalogAction.");  // NOI18N
         return UNKNOWN;
     }
     
@@ -73,5 +75,5 @@ public abstract class AbstractExpression extends AbstractNamedBean
         return this.getClass().getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractExpression.class);
+    private final static Logger log = LoggerFactory.getLogger(AbstractAnalogAction.class);
 }

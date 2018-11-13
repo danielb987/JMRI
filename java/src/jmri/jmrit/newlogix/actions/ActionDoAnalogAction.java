@@ -80,7 +80,7 @@ public class ActionDoAnalogAction
     public boolean executeStart() {
         float result = _analogExpressionSocket.evaluate();
         
-        _analogActionSocket.executeStart(result);
+        _analogActionSocket.setValue(result);
 
         return false;
     }
@@ -101,7 +101,7 @@ public class ActionDoAnalogAction
     /** {@inheritDoc} */
     @Override
     public void abort() {
-        _analogActionSocket.abort();
+        // Do nothing
     }
     
     @Override

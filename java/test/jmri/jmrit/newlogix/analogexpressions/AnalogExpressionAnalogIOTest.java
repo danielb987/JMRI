@@ -1,4 +1,4 @@
-package jmri.jmrit.newlogix.actions;
+package jmri.jmrit.newlogix.analogexpressions;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -7,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionMany
+ * Test ExpressionAnd
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionManyTest {
+public class AnalogExpressionAnalogIOTest {
 
     @Test
     public void testCtor() {
-        new ActionMany("IQA55:A321", null);
+        new AnalogExpressionAnalogIO("IQA55:E321");
     }
     
     // The minimal setup for log4J

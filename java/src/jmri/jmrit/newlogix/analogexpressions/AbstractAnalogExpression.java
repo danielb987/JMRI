@@ -1,38 +1,38 @@
-package jmri.jmrit.newlogix.expressions;
+package jmri.jmrit.newlogix.analogexpressions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
-import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.AnalogExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  */
-public abstract class AbstractExpression extends AbstractNamedBean
-        implements Expression {
+public abstract class AbstractAnalogExpression extends AbstractNamedBean
+        implements AnalogExpression {
 
-    public AbstractExpression(String sys) throws BadSystemNameException {
+    public AbstractAnalogExpression(String sys) throws BadSystemNameException {
         super(sys);
     }
 
-    public AbstractExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractAnalogExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
 
     @Override
     public String getBeanType() {
-        return Bundle.getMessage("BeanNameExpression");
+        return Bundle.getMessage("BeanNameAnalogExpression");
     }
 
     @Override
     public void setState(int s) throws JmriException {
-        log.warn("Unexpected call to setState in AbstractExpression.");  // NOI18N
+        log.warn("Unexpected call to setState in AbstractAnalogExpression.");  // NOI18N
     }
 
     @Override
     public int getState() {
-        log.warn("Unexpected call to getState in AbstractExpression.");  // NOI18N
+        log.warn("Unexpected call to getState in AbstractAnalogExpression.");  // NOI18N
         return UNKNOWN;
     }
     
@@ -73,5 +73,5 @@ public abstract class AbstractExpression extends AbstractNamedBean
         return this.getClass().getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractExpression.class);
+    private final static Logger log = LoggerFactory.getLogger(AbstractAnalogExpression.class);
 }

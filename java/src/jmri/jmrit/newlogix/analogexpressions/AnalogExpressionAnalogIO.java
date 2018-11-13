@@ -2,8 +2,8 @@ package jmri.jmrit.newlogix.analogexpressions;
 
 import java.util.List;
 import java.util.ArrayList;
+import jmri.AnalogIO;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.expressions.AbstractExpression;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
 
@@ -12,9 +12,9 @@ import jmri.jmrit.newlogix.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogExpressionAnalogIO extends AbstractExpression {
+public class AnalogExpressionAnalogIO extends AbstractAnalogExpression {
 
-    List<Expression> children = new ArrayList<>();
+    private AnalogIO _analogIO;
     
     public AnalogExpressionAnalogIO(String sys) throws BadUserNameException,
             BadSystemNameException {
@@ -26,6 +26,22 @@ public class AnalogExpressionAnalogIO extends AbstractExpression {
         super(sys, user);
     }
 
+    public AnalogExpressionAnalogIO(
+            String sys,
+            AnalogIO analogIO) {
+        
+        super(sys);
+        _analogIO = analogIO;
+    }
+    
+    public AnalogExpressionAnalogIO(
+            String sys, String user,
+            AnalogIO analogIO) {
+        
+        super(sys, user);
+        _analogIO = analogIO;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -35,37 +51,28 @@ public class AnalogExpressionAnalogIO extends AbstractExpression {
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return true;
     }
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
-        boolean result = true;
-        for (Expression e : children) {
-            if (! e.evaluate()) {
-                result = false;
-            }
+    public float evaluate() {
+        if (_analogIO != null) {
+            return _analogIO.getKnownAnalogValue();
+        } else {
+            return (float) 0.0;
         }
-        return result;
     }
     
-    /** {@inheritDoc} */
     @Override
-    public void reset() {
-        for (Expression e : children) {
-            e.reset();
-        }
-    }
-
-    @Override
-    public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public FemaleSocket getChild(int index)
+            throws IllegalArgumentException, UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 0;
     }
 
 }

@@ -1,4 +1,4 @@
-package jmri.jmrit.newlogix.actions;
+package jmri.jmrit.newlogix.analogactions;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -11,11 +11,11 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionManyTest {
+public class AnalogActionSetAnalogIOTest {
 
     @Test
     public void testCtor() {
-        new ActionMany("IQA55:A321", null);
+        new AnalogActionSetAnalogIO("IQA55:A321");
     }
     
     // The minimal setup for log4J

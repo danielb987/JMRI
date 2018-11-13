@@ -17,13 +17,4 @@ public interface AnalogExpression extends NamedBean, Base {
      */
     public float evaluate();
     
-    /**
-     * Reset the evaluation.
-     * This method is called when the closest ancestor Action is activated.
-     * 
-     * A parent expression must to call reset() on its child when the parent
-     * is reset().
-     */
-    public void reset();
-    
 }

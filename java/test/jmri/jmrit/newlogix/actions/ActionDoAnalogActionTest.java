@@ -11,11 +11,11 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionManyTest {
+public class ActionDoAnalogActionTest {
 
     @Test
     public void testCtor() {
-        new ActionMany("IQA55:A321", null);
+        new ActionDoAnalogAction("IQA55:A321", null);
     }
     
     // The minimal setup for log4J
