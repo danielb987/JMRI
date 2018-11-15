@@ -1,6 +1,8 @@
 package jmri.jmrit.newlogix.engine;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.Action;
@@ -34,6 +36,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     int lastAutoNewLogixRef = 0;
+    List<FemaleSocketFactory> _femaleSocketFactories = new ArrayList<>();
     
     
     public DefaultNewLogixManager() {
@@ -223,4 +226,14 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultNewLogixManager.class);
+
+    @Override
+    public void registerFemaleSocketFactory(FemaleSocketFactory factory) {
+        _femaleSocketFactories.add(factory);
+    }
+
+    @Override
+    public List<FemaleSocketFactory> getFemaleSocketFactories() {
+        return new ArrayList<>(_femaleSocketFactories);
+    }
 }

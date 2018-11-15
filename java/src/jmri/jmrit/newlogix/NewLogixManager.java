@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix;
 
+import java.util.List;
 import jmri.Manager;
 
 /**
@@ -75,5 +76,22 @@ public interface NewLogixManager extends Manager<NewLogix> {
      * @param s true if NewLogix should be disabled when loaded
      */
     public void setLoadDisabled(boolean s);
+    
+    /**
+     * Register a FemaleSocketFactory.
+     */
+    public void registerFemaleSocketFactory(FemaleSocketFactory factory);
+    
+    /**
+     * Register a FemaleSocketFactory.
+     */
+    public List<FemaleSocketFactory> getFemaleSocketFactories();
+    
+    /**
+     * Interface for creation of a FemaleSocket.
+     */
+    public interface FemaleSocketFactory {
+        public FemaleSocket create();
+    }
     
 }

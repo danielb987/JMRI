@@ -10,6 +10,8 @@ import jmri.jmrit.newlogix.ActionManager;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.NewLogix;
+import jmri.jmrit.newlogix.NewLogixManager;
+import jmri.jmrit.newlogix.NewLogixManager.FemaleSocketFactory;
 
 /**
  * An action that can hold everything but doesn't do anything.
@@ -20,7 +22,8 @@ import jmri.jmrit.newlogix.NewLogix;
  */
 public class ActionHoldAnything extends AbstractAction {
 
-    private final Map<Class, List<? extends FemaleSocket>> sockets = new HashMap<>();
+    private final Map<FemaleSocketFactory, List<FemaleSocket>> sockets = new HashMap<>();
+//    private final Map<FemaleSocketFactory, List<? extends FemaleSocket>> sockets = new HashMap<>();
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
@@ -29,18 +32,31 @@ public class ActionHoldAnything extends AbstractAction {
     public ActionHoldAnything(NewLogix newLogix)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         super(InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix));
+        init();
     }
 
     public ActionHoldAnything(String sys)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         super(sys);
+        init();
     }
 
     public ActionHoldAnything(String sys, String user)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         super(sys, user);
+        init();
     }
-
+    
+    private void init() {
+        for (FemaleSocketFactory factory :
+                InstanceManager.getDefault(NewLogixManager.class).getFemaleSocketFactories()) {
+            
+            List<FemaleSocket> list = new ArrayList<>();
+            list.add(factory.create());
+            sockets.put(factory, list);
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
