@@ -12,6 +12,7 @@ import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
+import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
 
 /**
@@ -54,6 +55,19 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     private boolean _lastActionResult = false;
     private final FemaleExpressionSocket _expressionSocket;
     private final FemaleActionSocket _actionSocket;
+    
+    /**
+     * Create a new instance of ActionIfThen and generate a new system name.
+     * @param newLogix the NewLogix that this action is related to
+     */
+    public ActionIfThen(NewLogix newLogix, Type type) {
+        super(InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix));
+        _type = type;
+        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, "E1");
+        _actionSocket = InstanceManager.getDefault(ActionManager.class)
+                .createFemaleActionSocket(this, "A1");
+    }
     
     public ActionIfThen(String sys, Type type) {
         super(sys);

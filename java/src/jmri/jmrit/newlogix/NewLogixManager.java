@@ -27,6 +27,16 @@ public interface NewLogixManager extends Manager<NewLogix> {
      * @return a new NewLogix or null if unable to create
      */
     public NewLogix createNewNewLogix(String userName);
+    
+    /**
+     * Creates the initial items in the NewLogix tree.
+     * 
+     * By default, this is as following:
+     * + ActionMany
+     *   + ActionHoldAnything
+     *   + ActionDoIf
+     */
+    public void setupInitialNewLogixTree(NewLogix newLogix);
 
     /**
      * Locate via user name, then system name if needed. Does not create a new

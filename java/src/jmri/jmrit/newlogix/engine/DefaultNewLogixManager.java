@@ -14,6 +14,9 @@ import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
+import jmri.jmrit.newlogix.actions.ActionHoldAnything;
+import jmri.jmrit.newlogix.actions.ActionIfThen;
+import jmri.jmrit.newlogix.actions.ActionMany;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -119,6 +122,10 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
                 log.warn("Auto generated SystemName " + systemName + " is not in the correct format");
             }
         }
+        
+        // Setup initial tree for the NewLogix
+        setupInitialNewLogixTree(x);
+        
         return x;
     }
 
@@ -131,6 +138,22 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         return createNewNewLogix(b.toString(), userName);
     }
 
+    @Override
+    public void setupInitialNewLogixTree(NewLogix newLogix) {
+        MaleActionSocket actionManySocket =
+                InstanceManager.getDefault(ActionManager.class).register(new ActionMany(newLogix));
+        newLogix.getFemaleSocket().connect(actionManySocket);
+        
+        MaleActionSocket actionHoldAnythingSocket =
+                InstanceManager.getDefault(ActionManager.class).register(new ActionHoldAnything(newLogix));
+        actionManySocket.getChild(0).connect(actionHoldAnythingSocket);
+        
+        MaleActionSocket actionIfThenSocket =
+                InstanceManager.getDefault(ActionManager.class)
+                        .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
+        actionManySocket.getChild(1).connect(actionIfThenSocket);
+    }
+    
     @Override
     public NewLogix getNewLogix(String name) {
         NewLogix x = getByUserName(name);
