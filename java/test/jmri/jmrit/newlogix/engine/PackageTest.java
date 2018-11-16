@@ -6,8 +6,10 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     jmri.jmrit.newlogix.engine.configurexml.PackageTest.class,
-    InternalActionTest.class,
-    InternalExpressionTest.class,
+    DefaultMaleActionSocketTest.class,
+    DefaultMaleExpressionSocketTest.class,
+    DefaultMaleAnalogActionSocketTest.class,
+    DefaultMaleAnalogExpressionSocketTest.class,
     ExpressionPluginAdapterTest.class,
 })
 

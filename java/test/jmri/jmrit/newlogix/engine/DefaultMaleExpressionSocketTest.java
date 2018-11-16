@@ -1,31 +1,31 @@
 package jmri.jmrit.newlogix.engine;
 
-import jmri.jmrit.newlogix.engine.DefaultMaleActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.newlogix.actions.ActionMany;
-import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.expressions.ExpressionAnd;
+import jmri.jmrit.newlogix.Expression;
 
 /**
  * Test ExpressionTimer
  * 
  * @author Daniel Bergqvist 2018
  */
-public class InternalActionTest {
+public class DefaultMaleExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        Action action = new ActionMany("IQA55:A321");
-        new DefaultMaleActionSocket(action);
+        Expression expression = new ExpressionAnd("IQA55:E321");
+        new DefaultMaleExpressionSocket(expression);
     }
     
     // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
