@@ -7,20 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
-import jmri.jmrit.newlogix.ExpressionManager;
+import jmri.jmrit.newlogix.AnalogExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.MaleExpressionSocket;
+import jmri.jmrit.newlogix.MaleAnalogExpressionSocket;
 import jmri.jmrit.newlogix.NewLogix;
-import jmri.jmrit.newlogix.NewLogixExpressionFactory;
+import jmri.jmrit.newlogix.NewLogixAnalogExpressionFactory;
 import jmri.jmrit.newlogix.NewLogixPluginFactory;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.newlogix.Expression;
-import jmri.jmrit.newlogix.FemaleExpressionSocket;
+import jmri.jmrit.newlogix.AnalogExpression;
+import jmri.jmrit.newlogix.FemaleAnalogExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.managers.AbstractManager;
 
@@ -29,10 +29,10 @@ import jmri.managers.AbstractManager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultExpressionManager extends AbstractManager<MaleExpressionSocket>
-        implements ExpressionManager, InstanceManagerAutoDefault {
+public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogExpressionSocket>
+        implements AnalogExpressionManager, InstanceManagerAutoDefault {
 
-    private final Map<Category, List<Class<? extends Expression>>> expressionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends AnalogExpression>>> expressionClassList = new HashMap<>();
     int lastAutoExpressionRef = 0;
     
     // This is for testing only!!!
@@ -40,7 +40,7 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
-    public DefaultExpressionManager() {
+    public DefaultAnalogExpressionManager() {
         super();
         
         for (Category category : Category.values()) {
@@ -48,25 +48,25 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
         }
         
         System.out.format("Read expressions%n");
-        for (NewLogixExpressionFactory expressionFactory : ServiceLoader.load(NewLogixExpressionFactory.class)) {
-            expressionFactory.getExpressionClasses().forEach((entry) -> {
+        for (NewLogixAnalogExpressionFactory expressionFactory : ServiceLoader.load(NewLogixAnalogExpressionFactory.class)) {
+            expressionFactory.getAnalogExpressionClasses().forEach((entry) -> {
                 System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
         
-        System.out.format("Read plugin expressions%n");
-        for (NewLogixPluginFactory expressionFactory : ServiceLoader.load(NewLogixPluginFactory.class)) {
-            System.out.format("Read plugin factory: %s%n", expressionFactory.getClass().getName());
-            expressionFactory.getExpressionClasses().forEach((entry) -> {
-                System.out.format("Add expression plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
-                expressionClassList.get(entry.getKey()).add(entry.getValue());
-            });
-        }
+//        System.out.format("Read plugin expressions%n");
+//        for (NewLogixPluginFactory expressionFactory : ServiceLoader.load(NewLogixPluginFactory.class)) {
+//            System.out.format("Read plugin factory: %s%n", expressionFactory.getClass().getName());
+//            expressionFactory.getAnalogExpressionClasses().forEach((entry) -> {
+//                System.out.format("Add expression plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                expressionClassList.get(entry.getKey()).add(entry.getValue());
+//            });
+//        }
     }
 
-    protected MaleExpressionSocket createMaleExpressionSocket(Expression expression) {
-        return new DefaultMaleExpressionSocket(expression);
+    protected MaleAnalogExpressionSocket createMaleAnalogExpressionSocket(AnalogExpression expression) {
+        return new DefaultMaleAnalogExpressionSocket(expression);
     }
     
     /**
@@ -76,7 +76,7 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
      * @param expression the bean
      */
     @Override
-    public MaleExpressionSocket register(@Nonnull Expression expression)
+    public MaleAnalogExpressionSocket register(@Nonnull AnalogExpression expression)
             throws IllegalArgumentException {
         
         // Check if system name is valid
@@ -85,7 +85,7 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
             throw new IllegalArgumentException("System name is invalid");
         }
         // save in the maps
-        MaleExpressionSocket maleSocket = createMaleExpressionSocket(expression);
+        MaleAnalogExpressionSocket maleSocket = createMaleAnalogExpressionSocket(expression);
         register(maleSocket);
         return maleSocket;
     }
@@ -97,7 +97,7 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
 
     @Override
     public String getBeanTypeHandled() {
-        return Bundle.getMessage("BeanNameExpression");
+        return Bundle.getMessage("BeanNameAnalogExpression");
     }
 
     @Override
@@ -136,18 +136,18 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
     }
 
     @Override
-    public FemaleExpressionSocket createFemaleExpressionSocket(
+    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleExpressionSocket(listener, socketName);
+        return new DefaultFemaleAnalogExpressionSocket(listener, socketName);
     }
 
     @Override
-    public FemaleExpressionSocket createFemaleExpressionSocket(
+    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             FemaleSocketListener listener, String socketName,
-            MaleExpressionSocket maleSocket) {
+            MaleAnalogExpressionSocket maleSocket) {
         
-        FemaleExpressionSocket socket =
-                new DefaultFemaleExpressionSocket(listener, socketName);
+        FemaleAnalogExpressionSocket socket =
+                new DefaultFemaleAnalogExpressionSocket(listener, socketName);
         socket.connect(maleSocket);
         return socket;
     }
@@ -183,10 +183,10 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
         throw new UnsupportedOperationException("Not supported yet.");
     }
 */    
-    static DefaultExpressionManager _instance = null;
+    static DefaultAnalogExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
-    static public DefaultExpressionManager instance() {
+    static public DefaultAnalogExpressionManager instance() {
         if (log.isDebugEnabled()) {
             if (!ThreadingUtil.isGUIThread()) {
                 Log4JUtil.warnOnce(log, "instance() called on wrong thread");
@@ -194,10 +194,10 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
         }
         
         if (_instance == null) {
-            _instance = new DefaultExpressionManager();
+            _instance = new DefaultAnalogExpressionManager();
         }
         return (_instance);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultExpressionManager.class);
+    private final static Logger log = LoggerFactory.getLogger(DefaultAnalogExpressionManager.class);
 }

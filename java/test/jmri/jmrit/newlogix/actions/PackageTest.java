@@ -6,6 +6,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     jmri.jmrit.newlogix.actions.configurexml.PackageTest.class,
+    ActionDoAnalogActionTest.class,
     ActionDoIfTest.class,
     ActionManyTest.class,
     ActionSocketTest.class,

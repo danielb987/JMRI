@@ -41,11 +41,15 @@ import jmri.implementation.JmriConfigurationManager;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.WarrantManager;
+import jmri.jmrit.newlogix.AnalogActionManager;
+import jmri.jmrit.newlogix.AnalogExpressionManager;
 import jmri.jmrix.ConnectionConfigManager;
 import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
 import jmri.jmrit.newlogix.engine.DefaultActionManager;
+import jmri.jmrit.newlogix.engine.DefaultAnalogExpressionManager;
+import jmri.jmrit.newlogix.engine.DefaultAnalogActionManager;
 import jmri.jmrix.internal.InternalReporterManager;
 import jmri.jmrix.internal.InternalSensorManager;
 import jmri.managers.AbstractSignalHeadManager;
@@ -733,6 +737,7 @@ public class JUnitUtil {
 
     public static void initNewLogixManager() {
         NewLogixManager m = new DefaultNewLogixManager();
+        InstanceManager.store(m, NewLogixManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.NEWLOGIXS);
         }
@@ -740,6 +745,7 @@ public class JUnitUtil {
 
     public static void initExpressionManager() {
         ExpressionManager m = new DefaultExpressionManager();
+        InstanceManager.store(m, ExpressionManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
         }
@@ -747,8 +753,25 @@ public class JUnitUtil {
 
     public static void initActionManager() {
         ActionManager m = new DefaultActionManager();
+        InstanceManager.store(m, ActionManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
+        }
+    }
+
+    public static void initAnalogExpressionManager() {
+        AnalogExpressionManager m = new DefaultAnalogExpressionManager();
+        InstanceManager.store(m, AnalogExpressionManager.class);
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGEXPRESSIONS);
+        }
+    }
+
+    public static void initAnalogActionManager() {
+        AnalogActionManager m = new DefaultAnalogActionManager();
+        InstanceManager.store(m, AnalogActionManager.class);
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGACTIONS);
         }
     }
 
