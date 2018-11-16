@@ -12,7 +12,6 @@ import org.junit.runners.Suite;
     BlockTest.class,
     BlockManagerTest.class,
     DccLocoAddressTest.class,
-    ExpressionTest.class,
     InstanceManagerTest.class,
     NamedBeanTest.class,
     LightTest.class,

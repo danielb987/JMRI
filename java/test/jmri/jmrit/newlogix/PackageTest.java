@@ -13,7 +13,7 @@ import org.junit.runners.Suite;
     jmri.jmrit.newlogix.log.PackageTest.class,
     jmri.jmrit.newlogix.tools.swing.PackageTest.class,
     NewLogixTest.class,
-    DefaultNewLogixTest.class,
+    ExpressionTest.class,
 })
 
 /**

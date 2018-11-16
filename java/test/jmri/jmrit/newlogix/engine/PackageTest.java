@@ -10,6 +10,7 @@ import org.junit.runners.Suite;
     DefaultMaleExpressionSocketTest.class,
     DefaultMaleAnalogActionSocketTest.class,
     DefaultMaleAnalogExpressionSocketTest.class,
+    DefaultNewLogixTest.class,
     ExpressionPluginAdapterTest.class,
 })
 

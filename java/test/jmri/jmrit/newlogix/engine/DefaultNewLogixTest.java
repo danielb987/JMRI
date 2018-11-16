@@ -1,24 +1,21 @@
-package jmri;
+package jmri.jmrit.newlogix.engine;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.newlogix.Expression;
 
 /**
- * Test Expression
+ * Test DefaultNewLogix
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTest {
+public class DefaultNewLogixTest {
 
     @Test
-    public void testEnum() {
-        Assert.assertTrue("TRUE".equals(Expression.TriggerCondition.TRUE.name()));
-        Assert.assertTrue("FALSE".equals(Expression.TriggerCondition.FALSE.name()));
-        Assert.assertTrue("CHANGE".equals(Expression.TriggerCondition.CHANGE.name()));
+    public void testCtor() {
+        new DefaultNewLogix("IQA55", null);
     }
     
     // The minimal setup for log4J
