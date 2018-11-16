@@ -136,7 +136,7 @@ public class ActionDoAnalogAction
 
     @Override
     public String toString() {
-        return Bundle.getMessage("ActionIfThen", _analogExpressionSocket.getName(), _analogActionSocket.getName());
+        return Bundle.getMessage("ActionDoAnalogAction", _analogExpressionSocket.getName(), _analogActionSocket.getName());
     }
     
 }

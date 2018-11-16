@@ -1,14 +1,11 @@
 package jmri.jmrit.newlogix.analogexpressions;
 
-import java.util.List;
-import java.util.ArrayList;
 import jmri.AnalogIO;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
 
 /**
- * Evaluates to True if all the child expressions evaluate to true.
+ * Reads an AnalogIO.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
@@ -45,7 +42,7 @@ public class AnalogExpressionAnalogIO extends AbstractAnalogExpression {
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return Category.COMMON;
+        return Category.ITEM;
     }
     
     /** {@inheritDoc} */
@@ -73,6 +70,15 @@ public class AnalogExpressionAnalogIO extends AbstractAnalogExpression {
     @Override
     public int getChildCount() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        if (_analogIO != null) {
+            return Bundle.getMessage("AnalogExpressionAnalogIO", _analogIO.getDisplayName());
+        } else {
+            return Bundle.getMessage("AnalogExpressionAnalogIO", "none");
+        }
     }
 
 }

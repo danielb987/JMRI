@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.analogactions;
 
+import jmri.jmrit.newlogix.AnalogAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -16,6 +17,12 @@ public class AnalogActionSetAnalogIOTest {
     @Test
     public void testCtor() {
         new AnalogActionSetAnalogIO("IQA55:A321");
+    }
+    
+    @Test
+    public void testToString() {
+        AnalogAction analogAction = new AnalogActionSetAnalogIO("IQA55:A321");
+        Assert.assertTrue("String matches", "Set analog none".equals(analogAction.toString()));
     }
     
     // The minimal setup for log4J

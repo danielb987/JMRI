@@ -2,14 +2,13 @@ package jmri.jmrit.newlogix.analogactions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// import jmri.AnalogIO;
+import jmri.AnalogIO;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.newlogix.AnalogActionManager;
 import jmri.jmrit.newlogix.AnalogExpressionManager;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleSocket;
-import jmri.AnalogIO;
 
 /**
  * Sets an AnalogIO.
@@ -57,22 +56,31 @@ public class AnalogActionSetAnalogIO extends AbstractAnalogAction {
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
     public Category getCategory() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Category.ITEM;
     }
 
     @Override
     public boolean isExternal() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        if (_analogIO != null) {
+            return Bundle.getMessage("AnalogActionSetAnalogIO", _analogIO.getDisplayName());
+        } else {
+            return Bundle.getMessage("AnalogActionSetAnalogIO", "none");
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(AnalogActionSetAnalogIO.class);
