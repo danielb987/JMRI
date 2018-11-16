@@ -26,9 +26,13 @@ import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
 import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.AnalogActionManager;
+import jmri.jmrit.newlogix.AnalogExpressionManager;
 import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.jmrit.newlogix.engine.DefaultActionManager;
+import jmri.jmrit.newlogix.engine.DefaultAnalogActionManager;
+import jmri.jmrit.newlogix.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
 import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
@@ -62,6 +66,14 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     public <T> Object getDefault(Class<T> type) {
         if (type == ActionManager.class) {
             return new DefaultActionManager();
+        }
+
+        if (type == AnalogActionManager.class) {
+            return new DefaultAnalogActionManager();
+        }
+
+        if (type == AnalogExpressionManager.class) {
+            return new DefaultAnalogExpressionManager();
         }
 
         if (type == AudioManager.class) {
@@ -160,6 +172,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         Set<Class<?>> set = super.getInitalizes();
         set.addAll(Arrays.asList(
                 ActionManager.class,
+                AnalogActionManager.class,
+                AnalogExpressionManager.class,
                 AudioManager.class,
                 BlockManager.class,
                 ClockControl.class,

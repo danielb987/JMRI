@@ -737,7 +737,6 @@ public class JUnitUtil {
 
     public static void initNewLogixManager() {
         NewLogixManager m = new DefaultNewLogixManager();
-        InstanceManager.store(m, NewLogixManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.NEWLOGIXS);
         }
@@ -745,7 +744,6 @@ public class JUnitUtil {
 
     public static void initExpressionManager() {
         ExpressionManager m = new DefaultExpressionManager();
-        InstanceManager.store(m, ExpressionManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
         }
@@ -753,7 +751,6 @@ public class JUnitUtil {
 
     public static void initActionManager() {
         ActionManager m = new DefaultActionManager();
-        InstanceManager.store(m, ActionManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
         }
@@ -761,7 +758,6 @@ public class JUnitUtil {
 
     public static void initAnalogExpressionManager() {
         AnalogExpressionManager m = new DefaultAnalogExpressionManager();
-        InstanceManager.store(m, AnalogExpressionManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGEXPRESSIONS);
         }
@@ -769,7 +765,6 @@ public class JUnitUtil {
 
     public static void initAnalogActionManager() {
         AnalogActionManager m = new DefaultAnalogActionManager();
-        InstanceManager.store(m, AnalogActionManager.class);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGACTIONS);
         }

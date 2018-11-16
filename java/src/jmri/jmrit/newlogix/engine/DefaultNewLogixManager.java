@@ -42,12 +42,6 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     public DefaultNewLogixManager() {
         super();
         
-        // For testing only.
-        InstanceManager.getDefault(ExpressionManager.class);
-        
-        // For testing only.
-        InstanceManager.getDefault(ActionManager.class);
-        
         // The NewLogixPreferences class may load plugins so we must ensure
         // it's loaded here.
         InstanceManager.getDefault(NewLogixPreferences.class);
