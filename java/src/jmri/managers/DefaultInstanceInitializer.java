@@ -35,6 +35,7 @@ import jmri.jmrit.newlogix.engine.DefaultAnalogActionManager;
 import jmri.jmrit.newlogix.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
 import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
+import jmri.jmrit.newlogix.engine.NewLogixPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -64,6 +65,11 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
     @Override
     public <T> Object getDefault(Class<T> type) {
+        
+        // In order for getDefault() to be called for a particular manager,
+        // the manager also needs to be added to the method getInitalizes()
+        // below.
+        
         if (type == ActionManager.class) {
             return new DefaultActionManager();
         }
@@ -106,6 +112,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
         if (type == NewLogixManager.class) {
             return new DefaultNewLogixManager();
+        }
+
+        if (type == NewLogixPreferences.class) {
+            return new NewLogixPreferences();
         }
 
         if (type == RailComManager.class) {
@@ -183,6 +193,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 LogixManager.class,
                 MemoryManager.class,
                 NewLogixManager.class,
+                NewLogixPreferences.class,
                 RailComManager.class,
                 ReporterManager.class,
                 RouteManager.class,
