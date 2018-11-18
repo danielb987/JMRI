@@ -67,9 +67,10 @@ public class NewLogixEditor extends JmriJFrame {
         
         
         // For testing only
+        InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
+/*        
         String systemName;
         NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
-/*        
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         MaleExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).register(expression);
