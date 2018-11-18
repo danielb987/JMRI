@@ -69,6 +69,7 @@ public class NewLogixEditor extends JmriJFrame {
         // For testing only
         String systemName;
         NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
+/*        
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         MaleExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).register(expression);
@@ -80,7 +81,7 @@ public class NewLogixEditor extends JmriJFrame {
         Action actionIfThen = new ActionIfThen(systemName, ActionIfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
         actionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(actionIfThen);
         newLogix.getFemaleSocket().connect(actionSocket);
-        
+*/        
         
         // Figure out where in the filesystem to start displaying
 //        File root;

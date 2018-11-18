@@ -13,16 +13,33 @@ import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleAnalogActionSocket;
 import jmri.jmrit.newlogix.MaleSocket;
+import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 
 /**
  *
  */
-public class DefaultFemaleAnalogActionSocket
+public final class DefaultFemaleAnalogActionSocket
         extends AbstractFemaleSocket
         implements FemaleAnalogActionSocket {
 
     public DefaultFemaleAnalogActionSocket(FemaleSocketListener listener, String name) {
         super(listener, name);
+    }
+    
+    public DefaultFemaleAnalogActionSocket(
+            FemaleSocketListener listener,
+            String name,
+            MaleAnalogActionSocket maleSocket) {
+        
+        super(listener, name);
+        
+        try {
+            connect(maleSocket);
+        } catch (SocketAlreadyConnectedException e) {
+            // This should never be able to happen since a newly created
+            // socket is not connected.
+            throw new RuntimeException(e);
+        }
     }
     
     @Override

@@ -12,15 +12,32 @@ import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleAnalogExpressionSocket;
 import jmri.jmrit.newlogix.MaleSocket;
+import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 
 /**
  *
  */
-public class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
+public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
         implements FemaleAnalogExpressionSocket {
 
     public DefaultFemaleAnalogExpressionSocket(FemaleSocketListener listener, String name) {
         super(listener, name);
+    }
+    
+    public DefaultFemaleAnalogExpressionSocket(
+            FemaleSocketListener listener,
+            String name,
+            MaleAnalogExpressionSocket maleSocket) {
+        
+        super(listener, name);
+        
+        try {
+            connect(maleSocket);
+        } catch (SocketAlreadyConnectedException e) {
+            // This should never be able to happen since a newly created
+            // socket is not connected.
+            throw new RuntimeException(e);
+        }
     }
     
     @Override

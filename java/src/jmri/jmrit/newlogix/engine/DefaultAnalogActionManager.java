@@ -142,8 +142,8 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
             MaleAnalogActionSocket maleSocket){
         
         FemaleAnalogActionSocket socket =
-                new DefaultFemaleAnalogActionSocket(listener, socketName);
-        socket.connect(maleSocket);
+                new DefaultFemaleAnalogActionSocket(listener, socketName, maleSocket);
+        
         return socket;
     }
 /*

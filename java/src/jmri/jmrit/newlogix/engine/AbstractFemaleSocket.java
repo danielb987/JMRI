@@ -4,6 +4,7 @@ import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleSocket;
+import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 
 /**
  * Abstract female socket.
@@ -21,13 +22,13 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     
     /** {@inheritDoc} */
     @Override
-    public void connect(MaleSocket socket) {
-        if (!isCompatible(socket)) {
-            throw new UnsupportedOperationException("Socket is not compatible");
+    public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
+        if (_socket != null) {
+            throw new SocketAlreadyConnectedException("Socket is already connected");
         }
         
-        if (_socket != null) {
-            disconnect();
+        if (!isCompatible(socket)) {
+            throw new UnsupportedOperationException("Socket is not compatible");
         }
         
         _socket = socket;

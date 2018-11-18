@@ -16,6 +16,7 @@ import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
+import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 import jmri.jmrit.newlogix.actions.ActionHoldAnything;
 import jmri.jmrit.newlogix.actions.ActionIfThen;
 import jmri.jmrit.newlogix.actions.ActionMany;
@@ -137,18 +138,24 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
     @Override
     public void setupInitialNewLogixTree(NewLogix newLogix) {
-        MaleActionSocket actionManySocket =
-                InstanceManager.getDefault(ActionManager.class).register(new ActionMany(newLogix));
-        newLogix.getFemaleSocket().connect(actionManySocket);
-        
-        MaleActionSocket actionHoldAnythingSocket =
-                InstanceManager.getDefault(ActionManager.class).register(new ActionHoldAnything(newLogix));
-        actionManySocket.getChild(0).connect(actionHoldAnythingSocket);
-        
-        MaleActionSocket actionIfThenSocket =
-                InstanceManager.getDefault(ActionManager.class)
-                        .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
-        actionManySocket.getChild(1).connect(actionIfThenSocket);
+        try {
+            MaleActionSocket actionManySocket =
+                    InstanceManager.getDefault(ActionManager.class).register(new ActionMany(newLogix));
+            newLogix.getFemaleSocket().connect(actionManySocket);
+
+            MaleActionSocket actionHoldAnythingSocket =
+                    InstanceManager.getDefault(ActionManager.class).register(new ActionHoldAnything(newLogix));
+            actionManySocket.getChild(0).connect(actionHoldAnythingSocket);
+
+            MaleActionSocket actionIfThenSocket =
+                    InstanceManager.getDefault(ActionManager.class)
+                            .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
+            actionManySocket.getChild(1).connect(actionIfThenSocket);
+            
+        } catch (SocketAlreadyConnectedException e) {
+            // This should never be able to happen.
+            throw new RuntimeException(e);
+        }
     }
     
     @Override

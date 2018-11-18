@@ -147,8 +147,8 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
             MaleExpressionSocket maleSocket) {
         
         FemaleExpressionSocket socket =
-                new DefaultFemaleExpressionSocket(listener, socketName);
-        socket.connect(maleSocket);
+                new DefaultFemaleExpressionSocket(listener, socketName, maleSocket);
+        
         return socket;
     }
 /*
