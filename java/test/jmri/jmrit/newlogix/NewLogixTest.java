@@ -34,6 +34,11 @@ public class NewLogixTest {
     }
     
     @Test
+    public void testExceptions() {
+        new SocketAlreadyConnectedException().getMessage();
+    }
+    
+    @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "New Logix".equals(new DefaultNewLogix("IQA55", null).getBeanType()));
         Assert.assertTrue("bean type is correct", "Action".equals(new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.TRIGGER_ACTION).getBeanType()));
