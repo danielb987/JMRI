@@ -11,6 +11,7 @@ import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
+import jmri.jmrit.newlogix.FemaleSocketFactory;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;

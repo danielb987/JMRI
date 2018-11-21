@@ -87,11 +87,4 @@ public interface NewLogixManager extends Manager<NewLogix> {
      */
     public List<FemaleSocketFactory> getFemaleSocketFactories();
     
-    /**
-     * Interface for creation of a FemaleSocket.
-     */
-    public interface FemaleSocketFactory {
-        public FemaleSocket create();
-    }
-    
 }

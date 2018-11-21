@@ -9,9 +9,11 @@ import jmri.NamedBean;
 import jmri.jmrit.newlogix.ActionManager;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketFactory;
+import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleSocket;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
-import jmri.jmrit.newlogix.NewLogixManager.FemaleSocketFactory;
 
 /**
  * An action that can hold everything but doesn't do anything.
@@ -22,8 +24,7 @@ import jmri.jmrit.newlogix.NewLogixManager.FemaleSocketFactory;
  */
 public class ActionHoldAnything extends AbstractAction {
 
-    private final Map<FemaleSocketFactory, List<FemaleSocket>> sockets = new HashMap<>();
-//    private final Map<FemaleSocketFactory, List<? extends FemaleSocket>> sockets = new HashMap<>();
+    private final List<MultipleSockets> _multipleSockets = new ArrayList<>();
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
@@ -31,18 +32,21 @@ public class ActionHoldAnything extends AbstractAction {
      */
     public ActionHoldAnything(NewLogix newLogix)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
+        
         super(InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix));
         init();
     }
 
     public ActionHoldAnything(String sys)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
+        
         super(sys);
         init();
     }
 
     public ActionHoldAnything(String sys, String user)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
+        
         super(sys, user);
         init();
     }
@@ -51,9 +55,7 @@ public class ActionHoldAnything extends AbstractAction {
         for (FemaleSocketFactory factory :
                 InstanceManager.getDefault(NewLogixManager.class).getFemaleSocketFactories()) {
             
-            List<FemaleSocket> list = new ArrayList<>();
-            list.add(factory.create());
-            sockets.put(factory, list);
+            _multipleSockets.add(new MultipleSockets(factory));
         }
     }
     
@@ -95,12 +97,80 @@ public class ActionHoldAnything extends AbstractAction {
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int i = index;
+        
+        for (MultipleSockets multipleSockets : _multipleSockets) {
+            if (i < multipleSockets._femaleSockets.size()) {
+                return multipleSockets._femaleSockets.get(i);
+            }
+            i -= multipleSockets._femaleSockets.size();
+        }
+        
+        throw new IllegalArgumentException(String.format("index %d out of range", index));
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _multipleSockets.size();
+    }
+    
+    
+    
+    private static class MultipleSockets implements MaleSocket, FemaleSocketListener {
+
+        private final FemaleSocketFactory _femaleSocketFactory;
+        private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
+        
+        private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
+            _femaleSocketFactory = femaleSocketFactory;
+            _femaleSockets.add(femaleSocketFactory.create());
+        }
+        
+        @Override
+        public String getConfiguratorClassName() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public String getShortDescription() {
+            return "Multiple sockets for " + _femaleSocketFactory.getClass().getName();
+        }
+
+        @Override
+        public String getLongDescription() {
+            return "Multiple sockets for " + _femaleSocketFactory.getClass().getName();
+        }
+
+        @Override
+        public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
+            return _femaleSockets.get(index);
+        }
+
+        @Override
+        public int getChildCount() {
+            return _femaleSockets.size();
+        }
+
+        @Override
+        public Category getCategory() {
+            return Category.OTHER;
+        }
+
+        @Override
+        public boolean isExternal() {
+            return false;
+        }
+
+        @Override
+        public void connected(FemaleSocket socket) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void disconnected(FemaleSocket socket) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
     }
     
 }
