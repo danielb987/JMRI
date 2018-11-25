@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import jmri.InvokeOnGuiThread;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * Utilities for handling JMRI's threading conventions.
@@ -21,6 +22,7 @@ import jmri.InvokeOnGuiThread;
  *
  * @author Bob Jacobsen Copyright 2015
  */
+@ThreadSafe
 public class ThreadingUtil {
 
     /**
@@ -33,17 +35,6 @@ public class ThreadingUtil {
     private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = true;
 
 
-    static public interface ThreadAction extends Runnable {
-
-        /**
-         * {@inheritDoc}
-         * <p>
-         * Must handle its own exceptions.
-         */
-        @Override
-        public void run();
-    }
-    
     static private class LayoutEvent {
         private final ThreadAction _threadAction;
         private final Object _lock;
@@ -282,10 +273,6 @@ public class ThreadingUtil {
         }
     }
 
-    public interface ReturningThreadAction<E> {
-        public E run();
-    }
-    
     /**
      * Run some GUI-specific code at some later point.
      * <p>
@@ -387,6 +374,27 @@ public class ThreadingUtil {
 
 
     /**
+     * Interface for use in ThreadingUtil's lambda interfaces
+     */
+    static public interface ThreadAction extends Runnable {
+
+        /**
+         * {@inheritDoc}
+         * <p>
+         * Must handle its own exceptions.
+         */
+        @Override
+        public void run();
+    }
+
+    /**
+     * Interface for use in ThreadingUtil's lambda interfaces
+     */
+    static public interface ReturningThreadAction<E> {
+        public E run();
+    }
+    
+    /**
      * Warn if a thread is holding locks. Used when transitioning to another context.
      */
     static public void warnLocks() {
@@ -414,7 +422,10 @@ public class ThreadingUtil {
         }
     }
     private static boolean lastWarnLocksLimit = false;
-    public static RuntimeException lastWarnLocksException = null;
+    private static RuntimeException lastWarnLocksException = null; 
+    public RuntimeException getlastWarnLocksException() { // public for script and test access
+        return lastWarnLocksException;
+    }
     
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThreadingUtil.class);
 
