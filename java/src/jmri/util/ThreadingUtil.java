@@ -5,10 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import jmri.InvokeOnGuiThread;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * Utilities for handling JMRI's threading conventions.
@@ -21,6 +21,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * distinction now, but it might be later, so we build it into the calls.
  *
  * @author Bob Jacobsen Copyright 2015
+ * @author Daniel Bergqvist Copyright 2018
  */
 @ThreadSafe
 public class ThreadingUtil {
@@ -31,8 +32,7 @@ public class ThreadingUtil {
      * WARNING: Setting this variable to true will probably break things.
      * It's only intended for testing.
      */
-//    private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = false;
-    private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = true;
+    private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = false;
 
 
     static private class LayoutEvent {
