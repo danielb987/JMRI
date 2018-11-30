@@ -37,31 +37,7 @@ public class ThreadingUtil {
     /**
      * Should GUI and NewLogix be separate threads?
      */
-    private static final boolean SEPARATE_GUI_AND_NEWLOGIX_THREADS = false;
-
-
-    static private class ThreadEvent {
-        private final ThreadAction _threadAction;
-        private final Object _lock;
-        
-        public ThreadEvent(ThreadAction threadAction) {
-            _threadAction = threadAction;
-            _lock = null;
-        }
-        
-        public ThreadEvent(ThreadAction threadAction,
-                Object lock) {
-            _threadAction = threadAction;
-            _lock = lock;
-        }
-    }
-    
-    
-    private static Thread newLogixThread = null;
-    private static BlockingQueue<ThreadEvent> newLogixEventQueue = null;
-
-    private static Thread layoutThread = null;
-    private static BlockingQueue<ThreadEvent> layoutEventQueue = null;
+    private static final boolean SEPARATE_GUI_AND_NEWLOGIX_THREADS = true;
 
 
     @InvokeOnGuiThread
@@ -534,6 +510,22 @@ public class ThreadingUtil {
     }
 
 
+    static private class ThreadEvent {
+        private final ThreadAction _threadAction;
+        private final Object _lock;
+        
+        public ThreadEvent(ThreadAction threadAction) {
+            _threadAction = threadAction;
+            _lock = null;
+        }
+        
+        public ThreadEvent(ThreadAction threadAction,
+                Object lock) {
+            _threadAction = threadAction;
+            _lock = lock;
+        }
+    }
+
     /**
      * Interface for use in ThreadingUtil's lambda interfaces
      */
@@ -582,6 +574,13 @@ public class ThreadingUtil {
             }
         }
     }
+
+    private static Thread newLogixThread = null;
+    private static BlockingQueue<ThreadEvent> newLogixEventQueue = null;
+
+    private static Thread layoutThread = null;
+    private static BlockingQueue<ThreadEvent> layoutEventQueue = null;
+
     private static boolean lastWarnLocksLimit = false;
     private static RuntimeException lastWarnLocksException = null; 
     public RuntimeException getlastWarnLocksException() { // public for script and test access
