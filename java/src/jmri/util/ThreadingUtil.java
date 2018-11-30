@@ -34,17 +34,22 @@ public class ThreadingUtil {
      */
     private static final boolean SEPARATE_GUI_AND_LAYOUT_THREADS = false;
 
+    /**
+     * Should GUI and NewLogix be separate threads?
+     */
+    private static final boolean SEPARATE_GUI_AND_NEWLOGIX_THREADS = false;
 
-    static private class LayoutEvent {
+
+    static private class ThreadEvent {
         private final ThreadAction _threadAction;
         private final Object _lock;
         
-        public LayoutEvent(ThreadAction threadAction) {
+        public ThreadEvent(ThreadAction threadAction) {
             _threadAction = threadAction;
             _lock = null;
         }
         
-        public LayoutEvent(ThreadAction threadAction,
+        public ThreadEvent(ThreadAction threadAction,
                 Object lock) {
             _threadAction = threadAction;
             _lock = lock;
@@ -52,9 +57,160 @@ public class ThreadingUtil {
     }
     
     
-    private static Thread layoutThread = null;
-    private static BlockingQueue<LayoutEvent> layoutEventQueue = null;
+    private static Thread newLogixThread = null;
+    private static BlockingQueue<ThreadEvent> newLogixEventQueue = null;
 
+    private static Thread layoutThread = null;
+    private static BlockingQueue<ThreadEvent> layoutEventQueue = null;
+
+
+    @InvokeOnGuiThread
+    public static void launchNewLogixThread() {
+        if (!SEPARATE_GUI_AND_NEWLOGIX_THREADS) {
+            return;
+        }
+        
+        newLogixEventQueue = new ArrayBlockingQueue<>(1024);
+        newLogixThread = new Thread(() -> {
+            while (true) {
+                try {
+                    ThreadEvent event = newLogixEventQueue.take();
+                    if (event._lock != null) {
+                        synchronized(event._lock) {
+                            event._threadAction.run();
+                            event._lock.notify();
+                        }
+                    } else {
+                        event._threadAction.run();
+                    }
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }, "JMRI NewLogixThread");
+        newLogixThread.setDaemon(true);
+        newLogixThread.start();
+    }
+    
+    /**
+     * Run some NewLogix-specific code before returning.
+     * <p>
+     * Typical uses:
+     * <p> {@code
+     * ThreadingUtil.runOnNewLogix(() -> {
+     *     newLogix.doSomething(value);
+     * }); 
+     * }
+     *
+     * @param ta What to run, usually as a lambda expression
+     */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = {"WA_NOT_IN_LOOP", "UW_UNCOND_WAIT"},
+            justification="Method runOnNewLogix() doesn't have a loop. Waiting for single possible event."+
+                    "The thread that is going to call notify() cannot get"+
+                    " it's hands on the lock until wait() is called, "+
+                    " since the caller must first fetch the event from the"+
+                    " event queue and the event is put on the event queue in"+
+                    " the synchronize block.")
+    static public void runOnNewLogix(@Nonnull ThreadAction ta) {
+        if (newLogixThread != null) {
+            Object lock = new Object();
+            synchronized(lock) {
+                newLogixEventQueue.add(new ThreadEvent(ta, lock));
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    log.debug("Interrupted while running on NewLogix thread");
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } else {
+            runOnGUI(ta);
+        }
+    }
+
+    /**
+     * Run some layout-specific code at some later point.
+     * <p>
+     * Please note the operation may have happened before this returns. Or
+     * later. No long-term guarantees.
+     * <p>
+     * Typical uses:
+     * <p> {@code
+     * ThreadingUtil.runOnLayoutEventually(() -> {
+     *     sensor.setState(value);
+     * }); 
+     * }
+     *
+     * @param ta What to run, usually as a lambda expression
+     */
+    static public void runOnNewLogixEventually(@Nonnull ThreadAction ta) {
+        if (newLogixThread != null) {
+            newLogixEventQueue.add(new ThreadEvent(ta));
+        } else {
+            runOnGUIEventually(ta);
+        }
+    }
+
+    /**
+     * Run some layout-specific code at some later point, at least a known time
+     * in the future.
+     * <p>
+     * There is no long-term guarantee about the accuracy of the interval.
+     * <p>
+     * Typical uses:
+     * <p> {@code
+     * ThreadingUtil.runOnLayoutEventually(() -> {
+     *     sensor.setState(value);
+     * }, 1000); 
+     * }
+     *
+     * @param ta    What to run, usually as a lambda expression
+     * @param delay interval in milliseconds
+     * @return reference to timer object handling delay so you can cancel if desired; note that operation may have already taken place.
+     */
+    @Nonnull 
+    static public Timer runOnNewLogixDelayed(@Nonnull ThreadAction ta, int delay) {
+        if (newLogixThread != null) {
+            // dispatch to Swing via timer. We are forced to use a Swing Timer
+            // since the method returns a Timer object and we don't want to
+            // change the method interface.
+            Timer timer = new Timer(delay, (ActionEvent e) -> {
+                // Dispatch the event to the layout event handler once the time
+                // has passed.
+                newLogixEventQueue.add(new ThreadEvent(ta));
+            });
+            timer.setRepeats(false);
+            timer.start();
+            return timer;
+        } else {
+            return runOnGUIDelayed(ta, delay);
+        }
+    }
+
+    /**
+     * Check if on the layout-operation thread.
+     *
+     * @return true if on the layout-operation thread
+     */
+    static public boolean isNewLogixThread() {
+        if (newLogixThread != null) {
+            return newLogixThread == Thread.currentThread();
+        } else {
+            return isGUIThread();
+        }
+    }
+
+    /**
+     * Checks if the the current thread is the layout thread.
+     * The check is only done if debug is enabled.
+     */
+    static public void checkIsNewLogixThread() {
+        if (log.isDebugEnabled()) {
+            if (!isNewLogixThread()) {
+                Log4JUtil.warnOnce(log, "checkIsNewLogixThread() called on wrong thread", new Exception());
+            }
+        }
+    }
 
     @InvokeOnGuiThread
     public static void launchLayoutThread() {
@@ -66,7 +222,7 @@ public class ThreadingUtil {
         layoutThread = new Thread(() -> {
             while (true) {
                 try {
-                    LayoutEvent event = layoutEventQueue.take();
+                    ThreadEvent event = layoutEventQueue.take();
                     if (event._lock != null) {
                         synchronized(event._lock) {
                             event._threadAction.run();
@@ -96,13 +252,18 @@ public class ThreadingUtil {
      *
      * @param ta What to run, usually as a lambda expression
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "WA_NOT_IN_LOOP",
-            justification="Method runOnGUI() doesn't have a loop. Waiting for single possible event.")
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = {"WA_NOT_IN_LOOP", "UW_UNCOND_WAIT"},
+            justification="Method runOnLayout() doesn't have a loop. Waiting for single possible event."+
+                    "The thread that is going to call notify() cannot get"+
+                    " it's hands on the lock until wait() is called, "+
+                    " since the caller must first fetch the event from the"+
+                    " event queue and the event is put on the event queue in"+
+                    " the synchronize block.")
     static public void runOnLayout(@Nonnull ThreadAction ta) {
         if (layoutThread != null) {
             Object lock = new Object();
             synchronized(lock) {
-                layoutEventQueue.add(new LayoutEvent(ta, lock));
+                layoutEventQueue.add(new ThreadEvent(ta, lock));
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
@@ -132,7 +293,7 @@ public class ThreadingUtil {
      */
     static public void runOnLayoutEventually(@Nonnull ThreadAction ta) {
         if (layoutThread != null) {
-            layoutEventQueue.add(new LayoutEvent(ta));
+            layoutEventQueue.add(new ThreadEvent(ta));
         } else {
             runOnGUIEventually(ta);
         }
@@ -164,7 +325,7 @@ public class ThreadingUtil {
             Timer timer = new Timer(delay, (ActionEvent e) -> {
                 // Dispatch the event to the layout event handler once the time
                 // has passed.
-                layoutEventQueue.add(new LayoutEvent(ta));
+                layoutEventQueue.add(new ThreadEvent(ta));
             });
             timer.setRepeats(false);
             timer.start();
