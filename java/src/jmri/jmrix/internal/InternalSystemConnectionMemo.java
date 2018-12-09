@@ -54,6 +54,7 @@ public class InternalSystemConnectionMemo extends jmri.jmrix.SystemConnectionMem
         configured = true;
     }
 
+    private InternalDigitalIOManager digitalIOManager;
     private InternalSensorManager sensorManager;
     private InternalLightManager lightManager;
     private InternalReporterManager reporterManager;
@@ -63,6 +64,16 @@ public class InternalSystemConnectionMemo extends jmri.jmrix.SystemConnectionMem
     private InternalConsistManager consistManager;
     private jmri.jmrix.debugthrottle.DebugThrottleManager throttleManager;
     private jmri.progdebugger.DebugProgrammerManager programManager;
+
+    public InternalDigitalIOManager getDigitalIOManager() {
+        if (digitalIOManager == null) {
+            log.debug("Create InternalDigitalIOManager \"{}\" by request", getSystemPrefix());
+            digitalIOManager = new InternalDigitalIOManager(getSystemPrefix());
+            // special due to ProxyManager support
+            InstanceManager.setDigitalIOManager(digitalIOManager);
+        }
+        return digitalIOManager;
+    }
 
     public InternalSensorManager getSensorManager() {
         if (sensorManager == null) {

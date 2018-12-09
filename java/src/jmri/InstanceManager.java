@@ -736,6 +736,21 @@ public final class InstanceManager {
         }
     }
 
+    // Needs to have proxy manager converted to work
+    // with current list of managers (and robust default
+    // management) before this can be deprecated in favor of
+    // store(p, DigitalIOManager.class)
+    @SuppressWarnings("unchecked") // AbstractProxyManager of the right type is type-safe by definition
+    static public void setDigitalIOManager(DigitalIOManager p) {
+        log.debug(" setDigitalIOManager");
+        DigitalIOManager apm = getDefault(DigitalIOManager.class);
+        if (apm instanceof jmri.managers.AbstractProxyManager<?>) { // <?> due to type erasure
+            ((jmri.managers.AbstractProxyManager<DigitalIO>) apm).addManager(p);
+        } else {
+            log.error("Incorrect setup: DigitalIOManager default isn't an AbstractProxyManager<DigitalIO>");
+        }
+    }
+
     /* *************************************************************************** */
 
     /**
