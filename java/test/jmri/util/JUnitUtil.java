@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Nonnull;
 import jmri.jmrit.newlogix.ActionManager;
+import jmri.AddressedProgrammerManager;
 import jmri.ConditionalManager;
 import jmri.ConfigureManager;
 import jmri.jmrit.newlogix.ExpressionManager;
@@ -122,21 +123,21 @@ public class JUnitUtil {
      * Public in case modification is needed from a test or script.
      */
     static final public int DEFAULT_RELEASETHREAD_DELAY = 50;
-    
+
     /**
      * Standard time step (in mSec) when looping in a waitFor operation.
      * <p>
      * Public in case modification is needed from a test or script.
-     */    
+     */
     static final public int WAITFOR_DELAY_STEP = 5;
     /**
      * Maximum time to wait before failing a waitFor operation.
-     * The default value is really long, but that only matters when the test is failing anyway, 
+     * The default value is really long, but that only matters when the test is failing anyway,
      * and some of the LayoutEditor/SignalMastLogic tests are slow. But too long will cause CI jobs
      * to time out before this logs the error....
      * <p>
      * Public in case modification is needed from a test or script.
-     */    
+     */
     static final public int WAITFOR_MAX_DELAY = 10000;
 
     /**
@@ -148,7 +149,7 @@ public class JUnitUtil {
     static boolean printSetUpTearDownNames = Boolean.getBoolean("jmri.util.JUnitUtil.printSetUpTearDownNames"); // false unless set true
 
     /**
-     * When true, checks that calls to setUp and tearDown properly alterante, printing an 
+     * When true, checks that calls to setUp and tearDown properly alterante, printing an
      * error message with context information on System.err if inconsistent calls are observed.
      * <p>
      * Set from the jmri.util.JUnitUtil.checkSetUpTearDownSequence environment variable.
@@ -164,7 +165,7 @@ public class JUnitUtil {
     static boolean checkSequenceDumpsStack =    Boolean.getBoolean("jmri.util.JUnitUtil.checkSequenceDumpsStack"); // false unless set true
 
     static private int threadCount = 0;
-    
+
     static private boolean didSetUp = false;
     static private boolean didTearDown = true;
     static private String lastSetUpClassName = "<unknown>";
@@ -173,7 +174,7 @@ public class JUnitUtil {
     static private String lastTearDownClassName = "<unknown>";
     static private String lastTearDownThreadName = "<unknown>";
     static private StackTraceElement[] lastTearDownStackTrace = new StackTraceElement[0];
-    
+
     static private boolean isLoggingInitialized = false;
     /**
      * JMRI standard setUp for tests. This should be the first line in the {@code @Before}
@@ -186,7 +187,7 @@ public class JUnitUtil {
             String filename = System.getProperty("jmri.log4jconfigfilename", "tests.lcf");
             Log4JUtil.initLogging(filename);
         }
-        
+
         // need to do this each time
         try {
             JUnitAppender.start();
@@ -197,7 +198,7 @@ public class JUnitUtil {
         // do not set the UncaughtExceptionHandler while unit testing
         // individual tests can explicitly set it after calling this method
         Thread.setDefaultUncaughtExceptionHandler(null);
-        
+
         // silence the Jemmy GUI unit testing framework
         JUnitUtil.silenceGUITestOutput();
 
@@ -212,12 +213,12 @@ public class JUnitUtil {
         // Log and/or check the use of setUp and tearDown
         if (checkSetUpTearDownSequence || printSetUpTearDownNames) {
             lastSetUpClassName = getTestClassName();
-        
+
             if (printSetUpTearDownNames) System.err.println(">> Starting test in "+lastSetUpClassName);
-        
+
             if ( checkSetUpTearDownSequence)  {
                 if (checkSequenceDumpsStack)  lastSetUpThreadName = Thread.currentThread().getName();
-                
+
                 if (didSetUp || ! didTearDown) {
                     System.err.println("   "+getTestClassName()+".setUp on thread "+lastSetUpThreadName+" unexpectedly found setUp="+didSetUp+" tearDown="+didTearDown+"; last tearDown was in "+lastTearDownClassName+" thread "+lastTearDownThreadName);
                     if (checkSequenceDumpsStack) {
@@ -230,7 +231,7 @@ public class JUnitUtil {
                         System.err.println("----------------------");
                     }
                 }
-                
+
                 didTearDown = false;
                 didSetUp = true;
 
@@ -238,7 +239,7 @@ public class JUnitUtil {
             }
         }
     }
-    
+
     /**
      * Teardown from tests. This should be the last line in the {@code @After}
      * annotated method.
@@ -251,7 +252,7 @@ public class JUnitUtil {
 
             if (checkSetUpTearDownSequence) {
                 if (checkSequenceDumpsStack) lastTearDownThreadName = Thread.currentThread().getName();
-                
+
                 if (! didSetUp || didTearDown) {
                     System.err.println("   "+getTestClassName()+".tearDown on thread "+lastTearDownThreadName+" unexpectedly found setUp="+didSetUp+" tearDown="+didTearDown+"; last setUp was in "+lastSetUpClassName+" thread "+lastSetUpThreadName);
                     if (checkSequenceDumpsStack) {
@@ -264,18 +265,18 @@ public class JUnitUtil {
                         System.err.println("----------------------");
                     }
                 }
-                
+
                 didSetUp = false;
                 didTearDown = true;
-            
+
                 if (checkSequenceDumpsStack) lastTearDownStackTrace = Thread.currentThread().getStackTrace();
             }
-        
+
             // To save time & space, only print end when doing full check
             if (printSetUpTearDownNames && checkSetUpTearDownSequence)  System.err.println("<<   Ending test in "+lastTearDownClassName);
 
         }
-        
+
         // ideally this would be resetWindows(false, true) to force an error if an earlier
         // test left a window open, but different platforms seem to have just
         // enough differences that this is, for now, turned off
@@ -288,9 +289,16 @@ public class JUnitUtil {
         JUnitAppender.verifyNoBacklog();
         JUnitAppender.resetUnexpectedMessageFlags(severity);
         Assert.assertFalse("Unexpected "+severity+" or higher messages emitted", unexpectedMessageSeen);
-        
+
         // Optionally, check that no threads were left running (could be controlled by environment var?)
         // checkThreads(false);  // true means stop on 1st extra thread
+
+        // Optionally, print whatever is on the Swing queue to see what's keeping things alive
+        //Object entry = java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue().peekEvent();
+        //if (entry != null) System.err.println("entry: "+entry);
+
+        // Optionally, check that the Swing queue is idle
+        //new org.netbeans.jemmy.QueueTool().waitEmpty(250);
 
     }
 
@@ -662,7 +670,7 @@ public class JUnitUtil {
 
     public static void initInternalSignalHeadManager() {
         SignalHeadManager m = new AbstractSignalHeadManager();
-        InstanceManager.setSignalHeadManager(m);
+        InstanceManager.setDefault(SignalHeadManager.class, m);
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.SIGNALHEADS);
         }
@@ -703,7 +711,7 @@ public class JUnitUtil {
 
     public static void initDebugProgrammerManager() {
         DebugProgrammerManager m = new DebugProgrammerManager();
-        InstanceManager.setAddressedProgrammerManager(m);
+        InstanceManager.store(m, AddressedProgrammerManager.class);
         InstanceManager.store(m, GlobalProgrammerManager.class);
     }
 
@@ -985,7 +993,7 @@ public class JUnitUtil {
 
         return "<unknown class>";
     }
-        
+
     /**
      * Dispose of any disposable windows. This should only be used if there is
      * no ability to actually close windows opened by a test using
@@ -1067,12 +1075,12 @@ public class JUnitUtil {
      */
     public static void dispose(@Nonnull Window window) {
         java.util.Objects.requireNonNull(window, "Window cannot be null");
-        
+
         ThreadingUtil.runOnGUI(() -> {
             window.dispose();
         });
     }
-    
+
     public static Thread getThreadByName(String threadName) {
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().equals(threadName)) return t;
@@ -1103,7 +1111,7 @@ public class JUnitUtil {
     static List<Thread> threadsSeen = new ArrayList<>();
 
     /**
-     * Do a diagnostic check of threads, 
+     * Do a diagnostic check of threads,
      * providing a traceback if any new ones are still around.
      * <p>
      * First implementation is rather simplistic.
@@ -1112,7 +1120,7 @@ public class JUnitUtil {
     static void checkThreads(boolean stop) {
         // now check for extra threads
         threadCount = 0;
-        Thread.getAllStackTraces().keySet().forEach((t) -> 
+        Thread.getAllStackTraces().keySet().forEach((t) ->
             {
                 if (threadsSeen.contains(t)) return;
                 String name = t.getName();
@@ -1123,17 +1131,17 @@ public class JUnitUtil {
                      || name.startsWith("Image Fetcher ")
                      || name.startsWith("JmDNS(")
                      || name.startsWith("SocketListener(")
-                     || (name.startsWith("Timer-") && 
-                            ( t.getThreadGroup() != null && 
+                     || (name.startsWith("Timer-") &&
+                            ( t.getThreadGroup() != null &&
                                 (t.getThreadGroup().getName().contains("FailOnTimeoutGroup") || t.getThreadGroup().getName().contains("main") )
-                            ) 
+                            )
                         )
-                    )) {  
-                    
+                    )) {
+
                         threadCount++;
                         threadsSeen.add(t);
                         System.out.println("New thread \""+t.getName()+"\" group \""+ (t.getThreadGroup()!=null ? t.getThreadGroup().getName() : "(null)")+"\"");
-                    
+
                         // for anonymous threads, show the traceback in hopes of finding what it is
                         if (name.startsWith("Thread-")) {
                             for (StackTraceElement e : Thread.getAllStackTraces().get(t)) {
