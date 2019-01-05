@@ -318,7 +318,6 @@ public abstract class AppsBase {
         }
     }
 
-    //abstract protected void addToActionModel();
     private boolean doDeferredLoad(File file) {
         boolean result;
         log.debug("start deferred load from config file {}", file.getName());

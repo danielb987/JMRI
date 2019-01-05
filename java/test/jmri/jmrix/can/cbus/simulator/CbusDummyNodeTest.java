@@ -1,4 +1,4 @@
-package jmri.jmrit.display.configurexml;
+package jmri.jmrix.can.cbus.simulator;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -7,17 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * LayoutTurntableXmlTest.java
  *
- * Description: tests for the LayoutTurntableXml class
- *
- * @author   Paul Bender  Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2017	
  */
-public class LayoutTurntableXmlTest {
+public class CbusDummyNodeTest {
 
     @Test
-    public void testCtor(){
-      Assert.assertNotNull("LayoutTurntableXml constructor",new LayoutTurntableXml());
+    public void testCTor() {
+        CbusDummyNode t = new CbusDummyNode(0,null,0);
+        Assert.assertNotNull("exists",t);
     }
 
     // The minimal setup for log4J
@@ -31,5 +29,6 @@ public class LayoutTurntableXmlTest {
         JUnitUtil.tearDown();
     }
 
-}
+    // private final static Logger log = LoggerFactory.getLogger(CbusDummyNodeTest.class);
 
+}
