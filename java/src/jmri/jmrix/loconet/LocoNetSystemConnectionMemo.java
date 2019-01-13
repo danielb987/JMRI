@@ -1,6 +1,7 @@
 package jmri.jmrix.loconet;
 
 import java.util.ResourceBundle;
+import javax.annotation.Nonnull;
 import jmri.AddressedProgrammerManager;
 import jmri.ClockControl;
 import jmri.CommandStation;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
 
     /**
-     * Must manually register() after construction is complete
+     * Must manually register() after construction is complete.
      */
     public LocoNetSystemConnectionMemo(LnTrafficController lt, SlotManager sm) {
         super("L", "LocoNet"); // NOI18N
@@ -41,8 +42,7 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
 
         this.sm = sm; // doesn't full register, but fine for this purpose.
 
-        // self-register
-        register();
+        // self-registration is deferred until the command station type is set below
                 
         // create and register the ComponentFactory for the GUI
         InstanceManager.store(cf = new LnComponentFactory(this),
@@ -50,36 +50,38 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
     }
 
     /**
-     * Must manually register() after construction is complete
+     * Must manually register() after construction is complete.
      */
     public LocoNetSystemConnectionMemo() {
-        super("L", "LocoNet"); // NOI18N
+        this("L", "LocoNet"); // NOI18N
+    }
 
-        // self-register
-        register();
+    public LocoNetSystemConnectionMemo(@Nonnull String prefix, @Nonnull String name) {
+        super(prefix, name); // NOI18N
 
         // create and register the ComponentFactory for the GUI
         InstanceManager.store(cf = new LnComponentFactory(this),
                 ComponentFactory.class);
     }
 
-    /** 
+    /**
      * Do both the default parent
-     * {@link SystemConnectionMemo} registration, 
+     * {@link SystemConnectionMemo} registration,
      * and register this specific type.
      */
     public void register() {
         super.register(); // registers general type
         InstanceManager.store(this, LocoNetSystemConnectionMemo.class); // also register as specific type
     }
-    
+
     ComponentFactory cf = null;
     private LnTrafficController lt;
+    protected LocoNetThrottledTransmitter tm;
     private SlotManager sm;
     private LnMessageManager lnm = null;
 
     /**
-     * Provides access to the SlotManager for this particular connection.
+     * Provide access to the SlotManager for this particular connection.
      *
      * @return the slot manager or null if no valid slot manager is available
      */
@@ -119,7 +121,7 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
 
     public DefaultProgrammerManager getProgrammerManager() {
         if (programmerManager == null) {
-            programmerManager = new LnProgrammerManager(getSlotManager(), this);
+            programmerManager = new LnProgrammerManager(this);
         }
         return programmerManager;
     }
@@ -141,7 +143,7 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
      * @param mTurnoutExtraSpace Is the user configuration set for extra time
      *                           between turnout operations?
      * @param mTranspondingAvailable    Is the layout configured to provide
-     *                                  transopnding reports
+     *                                  transponding reports
      */
     public void configureCommandStation(LnCommandStationType type, boolean mTurnoutNoRetry,
                                             boolean mTurnoutExtraSpace, boolean mTranspondingAvailable) {
@@ -165,6 +167,9 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
             // store as CommandStation object
             InstanceManager.store(sm, jmri.CommandStation.class);
         }
+
+        // register this SystemConnectionMemo to connect to rest of system
+        register();
     }
 
     /**
@@ -211,6 +216,7 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
         if (type.equals(CommandStation.class)) {
             return true;
         }
+
         return super.provides(type);
     }
 
@@ -261,8 +267,6 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
         }
         return super.get(T);
     }
-
-    protected LocoNetThrottledTransmitter tm;
 
     /**
      * Configure the common managers for LocoNet connections. This puts the
@@ -410,25 +414,28 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
 
     @Override
     public void dispose() {
-        lt = null;
-        sm = null;
         InstanceManager.deregister(this, LocoNetSystemConnectionMemo.class);
         if (cf != null) {
             InstanceManager.deregister(cf, ComponentFactory.class);
         }
         if (powerManager != null) {
+            powerManager.dispose();
             InstanceManager.deregister(powerManager, LnPowerManager.class);
         }
         if (turnoutManager != null) {
+            turnoutManager.dispose();
             InstanceManager.deregister(turnoutManager, LnTurnoutManager.class);
         }
         if (lightManager != null) {
+            lightManager.dispose();
             InstanceManager.deregister(lightManager, LnLightManager.class);
         }
         if (sensorManager != null) {
+            sensorManager.dispose();
             InstanceManager.deregister(sensorManager, LnSensorManager.class);
         }
         if (reporterManager != null) {
+            reporterManager.dispose();
             InstanceManager.deregister(reporterManager, LnReporterManager.class);
         }
         if (throttleManager != null) {
@@ -443,6 +450,12 @@ public class LocoNetSystemConnectionMemo extends SystemConnectionMemo {
         }
         if (tm != null){
             tm.dispose();
+        }
+        if (sm != null){
+            sm.dispose();
+        }
+        if (lt != null){
+            lt.dispose();
         }
         super.dispose();
     }

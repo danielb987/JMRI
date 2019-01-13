@@ -74,7 +74,7 @@ public class NXFrame extends WarrantRoute {
     private JPanel _switchPanel;
     private JPanel _trainPanel;
     
-    public static float INCRE_RATE = 1.08f;  // multiplier to increase throttle increments
+    public static float INCRE_RATE = 1.10f;  // multiplier to increase throttle increments
 
 
     protected NXFrame() {
@@ -93,6 +93,10 @@ public class NXFrame extends WarrantRoute {
     
     private void init() {
         if (log.isDebugEnabled()) log.debug("newInstance");
+        WarrantFrame f = WarrantTableAction.getWarrantFrame();
+        if (f != null) {    // only edit one warrant at a time.
+            WarrantTableAction.closeWarrantFrame(f);
+        }
         updatePreferences();
         makeMenus();
 
@@ -388,8 +392,8 @@ public class NXFrame extends WarrantRoute {
     }
     
     private void updateAutoRunPanel() {
-        _startDist = _orders.get(0).getBlock().getLengthMm() / 2;
-        _stopDist = _orders.get(_orders.size()-1).getBlock().getLengthMm() / 2;
+        _startDist = getPathLength(_orders.get(0)) / 2;
+        _stopDist = getPathLength(_orders.get(_orders.size()-1)) / 2;
         NumberFormat formatter = NumberFormat.getNumberInstance(); 
         if (_originUnits.getText().equals("In")) {
             float num = Math.round(_startDist * 100 / 25.4f);
@@ -465,7 +469,8 @@ public class NXFrame extends WarrantRoute {
         warrant.setBlockOrders(_orders);
         warrant.setTrainName(getTrainName());
         warrant.setNoRamp(_noRamp.isSelected());
-        _speedUtil.setDistanceTravelled(_startDist);
+        // position distance from start of path
+        _speedUtil.setDistanceTravelled(getPathLength(_orders.get(0)) - _startDist);
         warrant.setSpeedUtil(_speedUtil);   // transfer SpeedUtil to warrant
         if (log.isDebugEnabled()) log.debug("Warrant {). Route and loco set.", warrant.getDisplayName());
         int mode;
@@ -489,7 +494,7 @@ public class NXFrame extends WarrantRoute {
             if (log.isDebugEnabled()) {
                 log.debug("WarrantTableFrame run warrant. msg= " + msg + " Remove warrant " + warrant.getDisplayName());
             }
-            tableFrame.getModel().removeWarrant(warrant);
+            tableFrame.getModel().removeWarrant(warrant, false);
         }
 
         if (msg == null && mode == Warrant.MODE_RUN) {
@@ -591,23 +596,27 @@ public class NXFrame extends WarrantRoute {
         }
         if (_originUnits.getText().equals("In")){
             oDist *= 25.4f;
-            if (oDist >= 0 && oDist <= len) {
+            if (oDist > 0 && oDist < len) {
                 _startDist = oDist;
             } else {
-                if (oDist > len) {
-                    float num = Math.round(len * 100 / 25.4f);
+                if (oDist >= len) {
+                    float num = Math.round((len-1) * 100 / 25.4f);
                     _originDist.setText(formatter.format(num / 100f));
+                }else if (oDist <= 0) {
+                    _originDist.setText(formatter.format(0.1f));
                 }
                 return lengthError(bo.getPathName(), bo.getBlock().getDisplayName(), len, oDist, true);            
             }
         } else {
             oDist *= 10f;
-            if (oDist >= 0 && oDist <= len) {
+            if (oDist > 0 && oDist < len) {
                 _startDist = oDist;
             } else {
-                if (oDist > len) {
-                    float num = Math.round(len * 100);
+                if (oDist >= len) {
+                    float num = Math.round((len-1) * 100);
                     _originDist.setText(formatter.format(num / 1000f));
+                } else if (oDist <= 0) {
+                    _originDist.setText(formatter.format(.1));
                 }
                 return lengthError(bo.getPathName(), bo.getBlock().getDisplayName(), len, oDist, false);            
             }
@@ -673,16 +682,20 @@ public class NXFrame extends WarrantRoute {
     private float getPathLength(BlockOrder bo) {
         float len = bo.getPath().getLengthMm();
         if (len <= 0) {
-            String sLen = JOptionPane.showInputDialog(this, 
-                    Bundle.getMessage("zeroPathLength", bo.getPathName(), bo.getBlock().getDisplayName())
-                    + Bundle.getMessage("getPathLength", bo.getPathName(), bo.getBlock().getDisplayName()),
-                    Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
-            try {
-                len = NumberFormat.getNumberInstance().parse(sLen).floatValue();                    
-            } catch (java.text.ParseException  pe) {
-                len = -1.0f;
-            } catch (java.lang.NullPointerException  npe) {
-                len = -1.0f;
+            len = bo.getTempPathLen();
+            if ( len <= 0) {
+                String sLen = JOptionPane.showInputDialog(this, 
+                        Bundle.getMessage("zeroPathLength", bo.getPathName(), bo.getBlock().getDisplayName())
+                        + Bundle.getMessage("getPathLength", bo.getPathName(), bo.getBlock().getDisplayName()),
+                        Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                try {
+                    len = NumberFormat.getNumberInstance().parse(sLen).floatValue();                    
+                } catch (java.text.ParseException  pe) {
+                    len = -1.0f;
+                } catch (java.lang.NullPointerException  npe) {
+                    len = -1.0f;
+                }
+                bo.setTempPathLen(len);
             }
         }
        return len;
@@ -946,8 +959,10 @@ public class NXFrame extends WarrantRoute {
                 blockName = bo.getBlock().getDisplayName();
                 w.addThrottleCommand(new ThrottleSetting((int) noopTime, "NoOp", "Enter Block", blockName,
                         (hasProfileSpeeds ? _speedUtil.getTrackSpeed(curThrottle, isForward) : 0.0f)));
-                if (log.isDebugEnabled()) log.debug("{}. Enter block \"{}\" noopTime= {}, speedTime= {} blockLen= {}",
+                if (log.isDebugEnabled()) {
+                    log.debug("{}. Enter block \"{}\" noopTime= {}, speedTime= {} blockLen= {}",
                         cmdNum++, blockName, noopTime, speedTime, blockLen);
+                }
             }
         }
         if (log.isDebugEnabled()) {

@@ -56,6 +56,14 @@ public class ManagerDefaultSelectorTest {
         Assert.assertTrue(mds.isPreferencesValid(profile));
      }
 
+    private LocoNetSystemConnectionMemo getLocoNetTestConnection() {
+        // create a test loconet connection
+        LnTrafficController lnis = new LocoNetInterfaceScaffold();
+        LocoNetSystemConnectionMemo loconet = new LocoNetSystemConnectionMemo(lnis, null);
+        loconet.configureCommandStation(LnCommandStationType.COMMAND_STATION_DCS100, false, false, false);
+        return loconet;
+    }
+    
     @Test
     public void testSingleSystemPreferencesValid() {
         ManagerDefaultSelector mds = new ManagerDefaultSelector();
@@ -71,10 +79,7 @@ public class ManagerDefaultSelectorTest {
         }
         
         // add a LocoNet connection
-        LnTrafficController lnis = new LocoNetInterfaceScaffold();
-        SlotManager slotmanager = new SlotManager(lnis);
-        slotmanager.setCommandStationType(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100);
-        LocoNetSystemConnectionMemo loconet = new LocoNetSystemConnectionMemo(lnis, slotmanager);
+        LocoNetSystemConnectionMemo loconet = getLocoNetTestConnection();
         
         // wait for notifications
         JUnitUtil.waitFor(() -> {return 1 == loconet.getPropertyChangeListeners().length;}, "Registration Complete");
@@ -101,6 +106,8 @@ public class ManagerDefaultSelectorTest {
         // loconet gone, auto internal is by itself, so OK
         Assert.assertTrue(mds.isPreferencesValid(profile));
         
+        loconet.dispose();
+        
     }
 
     @Test
@@ -117,10 +124,7 @@ public class ManagerDefaultSelectorTest {
         }
         
         // add a LocoNet connection
-        LnTrafficController lnis = new LocoNetInterfaceScaffold();
-        SlotManager slotmanager = new SlotManager(lnis);
-        slotmanager.setCommandStationType(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100);
-        LocoNetSystemConnectionMemo loconet = new LocoNetSystemConnectionMemo(lnis, slotmanager);
+        LocoNetSystemConnectionMemo loconet = getLocoNetTestConnection();
 
         // wait for notifications
         JUnitUtil.waitFor(() -> {return 1 == loconet.getPropertyChangeListeners().length;}, "Registration Complete");
@@ -159,6 +163,8 @@ public class ManagerDefaultSelectorTest {
 
         // loconet gone, auto internal is by itself, so OK
         Assert.assertTrue(mds.isPreferencesValid(profile));
+        
+        loconet.dispose();
     }
 
     @Test
@@ -175,20 +181,14 @@ public class ManagerDefaultSelectorTest {
         }
         
         // add a LocoNet connection
-        LnTrafficController lnis = new LocoNetInterfaceScaffold();
-        SlotManager slotmanager = new SlotManager(lnis);
-        slotmanager.setCommandStationType(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100);
-        LocoNetSystemConnectionMemo loconet = new LocoNetSystemConnectionMemo(lnis, slotmanager);
+        LocoNetSystemConnectionMemo loconet = getLocoNetTestConnection();
 
         // wait for notifications
         JUnitUtil.waitFor(() -> {return 1 == loconet.getPropertyChangeListeners().length;}, "Registration Complete");
         new org.netbeans.jemmy.QueueTool().waitEmpty(20);
         
         // add another LocoNet connection
-        LnTrafficController lnis2 = new LocoNetInterfaceScaffold();
-        SlotManager slotmanager2 = new SlotManager(lnis2);
-        slotmanager2.setCommandStationType(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100);
-        LocoNetSystemConnectionMemo loconet2 = new LocoNetSystemConnectionMemo(lnis2, slotmanager2);
+        LocoNetSystemConnectionMemo loconet2 = getLocoNetTestConnection();
 
         // wait for notifications
         JUnitUtil.waitFor(() -> {return 1 == loconet2.getPropertyChangeListeners().length;}, "Registration Complete");
@@ -217,6 +217,9 @@ public class ManagerDefaultSelectorTest {
 
         // loconet and loconet2 gone, auto internal is by itself, so OK
         Assert.assertTrue(mds.isPreferencesValid(profile));
+        
+        loconet.dispose();
+        loconet2.dispose();
     }
     
     @Test

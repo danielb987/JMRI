@@ -21,7 +21,7 @@ import jmri.InstanceManager;
 abstract public class AbstractConnectionConfig implements ConnectionConfig {
 
     /**
-     * Ctor for a functional object with no prexisting adapter. Expect that the
+     * Ctor for a functional object with no preexisting adapter. Expect that the
      * subclass setInstance() will fill the adapter member.
      */
     @SuppressWarnings("deprecation")  // two temporary references during migration
@@ -173,7 +173,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
 
     /**
      * Load the adapter with an appropriate object
-     * <i>unless</I> its already been set.
+     * <i>unless</I> it's already been set.
      */
     abstract protected void setInstance();
 

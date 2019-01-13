@@ -24,7 +24,7 @@
     Provides build services for JMRI libraries and applications
     </description>
 
-    <property name="jmri.copyright.year" value="1997-2018"/>
+    <property name="jmri.copyright.year" value="1997-2019"/>
 
     <property environment="env"/>
 
@@ -224,6 +224,7 @@
         <pathelement location="${libdir}/mqtt-client-0.4.0.jar"/>
         <pathelement location="${libdir}/json-schema-validator-0.1.19.jar"/>
         <pathelement location="${libdir}/jsplitbutton-1.3.1.jar"/>
+        <pathelement location="${libdir}/thumbnailator-0.4.8.jar"/>
     </path>
     <pathconvert property="runtime.class.jars" refid="runtime.class.path"/>
 
@@ -286,6 +287,10 @@
         <!-- Selenium and it's dependencies -->
         <pathelement location="${libdir}/selenium-server-standalone-3.6.0.jar"/>
         <pathelement location="${libdir}/webdrivermanager-2.0.1.jar"/>
+        <!-- Spring Mock and it's dependencies -->
+        <pathelement location="${libdir}/spring-test-5.1.3.RELEASE.jar"/>
+        <pathelement location="${libdir}/spring-core-5.1.3.RELEASE.jar"/>
+        <pathelement location="${libdir}/spring-web-5.1.3.RELEASE.jar"/>
         <!-- include JMRI classes last -->
         <pathelement location="${target}/"/>  <!-- after declared jars to check for name collisions -->
         <pathelement location="${testtarget}"/> <!-- test resources in classpath that collide with stock resources -->

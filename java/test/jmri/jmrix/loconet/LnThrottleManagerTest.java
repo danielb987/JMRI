@@ -6,11 +6,8 @@ import jmri.InstanceManager;
 import jmri.ThrottleListener;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import jmri.util.junit.annotations.*;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +36,8 @@ public class LnThrottleManagerTest extends jmri.managers.AbstractThrottleManager
 
     @Test
     @Override
-    @Ignore("test requires further setup")
+    @Ignore("parent class test requires further setup")
+    @ToDo("complete initialization and remove this overriden method so that the parent class test can run")
     public void testGetThrottleInfo() {
     }
 
@@ -1142,8 +1140,8 @@ public class LnThrottleManagerTest extends jmri.managers.AbstractThrottleManager
     @Before
     public void setUp() {
         JUnitUtil.setUp();
-        lnis = new LocoNetInterfaceScaffold();
         memo = new LocoNetSystemConnectionMemo();
+        lnis = new LocoNetInterfaceScaffold(memo);
         memo.setLnTrafficController(lnis);
         memo.configureCommandStation(LnCommandStationType.COMMAND_STATION_DCS100, false, false, false);
         memo.configureManagers();
@@ -1158,6 +1156,7 @@ public class LnThrottleManagerTest extends jmri.managers.AbstractThrottleManager
     public void tearDown() {
         ((LnThrottleManager)tm).dispose();
         memo.dispose();
+        lnis = null;
         JUnitUtil.tearDown();
     }
 
