@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the InternalSensorManager interface.
+ * Implement a sensor manager for "Internal" (virtual) sensors.
  *
  * @author	Bob Jacobsen Copyright (C) 2001, 2003, 2006
  */

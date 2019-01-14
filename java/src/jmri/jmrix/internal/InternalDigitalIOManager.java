@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the InternalSensorManager interface.
+ * Implement a digitalio manager for "Internal" (virtual) digitalio:s.
  *
  * @author	Bob Jacobsen Copyright (C) 2001, 2003, 2006
  * @author	Daniel Bergqvist Copyright (C) 2018
