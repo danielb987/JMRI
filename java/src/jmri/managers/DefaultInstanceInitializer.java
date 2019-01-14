@@ -6,6 +6,7 @@ import jmri.AudioManager;
 import jmri.BlockManager;
 import jmri.ClockControl;
 import jmri.ConditionalManager;
+import jmri.DigitalIOManager;
 import jmri.InstanceInitializer;
 import jmri.InstanceManager;
 import jmri.LightManager;
@@ -65,6 +66,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
         if (type == ConditionalManager.class) {
             return new DefaultConditionalManager();
+        }
+
+        if (type == DigitalIOManager.class) {
+            return new jmri.managers.ProxyDigitalIOManager();
         }
 
         if (type == LightManager.class) {
@@ -146,6 +151,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 BlockManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
+                DigitalIOManager.class,
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
