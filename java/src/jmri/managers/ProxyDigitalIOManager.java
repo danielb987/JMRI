@@ -103,7 +103,4 @@ public class ProxyDigitalIOManager extends AbstractProxyManager<DigitalIO>
         return Bundle.getMessage("BeanNameSensor");
     }
 
-    // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(ProxyDigitalIOManager.class);
-
 }
