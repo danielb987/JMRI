@@ -4,8 +4,6 @@ import javax.annotation.Nonnull;
 
 import jmri.DigitalIO;
 import jmri.DigitalIOManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of a DigitalIOManager that can serves as a proxy for multiple
