@@ -54,7 +54,7 @@ public class ProxySensorManager extends AbstractProxyManager<Sensor>
      * Locate an instance based on a system name. Returns null if no instance
      * already exists.
      *
-     * @return requested Turnout object or null if none exists
+     * @return requested Sensor object or null if none exists
      */
     @Override
     public Sensor getBySystemName(String sName) {
@@ -65,7 +65,7 @@ public class ProxySensorManager extends AbstractProxyManager<Sensor>
      * Locate an instance based on a user name. Returns null if no instance
      * already exists.
      *
-     * @return requested Turnout object or null if none exists
+     * @return requested Sensor object or null if none exists
      */
     @Override
     public Sensor getByUserName(String userName) {
@@ -75,21 +75,21 @@ public class ProxySensorManager extends AbstractProxyManager<Sensor>
     /**
      * Return an instance with the specified system and user names. Note that
      * two calls with the same arguments will get the same instance; there is
-     * only one Sensor object representing a given physical turnout and
+     * only one Sensor object representing a given physical sensor and
      * therefore only one with a specific system or user name.
      * <P>
      * This will always return a valid object reference for a valid request; a
      * new object will be created if necessary. In that case:
      * <UL>
      * <LI>If a null reference is given for user name, no user name will be
-     * associated with the Turnout object created; a valid system name must be
+     * associated with the Sensor object created; a valid system name must be
      * provided
      * <LI>If a null reference is given for the system name, a system name will
      * _somehow_ be inferred from the user name. How this is done is system
      * specific. Note: a future extension of this interface will add an
      * exception to signal that this was not possible.
      * <LI>If both names are provided, the system name defines the hardware
-     * access of the desired turnout, and the user address is associated with
+     * access of the desired sensor, and the user address is associated with
      * it.
      * </UL>
      * Note that it is possible to make an inconsistent request if both
