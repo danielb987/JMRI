@@ -54,7 +54,7 @@ public class ProxyDigitalIOManager extends AbstractProxyManager<DigitalIO>
      * Locate an instance based on a system name. Returns null if no instance
      * already exists.
      *
-     * @return requested Turnout object or null if none exists
+     * @return requested DigitalIO object or null if none exists
      */
     @Override
     public DigitalIO getBySystemName(String sName) {
@@ -65,7 +65,7 @@ public class ProxyDigitalIOManager extends AbstractProxyManager<DigitalIO>
      * Locate an instance based on a user name. Returns null if no instance
      * already exists.
      *
-     * @return requested Turnout object or null if none exists
+     * @return requested DigitalIO object or null if none exists
      */
     @Override
     public DigitalIO getByUserName(String userName) {
