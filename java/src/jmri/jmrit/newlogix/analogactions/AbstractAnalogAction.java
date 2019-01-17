@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnalogAction extends AbstractNamedBean
         implements AnalogAction {
 
+    private Lock _lock = Lock.NONE;
+
+
     public AbstractAnalogAction(String sys) throws BadSystemNameException {
         super(sys);
     }
@@ -39,6 +42,18 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
     }
     
     
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String getConfiguratorClassName() {

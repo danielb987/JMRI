@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractExpression extends AbstractNamedBean
         implements Expression {
 
+    private Lock _lock = Lock.NONE;
+    
+    
     public AbstractExpression(String sys) throws BadSystemNameException {
         super(sys);
     }
@@ -36,6 +39,18 @@ public abstract class AbstractExpression extends AbstractNamedBean
         return UNKNOWN;
     }
     
+    
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
+    }
     
     /** {@inheritDoc} */
     @Override

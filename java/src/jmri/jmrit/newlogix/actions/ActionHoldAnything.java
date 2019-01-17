@@ -120,12 +120,25 @@ public class ActionHoldAnything extends AbstractAction {
 
         private final FemaleSocketFactory _femaleSocketFactory;
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
+        private Lock _lock = Lock.NONE;
         
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
             _femaleSockets.add(femaleSocketFactory.create());
         }
         
+        /** {@inheritDoc} */
+        @Override
+        public Lock getLock() {
+            return _lock;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setLock(Lock lock) {
+            _lock = lock;
+        }
+
         @Override
         public String getConfiguratorClassName() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

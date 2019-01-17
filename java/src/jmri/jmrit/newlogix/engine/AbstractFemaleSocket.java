@@ -14,10 +14,24 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     private final FemaleSocketListener _listener;
     private MaleSocket _socket = null;
     private String _name = null;
+    private Lock _lock = Lock.NONE;
+    
     
     public AbstractFemaleSocket(FemaleSocketListener listener, String name) {
         _listener = listener;
         _name = name;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
     }
     
     /** {@inheritDoc} */

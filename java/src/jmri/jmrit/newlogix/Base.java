@@ -8,6 +8,27 @@ package jmri.jmrit.newlogix;
  */
 public interface Base {
     
+    
+    public enum Lock {
+        
+        /**
+         * The item is not locked.
+         */
+        NONE,
+        
+        /**
+         * The item is locked by the user and can be unlocked by the user.
+         */
+        USER_LOCK,
+        
+        /**
+         * The item is locked by a hard lock that cannot be unlocked by the
+         * user. But it can be removed by editing the xml file. This lock is
+         * used for items that normally shouldn't be changed.
+         */
+        HARD_LOCK;
+    }
+    
     /**
      * The name of the property child count.
      * To get the number of children, use the method getChildCount().
@@ -87,5 +108,17 @@ public interface Base {
      * @return true if this is external
      */
     public boolean isExternal();
+    
+    /**
+     * Get the status of the lock.
+     */
+    public Lock getLock();
+    
+    /**
+     * Set the status of the lock.
+     * 
+     * Note that the user interface should normally not allow editing a hard lock.
+     */
+    public void setLock(Lock lock);
 
 }

@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnalogExpression extends AbstractNamedBean
         implements AnalogExpression {
 
+    private Lock _lock = Lock.NONE;
+
+
     public AbstractAnalogExpression(String sys) throws BadSystemNameException {
         super(sys);
     }
@@ -37,6 +40,18 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
     }
     
     
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String getConfiguratorClassName() {

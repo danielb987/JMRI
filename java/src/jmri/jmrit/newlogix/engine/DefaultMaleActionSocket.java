@@ -22,9 +22,23 @@ public class DefaultMaleActionSocket implements MaleActionSocket {
 
     private final Action _action;
     private boolean _isActive = false;
+    private Lock _lock = Lock.NONE;
+    
     
     public DefaultMaleActionSocket(@Nonnull Action action) {
         _action = action;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
     }
     
     /** {@inheritDoc} */

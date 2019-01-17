@@ -21,9 +21,23 @@ import jmri.jmrit.newlogix.MaleAnalogExpressionSocket;
 public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSocket {
 
     private final AnalogExpression _expression;
-    
+    private Lock _lock = Lock.NONE;
+
+
     public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
         _expression = expression;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
     }
 
     /** {@inheritDoc} */

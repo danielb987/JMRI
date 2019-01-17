@@ -22,9 +22,23 @@ public class DefaultMaleExpressionSocket implements MaleExpressionSocket {
 
     private final Expression _expression;
     private boolean lastEvaluationResult = false;
-    
+    private Lock _lock = Lock.NONE;
+
+
     public DefaultMaleExpressionSocket(@Nonnull Expression expression) {
         _expression = expression;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
     }
 
     /** {@inheritDoc} */

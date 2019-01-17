@@ -14,12 +14,27 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAction extends AbstractNamedBean
         implements Action {
 
+    private Lock _lock = Lock.NONE;
+    
+    
     public AbstractAction(String sys) throws BadSystemNameException {
         super(sys);
     }
 
     public AbstractAction(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
     }
     
     public String getNewSocketName() {

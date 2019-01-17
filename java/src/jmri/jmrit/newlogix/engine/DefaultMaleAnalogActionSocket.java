@@ -21,9 +21,23 @@ import jmri.jmrit.newlogix.MaleAnalogActionSocket;
 public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
 
     private final AnalogAction _action;
+    private Lock _lock = Lock.NONE;
+    
     
     public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
         _action = action;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Lock getLock() {
+        return _lock;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setLock(Lock lock) {
+        _lock = lock;
     }
     
     /** {@inheritDoc} */
