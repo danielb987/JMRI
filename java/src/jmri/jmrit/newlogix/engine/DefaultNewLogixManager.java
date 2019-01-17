@@ -7,10 +7,12 @@ import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.ActionManager;
+import jmri.jmrit.newlogix.Base;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
+import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketFactory;
 import jmri.jmrit.newlogix.FemaleSocketListener;
 import jmri.jmrit.newlogix.MaleActionSocket;
@@ -142,16 +144,21 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         try {
             MaleActionSocket actionManySocket =
                     InstanceManager.getDefault(ActionManager.class).register(new ActionMany(newLogix));
-            newLogix.getFemaleSocket().connect(actionManySocket);
+            FemaleSocket femaleSocket = newLogix.getFemaleSocket();
+            femaleSocket.connect(actionManySocket);
+            femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             MaleActionSocket actionHoldAnythingSocket =
                     InstanceManager.getDefault(ActionManager.class).register(new ActionHoldAnything(newLogix));
-            actionManySocket.getChild(0).connect(actionHoldAnythingSocket);
+            femaleSocket = actionManySocket.getChild(0);
+            femaleSocket.connect(actionHoldAnythingSocket);
+            femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             MaleActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(ActionManager.class)
                             .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
-            actionManySocket.getChild(1).connect(actionIfThenSocket);
+            femaleSocket = actionManySocket.getChild(1);
+            femaleSocket.connect(actionIfThenSocket);
             
         } catch (SocketAlreadyConnectedException e) {
             // This should never be able to happen.
