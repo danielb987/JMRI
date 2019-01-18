@@ -23,9 +23,9 @@ public class ActionDoIfTest {
     @Test
     public void testToString() {
         Action a1 = new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.TRIGGER_ACTION);
-        Assert.assertTrue("If E1 then A1".equals(a1.toString()));
+        Assert.assertTrue("If E1 then A1".equals(a1.getLongDescription()));
         Action a2 = new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.CONTINOUS_ACTION);
-        Assert.assertTrue("If E1 then A1".equals(a2.toString()));
+        Assert.assertTrue("If E1 then A1".equals(a2.getLongDescription()));
     }
     
     // The minimal setup for log4J
