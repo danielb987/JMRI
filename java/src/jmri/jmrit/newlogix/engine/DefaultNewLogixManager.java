@@ -87,13 +87,15 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     @Override
-    public NewLogix createNewNewLogix(String systemName, String userName) {
+    public NewLogix createNewNewLogix(String systemName, String userName)
+            throws IllegalArgumentException {
+        
         // Check that Logix does not already exist
         NewLogix x;
         if (userName != null && !userName.equals("")) {
             x = getByUserName(userName);
             if (x != null) {
-                return null;
+                throw new IllegalArgumentException("UserName " + userName + " already exists");
             }
         }
         x = getBySystemName(systemName);
@@ -102,8 +104,9 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
         }
         // Check if system name is valid
         if (this.validSystemNameFormat(systemName) != NameValidity.VALID) {
-            log.warn("SystemName " + systemName + " is not in the correct format");
-            return null;
+            throw new IllegalArgumentException("SystemName " + systemName + " is not in the correct format");
+//            log.warn("SystemName " + systemName + " is not in the correct format");
+//            return null;
         }
         // NewLogix does not exist, create a new NewLogix
         x = new DefaultNewLogix(systemName, userName);
@@ -131,7 +134,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     @Override
-    public NewLogix createNewNewLogix(String userName) {
+    public NewLogix createNewNewLogix(String userName) throws IllegalArgumentException {
         int nextAutoNewLogixRef = lastAutoNewLogixRef + 1;
         StringBuilder b = new StringBuilder("IQ:A:");
         String nextNumber = paddedNumber.format(nextAutoNewLogixRef);

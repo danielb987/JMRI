@@ -18,7 +18,8 @@ public interface NewLogixManager extends Manager<NewLogix> {
      * @return a new NewLogix or null if unable to create: An error, or the
      * NewLogix already exists
      */
-    public NewLogix createNewNewLogix(String systemName, String userName);
+    public NewLogix createNewNewLogix(String systemName, String userName)
+            throws IllegalArgumentException;
 
     /**
      * For use with User GUI, to allow the auto generation of systemNames, where
@@ -27,7 +28,8 @@ public interface NewLogixManager extends Manager<NewLogix> {
      * @param userName the user name
      * @return a new NewLogix or null if unable to create
      */
-    public NewLogix createNewNewLogix(String userName);
+    public NewLogix createNewNewLogix(String userName)
+            throws IllegalArgumentException;
     
     /**
      * Creates the initial items in the NewLogix tree.
