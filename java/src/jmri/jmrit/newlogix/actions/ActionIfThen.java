@@ -238,8 +238,13 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     }
 
     @Override
-    public String toString() {
-        return Bundle.getMessage("ActionIfThen", _expressionSocket.getName(), _actionSocket.getName());
+    public String getShortDescription() {
+        return Bundle.getMessage("ActionIfThen_Short");
     }
-    
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("ActionIfThen_Long", _expressionSocket.getName(), _actionSocket.getName());
+    }
+
 }

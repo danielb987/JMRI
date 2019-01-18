@@ -234,4 +234,14 @@ public final class DefaultFemaleActionSocket
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("DefaultFemaleActionSocket_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("DefaultFemaleActionSocket_Long", getName());
+    }
+
 }

@@ -127,6 +127,17 @@ public class ActionMany extends AbstractAction implements FemaleSocketListener {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("ActionMany_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("ActionMany_Long");
+//        return Bundle.getMessage("ActionMany_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
+    }
+
     
     private static class ActionEntry {
         private final FemaleActionSocket socket;

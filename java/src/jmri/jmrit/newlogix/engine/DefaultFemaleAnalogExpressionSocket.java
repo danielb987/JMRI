@@ -208,4 +208,14 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("DefaultFemaleAnalogExpressionSocket_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("DefaultFemaleAnalogExpressionSocket_Long", getName());
+    }
+
 }

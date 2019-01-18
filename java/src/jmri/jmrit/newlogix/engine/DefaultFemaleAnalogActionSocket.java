@@ -208,4 +208,14 @@ public final class DefaultFemaleAnalogActionSocket
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("DefaultFemaleAnalogActionSocket_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("DefaultFemaleAnalogActionSocket_Long", getName());
+    }
+
 }

@@ -114,6 +114,16 @@ public class ActionHoldAnything extends AbstractAction {
         return _multipleSockets.size();
     }
     
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("ActionHoldAnything_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("ActionHoldAnything_Long");
+    }
+
     
     
     private static class MultipleSockets implements MaleSocket, FemaleSocketListener {

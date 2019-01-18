@@ -62,4 +62,15 @@ public class ActionPluginSocket extends AbstractAction {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("ActionPluginSocket_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("ActionPluginSocket_Long");
+//        return Bundle.getMessage("ActionPluginSocket_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
+    }
+
 }

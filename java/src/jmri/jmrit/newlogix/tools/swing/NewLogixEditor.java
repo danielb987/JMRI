@@ -1,11 +1,14 @@
 package jmri.jmrit.newlogix.tools.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.util.SortedSet;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -240,25 +243,38 @@ public class NewLogixEditor extends JmriJFrame {
 
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            javax.swing.JPanel panel = new javax.swing.JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-            javax.swing.JCheckBox checkbox = new javax.swing.JCheckBox();
-            checkbox.setSelected((row%2)==0);
-            panel.add(checkbox);
-            javax.swing.JTextField field = new javax.swing.JTextField();
-            field.setText(value.toString());
-            panel.add(field);
-            javax.swing.JTextField field2 = new javax.swing.JTextField();
+            
             FemaleSocket socket = (FemaleSocket)value;
+            
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+            panel.setOpaque(false);
+            
+            JLabel socketLabel = new JLabel(socket.getShortDescription());
+            Font font = socketLabel.getFont();
+            socketLabel.setFont(font.deriveFont((float)(font.getSize2D()*1.7)));
+            socketLabel.setForeground(Color.red);
+            panel.add(socketLabel);
+            
+            panel.add(javax.swing.Box.createRigidArea(new Dimension(5,0)));
+            
+            JLabel socketNameLabel = new JLabel(socket.getName());
+//            font = socketNameLabel.getFont();
+//            socketNameLabel.setFont(font.deriveFont((float)(font.getSize2D()*1.7)));
+            socketNameLabel.setForeground(Color.red);
+            panel.add(socketNameLabel);
+            
+            panel.add(javax.swing.Box.createRigidArea(new Dimension(5,0)));
+            
+            JLabel connectedItemLabel = new JLabel();
             if (socket.isConnected()) {
-                field2.setText(socket.getLongDescription());
+                connectedItemLabel.setText(socket.getConnectedSocket().getLongDescription());
             } else {
-                field2.setText("Not connected");
+                connectedItemLabel.setText("Not connected");
             }
-            panel.add(field2);
+            panel.add(connectedItemLabel);
+            
             return panel;
-//            return field;
-//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         
     }

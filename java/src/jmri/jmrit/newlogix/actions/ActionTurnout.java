@@ -75,4 +75,15 @@ public class ActionTurnout extends AbstractAction {
         return 0;
     }
 
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("ActionTurnout_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
+        return Bundle.getMessage("ActionTurnout_Long");
+//        return Bundle.getMessage("ActionTurnout_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
+    }
+
 }

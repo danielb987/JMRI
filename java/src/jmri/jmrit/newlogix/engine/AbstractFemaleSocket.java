@@ -68,25 +68,6 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return _socket != null;
     }
     
-
-    @Override
-    public String getShortDescription() {
-        if (_socket != null) {
-            return _socket.getShortDescription();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-    }
-
-    @Override
-    public String getLongDescription() {
-        if (_socket != null) {
-            return _socket.getLongDescription();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void setName(String name) {

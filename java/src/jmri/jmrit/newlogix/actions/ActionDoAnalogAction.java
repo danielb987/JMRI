@@ -135,8 +135,13 @@ public class ActionDoAnalogAction
     }
 
     @Override
-    public String toString() {
+    public String getShortDescription() {
+        return Bundle.getMessage("ActionDoAnalogAction_Short");
+    }
+
+    @Override
+    public String getLongDescription() {
         return Bundle.getMessage("ActionDoAnalogAction", _analogExpressionSocket.getName(), _analogActionSocket.getName());
     }
-    
+
 }

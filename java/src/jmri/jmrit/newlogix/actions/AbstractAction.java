@@ -95,19 +95,5 @@ public abstract class AbstractAction extends AbstractNamedBean
     }
     
     
-    //************************************************************************
-    // For testing only
-    //************************************************************************
-    
-    @Override
-    public String getShortDescription() {
-        return this.getClass().getSimpleName();
-    }
-    
-    @Override
-    public String getLongDescription() {
-        return this.getClass().getName();
-    }
-
     private final static Logger log = LoggerFactory.getLogger(AbstractAction.class);
 }
