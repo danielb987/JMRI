@@ -5,16 +5,24 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
@@ -104,12 +112,46 @@ public class NewLogixEditor extends JmriJFrame {
         FemaleSocketTreeModel model = new FemaleSocketTreeModel(root);
 
         // Create a JTree and tell it to display our model
-        JTree tree = new JTree();
+        final JTree tree = new JTree();
         tree.setModel(model);
         tree.setCellRenderer(new FemaleSocketTreeRenderer());
         
         tree.setShowsRootHandles(true);
-
+        
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem mi = new JMenuItem("Insert a children");
+//            mi.addActionListener(this);
+        mi.setActionCommand("insert");
+        popup.add(mi);
+        mi = new JMenuItem("Remove this node");
+//            mi.addActionListener(this);
+        mi.setActionCommand("remove");
+        popup.add(mi);
+        popup.setOpaque(true);
+        popup.setLightWeightPopupEnabled(true);
+        
+        tree.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
+                            int row = tree.getClosestRowForLocation(e.getX(), e.getY());
+                            tree.setSelectionRow(row);
+                            Object c = e.getSource();
+                            System.out.format("Component is a %s%n", c.getClass().getName());
+                            TreePath path = tree.getSelectionPath();
+                            DefaultMutableTreeNode dmtn = null;
+                            if (path != null) {
+//                                dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
+                                FemaleSocket femaleSocket = (FemaleSocket) path.getLastPathComponent();
+                                System.out.format("femaleSocket is a %s. %s%n", femaleSocket.getClass().getName(), femaleSocket.getLongDescription());
+                            }
+                            popup.show((JComponent) e.getSource(), e.getX(), e.getY());
+                        }
+                    }
+                }
+        );
+        
         // The JTree can get big, so allow it to scroll
         JScrollPane scrollpane = new JScrollPane(tree);
 
@@ -157,21 +199,19 @@ public class NewLogixEditor extends JmriJFrame {
      * system tree and display the files and directories.
      */
     private static class FemaleSocketTreeModel implements TreeModel {
-        // We specify the root directory when we create the model.
 
-        protected FemaleSocket root;
+        private FemaleSocket root;
+        private List<TreeModelListener> listeners = new ArrayList<>();
 
         public FemaleSocketTreeModel(FemaleSocket root) {
             this.root = root;
         }
 
-        // The model knows how to return the root object of the tree
         @Override
         public Object getRoot() {
             return root;
         }
 
-        // Tell JTree whether an object in the tree is a leaf
         @Override
         public boolean isLeaf(Object node) {
             FemaleSocket socket = (FemaleSocket) node;
@@ -181,7 +221,6 @@ public class NewLogixEditor extends JmriJFrame {
             return socket.getConnectedSocket().getChildCount() == 0;
         }
 
-        // Tell JTree how many children a node has
         @Override
         public int getChildCount(Object parent) {
             FemaleSocket socket = (FemaleSocket) parent;
@@ -191,9 +230,6 @@ public class NewLogixEditor extends JmriJFrame {
             return socket.getConnectedSocket().getChildCount();
         }
 
-        // Fetch any numbered child of a node for the JTree.
-        // Our model returns File objects for all nodes in the tree.  The
-        // JTree displays these by calling the File.toString() method.
         @Override
         public Object getChild(Object parent, int index) {
             FemaleSocket socket = (FemaleSocket) parent;
@@ -203,7 +239,6 @@ public class NewLogixEditor extends JmriJFrame {
             return socket.getConnectedSocket().getChild(index);
         }
 
-        // Figure out a child's position in its parent node.
         @Override
         public int getIndexOfChild(Object parent, Object child) {
             FemaleSocket socket = (FemaleSocket) parent;
@@ -226,18 +261,33 @@ public class NewLogixEditor extends JmriJFrame {
         public void valueForPathChanged(TreePath path, Object newvalue) {
         }
 
-        // Since this is not an editable tree model, we never fire any events,
-        // so we don't actually have to keep track of interested listeners
         @Override
         public void addTreeModelListener(TreeModelListener l) {
+            listeners.add(l);
         }
 
         @Override
         public void removeTreeModelListener(TreeModelListener l) {
+            listeners.remove(l);
         }
-        
+
+//        private void notify() {
+//            for (TreeModelListener l : listeners) {
+//                l.treeNodesChanged(e);
+//            }
+//        }
+
     }
     
+/*    
+    private static final class FemaleSocketPanel extends JPanel {
+        
+        private final FemaleSocket _socket;
+        FemaleSocketPanel(FemaleSocket socket) {
+            _socket = socket;
+        }
+    }
+*/    
     
     private static final class FemaleSocketTreeRenderer implements TreeCellRenderer {
 
@@ -246,6 +296,7 @@ public class NewLogixEditor extends JmriJFrame {
             
             FemaleSocket socket = (FemaleSocket)value;
             
+//            FemaleSocketPanel panel = new FemaleSocketPanel(socket);
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
             panel.setOpaque(false);
@@ -259,8 +310,6 @@ public class NewLogixEditor extends JmriJFrame {
             panel.add(javax.swing.Box.createRigidArea(new Dimension(5,0)));
             
             JLabel socketNameLabel = new JLabel(socket.getName());
-//            font = socketNameLabel.getFont();
-//            socketNameLabel.setFont(font.deriveFont((float)(font.getSize2D()*1.7)));
             socketNameLabel.setForeground(Color.red);
             panel.add(socketNameLabel);
             
@@ -269,8 +318,8 @@ public class NewLogixEditor extends JmriJFrame {
             JLabel connectedItemLabel = new JLabel();
             if (socket.isConnected()) {
                 connectedItemLabel.setText(socket.getConnectedSocket().getLongDescription());
-            } else {
-                connectedItemLabel.setText("Not connected");
+//            } else {
+//                connectedItemLabel.setText("Not connected");
             }
             panel.add(connectedItemLabel);
             
