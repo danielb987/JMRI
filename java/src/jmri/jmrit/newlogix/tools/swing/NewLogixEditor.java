@@ -140,7 +140,7 @@ public class NewLogixEditor extends JmriJFrame {
                             Object c = e.getSource();
                             System.out.format("Component is a %s%n", c.getClass().getName());
                             TreePath path = tree.getSelectionPath();
-                            DefaultMutableTreeNode dmtn = null;
+//                            DefaultMutableTreeNode dmtn = null;
                             if (path != null) {
 //                                dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
                                 FemaleSocket femaleSocket = (FemaleSocket) path.getLastPathComponent();
