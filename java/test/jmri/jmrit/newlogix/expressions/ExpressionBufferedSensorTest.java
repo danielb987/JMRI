@@ -1,6 +1,5 @@
 package jmri.jmrit.newlogix.expressions;
 
-import jmri.jmrit.newlogix.expressions.ExpressionBufferedSensor;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;

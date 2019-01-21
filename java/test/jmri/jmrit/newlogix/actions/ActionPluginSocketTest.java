@@ -1,6 +1,5 @@
 package jmri.jmrit.newlogix.actions;
 
-import jmri.jmrit.newlogix.actions.ActionPluginSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
