@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
     ActionDoAnalogActionTest.class,
     ActionDoIfTest.class,
     ActionManyTest.class,
+    ActionPluginSocketTest.class,
     ActionSocketTest.class,
     ActionTurnoutTest.class,
 })

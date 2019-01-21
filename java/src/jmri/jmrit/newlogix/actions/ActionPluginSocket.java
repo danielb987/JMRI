@@ -15,7 +15,6 @@ public class ActionPluginSocket extends AbstractAction {
     public ActionPluginSocket(String sys, NewLogixActionPlugin actionPlugin) {
         super(sys);
         _actionPlugin = actionPlugin;
-        throw new RuntimeException("Test that the constructor is executed");
     }
     
     public ActionPluginSocket(String sys, String user, NewLogixActionPlugin actionPlugin) {

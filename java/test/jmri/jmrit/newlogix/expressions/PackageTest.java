@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     jmri.jmrit.newlogix.expressions.configurexml.PackageTest.class,
     ExpressionAndTest.class,
+    ExpressionBufferedSensorTest.class,
     ExpressionHoldTest.class,
     ExpressionResetOnTrueTest.class,
     ExpressionSocketTest.class,
