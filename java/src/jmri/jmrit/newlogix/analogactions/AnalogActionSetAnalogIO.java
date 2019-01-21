@@ -75,12 +75,17 @@ public class AnalogActionSetAnalogIO extends AbstractAnalogAction {
     }
 
     @Override
-    public String toString() {
+    public String getShortDescription() {
         if (_analogIO != null) {
             return Bundle.getMessage("AnalogActionSetAnalogIO", _analogIO.getDisplayName());
         } else {
             return Bundle.getMessage("AnalogActionSetAnalogIO", "none");
         }
+    }
+
+    @Override
+    public String getLongDescription() {
+        return getShortDescription();
     }
 
     private final static Logger log = LoggerFactory.getLogger(AnalogActionSetAnalogIO.class);

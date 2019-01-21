@@ -113,7 +113,16 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.matches("IQ\\:[AM]\\:\\d+:[AM]\\:A\\d+")) {
+        // I - Internal
+        // Q - NewLogix
+        // :
+        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // \d+ - The NewLogix ID number
+        // :
+        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // A - AnalogAction
+        // \d+ - The AnalogAction ID number
+        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?AA\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

@@ -1,5 +1,9 @@
 package jmri.jmrit.newlogix.expressions;
 
+import jmri.InstanceManager;
+import jmri.NamedBean;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
+import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 import jmri.jmrit.newlogix.expressions.ExpressionTriggerOnce;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -15,8 +19,13 @@ import org.junit.Test;
 public class ExpressionTriggerOnceTest {
 
     @Test
-    public void testCtor() {
-        new ExpressionTriggerOnce("IQA55:E321", null, null);
+    public void testCtor()
+            throws NamedBean.BadUserNameException,
+                    NamedBean.BadSystemNameException,
+                    SocketAlreadyConnectedException {
+        ExpressionTurnout expression = new ExpressionTurnout("IQ:A:55:A:E321", null);
+        MaleExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).register(expression);
+        new ExpressionTriggerOnce("IQA55:E321", null, expressionSocket);
     }
     
     // The minimal setup for log4J

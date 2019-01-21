@@ -56,15 +56,28 @@ public class ExpressionAnd extends AbstractExpression {
             e.reset();
         }
     }
-
+    
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public String getShortDescription() {
+        return Bundle.getMessage("ExpressionAnd");
+//        return Bundle.getMessage("ExpressionAnd",
+//                _holdExpressionSocket.getName(),
+//                _triggerExpressionSocket.getName());
+    }
+    
+    @Override
+    public String getLongDescription() {
+        return getShortDescription();
     }
 
 }

@@ -20,9 +20,9 @@ public class AnalogActionSetAnalogIOTest {
     }
     
     @Test
-    public void testToString() {
+    public void testShortDescription() {
         AnalogAction analogAction = new AnalogActionSetAnalogIO("IQA55:A321");
-        Assert.assertTrue("String matches", "Set analog none".equals(analogAction.toString()));
+        Assert.assertTrue("String matches", "Set analog none".equals(analogAction.getShortDescription()));
     }
     
     // The minimal setup for log4J

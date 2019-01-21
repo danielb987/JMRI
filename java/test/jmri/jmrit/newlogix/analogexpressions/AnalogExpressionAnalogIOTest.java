@@ -20,9 +20,9 @@ public class AnalogExpressionAnalogIOTest {
     }
     
     @Test
-    public void testToString() {
+    public void testShortDescription() {
         AnalogExpression analogExpression = new AnalogExpressionAnalogIO("IQA55:E321");
-        Assert.assertTrue("String matches", "Read analog none".equals(analogExpression.toString()));
+        Assert.assertTrue("String matches", "Read analog none".equals(analogExpression.getShortDescription()));
     }
     
     // The minimal setup for log4J

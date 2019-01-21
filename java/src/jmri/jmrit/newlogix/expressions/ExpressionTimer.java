@@ -1,7 +1,6 @@
 package jmri.jmrit.newlogix.expressions;
 
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.FemaleSocket;
 
 /**
@@ -49,6 +48,16 @@ public class ExpressionTimer extends AbstractExpression {
     @Override
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getShortDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getLongDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

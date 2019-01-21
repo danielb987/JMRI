@@ -73,12 +73,17 @@ public class AnalogExpressionAnalogIO extends AbstractAnalogExpression {
     }
 
     @Override
-    public String toString() {
+    public String getShortDescription() {
         if (_analogIO != null) {
             return Bundle.getMessage("AnalogExpressionAnalogIO", _analogIO.getDisplayName());
         } else {
             return Bundle.getMessage("AnalogExpressionAnalogIO", "none");
         }
+    }
+
+    @Override
+    public String getLongDescription() {
+        return getShortDescription();
     }
 
 }

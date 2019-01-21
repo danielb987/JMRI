@@ -1,8 +1,14 @@
 package jmri.jmrit.newlogix.expressions;
 
+import jmri.InstanceManager;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.Expression;
+import jmri.jmrit.newlogix.ExpressionManager;
+import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
+import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleExpressionSocket;
+import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 
 /**
  * An Expression that returns True only once while its child expression returns
@@ -14,16 +20,19 @@ import jmri.jmrit.newlogix.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionTriggerOnce extends AbstractExpression {
+public class ExpressionTriggerOnce extends AbstractExpression implements FemaleSocketListener {
 
-    private Expression _childExpression;
+    private FemaleExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
-    public ExpressionTriggerOnce(String sys, String user, Expression childExpression)
-            throws BadUserNameException, BadSystemNameException {
+    public ExpressionTriggerOnce(String sys, String user, MaleExpressionSocket expression)
+            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
         
         super(sys, user);
-        _childExpression = childExpression;
+        
+        _childExpression = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, "E1");
+        _childExpression.connect(expression);
     }
     
     /** {@inheritDoc} */
@@ -63,6 +72,26 @@ public class ExpressionTriggerOnce extends AbstractExpression {
     @Override
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public void connected(FemaleSocket socket) {
+        // This class doesn't care.
+    }
+    
+    @Override
+    public void disconnected(FemaleSocket socket) {
+        // This class doesn't care.
+    }
+
+    @Override
+    public String getShortDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getLongDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

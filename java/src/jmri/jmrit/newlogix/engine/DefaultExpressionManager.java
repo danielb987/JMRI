@@ -118,7 +118,16 @@ public class DefaultExpressionManager extends AbstractManager<MaleExpressionSock
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.matches("IQ\\:[AM]\\:\\d+:[AM]\\:E\\d+")) {
+        // I - Internal
+        // Q - NewLogix
+        // :
+        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // \d+ - The NewLogix ID number
+        // :
+        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // E - Expression
+        // \d+ - The Expression ID number
+        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?E\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

@@ -118,7 +118,16 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.matches("IQ\\:[AM]\\:\\d+:[AM]\\:E\\d+")) {
+        // I - Internal
+        // Q - NewLogix
+        // :
+        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // \d+ - The NewLogix ID number
+        // :
+        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // AE - AnalogExpression
+        // \d+ - The AnalogExpression ID number
+        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?AE\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

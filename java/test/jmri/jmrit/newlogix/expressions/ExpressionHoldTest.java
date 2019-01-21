@@ -20,9 +20,9 @@ public class ExpressionHoldTest {
     }
     
     @Test
-    public void testToString() {
+    public void testShortDescription() {
         Expression e1 = new ExpressionHold("IQA55:E321");
-        Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.toString()));
+        Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getShortDescription()));
     }
     
     // The minimal setup for log4J

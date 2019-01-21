@@ -2,7 +2,6 @@ package jmri.jmrit.newlogix.expressions;
 
 import jmri.InstanceManager;
 import jmri.jmrit.newlogix.Category;
-import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.ExpressionManager;
 import jmri.jmrit.newlogix.FemaleExpressionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
@@ -21,8 +20,8 @@ import jmri.jmrit.newlogix.MaleExpressionSocket;
  */
 public class ExpressionHold extends AbstractExpression implements FemaleSocketListener {
 
-    private FemaleExpressionSocket _holdExpressionSocket;
-    private FemaleExpressionSocket _triggerExpressionSocket;
+    private final FemaleExpressionSocket _holdExpressionSocket;
+    private final FemaleExpressionSocket _triggerExpressionSocket;
     private boolean _isActive = false;
     
     public ExpressionHold(String sys) throws BadUserNameException,
@@ -131,17 +130,22 @@ public class ExpressionHold extends AbstractExpression implements FemaleSocketLi
     public void connected(FemaleSocket socket) {
         // This class doesn't care.
     }
-
+    
     @Override
     public void disconnected(FemaleSocket socket) {
         // This class doesn't care.
     }
-
+    
     @Override
-    public String toString() {
+    public String getShortDescription() {
         return Bundle.getMessage("ExpressionHold",
                 _holdExpressionSocket.getName(),
                 _triggerExpressionSocket.getName());
     }
     
+    @Override
+    public String getLongDescription() {
+        return getShortDescription();
+    }
+
 }

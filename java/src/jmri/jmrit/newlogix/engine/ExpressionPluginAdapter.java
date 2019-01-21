@@ -14,14 +14,14 @@ import jmri.jmrit.newlogix.FemaleSocket;
  */
 public class ExpressionPluginAdapter extends AbstractExpression {
 
-    private Expression _pluginExpression;
+    private final Expression _pluginExpression;
     
     public ExpressionPluginAdapter(String sys, Expression pluginExpression)
             throws BadUserNameException,
             BadSystemNameException {
         
         super(sys);
-//        jmri.jmrix.ConnectionConfig cc;
+        
         _pluginExpression = pluginExpression;
     }
 
@@ -57,6 +57,16 @@ public class ExpressionPluginAdapter extends AbstractExpression {
     @Override
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getShortDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getLongDescription() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
