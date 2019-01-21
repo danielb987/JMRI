@@ -28,47 +28,47 @@ import jmri.jmrit.newlogix.FemaleSocket;
  */
 public class ExpressionBufferedSensor extends AbstractExpression {
 
-    private final Sensor sensor;
+//    private final Sensor sensor;
     
     public ExpressionBufferedSensor(String sys) throws BadUserNameException, BadSystemNameException {
         super(sys);
-        sensor = null;
+//        sensor = null;
     }
 
     public ExpressionBufferedSensor(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        sensor = null;
+//        sensor = null;
     }
 
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Category.ITEM;
     }
 
     @Override
     public boolean isExternal() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
 
     @Override
     public boolean evaluate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void reset() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
