@@ -1,5 +1,6 @@
 package jmri.jmrit.newlogix.expressions;
 
+import jmri.Sensor;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.FemaleSocket;
 
@@ -27,12 +28,16 @@ import jmri.jmrit.newlogix.FemaleSocket;
  */
 public class ExpressionBufferedSensor extends AbstractExpression {
 
+    private final Sensor sensor;
+    
     public ExpressionBufferedSensor(String sys) throws BadUserNameException, BadSystemNameException {
         super(sys);
+        sensor = null;
     }
 
     public ExpressionBufferedSensor(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        sensor = null;
     }
 
     /** {@inheritDoc} */
