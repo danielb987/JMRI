@@ -707,9 +707,23 @@ public class VSDecoderManager implements PropertyChangeListener {
                         return;
                     }
                     if (blk.isReportingCurrent()) {
-                        repVal = (String) blk.getReporter().getCurrentReport();
+                        Object currentReport = blk.getReporter().getCurrentReport();
+                        if ( currentReport != null) {
+                           if(currentReport instanceof jmri.Reportable) {
+                              repVal = ((jmri.Reportable)currentReport).toReportString();
+                           } else {
+                              repVal = currentReport.toString();
+                           }
+                        }
                     } else {
-                        repVal = (String) blk.getReporter().getLastReport();
+                        Object lastReport = blk.getReporter().getLastReport();
+                        if ( lastReport != null) {
+                           if(lastReport instanceof jmri.Reportable) {
+                              repVal = ((jmri.Reportable)lastReport).toReportString();
+                           } else {
+                              repVal = lastReport.toString();
+                           }
+                        }
                     }
                 } else {
                     log.debug("Ignoring report. not an OCCUPIED event.");
@@ -870,8 +884,8 @@ public class VSDecoderManager implements PropertyChangeListener {
 
             // Re-register for all the reporters. The registerReporterListener() will skip
             // any that we're already registered for.
-            for (String sysName : jmri.InstanceManager.getDefault(jmri.ReporterManager.class).getSystemNameList()) {
-                registerReporterListener(sysName);
+            for (Reporter r : jmri.InstanceManager.getDefault(jmri.ReporterManager.class).getNamedBeanSet()) {
+                registerReporterListener(r.getSystemName());
             }
 
             // It could be that we lost a Reporter.  But since we aren't keeping a list anymore
