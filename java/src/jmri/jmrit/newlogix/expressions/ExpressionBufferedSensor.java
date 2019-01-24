@@ -25,6 +25,8 @@ import jmri.jmrit.newlogix.FemaleSocket;
  * 
  * The expression remembers the state of the sensor until the NewLogixs has been
  * run.
+ * 
+ * @author Daniel Bergqvist 2018
  */
 public class ExpressionBufferedSensor extends AbstractExpression {
 

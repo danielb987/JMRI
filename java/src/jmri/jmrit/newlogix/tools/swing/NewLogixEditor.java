@@ -5,6 +5,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.InstanceManager;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.Base;
 import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
@@ -43,6 +47,8 @@ import jmri.util.JmriJFrame;
 
 /**
  * Editor of NewLogix
+ * 
+ * @author Daniel Bergqvist 2018
  */
 public class NewLogixEditor extends JmriJFrame {
 
@@ -118,39 +124,8 @@ public class NewLogixEditor extends JmriJFrame {
         
         tree.setShowsRootHandles(true);
         
-        JPopupMenu popup = new JPopupMenu();
-        JMenuItem mi = new JMenuItem("Insert a children");
-//            mi.addActionListener(this);
-        mi.setActionCommand("insert");
-        popup.add(mi);
-        mi = new JMenuItem("Remove this node");
-//            mi.addActionListener(this);
-        mi.setActionCommand("remove");
-        popup.add(mi);
-        popup.setOpaque(true);
-        popup.setLightWeightPopupEnabled(true);
-        
-        tree.addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
-                        if (e.isPopupTrigger()) {
-                            int row = tree.getClosestRowForLocation(e.getX(), e.getY());
-                            tree.setSelectionRow(row);
-                            Object c = e.getSource();
-                            System.out.format("Component is a %s%n", c.getClass().getName());
-                            TreePath path = tree.getSelectionPath();
-//                            DefaultMutableTreeNode dmtn = null;
-                            if (path != null) {
-//                                dmtn = (DefaultMutableTreeNode) path.getLastPathComponent();
-                                FemaleSocket femaleSocket = (FemaleSocket) path.getLastPathComponent();
-                                System.out.format("femaleSocket is a %s. %s%n", femaleSocket.getClass().getName(), femaleSocket.getLongDescription());
-                            }
-                            popup.show((JComponent) e.getSource(), e.getX(), e.getY());
-                        }
-                    }
-                }
-        );
+        PopupMenu popup = new PopupMenu(tree, model);
+        popup.init();
         
         // The JTree can get big, so allow it to scroll
         JScrollPane scrollpane = new JScrollPane(tree);
@@ -200,8 +175,8 @@ public class NewLogixEditor extends JmriJFrame {
      */
     private static class FemaleSocketTreeModel implements TreeModel {
 
-        private FemaleSocket root;
-        private List<TreeModelListener> listeners = new ArrayList<>();
+        private final FemaleSocket root;
+        private final List<TreeModelListener> listeners = new ArrayList<>();
 
         public FemaleSocketTreeModel(FemaleSocket root) {
             this.root = root;
@@ -279,15 +254,6 @@ public class NewLogixEditor extends JmriJFrame {
 
     }
     
-/*    
-    private static final class FemaleSocketPanel extends JPanel {
-        
-        private final FemaleSocket _socket;
-        FemaleSocketPanel(FemaleSocket socket) {
-            _socket = socket;
-        }
-    }
-*/    
     
     private static final class FemaleSocketTreeRenderer implements TreeCellRenderer {
 
@@ -324,6 +290,147 @@ public class NewLogixEditor extends JmriJFrame {
             panel.add(connectedItemLabel);
             
             return panel;
+        }
+        
+    }
+    
+    
+    private static final class PopupMenu extends JPopupMenu implements ActionListener {
+        
+        private static final String ACTION_COMMAND_ADD = "add";
+        private static final String ACTION_COMMAND_REMOVE = "remove";
+        private static final String ACTION_COMMAND_EDIT = "edit";
+        private static final String ACTION_COMMAND_CUT = "cut";
+        private static final String ACTION_COMMAND_COPY = "copy";
+        private static final String ACTION_COMMAND_PASTE = "paste";
+        private static final String ACTION_COMMAND_LOCK = "lock";
+        private static final String ACTION_COMMAND_UNLOCK = "unlock";
+        
+        private final JTree _tree;
+//        private final FemaleSocketTreeModel _model;
+        
+        private JMenuItem menuItemAdd;
+        private JMenuItem menuItemRemove;
+        private JMenuItem menuItemEdit;
+        private JMenuItem menuItemCut;
+        private JMenuItem menuItemCopy;
+        private JMenuItem menuItemPaste;
+        private JMenuItem menuItemLock;
+        private JMenuItem menuItemUnlock;
+        
+        PopupMenu(JTree tree, FemaleSocketTreeModel model) {
+            _tree = tree;
+//            _model = model;
+        }
+        
+        private void init() {
+            menuItemAdd = new JMenuItem("Add");
+            menuItemAdd.addActionListener(this);
+            menuItemAdd.setActionCommand(ACTION_COMMAND_ADD);
+            add(menuItemAdd);
+            addSeparator();
+            menuItemEdit = new JMenuItem("Edit");
+            menuItemEdit.addActionListener(this);
+            menuItemEdit.setActionCommand(ACTION_COMMAND_EDIT);
+            add(menuItemEdit);
+            menuItemRemove = new JMenuItem("Remove");
+            menuItemRemove.addActionListener(this);
+            menuItemRemove.setActionCommand(ACTION_COMMAND_REMOVE);
+            add(menuItemRemove);
+            addSeparator();
+            menuItemCut = new JMenuItem("Cut");
+            menuItemCut.addActionListener(this);
+            menuItemCut.setActionCommand(ACTION_COMMAND_CUT);
+            add(menuItemCut);
+            menuItemCopy = new JMenuItem("Copy");
+            menuItemCopy.addActionListener(this);
+            menuItemCopy.setActionCommand(ACTION_COMMAND_COPY);
+            add(menuItemCopy);
+            menuItemPaste = new JMenuItem("Paste");
+            menuItemPaste.addActionListener(this);
+            menuItemPaste.setActionCommand(ACTION_COMMAND_PASTE);
+            add(menuItemPaste);
+            addSeparator();
+            menuItemLock = new JMenuItem("Lock");
+            menuItemLock.addActionListener(this);
+            menuItemLock.setActionCommand(ACTION_COMMAND_LOCK);
+            add(menuItemLock);
+            menuItemUnlock = new JMenuItem("Unlock");
+            menuItemUnlock.addActionListener(this);
+            menuItemUnlock.setActionCommand(ACTION_COMMAND_UNLOCK);
+            add(menuItemUnlock);
+            setOpaque(true);
+            setLightWeightPopupEnabled(true);
+            
+            _tree.addMouseListener(
+                    new MouseAdapter() {
+                        @Override
+                        public void mouseReleased(MouseEvent e) {
+                            if (e.isPopupTrigger()) {
+                                // Get the row the user has clicked on
+                                TreePath path = _tree.getClosestPathForLocation(e.getX(), e.getY());
+                                if (path != null) {
+                                    // Check that the user has clicked on a row.
+                                    Rectangle rect = _tree.getPathBounds(path);
+                                    if ((e.getY() >= rect.y) && (e.getY() <= rect.y + rect.height)) {
+                                        FemaleSocket femaleSocket = (FemaleSocket) path.getLastPathComponent();
+                                        System.out.format("femaleSocket is a %s. %s%n", femaleSocket.getClass().getName(), femaleSocket.getLongDescription());
+                                        showPopup(e.getX(), e.getY(), femaleSocket);
+                                    }
+                                }
+                            }
+                        }
+                    }
+            );
+        }
+        
+        private void showPopup(int x, int y, FemaleSocket femaleSocket) {
+            boolean isConnected = femaleSocket.isConnected();
+            menuItemAdd.setEnabled(!isConnected);
+            menuItemRemove.setEnabled(isConnected);
+            menuItemEdit.setEnabled(isConnected);
+            menuItemCut.setEnabled(isConnected);
+            menuItemCopy.setEnabled(isConnected);
+            menuItemPaste.setEnabled(!isConnected);
+            
+            if (femaleSocket.isConnected()) {
+                MaleSocket maleSocket = femaleSocket.getConnectedSocket();
+                menuItemLock.setEnabled(maleSocket.getLock() == Base.Lock.NONE);
+                menuItemUnlock.setEnabled(maleSocket.getLock() == Base.Lock.USER_LOCK);
+            } else {
+                menuItemLock.setEnabled(false);
+                menuItemUnlock.setEnabled(false);
+            }
+            show(_tree, x, y);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (e.getActionCommand()) {
+                case ACTION_COMMAND_ADD:
+                    break;
+                    
+                case ACTION_COMMAND_EDIT:
+                    break;
+                    
+                case ACTION_COMMAND_REMOVE:
+                    break;
+                    
+                case ACTION_COMMAND_CUT:
+                    break;
+                    
+                case ACTION_COMMAND_COPY:
+                    break;
+                    
+                case ACTION_COMMAND_PASTE:
+                    break;
+                    
+                case ACTION_COMMAND_LOCK:
+                    break;
+                    
+                case ACTION_COMMAND_UNLOCK:
+                    break;
+            }
         }
         
     }
