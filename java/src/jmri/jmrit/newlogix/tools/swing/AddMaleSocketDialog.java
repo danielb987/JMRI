@@ -16,4 +16,9 @@ public class AddMaleSocketDialog extends JDialog {
         _femaleSocket = femaleSocket;
     }
     
+    public final void init() {
+        setTitle(Bundle.getMessage("AddMaleSocketDialogTitle", _femaleSocket.getLongDescription()));
+        setModal(true);
+    }
+    
 }

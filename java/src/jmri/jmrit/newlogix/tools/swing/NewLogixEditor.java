@@ -308,6 +308,7 @@ public class NewLogixEditor extends JmriJFrame {
         
         private final JTree _tree;
 //        private final FemaleSocketTreeModel _model;
+        private FemaleSocket _currentFemaleSocket;
         
         private JMenuItem menuItemAdd;
         private JMenuItem menuItemRemove;
@@ -385,6 +386,8 @@ public class NewLogixEditor extends JmriJFrame {
         }
         
         private void showPopup(int x, int y, FemaleSocket femaleSocket) {
+            _currentFemaleSocket = femaleSocket;
+            
             boolean isConnected = femaleSocket.isConnected();
             menuItemAdd.setEnabled(!isConnected);
             menuItemRemove.setEnabled(isConnected);
@@ -411,6 +414,10 @@ public class NewLogixEditor extends JmriJFrame {
                     break;
                     
                 case ACTION_COMMAND_EDIT:
+                    EditMaleSocketDialog dialog =
+                            new EditMaleSocketDialog(_currentFemaleSocket);
+                    dialog.init();
+                    dialog.setVisible(true);
                     break;
                     
                 case ACTION_COMMAND_REMOVE:
