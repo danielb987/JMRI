@@ -5,6 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    AddMaleSocketDialogTest.class,
+    EditMaleSocketDialogTest.class,
     NewLogixEditorTest.class,
     TimeDiagramTest.class,
 })
