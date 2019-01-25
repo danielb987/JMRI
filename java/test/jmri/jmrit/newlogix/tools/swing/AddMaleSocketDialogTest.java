@@ -9,17 +9,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test NewLogixEditor
+ * Test AddMaleSocketDialogTest
  * 
  * @author Daniel Bergqvist 2018
  */
-public class NewLogixEditorTest {
+public class AddMaleSocketDialogTest {
 
     @Test
     public void testCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        new NewLogixEditor();
+        new AddMaleSocketDialog(null);
     }
     
     // The minimal setup for log4J

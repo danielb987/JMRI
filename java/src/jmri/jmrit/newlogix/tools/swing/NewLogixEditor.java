@@ -309,6 +309,8 @@ public class NewLogixEditor extends JmriJFrame {
         private final JTree _tree;
 //        private final FemaleSocketTreeModel _model;
         private FemaleSocket _currentFemaleSocket;
+        private int _x;
+        private int _y;
         
         private JMenuItem menuItemAdd;
         private JMenuItem menuItemRemove;
@@ -376,6 +378,8 @@ public class NewLogixEditor extends JmriJFrame {
                                     if ((e.getY() >= rect.y) && (e.getY() <= rect.y + rect.height)) {
                                         FemaleSocket femaleSocket = (FemaleSocket) path.getLastPathComponent();
                                         System.out.format("femaleSocket is a %s. %s%n", femaleSocket.getClass().getName(), femaleSocket.getLongDescription());
+                                        _tree.getLocationOnScreen();
+                                        _tree.getX();
                                         showPopup(e.getX(), e.getY(), femaleSocket);
                                     }
                                 }
@@ -387,6 +391,8 @@ public class NewLogixEditor extends JmriJFrame {
         
         private void showPopup(int x, int y, FemaleSocket femaleSocket) {
             _currentFemaleSocket = femaleSocket;
+            _x = x;
+            _y = y;
             
             boolean isConnected = femaleSocket.isConnected();
             menuItemAdd.setEnabled(!isConnected);
@@ -416,8 +422,9 @@ public class NewLogixEditor extends JmriJFrame {
                 case ACTION_COMMAND_EDIT:
                     EditMaleSocketDialog dialog =
                             new EditMaleSocketDialog(_currentFemaleSocket);
-                    dialog.init();
-                    dialog.setVisible(true);
+                    dialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
+//                    dialog.init(_x, _y);
+//                    dialog.setVisible(true);
                     break;
                     
                 case ACTION_COMMAND_REMOVE:
