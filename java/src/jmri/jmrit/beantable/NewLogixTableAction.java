@@ -706,10 +706,6 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
     }
     EditMode _editMode;
 
-    // Save conditional reference target names before updating
-    private TreeSet<String> _saveTargetNames = new TreeSet<String>();
-    private HashMap<String, ArrayList<String>> _saveTargetList = new HashMap<>();
-
     // ------------ Methods for Add NewLogix Window ------------
 
     /**
