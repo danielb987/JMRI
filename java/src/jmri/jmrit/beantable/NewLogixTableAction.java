@@ -40,19 +40,12 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
-import jmri.Conditional;
-import jmri.ConditionalAction;
-import jmri.ConditionalManager;
-import jmri.ConditionalVariable;
 import jmri.InstanceManager;
 import jmri.Manager;
 import jmri.NamedBean;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.UserPreferencesManager;
-import jmri.jmrit.conditional.ConditionalEditBase;
-import jmri.jmrit.conditional.ConditionalListEdit;
-import jmri.jmrit.conditional.ConditionalTreeEdit;
 import jmri.jmrit.newlogix.tools.swing.NewLogixEditor;
 import jmri.jmrit.sensorgroup.SensorGroupFrame;
 import jmri.util.FileUtil;
@@ -76,11 +69,6 @@ import org.slf4j.LoggerFactory;
  * The traditional tabbed Pick List with text entry is the default method.
  * The Options menu has been expanded to list the 3 methods.
  * Mar 27, 2017 - Dave Sand
- * <p>
- * Add a Browse Option to the NewLogix Select Menu This will display a window that
- * creates a formatted list of the contents of the selected NewLogix with each
- * Conditional, Variable and Action. The code is courtesy of Chuck Catania and
- * is used with his permission. Apr 2, 2017 - Dave Sand
  *
  * @author Dave Duchamp Copyright (C) 2007
  * @author Pete Cressman Copyright (C) 2009, 2010, 2011
@@ -102,9 +90,8 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         // Default only (internal). We use InstanceManager to get managers for
         // compatibility with other facilities.
         _newLogixManager = InstanceManager.getNullableDefault(NewLogixManager.class);
-        _conditionalManager = InstanceManager.getNullableDefault(jmri.ConditionalManager.class);
-        // disable ourself if there is no NewLogix manager or no Conditional manager available
-        if ((_newLogixManager == null) || (_conditionalManager == null)) {
+        // disable ourself if there is no NewLogix manager
+        if (_newLogixManager == null) {
             setEnabled(false);
         }
     }
@@ -113,7 +100,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
      * Create a NewLogixManager instance with default title.
      */
     public NewLogixTableAction() {
-        this(Bundle.getMessage("TitleLogixTable"));
+        this(Bundle.getMessage("TitleNewLogixTable"));
     }
 
     // ------------ Methods for NewLogix Table Window ------------
@@ -227,14 +214,14 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
             /**
              * Delete the bean after all the checking has been done.
              * <p>
-             * Deactivates the NewLogix and remove it's conditionals.
+             * Deletes the NewLogix.
              *
              * @param bean of the NewLogix to delete
              */
             @Override
             void doDelete(NewLogix bean) {
                 bean.setEnabled(false);
-                // delete the NewLogix and all its Conditionals
+                // delete the NewLogix
                 _newLogixManager.deleteNewLogix(bean);
             }
 
@@ -316,7 +303,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
      */
     @Override
     protected void setTitle() {
-        f.setTitle(Bundle.getMessage("TitleLogixTable"));
+        f.setTitle(Bundle.getMessage("TitleNewLogixTable"));
     }
 
     /**
@@ -434,49 +421,6 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         });
         menu.add(item);
 
-        item = new JMenuItem(Bundle.getMessage("FindOrphans"));  // NOI18N
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                findOrphansPressed(e);
-            }
-        });
-        menu.add(item);
-
-        item = new JMenuItem(Bundle.getMessage("EmptyConditionals"));  // NOI18N
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                findEmptyPressed(e);
-            }
-        });
-        menu.add(item);
-
-        item = new JMenuItem(Bundle.getMessage("CrossReference"));  // NOI18N
-        item.addActionListener(new ActionListener() {
-            BeanTableFrame parent;
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new RefDialog(parent);
-            }
-
-            ActionListener init(BeanTableFrame f) {
-                parent = f;
-                return this;
-            }
-        }.init(f));
-        menu.add(item);
-
-        item = new JMenuItem(Bundle.getMessage("DisplayWhereUsed"));  // NOI18N
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                makeWhereUsedWindow();
-            }
-        });
-        menu.add(item);
-
         menuBar.add(menu, pos + offset + 1);  // add this menu to the right of the previous
     }
 
@@ -507,7 +451,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
                     _selectionMode = SelectionMode.USECOMBO;
                     break;
                 default:
-                    log.warn("Invalid NewLogix conditional selection mode value, '{}', returned", currentMode);  // NOI18N
+                    log.warn("Invalid NewLogix selection mode value, '{}', returned", currentMode);  // NOI18N
                     _selectionMode = SelectionMode.USEMULTI;
             }
         }
@@ -526,8 +470,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
     }
 
     /**
-     * Get the saved mode selection, default to the tranditional conditional
-     * list editor.
+     * Get the saved mode selection, default to the tree editor.
      * <p>
      * During the menu build process, the corresponding menu item is set to
      * selected.
@@ -546,7 +489,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
                     _editMode = EditMode.TREEEDIT;
                     break;
                 default:
-                    log.warn("Invalid conditional edit mode value, '{}', returned", currentMode);  // NOI18N
+                    log.warn("Invalid edit mode value, '{}', returned", currentMode);  // NOI18N
                     _editMode = EditMode.TREEEDIT;
             }
         }
@@ -565,69 +508,15 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
     }
 
     /**
-     * Open a new Pick List to drag Actions from to form NewLogix Conditionals.
+     * Open a new Pick List to drag Actions from to form NewLogix.
      */
-    void openPickListTable() {
+    private void openPickListTable() {
         if (_pickTables == null) {
             _pickTables = new jmri.jmrit.picker.PickFrame(Bundle.getMessage("TitlePickList"));  // NOI18N
         } else {
             _pickTables.setVisible(true);
         }
         _pickTables.toFront();
-    }
-
-    /**
-     * Find empty Conditional entries, called from menu.
-     *
-     * @see Maintenance#findEmptyPressed(Frame)
-     * @param e the event heard
-     */
-    void findEmptyPressed(ActionEvent e) {
-        Maintenance.findEmptyPressed(f);
-    }
-
-    /**
-     * Find orphaned entries, called from menu.
-     *
-     * @see Maintenance#findOrphansPressed(Frame)
-     * @param e the event heard
-     */
-    void findOrphansPressed(ActionEvent e) {
-        Maintenance.findOrphansPressed(f);
-    }
-
-    class RefDialog extends JDialog {
-
-        JTextField _devNameField;
-        java.awt.Frame _parent;
-
-        RefDialog(java.awt.Frame frame) {
-            super(frame, Bundle.getMessage("CrossReference"), true);  // NOI18N
-            _parent = frame;
-            JPanel extraPanel = new JPanel();
-            extraPanel.setLayout(new BoxLayout(extraPanel, BoxLayout.Y_AXIS));
-            _devNameField = new JTextField(30);
-            JPanel panel = makeEditPanel(_devNameField, "ElementName", "ElementNameHint");  // NOI18N
-            JButton referenceButton = new JButton(Bundle.getMessage("ReferenceButton"));  // NOI18N
-            panel.add(referenceButton);
-            referenceButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    deviceReportPressed(e);
-                }
-            });
-            panel.add(referenceButton);
-            extraPanel.add(panel);
-            setContentPane(extraPanel);
-            pack();
-            // setLocationRelativeTo((java.awt.Component)_pos);
-            setVisible(true);
-        }
-
-        void deviceReportPressed(ActionEvent e) {
-            Maintenance.deviceReportPressed(_devNameField.getText(), _parent);
-            dispose();
-        }
     }
 
     void enableAll(boolean enable) {
@@ -643,8 +532,6 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
 
     // ------------ variable definitions ------------
 
-    // Multi use variables
-    ConditionalManager _conditionalManager = null;  // set when LogixAction is created
     NewLogixManager _newLogixManager = null;  // set when LogixAction is created
 
     NewLogixEditor _treeEdit = null;
@@ -694,13 +581,11 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
     SelectionMode _selectionMode;
 
     /**
-     * Conditional edit view mode
-     *
-     * @since 4.9.x
+     * NewLogix edit view mode
      */
     public enum EditMode {
         /**
-         * Use the tree based mode for editing conditionals
+         * Use the tree based mode for editing NewLogix
          */
         TREEEDIT;
     }
@@ -723,7 +608,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         _showReminder = true;
         // make an Add NewLogix Frame
         if (addNewLogixFrame == null) {
-            JPanel panel5 = makeAddLogixFrame("TitleAddLogix", "AddLogixMessage");  // NOI18N
+            JPanel panel5 = makeAddLogixFrame("TitleAddNewLogix", "AddNewLogixMessage");  // NOI18N
             // Create NewLogix
             create = new JButton(Bundle.getMessage("ButtonCreate"));  // NOI18N
             panel5.add(create);
@@ -733,7 +618,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
                     createPressed(e);
                 }
             });
-            create.setToolTipText(Bundle.getMessage("LogixCreateButtonHint"));  // NOI18N
+            create.setToolTipText(Bundle.getMessage("NewLogixCreateButtonHint"));  // NOI18N
         }
         addNewLogixFrame.pack();
         addNewLogixFrame.setVisible(true);
@@ -787,8 +672,8 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
         c.gridy = 0;
         p.add(_autoSystemName, c);
-        _addUserName.setToolTipText(Bundle.getMessage("LogixUserNameHint"));    // NOI18N
-        _systemName.setToolTipText(Bundle.getMessage("LogixSystemNameHint"));   // NOI18N
+        _addUserName.setToolTipText(Bundle.getMessage("NewLogixUserNameHint"));    // NOI18N
+        _systemName.setToolTipText(Bundle.getMessage("NewLogixSystemNameHint"));   // NOI18N
         contentPane.add(p);
         // set up message
         JPanel panel3 = new JPanel();
@@ -974,62 +859,6 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
 */
     }
 
-    /* *
-     * Copy a given Conditional from one NewLogix to another.
-     *
-     * @param cSysName    system name of the Conditional
-     * @param srcNewLogix    original NewLogix containing the Conditional
-     * @param targetNewLogix target NewLogix to copy to
-     * /
-    void copyConditionalToLogix(String cSysName, NewLogix srcNewLogix, NewLogix targetNewLogix) {
-        Conditional cOld = _conditionalManager.getBySystemName(cSysName);
-        if (cOld == null) {
-            log.error("Failure to find Conditional with System Name: {}", cSysName);  // NOI18N
-            return;
-        }
-        String cOldSysName = cOld.getSystemName();
-        String cOldUserName = cOld.getUserName();
-
-        // make system name for new conditional
-        int num = targetNewLogix.getNumConditionals() + 1;
-        String cNewSysName = targetNewLogix.getSystemName() + "C" + Integer.toString(num);
-        // add to NewLogix at the end of the calculate order
-        String cNewUserName = Bundle.getMessage("CopyOf", cOldUserName); // NOI18N
-        if (cOldUserName != null && cOldUserName.length() == 0) {
-            cNewUserName += "C" + Integer.toString(num);
-        }
-        do {
-            cNewUserName = JOptionPane.showInputDialog(f,
-                    Bundle.getMessage("NameConditionalCopy", cOldUserName, cOldSysName, _newLogixSysName,
-                            targetNewLogix.getUserName(), targetNewLogix.getSystemName()),
-                    cNewUserName);
-            if (cNewUserName == null || cNewUserName.length() == 0) {
-                return;
-            }
-        } while (!checkConditionalUserName(cNewUserName, targetNewLogix));
-
-        while (!checkConditionalSystemName(cNewSysName)) {
-            cNewSysName = targetNewLogix.getSystemName() + "C" + ++num;
-        }
-
-        Conditional cNew = _conditionalManager.createNewConditional(cNewSysName, cNewUserName);
-        if (cNew == null) {
-            // should never get here unless there is an assignment conflict
-            log.error("Failure to create Conditional with System Name: \"{}\" and User Name: \"{}\"", cNewSysName, cNewUserName);  // NOI18N
-            return;
-        }
-        cNew.setLogicType(cOld.getLogicType(), cOld.getAntecedentExpression());
-        cNew.setStateVariables(cOld.getCopyOfStateVariables());
-        cNew.setAction(cOld.getCopyOfActions());
-        targetNewLogix.addConditional(cNewSysName, -1);
-
-        // Update where used with the copy results
-        _saveTargetNames.clear();
-        TreeSet<String> newTargetNames = new TreeSet<>();
-        loadReferenceNames(cOld.getCopyOfStateVariables(), newTargetNames);
-        updateWhereUsed(newTargetNames, cNewSysName);
-    }
-*/
     /**
      * Check and warn if a string is already in use as the user name of a NewLogix.
      *
@@ -1088,7 +917,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         if (_inEditMode) {
             // Already editing a NewLogix, ask for completion of that edit
             JOptionPane.showMessageDialog(null,
-                    Bundle.getMessage("LogixError32", _curNewLogix.getSystemName()),
+                    Bundle.getMessage("NewLogixError32", _curNewLogix.getSystemName()),
                     Bundle.getMessage("ErrorTitle"),
                     JOptionPane.ERROR_MESSAGE);
             if (_treeEdit != null) {
@@ -1101,7 +930,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         if (_inCopyMode) {
             // Already editing a NewLogix, ask for completion of that edit
             JOptionPane.showMessageDialog(null,
-                    Bundle.getMessage("LogixError31", _newLogixSysName),
+                    Bundle.getMessage("NewLogixError31", _newLogixSysName),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
                     JOptionPane.ERROR_MESSAGE);
             return false;
@@ -1114,7 +943,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
                 // NewLogix does not exist, so cannot be edited
                 log.error("No NewLogix with system name: " + sName);
                 JOptionPane.showMessageDialog(null,
-                        Bundle.getMessage("LogixError5"),
+                        Bundle.getMessage("NewLogixError5"),
                         Bundle.getMessage("ErrorTitle"), // NOI18N
                         JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -1212,7 +1041,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
             return;
         }
 
-        // Create a new conditional edit view, add the listener.
+        // Create a new NewLogix edit view, add the listener.
         if (_editMode == EditMode.TREEEDIT) {
             _treeEdit = new NewLogixEditor(sName);
             _treeEdit.initComponents();
@@ -1268,8 +1097,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
     }
 
     /**
-     * Respond to the Delete combo selection NewLogix window or conditional view
-     * delete request.
+     * Respond to the Delete combo selection NewLogix window delete request.
      *
      * @param sName system name of bean to be deleted
      */
@@ -1277,9 +1105,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         if (!checkFlags(sName)) {
             return;
         }
-//        if (!checkConditionalReferences(sName)) {
-//            return;
-//        }
+        
         final NewLogix x = _newLogixManager.getBySystemName(sName);
         final jmri.UserPreferencesManager p;
         p = jmri.InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class);
@@ -1351,144 +1177,6 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         f.setVisible(true);
     }
 
-    /* *
-     * Build a tree set from conditional references.
-     *
-     * @since 4.7.4
-     * @param varList The ConditionalVariable list that might contain
-     *                conditional references
-     * @param treeSet A tree set to be built from the varList data
-     * /
-    void loadReferenceNames(List<ConditionalVariable> varList, TreeSet<String> treeSet) {
-        treeSet.clear();
-        for (ConditionalVariable var : varList) {
-            if (var.getType() == Conditional.Type.CONDITIONAL_TRUE
-                    || var.getType() == Conditional.Type.CONDITIONAL_FALSE) {
-                treeSet.add(var.getName());
-            }
-        }
-    }
-
-    boolean checkConditionalUserName(String uName, NewLogix newLogix) {
-        if ((uName != null) && (!(uName.equals("")))) {
-            Conditional p = _conditionalManager.getByUserName(newLogix, uName);
-            if (p != null) {
-                // Conditional with this user name already exists
-                log.error("Failure to update Conditional with Duplicate User Name: " // NOI18N
-                        + uName);
-                JOptionPane.showMessageDialog(
-                        null, Bundle.getMessage("LogixError10"), // NOI18N
-                        Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /* *
-     * Check form of Conditional systemName.
-     *
-     * @param sName system name of bean to be checked
-     * @return false if sName is empty string or null
-     * /
-    boolean checkConditionalSystemName(String sName) {
-        if ((sName != null) && (!(sName.equals("")))) {
-            Conditional p = _conditionalManager.getBySystemName(sName);
-            if (p != null) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-        return true;
-    }
-
-    /* *
-     * Check for conditional references.
-     *
-     * @since 4.7.4
-     * @param newLogixName The NewLogix under consideration
-     * @return true if no references
-     * /
-    boolean checkConditionalReferences(String newLogixName) {
-        _saveTargetList.clear();
-        NewLogix x = _newLogixManager.getNewLogix(newLogixName);
-        int numConditionals = x.getNumConditionals();
-        if (numConditionals > 0) {
-            for (int i = 0; i < numConditionals; i++) {
-                String csName = x.getConditionalByNumberOrder(i);
-
-                // If the conditional is a where used source, retain it for later
-                ArrayList<String> targetList = InstanceManager.getDefault(jmri.ConditionalManager.class).getTargetList(csName);
-                if (targetList.size() > 0) {
-                    _saveTargetList.put(csName, targetList);
-                }
-
-                // If the conditional is a where used target, check scope
-                ArrayList<String> refList = InstanceManager.getDefault(jmri.ConditionalManager.class).getWhereUsed(csName);
-                if (refList != null) {
-                    for (String refName : refList) {
-                        NewLogix xRef = _conditionalManager.getParentNewLogix(refName);
-                        String xsName = xRef.getSystemName();
-                        if (newLogixName.equals(xsName)) {
-                            // Member of the same NewLogix
-                            continue;
-                        }
-
-                        // External references have to be removed before the NewLogix can be deleted.
-                        Conditional c = x.getConditional(csName);
-                        Conditional cRef = xRef.getConditional(refName);
-                        JOptionPane.showMessageDialog(null,
-                                Bundle.getMessage("LogixError11", c.getUserName(), c.getSystemName(), cRef.getUserName(),
-                                        cRef.getSystemName(), xRef.getUserName(), xRef.getSystemName()), // NOI18N
-                                Bundle.getMessage("ErrorTitle"),
-                                JOptionPane.ERROR_MESSAGE);  // NOI18N
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    /* *
-     * Remove target/source where used entries after a NewLogix delete.
-     *
-     * @since 4.7.4
-     * /
-    void deleteSourceWhereUsed() {
-        _saveTargetList.forEach((refName, targetList) -> {
-            for (String targetName : targetList) {
-                InstanceManager.getDefault(jmri.ConditionalManager.class).removeWhereUsed(targetName, refName);
-            }
-        });
-    }
-
-    /* *
-     * Update the conditional reference where used.
-     * <p>
-     * The difference between the saved target names and new target names is
-     * used to add/remove where used references.
-     *
-     * @since 4.7.4
-     * @param newTargetNames The conditional target names after updating
-     * @param refName        The system name for the referencing conditional
-     * /
-    void updateWhereUsed(TreeSet<String> newTargetNames, String refName) {
-        TreeSet<String> deleteNames = new TreeSet<>(_saveTargetNames);
-        deleteNames.removeAll(newTargetNames);
-        for (String deleteName : deleteNames) {
-            InstanceManager.getDefault(jmri.ConditionalManager.class).removeWhereUsed(deleteName, refName);
-        }
-
-        TreeSet<String> addNames = new TreeSet<>(newTargetNames);
-        addNames.removeAll(_saveTargetNames);
-        for (String addName : addNames) {
-            InstanceManager.getDefault(jmri.ConditionalManager.class).addWhereUsed(addName, refName);
-        }
-    }
-*/
     /**
      * Create Variable and Action editing pane center part.
      *
@@ -1542,73 +1230,12 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
 
     @Override
     public String getClassDescription() {
-        return Bundle.getMessage("TitleLogixTable");        // NOI18N
+        return Bundle.getMessage("TitleNewLogixTable");        // NOI18N
     }
 
     @Override
     protected String getClassName() {
         return NewLogixTableAction.class.getName();
-    }
-
-    // ------------ Methods for Conditional References Window ------------
-    /**
-     * Builds the conditional references window when the Conditional Variable
-     * References menu item is selected.
-     * <p>
-     * This is a stand-alone window that can be closed at any time.
-     *
-     * @since 4.7.4
-     */
-    void makeWhereUsedWindow() {
-
-        JmriJFrame referenceListFrame = new JmriJFrame(Bundle.getMessage("LabelRefTitle"), false, true);    // NOI18N
-        Container contentPane = referenceListFrame.getContentPane();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-
-        // build header information
-        JPanel panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        panel1.add(new JLabel(Bundle.getMessage("LabelRefTarget")));    // NOI18N
-        panel1.add(new JLabel(Bundle.getMessage("LabelRefSource")));    // NOI18N
-        contentPane.add(panel1);
-
-        // Build the conditional references listing
-        JScrollPane scrollPane = null;
-        JTextArea textContent = buildWhereUsedListing();
-        scrollPane = new JScrollPane(textContent);
-        contentPane.add(scrollPane);
-
-        referenceListFrame.pack();
-        referenceListFrame.setVisible(true);
-    }
-
-    /**
-     * Creates a component containing the conditional reference where used list.
-     * The source is {@link jmri.ConditionalManager#getWhereUsedMap()}
-     *
-     * @return a TextArea, empty if reference is not used
-     * @since 4.7.4
-     */
-    JTextArea buildWhereUsedListing() {
-        JTextArea condText = new javax.swing.JTextArea();
-        condText.setText(null);
-        HashMap<String, ArrayList<String>> whereUsed = InstanceManager.getDefault(ConditionalManager.class).getWhereUsedMap();
-        SortedSet<String> targets = new TreeSet<>(whereUsed.keySet());
-        targets.forEach((target) -> {
-            condText.append("\n" + target + "\t" + getWhereUsedName(target) + "  \n");
-            ArrayList<String> refNames = whereUsed.get(target);
-            refNames.forEach((refName) -> {
-                condText.append("\t\t" + refName + "\t" + getWhereUsedName(refName) + "  \n");
-            });
-        });
-        condText.setCaretPosition(0);
-        condText.setTabSize(2);
-        condText.setEditable(false);
-        return condText;
-    }
-
-    String getWhereUsedName(String cName) {
-        return _conditionalManager.getBySystemName(cName).getUserName();
     }
 
 // ------------ Methods for Conditional Browser Window ------------
@@ -1733,94 +1360,6 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         }
     }
 
-    /* *
-     * Builds a Component representing the current conditionals for the selected
-     * NewLogix statement.
-     *
-     * @return a TextArea listing existing conditionals; will be empty if there
-     *         are none
-     * /
-    JTextArea buildConditionalListing() {
-        String showSystemName,
-                showCondName,
-                condName,
-                operand,
-                tStr;
-
-        List<ConditionalVariable> variableList;
-        List<ConditionalAction> actionList;
-        ConditionalVariable variable;
-        ConditionalAction action;
-        String _antecedent = null;
-
-        JTextArea condText = new javax.swing.JTextArea();
-        condText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        condText.setText(null);
-        int numConditionals = _curNewLogix.getNumConditionals();
-        for (int rx = 0; rx < numConditionals; rx++) {
-            conditionalRowNumber = rx;
-            Conditional curConditional = _conditionalManager.getBySystemName(_curNewLogix.getConditionalByNumberOrder(rx));
-            variableList = curConditional.getCopyOfStateVariables();
-            _newLogixSysName = curConditional.getSystemName();
-            actionList = curConditional.getCopyOfActions();
-
-            showCondName = curConditional.getUserName();
-            if (showCondName == null) {
-                showCondName = "";
-            }
-            showSystemName = curConditional.getSystemName();
-
-            // If no user name for a conditional, create one using C + row number
-            if (showCondName.equals("")) {
-                showCondName = "C" + (rx + 1);
-            }
-            condText.append("\n  " + showSystemName + "  " + showCondName + "   \n");
-            if (curConditional.getLogicType() == Conditional.AntecedentOperator.MIXED) {
-                _antecedent = curConditional.getAntecedentExpression();
-                String antecedent = ConditionalEditBase.translateAntecedent(_antecedent, false);
-                condText.append("   " + Bundle.getMessage("LogixAntecedent") + " " + antecedent + "  \n");   // NOI18N
-            }
-
-            for (int i = 0; i < variableList.size(); i++) {
-                variable = variableList.get(i);
-                String varTrigger = (variable.doTriggerActions())
-                        ? "[x]" // NOI18N
-                        : "[ ]";
-                tStr = "    " + varTrigger + " ";
-                tStr = tStr + " R" + (i + 1) + (i > 8 ? " " : "  ");  // Makes {Rx}bb or {Rxx}b
-                condText.append(tStr);
-
-                operand = variable.getOpernString();
-                if (i == 0) { // add the IF to the first conditional
-                    condText.append(Bundle.getMessage("BrowserIF") + " " + operand + " ");    // NOI18N
-                } else {
-                    condText.append("  " + operand + " ");
-                }
-                if (variable.isNegated()) {
-                    condText.append(Bundle.getMessage("LogicNOT") + " ");     // NOI18N
-                }
-                condText.append(variable.toString() + "   \n");
-            } // for _variableList
-
-            if (actionList.size() > 0) {
-                condText.append("             " + Bundle.getMessage("BrowserTHEN") + "   \n");  // NOI18N
-                boolean triggerType = curConditional.getTriggerOnChange();
-                for (int i = 0; i < actionList.size(); i++) {
-                    action = actionList.get(i);
-                    condName = action.description(triggerType);
-                    condText.append("               " + condName + "   \n");
-                }  // for _actionList
-            } else {
-                condText.append("             " + Bundle.getMessage("BrowserNoAction") + "   \n\n");    // NOI18N
-            }
-        } // for numConditionals
-
-        condText.setCaretPosition(0);
-        condText.setTabSize(4);
-        condText.setEditable(false);
-        return condText;
-    }  // buildConditionalListing
-*/
     private final static Logger log = LoggerFactory.getLogger(NewLogixTableAction.class);
 
 }

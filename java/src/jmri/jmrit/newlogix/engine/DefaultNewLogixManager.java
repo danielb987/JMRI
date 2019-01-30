@@ -79,7 +79,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.toUpperCase().matches("IQ\\:[AM]\\:\\d+")) {
+        if (systemName.toUpperCase().matches("IQ\\:(A\\:)?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
