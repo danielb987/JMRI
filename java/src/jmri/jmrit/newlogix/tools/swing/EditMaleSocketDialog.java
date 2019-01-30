@@ -36,7 +36,8 @@ public class EditMaleSocketDialog extends JDialog {
         
         setContentPane(contentPanel);
         pack();
-        
+        System.out.format("Component: %s%n", c.getClass().getName());
+//        System.out.format("%d, %d%n", c.getLocationOnScreen().x, c.getLocationOnScreen().y);
         this.setLocationRelativeTo(c);
 //        this.setLocation(x, y);
 //        // Center dialog on screen

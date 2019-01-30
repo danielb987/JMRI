@@ -11,7 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -55,8 +58,34 @@ public class NewLogixEditor extends JmriJFrame {
     private static final int panelWidth700 = 700;
     private static final int panelHeight500 = 500;
     
+    private static final Map<String, Color> FEMALE_SOCKET_COLORS = new HashMap<>();
+    
+    private final NewLogix newLogix;
+    
+    /**
+     * Maintain a list of listeners -- normally only one.
+     */
+    private List<NewLogixEventListener> listenerList = new ArrayList<>();
+    
+    /**
+     * This contains a list of commands to be processed by the listener
+     * recipient.
+     */
+    public HashMap<String, String> logixData = new HashMap<>();
+    
     NewLogixEditor() {
-        
+        newLogix = null;
+    }
+    
+    /**
+     * Construct a NewLogixEditor.
+     *
+     * @param sName system name of NewLogix to be edited
+     */
+    public NewLogixEditor(String sName) {
+        FEMALE_SOCKET_COLORS.put("jmri.jmrit.newlogix.engine.DefaultFemaleActionSocket", Color.RED);
+        FEMALE_SOCKET_COLORS.put("jmri.jmrit.newlogix.engine.DefaultFemaleExpressionSocket", Color.BLUE);
+        newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getBySystemName(sName);
     }
     
     @Override
@@ -115,7 +144,11 @@ public class NewLogixEditor extends JmriJFrame {
         // Create a TreeModel object to represent our tree of files
 //        FileTreeModel model = new FileTreeModel(root);
 //        // Create a TreeModel object to represent our tree of files
-        FemaleSocketTreeModel model = new FemaleSocketTreeModel(root);
+        FemaleSocketTreeModel model;
+        if (newLogix != null)
+            model = new FemaleSocketTreeModel(newLogix.getFemaleSocket());
+        else
+            model = new FemaleSocketTreeModel(root);
 
         // Create a JTree and tell it to display our model
         final JTree tree = new JTree();
@@ -166,7 +199,24 @@ public class NewLogixEditor extends JmriJFrame {
         setVisible(true);
     }
     
+    public void addNewLogixEventListener(NewLogixEventListener listener) {
+        listenerList.add(listener);
+    }
     
+    /**
+     * Notify the listeners to check for new data.
+     */
+    void fireNewLogixEvent() {
+        for (NewLogixEventListener l : listenerList) {
+            l.newLogixEventOccurred();
+        }
+    }
+    
+    
+    public interface NewLogixEventListener extends EventListener {
+        
+        public void newLogixEventOccurred();
+    }
     
     
     /**
@@ -267,16 +317,19 @@ public class NewLogixEditor extends JmriJFrame {
             panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
             panel.setOpaque(false);
             
+//            System.out.format("Daniel AAAA: %s, %s, %s%n", socket.getClass().getCanonicalName(), socket.getClass().getName(), socket.getClass().getSimpleName());
             JLabel socketLabel = new JLabel(socket.getShortDescription());
             Font font = socketLabel.getFont();
             socketLabel.setFont(font.deriveFont((float)(font.getSize2D()*1.7)));
-            socketLabel.setForeground(Color.red);
+            socketLabel.setForeground(FEMALE_SOCKET_COLORS.get(socket.getClass().getName()));
+//            socketLabel.setForeground(Color.red);
             panel.add(socketLabel);
             
             panel.add(javax.swing.Box.createRigidArea(new Dimension(5,0)));
             
             JLabel socketNameLabel = new JLabel(socket.getName());
-            socketNameLabel.setForeground(Color.red);
+            socketNameLabel.setForeground(FEMALE_SOCKET_COLORS.get(socket.getClass().getName()));
+//            socketNameLabel.setForeground(Color.red);
             panel.add(socketNameLabel);
             
             panel.add(javax.swing.Box.createRigidArea(new Dimension(5,0)));
