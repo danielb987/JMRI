@@ -608,7 +608,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         _showReminder = true;
         // make an Add NewLogix Frame
         if (addNewLogixFrame == null) {
-            JPanel panel5 = makeAddLogixFrame("TitleAddNewLogix", "AddNewLogixMessage");  // NOI18N
+            JPanel panel5 = makeAddNewLogixFrame("TitleAddNewLogix", "AddNewLogixMessage");  // NOI18N
             // Create NewLogix
             create = new JButton(Bundle.getMessage("ButtonCreate"));  // NOI18N
             panel5.add(create);
@@ -636,7 +636,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
      *                  pane, either 1 or 2 is added to form the whole key
      * @return the button JPanel
      */
-    JPanel makeAddLogixFrame(String titleId, String messageId) {
+    JPanel makeAddNewLogixFrame(String titleId, String messageId) {
         addNewLogixFrame = new JmriJFrame(Bundle.getMessage(titleId));
         addNewLogixFrame.addHelpMenu(
                 "package.jmri.jmrit.beantable.LogixAddEdit", true);     // NOI18N
@@ -767,7 +767,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
         Runnable t = new Runnable() {
             @Override
             public void run() {
-                JPanel panel5 = makeAddLogixFrame("TitleCopyNewLogix", "CopyNewLogixMessage");    // NOI18N
+                JPanel panel5 = makeAddNewLogixFrame("TitleCopyNewLogix", "CopyNewLogixMessage");    // NOI18N
                 // Create NewLogix
                 JButton create = new JButton(Bundle.getMessage("ButtonCopy"));  // NOI18N
                 panel5.add(create);
@@ -883,7 +883,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
     /**
      * Check validity of NewLogix system name.
      * <p>
-     * Fixes name if it doesn't start with "IX".
+     * Fixes name if it doesn't start with "IQ:".
      *
      * @return false if name has length &lt; 1 after displaying a dialog
      */
@@ -896,11 +896,12 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if ((sName.length() < 2) || (sName.charAt(0) != 'I')
-                || (sName.charAt(1) != 'X')) {
-            // System name does not begin with IX, prefix IX to it
+        if ((sName.length() < 3) || (sName.charAt(0) != 'I')
+                || (sName.charAt(1) != 'Q')
+                || (sName.charAt(2) != ':')) {
+            // System name does not begin with IQ:, prefix IQ: to it
             String s = sName;
-            sName = "IX" + s;  // NOI18N
+            sName = "IQ:" + s;  // NOI18N
         }
         _systemName.setText(sName);
         return true;

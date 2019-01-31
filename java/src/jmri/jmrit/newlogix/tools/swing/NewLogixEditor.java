@@ -84,10 +84,15 @@ public class NewLogixEditor extends JmriJFrame {
      * @param sName system name of NewLogix to be edited
      */
     public NewLogixEditor(String sName) {
-        super(Bundle.getMessage("TitleEditNewLogix", sName));
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.newlogix.engine.DefaultFemaleActionSocket", Color.RED);
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.newlogix.engine.DefaultFemaleExpressionSocket", Color.BLUE);
         newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getBySystemName(sName);
+        
+        if (newLogix.getUserName() == null) {
+            setTitle(Bundle.getMessage("TitleEditNewLogix", sName));
+        } else {
+            setTitle(Bundle.getMessage("TitleEditNewLogix2", sName, newLogix.getUserName()));
+        }
     }
     
     @Override

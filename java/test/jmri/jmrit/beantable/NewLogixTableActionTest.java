@@ -100,7 +100,6 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         newLogixFrame.dispose();
     }
 
-    @Ignore     // Not working at the moment
     @Test
     public void testAddNewLogixAutoName() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -119,16 +118,15 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         new JButtonOperator(addFrame, Bundle.getMessage("ButtonCreate")).push();  // NOI18N
 
         NewLogix chk999 = jmri.InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getNewLogix("NewLogix 999");  // NOI18N
-        Assert.assertNotNull("Verify IQ:999 Added", chk999);  // NOI18N
+        Assert.assertNotNull("Verify 'NewLogix 999' Added", chk999);  // NOI18N
 
         // Add creates an edit frame; find and dispose
-        JFrame editFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleEditNewLogix"), true, true);  // NOI18N
+        JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxNewLogixSwing.getString("TitleEditNewLogix2"), "IQ:A:0001", "NewLogix 999"), true, true);  // NOI18N
         JUnitUtil.dispose(editFrame);
 
         JUnitUtil.dispose(newLogixFrame);
     }
 
-    @Ignore     // Not working at the moment
     @Test
     public void testAddNewLogix() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -150,7 +148,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         Assert.assertNotNull("Verify IQ:105 Added", chk105);  // NOI18N
 
         // Add creates an edit frame; find and dispose
-        JFrame editFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleEditNewLogix"), true, true);  // NOI18N
+        JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxNewLogixSwing.getString("TitleEditNewLogix2"), "IQ:105", "NewLogix 105"), true, true);  // NOI18N
         JUnitUtil.dispose(editFrame);
 
         JUnitUtil.dispose(newLogixFrame);
