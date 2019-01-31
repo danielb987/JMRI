@@ -23,7 +23,7 @@ public class NewLogixTest {
     @Test
     public void testManagers() {
         String systemName;
-        NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewNewLogix("A new logix for test");  // NOI18N
+        NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewLogix("A new logix for test");  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).register(expression);

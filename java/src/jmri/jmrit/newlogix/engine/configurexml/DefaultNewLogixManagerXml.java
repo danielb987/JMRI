@@ -128,7 +128,7 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            NewLogix x = tm.createNewNewLogix(sysName, userName);
+            NewLogix x = tm.createNewLogix(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, newLogixList.get(i));

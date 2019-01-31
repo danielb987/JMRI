@@ -87,7 +87,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     @Override
-    public NewLogix createNewNewLogix(String systemName, String userName)
+    public NewLogix createNewLogix(String systemName, String userName)
             throws IllegalArgumentException {
         
         // Check that Logix does not already exist
@@ -134,12 +134,12 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
     }
 
     @Override
-    public NewLogix createNewNewLogix(String userName) throws IllegalArgumentException {
+    public NewLogix createNewLogix(String userName) throws IllegalArgumentException {
         int nextAutoNewLogixRef = lastAutoNewLogixRef + 1;
         StringBuilder b = new StringBuilder("IQ:A:");
         String nextNumber = paddedNumber.format(nextAutoNewLogixRef);
         b.append(nextNumber);
-        return createNewNewLogix(b.toString(), userName);
+        return createNewLogix(b.toString(), userName);
     }
 
     @Override

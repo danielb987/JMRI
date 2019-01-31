@@ -809,7 +809,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
             if (!checkNewLogixUserName(uName)) {
                 return;
             }
-            targetNewLogix = _newLogixManager.createNewNewLogix(uName);
+            targetNewLogix = _newLogixManager.createNewLogix(uName);
         } else {
             if (!checkNewLogixSysName()) {
                 return;
@@ -837,7 +837,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
             }
             if (createLogix) {
                 // Create the new NewLogix
-                targetNewLogix = _newLogixManager.createNewNewLogix(sName, uName);
+                targetNewLogix = _newLogixManager.createNewLogix(sName, uName);
                 if (targetNewLogix == null) {
                     // should never get here unless there is an assignment conflict
                     log.error("Failure to create NewLogix with System Name: {}", sName);  // NOI18N
@@ -969,7 +969,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
             if (!checkNewLogixUserName(uName)) {
                 return;
             }
-            _curNewLogix = _newLogixManager.createNewNewLogix(uName);
+            _curNewLogix = _newLogixManager.createNewLogix(uName);
             sName = _curNewLogix.getSystemName();
         } else {
             if (!checkNewLogixSysName()) {
@@ -997,7 +997,7 @@ public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
                 return;
             }
             // Create the new NewLogix
-            _curNewLogix = _newLogixManager.createNewNewLogix(sName, uName);
+            _curNewLogix = _newLogixManager.createNewLogix(sName, uName);
             if (_curNewLogix == null) {
                 // should never get here unless there is an assignment conflict
                 log.error("Failure to create NewLogix with System Name: {}", sName);  // NOI18N

@@ -15,10 +15,9 @@ public interface NewLogixManager extends Manager<NewLogix> {
      *
      * @param systemName the system name
      * @param userName   the user name
-     * @return a new NewLogix or null if unable to create: An error, or the
-     * NewLogix already exists
+     * @return a new NewLogix or null if unable to create
      */
-    public NewLogix createNewNewLogix(String systemName, String userName)
+    public NewLogix createNewLogix(String systemName, String userName)
             throws IllegalArgumentException;
 
     /**
@@ -28,7 +27,7 @@ public interface NewLogixManager extends Manager<NewLogix> {
      * @param userName the user name
      * @return a new NewLogix or null if unable to create
      */
-    public NewLogix createNewNewLogix(String userName)
+    public NewLogix createNewLogix(String userName)
             throws IllegalArgumentException;
     
     /**

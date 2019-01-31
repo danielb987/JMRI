@@ -202,10 +202,10 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         jmri.util.JUnitUtil.initLogixManager();
         jmri.util.JUnitUtil.initDefaultUserMessagePreferences();
 
-        InstanceManager.getDefault(NewLogixManager.class).createNewNewLogix("IQ:101", "NewLogix 101");
-        InstanceManager.getDefault(NewLogixManager.class).createNewNewLogix("IQ:102", "NewLogix 102");
-        InstanceManager.getDefault(NewLogixManager.class).createNewNewLogix("IQ:103", "NewLogix 103");
-        InstanceManager.getDefault(NewLogixManager.class).createNewNewLogix("IQ:104", "NewLogix 104");
+        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:101", "NewLogix 101");
+        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:102", "NewLogix 102");
+        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:103", "NewLogix 103");
+        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:104", "NewLogix 104");
 
         helpTarget = "package.jmri.jmrit.beantable.LogixTable"; 
         a = new NewLogixTableAction();
