@@ -24,9 +24,9 @@ import org.netbeans.jemmy.operators.JTextFieldOperator;
 /*
 * Tests for the NewLogixTableAction Class
 * Re-created using JUnit4 with support for the new conditional editors
-* @author Dave Sand Copyright (C) 2017 (for the NewLogixTableAction class)
+* @author Dave Sand Copyright (C) 2017 (for the LogixTableActionTest class)
 * @author Daniel Bergqvist Copyright (C) 2019
- */
+*/
 public class NewLogixTableActionTest extends AbstractTableActionBase {
 
     static final ResourceBundle rbxNewLogixSwing = ResourceBundle.getBundle("jmri.jmrit.newlogix.tools.swing.NewLogixSwingBundle");
@@ -70,7 +70,6 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         Assert.assertTrue("Default include add button", a.includeAddButton());  // NOI18N
     }
 
-    @Ignore     // Not working at the moment
     @Test
     public void testLogixBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
