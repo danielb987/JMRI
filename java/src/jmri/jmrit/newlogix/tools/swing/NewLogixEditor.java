@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -54,7 +55,7 @@ import jmri.util.JmriJFrame;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class NewLogixEditor extends JmriJFrame {
+public final class NewLogixEditor extends JmriJFrame {
 
     private static final int panelWidth700 = 700;
     private static final int panelHeight500 = 500;
@@ -131,8 +132,8 @@ public class NewLogixEditor extends JmriJFrame {
         
         
         // For testing only
-        InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewLogix("A new logix for test");  // NOI18N
 /*        
+        InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewLogix("A new logix for test");  // NOI18N
         String systemName;
         NewLogix newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).createNewLogix("A new logix for test");  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ExpressionManager.class).getNewSystemName(newLogix);
@@ -215,6 +216,14 @@ public class NewLogixEditor extends JmriJFrame {
         setMinimumSize(dimension);
         pack();
         setVisible(true);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void windowClosed(WindowEvent e) {
+        logixData.clear();
+        logixData.put("Finish", newLogix.getSystemName());  // NOI18N
+        fireNewLogixEvent();
     }
     
     public void addNewLogixEventListener(NewLogixEventListener listener) {
