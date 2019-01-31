@@ -1,6 +1,7 @@
 package jmri.jmrit.beantable;
 
 import java.awt.GraphicsEnvironment;
+import java.util.ResourceBundle;
 import javax.swing.JFrame;
 import jmri.InstanceManager;
 import jmri.jmrit.newlogix.NewLogix;
@@ -16,6 +17,7 @@ import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JCheckBoxOperator;
 import org.netbeans.jemmy.operators.JDialogOperator;
 import org.netbeans.jemmy.operators.JFrameOperator;
+import org.netbeans.jemmy.operators.JMenuBarOperator;
 import org.netbeans.jemmy.operators.JTextFieldOperator;
 
 
@@ -26,6 +28,8 @@ import org.netbeans.jemmy.operators.JTextFieldOperator;
 * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class NewLogixTableActionTest extends AbstractTableActionBase {
+
+    static final ResourceBundle rbxNewLogixSwing = ResourceBundle.getBundle("jmri.jmrit.newlogix.tools.swing.NewLogixSwingBundle");
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(10); // 10 second timeout for methods in this test class.
@@ -66,6 +70,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         Assert.assertTrue("Default include add button", a.includeAddButton());  // NOI18N
     }
 
+    @Ignore     // Not working at the moment
     @Test
     public void testLogixBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -78,7 +83,6 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         JUnitUtil.dispose(frame);
     }
 
-    @Ignore     // Not working at the moment
     @Test
     public void testTreeEditor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -90,9 +94,9 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         Assert.assertNotNull(newLogixFrame);
 
         newLogixTable.editPressed("IQ:104");  // NOI18N
-        JFrameOperator cdlFrame = new JFrameOperator(Bundle.getMessage("TitleEditNewLogix"));  // NOI18N
+        JFrameOperator cdlFrame = new JFrameOperator(jmri.Bundle.formatMessage(rbxNewLogixSwing.getString("TitleEditNewLogix"), "IQ:104"));  // NOI18N
         Assert.assertNotNull(cdlFrame);
-        new JButtonOperator(cdlFrame, Bundle.getMessage("ButtonDone")).push();  // NOI18N
+        new JMenuBarOperator(cdlFrame).pushMenuNoBlock(Bundle.getMessage("MenuFile")+"|"+rbxNewLogixSwing.getString("CloseWindow"), "|");  // NOI18N
         newLogixFrame.dispose();
     }
 

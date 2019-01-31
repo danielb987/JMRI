@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -83,6 +84,7 @@ public class NewLogixEditor extends JmriJFrame {
      * @param sName system name of NewLogix to be edited
      */
     public NewLogixEditor(String sName) {
+        super(Bundle.getMessage("TitleEditNewLogix", sName));
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.newlogix.engine.DefaultFemaleActionSocket", Color.RED);
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.newlogix.engine.DefaultFemaleExpressionSocket", Color.BLUE);
         newLogix = InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getBySystemName(sName);
@@ -93,6 +95,17 @@ public class NewLogixEditor extends JmriJFrame {
         super.initComponents();
         // build menu
         JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu(Bundle.getMessage("MenuFile"));
+        JMenuItem closeWindowItem = new JMenuItem(Bundle.getMessage("CloseWindow"));
+        closeWindowItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+        fileMenu.add(closeWindowItem);
+        menuBar.add(fileMenu);
+        
         JMenu toolMenu = new JMenu(Bundle.getMessage("MenuTools"));
         toolMenu.add(new TimeDiagram.CreateNewNewLogixAction("Create a NewLogix"));
 /*        
