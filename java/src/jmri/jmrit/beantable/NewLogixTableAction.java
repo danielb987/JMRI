@@ -70,10 +70,10 @@ import org.slf4j.LoggerFactory;
  * The Options menu has been expanded to list the 3 methods.
  * Mar 27, 2017 - Dave Sand
  *
- * @author Dave Duchamp Copyright (C) 2007
- * @author Pete Cressman Copyright (C) 2009, 2010, 2011
- * @author Matthew Harris copyright (c) 2009
- * @author Dave Sand copyright (c) 2017
+ * @author Dave Duchamp Copyright (C) 2007 (LogixTableAction)
+ * @author Pete Cressman Copyright (C) 2009, 2010, 2011 (LogixTableAction)
+ * @author Matthew Harris copyright (c) 2009 (LogixTableAction)
+ * @author Dave Sand copyright (c) 2017 (LogixTableAction)
  * @author Daniel Bergqvist copyright (c) 2019
  */
 public class NewLogixTableAction extends AbstractTableAction<NewLogix> {
