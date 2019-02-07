@@ -6,6 +6,7 @@ import jmri.AudioManager;
 import jmri.BlockManager;
 import jmri.ClockControl;
 import jmri.ConditionalManager;
+import jmri.IdTagManager;
 import jmri.InstanceInitializer;
 import jmri.InstanceManager;
 import jmri.LightManager;
@@ -174,6 +175,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return VSDecoderManager.instance();
         }
 
+        if (type == IdTagManager.class) {
+            return new jmri.managers.ProxyIdTagManager();
+        }
+
         return super.getDefault(type);
     }
 
@@ -189,6 +194,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 ClockControl.class,
                 ConditionalManager.class,
                 ExpressionManager.class,
+                IdTagManager.class,
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
