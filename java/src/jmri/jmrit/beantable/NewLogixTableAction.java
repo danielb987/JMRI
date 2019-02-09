@@ -42,7 +42,6 @@ import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 import jmri.InstanceManager;
 import jmri.Manager;
-import jmri.NamedBean;
 import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.UserPreferencesManager;
