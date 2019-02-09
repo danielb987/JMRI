@@ -139,7 +139,8 @@ public class ActionMany extends AbstractAction implements FemaleSocketListener {
     }
 
     
-    private static class ActionEntry {
+    /* This class is public since ActionManyXml needs to access it. */
+    public static class ActionEntry {
         private final FemaleActionSocket socket;
         private boolean status;
         

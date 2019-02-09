@@ -1,6 +1,8 @@
 package jmri.jmrit.newlogix.engine.configurexml;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.jmrit.newlogix.ActionManager;
@@ -25,6 +27,12 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
     public DefaultActionManagerXml() {
     }
 
+    private Action getAction(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field f = action.getClass().getDeclaredField("_action");
+        f.setAccessible(true);
+        return (Action) f.get(action);
+    }
+    
     /**
      * Default implementation for storing the contents of a ActionManager
      *
@@ -38,14 +46,14 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
         ActionManager tm = (ActionManager) o;
         if (tm != null) {
             for (Action action : tm.getNamedBeanSet()) {
-                log.debug("logix system name is " + action.getSystemName());  // NOI18N
+                log.debug("action system name is " + action.getSystemName());  // NOI18N
                 try {
-                    Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(action);
+                    Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getAction(action));
                     if (e != null) {
                         actions.addContent(e);
                     }
                 } catch (Exception e) {
-                    log.error("Error storing signalhead: {}", e, e);
+                    log.error("Error storing action: {}", e, e);
                 }
 /*                
                 boolean enabled = action.getEnabled();
