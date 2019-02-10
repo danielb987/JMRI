@@ -11,11 +11,11 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionDoIfXmlTest {
+public class ActionManyXmlTest {
 
     @Test
     public void testCtor() {
-        new ActionDoIfXml();
+        new ActionManyXml();
     }
     
     // The minimal setup for log4J
