@@ -88,6 +88,7 @@ public class DefaultMaleActionSocket implements MaleActionSocket {
     @Override
     public void abort() {
         _action.abort();
+        _isActive = false;
     }
 
     @Override

@@ -5,10 +5,8 @@ import java.util.List;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.jmrit.newlogix.Action;
-import jmri.jmrit.newlogix.actions.ActionMany;
+import jmri.jmrit.newlogix.actions.ActionHoldAnything;
 import jmri.Turnout;
-import jmri.jmrit.newlogix.FemaleSocket;
-import jmri.jmrit.newlogix.MaleSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +14,9 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionHoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionManyXml() {
-//        jmri.managers.configurexml.DefaultConditionalManagerXml a;
+    public ActionHoldAnythingXml() {
     }
 /*
     @SuppressWarnings("unchecked")  // Reflection does not support generics
@@ -39,7 +36,7 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
      */
     @Override
     public Element store(Object o) {
-        ActionMany p = (ActionMany) o;
+        ActionHoldAnything p = (ActionHoldAnything) o;
 
         Element element = new Element("action");
         element.setAttribute("class", this.getClass().getName());
@@ -49,20 +46,10 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
         for (int i=0; i < p.getChildCount(); i++) {
             try {
 //                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
-                Element e = new Element("item");
-                e.addContent(new Element("index").addContent(Integer.toString(i)));
-                
-//                FemaleSocket socket = p.getChild(i);
-                MaleSocket socket = p.getChild(i).getConnectedSocket();
-                if (socket != null) {
-//                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket.getConnectedSocket());
-                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket);
-                    if (e2 != null) {
-                        e.addContent(e2);
-                    }
+                Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(p.getChild(i).getConnectedSocket());
+                if (e != null) {
+                    element.addContent(e);
                 }
-                
-                element.addContent(e);
             } catch (Exception e) {
                 log.error("Error storing action: {}", e, e);
             }
@@ -111,9 +98,9 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
         String uname = getUserName(shared);
         Action h;
         if (uname == null) {
-            h = new ActionMany(sys);
+            h = new ActionHoldAnything(sys);
         } else {
-            h = new ActionMany(sys, uname);
+            h = new ActionHoldAnything(sys, uname);
         }
 
         loadCommon(h, shared);
@@ -162,5 +149,5 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionManyXml.class);
+    private final static Logger log = LoggerFactory.getLogger(ActionHoldAnythingXml.class);
 }

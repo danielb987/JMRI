@@ -7,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionDoIfXml
+ * Test ActionIfThenXml
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionDoIfXmlTest {
+public class ActionIfThenXmlTest {
 
     @Test
     public void testCtor() {
-        new ActionDoIfXml();
+        new ActionIfThenXml();
     }
     
     // The minimal setup for log4J

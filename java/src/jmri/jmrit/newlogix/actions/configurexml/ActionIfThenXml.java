@@ -13,9 +13,9 @@ import jmri.jmrit.newlogix.Action;
 /**
  *
  */
-public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionDoIfXml() {
+    public ActionIfThenXml() {
     }
 
     /**
@@ -127,5 +127,5 @@ public class ActionDoIfXml extends jmri.managers.configurexml.AbstractNamedBeanM
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionDoIfXml.class);
+    private final static Logger log = LoggerFactory.getLogger(ActionIfThenXml.class);
 }

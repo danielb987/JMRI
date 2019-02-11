@@ -3,11 +3,13 @@ package jmri.jmrit.newlogix.actions;
 import java.util.ArrayList;
 import java.util.List;
 import jmri.InstanceManager;
+import jmri.jmrit.newlogix.Action;
 import jmri.jmrit.newlogix.Category;
 import jmri.jmrit.newlogix.ActionManager;
 import jmri.jmrit.newlogix.FemaleActionSocket;
 import jmri.jmrit.newlogix.FemaleSocket;
 import jmri.jmrit.newlogix.FemaleSocketListener;
+import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.NewLogix;
 
 /**
@@ -138,9 +140,9 @@ public class ActionMany extends AbstractAction implements FemaleSocketListener {
 //        return Bundle.getMessage("ActionMany_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
     }
 
-    
-    /* This class is public since ActionManyXml needs to access it. */
-    public static class ActionEntry {
+
+//    /* This class is public since ActionManyXml needs to access it. */
+    private static class ActionEntry {
         private final FemaleActionSocket socket;
         private boolean status;
         
@@ -148,6 +150,10 @@ public class ActionMany extends AbstractAction implements FemaleSocketListener {
             this.socket = socket;
         }
         
+//        public Action getAction() {
+//            return (MaleActionSocket) socket.getConnectedSocket();
+//        }
+        
     }
-    
+
 }

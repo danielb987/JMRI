@@ -1,14 +1,12 @@
-package jmri.jmrit.newlogix.actions.configurexml;
+package jmri.jmrit.newlogix.engine.configurexml;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
-import jmri.NamedBeanHandle;
 import jmri.jmrit.newlogix.Action;
+import jmri.jmrit.newlogix.Base;
 import jmri.jmrit.newlogix.actions.ActionMany;
-import jmri.Turnout;
-import jmri.jmrit.newlogix.FemaleSocket;
-import jmri.jmrit.newlogix.MaleSocket;
+import jmri.jmrit.newlogix.engine.DefaultMaleActionSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,56 +14,50 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultMaleActionSocketXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionManyXml() {
-//        jmri.managers.configurexml.DefaultConditionalManagerXml a;
+    public DefaultMaleActionSocketXml() {
     }
-/*
-    @SuppressWarnings("unchecked")  // Reflection does not support generics
-    private List<ActionMany.ActionEntry> getActionEntry(ActionMany actionMany)
+
+    private Action getAction(DefaultMaleActionSocket maleActionSocket)
             throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        
-        Field f = actionMany.getClass().getDeclaredField("actionEntries");
+        Field f = maleActionSocket.getClass().getDeclaredField("_action");
         f.setAccessible(true);
-        return (List<ActionMany.ActionEntry>) f.get(actionMany);
+        return (Action) f.get(maleActionSocket);
     }
-*/
+
+    private Base.Lock getLock(DefaultMaleActionSocket maleActionSocket)
+            throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field f = maleActionSocket.getClass().getDeclaredField("_lock");
+        f.setAccessible(true);
+        return (Base.Lock) f.get(maleActionSocket);
+    }
+
     /**
-     * Default implementation for storing the contents of a ActionMany
+     * Default implementation for storing the contents of a DefaultMaleActionSocket
      *
-     * @param o Object to store, of type ActionMany
+     * @param o Object to store, of type DefaultMaleActionSocket
      * @return Element containing the complete info
      */
     @Override
     public Element store(Object o) {
-        ActionMany p = (ActionMany) o;
+        DefaultMaleActionSocket p = (DefaultMaleActionSocket) o;
 
-        Element element = new Element("action");
+        Element element = new Element("maleActionSocket");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         element.addContent(new Element("userName").addContent(p.getUserName()));
 
-        for (int i=0; i < p.getChildCount(); i++) {
-            try {
+        try {
 //                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
-                Element e = new Element("item");
-                e.addContent(new Element("index").addContent(Integer.toString(i)));
-                
-//                FemaleSocket socket = p.getChild(i);
-                MaleSocket socket = p.getChild(i).getConnectedSocket();
-                if (socket != null) {
-//                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket.getConnectedSocket());
-                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket);
-                    if (e2 != null) {
-                        e.addContent(e2);
-                    }
-                }
-                
+            Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getAction(p));
+            if (e != null) {
                 element.addContent(e);
-            } catch (Exception e) {
-                log.error("Error storing action: {}", e, e);
             }
+            
+            element.addContent(new Element("lock").addContent(getLock(p).name()));
+        } catch (Exception e) {
+            log.error("Error storing action: {}", e, e);
         }
         
         storeCommon(p, element);
@@ -162,5 +154,5 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionManyXml.class);
+    private final static Logger log = LoggerFactory.getLogger(DefaultMaleActionSocketXml.class);
 }
