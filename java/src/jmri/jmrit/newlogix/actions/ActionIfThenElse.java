@@ -20,7 +20,7 @@ import jmri.jmrit.newlogix.NewLogixManager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ActionIfThen extends AbstractAction implements FemaleSocketListener {
+public class ActionIfThenElse extends AbstractAction implements FemaleSocketListener {
 
     /**
      * The type of Action. If the type is changed, the action is aborted if it
@@ -60,7 +60,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
      * Create a new instance of ActionIfThen and generate a new system name.
      * @param newLogix the NewLogix that this action is related to
      */
-    public ActionIfThen(NewLogix newLogix, Type type) {
+    public ActionIfThenElse(NewLogix newLogix, Type type) {
         super(InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix));
         _type = type;
         _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
@@ -69,7 +69,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
                 .createFemaleActionSocket(this, "A1");
     }
     
-    public ActionIfThen(String sys, Type type) {
+    public ActionIfThenElse(String sys, Type type) {
         super(sys);
         _type = type;
         _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
@@ -78,7 +78,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
                 .createFemaleActionSocket(this, "A1");
     }
     
-    public ActionIfThen(String sys, String user, Type type) {
+    public ActionIfThenElse(String sys, String user, Type type) {
         super(sys, user);
         _type = type;
         _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
@@ -87,7 +87,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
                 .createFemaleActionSocket(this, "A1");
     }
     
-    public ActionIfThen(
+    public ActionIfThenElse(
             String sys, Type type,
             String expressionSocketName, String actionSocketName,
             MaleExpressionSocket expression, MaleActionSocket action) {
@@ -100,7 +100,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
                 .createFemaleActionSocket(this, actionSocketName, action);
     }
     
-    public ActionIfThen(
+    public ActionIfThenElse(
             String sys, String user, Type type,
             String expressionSocketName, String actionSocketName, 
             MaleExpressionSocket expression, MaleActionSocket action) {

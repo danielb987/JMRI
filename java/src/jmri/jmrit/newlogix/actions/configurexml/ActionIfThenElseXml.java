@@ -3,7 +3,7 @@ package jmri.jmrit.newlogix.actions.configurexml;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.newlogix.actions.ActionIfThen;
+import jmri.jmrit.newlogix.actions.ActionIfThenElse;
 import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -13,9 +13,9 @@ import jmri.jmrit.newlogix.Action;
 /**
  *
  */
-public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionIfThenElseXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionIfThenXml() {
+    public ActionIfThenElseXml() {
     }
 
     /**
@@ -26,7 +26,7 @@ public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBea
      */
     @Override
     public Element store(Object o) {
-        ActionIfThen p = (ActionIfThen) o;
+        ActionIfThenElse p = (ActionIfThenElse) o;
 
         Element element = new Element("action");
         element.setAttribute("class", this.getClass().getName());
@@ -75,10 +75,10 @@ public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBea
         String uname = getUserName(shared);
         Action h;
         if (uname == null) {
-            h = new ActionIfThen(sys, ActionIfThen.Type.TRIGGER_ACTION);
+            h = new ActionIfThenElse(sys, ActionIfThenElse.Type.TRIGGER_ACTION);
         } else {
-            h = new ActionIfThen(sys, uname, ActionIfThen.Type.TRIGGER_ACTION);
-//            h = new ActionIfThen(sys, low, high, uname);
+            h = new ActionIfThenElse(sys, uname, ActionIfThenElse.Type.TRIGGER_ACTION);
+//            h = new ActionIfThenElse(sys, low, high, uname);
         }
 
         loadCommon(h, shared);
@@ -127,5 +127,5 @@ public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBea
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionIfThenXml.class);
+    private final static Logger log = LoggerFactory.getLogger(ActionIfThenElseXml.class);
 }

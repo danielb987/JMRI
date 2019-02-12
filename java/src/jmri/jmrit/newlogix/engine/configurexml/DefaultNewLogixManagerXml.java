@@ -40,12 +40,12 @@ public class DefaultNewLogixManagerXml extends jmri.managers.configurexml.Abstra
                 Element elem = new Element("newlogix");  // NOI18N
                 elem.addContent(new Element("systemName").addContent(newLogix.getSystemName()));  // NOI18N
 
-                // As a work-around for backward compatibility, store systemName and username as attribute.
-                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-                String uName = newLogix.getUserName();
-                if (uName != null && !uName.isEmpty()) {
-                    elem.setAttribute("userName", uName);  // NOI18N
-                }
+//                // As a work-around for backward compatibility, store systemName and username as attribute.
+//                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
+//                String uName = newLogix.getUserName();
+//                if (uName != null && !uName.isEmpty()) {
+//                    elem.setAttribute("userName", uName);  // NOI18N
+//                }
 
                 // store common part
                 storeCommon(newLogix, elem);

@@ -21,7 +21,7 @@ import jmri.jmrit.newlogix.NewLogix;
 import jmri.jmrit.newlogix.NewLogixManager;
 import jmri.jmrit.newlogix.SocketAlreadyConnectedException;
 import jmri.jmrit.newlogix.actions.ActionHoldAnything;
-import jmri.jmrit.newlogix.actions.ActionIfThen;
+import jmri.jmrit.newlogix.actions.ActionIfThenElse;
 import jmri.jmrit.newlogix.actions.ActionMany;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
@@ -159,7 +159,7 @@ public class DefaultNewLogixManager extends AbstractManager<NewLogix>
 
             MaleActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(ActionManager.class)
-                            .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
+                            .register(new ActionIfThenElse(newLogix, ActionIfThenElse.Type.TRIGGER_ACTION));
             femaleSocket = actionManySocket.getChild(1);
             femaleSocket.connect(actionIfThenSocket);
             

@@ -45,7 +45,7 @@ import jmri.jmrit.newlogix.Expression;
 import jmri.jmrit.newlogix.MaleActionSocket;
 import jmri.jmrit.newlogix.MaleExpressionSocket;
 import jmri.jmrit.newlogix.MaleSocket;
-import jmri.jmrit.newlogix.actions.ActionIfThen;
+import jmri.jmrit.newlogix.actions.ActionIfThenElse;
 import jmri.jmrit.newlogix.actions.ActionTurnout;
 import jmri.jmrit.newlogix.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
@@ -144,7 +144,7 @@ public final class NewLogixEditor extends JmriJFrame {
         Action actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleActionSocket actionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(actionTurnout);
         systemName = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).getNewSystemName(newLogix);
-        Action actionIfThen = new ActionIfThen(systemName, ActionIfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
+        Action actionIfThen = new ActionIfThenElse(systemName, ActionIfThenElse.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
         actionSocket = InstanceManager.getDefault(jmri.jmrit.newlogix.ActionManager.class).register(actionIfThen);
         newLogix.getFemaleSocket().connect(actionSocket);
 */        

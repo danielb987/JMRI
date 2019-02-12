@@ -41,7 +41,7 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
      */
     @Override
     public Element store(Object o) {
-        Element actions = new Element("actions");
+        Element actions = new Element("newlogixActions");
         setStoreElementClass(actions);
         ActionManager tm = (ActionManager) o;
         if (tm != null) {
