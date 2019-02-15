@@ -76,8 +76,8 @@ signals - obsolete, EMPTY, never used
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/paneleditor.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/switchboardeditor.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/entryexitpair.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/types/newlogix-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/filehistory.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/newlogix/newlogix-4.13.4.xsd"/>
 
   <xs:element name="layout-config">
     <xs:complexType>
