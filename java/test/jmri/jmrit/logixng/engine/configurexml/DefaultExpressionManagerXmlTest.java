@@ -15,7 +15,7 @@ public class DefaultExpressionManagerXmlTest {
 
     @Test
     public void testCTor() {
-        DefaultExpressionManagerXml t = new DefaultExpressionManagerXml();
+        new DefaultExpressionManagerXml();
     }
 
     // The minimal setup for log4J

@@ -14,7 +14,7 @@ public class DefaultMaleActionSocketXmlTest {
 
     @Test
     public void testCTor() {
-        DefaultMaleActionSocketXml t = new DefaultMaleActionSocketXml();
+        new DefaultMaleActionSocketXml();
     }
 
     // The minimal setup for log4J

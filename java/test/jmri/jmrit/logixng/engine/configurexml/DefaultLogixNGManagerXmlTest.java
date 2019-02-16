@@ -15,7 +15,7 @@ public class DefaultLogixNGManagerXmlTest {
 
     @Test
     public void testCTor() {
-        DefaultLogixNGManagerXml t = new DefaultLogixNGManagerXml();
+        new DefaultLogixNGManagerXml();
     }
 
     // The minimal setup for log4J
