@@ -139,6 +139,12 @@ public class ActionHoldAnything extends AbstractAction {
         
         /** {@inheritDoc} */
         @Override
+        public String getSystemName() {
+            throw new RuntimeException("This method should never be called");
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public Lock getLock() {
             return _lock;
         }

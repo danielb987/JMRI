@@ -58,6 +58,11 @@ public interface Base {
 
 
     /**
+     * Get the system name.
+     */
+    public String getSystemName();
+    
+    /**
      * Return the class name of the configurator class.
      * Returns the fully qualified class name of the class that is used to
      * configurate this class. That class needs to implement the

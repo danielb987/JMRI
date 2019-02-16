@@ -41,11 +41,22 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
     public Element store(Object o) {
         ActionMany p = (ActionMany) o;
 
-        Element element = new Element("action");
+        Element element = new Element("action-many");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        element.addContent(new Element("userName").addContent(p.getUserName()));
+        if (p.getUserName() != null) {
+            element.addContent(new Element("userName").addContent(p.getUserName()));
+        }
 
+        Element e = new Element("actions");
+        for (int i=0; i < p.getChildCount(); i++) {
+            MaleSocket socket = p.getChild(i).getConnectedSocket();
+            if (socket != null) {
+                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
+            }
+        }
+        element.addContent(e);
+/*        
         for (int i=0; i < p.getChildCount(); i++) {
             try {
 //                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
@@ -67,7 +78,7 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
                 log.error("Error storing action: {}", e, e);
             }
         }
-        
+*/        
         storeCommon(p, element);
 
 //        element.addContent(addTurnoutElement(p.getLow(), "low"));

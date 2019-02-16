@@ -350,8 +350,13 @@ signals - obsolete, EMPTY, never used
         <xs:element name="logixs"       type="LogixManagerType" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="conditionals" type="ConditionalManagerType" minOccurs="0" maxOccurs="unbounded" />
 
-        <xs:element name="logixngs"        type="LogixNGManagerType" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="logixngActions"  type="LogixNGActionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngs"                  type="LogixNGManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngActions"            type="LogixNGActionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngExpressions"        type="LogixNGExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngAnalogActions"      type="LogixNGAnalogActionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngAnalogExpressions"  type="LogixNGAnalogExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngStringActions"      type="LogixNGStringActionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngStringExpressions"  type="LogixNGStringExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
 
         <xs:element name="warrants"     type="WarrantManagerType" minOccurs="0" maxOccurs="unbounded" />
 

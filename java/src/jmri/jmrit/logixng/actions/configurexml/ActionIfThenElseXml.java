@@ -28,9 +28,16 @@ public class ActionIfThenElseXml extends jmri.managers.configurexml.AbstractName
     public Element store(Object o) {
         ActionIfThenElse p = (ActionIfThenElse) o;
 
-        Element element = new Element("action");
+        Element element = new Element("action-if-then-else");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
+        if (p.getUserName() != null) {
+            element.addContent(new Element("userName").addContent(p.getUserName()));
+        }
+
+        element.addContent(new Element("if-systemName").addContent(p.getSystemName()));
+        element.addContent(new Element("then-systemName").addContent(p.getSystemName()));
+        element.addContent(new Element("else-systemName").addContent(p.getSystemName()));
 
         storeCommon(p, element);
 
