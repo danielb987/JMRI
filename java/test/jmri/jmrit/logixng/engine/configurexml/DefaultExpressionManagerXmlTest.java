@@ -30,6 +30,6 @@ public class DefaultExpressionManagerXmlTest {
         JUnitUtil.tearDown();
     }
 
-    // private final static Logger log = LoggerFactory.getLogger(DefaultNewLogixManagerXmlTest.class);
+    // private final static Logger log = LoggerFactory.getLogger(DefaultExpressionManagerXmlTest.class);
 
 }

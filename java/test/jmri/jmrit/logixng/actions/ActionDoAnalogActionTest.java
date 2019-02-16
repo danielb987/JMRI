@@ -26,7 +26,7 @@ public class ActionDoAnalogActionTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initNewLogixManager();
+        JUnitUtil.initLogixNGManager();
         JUnitUtil.initExpressionManager();
         JUnitUtil.initActionManager();
         JUnitUtil.initAnalogExpressionManager();

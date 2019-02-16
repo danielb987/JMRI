@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
 })
 
 /**
- * Invokes complete set of tests in the jmri.jmrit.newlogix tree
+ * Invokes complete set of tests in the jmri.jmrit.logixng.actions tree
  *
  * @author Daniel Bergqvist 2018
  */

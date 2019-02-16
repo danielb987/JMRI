@@ -56,7 +56,7 @@ public class LogixNGTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initNewLogixManager();
+        JUnitUtil.initLogixNGManager();
         JUnitUtil.initExpressionManager();
         JUnitUtil.initActionManager();
     }

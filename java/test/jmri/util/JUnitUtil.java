@@ -795,7 +795,7 @@ public class JUnitUtil {
         }
     }
 
-    public static void initNewLogixManager() {
+    public static void initLogixNGManager() {
         LogixNGManager m = new DefaultLogixNGManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.LOGIXNGS);
