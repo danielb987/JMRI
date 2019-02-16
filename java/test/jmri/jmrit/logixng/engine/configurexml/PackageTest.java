@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
     DefaultActionManagerXmlTest.class,
     DefaultExpressionManagerXmlTest.class,
     DefaultLogixNGManagerXmlTest.class,
+    DefaultMaleActionSocketXmlTest.class,
 })
 
 /**

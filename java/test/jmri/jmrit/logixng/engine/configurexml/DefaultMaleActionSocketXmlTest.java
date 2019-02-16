@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.engine.configurexml;
 
-import jmri.jmrit.logixng.engine.configurexml.DefaultLogixNGManagerXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -11,11 +10,11 @@ import org.junit.Test;
  *
  * @author Daniel Bergqvist Copyright (C) 2018
  */
-public class DefaultLogixNGManagerXmlTest {
+public class DefaultMaleActionSocketXmlTest {
 
     @Test
     public void testCTor() {
-        DefaultLogixNGManagerXml t = new DefaultLogixNGManagerXml();
+        DefaultMaleActionSocketXml t = new DefaultMaleActionSocketXml();
     }
 
     // The minimal setup for log4J
@@ -29,6 +28,6 @@ public class DefaultLogixNGManagerXmlTest {
         JUnitUtil.tearDown();
     }
 
-    // private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManagerXmlTest.class);
+    // private final static Logger log = LoggerFactory.getLogger(DefaultActionManagerXmlTest.class);
 
 }

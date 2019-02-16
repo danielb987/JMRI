@@ -5,8 +5,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   ActionIfThenElseXmlTest.class,
-   ActionManyXmlTest.class,
+    ActionHoldAnythingXmlTest.class,
+    ActionIfThenElseXmlTest.class,
+    ActionManyXmlTest.class,
 })
 
 /**
