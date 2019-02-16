@@ -16,16 +16,15 @@ import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.WarrantManager;
-import jmri.jmrit.newlogix.ActionManager;
-import jmri.jmrit.newlogix.AnalogActionManager;
-import jmri.jmrit.newlogix.AnalogExpressionManager;
-import jmri.jmrit.newlogix.ExpressionManager;
-import jmri.jmrit.newlogix.NewLogixManager;
-import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
-import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
-import jmri.jmrit.newlogix.engine.DefaultActionManager;
-import jmri.jmrit.newlogix.engine.DefaultAnalogExpressionManager;
-import jmri.jmrit.newlogix.engine.DefaultAnalogActionManager;
+import jmri.jmrit.logixng.ActionManager;
+import jmri.jmrit.logixng.AnalogActionManager;
+import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.ExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
+import jmri.jmrit.logixng.engine.DefaultExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultActionManager;
+import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrix.internal.InternalReporterManager;
 import jmri.jmrix.internal.InternalSensorManager;
 import jmri.managers.AbstractSignalHeadManager;
@@ -59,6 +58,7 @@ import org.netbeans.jemmy.FrameWaiter;
 import org.netbeans.jemmy.TestOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.LogixNGManager;
 
 /**
  * Common utility methods for working with JUnit.
@@ -796,9 +796,9 @@ public class JUnitUtil {
     }
 
     public static void initNewLogixManager() {
-        NewLogixManager m = new DefaultNewLogixManager();
+        LogixNGManager m = new DefaultLogixNGManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.NEWLOGIXS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.LOGIXNGS);
         }
     }
 

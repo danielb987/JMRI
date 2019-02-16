@@ -26,19 +26,19 @@ import jmri.TurnoutManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
-import jmri.jmrit.newlogix.ActionManager;
-import jmri.jmrit.newlogix.AnalogActionManager;
-import jmri.jmrit.newlogix.AnalogExpressionManager;
-import jmri.jmrit.newlogix.ExpressionManager;
-import jmri.jmrit.newlogix.NewLogixManager;
-import jmri.jmrit.newlogix.engine.DefaultActionManager;
-import jmri.jmrit.newlogix.engine.DefaultAnalogActionManager;
-import jmri.jmrit.newlogix.engine.DefaultAnalogExpressionManager;
-import jmri.jmrit.newlogix.engine.DefaultExpressionManager;
-import jmri.jmrit.newlogix.engine.DefaultNewLogixManager;
-import jmri.jmrit.newlogix.engine.NewLogixPreferences;
+import jmri.jmrit.logixng.ActionManager;
+import jmri.jmrit.logixng.AnalogActionManager;
+import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.ExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultActionManager;
+import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
+import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
+import jmri.jmrit.logixng.engine.LogixNGPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
+import jmri.jmrit.logixng.LogixNGManager;
 
 /**
  * Provide the usual default implementations for the
@@ -111,12 +111,12 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultMemoryManager();
         }
 
-        if (type == NewLogixManager.class) {
-            return new DefaultNewLogixManager();
+        if (type == LogixNGManager.class) {
+            return new DefaultLogixNGManager();
         }
 
-        if (type == NewLogixPreferences.class) {
-            return new NewLogixPreferences();
+        if (type == LogixNGPreferences.class) {
+            return new LogixNGPreferences();
         }
 
         if (type == RailComManager.class) {
@@ -185,8 +185,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     @Override
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
-        set.addAll(Arrays.asList(
-                ActionManager.class,
+        set.addAll(Arrays.asList(ActionManager.class,
                 AnalogActionManager.class,
                 AnalogExpressionManager.class,
                 AudioManager.class,
@@ -198,8 +197,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
-                NewLogixManager.class,
-                NewLogixPreferences.class,
+                LogixNGManager.class,
+                LogixNGPreferences.class,
                 RailComManager.class,
                 ReporterManager.class,
                 RouteManager.class,

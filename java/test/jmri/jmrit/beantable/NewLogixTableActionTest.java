@@ -4,8 +4,6 @@ import java.awt.GraphicsEnvironment;
 import java.util.ResourceBundle;
 import javax.swing.JFrame;
 import jmri.InstanceManager;
-import jmri.jmrit.newlogix.NewLogix;
-import jmri.jmrit.newlogix.NewLogixManager;
 
 import jmri.util.*;
 import jmri.util.junit.rules.*;
@@ -19,10 +17,12 @@ import org.netbeans.jemmy.operators.JDialogOperator;
 import org.netbeans.jemmy.operators.JFrameOperator;
 import org.netbeans.jemmy.operators.JMenuBarOperator;
 import org.netbeans.jemmy.operators.JTextFieldOperator;
+import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.LogixNGManager;
 
 
 /*
-* Tests for the NewLogixTableAction Class
+* Tests for the LogixNGTableAction Class
 * Re-created using JUnit4 with support for the new conditional editors
 * @author Dave Sand Copyright (C) 2017 (for the LogixTableActionTest class)
 * @author Daniel Bergqvist Copyright (C) 2019
@@ -39,13 +39,13 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("NewLogixTableActionTest Constructor Return", new NewLogixTableAction());  // NOI18N
+        Assert.assertNotNull("NewLogixTableActionTest Constructor Return", new LogixNGTableAction());  // NOI18N
     }
 
     @Test
     public void testStringCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assert.assertNotNull("NewLogixTableAction Constructor Return", new NewLogixTableAction("test"));  // NOI18N
+        Assert.assertNotNull("NewLogixTableAction Constructor Return", new LogixNGTableAction("test"));  // NOI18N
     }
 
     @Override
@@ -73,7 +73,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
     @Test
     public void testLogixBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        NewLogixTableAction newLogixTable = (NewLogixTableAction) a;
+        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.browserPressed("IQ:101");  // NOI18N
 
@@ -88,7 +88,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         InstanceManager.getDefault(jmri.UserPreferencesManager.class).
                 setProperty("jmri.jmrit.beantable.NewLogixTableAction", "Edit Mode", "TREEEDIT");  // NOI18N
         a.actionPerformed(null);
-        NewLogixTableAction newLogixTable = (NewLogixTableAction) a;
+        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
         JFrameOperator newLogixFrame = new JFrameOperator(Bundle.getMessage("TitleNewLogixTable"));  // NOI18N
         Assert.assertNotNull(newLogixFrame);
 
@@ -102,7 +102,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
     @Test
     public void testAddNewLogixAutoName() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        NewLogixTableAction newLogixTable = (NewLogixTableAction) a;
+        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.actionPerformed(null); // show table
         JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleNewLogixTable"), true, true);  // NOI18N
@@ -116,7 +116,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         new JTextFieldOperator(addFrame, 1).setText("NewLogix 999");  // NOI18N
         new JButtonOperator(addFrame, Bundle.getMessage("ButtonCreate")).push();  // NOI18N
 
-        NewLogix chk999 = jmri.InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).getNewLogix("NewLogix 999");  // NOI18N
+        LogixNG chk999 = jmri.InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getLogixNG("NewLogix 999");  // NOI18N
         Assert.assertNotNull("Verify 'NewLogix 999' Added", chk999);  // NOI18N
 
         // Add creates an edit frame; find and dispose
@@ -129,7 +129,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
     @Test
     public void testAddNewLogix() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        NewLogixTableAction newLogixTable = (NewLogixTableAction) a;
+        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.actionPerformed(null); // show table
         JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleNewLogixTable"), true, true);  // NOI18N
@@ -143,7 +143,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         new JTextFieldOperator(addFrame, 1).setText("NewLogix 105");  // NOI18N
         new JButtonOperator(addFrame, Bundle.getMessage("ButtonCreate")).push();  // NOI18N
 
-        NewLogix chk105 = jmri.InstanceManager.getDefault(NewLogixManager.class).getNewLogix("NewLogix 105");  // NOI18N
+        LogixNG chk105 = jmri.InstanceManager.getDefault(LogixNGManager.class).getLogixNG("NewLogix 105");  // NOI18N
         Assert.assertNotNull("Verify IQ:105 Added", chk105);  // NOI18N
 
         // Add creates an edit frame; find and dispose
@@ -156,7 +156,7 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
     @Test
     public void testDeleteNewLogix() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        NewLogixTableAction newLogixTable = (NewLogixTableAction) a;
+        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.actionPerformed(null); // show table
         JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleNewLogixTable"), true, true);  // NOI18N
@@ -166,14 +166,14 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         Thread t1 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonNo"));  // NOI18N
         newLogixTable.deletePressed("IQ:102");  // NOI18N
         t1.join();
-        NewLogix chk102 = jmri.InstanceManager.getDefault(NewLogixManager.class).getBySystemName("IQ:102");  // NOI18N
+        LogixNG chk102 = jmri.InstanceManager.getDefault(LogixNGManager.class).getBySystemName("IQ:102");  // NOI18N
         Assert.assertNotNull("Verify IQ:102 Not Deleted", chk102);  // NOI18N
 
         // Delete IQ:103, respond Yes
         Thread t2 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonYes"));  // NOI18N
         newLogixTable.deletePressed("IQ:103");  // NOI18N
         t2.join();
-        NewLogix chk103 = jmri.InstanceManager.getDefault(NewLogixManager.class).getBySystemName("IQ:103");  // NOI18N
+        LogixNG chk103 = jmri.InstanceManager.getDefault(LogixNGManager.class).getBySystemName("IQ:103");  // NOI18N
         Assert.assertNull("Verify IQ:103 Is Deleted", chk103);  // NOI18N
 
         JUnitUtil.dispose(newLogixFrame);
@@ -199,13 +199,13 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         jmri.util.JUnitUtil.initLogixManager();
         jmri.util.JUnitUtil.initDefaultUserMessagePreferences();
 
-        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:101", "NewLogix 101");
-        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:102", "NewLogix 102");
-        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:103", "NewLogix 103");
-        InstanceManager.getDefault(NewLogixManager.class).createNewLogix("IQ:104", "NewLogix 104");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:101", "NewLogix 101");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:102", "NewLogix 102");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:103", "NewLogix 103");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:104", "NewLogix 104");
 
         helpTarget = "package.jmri.jmrit.beantable.LogixTable"; 
-        a = new NewLogixTableAction();
+        a = new LogixNGTableAction();
     }
 
     @After

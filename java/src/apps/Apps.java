@@ -452,7 +452,7 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         // do final activation
         InstanceManager.getDefault(jmri.LogixManager.class).activateAllLogixs();
         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).initializeLayoutBlockPaths();
-        InstanceManager.getDefault(jmri.jmrit.newlogix.NewLogixManager.class).activateAllNewLogixs();
+        InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).activateAllLogixNGs();
 
         log.debug("End constructor");
     }
