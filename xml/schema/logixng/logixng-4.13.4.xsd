@@ -13,7 +13,7 @@
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
 
-<!-- This file contains definitions for NewLogix, Expressions and Actions,  -->
+<!-- This file contains definitions for LogixNG, Expressions and Actions,  -->
 <!-- since they are so intimately coupled -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -26,18 +26,18 @@
             "
         >
 
-    <xs:complexType name="NewLogixManagerType">
+    <xs:complexType name="LogixNGManagerType">
       <xs:annotation>
         <xs:documentation>
-          Define the XML stucture for storing the contents of a NewLogixManager implementation.
+          Define the XML stucture for storing the contents of a LogixNGManager implementation.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.newlogix.engine.configurexml.DefaultNewLogixManagerXml</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.engine.configurexml.DefaultLogixNGManagerXml</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
         
-        <xs:element name="newlogix" minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="logixng" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
@@ -58,13 +58,13 @@
       <xs:attribute name="class" type="classType" use="required"/>
     </xs:complexType>
 
-    <xs:complexType name="NewLogixActionManagerType">
+    <xs:complexType name="LogixNGActionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.newlogix.engine.configurexml.DefaultActionManagerXml</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.engine.configurexml.DefaultActionManagerXml</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>

@@ -1,7 +1,7 @@
 package jmri.jmrit.logixng;
 
 /**
- * A NewLogix male socket.
+ * A LogixNG male socket.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */

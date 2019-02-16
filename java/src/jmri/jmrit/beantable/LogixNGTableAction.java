@@ -106,7 +106,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     /**
      * Create the JTable DataModel, along with the changes (overrides of
- BeanTableDataModel) for the specific case of a LogixNG table.
+     * BeanTableDataModel) for the specific case of a LogixNG table.
      */
     @Override
     protected void createModel() {
