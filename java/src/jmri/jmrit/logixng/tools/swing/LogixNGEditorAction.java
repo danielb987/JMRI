@@ -23,7 +23,7 @@ public class LogixNGEditorAction extends AbstractAction {
     static LogixNGEditor newLogixEditorFrame = null;
 
     @Override
-    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Only one OperationsSetupFrame")
+    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Only one LogixNGEditorFrame")
     public void actionPerformed(ActionEvent e) {
         // create a settings frame
         if (newLogixEditorFrame == null || !newLogixEditorFrame.isVisible()) {

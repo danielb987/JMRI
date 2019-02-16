@@ -23,7 +23,7 @@ public class TimeDiagramAction extends AbstractAction {
     static TimeDiagram timeDiagramFrame = null;
 
     @Override
-    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Only one OperationsSetupFrame")
+    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Only one TimeDiagramFrame")
     public void actionPerformed(ActionEvent e) {
         // create a settings frame
         if (timeDiagramFrame == null || !timeDiagramFrame.isVisible()) {
