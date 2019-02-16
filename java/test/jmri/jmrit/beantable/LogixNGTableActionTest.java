@@ -27,9 +27,9 @@ import jmri.jmrit.logixng.LogixNGManager;
 * @author Dave Sand Copyright (C) 2017 (for the LogixTableActionTest class)
 * @author Daniel Bergqvist Copyright (C) 2019
 */
-public class NewLogixTableActionTest extends AbstractTableActionBase {
+public class LogixNGTableActionTest extends AbstractTableActionBase {
 
-    static final ResourceBundle rbxNewLogixSwing = ResourceBundle.getBundle("jmri.jmrit.newlogix.tools.swing.NewLogixSwingBundle");
+    static final ResourceBundle rbxLogixNGSwing = ResourceBundle.getBundle("jmri.jmrit.logixng.tools.swing.LogixNGSwingBundle");
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(10); // 10 second timeout for methods in this test class.
@@ -39,24 +39,24 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("NewLogixTableActionTest Constructor Return", new LogixNGTableAction());  // NOI18N
+        Assert.assertNotNull("LogixNGTableActionTest Constructor Return", new LogixNGTableAction());  // NOI18N
     }
 
     @Test
     public void testStringCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assert.assertNotNull("NewLogixTableAction Constructor Return", new LogixNGTableAction("test"));  // NOI18N
+        Assert.assertNotNull("LogixNGTableAction Constructor Return", new LogixNGTableAction("test"));  // NOI18N
     }
 
     @Override
     public String getTableFrameName() {
-        return Bundle.getMessage("TitleNewLogixTable");  // NOI18N
+        return Bundle.getMessage("TitleLogixNGTable");  // NOI18N
     }
 
     @Override
     @Test
     public void testGetClassDescription() {
-        Assert.assertEquals("NewLogix Table Action class description", Bundle.getMessage("TitleNewLogixTable"), a.getClassDescription());  // NOI18N
+        Assert.assertEquals("LogixNG Table Action class description", Bundle.getMessage("TitleLogixNGTable"), a.getClassDescription());  // NOI18N
     }
 
     /**
@@ -86,81 +86,81 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
     public void testTreeEditor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         InstanceManager.getDefault(jmri.UserPreferencesManager.class).
-                setProperty("jmri.jmrit.beantable.NewLogixTableAction", "Edit Mode", "TREEEDIT");  // NOI18N
+                setProperty("jmri.jmrit.beantable.LogixNGTableAction", "Edit Mode", "TREEEDIT");  // NOI18N
         a.actionPerformed(null);
         LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
-        JFrameOperator newLogixFrame = new JFrameOperator(Bundle.getMessage("TitleNewLogixTable"));  // NOI18N
+        JFrameOperator newLogixFrame = new JFrameOperator(Bundle.getMessage("TitleLogixNGTable"));  // NOI18N
         Assert.assertNotNull(newLogixFrame);
 
         newLogixTable.editPressed("IQ:104");  // NOI18N
-        JFrameOperator cdlFrame = new JFrameOperator(jmri.Bundle.formatMessage(rbxNewLogixSwing.getString("TitleEditNewLogix"), "IQ:104"));  // NOI18N
+        JFrameOperator cdlFrame = new JFrameOperator(jmri.Bundle.formatMessage(rbxLogixNGSwing.getString("TitleEditLogixNG"), "IQ:104"));  // NOI18N
         Assert.assertNotNull(cdlFrame);
-        new JMenuBarOperator(cdlFrame).pushMenuNoBlock(Bundle.getMessage("MenuFile")+"|"+rbxNewLogixSwing.getString("CloseWindow"), "|");  // NOI18N
+        new JMenuBarOperator(cdlFrame).pushMenuNoBlock(Bundle.getMessage("MenuFile")+"|"+rbxLogixNGSwing.getString("CloseWindow"), "|");  // NOI18N
         newLogixFrame.dispose();
     }
 
     @Test
-    public void testAddNewLogixAutoName() {
+    public void testAddLogixNGAutoName() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.actionPerformed(null); // show table
-        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleNewLogixTable"), true, true);  // NOI18N
-        Assert.assertNotNull("Found NewLogix Frame", newLogixFrame);  // NOI18N
+        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
+        Assert.assertNotNull("Found LogixNG Frame", newLogixFrame);  // NOI18N
 
         newLogixTable.addPressed(null);
-        JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddNewLogix"));  // NOI18N
-        Assert.assertNotNull("Found Add NewLogix Frame", addFrame);  // NOI18N
+        JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddLogixNG"));  // NOI18N
+        Assert.assertNotNull("Found Add LogixNG Frame", addFrame);  // NOI18N
 
         new JCheckBoxOperator(addFrame, 0).clickMouse();
-        new JTextFieldOperator(addFrame, 1).setText("NewLogix 999");  // NOI18N
+        new JTextFieldOperator(addFrame, 1).setText("LogixNG 999");  // NOI18N
         new JButtonOperator(addFrame, Bundle.getMessage("ButtonCreate")).push();  // NOI18N
 
-        LogixNG chk999 = jmri.InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getLogixNG("NewLogix 999");  // NOI18N
-        Assert.assertNotNull("Verify 'NewLogix 999' Added", chk999);  // NOI18N
+        LogixNG chk999 = jmri.InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getLogixNG("LogixNG 999");  // NOI18N
+        Assert.assertNotNull("Verify 'LogixNG 999' Added", chk999);  // NOI18N
 
         // Add creates an edit frame; find and dispose
-        JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxNewLogixSwing.getString("TitleEditNewLogix2"), "IQ:A:0001", "NewLogix 999"), true, true);  // NOI18N
+        JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxLogixNGSwing.getString("TitleEditLogixNG2"), "IQ:A:0001", "LogixNG 999"), true, true);  // NOI18N
         JUnitUtil.dispose(editFrame);
 
         JUnitUtil.dispose(newLogixFrame);
     }
 
     @Test
-    public void testAddNewLogix() {
+    public void testAddLogixNG() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.actionPerformed(null); // show table
-        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleNewLogixTable"), true, true);  // NOI18N
-        Assert.assertNotNull("Found NewLogix Frame", newLogixFrame);  // NOI18N
+        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
+        Assert.assertNotNull("Found LogixNG Frame", newLogixFrame);  // NOI18N
 
         newLogixTable.addPressed(null);
-        JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddNewLogix"));  // NOI18N
-        Assert.assertNotNull("Found Add NewLogix Frame", addFrame);  // NOI18N
+        JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddLogixNG"));  // NOI18N
+        Assert.assertNotNull("Found Add LogixNG Frame", addFrame);  // NOI18N
 
         new JTextFieldOperator(addFrame, 0).setText("105");  // NOI18N
-        new JTextFieldOperator(addFrame, 1).setText("NewLogix 105");  // NOI18N
+        new JTextFieldOperator(addFrame, 1).setText("LogixNG 105");  // NOI18N
         new JButtonOperator(addFrame, Bundle.getMessage("ButtonCreate")).push();  // NOI18N
 
-        LogixNG chk105 = jmri.InstanceManager.getDefault(LogixNGManager.class).getLogixNG("NewLogix 105");  // NOI18N
+        LogixNG chk105 = jmri.InstanceManager.getDefault(LogixNGManager.class).getLogixNG("LogixNG 105");  // NOI18N
         Assert.assertNotNull("Verify IQ:105 Added", chk105);  // NOI18N
 
         // Add creates an edit frame; find and dispose
-        JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxNewLogixSwing.getString("TitleEditNewLogix2"), "IQ:105", "NewLogix 105"), true, true);  // NOI18N
+        JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxLogixNGSwing.getString("TitleEditLogixNG2"), "IQ:105", "LogixNG 105"), true, true);  // NOI18N
         JUnitUtil.dispose(editFrame);
 
         JUnitUtil.dispose(newLogixFrame);
     }
 
     @Test
-    public void testDeleteNewLogix() throws InterruptedException {
+    public void testDeleteLogixNG() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
 
         newLogixTable.actionPerformed(null); // show table
-        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleNewLogixTable"), true, true);  // NOI18N
-        Assert.assertNotNull("Found NewLogix Frame", newLogixFrame);  // NOI18N
+        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
+        Assert.assertNotNull("Found LogixNG Frame", newLogixFrame);  // NOI18N
 
         // Delete IQ:102, respond No
         Thread t1 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonNo"));  // NOI18N
@@ -199,10 +199,10 @@ public class NewLogixTableActionTest extends AbstractTableActionBase {
         jmri.util.JUnitUtil.initLogixManager();
         jmri.util.JUnitUtil.initDefaultUserMessagePreferences();
 
-        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:101", "NewLogix 101");
-        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:102", "NewLogix 102");
-        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:103", "NewLogix 103");
-        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:104", "NewLogix 104");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:101", "LogixNG 101");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:102", "LogixNG 102");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:103", "LogixNG 103");
+        InstanceManager.getDefault(LogixNGManager.class).createLogixNG("IQ:104", "LogixNG 104");
 
         helpTarget = "package.jmri.jmrit.beantable.LogixTable"; 
         a = new LogixNGTableAction();
