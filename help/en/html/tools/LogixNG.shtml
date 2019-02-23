@@ -9,7 +9,7 @@
   <title>JMRI: New Logix Documentation</title>
   <meta name="author" content="Daniel Bergqvist">
   <meta name="keywords" content=
-  "newlogix model railroad JMRI NewLogix PanelPro"><!-- Style -->
+  "logixng model railroad JMRI LogixNG PanelPro"><!-- Style -->
   <meta http-equiv="Content-Type" content=
   "text/html; charset=us-ascii">
   <link rel="stylesheet" type="text/css" href="/css/default.css"
@@ -30,20 +30,20 @@
       <div id="mainContent">
         <!-- Page Body -->
 
-        <h1>JMRI: NewLogix Documentation</h1>
+        <h1>JMRI: LogixNG Documentation</h1>
 
-        <p>This page is the user manual for NewLogix. For the technical
-		aspects and how to extend NewLogix with new features, see the
-		<a href="../doc/Technical/NewLogix.shtml">Technical documentation</a>
-		of NewLogix.</p>
+        <p>This page is the user manual for LogixNG. For the technical
+		aspects and how to extend LogixNG with new features, see the
+		<a href="../doc/Technical/LogixNG.shtml">Technical documentation</a>
+		of LogixNG.</p>
 
-        <p>NewLogix provide a powerful capability for JMRI to monitor
+        <p>LogixNG provide a powerful capability for JMRI to monitor
 		one or more conditions on a layout, and take action when these
 		conditions change in a user-specified way. Logix can be used
 		to control signals, crossing gates, and other types of
 		automation on the layout.</p>
 
-		<p>The main building blocks in NewLogix is Expressions and
+		<p>The main building blocks in LogixNG is Expressions and
 		Actions. Expressions ask a question while Actions do somethings.
 		It can be described as:</p>
 
@@ -106,17 +106,17 @@
 
 		<p><strong>Turnout</strong> - Set the state of a turnout.</p>
 
-        <h2>How to setup NewLogixs</h2>
+        <h2>How to setup LogixNGs</h2>
 
         <h2>Time Diagram</h2>
 
-        <h2>Plugins for NewLogix</h2>
+        <h2>Plugins for LogixNG</h2>
 
-		<p>NewLogix supports expression and action plugins. This can be done
+		<p>LogixNG supports expression and action plugins. This can be done
 		in two different ways, native plugin or external plugin.</p>
 
 		<p>A <strong>native plugin</strong> is a class that implements the
-		NewLogixExpression interface or the NewLogixAction interface. The
+		Expression interface or the Action interface. The
 		downside is that the jar file with these classes needs to be placed
 		in the <a href="../../Technical/StartUpScripts.shtml">JMRI classpath</a>
 		to be accessible for JMRI. But as long as they are located at the
