@@ -4,7 +4,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.Expression;
 import jmri.jmrit.logixng.Action;
 import jmri.jmrit.logixng.engine.DefaultLogixNG;
-import jmri.jmrit.logixng.actions.ActionIfThenElse;
+import jmri.jmrit.logixng.actions.ActionIfThen;
 import jmri.jmrit.logixng.actions.ActionTurnout;
 import jmri.jmrit.logixng.expressions.ExpressionAnd;
 import jmri.jmrit.logixng.expressions.ExpressionTurnout;
@@ -45,7 +45,7 @@ public class LogixNGTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "LogixNG".equals(new DefaultLogixNG("IQA55", null).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Action".equals(new ActionIfThenElse("IQA55:A321", null, ActionIfThenElse.Type.TRIGGER_ACTION).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Action".equals(new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.TRIGGER_ACTION).getBeanType()));
         Assert.assertTrue("bean type is correct", "Expression".equals(new ExpressionAnd("IQA55:E321", null).getBeanType()));
     }
     

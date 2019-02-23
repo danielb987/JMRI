@@ -1,21 +1,43 @@
 package jmri.jmrit.logixng.actions.configurexml;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.logixng.actions.ActionIfThenElse;
 import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Action;
+import jmri.jmrit.logixng.FemaleActionSocket;
+import jmri.jmrit.logixng.FemaleExpressionSocket;
+import jmri.jmrit.logixng.actions.ActionIfThen;
 
 /**
  *
  */
-public class ActionIfThenElseXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionIfThenElseXml() {
+    public ActionIfThenXml() {
+    }
+
+    private ActionIfThen.Type getType(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field f = action.getClass().getDeclaredField("_type");
+        f.setAccessible(true);
+        return (ActionIfThen.Type) f.get(action);
+    }
+
+    private FemaleExpressionSocket getIfExpressionSocket(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field f = action.getClass().getDeclaredField("_ifExpressionSocket");
+        f.setAccessible(true);
+        return (FemaleExpressionSocket) f.get(action);
+    }
+
+    private FemaleActionSocket getThenActionSocket(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field f = action.getClass().getDeclaredField("_thenActionSocket");
+        f.setAccessible(true);
+        return (FemaleActionSocket) f.get(action);
     }
 
     /**
@@ -26,18 +48,28 @@ public class ActionIfThenElseXml extends jmri.managers.configurexml.AbstractName
      */
     @Override
     public Element store(Object o) {
-        ActionIfThenElse p = (ActionIfThenElse) o;
+        ActionIfThen p = (ActionIfThen) o;
 
-        Element element = new Element("action-if-then-else");
+        Element element = new Element("action-if-then");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {
             element.addContent(new Element("userName").addContent(p.getUserName()));
         }
 
-        element.addContent(new Element("if-systemName").addContent(p.getSystemName()));
-        element.addContent(new Element("then-systemName").addContent(p.getSystemName()));
-        element.addContent(new Element("else-systemName").addContent(p.getSystemName()));
+        try {
+            element.setAttribute("type", getType(p).name());
+            FemaleExpressionSocket ifExpressionSocket = getIfExpressionSocket(p);
+            if (ifExpressionSocket.isConnected()) {
+                element.addContent(new Element("if-systemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));
+            }
+            FemaleActionSocket _thenActionSocket = getThenActionSocket(p);
+            if (_thenActionSocket.isConnected()) {
+                element.addContent(new Element("then-systemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
+            }
+        } catch (Exception e) {
+            log.error("Error storing action: {}", e, e);
+        }
 
         storeCommon(p, element);
 
@@ -82,10 +114,10 @@ public class ActionIfThenElseXml extends jmri.managers.configurexml.AbstractName
         String uname = getUserName(shared);
         Action h;
         if (uname == null) {
-            h = new ActionIfThenElse(sys, ActionIfThenElse.Type.TRIGGER_ACTION);
+            h = new ActionIfThen(sys, ActionIfThen.Type.TRIGGER_ACTION);
         } else {
-            h = new ActionIfThenElse(sys, uname, ActionIfThenElse.Type.TRIGGER_ACTION);
-//            h = new ActionIfThenElse(sys, low, high, uname);
+            h = new ActionIfThen(sys, uname, ActionIfThen.Type.TRIGGER_ACTION);
+//            h = new ActionIfThen(sys, low, high, uname);
         }
 
         loadCommon(h, shared);
@@ -134,5 +166,5 @@ public class ActionIfThenElseXml extends jmri.managers.configurexml.AbstractName
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionIfThenElseXml.class);
+    private final static Logger log = LoggerFactory.getLogger(ActionIfThenXml.class);
 }

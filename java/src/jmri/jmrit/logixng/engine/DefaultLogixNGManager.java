@@ -19,7 +19,7 @@ import jmri.jmrit.logixng.MaleActionSocket;
 import jmri.jmrit.logixng.MaleExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.actions.ActionHoldAnything;
-import jmri.jmrit.logixng.actions.ActionIfThenElse;
+import jmri.jmrit.logixng.actions.ActionIfThen;
 import jmri.jmrit.logixng.actions.ActionMany;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
@@ -159,7 +159,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
 
             MaleActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(ActionManager.class)
-                            .register(new ActionIfThenElse(newLogix, ActionIfThenElse.Type.TRIGGER_ACTION));
+                            .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
             femaleSocket = actionManySocket.getChild(1);
             femaleSocket.connect(actionIfThenSocket);
             

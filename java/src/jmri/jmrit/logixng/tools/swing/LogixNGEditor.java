@@ -43,7 +43,7 @@ import jmri.jmrit.logixng.Expression;
 import jmri.jmrit.logixng.MaleActionSocket;
 import jmri.jmrit.logixng.MaleExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.actions.ActionIfThenElse;
+import jmri.jmrit.logixng.actions.ActionIfThen;
 import jmri.jmrit.logixng.actions.ActionTurnout;
 import jmri.jmrit.logixng.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
@@ -144,7 +144,7 @@ public final class LogixNGEditor extends JmriJFrame {
         Action actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleActionSocket actionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(actionTurnout);
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
-        Action actionIfThen = new ActionIfThenElse(systemName, ActionIfThenElse.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
+        Action actionIfThen = new ActionIfThen(systemName, ActionIfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
         actionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(actionIfThen);
         newLogix.getFemaleSocket().connect(actionSocket);
 */        

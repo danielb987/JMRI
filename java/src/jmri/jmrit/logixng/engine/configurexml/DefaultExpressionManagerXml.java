@@ -34,13 +34,16 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
         setStoreElementClass(expressions);
         ExpressionManager tm = (ExpressionManager) o;
         if (tm != null) {
-            java.util.Iterator<String> iter
-                    = tm.getSystemNameList().iterator();
-
-            // don't return an element if there are not Logix to include
-            if (!iter.hasNext()) {
-                return null;
+            for (Expression e : tm.getNamedBeanSet()) {
+                
             }
+//            java.util.Iterator<String> iter
+//                    = tm.getSystemNameList().iterator();
+//
+//            // don't return an element if there are not Logix to include
+//            if (!iter.hasNext()) {
+//                return null;
+//            }
 
             // store the Logix
 //            while (iter.hasNext()) {

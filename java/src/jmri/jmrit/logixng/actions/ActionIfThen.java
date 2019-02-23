@@ -2,8 +2,6 @@ package jmri.jmrit.logixng.actions;
 
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.Expression;
-import jmri.jmrit.logixng.Action;
 import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.ExpressionManager;
 import jmri.jmrit.logixng.FemaleActionSocket;
@@ -13,14 +11,13 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleActionSocket;
 import jmri.jmrit.logixng.MaleExpressionSocket;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
 
 /**
  * Executes an action when the expression is True.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ActionIfThenElse extends AbstractAction implements FemaleSocketListener {
+public class ActionIfThen extends AbstractAction implements FemaleSocketListener {
 
     /**
      * The type of Action. If the type is changed, the action is aborted if it
@@ -53,64 +50,68 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     private Type _type;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
-    private final FemaleExpressionSocket _expressionSocket;
-    private final FemaleActionSocket _actionSocket;
+    private final FemaleExpressionSocket _ifExpressionSocket;
+    private final FemaleActionSocket _thenActionSocket;
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      * @param newLogix the LogixNG that this action is related to
      */
-    public ActionIfThenElse(LogixNG newLogix, Type type) {
+    public ActionIfThen(LogixNG newLogix, Type type) {
         super(InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix));
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E1");
-        _actionSocket = InstanceManager.getDefault(ActionManager.class)
-                .createFemaleActionSocket(this, "A1");
+        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, "E");
+        _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
+                .createFemaleActionSocket(this, "A");
     }
     
-    public ActionIfThenElse(String sys, Type type) {
+    public ActionIfThen(String sys, Type type) {
         super(sys);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E1");
-        _actionSocket = InstanceManager.getDefault(ActionManager.class)
-                .createFemaleActionSocket(this, "A1");
+        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, "E");
+        _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
+                .createFemaleActionSocket(this, "A");
     }
     
-    public ActionIfThenElse(String sys, String user, Type type) {
+    public ActionIfThen(String sys, String user, Type type) {
         super(sys, user);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E1");
-        _actionSocket = InstanceManager.getDefault(ActionManager.class)
-                .createFemaleActionSocket(this, "A1");
+        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, "E");
+        _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
+                .createFemaleActionSocket(this, "A");
     }
     
-    public ActionIfThenElse(
+    public ActionIfThen(
             String sys, Type type,
-            String expressionSocketName, String actionSocketName,
-            MaleExpressionSocket expression, MaleActionSocket action) {
+            String ifExpressionSocketName,
+            String thenActionSocketName,
+            MaleExpressionSocket ifExpression,
+            MaleActionSocket thenAction) {
         
         super(sys);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
-                .createFemaleExpressionSocket(this, expressionSocketName, expression);
-        _actionSocket = InstanceManager.getDefault(ActionManager.class)
-                .createFemaleActionSocket(this, actionSocketName, action);
+        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, ifExpressionSocketName, ifExpression);
+        _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
+                .createFemaleActionSocket(this, thenActionSocketName, thenAction);
     }
     
-    public ActionIfThenElse(
+    public ActionIfThen(
             String sys, String user, Type type,
-            String expressionSocketName, String actionSocketName, 
-            MaleExpressionSocket expression, MaleActionSocket action) {
+            String ifExpressionSocketName,
+            String thenActionSocketName,
+            MaleExpressionSocket ifExpression,
+            MaleActionSocket thenAction) {
         
         super(sys, user);
         _type = type;
-        _expressionSocket = InstanceManager.getDefault(ExpressionManager.class)
-                .createFemaleExpressionSocket(this, expressionSocketName, expression);
-        _actionSocket = InstanceManager.getDefault(ActionManager.class)
-                .createFemaleActionSocket(this, actionSocketName, action);
+        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+                .createFemaleExpressionSocket(this, ifExpressionSocketName, ifExpression);
+        _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
+                .createFemaleActionSocket(this, thenActionSocketName, thenAction);
     }
     
     /** {@inheritDoc} */
@@ -128,11 +129,11 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        _lastExpressionResult = _expressionSocket.evaluate();
+        _lastExpressionResult = _ifExpressionSocket.evaluate();
         _lastActionResult = false;
 
         if (_lastExpressionResult) {
-            _lastActionResult = _actionSocket.executeStart();
+            _lastActionResult = _thenActionSocket.executeStart();
         }
 
         return _lastActionResult;
@@ -143,15 +144,15 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     public boolean executeContinue() {
         switch (_type) {
             case TRIGGER_ACTION:
-                _lastActionResult = _actionSocket.executeContinue();
+                _lastActionResult = _thenActionSocket.executeContinue();
                 break;
                 
             case CONTINOUS_ACTION:
-                boolean exprResult = _expressionSocket.evaluate();
+                boolean exprResult = _ifExpressionSocket.evaluate();
                 if (exprResult) {
-                    _lastActionResult = _actionSocket.executeContinue();
+                    _lastActionResult = _thenActionSocket.executeContinue();
                 } else {
-                    _actionSocket.abort();
+                    _thenActionSocket.abort();
                     _lastActionResult = false;
                 }
                 break;
@@ -168,15 +169,15 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     public boolean executeRestart() {
         switch (_type) {
             case TRIGGER_ACTION:
-                _lastActionResult = _actionSocket.executeRestart();
+                _lastActionResult = _thenActionSocket.executeRestart();
                 break;
                 
             case CONTINOUS_ACTION:
-                boolean exprResult = _expressionSocket.evaluate();
+                boolean exprResult = _ifExpressionSocket.evaluate();
                 if (exprResult) {
-                    _lastActionResult = _actionSocket.executeRestart();
+                    _lastActionResult = _thenActionSocket.executeRestart();
                 } else {
-                    _actionSocket.abort();
+                    _thenActionSocket.abort();
                     _lastActionResult = false;
                 }
                 break;
@@ -191,7 +192,7 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     /** {@inheritDoc} */
     @Override
     public void abort() {
-        _actionSocket.abort();
+        _thenActionSocket.abort();
     }
     
     /** {@inheritDoc} */
@@ -202,7 +203,7 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     /** {@inheritDoc} */
     public void setType(Type type) {
         if ((_type != type) && _lastActionResult) {
-            _actionSocket.abort();
+            _thenActionSocket.abort();
         }
         _type = type;
     }
@@ -211,10 +212,10 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         switch (index) {
             case 0:
-                return _expressionSocket;
+                return _ifExpressionSocket;
                 
             case 1:
-                return _actionSocket;
+                return _thenActionSocket;
                 
             default:
                 throw new IllegalArgumentException(
@@ -244,7 +245,7 @@ public class ActionIfThenElse extends AbstractAction implements FemaleSocketList
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("ActionIfThen_Long", _expressionSocket.getName(), _actionSocket.getName());
+        return Bundle.getMessage("ActionIfThen_Long", _ifExpressionSocket.getName(), _thenActionSocket.getName());
     }
 
 }
