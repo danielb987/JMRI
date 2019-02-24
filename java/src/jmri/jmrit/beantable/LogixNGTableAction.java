@@ -50,7 +50,7 @@ import jmri.util.JmriJFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * Swing action to create and register a LogixNG Table.
@@ -78,7 +78,7 @@ import jmri.jmrit.logixng.LogixNGManager;
 public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     /**
-     * Create a LogixNGManager instance.
+     * Create a LogixNG_Manager instance.
      *
      * @param s the Action title, not the title of the resulting frame. Perhaps
      *          this should be changed?
@@ -88,7 +88,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         // set up managers - no need to use InstanceManager since both managers are
         // Default only (internal). We use InstanceManager to get managers for
         // compatibility with other facilities.
-        _logixNGManager = InstanceManager.getNullableDefault(LogixNGManager.class);
+        _logixNGManager = InstanceManager.getNullableDefault(LogixNG_Manager.class);
         // disable ourself if there is no LogixNG manager
         if (_logixNGManager == null) {
             setEnabled(false);
@@ -96,7 +96,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
     }
 
     /**
-     * Create a LogixNGManager instance with default title.
+     * Create a LogixNG_Manager instance with default title.
      */
     public LogixNGTableAction() {
         this(Bundle.getMessage("TitleLogixNGTable"));
@@ -234,18 +234,18 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
             @Override
             public Manager<LogixNG> getManager() {
-                return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class);
+                return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
             }
 
             @Override
             public LogixNG getBySystemName(String name) {
-                return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getBySystemName(
+                return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getBySystemName(
                         name);
             }
 
             @Override
             public LogixNG getByUserName(String name) {
-                return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getByUserName(
+                return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getByUserName(
                         name);
             }
 
@@ -531,7 +531,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     // ------------ variable definitions ------------
 
-    LogixNGManager _logixNGManager = null;  // set when LogixNGAction is created
+    LogixNG_Manager _logixNGManager = null;  // set when LogixNGAction is created
 
     LogixNGEditor _treeEdit = null;
 
@@ -887,7 +887,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
      * @return false if name has length &lt; 1 after displaying a dialog
      */
     boolean checkLogixNGSysName() {
-        String sName = InstanceManager.getDefault(LogixNGManager.class).normalizeSystemName(_systemName.getText());
+        String sName = InstanceManager.getDefault(LogixNG_Manager.class).normalizeSystemName(_systemName.getText());
         if ((sName.length() < 1)) {
             // Entered system name is blank or too short
             JOptionPane.showMessageDialog(addLogixNGFrame,

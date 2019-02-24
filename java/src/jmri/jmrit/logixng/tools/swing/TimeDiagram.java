@@ -164,7 +164,7 @@ public class TimeDiagram extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
             
             String systemName;
-            LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
+            LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
             System.out.format("newLogix: %s%n", newLogix);
             systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).getNewSystemName(newLogix);
             Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N

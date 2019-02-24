@@ -15,7 +15,7 @@ import jmri.jmrit.logixng.MaleActionSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * The default implementation of LogixNG.

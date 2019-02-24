@@ -27,7 +27,7 @@ public class LogixNGTest {
     @Test
     public void testManagers() {
         String systemName;
-        LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).createLogixNG("A new logix for test");  // NOI18N
+        LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(expression);

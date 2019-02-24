@@ -3,12 +3,12 @@ package jmri.jmrit.logixng.engine.configurexml;
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
+import jmri.jmrit.logixng.engine.Default_LogixNG_Manager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * Provides the functionality for configuring LogixNGManagers
@@ -32,7 +32,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
     public Element store(Object o) {
         Element newLogixs = new Element("logixngs");
         setStoreElementClass(newLogixs);
-        LogixNGManager tm = (LogixNGManager) o;
+        LogixNG_Manager tm = (LogixNG_Manager) o;
         if (tm != null) {
             for (LogixNG newLogix : tm.getNamedBeanSet()) {
                 log.debug("logix system name is " + newLogix.getSystemName());  // NOI18N
@@ -79,8 +79,8 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
     }
 
     /**
-     * Create a LogixNGManager object of the correct class, then register and
-	 * fill it.
+     * Create a LogixNG_Manager object of the correct class, then register and
+ fill it.
      *
      * @param sharedLogixNG  Shared top level Element to unpack.
      * @param perNodeLogixNG Per-node top level Element to unpack.
@@ -107,7 +107,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         if (log.isDebugEnabled()) {
             log.debug("Found " + newLogixList.size() + " logixngs");  // NOI18N
         }
-        LogixNGManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class);
+        LogixNG_Manager tm = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
 
         for (int i = 0; i < newLogixList.size(); i++) {
 
@@ -172,7 +172,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
      */
     protected void replaceLogixNGManager() {
         if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
-                .equals(DefaultLogixNGManager.class.getName())) {
+                .equals(Default_LogixNG_Manager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
@@ -185,8 +185,8 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         }
 
         // register new one with InstanceManager
-        DefaultLogixNGManager pManager = DefaultLogixNGManager.instance();
-        InstanceManager.store(pManager, LogixNGManager.class);
+        Default_LogixNG_Manager pManager = Default_LogixNG_Manager.instance();
+        InstanceManager.store(pManager, LogixNG_Manager.class);
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
@@ -196,7 +196,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
 
     @Override
     public int loadOrder() {
-        return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getXMLOrder();
+        return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getXMLOrder();
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManagerXml.class);

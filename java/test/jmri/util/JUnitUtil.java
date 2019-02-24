@@ -20,7 +20,7 @@ import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.ExpressionManager;
-import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
+import jmri.jmrit.logixng.engine.Default_LogixNG_Manager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
@@ -58,7 +58,7 @@ import org.netbeans.jemmy.FrameWaiter;
 import org.netbeans.jemmy.TestOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * Common utility methods for working with JUnit.
@@ -796,7 +796,7 @@ public class JUnitUtil {
     }
 
     public static void initLogixNGManager() {
-        LogixNGManager m = new DefaultLogixNGManager();
+        LogixNG_Manager m = new Default_LogixNG_Manager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.LOGIXNGS);
         }

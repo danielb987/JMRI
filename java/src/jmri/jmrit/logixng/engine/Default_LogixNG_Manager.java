@@ -27,15 +27,15 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
- * Class providing the basic logic of the LogixNGManager interface.
+ * Class providing the basic logic of the LogixNG_Manager interface.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultLogixNGManager extends AbstractManager<LogixNG>
-        implements LogixNGManager {
+public class Default_LogixNG_Manager extends AbstractManager<LogixNG>
+        implements LogixNG_Manager {
 
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
@@ -43,7 +43,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     List<FemaleSocketFactory> _femaleSocketFactories = new ArrayList<>();
     
     
-    public DefaultLogixNGManager() {
+    public Default_LogixNG_Manager() {
         super();
         
         // The LogixNGPreferences class may load plugins so we must ensure
@@ -221,10 +221,10 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    static DefaultLogixNGManager _instance = null;
+    static Default_LogixNG_Manager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
-    static public DefaultLogixNGManager instance() {
+    static public Default_LogixNG_Manager instance() {
         if (log.isDebugEnabled()) {
             if (!ThreadingUtil.isGUIThread()) {
                 Log4JUtil.warnOnce(log, "instance() called on wrong thread");
@@ -232,12 +232,12 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         }
         
         if (_instance == null) {
-            _instance = new DefaultLogixNGManager();
+            _instance = new Default_LogixNG_Manager();
         }
         return (_instance);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManager.class);
+    private final static Logger log = LoggerFactory.getLogger(Default_LogixNG_Manager.class);
 
     @Override
     public void registerFemaleSocketFactory(FemaleSocketFactory factory) {

@@ -8,7 +8,7 @@ import jmri.Manager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface LogixNGManager extends Manager<LogixNG> {
+public interface LogixNG_Manager extends Manager<LogixNG> {
 
     /**
      * Create a new LogixNG if the LogixNG does not exist.

@@ -13,7 +13,7 @@ import jmri.jmrit.logixng.FemaleSocketFactory;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * An action that can hold everything but doesn't do anything.
@@ -53,7 +53,7 @@ public class ActionHoldAnything extends AbstractAction {
     
     private void init() {
         for (FemaleSocketFactory factory :
-                InstanceManager.getDefault(LogixNGManager.class).getFemaleSocketFactories()) {
+                InstanceManager.getDefault(LogixNG_Manager.class).getFemaleSocketFactories()) {
             
             _multipleSockets.add(new MultipleSockets(factory));
         }

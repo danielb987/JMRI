@@ -34,11 +34,11 @@ import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
-import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
+import jmri.jmrit.logixng.engine.Default_LogixNG_Manager;
 import jmri.jmrit.logixng.engine.LogixNGPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * Provide the usual default implementations for the
@@ -111,8 +111,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultMemoryManager();
         }
 
-        if (type == LogixNGManager.class) {
-            return new DefaultLogixNGManager();
+        if (type == LogixNG_Manager.class) {
+            return new Default_LogixNG_Manager();
         }
 
         if (type == LogixNGPreferences.class) {
@@ -197,7 +197,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
-                LogixNGManager.class,
+                LogixNG_Manager.class,
                 LogixNGPreferences.class,
                 RailComManager.class,
                 ReporterManager.class,

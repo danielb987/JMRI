@@ -48,7 +48,7 @@ import jmri.jmrit.logixng.actions.ActionTurnout;
 import jmri.jmrit.logixng.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
 
 /**
  * Editor of LogixNG
@@ -87,7 +87,7 @@ public final class LogixNGEditor extends JmriJFrame {
     public LogixNGEditor(String sName) {
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleActionSocket", Color.RED);
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleExpressionSocket", Color.BLUE);
-        newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).getBySystemName(sName);
+        newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getBySystemName(sName);
         
         if (newLogix.getUserName() == null) {
             setTitle(Bundle.getMessage("TitleEditLogixNG", sName));
@@ -133,9 +133,9 @@ public final class LogixNGEditor extends JmriJFrame {
         
         // For testing only
 /*        
-        InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).createLogixNG("A new logix for test");  // NOI18N
+        InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         String systemName;
-        LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNGManager.class).createLogixNG("A new logix for test");  // NOI18N
+        LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).getNewSystemName(newLogix);
         Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         MaleExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(expression);
@@ -153,7 +153,7 @@ public final class LogixNGEditor extends JmriJFrame {
 //        File root;
 //        root = new File(System.getProperty("user.home"));
         FemaleSocket root;
-        SortedSet<LogixNG> newLogixSet = InstanceManager.getDefault(LogixNGManager.class).getNamedBeanSet();
+        SortedSet<LogixNG> newLogixSet = InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet();
         for (LogixNG nl : newLogixSet) {
             System.out.format("LogixNG: %s%n", nl.toString());
             System.out.format("LogixNG female socket: %s. Connected: %b%n", nl.getFemaleSocket().toString(), nl.getFemaleSocket().isConnected());
