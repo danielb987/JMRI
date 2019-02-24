@@ -8,6 +8,7 @@ import jmri.jmrit.logixng.Expression;
 import jmri.jmrit.logixng.ExpressionManager;
 import jmri.jmrit.logixng.FemaleExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
 
 /**
@@ -15,7 +16,7 @@ import jmri.jmrit.logixng.LogixNG;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionAnd extends AbstractExpression {
+public class ExpressionAnd extends AbstractExpression implements FemaleSocketListener {
 
     List<FemaleExpressionSocket> children = new ArrayList<>();
     
@@ -25,16 +26,23 @@ public class ExpressionAnd extends AbstractExpression {
      */
     public ExpressionAnd(LogixNG newLogix) {
         super(InstanceManager.getDefault(ExpressionManager.class).getNewSystemName(newLogix));
+        init();
     }
     
     public ExpressionAnd(String sys) throws BadUserNameException,
             BadSystemNameException {
         super(sys);
+        init();
     }
 
     public ExpressionAnd(String sys, String user) throws BadUserNameException,
             BadSystemNameException {
         super(sys, user);
+        init();
+    }
+
+    private void init() {
+        children.add(InstanceManager.getDefault(ExpressionManager.class).createFemaleExpressionSocket(this, getNewSocketName()));
     }
 
     /** {@inheritDoc} */
@@ -90,6 +98,25 @@ public class ExpressionAnd extends AbstractExpression {
     @Override
     public String getLongDescription() {
         return getShortDescription();
+    }
+
+    @Override
+    public void connected(FemaleSocket socket) {
+        boolean hasFreeSocket = false;
+        for (FemaleExpressionSocket child : children) {
+            hasFreeSocket = !child.isConnected();
+            if (hasFreeSocket) {
+                break;
+            }
+        }
+        if (!hasFreeSocket) {
+            children.add(InstanceManager.getDefault(ExpressionManager.class).createFemaleExpressionSocket(this, getNewSocketName()));
+        }
+    }
+
+    @Override
+    public void disconnected(FemaleSocket socket) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

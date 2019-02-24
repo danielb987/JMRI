@@ -1,76 +1,79 @@
-package jmri.jmrit.logixng.actions.configurexml;
+package jmri.jmrit.logixng.expressions.configurexml;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.logging.Level;
 import jmri.InstanceManager;
-import jmri.NamedBeanHandle;
-import jmri.Turnout;
+import jmri.jmrit.logixng.Expression;
+import jmri.jmrit.logixng.expressions.ExpressionAnd;
+import jmri.jmrit.logixng.MaleSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.Action;
-import jmri.jmrit.logixng.FemaleActionSocket;
-import jmri.jmrit.logixng.FemaleExpressionSocket;
-import jmri.jmrit.logixng.actions.ActionIfThen;
 
 /**
  *
  */
-public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ExpressionAndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionIfThenXml() {
+    public ExpressionAndXml() {
+//        jmri.managers.configurexml.DefaultConditionalManagerXml a;
     }
-
-    private ActionIfThen.Type getType(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_type");
+/*
+    @SuppressWarnings("unchecked")  // Reflection does not support generics
+    private List<ActionMany.ActionEntry> getActionEntry(ActionMany actionMany)
+            throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        
+        Field f = actionMany.getClass().getDeclaredField("actionEntries");
         f.setAccessible(true);
-        return (ActionIfThen.Type) f.get(action);
+        return (List<ActionMany.ActionEntry>) f.get(actionMany);
     }
-
-    private FemaleExpressionSocket getIfExpressionSocket(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_ifExpressionSocket");
-        f.setAccessible(true);
-        return (FemaleExpressionSocket) f.get(action);
-    }
-
-    private FemaleActionSocket getThenActionSocket(Action action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_thenActionSocket");
-        f.setAccessible(true);
-        return (FemaleActionSocket) f.get(action);
-    }
-
+*/
     /**
-     * Default implementation for storing the contents of a SE8cSignalHead
+     * Default implementation for storing the contents of a ActionMany
      *
-     * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param o Object to store, of type ActionMany
      * @return Element containing the complete info
      */
     @Override
     public Element store(Object o) {
-        ActionIfThen p = (ActionIfThen) o;
+        ExpressionAnd p = (ExpressionAnd) o;
 
-        Element element = new Element("actionIfThen");
+        Element element = new Element("expressionAnd");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {
             element.addContent(new Element("userName").addContent(p.getUserName()));
         }
 
-        try {
-            element.setAttribute("type", getType(p).name());
-            FemaleExpressionSocket ifExpressionSocket = getIfExpressionSocket(p);
-            if (ifExpressionSocket.isConnected()) {
-                element.addContent(new Element("ifSystemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));
+        Element e = new Element("expressions");
+        for (int i=0; i < p.getChildCount(); i++) {
+            MaleSocket socket = p.getChild(i).getConnectedSocket();
+            if (socket != null) {
+                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
             }
-            FemaleActionSocket _thenActionSocket = getThenActionSocket(p);
-            if (_thenActionSocket.isConnected()) {
-                element.addContent(new Element("thenSystemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
-            }
-        } catch (Exception e) {
-            log.error("Error storing action: {}", e, e);
         }
-
+        element.addContent(e);
+/*        
+        for (int i=0; i < p.getChildCount(); i++) {
+            try {
+//                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
+                Element e = new Element("item");
+                e.addContent(new Element("index").addContent(Integer.toString(i)));
+                
+//                FemaleSocket socket = p.getChild(i);
+                MaleSocket socket = p.getChild(i).getConnectedSocket();
+                if (socket != null) {
+//                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket.getConnectedSocket());
+                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket);
+                    if (e2 != null) {
+                        e.addContent(e2);
+                    }
+                }
+                
+                element.addContent(e);
+            } catch (Exception e) {
+                log.error("Error storing action: {}", e, e);
+            }
+        }
+*/        
         storeCommon(p, element);
 
 //        element.addContent(addTurnoutElement(p.getLow(), "low"));
@@ -112,17 +115,16 @@ public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBea
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        Action h;
+        Expression h;
         if (uname == null) {
-            h = new ActionIfThen(sys, ActionIfThen.Type.TRIGGER_ACTION);
+            h = new ExpressionAnd(sys);
         } else {
-            h = new ActionIfThen(sys, uname, ActionIfThen.Type.TRIGGER_ACTION);
-//            h = new ActionIfThen(sys, low, high, uname);
+            h = new ExpressionAnd(sys, uname);
         }
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(h);
+        InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(h);
         return true;
     }
 /*
@@ -166,5 +168,5 @@ public class ActionIfThenXml extends jmri.managers.configurexml.AbstractNamedBea
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionIfThenXml.class);
+    private final static Logger log = LoggerFactory.getLogger(ExpressionAndXml.class);
 }

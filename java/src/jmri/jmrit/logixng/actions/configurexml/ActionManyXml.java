@@ -41,7 +41,7 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
     public Element store(Object o) {
         ActionMany p = (ActionMany) o;
 
-        Element element = new Element("action-many");
+        Element element = new Element("actionMany");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {
@@ -50,10 +50,13 @@ public class ActionManyXml extends jmri.managers.configurexml.AbstractNamedBeanM
 
         Element e = new Element("actions");
         for (int i=0; i < p.getChildCount(); i++) {
+            Element e2 = new Element("socket");
+            e2.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
             MaleSocket socket = p.getChild(i).getConnectedSocket();
             if (socket != null) {
-                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
+                e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
             }
+            e.addContent(e2);
         }
         element.addContent(e);
 /*        

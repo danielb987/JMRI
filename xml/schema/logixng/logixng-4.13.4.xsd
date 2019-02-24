@@ -26,6 +26,10 @@
             "
         >
 
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/actions/actionHoldAnything-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/actions/actionIfThen-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/actions/actionMany-4.13.4.xsd"/>
+
     <xs:complexType name="LogixNGManagerType">
       <xs:annotation>
         <xs:documentation>
@@ -73,7 +77,11 @@
         
         <!-- Permit any of these tags in any order in any number -->
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="action-many" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="actionHoldAnything"  type="LogixNG_ActionHoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="actionIfThen"        type="LogixNG_ActionIfThenType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="actionMany"          type="LogixNG_ActionManyType" minOccurs="0" maxOccurs="unbounded" />
+<!--
+            <xs:element name="actionMany" minOccurs="0" maxOccurs="unbounded">
               <xs:complexType>
                 <xs:sequence>
                   <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
@@ -93,7 +101,7 @@
               </xs:complexType>
             </xs:element>
             
-            <xs:element name="action-hold-anything" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="actionHoldAnything" minOccurs="0" maxOccurs="unbounded">
               <xs:complexType>
                 <xs:sequence>
                   <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
@@ -111,14 +119,14 @@
               </xs:complexType>
             </xs:element>
             
-            <xs:element name="action-if-then" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="actionIfThen" minOccurs="0" maxOccurs="unbounded">
               <xs:complexType>
                 <xs:sequence>
                   <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
                   <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
                   <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-                  <xs:element name="if-systemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
-                  <xs:element name="then-systemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="ifSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="thenSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
                 </xs:sequence>
                 <xs:attribute name="type" use="required">
                   <xs:simpleType>
@@ -132,6 +140,7 @@
                 <xs:attribute name="class" type="classType" use="required"/>
               </xs:complexType>
             </xs:element>
+-->
           </xs:choice>
       </xs:sequence>
       <xs:attribute name="class" type="classType" use="required"/>
@@ -149,16 +158,24 @@
       </xs:annotation>
       <xs:sequence>
         
-        <xs:element name="expression" minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="expressionAnd" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
               <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
               <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element name="logixConditional" minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="expressions" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
-                  <xs:attribute name="systemName" type="systemNameType" use="required" />
-                  <xs:attribute name="order" type="xs:nonNegativeInteger" />
+                  <xs:sequence>
+                    <xs:element name="socket" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="socketName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                          <xs:element name="systemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>

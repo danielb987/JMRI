@@ -38,7 +38,7 @@ public class ActionHoldAnythingXml extends jmri.managers.configurexml.AbstractNa
     public Element store(Object o) {
         ActionHoldAnything p = (ActionHoldAnything) o;
 
-        Element element = new Element("action-hold-anything");
+        Element element = new Element("actionHoldAnything");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {

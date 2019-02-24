@@ -37,7 +37,7 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
      */
     @Override
     public Element store(Object o) {
-        Element expressions = new Element("logixngs");
+        Element expressions = new Element("logixngExpressions");
         setStoreElementClass(expressions);
         ExpressionManager tm = (ExpressionManager) o;
         if (tm != null) {

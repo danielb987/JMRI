@@ -52,6 +52,25 @@ public abstract class AbstractExpression extends AbstractNamedBean
         _lock = lock;
     }
     
+    public String getNewSocketName() {
+        int x = 1;
+        while (x < 10000) {     // Protect from infinite loop
+            boolean validName = true;
+            for (int i=0; i < getChildCount(); i++) {
+                String name = "E" + Integer.toString(x);
+                if (name.equals(getChild(i).getName())) {
+                    validName = false;
+                    break;
+                }
+            }
+            if (validName) {
+                return "E" + Integer.toString(x);
+            }
+            x++;
+        }
+        throw new RuntimeException("Unable to find a new socket name");
+    }
+    
     /** {@inheritDoc} */
     @Override
     public String getConfiguratorClassName() {
