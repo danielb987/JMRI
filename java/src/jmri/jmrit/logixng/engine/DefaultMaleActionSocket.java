@@ -247,4 +247,14 @@ public class DefaultMaleActionSocket implements MaleActionSocket {
         return _action.getConfiguratorClassName();
     }
 
+    @Override
+    public void setDebugConfig(DebugConfig config) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public DebugConfig getDebugConfig() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

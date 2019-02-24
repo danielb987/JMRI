@@ -221,4 +221,14 @@ public class DefaultMaleExpressionSocket implements MaleExpressionSocket {
         return _expression.getConfiguratorClassName();
     }
 
+    @Override
+    public void setDebugConfig(DebugConfig config) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public DebugConfig getDebugConfig() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

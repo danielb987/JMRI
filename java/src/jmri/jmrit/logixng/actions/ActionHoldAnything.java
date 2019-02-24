@@ -192,12 +192,22 @@ public class ActionHoldAnything extends AbstractAction {
 
         @Override
         public void connected(FemaleSocket socket) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void disconnected(FemaleSocket socket) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setDebugConfig(DebugConfig config) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public DebugConfig getDebugConfig() {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
     }
