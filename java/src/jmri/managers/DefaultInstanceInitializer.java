@@ -34,7 +34,7 @@ import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
-import jmri.jmrit.logixng.engine.Default_LogixNG_Manager;
+import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
 import jmri.jmrit.logixng.engine.LogixNGPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
@@ -112,7 +112,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         }
 
         if (type == LogixNG_Manager.class) {
-            return new Default_LogixNG_Manager();
+            return new DefaultLogixNGManager();
         }
 
         if (type == LogixNGPreferences.class) {

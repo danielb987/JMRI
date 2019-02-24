@@ -20,7 +20,7 @@ import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.ExpressionManager;
-import jmri.jmrit.logixng.engine.Default_LogixNG_Manager;
+import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
@@ -796,7 +796,7 @@ public class JUnitUtil {
     }
 
     public static void initLogixNGManager() {
-        LogixNG_Manager m = new Default_LogixNG_Manager();
+        LogixNG_Manager m = new DefaultLogixNGManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.LOGIXNGS);
         }

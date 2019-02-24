@@ -1,6 +1,6 @@
 package jmri.jmrit.logixng.engine.configurexml;
 
-import jmri.jmrit.logixng.engine.configurexml.Default_LogixNG_ManagerXml;
+import jmri.jmrit.logixng.engine.configurexml.DefaultLogixNGManagerXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,7 +15,7 @@ public class DefaultLogixNGManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new Default_LogixNG_ManagerXml();
+        new DefaultLogixNGManagerXml();
     }
 
     // The minimal setup for log4J

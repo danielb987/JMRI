@@ -35,7 +35,7 @@ import jmri.jmrit.logixng.LogixNG_Manager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class Default_LogixNG_Manager extends AbstractManager<LogixNG>
+public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         implements LogixNG_Manager {
 
     DecimalFormat paddedNumber = new DecimalFormat("0000");
@@ -44,7 +44,7 @@ public class Default_LogixNG_Manager extends AbstractManager<LogixNG>
     List<FemaleSocketFactory> _femaleSocketFactories = new ArrayList<>();
     
     
-    public Default_LogixNG_Manager() {
+    public DefaultLogixNGManager() {
         super();
         
         // The LogixNGPreferences class may load plugins so we must ensure
@@ -242,10 +242,10 @@ public class Default_LogixNG_Manager extends AbstractManager<LogixNG>
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    static Default_LogixNG_Manager _instance = null;
+    static DefaultLogixNGManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
-    static public Default_LogixNG_Manager instance() {
+    static public DefaultLogixNGManager instance() {
         if (log.isDebugEnabled()) {
             if (!ThreadingUtil.isGUIThread()) {
                 Log4JUtil.warnOnce(log, "instance() called on wrong thread");
@@ -253,12 +253,12 @@ public class Default_LogixNG_Manager extends AbstractManager<LogixNG>
         }
         
         if (_instance == null) {
-            _instance = new Default_LogixNG_Manager();
+            _instance = new DefaultLogixNGManager();
         }
         return (_instance);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(Default_LogixNG_Manager.class);
+    private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManager.class);
 
     @Override
     public void registerFemaleSocketFactory(FemaleSocketFactory factory) {

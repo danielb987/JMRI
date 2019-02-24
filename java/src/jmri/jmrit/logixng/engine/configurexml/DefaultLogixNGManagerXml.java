@@ -3,7 +3,7 @@ package jmri.jmrit.logixng.engine.configurexml;
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.engine.Default_LogixNG_Manager;
+import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,9 @@ import jmri.jmrit.logixng.LogixNG_Manager;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class Default_LogixNG_ManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public Default_LogixNG_ManagerXml() {
+    public DefaultLogixNGManagerXml() {
     }
 
     /**
@@ -172,7 +172,7 @@ public class Default_LogixNG_ManagerXml extends jmri.managers.configurexml.Abstr
      */
     protected void replaceLogixNGManager() {
         if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
-                .equals(Default_LogixNG_Manager.class.getName())) {
+                .equals(DefaultLogixNGManager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
@@ -185,7 +185,7 @@ public class Default_LogixNG_ManagerXml extends jmri.managers.configurexml.Abstr
         }
 
         // register new one with InstanceManager
-        Default_LogixNG_Manager pManager = Default_LogixNG_Manager.instance();
+        DefaultLogixNGManager pManager = DefaultLogixNGManager.instance();
         InstanceManager.store(pManager, LogixNG_Manager.class);
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
@@ -199,5 +199,5 @@ public class Default_LogixNG_ManagerXml extends jmri.managers.configurexml.Abstr
         return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getXMLOrder();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(Default_LogixNG_ManagerXml.class);
+    private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManagerXml.class);
 }

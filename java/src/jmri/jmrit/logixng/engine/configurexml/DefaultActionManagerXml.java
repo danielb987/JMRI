@@ -55,29 +55,6 @@ public class DefaultActionManagerXml extends jmri.managers.configurexml.Abstract
                 } catch (Exception e) {
                     log.error("Error storing action: {}", e, e);
                 }
-/*                
-                boolean enabled = action.getEnabled();
-                Element elem = new Element("logixng");  // NOI18N
-                elem.addContent(new Element("systemName").addContent(action.getSystemName()));  // NOI18N
-
-                // As a work-around for backward compatibility, store systemName and username as attribute.
-                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-                String uName = action.getUserName();
-                if (uName != null && !uName.isEmpty()) {
-                    elem.setAttribute("userName", uName);  // NOI18N
-                }
-
-                // store common part
-                storeCommon(action, elem);
-
-                if (enabled) {
-                    elem.setAttribute("enabled", "yes");  // NOI18N
-                } else {
-                    elem.setAttribute("enabled", "no");  // NOI18N
-                }
-                
-                newLogixs.addContent(elem);
-*/                
             }
         }
         return (actions);

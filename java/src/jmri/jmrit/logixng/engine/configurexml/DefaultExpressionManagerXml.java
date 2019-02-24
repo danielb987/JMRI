@@ -1,14 +1,15 @@
 package jmri.jmrit.logixng.engine.configurexml;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Expression;
 import jmri.jmrit.logixng.ExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.Expression;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
@@ -22,6 +23,12 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
     public DefaultExpressionManagerXml() {
     }
 
+    private Expression getExpression(Expression expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field f = expression.getClass().getDeclaredField("_expression");
+        f.setAccessible(true);
+        return (Expression) f.get(expression);
+    }
+    
     /**
      * Default implementation for storing the contents of a LogixManager
      *
@@ -34,64 +41,17 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
         setStoreElementClass(expressions);
         ExpressionManager tm = (ExpressionManager) o;
         if (tm != null) {
-            for (Expression e : tm.getNamedBeanSet()) {
-                
-            }
-//            java.util.Iterator<String> iter
-//                    = tm.getSystemNameList().iterator();
-//
-//            // don't return an element if there are not Logix to include
-//            if (!iter.hasNext()) {
-//                return null;
-//            }
-
-            // store the Logix
-//            while (iter.hasNext()) {
-/*            for (Expression e : tm.getNamedBeanSet()) {
-//                String sname = iter.next();
-//                if (sname == null) {
-//                    log.error("System name null during store");  // NOI18N
-//                }
-//                Expression x = tm.getBySystemName(sname);
-
-                log.debug("logix system name is " + e.getSystemName());  // NOI18N
-                boolean enabled = e.getEnabled();
-                Element elem = new Element("expression");  // NOI18N
-                elem.addContent(new Element("systemName").addContent(e.getSystemName()));  // NOI18N
-
-                // As a work-around for backward compatibility, store systemName and username as attribute.
-                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-                String uName = e.getUserName();
-                if (uName != null && !uName.isEmpty()) {
-                    elem.setAttribute("userName", uName);  // NOI18N
-                }
-
-                // store common part
-                storeCommon(e, elem);
-
-                if (enabled) {
-                    elem.setAttribute("enabled", "yes");  // NOI18N
-                } else {
-                    elem.setAttribute("enabled", "no");  // NOI18N
-                }
-/*                
-                // save child Conditionals
-                int numConditionals = x.getNumConditionals();
-                if (numConditionals > 0) {
-                    String cSysName = "";
-                    Element cElem = null;
-                    for (int k = 0; k < numConditionals; k++) {
-                        cSysName = x.getConditionalByNumberOrder(k);
-                        cElem = new Element("expressionConditional");  // NOI18N
-                        cElem.setAttribute("systemName", cSysName);  // NOI18N
-                        cElem.setAttribute("order", Integer.toString(k));  // NOI18N
-                        elem.addContent(cElem);
+            for (Expression expression : tm.getNamedBeanSet()) {
+                log.debug("expression system name is " + expression.getSystemName());  // NOI18N
+                try {
+                    Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getExpression(expression));
+                    if (e != null) {
+                        expressions.addContent(e);
                     }
+                } catch (Exception e) {
+                    log.error("Error storing action: {}", e, e);
                 }
-                
-//                expressions.addContent(elem);
             }
-*/
         }
         return (expressions);
     }
