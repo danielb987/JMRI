@@ -17,9 +17,9 @@ import jmri.jmrit.logixng.LogixNG_Manager;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class Default_LogixNG_ManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public DefaultLogixNGManagerXml() {
+    public Default_LogixNG_ManagerXml() {
     }
 
     /**
@@ -199,5 +199,5 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         return InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getXMLOrder();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManagerXml.class);
+    private final static Logger log = LoggerFactory.getLogger(Default_LogixNG_ManagerXml.class);
 }

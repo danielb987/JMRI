@@ -2,9 +2,13 @@ package jmri.jmrit.logixng.expressions;
 
 import java.util.List;
 import java.util.ArrayList;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.Expression;
+import jmri.jmrit.logixng.ExpressionManager;
+import jmri.jmrit.logixng.FemaleExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.LogixNG;
 
 /**
  * Evaluates to True if all the child expressions evaluate to true.
@@ -13,7 +17,15 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class ExpressionAnd extends AbstractExpression {
 
-    List<Expression> children = new ArrayList<>();
+    List<FemaleExpressionSocket> children = new ArrayList<>();
+    
+    /**
+     * Create a new instance of ActionIfThen and generate a new system name.
+     * @param newLogix the LogixNG that this action is related to
+     */
+    public ExpressionAnd(LogixNG newLogix) {
+        super(InstanceManager.getDefault(ExpressionManager.class).getNewSystemName(newLogix));
+    }
     
     public ExpressionAnd(String sys) throws BadUserNameException,
             BadSystemNameException {
@@ -59,12 +71,12 @@ public class ExpressionAnd extends AbstractExpression {
     
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return children.get(index);
     }
     
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return children.size();
     }
     
     @Override

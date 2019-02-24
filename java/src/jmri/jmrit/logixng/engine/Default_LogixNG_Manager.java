@@ -21,6 +21,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.actions.ActionHoldAnything;
 import jmri.jmrit.logixng.actions.ActionIfThen;
 import jmri.jmrit.logixng.actions.ActionMany;
+import jmri.jmrit.logixng.expressions.ExpressionAnd;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -162,7 +163,27 @@ public class Default_LogixNG_Manager extends AbstractManager<LogixNG>
                             .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
             femaleSocket = actionManySocket.getChild(1);
             femaleSocket.connect(actionIfThenSocket);
+
+            /* FOR TESTING ONLY */
+            /* FOR TESTING ONLY */
+            /* FOR TESTING ONLY */
+            /* FOR TESTING ONLY */
+            MaleExpressionSocket expressionAndSocket =
+                    InstanceManager.getDefault(ExpressionManager.class)
+                            .register(new ExpressionAnd(newLogix));
+            femaleSocket = actionIfThenSocket.getChild(0);
+            femaleSocket.connect(expressionAndSocket);
             
+            MaleActionSocket actionIfThenSocket2 =
+                    InstanceManager.getDefault(ActionManager.class)
+                            .register(new ActionIfThen(newLogix, ActionIfThen.Type.CONTINOUS_ACTION));
+            femaleSocket = actionIfThenSocket.getChild(1);
+            femaleSocket.connect(actionIfThenSocket2);
+            /* FOR TESTING ONLY */
+            /* FOR TESTING ONLY */
+            /* FOR TESTING ONLY */
+            /* FOR TESTING ONLY */
+
         } catch (SocketAlreadyConnectedException e) {
             // This should never be able to happen.
             throw new RuntimeException(e);
