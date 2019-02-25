@@ -497,12 +497,17 @@ public final class LogixNGEditor extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
                 case ACTION_COMMAND_ADD:
+                    AddMaleSocketDialog addDialog =
+                            new AddMaleSocketDialog(_currentFemaleSocket);
+                    addDialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
+//                    dialog.init(_x, _y);
+//                    dialog.setVisible(true);
                     break;
                     
                 case ACTION_COMMAND_EDIT:
-                    EditMaleSocketDialog dialog =
+                    EditMaleSocketDialog editDialog =
                             new EditMaleSocketDialog(_currentFemaleSocket);
-                    dialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
+                    editDialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
 //                    dialog.init(_x, _y);
 //                    dialog.setVisible(true);
                     break;

@@ -1,6 +1,10 @@
 package jmri.jmrit.logixng.tools.swing;
 
+import java.awt.Component;
+import javax.swing.BoxLayout;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import jmri.jmrit.logixng.FemaleSocket;
 
 /**
@@ -16,9 +20,28 @@ public class AddMaleSocketDialog extends JDialog {
         _femaleSocket = femaleSocket;
     }
     
-    public final void init() {
+    public final void init(int x, int y, Component c) {
         setTitle(Bundle.getMessage("AddMaleSocketDialogTitle", _femaleSocket.getLongDescription()));
         setModal(true);
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel();
+//        panel.add(new JLabel(Bundle.getMessage("InitExMessageListHeader")));
+        panel.add(new JLabel("InitExMessageListHeader"));
+        contentPanel.add(panel);
+        
+        
+        
+        
+        setContentPane(contentPanel);
+        pack();
+        System.out.format("Component: %s%n", c.getClass().getName());
+//        System.out.format("%d, %d%n", c.getLocationOnScreen().x, c.getLocationOnScreen().y);
+        this.setLocationRelativeTo(c);
+//        this.setLocation(x, y);
+//        // Center dialog on screen
+//        setLocationRelativeTo(null);
+        setVisible(true);
     }
     
 }
