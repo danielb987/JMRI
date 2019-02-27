@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import jmri.jmrit.logixng.AnalogAction;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * Every Action has an DefaultMaleActionSocket as its parent.
@@ -22,6 +23,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
 
     private final AnalogAction _action;
     private Lock _lock = Lock.NONE;
+    private DebugConfig _debugConfig = null;
     
     
     public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
@@ -214,14 +216,33 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         return _action.getConfiguratorClassName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        _debugConfig = config;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DebugConfig getDebugConfig() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new AnalogActionDebugConfig();
+    }
+
+
+
+    public class AnalogActionDebugConfig implements MaleSocket.DebugConfig {
+        
+        // If true, the socket is not executing the action.
+        // It's useful if you want to test the LogixNG without affecting the
+        // layout (turnouts, sensors, and so on).
+        public boolean dontExecute = false;
+        
     }
 
 }

@@ -12,6 +12,7 @@ import jmri.NamedBean;
 import jmri.jmrit.logixng.AnalogExpression;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * Every Expression has an DefaultMaleExpressionSocket as its parent.
@@ -22,6 +23,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     private final AnalogExpression _expression;
     private Lock _lock = Lock.NONE;
+    private DebugConfig _debugConfig = null;
 
 
     public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
@@ -213,14 +215,33 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         return _expression.getConfiguratorClassName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        _debugConfig = config;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DebugConfig getDebugConfig() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new AnalogActionDebugConfig();
+    }
+
+
+
+    public class AnalogActionDebugConfig implements MaleSocket.DebugConfig {
+        
+        // If true, the socket is not executing the action.
+        // It's useful if you want to test the LogixNG without affecting the
+        // layout (turnouts, sensors, and so on).
+        public boolean dontExecute = false;
+        
     }
 
 }

@@ -12,6 +12,7 @@ import jmri.NamedBean;
 import jmri.jmrit.logixng.Expression;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * Every Expression has an DefaultMaleExpressionSocket as its parent.
@@ -23,6 +24,7 @@ public class DefaultMaleExpressionSocket implements MaleExpressionSocket {
     private final Expression _expression;
     private boolean lastEvaluationResult = false;
     private Lock _lock = Lock.NONE;
+    private DebugConfig _debugConfig = null;
 
 
     public DefaultMaleExpressionSocket(@Nonnull Expression expression) {
@@ -221,14 +223,35 @@ public class DefaultMaleExpressionSocket implements MaleExpressionSocket {
         return _expression.getConfiguratorClassName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        _debugConfig = config;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DebugConfig getDebugConfig() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new ExpressionDebugConfig();
+    }
+
+
+
+    public class ExpressionDebugConfig implements MaleSocket.DebugConfig {
+        
+        // If true, the socket is returning the value of "result" instead of
+        // executing the expression.
+        public boolean forceResult = false;
+        
+        // The result if the result is forced.
+        public boolean result = false;
+        
     }
 
 }

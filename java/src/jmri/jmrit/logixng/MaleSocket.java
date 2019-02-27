@@ -20,14 +20,27 @@ public interface MaleSocket extends Base {
     public void setDebugConfig(DebugConfig config);
 
     /**
-     * Set the debug configuration for this male socket.
+     * Get the debug configuration for this male socket.
      * 
-     * @return the new configuration or null if debugging is turned off for this male socket
+     * @return the configuration or null if debugging is turned off for this male socket
      */
     public DebugConfig getDebugConfig();
 
     /**
+     * Create a debug configuration for this male socket.
+     * 
+     * @return the new configuration
+     */
+    public DebugConfig createDebugConfig();
+
+    /**
      * Debug configuration for this male socket.
+     * <P>
+     * In some cases, it may be desirable to be able to execute the LogixNG
+     * without fully working agains the layout. For example, when developing
+     * a LogixNG for a club layout, it may be desirable to be able to run the
+     * LogixNG without affecting turnouts on the layout while testing the
+     * LogixNG.
      */
     public interface DebugConfig {
     }

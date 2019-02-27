@@ -131,6 +131,7 @@ public class ActionHoldAnything extends AbstractAction {
         private final FemaleSocketFactory _femaleSocketFactory;
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
         private Lock _lock = Lock.NONE;
+        private DebugConfig _debugConfig = null;
         
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
@@ -200,14 +201,28 @@ public class ActionHoldAnything extends AbstractAction {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        /** {@inheritDoc} */
         @Override
         public void setDebugConfig(DebugConfig config) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            _debugConfig = config;
         }
 
+        /** {@inheritDoc} */
         @Override
         public DebugConfig getDebugConfig() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return _debugConfig;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public DebugConfig createDebugConfig() {
+            return new ActionDebugConfig();
+        }
+
+
+
+        public class ActionDebugConfig implements MaleSocket.DebugConfig {
+
         }
 
     }
