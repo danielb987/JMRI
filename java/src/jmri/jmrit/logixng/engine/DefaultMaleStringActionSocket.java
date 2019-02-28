@@ -1,51 +1,51 @@
 package jmri.jmrit.logixng.engine;
 
-import jmri.jmrit.logixng.Category;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
-import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.Category;
+import javax.annotation.Nonnull;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
+import jmri.jmrit.logixng.MaleStringActionSocket;
+import jmri.jmrit.logixng.StringAction;
 
 /**
- * Every AnalogExpression has an DefaultMaleAnalogExpressionSocket as its parent.
+ * Every StringAction has an DefaultMaleStringActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSocket {
+public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
 
-    private final AnalogExpression _expression;
+    private final StringAction _stringAction;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
-
-
-    public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
-        _expression = expression;
+    
+    
+    public DefaultMaleStringActionSocket(@Nonnull StringAction stringAction) {
+        _stringAction = stringAction;
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {
         return _lock;
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public void setLock(Lock lock) {
         _lock = lock;
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return _expression.getCategory();
+        return _stringAction.getCategory();
     }
 
     /** {@inheritDoc} */
@@ -56,163 +56,167 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     
     /** {@inheritDoc} */
     @Override
-    public float evaluate() {
-        return _expression.evaluate();
-    }
-
-    @Override
-    public int getState() {
-        return NamedBean.UNKNOWN;
-    }
-
-    @Override
-    public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return _expression.getChild(index);
-    }
-
-    @Override
-    public int getChildCount() {
-        return _expression.getChildCount();
+    /**
+     * Set a string value.
+     */
+    public void setValue(String value) {
+        _stringAction.setValue(value);
     }
 
     @Override
     public String getShortDescription() {
-        return _expression.getShortDescription();
+        return _stringAction.getShortDescription();
     }
 
     @Override
     public String getLongDescription() {
-        return _expression.getLongDescription();
+        return _stringAction.getLongDescription();
+    }
+
+    @Override
+    public FemaleSocket getChild(int index)
+            throws IllegalArgumentException, UnsupportedOperationException {
+        return _stringAction.getChild(index);
+    }
+
+    @Override
+    public int getChildCount() {
+        return _stringAction.getChildCount();
     }
 
     @Override
     public String getUserName() {
-        return _expression.getUserName();
+        return _stringAction.getUserName();
     }
 
     @Override
     public void setUserName(String s) throws BadUserNameException {
-        _expression.setUserName(s);
+        _stringAction.setUserName(s);
     }
 
     @Override
     public String getSystemName() {
-        return _expression.getSystemName();
+        return _stringAction.getSystemName();
     }
 
     @Override
     public String getDisplayName() {
-        return _expression.getDisplayName();
+        return _stringAction.getDisplayName();
     }
 
     @Override
     public String getFullyFormattedDisplayName() {
-        return _expression.getFullyFormattedDisplayName();
+        return _stringAction.getFullyFormattedDisplayName();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        _expression.addPropertyChangeListener(l, name, listenerRef);
+        _stringAction.addPropertyChangeListener(l, name, listenerRef);
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        _expression.addPropertyChangeListener(l);
+        _stringAction.addPropertyChangeListener(l);
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
-        _expression.removePropertyChangeListener(l);
+        _stringAction.removePropertyChangeListener(l);
     }
 
     @Override
     public void updateListenerRef(PropertyChangeListener l, String newName) {
-        _expression.updateListenerRef(l, newName);
+        _stringAction.updateListenerRef(l, newName);
     }
 
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        _expression.vetoableChange(evt);
+        _stringAction.vetoableChange(evt);
     }
 
     @Override
     public String getListenerRef(PropertyChangeListener l) {
-        return _expression.getListenerRef(l);
+        return _stringAction.getListenerRef(l);
     }
 
     @Override
     public ArrayList<String> getListenerRefs() {
-        return _expression.getListenerRefs();
+        return _stringAction.getListenerRefs();
     }
 
     @Override
     public int getNumPropertyChangeListeners() {
-        return _expression.getNumPropertyChangeListeners();
+        return _stringAction.getNumPropertyChangeListeners();
     }
 
     @Override
     public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        return _expression.getPropertyChangeListenersByReference(name);
+        return _stringAction.getPropertyChangeListenersByReference(name);
     }
 
     @Override
     public void dispose() {
-        _expression.dispose();
+        _stringAction.dispose();
     }
 
     @Override
     public void setState(int s) throws JmriException {
-        // Do nothing
+        _stringAction.setState(s);
+    }
+
+    @Override
+    public int getState() {
+        return _stringAction.getState();
     }
 
     @Override
     public String describeState(int state) {
-        return Bundle.getMessage("BeanStateUnknown");
+        return _stringAction.describeState(state);
     }
 
     @Override
     public String getComment() {
-        return _expression.getComment();
+        return _stringAction.getComment();
     }
 
     @Override
     public void setComment(String comment) {
-        _expression.setComment(comment);
+        _stringAction.setComment(comment);
     }
 
     @Override
     public void setProperty(String key, Object value) {
-        _expression.setProperty(key, value);
+        _stringAction.setProperty(key, value);
     }
 
     @Override
     public Object getProperty(String key) {
-        return _expression.getProperty(key);
+        return _stringAction.getProperty(key);
     }
 
     @Override
     public void removeProperty(String key) {
-        _expression.removeProperty(key);
+        _stringAction.removeProperty(key);
     }
 
     @Override
     public Set<String> getPropertyKeys() {
-        return _expression.getPropertyKeys();
+        return _stringAction.getPropertyKeys();
     }
 
     @Override
     public String getBeanType() {
-        return _expression.getBeanType();
+        return _stringAction.getBeanType();
     }
 
     @Override
     public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        return _expression.compareSystemNameSuffix(suffix1, suffix2, n2);
+        return _stringAction.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
     @Override
     public String getConfiguratorClassName() {
-        return _expression.getConfiguratorClassName();
+        return _stringAction.getConfiguratorClassName();
     }
 
     /** {@inheritDoc} */
@@ -230,12 +234,12 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     /** {@inheritDoc} */
     @Override
     public DebugConfig createDebugConfig() {
-        return new AnalogExpressionDebugConfig();
+        return new StringActionDebugConfig();
     }
 
 
 
-    public class AnalogExpressionDebugConfig implements MaleSocket.DebugConfig {
+    public class StringActionDebugConfig implements MaleSocket.DebugConfig {
         
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the

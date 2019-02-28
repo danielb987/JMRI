@@ -5,27 +5,26 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.analogexpressions.AnalogExpressionAnalogIO;
-import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.StringAction;
+import jmri.jmrit.logixng.stringactions.StringActionSetStringIO;
 
 /**
  * Test ExpressionTimer
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DefaultMaleAnalogExpressionSocketTest {
+public class DefaultMaleStringActionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogExpression expression = new AnalogExpressionAnalogIO("IQA55:E321");
-        new DefaultMaleAnalogExpressionSocket(expression);
+        StringAction action = new StringActionSetStringIO("IQA55:A321");
+        new DefaultMaleStringActionSocket(action);
     }
     
     // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
-        JUnitUtil.resetProfileManager();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();

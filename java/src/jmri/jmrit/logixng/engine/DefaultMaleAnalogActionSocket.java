@@ -15,7 +15,7 @@ import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 
 /**
- * Every Action has an DefaultMaleActionSocket as its parent.
+ * Every AnalogAction has an DefaultMaleAnalogActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */

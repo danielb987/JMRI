@@ -1,13 +1,12 @@
 package jmri.jmrit.logixng.engine;
 
-import jmri.jmrit.logixng.engine.DefaultMaleAnalogActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.analogactions.AnalogActionSetAnalogIO;
 import jmri.jmrit.logixng.AnalogAction;
+import jmri.jmrit.logixng.analogactions.AnalogActionSetAnalogIO;
 
 /**
  * Test ExpressionTimer
