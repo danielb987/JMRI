@@ -75,9 +75,9 @@ public class StringExpressionStringIO extends AbstractStringExpression {
     @Override
     public String getShortDescription() {
         if (_stringIO != null) {
-            return Bundle.getMessage("AnalogExpressionAnalogIO", _stringIO.getDisplayName());
+            return Bundle.getMessage("StringExpressionStringIO", _stringIO.getDisplayName());
         } else {
-            return Bundle.getMessage("AnalogExpressionAnalogIO", "none");
+            return Bundle.getMessage("StringExpressionStringIO", "none");
         }
     }
 

@@ -20,11 +20,15 @@ import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.ExpressionManager;
+import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
+import jmri.jmrit.logixng.engine.DefaultStringExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultStringActionManager;
 import jmri.jmrix.internal.InternalReporterManager;
 import jmri.jmrix.internal.InternalSensorManager;
 import jmri.managers.AbstractSignalHeadManager;
@@ -827,6 +831,20 @@ public class JUnitUtil {
         AnalogActionManager m = new DefaultAnalogActionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGACTIONS);
+        }
+    }
+
+    public static void initStringExpressionManager() {
+        StringExpressionManager m = new DefaultStringExpressionManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRINGEXPRESSIONS);
+        }
+    }
+
+    public static void initStringActionManager() {
+        StringActionManager m = new DefaultStringActionManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRINGACTIONS);
         }
     }
 

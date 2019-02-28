@@ -8,17 +8,17 @@ import jmri.Manager;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSocket> {
+public interface StringExpressionManager extends Manager<MaleStringExpressionSocket> {
 
     /**
      * Remember a NamedBean Object created outside the manager.
-     * This method creates a MaleAnalogExpressionSocket for the action.
+     * This method creates a MaleStringExpressionSocket for the action.
      *
      * @param expression the bean
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleAnalogExpressionSocket register(@Nonnull AnalogExpression expression)
+    public MaleStringExpressionSocket register(@Nonnull StringExpression expression)
             throws IllegalArgumentException;
     
     /**
@@ -29,12 +29,12 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
      */
     public String getNewSystemName(LogixNG newLogix);
 
-    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
+    public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
             FemaleSocketListener listener, String socketName);
 
-    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
+    public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
             FemaleSocketListener listener, String socketName,
-            MaleAnalogExpressionSocket maleSocket);
+            MaleStringExpressionSocket maleSocket);
 
     /*.*
      * Add an Expression.

@@ -1,5 +1,6 @@
-package jmri.jmrit.logixng.actions;
+package jmri.jmrit.logixng.stringexpressions;
 
+import jmri.jmrit.logixng.StringExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -7,15 +8,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionMany
+ * Test ExpressionAnd
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionDoAnalogActionTest {
+public class StringExpressionStringIOTest {
 
     @Test
     public void testCtor() {
-        new ActionDoAnalogAction("IQA55:A321");
+        new StringExpressionStringIO("IQA55:E321");
+    }
+    
+    @Test
+    public void testShortDescription() {
+        StringExpression stringExpression = new StringExpressionStringIO("IQA55:E321");
+        Assert.assertTrue("String matches", "Read string none".equals(stringExpression.getShortDescription()));
     }
     
     // The minimal setup for log4J
@@ -25,11 +32,6 @@ public class ActionDoAnalogActionTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixNGManager();
-        JUnitUtil.initExpressionManager();
-        JUnitUtil.initActionManager();
-        JUnitUtil.initAnalogExpressionManager();
-        JUnitUtil.initAnalogActionManager();
     }
 
     @After

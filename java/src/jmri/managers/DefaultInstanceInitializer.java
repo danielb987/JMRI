@@ -30,11 +30,15 @@ import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.ExpressionManager;
+import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
+import jmri.jmrit.logixng.engine.DefaultStringActionManager;
+import jmri.jmrit.logixng.engine.DefaultStringExpressionManager;
 import jmri.jmrit.logixng.engine.LogixNGPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
@@ -159,6 +163,14 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultSignalSystemManager();
         }
 
+        if (type == StringActionManager.class) {
+            return new DefaultStringActionManager();
+        }
+
+        if (type == StringExpressionManager.class) {
+            return new DefaultStringExpressionManager();
+        }
+
         if (type == Timebase.class) {
             Timebase timebase = new jmri.jmrit.simpleclock.SimpleTimebase();
             if (InstanceManager.getNullableDefault(jmri.ConfigureManager.class) != null) {
@@ -185,7 +197,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     @Override
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
-        set.addAll(Arrays.asList(ActionManager.class,
+        set.addAll(Arrays.asList(
+                ActionManager.class,
                 AnalogActionManager.class,
                 AnalogExpressionManager.class,
                 AudioManager.class,
@@ -208,6 +221,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 SignalMastLogicManager.class,
                 SignalMastManager.class,
                 SignalSystemManager.class,
+                StringActionManager.class,
+                StringExpressionManager.class,
                 Timebase.class,
                 TurnoutManager.class,
                 VSDecoderManager.class

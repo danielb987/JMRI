@@ -1,5 +1,6 @@
-package jmri.jmrit.logixng.actions;
+package jmri.jmrit.logixng.stringactions;
 
+import jmri.jmrit.logixng.StringAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -11,11 +12,17 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionDoAnalogActionTest {
+public class StringActionSetStringIOTest {
 
     @Test
     public void testCtor() {
-        new ActionDoAnalogAction("IQA55:A321");
+        new StringActionSetStringIO("IQA55:A321");
+    }
+    
+    @Test
+    public void testShortDescription() {
+        StringAction stringAction = new StringActionSetStringIO("IQA55:A321");
+        Assert.assertTrue("String matches", "Set string none".equals(stringAction.getShortDescription()));
     }
     
     // The minimal setup for log4J
@@ -25,11 +32,6 @@ public class ActionDoAnalogActionTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixNGManager();
-        JUnitUtil.initExpressionManager();
-        JUnitUtil.initActionManager();
-        JUnitUtil.initAnalogExpressionManager();
-        JUnitUtil.initAnalogActionManager();
     }
 
     @After

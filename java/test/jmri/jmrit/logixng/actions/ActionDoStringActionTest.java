@@ -11,11 +11,11 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionDoAnalogActionTest {
+public class ActionDoStringActionTest {
 
     @Test
     public void testCtor() {
-        new ActionDoAnalogAction("IQA55:A321");
+        new ActionDoStringAction("IQA55:A321");
     }
     
     // The minimal setup for log4J
@@ -28,8 +28,8 @@ public class ActionDoAnalogActionTest {
         JUnitUtil.initLogixNGManager();
         JUnitUtil.initExpressionManager();
         JUnitUtil.initActionManager();
-        JUnitUtil.initAnalogExpressionManager();
-        JUnitUtil.initAnalogActionManager();
+        JUnitUtil.initStringExpressionManager();
+        JUnitUtil.initStringActionManager();
     }
 
     @After

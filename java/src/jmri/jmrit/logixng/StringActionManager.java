@@ -4,37 +4,37 @@ import javax.annotation.Nonnull;
 import jmri.Manager;
 
 /**
- * Manager for AnalogAction
+ * Manager for StringAction
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
+public interface StringActionManager extends Manager<MaleStringActionSocket> {
 
     /**
      * Remember a NamedBean Object created outside the manager.
-     * This method creates a MaleAnalogActionSocket for the action.
+     * This method creates a MaleStringActionSocket for the action.
      *
      * @param action the bean
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleAnalogActionSocket register(@Nonnull AnalogAction action)
+    public MaleStringActionSocket register(@Nonnull StringAction action)
             throws IllegalArgumentException;
     
     /**
-     * Create a new system name for an AnalogAction.
+     * Create a new system name for an StringAction.
      *
      * @param newLogix the LogixNG that this analog action belongs to
      * @return a new system name
      */
     public String getNewSystemName(LogixNG newLogix);
 
-    public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
+    public FemaleStringActionSocket createFemaleStringActionSocket(
             FemaleSocketListener listener, String socketName);
 
-    public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
+    public FemaleStringActionSocket createFemaleStringActionSocket(
             FemaleSocketListener listener, String socketName,
-            MaleAnalogActionSocket maleSocket);
+            MaleStringActionSocket maleSocket);
 
     /*.*
      * Add an Action.

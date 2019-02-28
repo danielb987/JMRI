@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.actions.configurexml.PackageTest.class,
     ActionDoAnalogActionTest.class,
+    ActionDoStringActionTest.class,
     ActionIfThenElseTest.class,
     ActionManyTest.class,
     ActionPluginSocketTest.class,

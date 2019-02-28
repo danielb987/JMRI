@@ -342,11 +342,13 @@ public interface Manager<E extends NamedBean> {
     public static final int LOGIXS = IDTAGS + 10;
     public static final int CONDITIONALS = LOGIXS + 10;
     public static final int LOGIXNGS = CONDITIONALS + 10;           // LogixNG
-    public static final int ANALOGEXPRESSIONS = LOGIXNGS + 10;      // LogixNG AnalogExpression
-    public static final int ANALOGACTIONS = ANALOGEXPRESSIONS + 10; // LogixNG AnalogAction
-    public static final int EXPRESSIONS = ANALOGACTIONS + 10;       // LogixNG Expression
+    public static final int EXPRESSIONS = LOGIXNGS + 10;            // LogixNG Expression
     public static final int ACTIONS = EXPRESSIONS + 10;             // LogixNG Action
-    public static final int AUDIO = ACTIONS + 10;
+    public static final int ANALOGEXPRESSIONS = ACTIONS + 10;       // LogixNG AnalogExpression
+    public static final int ANALOGACTIONS = ANALOGEXPRESSIONS + 10; // LogixNG AnalogAction
+    public static final int STRINGEXPRESSIONS = ANALOGACTIONS + 10; // LogixNG StringExpression
+    public static final int STRINGACTIONS = STRINGEXPRESSIONS + 10; // LogixNG StringAction
+    public static final int AUDIO = STRINGACTIONS + 10;
     public static final int TIMEBASE = AUDIO + 10;
     public static final int PANELFILES = TIMEBASE + 10;
     public static final int ENTRYEXIT = PANELFILES + 10;
