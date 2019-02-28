@@ -3,14 +3,14 @@ package jmri.jmrit.logixng;
 import java.util.Map;
 
 /**
- * The parent interface for plugin Action classes.
- * A plugin Action class is a class that implements the Action interface and
- * can be loaded from a JAR file.
+ * The parent interface for plugin AnalogExpression classes.
+ * A plugin AnalogExpression class is a class that implements the
+ * AnalogExpression interface and can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionPlugin extends Action {
-    
+public interface AnalogExpressionPlugin extends AnalogExpression {
+
     /**
      * Initialize the object.
      * 

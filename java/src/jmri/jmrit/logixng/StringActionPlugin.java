@@ -3,13 +3,13 @@ package jmri.jmrit.logixng;
 import java.util.Map;
 
 /**
- * The parent interface for plugin Action classes.
- * A plugin Action class is a class that implements the Action interface and
- * can be loaded from a JAR file.
+ * The parent interface for plugin StringAction classes.
+ * A plugin StringAction class is a class that implements the StringAction
+ * interface and can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface ActionPlugin extends Action {
+public interface StringActionPlugin extends StringAction {
     
     /**
      * Initialize the object.
