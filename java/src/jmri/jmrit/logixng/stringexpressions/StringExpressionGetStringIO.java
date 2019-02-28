@@ -9,21 +9,21 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class StringExpressionStringIO extends AbstractStringExpression {
+public class StringExpressionGetStringIO extends AbstractStringExpression {
 
     private StringIO _stringIO;
     
-    public StringExpressionStringIO(String sys) throws BadUserNameException,
+    public StringExpressionGetStringIO(String sys) throws BadUserNameException,
             BadSystemNameException {
         super(sys);
     }
 
-    public StringExpressionStringIO(String sys, String user) throws BadUserNameException,
+    public StringExpressionGetStringIO(String sys, String user) throws BadUserNameException,
             BadSystemNameException {
         super(sys, user);
     }
 
-    public StringExpressionStringIO(
+    public StringExpressionGetStringIO(
             String sys,
             StringIO stringIO) {
         
@@ -31,7 +31,7 @@ public class StringExpressionStringIO extends AbstractStringExpression {
         _stringIO = stringIO;
     }
     
-    public StringExpressionStringIO(
+    public StringExpressionGetStringIO(
             String sys, String user,
             StringIO stringIO) {
         

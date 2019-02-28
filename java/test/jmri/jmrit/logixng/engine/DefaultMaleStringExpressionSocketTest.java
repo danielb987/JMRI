@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.StringExpression;
-import jmri.jmrit.logixng.stringexpressions.StringExpressionStringIO;
+import jmri.jmrit.logixng.stringexpressions.StringExpressionGetStringIO;
 
 /**
  * Test ExpressionTimer
@@ -17,7 +17,7 @@ public class DefaultMaleStringExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        StringExpression expression = new StringExpressionStringIO("IQA55:E321");
+        StringExpression expression = new StringExpressionGetStringIO("IQA55:E321");
         new DefaultMaleStringExpressionSocket(expression);
     }
     

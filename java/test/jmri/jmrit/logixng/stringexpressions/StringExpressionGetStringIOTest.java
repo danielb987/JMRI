@@ -8,20 +8,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ExpressionAnd
+ * Test StringExpressionGetStringIO
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist 2019
  */
-public class StringExpressionStringIOTest {
+public class StringExpressionGetStringIOTest {
 
     @Test
     public void testCtor() {
-        new StringExpressionStringIO("IQA55:E321");
+        new StringExpressionGetStringIO("IQA55:E321");
     }
     
     @Test
     public void testShortDescription() {
-        StringExpression stringExpression = new StringExpressionStringIO("IQA55:E321");
+        StringExpression stringExpression = new StringExpressionGetStringIO("IQA55:E321");
         Assert.assertTrue("String matches", "Read string none".equals(stringExpression.getShortDescription()));
     }
     

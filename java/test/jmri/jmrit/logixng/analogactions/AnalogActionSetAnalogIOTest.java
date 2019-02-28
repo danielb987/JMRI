@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.analogactions;
 
-import jmri.jmrit.logixng.analogactions.AnalogActionSetAnalogIO;
 import jmri.jmrit.logixng.AnalogAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -9,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionMany
+ * Test AnalogActionSetAnalogIO
  * 
  * @author Daniel Bergqvist 2018
  */

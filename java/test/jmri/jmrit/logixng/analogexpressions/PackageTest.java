@@ -6,7 +6,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 //    jmri.jmrit.logixng.actions.configurexml.PackageTest.class,
-    AnalogExpressionAnalogIOTest.class,
+    AnalogExpressionGetAnalogIOTest.class,
 })
 
 /**

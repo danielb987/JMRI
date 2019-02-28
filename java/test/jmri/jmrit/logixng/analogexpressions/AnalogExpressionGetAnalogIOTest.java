@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.analogexpressions;
 
-import jmri.jmrit.logixng.analogexpressions.AnalogExpressionAnalogIO;
 import jmri.jmrit.logixng.AnalogExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -9,20 +8,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ExpressionAnd
+ * Test AnalogExpressionGetAnalogIO
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AnalogExpressionAnalogIOTest {
+public class AnalogExpressionGetAnalogIOTest {
 
     @Test
     public void testCtor() {
-        new AnalogExpressionAnalogIO("IQA55:E321");
+        new AnalogExpressionGetAnalogIO("IQA55:E321");
     }
     
     @Test
     public void testShortDescription() {
-        AnalogExpression analogExpression = new AnalogExpressionAnalogIO("IQA55:E321");
+        AnalogExpression analogExpression = new AnalogExpressionGetAnalogIO("IQA55:E321");
         Assert.assertTrue("String matches", "Read analog none".equals(analogExpression.getShortDescription()));
     }
     

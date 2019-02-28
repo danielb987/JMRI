@@ -43,7 +43,7 @@
 		to control signals, crossing gates, and other types of
 		automation on the layout.</p>
 
-		<p>The main building blocks in LogixNG is Expressions and
+		<p>The most common building blocks in LogixNG is Expressions and
 		Actions. Expressions ask a question while Actions do somethings.
 		It can be described as:</p>
 
@@ -55,11 +55,18 @@
 		"Is turnout LT20 thrown?" If it is, the answer is True,
 		else it's False. Some expressions depends on other expressions.
 		Like the "And" expression, which is True if all of its expressions
-		are True. There is a timer expression which becomes true when
+		are True. There is also a timer expression which becomes true when
 		a certain time has passed.</p>
 
-		<p>Actions do something. It can set a turnout or a signal. Some
+		<p>Actions do something. They can set a turnout or a signal. Some
 		actions activates other actions, which in turn do something.</p>
+
+		<p>There are also AnalogExpressions, AnalogActions, StringExpressions
+		and StringActions. AnalogExpressions returns an decimal number,
+		for example the voltage to the track. StringExpressions returns a
+		String. An AnalogAction sets a decimal value, for example the desired
+		voltage to the track. A StringAction sets a string, for example a
+		message to be sent to throttles that support text messages.
 
 		<h3>Expressions</h3>
 
@@ -104,7 +111,31 @@
 
 		<p><strong>Many</strong> - This action activates many other actions.</p>
 
+		<p><strong>DoAnalogAction</strong> - This action has an AnalogExpression
+		and an AnalogAction. It asks the AnalogExpression about the value and then
+		sets that value to the AnalogAction.</p>
+
+		<p><strong>DoStringAction</strong> - This action has an StringExpression
+		and an StringAction. It asks the StringExpression about the value and then
+		sets that value to the StringAction.</p>
+
 		<p><strong>Turnout</strong> - Set the state of a turnout.</p>
+
+		<h3>AnalogExpressions</h3>
+
+		<p><strong>GetAnalogIO</strong> - Gets the value of an AnalogIO.</p>
+
+		<h3>AnalogActions</h3>
+
+		<p><strong>SetAnalogIO</strong> - Sets the value of an AnalogIO.</p>
+
+		<h3>StringExpressions</h3>
+
+		<p><strong>GetStringIO</strong> - Gets the value of a StringIO.</p>
+
+		<h3>StringActions</h3>
+
+		<p><strong>SetStringIO</strong> - Sets the value of a StringIO.</p>
 
         <h2>How to setup LogixNGs</h2>
 

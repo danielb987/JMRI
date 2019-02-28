@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionMany
+ * Test ActionDoStringAction
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist 2019
  */
 public class ActionDoStringActionTest {
 

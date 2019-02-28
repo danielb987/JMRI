@@ -9,21 +9,21 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogExpressionAnalogIO extends AbstractAnalogExpression {
+public class AnalogExpressionGetAnalogIO extends AbstractAnalogExpression {
 
     private AnalogIO _analogIO;
     
-    public AnalogExpressionAnalogIO(String sys) throws BadUserNameException,
+    public AnalogExpressionGetAnalogIO(String sys) throws BadUserNameException,
             BadSystemNameException {
         super(sys);
     }
 
-    public AnalogExpressionAnalogIO(String sys, String user) throws BadUserNameException,
+    public AnalogExpressionGetAnalogIO(String sys, String user) throws BadUserNameException,
             BadSystemNameException {
         super(sys, user);
     }
 
-    public AnalogExpressionAnalogIO(
+    public AnalogExpressionGetAnalogIO(
             String sys,
             AnalogIO analogIO) {
         
@@ -31,7 +31,7 @@ public class AnalogExpressionAnalogIO extends AbstractAnalogExpression {
         _analogIO = analogIO;
     }
     
-    public AnalogExpressionAnalogIO(
+    public AnalogExpressionGetAnalogIO(
             String sys, String user,
             AnalogIO analogIO) {
         
