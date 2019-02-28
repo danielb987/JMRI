@@ -574,6 +574,10 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         }
     }
 
+    /**
+     * Open Preferences action.
+     * Often done due to error
+     */
     public void doPreferences() {
         if (prefsAction == null) prefsAction = new TabbedPreferencesAction();
         prefsAction.actionPerformed(null);
