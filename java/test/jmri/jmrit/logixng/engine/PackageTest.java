@@ -11,6 +11,8 @@ import org.junit.runners.Suite;
     DefaultMaleAnalogActionSocketTest.class,
     DefaultMaleAnalogExpressionSocketTest.class,
     DefaultMaleExpressionSocketTest.class,
+    DefaultMaleStringActionSocketTest.class,
+    DefaultMaleStringExpressionSocketTest.class,
     ExpressionPluginAdapterTest.class,
 })
 
