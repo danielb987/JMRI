@@ -32,6 +32,8 @@
 
         <h1>LogixNG - Plugins for LogixNG</h1>
 
+		<p style="color:yellow;background-color:red">LogixNG has gone thru big changes and the code for plugins is not up to date.</p>
+
         <h2>Plugins for LogixNG</h2>
 
 		<p>JMRI supports extending JMRI in several ways by adding a jar file with classes to the
