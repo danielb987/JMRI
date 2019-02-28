@@ -34,7 +34,7 @@
 
         <p>This page is the user manual for LogixNG. For the technical
 		aspects and how to extend LogixNG with new features, see the
-		<a href="../doc/Technical/LogixNG.shtml">Technical documentation</a>
+		<a href="../doc/Technical/logixng/LogixNG.shtml">Technical documentation</a>
 		of LogixNG.</p>
 
         <p>LogixNG provide a powerful capability for JMRI to monitor

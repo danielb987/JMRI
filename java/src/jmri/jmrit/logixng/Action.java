@@ -17,7 +17,7 @@ public interface Action extends NamedBean, Base {
     public boolean executeStart();
     
     /**
-     * Continue execution of this Action.
+     * Continue execution of this Action if it last time returned true.
      * This method is called if Type == TRIGGER_ACTION, the previous call to
      * one of the execute???() methods returned True and the expression is
      * still True.

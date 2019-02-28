@@ -139,7 +139,14 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
         return _lastActionResult;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Continue execution of this Action.
+     * This method is called if Type == TRIGGER_ACTION, the previous call to
+     * one of the execute???() methods returned True and the expression is
+     * still True.
+     * 
+     * @return true if this action is not finished.
+     */
     @Override
     public boolean executeContinue() {
         switch (_type) {
@@ -164,7 +171,15 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
         return _lastActionResult;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Restart the execute of this Action.
+     * This method is called if Type == TRIGGER_ACTION and the expression has
+     * become False and then True again.
+     * 
+     * If a parent action is restarted, it must restart all its children.
+     * 
+     * @return true if this action is not finished.
+     */
     @Override
     public boolean executeRestart() {
         switch (_type) {
