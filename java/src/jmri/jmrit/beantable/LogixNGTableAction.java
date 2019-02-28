@@ -263,8 +263,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             }
 
             /**
-             * Replace delete button with comboBox to edit/delete/copy/select
- LogixNG.
+             * Replace delete button with comboBox to edit/delete/copy/select LogixNG.
              *
              * @param table name of the LogixNG JTable holding the column
              */
