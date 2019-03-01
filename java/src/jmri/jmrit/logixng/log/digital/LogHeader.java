@@ -38,7 +38,6 @@ public class LogHeader {
     
     /**
      * Set the encoding of this log.
-     * @param encoding the encoding
      */
     public void setEncoding(Encodings encoding) {
         _encoding = encoding;
@@ -46,7 +45,6 @@ public class LogHeader {
     
     /**
      * Get the encoding of this log.
-     * @return the encoding
      */
     public Encodings getEncoding() {
         return _encoding;
@@ -62,7 +60,6 @@ public class LogHeader {
     
     /**
      * Get the name of this log.
-     * @return the name
      */
     public String getName() {
         return _name;
@@ -112,8 +109,8 @@ public class LogHeader {
      * Read the header of this log from an InputStream.
      * @param input the input stream to read from
      * @throws IOException if an I/O error occurs
-     * @throws jmri.jmrit.logixng.log.Log.InvalidFormatException invalid format of the header
-     * @throws jmri.jmrit.logixng.log.Log.UnsupportedVersionException invalid version of the file
+     * @throws Log.InvalidFormatException invalid format of the header
+     * @throws Log.UnsupportedVersionException invalid version of the file
      */
     public void readHeader(InputStream input) throws IOException,
             InvalidFormatException, UnsupportedVersionException {

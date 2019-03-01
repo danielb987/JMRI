@@ -26,8 +26,8 @@ public class LogReader {
      * @throws java.lang.InstantiationException if an instance of the decoder class cannot be instansiated
      * @throws java.lang.IllegalAccessException if an instance of the decoder class cannot be instansiated
      * @throws java.lang.reflect.InvocationTargetException if a method on the instance of the decoder class cannot be called
-     * @throws jmri.jmrit.logixng.log.Log.InvalidFormatException invalid format of the header
-     * @throws jmri.jmrit.logixng.log.Log.UnsupportedVersionException invalid version of the file
+     * @throws Log.InvalidFormatException invalid format of the header
+     * @throws Log.UnsupportedVersionException invalid version of the file
      */
     public LogReader(Log log, InputStream input) throws IOException,
             NoSuchMethodException, InstantiationException, IllegalAccessException,
@@ -55,7 +55,7 @@ public class LogReader {
      * Try to read one more row of data. Returns null if end of data.
      * @return a row of data or null if end of data
      * @throws java.io.IOException if an I/O error occurs
-     * @throws jmri.jmrit.logixng.log.Log.InvalidFormatException
+     * @throws Log.InvalidFormatException
      */
     public LogRow read() throws IOException, Log.InvalidFormatException {
         return decoder.read();

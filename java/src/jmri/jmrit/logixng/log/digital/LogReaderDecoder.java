@@ -29,7 +29,7 @@ public interface LogReaderDecoder {
      * Try to read one more row of data. Returns null if end of data.
      * @return a row of data or null if end of data
      * @throws java.io.IOException if an I/O error occurs
-     * @throws jmri.jmrit.logixng.log.Log.InvalidFormatException if the log has invalid format
+     * @throws InvalidFormatException if the log has invalid format
      */
     public LogRow read() throws IOException, InvalidFormatException;
     

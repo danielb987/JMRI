@@ -11,15 +11,14 @@ public interface LogixNG extends NamedBean {
 
     /**
      * Get the female socket of this LogixNG.
-     * @return 
      */
     public FemaleSocket getFemaleSocket();
     
     /**
      * Execute the LogixNG.
      * Most of the LogixNG's has a ActionDoIf as its action and it's that
- action that evaluates the expression and decides if it should execute
- its action.
+     * action that evaluates the expression and decides if it should execute
+     * its action.
      */
     public void execute();
     

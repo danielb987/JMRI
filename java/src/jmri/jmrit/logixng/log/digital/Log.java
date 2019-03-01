@@ -12,7 +12,7 @@ public interface Log {
     /**
      * The log has an invalid format.
      */
-    public class InvalidFormatException extends Exception {
+    public static class InvalidFormatException extends Exception {
         public InvalidFormatException(String message) {
             super(message);
         }
@@ -21,7 +21,7 @@ public interface Log {
     /**
      * The version in the log file is not supported.
      */
-    public class UnsupportedVersionException extends Exception {
+    public static class UnsupportedVersionException extends Exception {
         public UnsupportedVersionException(String message) {
             super(message);
         }
