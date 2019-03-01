@@ -12,7 +12,7 @@ import org.junit.runners.Suite;
     ResetOnTrueTest.class,
     TimerTest.class,
     TriggerOnceTest.class,
-    TurnoutTest.class,
+    ExpressionTurnoutTest.class,
 })
 
 /**
