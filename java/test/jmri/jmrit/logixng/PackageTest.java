@@ -10,7 +10,7 @@ import org.junit.runners.Suite;
     jmri.jmrit.logixng.engine.PackageTest.class,
     jmri.jmrit.logixng.digitalactions.PackageTest.class,
     jmri.jmrit.logixng.digitalexpressions.PackageTest.class,
-    jmri.jmrit.logixng.log.PackageTest.class,
+    jmri.jmrit.logixng.log.digital.PackageTest.class,
     jmri.jmrit.logixng.stringactions.PackageTest.class,
     jmri.jmrit.logixng.stringexpressions.PackageTest.class,
     jmri.jmrit.logixng.tools.swing.PackageTest.class,
