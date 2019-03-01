@@ -1,8 +1,8 @@
-package jmri.jmrit.logixng.log;
+package jmri.jmrit.logixng.log.digital;
 
 import java.io.IOException;
 import java.io.InputStream;
-import jmri.jmrit.logixng.log.Log.InvalidFormatException;
+import jmri.jmrit.logixng.log.digital.Log.InvalidFormatException;
 
 /**
  * This decoder reads a log where each status bit is a '0' or '1' character.

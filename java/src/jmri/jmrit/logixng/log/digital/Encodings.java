@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.log;
+package jmri.jmrit.logixng.log.digital;
 
 /**
  * The encodings that are supported in the LogixNG log.

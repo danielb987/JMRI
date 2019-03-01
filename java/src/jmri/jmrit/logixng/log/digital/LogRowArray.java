@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.log;
+package jmri.jmrit.logixng.log.digital;
 
 /**
  * One row of log data stored in an array.

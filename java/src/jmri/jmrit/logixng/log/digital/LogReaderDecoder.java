@@ -1,8 +1,8 @@
-package jmri.jmrit.logixng.log;
+package jmri.jmrit.logixng.log.digital;
 
 import java.io.IOException;
 import java.io.InputStream;
-import jmri.jmrit.logixng.log.Log.InvalidFormatException;
+import jmri.jmrit.logixng.log.digital.Log.InvalidFormatException;
 
 /**
  * Reads the data part of the log from a stream and decodes it.

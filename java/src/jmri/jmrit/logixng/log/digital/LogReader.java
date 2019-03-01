@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.log;
+package jmri.jmrit.logixng.log.digital;
 
 import java.io.InputStream;
 import java.io.IOException;
