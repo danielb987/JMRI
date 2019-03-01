@@ -8,20 +8,16 @@ import jmri.InvokeOnGuiThread;
 import jmri.jmrit.logixng.Action;
 import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.Expression;
-import jmri.jmrit.logixng.ExpressionManager;
 import jmri.jmrit.logixng.FemaleActionSocket;
-import jmri.jmrit.logixng.FemaleExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleActionSocket;
-import jmri.jmrit.logixng.MaleExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.actions.ActionHoldAnything;
 import jmri.jmrit.logixng.actions.ActionIfThen;
 import jmri.jmrit.logixng.actions.ActionMany;
-import jmri.jmrit.logixng.expressions.ExpressionAnd;
+import jmri.jmrit.logixng.digitalexpressions.And;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -29,6 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 
 /**
  * Class providing the basic logic of the LogixNG_Manager interface.
@@ -168,9 +168,9 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
-            MaleExpressionSocket expressionAndSocket =
-                    InstanceManager.getDefault(ExpressionManager.class)
-                            .register(new ExpressionAnd(newLogix));
+            MaleDigitalExpressionSocket expressionAndSocket =
+                    InstanceManager.getDefault(DigitalExpressionManager.class)
+                            .register(new And(newLogix));
             femaleSocket = actionIfThenSocket.getChild(0);
             femaleSocket.connect(expressionAndSocket);
             
@@ -215,7 +215,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
 //    }
 
 //    @Override
-//    public MaleExpressionSocket createMaleExpressionSocket(Expression expression) {
+//    public MaleDigitalExpressionSocket createMaleExpressionSocket(DigitalExpression expression) {
 //        return new DefaultMaleExpressionSocket(expression);
 //    }
 

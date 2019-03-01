@@ -39,16 +39,16 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Action;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.Expression;
 import jmri.jmrit.logixng.MaleActionSocket;
-import jmri.jmrit.logixng.MaleExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.actions.ActionIfThen;
 import jmri.jmrit.logixng.actions.ActionTurnout;
-import jmri.jmrit.logixng.expressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 
 /**
  * Editor of LogixNG
@@ -137,9 +137,9 @@ public final class LogixNGEditor extends JmriJFrame {
         String systemName;
         LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).getNewSystemName(newLogix);
-        Expression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-        MaleExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(expression);
-//        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, Expression 26"));  // NOI18N
+        DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
+        MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(expression);
+//        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
         Action actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleActionSocket actionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(actionTurnout);

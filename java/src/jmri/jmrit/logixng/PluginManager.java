@@ -92,20 +92,20 @@ public class PluginManager {
 //                    System.out.format("%s extends %s%n", cls.getName(), cls.getSuperclass());
 //                    System.out.format("AA: %b%n", cls.isAssignableFrom(Action.class));
 //                    System.out.format("BB: %b%n", Action.class.isAssignableFrom(cls));
-//                    System.out.format("EE: %b%n", Expression.class.isAssignableFrom(cls));
+//                    System.out.format("EE: %b%n", DigitalExpression.class.isAssignableFrom(cls));
 //                    System.out.format("CCC: %b%n", cls.newInstance() instanceof Action);
                     
 //                    for (Class<?> temp : cls.getInterfaces()) {
 //                        System.out.format("%s implements %s%n", cls.getName(), temp.getName());
 //                    }
 
-//                    if (cls.newInstance() instanceof Expression) {
-//                        System.out.format("AAA: Class %s is an Expression%n", cls.getName());
-//                    } else if (cls.isInstance(Expression.class)) {
-//                    if (cls.isInstance(Expression.class)) {
+//                    if (cls.newInstance() instanceof DigitalExpression) {
+//                        System.out.format("AAA: Class %s is an DigitalExpression%n", cls.getName());
+//                    } else if (cls.isInstance(DigitalExpression.class)) {
+//                    if (cls.isInstance(DigitalExpression.class)) {
 //                    ClassType type = ClassType.OTHER;
                     ClassType type;
-                    if (ExpressionPlugin.class.isAssignableFrom(cls)) {
+                    if (DigitalExpressionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression%n", cls.getName());
                         type = ClassType.EXPRESSION;
 //                    } else if (cls.isInstance(Action.class)) {
@@ -115,7 +115,7 @@ public class PluginManager {
                     } else if (jmri.jmrit.logixng.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is a plugin configurator%n", cls.getName());
                         type = ClassType.CONFIGURATOR;
-                    } else if (Expression.class.isAssignableFrom(cls)) {
+                    } else if (DigitalExpression.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
                         type = ClassType.EXPRESSION_NOT_PLUGIN;
 //                    } else if (cls.isInstance(Action.class)) {

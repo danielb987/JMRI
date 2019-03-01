@@ -3,14 +3,14 @@ package jmri.jmrit.logixng.actions;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ActionManager;
-import jmri.jmrit.logixng.ExpressionManager;
 import jmri.jmrit.logixng.FemaleActionSocket;
-import jmri.jmrit.logixng.FemaleExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleActionSocket;
-import jmri.jmrit.logixng.MaleExpressionSocket;
 import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 
 /**
  * Executes an action when the expression is True.
@@ -50,7 +50,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     private Type _type;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
-    private final FemaleExpressionSocket _ifExpressionSocket;
+    private final FemaleDigitalExpressionSocket _ifExpressionSocket;
     private final FemaleActionSocket _thenActionSocket;
     
     /**
@@ -60,7 +60,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     public ActionIfThen(LogixNG newLogix, Type type) {
         super(InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix));
         _type = type;
-        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+        _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E");
         _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, "A");
@@ -69,7 +69,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     public ActionIfThen(String sys, Type type) {
         super(sys);
         _type = type;
-        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+        _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E");
         _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, "A");
@@ -78,7 +78,7 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
     public ActionIfThen(String sys, String user, Type type) {
         super(sys, user);
         _type = type;
-        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+        _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, "E");
         _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, "A");
@@ -88,12 +88,12 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
             String sys, Type type,
             String ifExpressionSocketName,
             String thenActionSocketName,
-            MaleExpressionSocket ifExpression,
+            MaleDigitalExpressionSocket ifExpression,
             MaleActionSocket thenAction) {
         
         super(sys);
         _type = type;
-        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+        _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, ifExpressionSocketName, ifExpression);
         _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, thenActionSocketName, thenAction);
@@ -103,12 +103,12 @@ public class ActionIfThen extends AbstractAction implements FemaleSocketListener
             String sys, String user, Type type,
             String ifExpressionSocketName,
             String thenActionSocketName,
-            MaleExpressionSocket ifExpression,
+            MaleDigitalExpressionSocket ifExpression,
             MaleActionSocket thenAction) {
         
         super(sys, user);
         _type = type;
-        _ifExpressionSocket = InstanceManager.getDefault(ExpressionManager.class)
+        _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, ifExpressionSocketName, ifExpression);
         _thenActionSocket = InstanceManager.getDefault(ActionManager.class)
                 .createFemaleActionSocket(this, thenActionSocketName, thenAction);

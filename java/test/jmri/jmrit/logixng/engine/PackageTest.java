@@ -6,14 +6,15 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.engine.configurexml.PackageTest.class,
-    DefaultLogixNGTest.class,
+    DefaultFemaleDigitalExpressionSocketTest.class,
     DefaultMaleActionSocketTest.class,
     DefaultMaleAnalogActionSocketTest.class,
     DefaultMaleAnalogExpressionSocketTest.class,
-    DefaultMaleExpressionSocketTest.class,
+    DefaultMaleDigitalExpressionSocketTest.class,
     DefaultMaleStringActionSocketTest.class,
     DefaultMaleStringExpressionSocketTest.class,
-    ExpressionPluginAdapterTest.class,
+    DigitalExpressionPluginAdapterTest.class,
+    DefaultLogixNGTest.class,
 })
 
 /**

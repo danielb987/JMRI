@@ -29,13 +29,12 @@ import jmri.jmrit.audio.DefaultAudioManager;
 import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
-import jmri.jmrit.logixng.ExpressionManager;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
-import jmri.jmrit.logixng.engine.DefaultExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultDigitalExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
 import jmri.jmrit.logixng.engine.DefaultStringActionManager;
 import jmri.jmrit.logixng.engine.DefaultStringExpressionManager;
@@ -43,6 +42,7 @@ import jmri.jmrit.logixng.engine.LogixNGPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 
 /**
  * Provide the usual default implementations for the
@@ -99,8 +99,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultConditionalManager();
         }
 
-        if (type == ExpressionManager.class) {
-            return new DefaultExpressionManager();
+        if (type == DigitalExpressionManager.class) {
+            return new DefaultDigitalExpressionManager();
         }
 
         if (type == LightManager.class) {
@@ -197,15 +197,14 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     @Override
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
-        set.addAll(Arrays.asList(
-                ActionManager.class,
+        set.addAll(Arrays.asList(ActionManager.class,
                 AnalogActionManager.class,
                 AnalogExpressionManager.class,
                 AudioManager.class,
                 BlockManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
-                ExpressionManager.class,
+                DigitalExpressionManager.class,
                 IdTagManager.class,
                 LightManager.class,
                 LogixManager.class,

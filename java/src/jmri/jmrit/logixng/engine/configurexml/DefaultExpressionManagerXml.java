@@ -4,12 +4,12 @@ import java.lang.reflect.Field;
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Expression;
-import jmri.jmrit.logixng.ExpressionManager;
-import jmri.jmrit.logixng.engine.DefaultExpressionManager;
+import jmri.jmrit.logixng.engine.DefaultDigitalExpressionManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
@@ -23,10 +23,10 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
     public DefaultExpressionManagerXml() {
     }
 
-    private Expression getExpression(Expression expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private DigitalExpression getExpression(DigitalExpression expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = expression.getClass().getDeclaredField("_expression");
         f.setAccessible(true);
-        return (Expression) f.get(expression);
+        return (DigitalExpression) f.get(expression);
     }
     
     /**
@@ -39,9 +39,9 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
     public Element store(Object o) {
         Element expressions = new Element("logixngExpressions");
         setStoreElementClass(expressions);
-        ExpressionManager tm = (ExpressionManager) o;
+        DigitalExpressionManager tm = (DigitalExpressionManager) o;
         if (tm != null) {
-            for (Expression expression : tm.getNamedBeanSet()) {
+            for (DigitalExpression expression : tm.getNamedBeanSet()) {
                 log.debug("expression system name is " + expression.getSystemName());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getExpression(expression));
@@ -73,8 +73,8 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
     }
 
     /**
-     * Create a ExpressionManager object of the correct class, then register and
-     * fill it.
+     * Create a DigitalExpressionManager object of the correct class, then register and
+ fill it.
      *
      * @param sharedExpression  Shared top level Element to unpack.
      * @param perNodeExpression Per-node top level Element to unpack.
@@ -102,7 +102,7 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
         if (log.isDebugEnabled()) {
             log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
         }
-        ExpressionManager tm = InstanceManager.getDefault(jmri.ExpressionManager.class);
+        DigitalExpressionManager tm = InstanceManager.getDefault(jmri.DigitalExpressionManager.class);
 
         for (int i = 0; i < expressionList.size(); i++) {
 
@@ -123,7 +123,7 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            Expression x = tm.createNewExpression(sysName, userName);
+            DigitalExpression x = tm.createNewExpression(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, expressionList.get(i));
@@ -168,7 +168,7 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
      */
     protected void replaceExpressionManager() {
         if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
-                .equals(DefaultExpressionManager.class.getName())) {
+                .equals(DefaultDigitalExpressionManager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
@@ -181,8 +181,8 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
         }
 
         // register new one with InstanceManager
-        DefaultExpressionManager pManager = DefaultExpressionManager.instance();
-        InstanceManager.store(pManager, ExpressionManager.class);
+        DefaultDigitalExpressionManager pManager = DefaultDigitalExpressionManager.instance();
+        InstanceManager.store(pManager, DigitalExpressionManager.class);
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
@@ -192,7 +192,7 @@ public class DefaultExpressionManagerXml extends jmri.managers.configurexml.Abst
 
     @Override
     public int loadOrder() {
-        return InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).getXMLOrder();
+        return InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getXMLOrder();
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultExpressionManagerXml.class);
