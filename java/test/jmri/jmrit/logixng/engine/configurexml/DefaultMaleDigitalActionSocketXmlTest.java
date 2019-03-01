@@ -10,11 +10,11 @@ import org.junit.Test;
  *
  * @author Daniel Bergqvist Copyright (C) 2018
  */
-public class DefaultDigitalExpressionManagerXmlTest {
+public class DefaultMaleDigitalActionSocketXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultDigitalExpressionManagerXml();
+        new DefaultMaleDigitalActionSocketXml();
     }
 
     // The minimal setup for log4J
@@ -28,6 +28,6 @@ public class DefaultDigitalExpressionManagerXmlTest {
         JUnitUtil.tearDown();
     }
 
-    // private final static Logger log = LoggerFactory.getLogger(DefaultDigitalExpressionManagerXmlTest.class);
+    // private final static Logger log = LoggerFactory.getLogger(DefaultActionManagerXmlTest.class);
 
 }

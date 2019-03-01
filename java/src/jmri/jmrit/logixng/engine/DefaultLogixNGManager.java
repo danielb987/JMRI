@@ -5,18 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
-import jmri.jmrit.logixng.Action;
-import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.FemaleActionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.MaleActionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.actions.ActionHoldAnything;
-import jmri.jmrit.logixng.actions.ActionIfThen;
-import jmri.jmrit.logixng.actions.ActionMany;
+import jmri.jmrit.logixng.digitalactions.HoldAnything;
+import jmri.jmrit.logixng.digitalactions.IfThen;
+import jmri.jmrit.logixng.digitalactions.Many;
 import jmri.jmrit.logixng.digitalexpressions.And;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
@@ -29,6 +25,10 @@ import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.FemaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleDigitalActionSocket;
 
 /**
  * Class providing the basic logic of the LogixNG_Manager interface.
@@ -146,21 +146,21 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     @Override
     public void setupInitialLogixNGTree(LogixNG newLogix) {
         try {
-            MaleActionSocket actionManySocket =
-                    InstanceManager.getDefault(ActionManager.class).register(new ActionMany(newLogix));
+            MaleDigitalActionSocket actionManySocket =
+                    InstanceManager.getDefault(DigitalActionManager.class).register(new Many(newLogix));
             FemaleSocket femaleSocket = newLogix.getFemaleSocket();
             femaleSocket.connect(actionManySocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
-            MaleActionSocket actionHoldAnythingSocket =
-                    InstanceManager.getDefault(ActionManager.class).register(new ActionHoldAnything(newLogix));
+            MaleDigitalActionSocket actionHoldAnythingSocket =
+                    InstanceManager.getDefault(DigitalActionManager.class).register(new HoldAnything(newLogix));
             femaleSocket = actionManySocket.getChild(0);
             femaleSocket.connect(actionHoldAnythingSocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
-            MaleActionSocket actionIfThenSocket =
-                    InstanceManager.getDefault(ActionManager.class)
-                            .register(new ActionIfThen(newLogix, ActionIfThen.Type.TRIGGER_ACTION));
+            MaleDigitalActionSocket actionIfThenSocket =
+                    InstanceManager.getDefault(DigitalActionManager.class)
+                            .register(new IfThen(newLogix, IfThen.Type.TRIGGER_ACTION));
             femaleSocket = actionManySocket.getChild(1);
             femaleSocket.connect(actionIfThenSocket);
 
@@ -174,9 +174,9 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             femaleSocket = actionIfThenSocket.getChild(0);
             femaleSocket.connect(expressionAndSocket);
             
-            MaleActionSocket actionIfThenSocket2 =
-                    InstanceManager.getDefault(ActionManager.class)
-                            .register(new ActionIfThen(newLogix, ActionIfThen.Type.CONTINOUS_ACTION));
+            MaleDigitalActionSocket actionIfThenSocket2 =
+                    InstanceManager.getDefault(DigitalActionManager.class)
+                            .register(new IfThen(newLogix, IfThen.Type.CONTINOUS_ACTION));
             femaleSocket = actionIfThenSocket.getChild(1);
             femaleSocket.connect(actionIfThenSocket2);
             /* FOR TESTING ONLY */
@@ -210,7 +210,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     }
 
 //    @Override
-//    public MaleActionSocket createMaleActionSocket(Action action) {
+//    public MaleDigitalActionSocket createMaleActionSocket(DigitalAction action) {
 //        return new DefaultMaleActionSocket(action);
 //    }
 

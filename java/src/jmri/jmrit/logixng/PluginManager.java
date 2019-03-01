@@ -90,10 +90,10 @@ public class PluginManager {
                     Class cls = cl.loadClass(className);
                     
 //                    System.out.format("%s extends %s%n", cls.getName(), cls.getSuperclass());
-//                    System.out.format("AA: %b%n", cls.isAssignableFrom(Action.class));
-//                    System.out.format("BB: %b%n", Action.class.isAssignableFrom(cls));
+//                    System.out.format("AA: %b%n", cls.isAssignableFrom(DigitalAction.class));
+//                    System.out.format("BB: %b%n", DigitalAction.class.isAssignableFrom(cls));
 //                    System.out.format("EE: %b%n", DigitalExpression.class.isAssignableFrom(cls));
-//                    System.out.format("CCC: %b%n", cls.newInstance() instanceof Action);
+//                    System.out.format("CCC: %b%n", cls.newInstance() instanceof DigitalAction);
                     
 //                    for (Class<?> temp : cls.getInterfaces()) {
 //                        System.out.format("%s implements %s%n", cls.getName(), temp.getName());
@@ -108,8 +108,8 @@ public class PluginManager {
                     if (DigitalExpressionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression%n", cls.getName());
                         type = ClassType.EXPRESSION;
-//                    } else if (cls.isInstance(Action.class)) {
-                    } else if (ActionPlugin.class.isAssignableFrom(cls)) {
+//                    } else if (cls.isInstance(DigitalAction.class)) {
+                    } else if (DigitalActionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
                     } else if (jmri.jmrit.logixng.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
@@ -118,8 +118,8 @@ public class PluginManager {
                     } else if (DigitalExpression.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
                         type = ClassType.EXPRESSION_NOT_PLUGIN;
-//                    } else if (cls.isInstance(Action.class)) {
-                    } else if (Action.class.isAssignableFrom(cls)) {
+//                    } else if (cls.isInstance(DigitalAction.class)) {
+                    } else if (DigitalAction.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action but not a plugin%n", cls.getName());
                         type = ClassType.ACTION_NOT_PLUGIN;
                     } else {

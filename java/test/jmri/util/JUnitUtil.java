@@ -16,14 +16,13 @@ import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.WarrantManager;
-import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultLogixNGManager;
 import jmri.jmrit.logixng.engine.DefaultDigitalExpressionManager;
-import jmri.jmrit.logixng.engine.DefaultActionManager;
+import jmri.jmrit.logixng.engine.DefaultDigitalActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.engine.DefaultStringExpressionManager;
@@ -63,6 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.DigitalActionManager;
 
 /**
  * Common utility methods for working with JUnit.
@@ -806,20 +806,6 @@ public class JUnitUtil {
         }
     }
 
-    public static void initExpressionManager() {
-        DigitalExpressionManager m = new DefaultDigitalExpressionManager();
-        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
-        }
-    }
-
-    public static void initActionManager() {
-        ActionManager m = new DefaultActionManager();
-        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
-        }
-    }
-
     public static void initAnalogExpressionManager() {
         AnalogExpressionManager m = new DefaultAnalogExpressionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
@@ -831,6 +817,20 @@ public class JUnitUtil {
         AnalogActionManager m = new DefaultAnalogActionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGACTIONS);
+        }
+    }
+
+    public static void initDigitalExpressionManager() {
+        DigitalExpressionManager m = new DefaultDigitalExpressionManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
+        }
+    }
+
+    public static void initDigitalActionManager() {
+        DigitalActionManager m = new DefaultDigitalActionManager();
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
         }
     }
 

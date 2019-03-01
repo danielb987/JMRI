@@ -19,12 +19,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.actions.ActionTurnout;
+import jmri.jmrit.logixng.digitalactions.Turnout;
 import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
-import jmri.jmrit.logixng.Action;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalAction;
 
 /**
  *
@@ -123,7 +123,7 @@ public class TimeDiagram extends JmriJFrame {
                 System.out.format("AAA: Class %s is an Expression%n", cls.getName());
             } else if (cls.isInstance(DigitalExpression.class)) {
                 System.out.format("Class %s is an Expression%n", cls.getName());
-            } else if (cls.isInstance(Action.class)) {
+            } else if (cls.isInstance(DigitalAction.class)) {
                 System.out.format("Class %s is an Action%n", cls.getName());
             } else {
                 System.out.format("Class %s is an unknown class%n", cls.getName());
@@ -170,9 +170,9 @@ public class TimeDiagram extends JmriJFrame {
             DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
             InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
 //            InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-            systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
-            Action action = new ActionTurnout(systemName, "An action for test");  // NOI18N
-            InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(action);
+            systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(newLogix);
+            DigitalAction action = new Turnout(systemName, "An action for test");  // NOI18N
+            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(action);
 /*            
             if (f == null || !f.isVisible()) {
                 f = new OptionFrame();

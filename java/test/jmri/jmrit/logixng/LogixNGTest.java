@@ -1,10 +1,9 @@
 package jmri.jmrit.logixng;
 
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.Action;
 import jmri.jmrit.logixng.engine.DefaultLogixNG;
-import jmri.jmrit.logixng.actions.ActionIfThen;
-import jmri.jmrit.logixng.actions.ActionTurnout;
+import jmri.jmrit.logixng.digitalactions.IfThen;
+import jmri.jmrit.logixng.digitalactions.Turnout;
 import jmri.jmrit.logixng.digitalexpressions.And;
 import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
 import jmri.util.JUnitUtil;
@@ -16,6 +15,7 @@ import org.junit.Test;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalAction;
 
 /**
  * Test LogixNG
@@ -32,9 +32,9 @@ public class LogixNGTest {
         DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
-        Action action = new ActionTurnout(systemName, "An action for test");  // NOI18N
-        InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(action);
+        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(newLogix);
+        DigitalAction action = new Turnout(systemName, "An action for test");  // NOI18N
+        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(action);
     }
     
     @Test
@@ -45,7 +45,7 @@ public class LogixNGTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "LogixNG".equals(new DefaultLogixNG("IQA55", null).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Action".equals(new ActionIfThen("IQA55:A321", null, ActionIfThen.Type.TRIGGER_ACTION).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Action".equals(new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION).getBeanType()));
         Assert.assertTrue("bean type is correct", "Expression".equals(new And("IQA55:E321", null).getBeanType()));
     }
     
@@ -57,8 +57,8 @@ public class LogixNGTest {
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initLogixNGManager();
-        JUnitUtil.initExpressionManager();
-        JUnitUtil.initActionManager();
+        JUnitUtil.initDigitalExpressionManager();
+        JUnitUtil.initDigitalActionManager();
     }
 
     @After

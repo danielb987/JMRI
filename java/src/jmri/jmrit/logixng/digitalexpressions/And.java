@@ -89,10 +89,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("ExpressionAnd");
-//        return Bundle.getMessage("And",
-//                _holdExpressionSocket.getName(),
-//                _triggerExpressionSocket.getName());
+        return Bundle.getMessage("And");
     }
     
     @Override

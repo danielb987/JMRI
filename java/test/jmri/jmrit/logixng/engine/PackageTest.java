@@ -7,7 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.engine.configurexml.PackageTest.class,
     DefaultFemaleDigitalExpressionSocketTest.class,
-    DefaultMaleActionSocketTest.class,
+    DefaultMaleDigitalActionSocketTest.class,
     DefaultMaleAnalogActionSocketTest.class,
     DefaultMaleAnalogExpressionSocketTest.class,
     DefaultMaleDigitalExpressionSocketTest.class,

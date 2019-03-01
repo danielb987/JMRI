@@ -11,7 +11,7 @@ import java.util.Set;
 public interface LogixNGPluginFactory {
 
     /**
-     * Get a set of classes that implements the ActionPlugin interface.
+     * Get a set of classes that implements the DigitalActionPlugin interface.
      * 
      * @return a set of entries with category and class
      */
@@ -19,11 +19,11 @@ public interface LogixNGPluginFactory {
         getExpressionClasses();
     
     /**
-     * Get a set of classes that implements the ActionPlugin interface.
+     * Get a set of classes that implements the DigitalActionPlugin interface.
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends ActionPlugin>>>
+    public Set<Map.Entry<Category, Class<? extends DigitalActionPlugin>>>
         getActionClasses();
     
 }

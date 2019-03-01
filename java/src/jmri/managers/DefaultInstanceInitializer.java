@@ -26,12 +26,11 @@ import jmri.TurnoutManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
-import jmri.jmrit.logixng.ActionManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
-import jmri.jmrit.logixng.engine.DefaultActionManager;
+import jmri.jmrit.logixng.engine.DefaultDigitalActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.engine.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.engine.DefaultDigitalExpressionManager;
@@ -43,6 +42,7 @@ import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.DigitalActionManager;
 
 /**
  * Provide the usual default implementations for the
@@ -75,8 +75,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         // the manager also needs to be added to the method getInitalizes()
         // below.
         
-        if (type == ActionManager.class) {
-            return new DefaultActionManager();
+        if (type == DigitalActionManager.class) {
+            return new DefaultDigitalActionManager();
         }
 
         if (type == AnalogActionManager.class) {
@@ -197,7 +197,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     @Override
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
-        set.addAll(Arrays.asList(ActionManager.class,
+        set.addAll(Arrays.asList(DigitalActionManager.class,
                 AnalogActionManager.class,
                 AnalogExpressionManager.class,
                 AudioManager.class,

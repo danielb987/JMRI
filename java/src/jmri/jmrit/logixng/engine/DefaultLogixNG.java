@@ -6,16 +6,16 @@ import java.util.SortedSet;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
-import jmri.jmrit.logixng.Action;
-import jmri.jmrit.logixng.ActionManager;
-import jmri.jmrit.logixng.FemaleActionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.MaleActionSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.FemaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleDigitalActionSocket;
 
 /**
  * The default implementation of LogixNG.
@@ -25,18 +25,18 @@ import jmri.jmrit.logixng.LogixNG_Manager;
 public final class DefaultLogixNG extends AbstractNamedBean
         implements LogixNG, FemaleSocketListener {
     
-//    private Action _action;
-    private final FemaleActionSocket _femaleActionSocket;
+//    private DigitalAction _action;
+    private final FemaleDigitalActionSocket _femaleActionSocket;
     private boolean _enabled = false;
     
     public DefaultLogixNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(ActionManager.class).createFemaleActionSocket(this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, "");
     }
 
-    public DefaultLogixNG(String sys, String user, MaleActionSocket action) throws BadUserNameException, BadSystemNameException  {
+    public DefaultLogixNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(ActionManager.class).createFemaleActionSocket(this, "", action);
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, "", action);
     }
     
     /** {@inheritDoc} */

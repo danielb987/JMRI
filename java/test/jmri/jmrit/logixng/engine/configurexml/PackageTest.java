@@ -5,10 +5,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    DefaultActionManagerXmlTest.class,
+    DefaultDigitalActionManagerXmlTest.class,
     DefaultDigitalExpressionManagerXmlTest.class,
     DefaultLogixNGManagerXmlTest.class,
-    DefaultMaleActionSocketXmlTest.class,
+    DefaultMaleDigitalActionSocketXmlTest.class,
 })
 
 /**
