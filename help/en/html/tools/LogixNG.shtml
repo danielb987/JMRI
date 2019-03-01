@@ -43,6 +43,26 @@
 		to control signals, crossing gates, and other types of
 		automation on the layout.</p>
 
+        <h2>LogixNG documentation</h2>
+
+        <ul>
+          <li><a href="PackageStructure.shtml">The structure of
+		  LogixNG packages</a></li>
+
+          <li><a href="CategoriesEnum.shtml">The Categories enum</a></li>
+
+          <li><a href="CreateExpressionsAndActions.shtml">Create
+		  Expressions, Actions, and so on</a></li>
+
+          <li><a href="Sockets.shtml">Sockets</a></li>
+
+          <li><a href="Plugins.shtml">Plugins for LogixNG</a></li>
+        </ul>
+
+
+		<hr/>
+
+
 		<p>The most common building blocks in LogixNG is Expressions and
 		Actions. Expressions ask a question while Actions do somethings.
 		It can be described as:</p>
@@ -143,6 +163,9 @@
 
         <h2>Plugins for LogixNG</h2>
 
+		<p style="color:yellow;background-color:red">LogixNG has gone thru
+		big changes and the code for plugins is not up to date.</p>
+
 		<p>LogixNG supports expression and action plugins. This can be done
 		in two different ways, native plugin or external plugin.</p>
 
@@ -158,6 +181,46 @@
 		interface. These classes can be placed anywhere, but they needs to
 		be configured by the user. That is, the user has to point JMRI to the
 		jar file and select which classes in the jar file to use with JMRI.</p>
+
+
+
+        <h2>Execution groups</h2>
+
+		<p style="color:yellow;background-color:red">Execution groups are yet
+		to be implemented.</p>
+
+		<p>This section is on an advanced topic that most JMRI users probably
+		don't need to use. It's recommended to learn to use LogixNG before
+		starting to use execution groups.</p>
+
+		<p>The LogixNGs are executed when one of the actions or expressions
+		notify the LogixNG manager that it wants to execute the LogixNGs. This
+		may be due to a change on the layout, for example an activated sensor,
+		or a timer that is finished.</p>
+
+		<p>As default, this executes all the LogixNGs. But there may cases
+		there this is not desired. It can be due to large layouts or due to
+		some Actions or Expressions that takes a long time to finish.</p>
+
+		<p>To solve this, LogixNG groups all the LogixNGs into execution
+		groups. When notified, the LogixNG manager executes the LogixNGs that
+		are part of a particular execution group.</p>
+
+		<p>In case one LogixNG wants to trigger execution of another execution
+		group whan the one it belongs to, one can use the
+		ActionTriggerExecutionGroup that notifies the LogixNG manager to
+		execute a predefined exectution group.</p>
+
+		<p>If the LogixNG manager gets several notifications before it can
+		execute an execution group, it always starts with the execution group
+		with the lowest system name. For example, the main execution group,
+		IQEG0, always has the highest priority.</p>
+
+		<p>The execution groups are Named Beans and has a system name and a
+		user name. The system name is IQEG&lt;number&gt;, where the main
+		execution group has the system name IQEG0. (I=Internal, Q=LogixNG,
+		EG=ExecutionGroup).</p>
+
 
         <!--#include virtual="/Footer" -->
       </div><!-- closes #mainContent-->
