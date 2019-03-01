@@ -1,6 +1,6 @@
 package jmri.jmrit.logixng.digitalactions;
 
-import jmri.jmrit.logixng.digitalactions.Turnout;
+import jmri.jmrit.logixng.digitalactions.ActionTurnout;
 import jmri.jmrit.logixng.digitalactions.IfThen;
 import jmri.jmrit.logixng.digitalactions.Many;
 import java.util.AbstractMap;
@@ -23,7 +23,7 @@ public class Factory implements DigitalActionFactory {
         Set<Map.Entry<Category, Class<? extends DigitalAction>>> digitalActionClasses = new HashSet<>();
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, IfThen.class));
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, Many.class));
-        digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, Turnout.class));
+        digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, ActionTurnout.class));
         return digitalActionClasses;
     }
 

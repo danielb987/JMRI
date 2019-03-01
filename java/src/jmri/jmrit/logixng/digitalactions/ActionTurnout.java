@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digitalactions;
 
+import jmri.Turnout;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalAction;
@@ -9,12 +10,12 @@ import jmri.jmrit.logixng.DigitalAction;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class Turnout extends AbstractDigitalAction {
+public class ActionTurnout extends AbstractDigitalAction {
 
-//    private Turnout _turnout;
+//    private ActionTurnout _turnout;
 //    private int _newState;
     
-    public Turnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public ActionTurnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
 //        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }

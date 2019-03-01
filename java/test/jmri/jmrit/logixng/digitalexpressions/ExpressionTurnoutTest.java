@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digitalexpressions;
 
-import jmri.jmrit.logixng.digitalactions.Turnout;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test Turnout
+ * Test ExpressionTurnout
  * 
  * @author Daniel Bergqvist 2018
  */
-public class TurnoutTest {
+public class ExpressionTurnoutTest {
 
     @Test
     public void testCtor() {
-        new Turnout("IQA55:A321", null);
+        new ExpressionTurnout("IQA55:E321", null);
     }
     
     // The minimal setup for log4J

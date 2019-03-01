@@ -40,7 +40,7 @@ import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digitalactions.IfThen;
-import jmri.jmrit.logixng.digitalactions.Turnout;
+import jmri.jmrit.logixng.digitalactions.ActionTurnout;
 import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
@@ -141,7 +141,7 @@ public final class LogixNGEditor extends JmriJFrame {
         MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
-        DigitalAction actionTurnout = new Turnout(systemName, "An action for test");  // NOI18N
+        DigitalAction actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleDigitalActionSocket actionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(actionTurnout);
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
         DigitalAction actionIfThen = new IfThen(systemName, IfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);

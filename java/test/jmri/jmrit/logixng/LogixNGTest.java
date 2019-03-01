@@ -3,7 +3,7 @@ package jmri.jmrit.logixng;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.engine.DefaultLogixNG;
 import jmri.jmrit.logixng.digitalactions.IfThen;
-import jmri.jmrit.logixng.digitalactions.Turnout;
+import jmri.jmrit.logixng.digitalactions.ActionTurnout;
 import jmri.jmrit.logixng.digitalexpressions.And;
 import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
 import jmri.util.JUnitUtil;
@@ -28,7 +28,7 @@ public class LogixNGTest {
         InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
         systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(newLogix);
-        DigitalAction action = new Turnout(systemName, "An action for test");  // NOI18N
+        DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(action);
     }
     

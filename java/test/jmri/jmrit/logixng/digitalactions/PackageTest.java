@@ -12,7 +12,7 @@ import org.junit.runners.Suite;
     IfThenElseTest.class,
     ManyTest.class,
     SocketTest.class,
-    TurnoutTest.class,
+    ActionTurnoutTest.class,
 })
 
 /**

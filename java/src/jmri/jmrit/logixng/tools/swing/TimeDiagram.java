@@ -19,7 +19,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.digitalactions.Turnout;
+import jmri.jmrit.logixng.digitalactions.ActionTurnout;
 import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
@@ -171,7 +171,7 @@ public class TimeDiagram extends JmriJFrame {
             InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
 //            InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
             systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(newLogix);
-            DigitalAction action = new Turnout(systemName, "An action for test");  // NOI18N
+            DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
             InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(action);
 /*            
             if (f == null || !f.isVisible()) {
