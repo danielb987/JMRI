@@ -1,6 +1,6 @@
 package jmri.jmrit.logixng;
 
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.engine.DefaultLogixNG;
 import jmri.jmrit.logixng.digitalactions.IfThen;
 import jmri.jmrit.logixng.digitalactions.Turnout;
@@ -11,11 +11,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import jmri.InstanceManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalExpression;
-import jmri.jmrit.logixng.DigitalAction;
 
 /**
  * Test LogixNG
