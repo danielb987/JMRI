@@ -73,7 +73,7 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLogixNG().getSystemName() + ":AE10";
     }
 
 }

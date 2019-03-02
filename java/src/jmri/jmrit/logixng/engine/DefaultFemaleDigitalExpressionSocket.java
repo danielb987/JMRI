@@ -86,7 +86,7 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return "IQA54";
+        return getLogixNG().getSystemName() + ":DE10";
     }
 
 }

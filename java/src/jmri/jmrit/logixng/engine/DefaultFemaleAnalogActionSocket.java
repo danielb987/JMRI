@@ -73,7 +73,7 @@ public final class DefaultFemaleAnalogActionSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLogixNG().getSystemName() + ":AA10";
     }
 
 }

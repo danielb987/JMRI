@@ -99,7 +99,7 @@ public final class DefaultFemaleDigitalActionSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLogixNG().getSystemName() + ":DA10";
     }
 
 }
