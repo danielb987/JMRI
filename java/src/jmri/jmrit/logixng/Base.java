@@ -96,7 +96,18 @@ public interface Base {
     }
     
     /**
-     * Get the parent.
+     * Set the parent.
+     * <P>
+     * The following rules apply
+     * <ul>
+     * <li>LogixNGs has no parent. The method throws an UnsupportedOperationException if called.</li>
+     * <li>Expressions and actions has the female socket that they are connected to as their parent.
+     * An expression or action must always be connected to a female socket.</li>
+     * <li>The parent of a female sockets is the LogixNG, expression or action that
+     * has this female socket.</li>
+     * <li>The parent of a male sockets is the same parent as the expression or
+     * action that it contains.</li>
+     * </ul>
      */
     public Base getParent();
     
