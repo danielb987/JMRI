@@ -18,7 +18,7 @@ public class DefaultMaleDigitalExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression expression = new And("IQA55:E321");
+        DigitalExpression expression = new And(null, "IQA55:E321");
         new DefaultMaleDigitalExpressionSocket(expression);
     }
     

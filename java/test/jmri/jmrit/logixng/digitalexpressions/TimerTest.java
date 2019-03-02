@@ -16,12 +16,12 @@ public class TimerTest {
 
     @Test
     public void testCtor() {
-        new Timer("IQA55:E321", null);
+        new Timer(null, "IQA55:E321", null);
     }
     
     @Test
     public void testGetCategory() {
-        Assert.assertTrue(Category.COMMON.equals(new Timer("IQA55:E321", null).getCategory()));
+        Assert.assertTrue(Category.COMMON.equals(new Timer(null, "IQA55:E321", null).getCategory()));
     }
     
     // The minimal setup for log4J

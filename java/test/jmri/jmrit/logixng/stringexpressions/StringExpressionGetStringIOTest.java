@@ -16,12 +16,12 @@ public class StringExpressionGetStringIOTest {
 
     @Test
     public void testCtor() {
-        new StringExpressionGetStringIO("IQA55:E321");
+        new StringExpressionGetStringIO(null, "IQA55:E321");
     }
     
     @Test
     public void testShortDescription() {
-        StringExpression stringExpression = new StringExpressionGetStringIO("IQA55:E321");
+        StringExpression stringExpression = new StringExpressionGetStringIO(null, "IQA55:E321");
         Assert.assertTrue("String matches", "Read string none".equals(stringExpression.getShortDescription()));
     }
     

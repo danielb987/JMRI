@@ -30,7 +30,7 @@ public class SocketTest {
             }
         };
         
-        new DefaultFemaleDigitalActionSocket(listener, "A1");
+        new DefaultFemaleDigitalActionSocket(null, listener, "A1");
     }
     
     // The minimal setup for log4J

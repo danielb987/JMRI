@@ -16,7 +16,7 @@ public class DoStringActionTest {
 
     @Test
     public void testCtor() {
-        new DoStringAction("IQA55:A321");
+        new DoStringAction(null, "IQA55:A321");
     }
     
     // The minimal setup for log4J

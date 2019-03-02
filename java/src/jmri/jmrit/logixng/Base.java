@@ -91,7 +91,11 @@ public interface Base {
         if (this instanceof LogixNG) {
             return (LogixNG) this;
         } else {
-            return (LogixNG) getParent();
+            Base parent = getParent();
+            while (! (parent instanceof LogixNG)) {
+                parent = parent.getParent();
+            }
+            return (LogixNG) parent;
         }
     }
     

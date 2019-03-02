@@ -16,12 +16,12 @@ public class AnalogExpressionGetAnalogIOTest {
 
     @Test
     public void testCtor() {
-        new AnalogExpressionGetAnalogIO("IQA55:E321");
+        new AnalogExpressionGetAnalogIO(null, "IQA55:E321");
     }
     
     @Test
     public void testShortDescription() {
-        AnalogExpression analogExpression = new AnalogExpressionGetAnalogIO("IQA55:E321");
+        AnalogExpression analogExpression = new AnalogExpressionGetAnalogIO(null, "IQA55:E321");
         Assert.assertTrue("String matches", "Read analog none".equals(analogExpression.getShortDescription()));
     }
     

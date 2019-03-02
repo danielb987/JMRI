@@ -16,7 +16,7 @@ public class ManyTest {
 
     @Test
     public void testCtor() {
-        new Many("IQA55:A321", null);
+        new Many(null, "IQA55:A321", null);
     }
     
     // The minimal setup for log4J

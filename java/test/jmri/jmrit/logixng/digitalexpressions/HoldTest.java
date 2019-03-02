@@ -16,12 +16,12 @@ public class HoldTest {
 
     @Test
     public void testCtor() {
-        new Hold("IQA55:E321");
+        new Hold(null, "IQA55:E321");
     }
     
     @Test
     public void testShortDescription() {
-        DigitalExpression e1 = new Hold("IQA55:E321");
+        DigitalExpression e1 = new Hold(null, "IQA55:E321");
         Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getShortDescription()));
     }
     

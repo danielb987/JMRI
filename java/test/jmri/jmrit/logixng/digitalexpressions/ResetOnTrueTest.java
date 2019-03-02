@@ -22,11 +22,11 @@ public class ResetOnTrueTest {
             throws NamedBean.BadUserNameException,
                     NamedBean.BadSystemNameException,
                     SocketAlreadyConnectedException {
-        ExpressionTurnout expression = new ExpressionTurnout("IQ:A:55:A:E321", null);
+        ExpressionTurnout expression = new ExpressionTurnout(null, "IQ55:DE321", null);
         MaleDigitalExpressionSocket primaryExpressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
-        expression = new ExpressionTurnout("IQ:50:E322", null);
+        expression = new ExpressionTurnout(null, "IQ50:DE322", null);
         MaleDigitalExpressionSocket secondaryExpressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
-        new ResetOnTrue("IQA55:E321", null, primaryExpressionSocket, secondaryExpressionSocket);
+        new ResetOnTrue(null, "IQA55:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
     }
     
     // The minimal setup for log4J

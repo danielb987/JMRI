@@ -22,13 +22,13 @@ public class LogixNGTest {
     @Test
     public void testManagers() {
         String systemName;
-        LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getNewSystemName(newLogix);
-        DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
+        LogixNG logixNG = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
+        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getNewSystemName(logixNG);
+        DigitalExpression expression = new ExpressionTurnout(null, systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(newLogix);
-        DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
+        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(logixNG);
+        DigitalAction action = new ActionTurnout(null, systemName, "An action for test");  // NOI18N
         InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(action);
     }
     
@@ -40,8 +40,8 @@ public class LogixNGTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "LogixNG".equals(new DefaultLogixNG("IQA55", null).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Action".equals(new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Expression".equals(new And("IQA55:E321", null).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Action".equals(new IfThen(null, "IQA55:A321", null, IfThen.Type.TRIGGER_ACTION).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Expression".equals(new And(null, "IQA55:E321", null).getBeanType()));
     }
     
     // The minimal setup for log4J

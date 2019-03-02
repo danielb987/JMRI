@@ -15,7 +15,7 @@ public class BufferedSensorTest {
 
     @Test
     public void testCtor() {
-        new BufferedSensor("IQA55:E321", null);
+        new BufferedSensor(null, "IQA55:E321", null);
     }
     
     // The minimal setup for log4J

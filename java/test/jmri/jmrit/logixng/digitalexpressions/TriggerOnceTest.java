@@ -22,9 +22,9 @@ public class TriggerOnceTest {
             throws NamedBean.BadUserNameException,
                     NamedBean.BadSystemNameException,
                     SocketAlreadyConnectedException {
-        ExpressionTurnout expression = new ExpressionTurnout("IQ:A:55:A:E321", null);
+        ExpressionTurnout expression = new ExpressionTurnout(null, "IQA55:DEA321", null);
         MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
-        new TriggerOnce("IQA55:E321", null, expressionSocket);
+        new TriggerOnce(null, "IQA55:DE321", null, expressionSocket);
     }
     
     // The minimal setup for log4J

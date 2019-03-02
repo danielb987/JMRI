@@ -17,7 +17,7 @@ public class DefaultMaleStringExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        StringExpression expression = new StringExpressionGetStringIO("IQA55:E321");
+        StringExpression expression = new StringExpressionGetStringIO(null, "IQA55:E321");
         new DefaultMaleStringExpressionSocket(expression);
     }
     

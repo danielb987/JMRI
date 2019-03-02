@@ -16,12 +16,12 @@ public class AnalogActionSetAnalogIOTest {
 
     @Test
     public void testCtor() {
-        new AnalogActionSetAnalogIO("IQA55:A321");
+        new AnalogActionSetAnalogIO(null, "IQA55:A321");
     }
     
     @Test
     public void testShortDescription() {
-        AnalogAction analogAction = new AnalogActionSetAnalogIO("IQA55:A321");
+        AnalogAction analogAction = new AnalogActionSetAnalogIO(null, "IQA55:A321");
         Assert.assertTrue("String matches", "Set analog none".equals(analogAction.getShortDescription()));
     }
     

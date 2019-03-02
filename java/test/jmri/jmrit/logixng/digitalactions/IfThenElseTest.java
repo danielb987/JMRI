@@ -17,15 +17,15 @@ public class IfThenElseTest {
 
     @Test
     public void testCtor() {
-        new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
-        new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        new IfThen(null, "IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
+        new IfThen(null, "IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
     }
     
     @Test
     public void testToString() {
-        DigitalAction a1 = new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
+        DigitalAction a1 = new IfThen(null, "IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
         Assert.assertTrue("If E then A".equals(a1.getLongDescription()));
-        DigitalAction a2 = new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        DigitalAction a2 = new IfThen(null, "IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
         Assert.assertTrue("If E then A".equals(a2.getLongDescription()));
     }
     

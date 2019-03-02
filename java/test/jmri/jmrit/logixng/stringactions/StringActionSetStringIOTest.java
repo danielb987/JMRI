@@ -16,12 +16,12 @@ public class StringActionSetStringIOTest {
 
     @Test
     public void testCtor() {
-        new StringActionSetStringIO("IQA55:A321");
+        new StringActionSetStringIO(null, "IQA55:A321");
     }
     
     @Test
     public void testShortDescription() {
-        StringAction stringAction = new StringActionSetStringIO("IQA55:A321");
+        StringAction stringAction = new StringActionSetStringIO(null, "IQA55:A321");
         Assert.assertTrue("String matches", "Set string none".equals(stringAction.getShortDescription()));
     }
     

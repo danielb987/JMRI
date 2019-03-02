@@ -17,7 +17,7 @@ public class DefaultMaleAnalogExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogExpression expression = new AnalogExpressionGetAnalogIO("IQA55:E321");
+        AnalogExpression expression = new AnalogExpressionGetAnalogIO(null, "IQA55:E321");
         new DefaultMaleAnalogExpressionSocket(expression);
     }
     

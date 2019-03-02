@@ -30,7 +30,7 @@ public class DefaultFemaleDigitalExpressionSocketTest {
             }
         };
         
-        new DefaultFemaleDigitalExpressionSocket(listener, "E1");
+        new DefaultFemaleDigitalExpressionSocket(null, listener, "E1");
     }
     
     // The minimal setup for log4J

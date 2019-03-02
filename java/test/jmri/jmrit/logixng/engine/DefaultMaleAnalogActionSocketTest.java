@@ -17,7 +17,7 @@ public class DefaultMaleAnalogActionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogAction action = new AnalogActionSetAnalogIO("IQA55:A321");
+        AnalogAction action = new AnalogActionSetAnalogIO(null, "IQA55:A321");
         new DefaultMaleAnalogActionSocket(action);
     }
     

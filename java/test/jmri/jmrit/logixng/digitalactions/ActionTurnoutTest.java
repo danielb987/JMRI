@@ -15,7 +15,7 @@ public class ActionTurnoutTest {
 
     @Test
     public void testCtor() {
-        new ActionTurnout("IQA55:A321", null);
+        new ActionTurnout(null, "IQA55:A321", null);
     }
     
     // The minimal setup for log4J

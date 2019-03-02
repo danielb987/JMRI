@@ -16,7 +16,7 @@ public class DoAnalogActionTest {
 
     @Test
     public void testCtor() {
-        new DoAnalogAction("IQA55:A321");
+        new DoAnalogAction(null, "IQA55:A321");
     }
     
     // The minimal setup for log4J

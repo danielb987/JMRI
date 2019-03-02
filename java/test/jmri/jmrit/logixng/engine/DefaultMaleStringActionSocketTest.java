@@ -17,7 +17,7 @@ public class DefaultMaleStringActionSocketTest {
 
     @Test
     public void testCtor() {
-        StringAction action = new StringActionSetStringIO("IQA55:A321");
+        StringAction action = new StringActionSetStringIO(null, "IQA55:A321");
         new DefaultMaleStringActionSocket(action);
     }
     

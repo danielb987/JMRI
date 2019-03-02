@@ -15,7 +15,7 @@ public class ExpressionTurnoutTest {
 
     @Test
     public void testCtor() {
-        new ExpressionTurnout("IQA55:E321", null);
+        new ExpressionTurnout(null, "IQA55:E321", null);
     }
     
     // The minimal setup for log4J

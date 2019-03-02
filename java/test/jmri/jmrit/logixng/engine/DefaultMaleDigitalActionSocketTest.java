@@ -18,7 +18,7 @@ public class DefaultMaleDigitalActionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalAction action = new Many("IQA55:A321");
+        DigitalAction action = new Many(null, "IQA55:A321");
         new DefaultMaleDigitalActionSocket(action);
     }
     

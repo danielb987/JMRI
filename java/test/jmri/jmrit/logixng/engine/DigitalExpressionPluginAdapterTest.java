@@ -17,8 +17,8 @@ public class DigitalExpressionPluginAdapterTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression expression = new And("IQA55:E321");
-        new DigitalExpressionPluginAdapter("SystemName", expression);
+        DigitalExpression expression = new And(null, "IQA55:E321");
+        new DigitalExpressionPluginAdapter(null, "SystemName", expression);
     }
     
     // The minimal setup for log4J
