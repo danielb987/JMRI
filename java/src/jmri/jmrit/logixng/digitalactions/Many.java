@@ -24,7 +24,6 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
-     * @param newLogix the LogixNG that this action is related to
      */
     public Many(Base parent) throws BadUserNameException, BadSystemNameException {
         super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
