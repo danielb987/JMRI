@@ -12,9 +12,9 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.DigitalAction;
@@ -22,6 +22,7 @@ import jmri.jmrit.logixng.DigitalActionFactory;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.managers.AbstractManager;
 
 /**
  * Class providing the basic logic of the DigitalActionManager interface.
@@ -122,7 +123,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // A - DigitalAction
         // \d+ - The DigitalAction ID number
-        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?A\\d+")) {
+        if (systemName.matches("IQA?\\d+:DAA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -133,7 +134,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     public String getNewSystemName(LogixNG newLogix) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
-        b.append(":A:A");
+        b.append(":DAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();
@@ -141,17 +142,17 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
 
     @Override
     public FemaleDigitalActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleDigitalActionSocket(listener, socketName);
+            Base parent, FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleDigitalActionSocket(parent, listener, socketName);
     }
 
     @Override
     public FemaleDigitalActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent, FemaleSocketListener listener, String socketName,
             MaleDigitalActionSocket maleSocket){
         
         FemaleDigitalActionSocket socket =
-                new DefaultFemaleDigitalActionSocket(listener, socketName, maleSocket);
+                new DefaultFemaleDigitalActionSocket(parent, listener, socketName, maleSocket);
         
         return socket;
     }

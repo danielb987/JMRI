@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import jmri.JmriException;
 import jmri.NamedBean;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleSocket;
@@ -20,16 +21,17 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSocket
         implements FemaleDigitalExpressionSocket {
 
-    public DefaultFemaleDigitalExpressionSocket(FemaleSocketListener listener, String name) {
-        super(listener, name);
+    public DefaultFemaleDigitalExpressionSocket(Base parent, FemaleSocketListener listener, String name) {
+        super(parent, listener, name);
     }
     
     public DefaultFemaleDigitalExpressionSocket(
+            Base parent,
             FemaleSocketListener listener,
             String name,
             MaleDigitalExpressionSocket maleSocket) {
         
-        super(listener, name);
+        super(parent, listener, name);
         
         try {
             connect(maleSocket);
@@ -40,11 +42,13 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean isCompatible(MaleSocket socket) {
         return socket instanceof MaleDigitalExpressionSocket;
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
         if (isConnected()) {
@@ -54,6 +58,7 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         if (isConnected()) {
@@ -61,168 +66,27 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
         }
     }
 
-    @Override
-    public FemaleSocket getChild(int index) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getUserName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setUserName(String s) throws BadUserNameException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getSystemName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getDisplayName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getFullyFormattedDisplayName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener l) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener l) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void updateListenerRef(PropertyChangeListener l, String newName) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String getListenerRef(PropertyChangeListener l) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ArrayList<String> getListenerRefs() {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int getNumPropertyChangeListeners() {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    /** {@inheritDoc} */
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported.");
     }
 
-    @Override
-    public void setState(int s) throws JmriException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public int getState() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String describeState(int state) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getComment() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setComment(String comment) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setProperty(String key, Object value) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Object getProperty(String key) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void removeProperty(String key) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Set<String> getPropertyKeys() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getBeanType() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getConfiguratorClassName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
+    /** {@inheritDoc} */
     @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleExpressionSocket_Short");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("DefaultFemaleExpressionSocket_Long", getName());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getExampleSystemName() {
+        return "IQA54";
     }
 
 }

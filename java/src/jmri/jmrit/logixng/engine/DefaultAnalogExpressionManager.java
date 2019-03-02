@@ -17,6 +17,7 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
@@ -127,7 +128,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // AE - AnalogExpression
         // \d+ - The AnalogExpression ID number
-        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?AE\\d+")) {
+        if (systemName.matches("IQA?\\d+:AEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -138,7 +139,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     public String getNewSystemName(LogixNG newLogix) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
-        b.append(":A:E");
+        b.append(":AEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();
@@ -146,17 +147,17 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
 
     @Override
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleAnalogExpressionSocket(listener, socketName);
+            Base parent, FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleAnalogExpressionSocket(parent, listener, socketName);
     }
 
     @Override
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent, FemaleSocketListener listener, String socketName,
             MaleAnalogExpressionSocket maleSocket) {
         
         FemaleAnalogExpressionSocket socket =
-                new DefaultFemaleAnalogExpressionSocket(listener, socketName, maleSocket);
+                new DefaultFemaleAnalogExpressionSocket(parent, listener, socketName, maleSocket);
         
         return socket;
     }

@@ -9,6 +9,7 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Category;
 import javax.annotation.Nonnull;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.DigitalAction;
@@ -29,6 +30,16 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     
     public DefaultMaleDigitalActionSocket(@Nonnull DigitalAction action) {
         _action = action;
+    }
+    
+    @Override
+    public Base getParent() {
+        return _action.getParent();
+    }
+    
+    @Override
+    public void setParent(Base parent) {
+        _action.setParent(parent);
     }
     
     /** {@inheritDoc} */

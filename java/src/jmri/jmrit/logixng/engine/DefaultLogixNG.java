@@ -6,6 +6,8 @@ import java.util.SortedSet;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import org.slf4j.Logger;
@@ -31,12 +33,12 @@ public final class DefaultLogixNG extends AbstractNamedBean
     
     public DefaultLogixNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
     }
 
     public DefaultLogixNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, "", action);
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
     }
     
     /** {@inheritDoc} */
@@ -113,5 +115,60 @@ public final class DefaultLogixNG extends AbstractNamedBean
     @Override
     public void disconnected(FemaleSocket socket) {
         // Do nothing
+    }
+
+    @Override
+    public String getConfiguratorClassName() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public String getShortDescription() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public String getLongDescription() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public Base getParent() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void setParent(Base parent) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public int getChildCount() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public Category getCategory() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public boolean isExternal() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public Lock getLock() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void setLock(Lock lock) {
+        throw new UnsupportedOperationException("Not supported.");
     }
 }

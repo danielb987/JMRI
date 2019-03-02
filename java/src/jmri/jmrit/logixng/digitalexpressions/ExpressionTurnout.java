@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -10,12 +11,12 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class ExpressionTurnout extends AbstractDigitalExpression {
 
-    public ExpressionTurnout(String sys) throws BadUserNameException, BadSystemNameException {
-        super(sys);
+    public ExpressionTurnout(Base parent, String sys) throws BadUserNameException, BadSystemNameException {
+        super(parent, sys);
     }
 
-    public ExpressionTurnout(String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(sys, user);
+    public ExpressionTurnout(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(parent, sys, user);
     }
 
     /** {@inheritDoc} */

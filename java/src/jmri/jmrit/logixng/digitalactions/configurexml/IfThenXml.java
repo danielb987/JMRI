@@ -114,10 +114,9 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         String uname = getUserName(shared);
         DigitalAction h;
         if (uname == null) {
-            h = new IfThen(sys, IfThen.Type.TRIGGER_ACTION);
+            h = new IfThen(null, sys, IfThen.Type.TRIGGER_ACTION);
         } else {
-            h = new IfThen(sys, uname, IfThen.Type.TRIGGER_ACTION);
-//            h = new IfThen(sys, low, high, uname);
+            h = new IfThen(null, sys, uname, IfThen.Type.TRIGGER_ACTION);
         }
 
         loadCommon(h, shared);

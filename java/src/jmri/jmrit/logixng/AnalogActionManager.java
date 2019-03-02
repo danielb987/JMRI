@@ -30,10 +30,12 @@ public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
     public String getNewSystemName(LogixNG newLogix);
 
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
-            FemaleSocketListener listener, String socketName);
+            Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleAnalogActionSocket maleSocket);
 
     /*.*

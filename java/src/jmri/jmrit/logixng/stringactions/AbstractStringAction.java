@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.stringactions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +15,30 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractStringAction extends AbstractNamedBean
         implements StringAction {
 
+    private Base _parent;
     private Lock _lock = Lock.NONE;
 
 
-    public AbstractStringAction(String sys) throws BadSystemNameException {
+    public AbstractStringAction(Base parent, String sys) throws BadSystemNameException {
         super(sys);
+        _parent = parent;
     }
 
-    public AbstractStringAction(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractStringAction(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        _parent = parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Base getParent() {
+        return _parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setParent(Base parent) {
+        _parent = parent;
     }
 
     @Override

@@ -14,8 +14,8 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.DigitalExpression;
@@ -23,6 +23,7 @@ import jmri.jmrit.logixng.DigitalExpressionFactory;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.managers.AbstractManager;
 
 /**
  * Class providing the basic logic of the DigitalExpressionManager interface.
@@ -127,7 +128,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // E - DigitalExpression
         // \d+ - The DigitalExpression ID number
-        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?E\\d+")) {
+        if (systemName.matches("IQA?\\d+:DEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -138,7 +139,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     public String getNewSystemName(LogixNG newLogix) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
-        b.append(":A:E");
+        b.append(":DEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();
@@ -146,17 +147,17 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
 
     @Override
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleDigitalExpressionSocket(listener, socketName);
+            Base parent, FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName);
     }
 
     @Override
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent, FemaleSocketListener listener, String socketName,
             MaleDigitalExpressionSocket maleSocket) {
         
         FemaleDigitalExpressionSocket socket =
-                new DefaultFemaleDigitalExpressionSocket(listener, socketName, maleSocket);
+                new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName, maleSocket);
         
         return socket;
     }

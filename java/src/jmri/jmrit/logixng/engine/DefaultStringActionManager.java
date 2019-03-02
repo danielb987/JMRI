@@ -12,6 +12,7 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringAction;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.Category;
@@ -122,7 +123,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // A - StringAction
         // \d+ - The StringAction ID number
-        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?AA\\d+")) {
+        if (systemName.matches("IQA?\\d+:SAA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -133,7 +134,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     public String getNewSystemName(LogixNG newLogix) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
-        b.append(":A:A");
+        b.append(":SAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();
@@ -141,17 +142,19 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
 
     @Override
     public FemaleStringActionSocket createFemaleStringActionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleStringActionSocket(listener, socketName);
+            Base parent, FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleStringActionSocket(parent, listener, socketName);
     }
 
     @Override
     public FemaleStringActionSocket createFemaleStringActionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleStringActionSocket maleSocket){
         
         FemaleStringActionSocket socket =
-                new DefaultFemaleStringActionSocket(listener, socketName, maleSocket);
+                new DefaultFemaleStringActionSocket(parent, listener, socketName, maleSocket);
         
         return socket;
     }

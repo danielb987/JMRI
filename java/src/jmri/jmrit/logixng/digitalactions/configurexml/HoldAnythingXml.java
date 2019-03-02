@@ -100,9 +100,9 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
         String uname = getUserName(shared);
         DigitalAction h;
         if (uname == null) {
-            h = new HoldAnything(sys);
+            h = new HoldAnything(null, sys);
         } else {
-            h = new HoldAnything(sys, uname);
+            h = new HoldAnything(null, sys, uname);
         }
 
         loadCommon(h, shared);

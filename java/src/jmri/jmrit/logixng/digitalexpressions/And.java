@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digitalexpressions;
 import java.util.List;
 import java.util.ArrayList;
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -22,27 +23,26 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
-     * @param newLogix the LogixNG that this action is related to
      */
-    public And(LogixNG newLogix) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(newLogix));
+    public And(Base parent) {
+        super(parent, InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(parent.getLogixNG()));
         init();
     }
     
-    public And(String sys) throws BadUserNameException,
+    public And(Base parent, String sys) throws BadUserNameException,
             BadSystemNameException {
-        super(sys);
+        super(parent, sys);
         init();
     }
 
-    public And(String sys, String user) throws BadUserNameException,
+    public And(Base parent, String sys, String user) throws BadUserNameException,
             BadSystemNameException {
-        super(sys, user);
+        super(parent, sys, user);
         init();
     }
 
     private void init() {
-        children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, getNewSocketName()));
+        children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, this, getNewSocketName()));
     }
 
     /** {@inheritDoc} */
@@ -107,7 +107,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
             }
         }
         if (!hasFreeSocket) {
-            children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, getNewSocketName()));
+            children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, this, getNewSocketName()));
         }
     }
 

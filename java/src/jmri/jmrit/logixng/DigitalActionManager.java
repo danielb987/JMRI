@@ -32,10 +32,12 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
     public String getNewSystemName(LogixNG newLogix);
 
     public FemaleDigitalActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName);
+            Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleDigitalActionSocket createFemaleActionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleDigitalActionSocket maleSocket);
 
     /*.*

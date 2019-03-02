@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digitalactions;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
@@ -23,44 +24,46 @@ public class DoAnalogAction
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
     private final FemaleAnalogActionSocket _analogActionSocket;
     
-    public DoAnalogAction(String sys) {
-        super(sys);
+    public DoAnalogAction(Base parent, String sys) {
+        super(parent, sys);
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, "E1");
+                .createFemaleAnalogExpressionSocket(this, this, "E1");
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
-                .createFemaleAnalogActionSocket(this, "A1");
+                .createFemaleAnalogActionSocket(this, this, "A1");
     }
     
-    public DoAnalogAction(String sys, String user) {
-        super(sys, user);
+    public DoAnalogAction(Base parent, String sys, String user) {
+        super(parent, sys, user);
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, "E1");
+                .createFemaleAnalogExpressionSocket(this, this, "E1");
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
-                .createFemaleAnalogActionSocket(this, "A1");
+                .createFemaleAnalogActionSocket(this, this, "A1");
     }
     
     public DoAnalogAction(
+            Base parent,
             String sys,
             String expressionSocketName, String actionSocketName,
             MaleAnalogExpressionSocket expression, MaleAnalogActionSocket action) {
         
-        super(sys);
+        super(parent, sys);
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, expressionSocketName, expression);
+                .createFemaleAnalogExpressionSocket(this, this, expressionSocketName, expression);
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
-                .createFemaleAnalogActionSocket(this, actionSocketName, action);
+                .createFemaleAnalogActionSocket(this, this, actionSocketName, action);
     }
     
     public DoAnalogAction(
+            Base parent,
             String sys, String user,
             String expressionSocketName, String actionSocketName, 
             MaleAnalogExpressionSocket expression, MaleAnalogActionSocket action) {
         
-        super(sys, user);
+        super(parent, sys, user);
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, expressionSocketName, expression);
+                .createFemaleAnalogExpressionSocket(this, this, expressionSocketName, expression);
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
-                .createFemaleAnalogActionSocket(this, actionSocketName, action);
+                .createFemaleAnalogActionSocket(this, this, actionSocketName, action);
     }
     
     /** {@inheritDoc} */

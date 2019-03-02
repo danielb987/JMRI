@@ -85,8 +85,8 @@ public final class LogixNGEditor extends JmriJFrame {
      * @param sName system name of LogixNG to be edited
      */
     public LogixNGEditor(String sName) {
-        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleActionSocket", Color.RED);
-        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleExpressionSocket", Color.BLUE);
+        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleDigitalActionSocket", Color.RED);
+        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleDigitalExpressionSocket", Color.BLUE);
         newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getBySystemName(sName);
         
         if (newLogix.getUserName() == null) {

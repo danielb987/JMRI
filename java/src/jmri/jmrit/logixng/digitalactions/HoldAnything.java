@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import jmri.InstanceManager;
 import jmri.NamedBean;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
@@ -28,26 +29,25 @@ public class HoldAnything extends AbstractDigitalAction {
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
-     * @param newLogix the LogixNG that this action is related to
      */
-    public HoldAnything(LogixNG newLogix)
+    public HoldAnything(Base parent)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(newLogix));
+        super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
         init();
     }
 
-    public HoldAnything(String sys)
+    public HoldAnything(Base parent, String sys)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         
-        super(sys);
+        super(parent, sys);
         init();
     }
 
-    public HoldAnything(String sys, String user)
+    public HoldAnything(Base parent, String sys, String user)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         
-        super(sys, user);
+        super(parent, sys, user);
         init();
     }
     
@@ -126,7 +126,9 @@ public class HoldAnything extends AbstractDigitalAction {
 
     
     
-    private static class MultipleSockets implements MaleSocket, FemaleSocketListener {
+    // This class can not be static since it needs to access the outer class.
+    
+    private class MultipleSockets implements MaleSocket, FemaleSocketListener {
 
         private final FemaleSocketFactory _femaleSocketFactory;
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
@@ -136,6 +138,16 @@ public class HoldAnything extends AbstractDigitalAction {
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
             _femaleSockets.add(femaleSocketFactory.create());
+        }
+        
+        @Override
+        public Base getParent() {
+            return HoldAnything.this;
+        }
+        
+        @Override
+        public void setParent(Base parent) {
+            // Do nothing. The parent of this class will always be the outer class.
         }
         
         /** {@inheritDoc} */

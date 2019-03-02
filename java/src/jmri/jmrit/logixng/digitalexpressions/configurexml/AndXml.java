@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digitalexpressions.configurexml;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.digitalexpressions.And;
 import jmri.jmrit.logixng.MaleSocket;
 import org.jdom2.Element;
@@ -117,9 +118,9 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
         String uname = getUserName(shared);
         DigitalExpression h;
         if (uname == null) {
-            h = new And(sys);
+            h = new And(null, sys);
         } else {
-            h = new And(sys, uname);
+            h = new And(null, sys, uname);
         }
 
         loadCommon(h, shared);

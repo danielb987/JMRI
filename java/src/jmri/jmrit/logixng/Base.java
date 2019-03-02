@@ -85,6 +85,52 @@ public interface Base {
     public String getLongDescription();
     
     /**
+     * Get the LogixNG of this item.
+     */
+    default public LogixNG getLogixNG() {
+        if (this instanceof LogixNG) {
+            return (LogixNG) this;
+        } else {
+            return (LogixNG) getParent();
+        }
+    }
+    
+    /**
+     * Get the parent.
+     */
+    public Base getParent();
+    
+    /**
+     * Set the parent.
+     * <P>
+     * The following rules apply
+     * <ul>
+     * <li>LogixNGs has no parent. The method throws an UnsupportedOperationException if called.</li>
+     * <li>Expressions and actions has the female socket that they are connected to as their parent.
+     * An expression or action must always be connected to a female socket.</li>
+     * <li>The parent of a female sockets is the LogixNG, expression or action that
+     * has this female socket.</li>
+     * <li>The parent of a male sockets is the same parent as the expression or
+     * action that it contains.</li>
+     * </ul>
+     */
+    public void setParent(Base parent);
+    
+    /**
+     * Set the parent.
+     */
+    default public void setParentForAllChildren() {
+        
+        for (int i=0; i < getChildCount(); i++) {
+            FemaleSocket femaleSocket = getChild(i);
+            femaleSocket.setParent(this);
+            if (femaleSocket.isConnected()) {
+                femaleSocket.getConnectedSocket().setParent(femaleSocket);
+            }
+        }
+    }
+    
+    /**
      * Get a child of this item
      * @param index the index of the child to get
      * @return the child

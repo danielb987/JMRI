@@ -16,6 +16,7 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringExpression;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -127,7 +128,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // AE - StringExpression
         // \d+ - The StringExpression ID number
-        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?AE\\d+")) {
+        if (systemName.matches("IQA?\\d+:SEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -138,7 +139,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     public String getNewSystemName(LogixNG newLogix) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
-        b.append(":A:E");
+        b.append(":SEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();
@@ -146,17 +147,19 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
 
     @Override
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleStringExpressionSocket(listener, socketName);
+            Base parent, FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleStringExpressionSocket(parent, listener, socketName);
     }
 
     @Override
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleStringExpressionSocket maleSocket) {
         
         FemaleStringExpressionSocket socket =
-                new DefaultFemaleStringExpressionSocket(listener, socketName, maleSocket);
+                new DefaultFemaleStringExpressionSocket(parent, listener, socketName, maleSocket);
         
         return socket;
     }

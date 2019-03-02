@@ -30,10 +30,12 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
     public String getNewSystemName(LogixNG newLogix);
 
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
-            FemaleSocketListener listener, String socketName);
+            Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleAnalogExpressionSocket maleSocket);
 
     /*.*

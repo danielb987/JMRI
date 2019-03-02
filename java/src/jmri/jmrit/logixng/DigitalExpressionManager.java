@@ -32,10 +32,12 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
     public String getNewSystemName(LogixNG newLogix);
 
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName);
+            Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleDigitalExpressionSocket maleSocket);
 
     /*.*

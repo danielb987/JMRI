@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.stringexpressions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +13,30 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractStringExpression extends AbstractNamedBean
         implements StringExpression {
 
+    private Base _parent;
     private Lock _lock = Lock.NONE;
 
 
-    public AbstractStringExpression(String sys) throws BadSystemNameException {
+    public AbstractStringExpression(Base parent, String sys) throws BadSystemNameException {
         super(sys);
+        _parent = parent;
     }
 
-    public AbstractStringExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractStringExpression(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        _parent = parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Base getParent() {
+        return _parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setParent(Base parent) {
+        _parent = parent;
     }
 
     @Override

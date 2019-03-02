@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.DigitalExpression;
@@ -29,6 +30,16 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
 
     public DefaultMaleDigitalExpressionSocket(@Nonnull DigitalExpression expression) {
         _expression = expression;
+    }
+
+    @Override
+    public Base getParent() {
+        return _expression.getParent();
+    }
+
+    @Override
+    public void setParent(Base parent) {
+        _expression.setParent(parent);
     }
 
     /** {@inheritDoc} */

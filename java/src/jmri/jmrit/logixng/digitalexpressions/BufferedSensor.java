@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
 import jmri.Sensor;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -32,13 +33,13 @@ public class BufferedSensor extends AbstractDigitalExpression {
 
 //    private final Sensor sensor;
     
-    public BufferedSensor(String sys) throws BadUserNameException, BadSystemNameException {
-        super(sys);
+    public BufferedSensor(Base parent, String sys) throws BadUserNameException, BadSystemNameException {
+        super(parent, sys);
 //        sensor = null;
     }
 
-    public BufferedSensor(String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(sys, user);
+    public BufferedSensor(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(parent, sys, user);
 //        sensor = null;
     }
 

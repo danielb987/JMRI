@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.StringIO;
 import jmri.JmriException;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -16,27 +17,30 @@ public class StringActionSetStringIO extends AbstractStringAction {
 
     private StringIO _stringIO;
     
-    public StringActionSetStringIO(String sys) {
-        super(sys);
+    public StringActionSetStringIO(Base parent, String sys) {
+        super(parent, sys);
     }
     
-    public StringActionSetStringIO(String sys, String user) {
-        super(sys, user);
+    public StringActionSetStringIO(Base parent, String sys, String user) {
+        super(parent, sys, user);
     }
     
     public StringActionSetStringIO(
+            Base parent,
             String sys,
             StringIO stringIO) {
         
-        super(sys);
+        super(parent, sys);
         _stringIO = stringIO;
     }
     
     public StringActionSetStringIO(
-            String sys, String user,
+            Base parent,
+            String sys,
+            String user,
             StringIO stringIO) {
         
-        super(sys, user);
+        super(parent, sys, user);
         _stringIO = stringIO;
     }
     

@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.analogexpressions;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,15 +13,30 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnalogExpression extends AbstractNamedBean
         implements AnalogExpression {
 
+    private Base _parent;
     private Lock _lock = Lock.NONE;
 
 
-    public AbstractAnalogExpression(String sys) throws BadSystemNameException {
+    public AbstractAnalogExpression(Base parent, String sys) throws BadSystemNameException {
         super(sys);
+        _parent = parent;
     }
 
-    public AbstractAnalogExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractAnalogExpression(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        _parent = parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Base getParent() {
+        return _parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setParent(Base parent) {
+        _parent = parent;
     }
 
     @Override

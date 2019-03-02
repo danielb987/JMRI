@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -28,6 +29,16 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
         _expression = expression;
+    }
+
+    @Override
+    public Base getParent() {
+        return _expression.getParent();
+    }
+
+    @Override
+    public void setParent(Base parent) {
+        _expression.setParent(parent);
     }
 
     /** {@inheritDoc} */

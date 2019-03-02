@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digitalactions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -55,63 +56,64 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
-     * @param newLogix the LogixNG that this action is related to
      */
-    public IfThen(LogixNG newLogix, Type type) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(newLogix));
+    public IfThen(Base parent, Type type) {
+        super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E");
+                .createFemaleExpressionSocket(this, this, "E");
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, "A");
+                .createFemaleActionSocket(this, this, "A");
     }
     
-    public IfThen(String sys, Type type) {
-        super(sys);
+    public IfThen(Base parent, String sys, Type type) {
+        super(parent, sys);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E");
+                .createFemaleExpressionSocket(this, this, "E");
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, "A");
+                .createFemaleActionSocket(this, this, "A");
     }
     
-    public IfThen(String sys, String user, Type type) {
-        super(sys, user);
+    public IfThen(Base parent, String sys, String user, Type type) {
+        super(parent, sys, user);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E");
+                .createFemaleExpressionSocket(this, this, "E");
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, "A");
+                .createFemaleActionSocket(this, this, "A");
     }
     
     public IfThen(
+            Base parent,
             String sys, Type type,
             String ifExpressionSocketName,
             String thenActionSocketName,
             MaleDigitalExpressionSocket ifExpression,
             MaleDigitalActionSocket thenAction) {
         
-        super(sys);
+        super(parent, sys);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, ifExpressionSocketName, ifExpression);
+                .createFemaleExpressionSocket(this, this, ifExpressionSocketName, ifExpression);
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, thenActionSocketName, thenAction);
+                .createFemaleActionSocket(this, this, thenActionSocketName, thenAction);
     }
     
     public IfThen(
+            Base parent,
             String sys, String user, Type type,
             String ifExpressionSocketName,
             String thenActionSocketName,
             MaleDigitalExpressionSocket ifExpression,
             MaleDigitalActionSocket thenAction) {
         
-        super(sys, user);
+        super(parent, sys, user);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, ifExpressionSocketName, ifExpression);
+                .createFemaleExpressionSocket(this, this, ifExpressionSocketName, ifExpression);
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, thenActionSocketName, thenAction);
+                .createFemaleActionSocket(this, this, thenActionSocketName, thenAction);
     }
     
     /** {@inheritDoc} */

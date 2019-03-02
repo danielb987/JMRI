@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digitalactions;
 import java.util.ArrayList;
 import java.util.List;
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -25,23 +26,23 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
      * Create a new instance of ActionMany and generate a new system name.
      * @param newLogix the LogixNG that this action is related to
      */
-    public Many(LogixNG newLogix) throws BadUserNameException, BadSystemNameException {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(newLogix));
+    public Many(Base parent) throws BadUserNameException, BadSystemNameException {
+        super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
         init();
     }
 
-    public Many(String sys) throws BadUserNameException, BadSystemNameException {
-        super(sys);
+    public Many(Base parent, String sys) throws BadUserNameException, BadSystemNameException {
+        super(parent, sys);
         init();
     }
 
-    public Many(String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(sys, user);
+    public Many(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+        super(parent, sys, user);
         init();
     }
     
     private void init() {
-        actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, getNewSocketName())));
+        actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, getNewSocketName())));
     }
     
     /** {@inheritDoc} */
@@ -120,7 +121,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
             }
         }
         if (!hasFreeSocket) {
-            actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, getNewSocketName())));
+            actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, getNewSocketName())));
         }
     }
 

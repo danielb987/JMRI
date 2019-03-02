@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -25,13 +26,13 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     private FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
-    public TriggerOnce(String sys, String user, MaleDigitalExpressionSocket expression)
+    public TriggerOnce(Base parent, String sys, String user, MaleDigitalExpressionSocket expression)
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
         
-        super(sys, user);
+        super(parent, sys, user);
         
         _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, "E1");
+                .createFemaleExpressionSocket(this, this, "E1");
         _childExpression.connect(expression);
     }
     

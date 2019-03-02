@@ -80,7 +80,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.toUpperCase().matches("IQ\\:(A\\:)?\\d+")) {
+        if (systemName.toUpperCase().matches("IQA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -117,7 +117,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         /* The following keeps track of the last created auto system name.
          currently we do not reuse numbers, although there is nothing to stop the
          user from manually recreating them */
-        if (systemName.startsWith("IQ:A:")) {
+        if (systemName.startsWith("IQA")) {
             try {
                 int autoNumber = Integer.parseInt(systemName.substring(5));
                 if (autoNumber > lastAutoLogixNGRef) {
@@ -137,47 +137,47 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     @Override
     public LogixNG createLogixNG(String userName) throws IllegalArgumentException {
         int nextAutoLogixNGRef = lastAutoLogixNGRef + 1;
-        StringBuilder b = new StringBuilder("IQ:A:");
+        StringBuilder b = new StringBuilder("IQA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return createLogixNG(b.toString(), userName);
     }
 
     @Override
-    public void setupInitialLogixNGTree(LogixNG newLogix) {
+    public void setupInitialLogixNGTree(LogixNG logixNG) {
         try {
+            FemaleSocket femaleSocket = logixNG.getFemaleSocket();
             MaleDigitalActionSocket actionManySocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).register(new Many(newLogix));
-            FemaleSocket femaleSocket = newLogix.getFemaleSocket();
+                    InstanceManager.getDefault(DigitalActionManager.class).register(new Many(femaleSocket));
             femaleSocket.connect(actionManySocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
-            MaleDigitalActionSocket actionHoldAnythingSocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).register(new HoldAnything(newLogix));
             femaleSocket = actionManySocket.getChild(0);
+            MaleDigitalActionSocket actionHoldAnythingSocket =
+                    InstanceManager.getDefault(DigitalActionManager.class).register(new HoldAnything(femaleSocket));
             femaleSocket.connect(actionHoldAnythingSocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
+            femaleSocket = actionManySocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .register(new IfThen(newLogix, IfThen.Type.TRIGGER_ACTION));
-            femaleSocket = actionManySocket.getChild(1);
+                            .register(new IfThen(femaleSocket, IfThen.Type.TRIGGER_ACTION));
             femaleSocket.connect(actionIfThenSocket);
 
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
+            femaleSocket = actionIfThenSocket.getChild(0);
             MaleDigitalExpressionSocket expressionAndSocket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
-                            .register(new And(newLogix));
-            femaleSocket = actionIfThenSocket.getChild(0);
+                            .register(new And(femaleSocket));
             femaleSocket.connect(expressionAndSocket);
             
+            femaleSocket = actionIfThenSocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket2 =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .register(new IfThen(newLogix, IfThen.Type.CONTINOUS_ACTION));
-            femaleSocket = actionIfThenSocket.getChild(1);
+                            .register(new IfThen(femaleSocket, IfThen.Type.CONTINOUS_ACTION));
             femaleSocket.connect(actionIfThenSocket2);
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
@@ -219,13 +219,23 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
 //        return new DefaultMaleExpressionSocket(expression);
 //    }
 
+    /** {@inheritDoc} */
+    @Override
+    public void resolveAllTrees() {
+        for (LogixNG logixNG : _tsys.values()) {
+            System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
+            logixNG.setParentForAllChildren();
+        }
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public void activateAllLogixNGs() {
 //        jmri.configurexml.ConfigXmlManager a;
 //        jmri.managers.configurexml.AbstractSignalHeadManagerXml b;
 //        jmri.implementation.configurexml.SE8cSignalHeadXml c;
-        for (LogixNG newLogix : _tsys.values()) {
-            System.out.format("LogixNG loaded: %s, %s%n", newLogix.getSystemName(), newLogix.getUserName());
+        for (LogixNG logixNG : _tsys.values()) {
+            System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
         }
 //        throw new UnsupportedOperationException("Not supported yet.");
     }

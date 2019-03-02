@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.engine;
 
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.digitalexpressions.AbstractDigitalExpression;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -16,11 +17,11 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
 
     private final DigitalExpression _pluginExpression;
     
-    public DigitalExpressionPluginAdapter(String sys, DigitalExpression pluginExpression)
+    public DigitalExpressionPluginAdapter(Base parent, String sys, DigitalExpression pluginExpression)
             throws BadUserNameException,
             BadSystemNameException {
         
-        super(sys);
+        super(parent, sys);
         
         _pluginExpression = pluginExpression;
     }

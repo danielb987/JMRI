@@ -7,6 +7,7 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -19,27 +20,29 @@ public class AnalogActionSetAnalogIO extends AbstractAnalogAction {
 
     private AnalogIO _analogIO;
     
-    public AnalogActionSetAnalogIO(String sys) {
-        super(sys);
+    public AnalogActionSetAnalogIO(Base parent, String sys) {
+        super(parent, sys);
     }
     
-    public AnalogActionSetAnalogIO(String sys, String user) {
-        super(sys, user);
+    public AnalogActionSetAnalogIO(Base parent, String sys, String user) {
+        super(parent, sys, user);
     }
     
     public AnalogActionSetAnalogIO(
+            Base parent,
             String sys,
             AnalogIO analogIO) {
         
-        super(sys);
+        super(parent, sys);
         _analogIO = analogIO;
     }
     
     public AnalogActionSetAnalogIO(
+            Base parent,
             String sys, String user,
             AnalogIO analogIO) {
         
-        super(sys, user);
+        super(parent, sys, user);
         _analogIO = analogIO;
     }
     

@@ -30,10 +30,12 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
     public String getNewSystemName(LogixNG newLogix);
 
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
-            FemaleSocketListener listener, String socketName);
+            Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent,
+            FemaleSocketListener listener,
+            String socketName,
             MaleStringExpressionSocket maleSocket);
 
     /*.*

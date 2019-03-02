@@ -7,7 +7,7 @@ import jmri.NamedBean;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface LogixNG extends NamedBean {
+public interface LogixNG extends Base, NamedBean {
 
     /**
      * Get the female socket of this LogixNG.

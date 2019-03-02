@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digitalactions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalAction;
@@ -14,17 +15,32 @@ import jmri.jmrit.logixng.DigitalAction;
 public abstract class AbstractDigitalAction extends AbstractNamedBean
         implements DigitalAction {
 
+    private Base _parent;
     private Lock _lock = Lock.NONE;
     
     
-    public AbstractDigitalAction(String sys) throws BadSystemNameException {
+    public AbstractDigitalAction(Base parent, String sys) throws BadSystemNameException {
         super(sys);
+        _parent = parent;
     }
 
-    public AbstractDigitalAction(String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractDigitalAction(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        _parent = parent;
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Base getParent() {
+        return _parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setParent(Base parent) {
+        _parent = parent;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {

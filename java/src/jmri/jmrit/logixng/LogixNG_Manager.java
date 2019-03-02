@@ -58,6 +58,14 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
 //    public MaleExpressionSocket createMaleExpressionSocket(Expression expression);
     
     /**
+     * Resolve all the LogixNG trees.
+     * <P>
+     * This method ensures that everything in the LogixNG tree has a pointer
+     * to its parent.
+     */
+    public void resolveAllTrees();
+
+    /**
      * Activate all LogixNGs that are not currently active. This method is
      * called after a configuration file is loaded.
      */

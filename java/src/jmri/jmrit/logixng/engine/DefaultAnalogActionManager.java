@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.AnalogAction;
 import jmri.jmrit.logixng.AnalogActionManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -122,7 +123,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // A - AnalogAction
         // \d+ - The AnalogAction ID number
-        if (systemName.matches("IQ\\:(A\\:)?\\d+:(A\\:)?AA\\d+")) {
+        if (systemName.matches("IQA?\\d+:AAA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -133,7 +134,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
     public String getNewSystemName(LogixNG newLogix) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
         StringBuilder b = new StringBuilder(newLogix.getSystemName());
-        b.append(":A:A");
+        b.append(":AAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();
@@ -141,17 +142,17 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
 
     @Override
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
-            FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleAnalogActionSocket(listener, socketName);
+            Base parent, FemaleSocketListener listener, String socketName) {
+        return new DefaultFemaleAnalogActionSocket(parent, listener, socketName);
     }
 
     @Override
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
-            FemaleSocketListener listener, String socketName,
+            Base parent, FemaleSocketListener listener, String socketName,
             MaleAnalogActionSocket maleSocket){
         
         FemaleAnalogActionSocket socket =
-                new DefaultFemaleAnalogActionSocket(listener, socketName, maleSocket);
+                new DefaultFemaleAnalogActionSocket(parent, listener, socketName, maleSocket);
         
         return socket;
     }

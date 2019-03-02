@@ -55,4 +55,9 @@ public interface FemaleSocket extends Base {
     @CheckForNull
     public String getName();
     
+    /**
+     * Get an example of a system name for this socket.
+     */
+    public String getExampleSystemName();
+    
 }

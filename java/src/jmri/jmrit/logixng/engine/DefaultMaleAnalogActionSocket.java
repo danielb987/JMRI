@@ -10,6 +10,7 @@ import jmri.NamedBean;
 import jmri.jmrit.logixng.Category;
 import javax.annotation.Nonnull;
 import jmri.jmrit.logixng.AnalogAction;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -28,6 +29,16 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     
     public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
         _action = action;
+    }
+    
+    @Override
+    public Base getParent() {
+        return _action.getParent();
+    }
+    
+    @Override
+    public void setParent(Base parent) {
+        _action.setParent(parent);
     }
     
     /** {@inheritDoc} */
