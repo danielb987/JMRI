@@ -55,7 +55,7 @@ public class LogReader {
      * Try to read one more row of data. Returns null if end of data.
      * @return a row of data or null if end of data
      * @throws java.io.IOException if an I/O error occurs
-     * @throws Log.InvalidFormatException
+     * @throws Log.InvalidFormatException if the log has invalid format
      */
     public LogRow read() throws IOException, Log.InvalidFormatException {
         return decoder.read();
