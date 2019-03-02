@@ -894,12 +894,11 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if ((sName.length() < 3) || (sName.charAt(0) != 'I')
-                || (sName.charAt(1) != 'Q')
-                || (sName.charAt(2) != ':')) {
+        if ((sName.length() < 2) || (sName.charAt(0) != 'I')
+                || (sName.charAt(1) != 'Q')) {
             // System name does not begin with IQ:, prefix IQ: to it
             String s = sName;
-            sName = "IQ:" + s;  // NOI18N
+            sName = "IQ" + s;  // NOI18N
         }
         _systemName.setText(sName);
         return true;
