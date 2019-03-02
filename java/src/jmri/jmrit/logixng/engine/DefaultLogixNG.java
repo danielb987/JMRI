@@ -144,12 +144,17 @@ public final class DefaultLogixNG extends AbstractNamedBean
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported.");
+        if (index != 0) {
+            throw new IllegalArgumentException(
+                    String.format("index has invalid value: %d", index));
+        }
+        
+        return _femaleActionSocket;
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported.");
+        return 1;
     }
 
     @Override
