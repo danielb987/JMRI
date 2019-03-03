@@ -881,7 +881,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
     /**
      * Check validity of LogixNG system name.
      * <p>
-     * Fixes name if it doesn't start with "IQ:".
+     * Fixes name if it doesn't start with "IQ".
      *
      * @return false if name has length &lt; 1 after displaying a dialog
      */
