@@ -56,7 +56,7 @@ public class DefaultMaleDigitalActionSocketXml extends jmri.managers.configurexm
             }
             
             element.addContent(new Element("lock").addContent(getLock(p).name()));
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
             log.error("Error storing action: {}", e, e);
         }
         

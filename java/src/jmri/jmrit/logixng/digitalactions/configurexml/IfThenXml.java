@@ -67,7 +67,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
             if (_thenActionSocket.isConnected()) {
                 element.addContent(new Element("thenSystemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
             }
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
             log.error("Error storing action: {}", e, e);
         }
 
