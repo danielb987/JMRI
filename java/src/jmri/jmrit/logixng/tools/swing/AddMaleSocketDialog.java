@@ -211,8 +211,8 @@ public class AddMaleSocketDialog extends JDialog {
      * @param e The event heard
      */
     void cancelAddPressed(ActionEvent e) {
-        addLogixNGFrame.setVisible(false);
-        addLogixNGFrame.dispose();
+//        addLogixNGFrame.setVisible(false);
+//        addLogixNGFrame.dispose();
 //        addLogixNGFrame = null;
 //        _inCopyMode = false;
 //        if (f != null) {
