@@ -68,6 +68,10 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     /** {@inheritDoc} */
     @Override
     public float evaluate() {
+        if ((_debugConfig != null)
+                && ((AnalogExpressionDebugConfig)_debugConfig)._forceResult) {
+            return ((AnalogExpressionDebugConfig)_debugConfig)._result;
+        }
         return _expression.evaluate();
     }
 
@@ -248,10 +252,12 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     public static class AnalogExpressionDebugConfig implements MaleSocket.DebugConfig {
         
-        // If true, the socket is not executing the action.
-        // It's useful if you want to test the LogixNG without affecting the
-        // layout (turnouts, sensors, and so on).
-        public boolean dontExecute = false;
+        // If true, the socket is returning the value of "result" instead of
+        // executing the expression.
+        public boolean _forceResult = false;
+        
+        // The result if the result is forced.
+        public float _result = 0.0f;
         
     }
 

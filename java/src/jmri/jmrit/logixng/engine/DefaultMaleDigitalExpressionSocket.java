@@ -69,6 +69,11 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
+        if ((_debugConfig != null)
+                && ((DigitalExpressionDebugConfig)_debugConfig)._forceResult) {
+            lastEvaluationResult = ((DigitalExpressionDebugConfig)_debugConfig)._result;
+            return lastEvaluationResult;
+        }
         lastEvaluationResult = _expression.evaluate();
         return lastEvaluationResult;
     }
@@ -249,19 +254,19 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     /** {@inheritDoc} */
     @Override
     public DebugConfig createDebugConfig() {
-        return new ExpressionDebugConfig();
+        return new DigitalExpressionDebugConfig();
     }
 
 
 
-    public static class ExpressionDebugConfig implements MaleSocket.DebugConfig {
+    public static class DigitalExpressionDebugConfig implements MaleSocket.DebugConfig {
         
         // If true, the socket is returning the value of "result" instead of
         // executing the expression.
-        public boolean forceResult = false;
+        public boolean _forceResult = false;
         
         // The result if the result is forced.
-        public boolean result = false;
+        public boolean _result = false;
         
     }
 

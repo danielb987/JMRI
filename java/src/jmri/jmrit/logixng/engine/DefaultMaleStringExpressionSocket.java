@@ -68,6 +68,10 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     /** {@inheritDoc} */
     @Override
     public String evaluate() {
+        if ((_debugConfig != null)
+                && ((StringExpressionDebugConfig)_debugConfig)._forceResult) {
+            return ((StringExpressionDebugConfig)_debugConfig)._result;
+        }
         return _stringExpression.evaluate();
     }
 
@@ -248,10 +252,12 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
 
     public static class StringExpressionDebugConfig implements MaleSocket.DebugConfig {
         
-        // If true, the socket is not executing the action.
-        // It's useful if you want to test the LogixNG without affecting the
-        // layout (turnouts, sensors, and so on).
-        public boolean dontExecute = false;
+        // If true, the socket is returning the value of "result" instead of
+        // executing the expression.
+        public boolean _forceResult = false;
+        
+        // The result if the result is forced.
+        public String _result = "";
         
     }
 
