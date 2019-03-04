@@ -73,7 +73,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
             throw new RuntimeException("executeStart() must not be called on an active action");
         }
         if ((_debugConfig != null)
-                && ((DigitalActionDebugConfig)_debugConfig).dontExecute) {
+                && ((DigitalActionDebugConfig)_debugConfig)._dontExecute) {
             return false;
         }
         _isActive = _action.executeStart();
@@ -87,7 +87,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
             return false;
         }
         if ((_debugConfig != null)
-                && ((DigitalActionDebugConfig)_debugConfig).dontExecute) {
+                && ((DigitalActionDebugConfig)_debugConfig)._dontExecute) {
             _isActive = false;
             _action.abort();
             return false;
@@ -100,7 +100,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     @Override
     public boolean executeRestart() {
         if ((_debugConfig != null)
-                && ((DigitalActionDebugConfig)_debugConfig).dontExecute) {
+                && ((DigitalActionDebugConfig)_debugConfig)._dontExecute) {
             if (_isActive) {
                 _isActive = false;
                 _action.abort();
@@ -304,7 +304,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the
         // layout (turnouts, sensors, and so on).
-        public boolean dontExecute = false;
+        public boolean _dontExecute = false;
         
     }
 

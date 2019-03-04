@@ -69,7 +69,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     @Override
     public void setValue(float value) {
         if ((_debugConfig != null)
-                && ((AnalogActionDebugConfig)_debugConfig).dontExecute) {
+                && ((AnalogActionDebugConfig)_debugConfig)._dontExecute) {
             return;
         }
         _action.setValue(value);
@@ -256,7 +256,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the
         // layout (turnouts, sensors, and so on).
-        public boolean dontExecute = false;
+        public boolean _dontExecute = false;
         
     }
 

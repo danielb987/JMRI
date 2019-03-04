@@ -72,7 +72,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
      */
     public void setValue(String value) {
         if ((_debugConfig != null)
-                && ((StringActionDebugConfig)_debugConfig).dontExecute) {
+                && ((StringActionDebugConfig)_debugConfig)._dontExecute) {
             return;
         }
         _stringAction.setValue(value);
@@ -259,7 +259,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the
         // layout (turnouts, sensors, and so on).
-        public boolean dontExecute = false;
+        public boolean _dontExecute = false;
         
     }
 
