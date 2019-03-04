@@ -72,6 +72,10 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         if (_isActive) {
             throw new RuntimeException("executeStart() must not be called on an active action");
         }
+        if ((_debugConfig != null)
+                && ((DigitalActionDebugConfig)_debugConfig).dontExecute) {
+            return false;
+        }
         _isActive = _action.executeStart();
         return _isActive;
     }
@@ -82,6 +86,12 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         if (!_isActive) {
             return false;
         }
+        if ((_debugConfig != null)
+                && ((DigitalActionDebugConfig)_debugConfig).dontExecute) {
+            _isActive = false;
+            _action.abort();
+            return false;
+        }
         _isActive = _action.executeContinue();
         return _isActive;
     }
@@ -89,6 +99,15 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
+        if ((_debugConfig != null)
+                && ((DigitalActionDebugConfig)_debugConfig).dontExecute) {
+            if (_isActive) {
+                _isActive = false;
+                _action.abort();
+                return false;
+            }
+            return false;
+        }
         if (_isActive) {
             _isActive = _action.executeRestart();
         } else {
@@ -275,12 +294,12 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     /** {@inheritDoc} */
     @Override
     public DebugConfig createDebugConfig() {
-        return new ActionDebugConfig();
+        return new DigitalActionDebugConfig();
     }
 
 
 
-    public static class ActionDebugConfig implements MaleSocket.DebugConfig {
+    public static class DigitalActionDebugConfig implements MaleSocket.DebugConfig {
         
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the

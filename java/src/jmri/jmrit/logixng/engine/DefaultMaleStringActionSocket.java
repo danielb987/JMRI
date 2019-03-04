@@ -71,6 +71,10 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
      * Set a string value.
      */
     public void setValue(String value) {
+        if ((_debugConfig != null)
+                && ((StringActionDebugConfig)_debugConfig).dontExecute) {
+            return;
+        }
         _stringAction.setValue(value);
     }
 

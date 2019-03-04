@@ -68,6 +68,10 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     /** {@inheritDoc} */
     @Override
     public void setValue(float value) {
+        if ((_debugConfig != null)
+                && ((AnalogActionDebugConfig)_debugConfig).dontExecute) {
+            return;
+        }
         _action.setValue(value);
     }
 
