@@ -280,7 +280,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
 
 
 
-    public class ActionDebugConfig implements MaleSocket.DebugConfig {
+    public static class ActionDebugConfig implements MaleSocket.DebugConfig {
         
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the

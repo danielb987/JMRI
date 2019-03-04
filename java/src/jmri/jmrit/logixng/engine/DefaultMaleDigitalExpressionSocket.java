@@ -254,7 +254,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
 
 
 
-    public class ExpressionDebugConfig implements MaleSocket.DebugConfig {
+    public static class ExpressionDebugConfig implements MaleSocket.DebugConfig {
         
         // If true, the socket is returning the value of "result" instead of
         // executing the expression.

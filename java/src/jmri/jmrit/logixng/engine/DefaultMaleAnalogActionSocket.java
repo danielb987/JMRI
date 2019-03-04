@@ -247,7 +247,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
 
 
 
-    public class AnalogActionDebugConfig implements MaleSocket.DebugConfig {
+    public static class AnalogActionDebugConfig implements MaleSocket.DebugConfig {
         
         // If true, the socket is not executing the action.
         // It's useful if you want to test the LogixNG without affecting the
