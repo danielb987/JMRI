@@ -136,6 +136,10 @@ public class ToolsMenu extends JMenu {
         add(new JSeparator());
         // LogixNG menu
         add(new jmri.jmrit.logixng.tools.swing.LogixNGMenu());
+
+        add(new JSeparator());
+        // add cab signals
+        add(new jmri.jmrit.cabsignals.CabSignalAction());
     }
 
 }
