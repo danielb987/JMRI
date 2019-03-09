@@ -14,6 +14,9 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
+import jmri.util.Log4JUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Every AnalogExpression has an DefaultMaleAnalogExpressionSocket as its parent.
@@ -25,6 +28,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     private final AnalogExpression _expression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
+    private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
 
 
     public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
@@ -53,6 +57,15 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         _lock = lock;
     }
 
+    public ErrorHandlingType getErrorHandlingType() {
+        return _errorHandlingType;
+    }
+
+    public void setErrorHandlingType(ErrorHandlingType errorHandlingType)
+    {
+        _errorHandlingType = errorHandlingType;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -65,6 +78,24 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         return false;
     }
     
+    /**
+     * Get the value of the AnalogExpression.
+     */
+    public float internalEvaluate() {
+        float result = _expression.evaluate();
+        
+        if (result == Float.NaN) {
+            throw new IllegalArgumentException("The result is NaN");
+        }
+        if (result == Float.NEGATIVE_INFINITY) {
+            throw new IllegalArgumentException("The result is negative infinity");
+        }
+        if (result == Float.POSITIVE_INFINITY) {
+            throw new IllegalArgumentException("The result is positive infinity");
+        }
+        return result;
+    }
+
     /** {@inheritDoc} */
     @Override
     public float evaluate() {
@@ -72,7 +103,31 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
                 && ((AnalogExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((AnalogExpressionDebugConfig)_debugConfig)._result;
         }
-        return _expression.evaluate();
+        
+        try {
+            return internalEvaluate();
+        } catch (Exception e) {
+            switch (_errorHandlingType) {
+                case SHOW_DIALOG_BOX:
+                    // We don't show a dialog box yet so log instead.
+                    log.error("expression {} thrown an exception: {}", _expression.toString(), e);
+                    return 0.0f;
+                    
+                case LOG_ERROR:
+                    log.error("expression {} thrown an exception: {}", _expression.toString(), e);
+                    return 0.0f;
+                    
+                case LOG_ERROR_ONCE:
+                    Log4JUtil.warnOnce(log, "expression {} thrown an exception: {}", _expression.toString(), e);
+                    return 0.0f;
+                    
+                case THROW:
+                    throw e;
+                    
+                default:
+                    throw e;
+            }
+        }
     }
 
     @Override
@@ -260,5 +315,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         public float _result = 0.0f;
         
     }
+
+    private final static Logger log = LoggerFactory.getLogger(DefaultMaleAnalogExpressionSocket.class);
 
 }
