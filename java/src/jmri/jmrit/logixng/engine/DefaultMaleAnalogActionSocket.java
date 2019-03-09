@@ -105,7 +105,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         try {
             internalSetValue(value);
         } catch (Exception e) {
-            switch (errorHandlingType) {
+            switch (_errorHandlingType) {
                 case SHOW_DIALOG_BOX:
                     // We don't show a dialog box yet so log instead.
                     log.error("action {} thrown an exception: {}", _action.toString(), e);
