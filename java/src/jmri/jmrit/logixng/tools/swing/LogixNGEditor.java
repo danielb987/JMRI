@@ -58,6 +58,8 @@ import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Editor of LogixNG
@@ -321,10 +323,9 @@ public final class LogixNGEditor extends JmriJFrame {
     }
 
     /**
-     * Respond to the Add button in LogixNG table Creates and/or initialize
-     * the Add LogixNG pane.
+     * Respond to the Add menu choice in the popup menu.
      *
-     * @param e The event heard
+     * @param femaleSocket the female socket
      */
     protected void addPressed(FemaleSocket femaleSocket) {
         // possible change
@@ -777,9 +778,14 @@ public final class LogixNGEditor extends JmriJFrame {
                     
                 case ACTION_COMMAND_UNLOCK:
                     break;
+                    
+                default:
+                    log.error("e.getActionCommand() returns unknown value {}", e.getActionCommand());
             }
         }
         
     }
     
+    private final static Logger log = LoggerFactory.getLogger(LogixNGEditor.class);
+
 }
