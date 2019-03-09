@@ -212,12 +212,16 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         _thenActionSocket.abort();
     }
     
-    /** {@inheritDoc} */
+    /**
+     * Get the type.
+     */
     public Type getType() {
         return _type;
     }
     
-    /** {@inheritDoc} */
+    /**
+     * Set the type.
+     */
     public void setType(Type type) {
         if ((_type != type) && _lastActionResult) {
             _thenActionSocket.abort();
