@@ -231,6 +231,57 @@
 
 
 
+		<h2>Error handling</h2>
+
+        <p style="color:yellow;background-color:red">This is yet
+        to be implemented.</p>
+
+		<p>Sometimes an error occurs. It may be due to an error on the layout,
+		an arithmetic error or something else. Each action and expression can
+		handle that and there are a couple of options.</p>
+		
+		<ul>
+		<li>Show a dialog box</li>
+		<li>Log the error</li>
+		<li>Log the error once</li>
+		<li>Let the action or exception above handle it</li>
+		</ul>
+
+		<p>These options can be configured at three different layers:</p>
+
+		<ul>
+		<li>For each action or expression</li>
+		<li>For the LogixNG the action or expression belongs to</li>
+		<li>In the LogixNG preferences</li>
+		</ul>
+
+		<p>The default is to log the error once. And by default, neither
+		each LogixNG nor each action and expression overrides the settings
+		in the preferences.</p>
+
+		<p>The recommendation is to set the desired error handling in the
+		LogixNG preferences, which sets it for all actions and expressions.
+		And then override that setting at the LogixNG level or an individual
+		action or expression when needed.</p>
+
+		<p>For example, a LogixNG that has an AnalogAction that sets an analog
+		value may want to abort that particular LogixNG if something goes wrong,
+		for example due to an arithmetic error. In that case, that LogixNG can
+		be configured to "Let the action or exception above handle it", which
+		means that the LogixNG will be aborted since no action or exception
+		in that LogixNG will handle the error.</p>
+
+		<p>Note that for actions or expressions that has multiple children,
+		for example the "Many" action, an that is not handled in one of the
+		children will abort that action or expression even if there are more
+		children to execute. Lets say, for example, the action "Many" have
+		three child actions A, B and C, and the Many action itself handles the
+		error but not the child A. If an error occurs in A, the Many action
+		will be aborted so that actions B and C will not be executed, but the
+		parent of the Many action will not be affected by the error.</p>
+
+
+
         <h2>Execution groups</h2>
 
         <p style="color:yellow;background-color:red">Execution groups are yet

@@ -906,7 +906,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     /**
      * Check if another LogixNG editing session is currently open or no system
- name is provided.
+     * name is provided.
      *
      * @param sName system name of LogixNG to be copied
      * @return true if a new session may be started

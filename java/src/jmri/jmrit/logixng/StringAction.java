@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng;
 
+import javax.annotation.Nonnull;
 import jmri.NamedBean;
 
 /**
@@ -12,6 +13,6 @@ public interface StringAction extends NamedBean, Base {
     /**
      * Set a string value.
      */
-    public void setValue(String value);
+    public void setValue(@Nonnull String value);
     
 }
