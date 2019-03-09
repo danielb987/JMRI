@@ -7,6 +7,14 @@ package jmri.jmrit.logixng;
  */
 public interface MaleSocket extends Base {
 
+    public enum ErrorHandlingType {
+        
+        SHOW_DIALOG_BOX,
+        LOG_ERROR,
+        LOG_ERROR_ONCE,
+        THROW,
+    }
+    
     /**
      * Set the debug configuration for this male socket.
      * <P>

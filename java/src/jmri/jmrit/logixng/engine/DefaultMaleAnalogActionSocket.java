@@ -14,6 +14,9 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
+import jmri.util.Log4JUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Every AnalogAction has an DefaultMaleAnalogActionSocket as its parent.
@@ -25,6 +28,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     private final AnalogAction _action;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
+    private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
     
     
     public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
@@ -53,6 +57,15 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         _lock = lock;
     }
     
+    public ErrorHandlingType getErrorHandlingType() {
+        return _errorHandlingType;
+    }
+    
+    public void setErrorHandlingType(ErrorHandlingType errorHandlingType)
+    {
+        _errorHandlingType = errorHandlingType;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -65,6 +78,22 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         return false;
     }
     
+    /**
+     * Set the value of the AnalogAction.
+     */
+    private void internalSetValue(float value) {
+        if (value == Float.NaN) {
+            throw new IllegalArgumentException("The value is NaN");
+        }
+        if (value == Float.NEGATIVE_INFINITY) {
+            throw new IllegalArgumentException("The value is negative infinity");
+        }
+        if (value == Float.POSITIVE_INFINITY) {
+            throw new IllegalArgumentException("The value is positive infinity");
+        }
+        _action.setValue(value);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void setValue(float value) {
@@ -72,7 +101,31 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
                 && ((AnalogActionDebugConfig)_debugConfig)._dontExecute) {
             return;
         }
-        _action.setValue(value);
+        
+        try {
+            internalSetValue(value);
+        } catch (Exception e) {
+            switch (errorHandlingType) {
+                case SHOW_DIALOG_BOX:
+                    // We don't show a dialog box yet so log instead.
+                    log.error("action {} thrown an exception: {}", _action.toString(), e);
+                    break;
+                    
+                case LOG_ERROR:
+                    log.error("action {} thrown an exception: {}", _action.toString(), e);
+                    break;
+                    
+                case LOG_ERROR_ONCE:
+                    Log4JUtil.warnOnce(log, "action {} thrown an exception: {}", _action.toString(), e);
+                    break;
+                    
+                case THROW:
+                    throw e;
+                    
+                default:
+                    throw e;
+            }
+        }
     }
 
     @Override
@@ -259,5 +312,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         public boolean _dontExecute = false;
         
     }
+
+    private final static Logger log = LoggerFactory.getLogger(DefaultMaleAnalogActionSocket.class);
 
 }

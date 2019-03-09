@@ -6,4 +6,12 @@ package jmri.jmrit.logixng;
 public interface MaleAnalogActionSocket
         extends MaleSocket, AnalogAction {
 
+    /**
+     * {@inheritDoc}
+     * 
+     * 
+     */
+    @Override
+    public void setValue(float value);
+
 }
