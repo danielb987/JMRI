@@ -83,7 +83,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
      * Set the value of the AnalogAction.
      */
     private void internalSetValue(float value) {
-        if (value == Float.NaN) {
+        if (Float.isNaN(value)) {
             throw new IllegalArgumentException("The value is NaN");
         }
         if (value == Float.NEGATIVE_INFINITY) {
