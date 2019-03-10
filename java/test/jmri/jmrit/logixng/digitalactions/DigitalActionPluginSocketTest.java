@@ -16,7 +16,7 @@ public class DigitalActionPluginSocketTest {
 
     @Test
     public void testCtor() {
-        new DigitalActionPluginSocket(null, "", null);
+        new DigitalActionPluginSocket("", null);
     }
     
     // The minimal setup for log4J
