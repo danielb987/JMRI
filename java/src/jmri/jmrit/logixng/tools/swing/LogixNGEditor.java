@@ -460,7 +460,7 @@ public final class LogixNGEditor extends JmriJFrame {
         addLogixNGFrame.pack();
         addLogixNGFrame.setVisible(true);
         
-        return null;
+        return panel5;
     }
     
     /**
