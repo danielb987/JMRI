@@ -85,7 +85,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     public float internalEvaluate() {
         float result = _expression.evaluate();
         
-        if (Float.isNaN(value)) {
+        if (Float.isNaN(result)) {
             throw new IllegalArgumentException("The result is NaN");
         }
         if (result == Float.NEGATIVE_INFINITY) {
