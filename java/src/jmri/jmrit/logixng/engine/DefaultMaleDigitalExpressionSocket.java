@@ -22,6 +22,7 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpressionSocket {
 
+    private Base _parent = null;
     private final DigitalExpression _expression;
     private boolean lastEvaluationResult = false;
     private Lock _lock = Lock.NONE;
@@ -34,12 +35,12 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
 
     @Override
     public Base getParent() {
-        return _expression.getParent();
+        return _parent;
     }
 
     @Override
     public void setParent(Base parent) {
-        _expression.setParent(parent);
+        _parent = parent;
     }
 
     /** {@inheritDoc} */

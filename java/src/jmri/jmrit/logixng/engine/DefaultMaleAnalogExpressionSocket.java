@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSocket {
 
+    private Base _parent = null;
     private final AnalogExpression _expression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
@@ -37,12 +38,12 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     @Override
     public Base getParent() {
-        return _expression.getParent();
+        return _parent;
     }
 
     @Override
     public void setParent(Base parent) {
-        _expression.setParent(parent);
+        _parent = parent;
     }
 
     /** {@inheritDoc} */

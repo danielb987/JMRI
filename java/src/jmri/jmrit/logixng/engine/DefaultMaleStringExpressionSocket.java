@@ -22,6 +22,7 @@ import jmri.jmrit.logixng.StringExpression;
  */
 public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSocket {
 
+    private Base _parent = null;
     private final StringExpression _stringExpression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
@@ -33,12 +34,12 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
 
     @Override
     public Base getParent() {
-        return _stringExpression.getParent();
+        return _parent;
     }
 
     @Override
     public void setParent(Base parent) {
-        _stringExpression.setParent(parent);
+        _parent = parent;
     }
 
     /** {@inheritDoc} */

@@ -73,12 +73,14 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         }
         
         _socket = socket;
+        _socket.setParent(this);
         _listener.connected(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public void disconnect() {
+        _socket.setParent(null);
         _socket = null;
         _listener.disconnected(this);
     }

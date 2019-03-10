@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
 
+    private Base _parent = null;
     private final AnalogAction _action;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
@@ -37,12 +38,12 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     
     @Override
     public Base getParent() {
-        return _action.getParent();
+        return _parent;
     }
     
     @Override
     public void setParent(Base parent) {
-        _action.setParent(parent);
+        _parent = parent;
     }
     
     /** {@inheritDoc} */

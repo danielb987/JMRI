@@ -22,6 +22,7 @@ import jmri.jmrit.logixng.StringAction;
  */
 public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
 
+    private Base _parent = null;
     private final StringAction _stringAction;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
@@ -33,12 +34,12 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     
     @Override
     public Base getParent() {
-        return _stringAction.getParent();
+        return _parent;
     }
     
     @Override
     public void setParent(Base parent) {
-        _stringAction.setParent(parent);
+        _parent = parent;
     }
     
     /** {@inheritDoc} */

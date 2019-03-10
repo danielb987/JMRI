@@ -22,6 +22,7 @@ import jmri.jmrit.logixng.MaleDigitalActionSocket;
  */
 public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
 
+    private Base _parent = null;
     private final DigitalAction _action;
     private boolean _isActive = false;
     private Lock _lock = Lock.NONE;
@@ -34,12 +35,12 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     
     @Override
     public Base getParent() {
-        return _action.getParent();
+        return _parent;
     }
     
     @Override
     public void setParent(Base parent) {
-        _action.setParent(parent);
+        _parent = parent;
     }
     
     /** {@inheritDoc} */
