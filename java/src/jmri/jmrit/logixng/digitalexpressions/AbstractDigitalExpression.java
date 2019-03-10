@@ -13,18 +13,17 @@ import jmri.jmrit.logixng.DigitalExpression;
 public abstract class AbstractDigitalExpression extends AbstractNamedBean
         implements DigitalExpression {
 
-    private Base _parent;
+    private Base _parent = null;
     private Lock _lock = Lock.NONE;
     
     
-    public AbstractDigitalExpression(Base parent, String sys) throws BadSystemNameException {
+    public AbstractDigitalExpression(String sys) throws BadSystemNameException {
         super(sys);
-        _parent = parent;
     }
 
-    public AbstractDigitalExpression(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractDigitalExpression(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _parent = parent;
     }
 
     /** {@inheritDoc} */

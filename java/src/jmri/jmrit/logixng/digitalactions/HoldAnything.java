@@ -30,24 +30,22 @@ public class HoldAnything extends AbstractDigitalAction {
     /**
      * Create a new instance of ActionMany and generate a new system name.
      */
-    public HoldAnything(Base parent)
-            throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
-        
-        super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
+    public HoldAnything(LogixNG logixNG) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG));
         init();
     }
 
-    public HoldAnything(Base parent, String sys)
-            throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
+    public HoldAnything(String sys)
+            throws NamedBean.BadSystemNameException {
         
-        super(parent, sys);
+        super(sys);
         init();
     }
 
-    public HoldAnything(Base parent, String sys, String user)
+    public HoldAnything(String sys, String user)
             throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         
-        super(parent, sys, user);
+        super(sys, user);
         init();
     }
     

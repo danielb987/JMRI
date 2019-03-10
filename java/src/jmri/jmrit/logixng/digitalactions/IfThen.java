@@ -1,7 +1,6 @@
 package jmri.jmrit.logixng.digitalactions;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -57,8 +56,8 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public IfThen(Base parent, Type type) {
-        super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
+    public IfThen(LogixNG logixNG, Type type) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG));
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E");
@@ -66,8 +65,8 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 .createFemaleActionSocket(this, this, "A");
     }
     
-    public IfThen(Base parent, String sys, Type type) {
-        super(parent, sys);
+    public IfThen(String sys, Type type) {
+        super(sys);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E");
@@ -75,8 +74,8 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 .createFemaleActionSocket(this, this, "A");
     }
     
-    public IfThen(Base parent, String sys, String user, Type type) {
-        super(parent, sys, user);
+    public IfThen(String sys, String user, Type type) {
+        super(sys, user);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E");
@@ -85,14 +84,13 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     }
     
     public IfThen(
-            Base parent,
             String sys, Type type,
             String ifExpressionSocketName,
             String thenActionSocketName,
             MaleDigitalExpressionSocket ifExpression,
             MaleDigitalActionSocket thenAction) {
         
-        super(parent, sys);
+        super(sys);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, ifExpressionSocketName, ifExpression);
@@ -101,14 +99,13 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     }
     
     public IfThen(
-            Base parent,
             String sys, String user, Type type,
             String ifExpressionSocketName,
             String thenActionSocketName,
             MaleDigitalExpressionSocket ifExpression,
             MaleDigitalActionSocket thenAction) {
         
-        super(parent, sys, user);
+        super(sys, user);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, ifExpressionSocketName, ifExpression);

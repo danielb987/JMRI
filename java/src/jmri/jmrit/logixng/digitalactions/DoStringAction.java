@@ -1,7 +1,6 @@
 package jmri.jmrit.logixng.digitalactions;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.Category;
@@ -24,16 +23,16 @@ public class DoStringAction
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
     
-    public DoStringAction(Base parent, String sys) {
-        super(parent, sys);
+    public DoStringAction(String sys) {
+        super(sys);
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
                 .createFemaleStringExpressionSocket(this, this, "E1");
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
                 .createFemaleStringActionSocket(this, this, "A1");
     }
     
-    public DoStringAction(Base parent, String sys, String user) {
-        super(parent, sys, user);
+    public DoStringAction(String sys, String user) {
+        super(sys, user);
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
                 .createFemaleStringExpressionSocket(this, this, "E1");
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
@@ -41,12 +40,11 @@ public class DoStringAction
     }
     
     public DoStringAction(
-            Base parent,
             String sys,
             String expressionSocketName, String actionSocketName,
             MaleStringExpressionSocket expression, MaleStringActionSocket action) {
         
-        super(parent, sys);
+        super(sys);
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
                 .createFemaleStringExpressionSocket(this, this, expressionSocketName, expression);
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
@@ -54,12 +52,11 @@ public class DoStringAction
     }
     
     public DoStringAction(
-            Base parent,
             String sys, String user,
             String expressionSocketName, String actionSocketName, 
             MaleStringExpressionSocket expression, MaleStringActionSocket action) {
         
-        super(parent, sys, user);
+        super(sys, user);
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
                 .createFemaleStringExpressionSocket(this, this, expressionSocketName, expression);
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)

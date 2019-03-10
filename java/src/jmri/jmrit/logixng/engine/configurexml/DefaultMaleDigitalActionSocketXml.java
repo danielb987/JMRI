@@ -103,9 +103,9 @@ public class DefaultMaleDigitalActionSocketXml extends jmri.managers.configurexm
         String uname = getUserName(shared);
         DigitalAction h;
         if (uname == null) {
-            h = new Many(null, sys);
+            h = new Many(sys);
         } else {
-            h = new Many(null, sys, uname);
+            h = new Many(sys, uname);
         }
 
         loadCommon(h, shared);

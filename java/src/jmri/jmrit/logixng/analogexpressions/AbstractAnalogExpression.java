@@ -13,18 +13,17 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnalogExpression extends AbstractNamedBean
         implements AnalogExpression {
 
-    private Base _parent;
+    private Base _parent = null;
     private Lock _lock = Lock.NONE;
 
 
-    public AbstractAnalogExpression(Base parent, String sys) throws BadSystemNameException {
+    public AbstractAnalogExpression(String sys) throws BadSystemNameException {
         super(sys);
-        _parent = parent;
     }
 
-    public AbstractAnalogExpression(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractAnalogExpression(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _parent = parent;
     }
 
     /** {@inheritDoc} */

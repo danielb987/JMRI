@@ -1,11 +1,5 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
-import jmri.jmrit.logixng.digitalexpressions.And;
-import jmri.jmrit.logixng.digitalexpressions.TriggerOnce;
-import jmri.jmrit.logixng.digitalexpressions.Timer;
-import jmri.jmrit.logixng.digitalexpressions.ResetOnTrue;
-import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
-import jmri.jmrit.logixng.digitalexpressions.Hold;
 import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Map;

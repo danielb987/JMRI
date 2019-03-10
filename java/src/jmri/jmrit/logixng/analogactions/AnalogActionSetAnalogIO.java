@@ -20,29 +20,23 @@ public class AnalogActionSetAnalogIO extends AbstractAnalogAction {
 
     private AnalogIO _analogIO;
     
-    public AnalogActionSetAnalogIO(Base parent, String sys) {
-        super(parent, sys);
+    public AnalogActionSetAnalogIO(String sys) {
+        super(sys);
     }
     
-    public AnalogActionSetAnalogIO(Base parent, String sys, String user) {
-        super(parent, sys, user);
+    public AnalogActionSetAnalogIO(String sys, String user) {
+        super(sys, user);
     }
     
-    public AnalogActionSetAnalogIO(
-            Base parent,
-            String sys,
-            AnalogIO analogIO) {
+    public AnalogActionSetAnalogIO(String sys, AnalogIO analogIO) {
         
-        super(parent, sys);
+        super(sys);
         _analogIO = analogIO;
     }
     
-    public AnalogActionSetAnalogIO(
-            Base parent,
-            String sys, String user,
-            AnalogIO analogIO) {
+    public AnalogActionSetAnalogIO(String sys, String user, AnalogIO analogIO) {
         
-        super(parent, sys, user);
+        super(sys, user);
         _analogIO = analogIO;
     }
     

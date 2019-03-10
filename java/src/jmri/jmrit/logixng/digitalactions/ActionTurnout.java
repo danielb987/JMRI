@@ -1,10 +1,8 @@
 package jmri.jmrit.logixng.digitalactions;
 
 import jmri.Turnout;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.DigitalAction;
 
 /**
  * This action sets the state of a turnout.
@@ -16,8 +14,9 @@ public class ActionTurnout extends AbstractDigitalAction {
 //    private ActionTurnout _turnout;
 //    private int _newState;
     
-    public ActionTurnout(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(parent, sys, user);
+    public ActionTurnout(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
 //        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
 

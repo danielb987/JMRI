@@ -15,18 +15,17 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnalogAction extends AbstractNamedBean
         implements AnalogAction {
 
-    private Base _parent;
+    private Base _parent = null;
     private Lock _lock = Lock.NONE;
 
 
-    public AbstractAnalogAction(Base parent, String sys) throws BadSystemNameException {
+    public AbstractAnalogAction(String sys) throws BadSystemNameException {
         super(sys);
-        _parent = parent;
     }
 
-    public AbstractAnalogAction(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractAnalogAction(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _parent = parent;
     }
 
     /** {@inheritDoc} */

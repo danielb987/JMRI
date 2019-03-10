@@ -33,13 +33,14 @@ public class BufferedSensor extends AbstractDigitalExpression {
 
 //    private final Sensor sensor;
     
-    public BufferedSensor(Base parent, String sys) throws BadUserNameException, BadSystemNameException {
-        super(parent, sys);
+    public BufferedSensor(String sys) throws BadSystemNameException {
+        super(sys);
 //        sensor = null;
     }
 
-    public BufferedSensor(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(parent, sys, user);
+    public BufferedSensor(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
 //        sensor = null;
     }
 

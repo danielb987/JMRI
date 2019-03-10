@@ -118,9 +118,9 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
         String uname = getUserName(shared);
         DigitalExpression h;
         if (uname == null) {
-            h = new And(null, sys);
+            h = new And(sys);
         } else {
-            h = new And(null, sys, uname);
+            h = new And(sys, uname);
         }
 
         loadCommon(h, shared);

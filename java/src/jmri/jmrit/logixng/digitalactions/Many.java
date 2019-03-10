@@ -3,7 +3,6 @@ package jmri.jmrit.logixng.digitalactions;
 import java.util.ArrayList;
 import java.util.List;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -25,23 +24,26 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     /**
      * Create a new instance of ActionMany and generate a new system name.
      */
-    public Many(Base parent) throws BadUserNameException, BadSystemNameException {
-        super(parent, InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(parent.getLogixNG()));
+    public Many(LogixNG logixNG) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG));
         init();
     }
 
-    public Many(Base parent, String sys) throws BadUserNameException, BadSystemNameException {
-        super(parent, sys);
+    public Many(String sys) throws BadSystemNameException {
+        super(sys);
         init();
     }
 
-    public Many(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(parent, sys, user);
+    public Many(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
         init();
     }
     
     private void init() {
-        actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, getNewSocketName())));
+        actionEntries
+                .add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class)
+                        .createFemaleActionSocket(this, this, getNewSocketName())));
     }
     
     /** {@inheritDoc} */

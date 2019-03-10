@@ -67,7 +67,9 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     }
 
     protected MaleAnalogExpressionSocket createMaleAnalogExpressionSocket(AnalogExpression expression) {
-        return new DefaultMaleAnalogExpressionSocket(expression);
+        MaleAnalogExpressionSocket socket = new DefaultMaleAnalogExpressionSocket(expression);
+        expression.setParent(socket);
+        return socket;
     }
     
     /**

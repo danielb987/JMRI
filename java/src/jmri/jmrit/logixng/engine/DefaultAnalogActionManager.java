@@ -63,7 +63,9 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
     }
 
     protected MaleAnalogActionSocket createMaleActionSocket(AnalogAction action) {
-        return new DefaultMaleAnalogActionSocket(action);
+        MaleAnalogActionSocket socket = new DefaultMaleAnalogActionSocket(action);
+        action.setParent(socket);
+        return socket;
     }
     
     /**

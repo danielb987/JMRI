@@ -105,8 +105,8 @@ public interface Base {
      * The following rules apply
      * <ul>
      * <li>LogixNGs has no parent. The method throws an UnsupportedOperationException if called.</li>
-     * <li>Expressions and actions has the female socket that they are connected to as their parent.
-     * An expression or action must always be connected to a female socket.</li>
+     * <li>Expressions and actions has the male socket that they are connected to as their parent.</li>
+     * <li>Male sockets has the female socket that they are connected to as their parent.</li>
      * <li>The parent of a female sockets is the LogixNG, expression or action that
      * has this female socket.</li>
      * <li>The parent of a male sockets is the same parent as the expression or

@@ -148,20 +148,20 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         try {
             FemaleSocket femaleSocket = logixNG.getFemaleSocket();
             MaleDigitalActionSocket actionManySocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).register(new Many(femaleSocket));
+                    InstanceManager.getDefault(DigitalActionManager.class).register(new Many(femaleSocket.getLogixNG()));
             femaleSocket.connect(actionManySocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             femaleSocket = actionManySocket.getChild(0);
             MaleDigitalActionSocket actionHoldAnythingSocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).register(new HoldAnything(femaleSocket));
+                    InstanceManager.getDefault(DigitalActionManager.class).register(new HoldAnything(femaleSocket.getLogixNG()));
             femaleSocket.connect(actionHoldAnythingSocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             femaleSocket = actionManySocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .register(new IfThen(femaleSocket, IfThen.Type.TRIGGER_ACTION));
+                            .register(new IfThen(femaleSocket.getLogixNG(), IfThen.Type.TRIGGER_ACTION));
             femaleSocket.connect(actionIfThenSocket);
 
             /* FOR TESTING ONLY */
@@ -171,13 +171,13 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             femaleSocket = actionIfThenSocket.getChild(0);
             MaleDigitalExpressionSocket expressionAndSocket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
-                            .register(new And(femaleSocket));
+                            .register(new And(femaleSocket.getLogixNG()));
             femaleSocket.connect(expressionAndSocket);
             
             femaleSocket = actionIfThenSocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket2 =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .register(new IfThen(femaleSocket, IfThen.Type.CONTINOUS_ACTION));
+                            .register(new IfThen(femaleSocket.getLogixNG(), IfThen.Type.CONTINOUS_ACTION));
             femaleSocket.connect(actionIfThenSocket2);
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */

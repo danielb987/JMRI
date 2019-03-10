@@ -63,7 +63,9 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
 
     protected MaleDigitalActionSocket createMaleActionSocket(DigitalAction action) {
-        return new DefaultMaleDigitalActionSocket(action);
+        MaleDigitalActionSocket socket = new DefaultMaleDigitalActionSocket(action);
+        action.setParent(socket);
+        return socket;
     }
     
     /**

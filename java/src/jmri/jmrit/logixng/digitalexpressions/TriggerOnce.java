@@ -1,12 +1,10 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
@@ -23,13 +21,13 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class TriggerOnce extends AbstractDigitalExpression implements FemaleSocketListener {
 
-    private FemaleDigitalExpressionSocket _childExpression;
+    private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
-    public TriggerOnce(Base parent, String sys, String user, MaleDigitalExpressionSocket expression)
+    public TriggerOnce(String sys, String user, MaleDigitalExpressionSocket expression)
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
         
-        super(parent, sys, user);
+        super(sys, user);
         
         _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E1");

@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -11,8 +10,9 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class Timer extends AbstractDigitalExpression {
 
-    public Timer(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
-        super(parent, sys, user);
+    public Timer(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
     }
 
     /** {@inheritDoc} */

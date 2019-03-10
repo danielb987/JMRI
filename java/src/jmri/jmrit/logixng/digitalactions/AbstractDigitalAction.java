@@ -15,18 +15,17 @@ import jmri.jmrit.logixng.DigitalAction;
 public abstract class AbstractDigitalAction extends AbstractNamedBean
         implements DigitalAction {
 
-    private Base _parent;
+    private Base _parent = null;
     private Lock _lock = Lock.NONE;
     
     
-    public AbstractDigitalAction(Base parent, String sys) throws BadSystemNameException {
+    public AbstractDigitalAction(String sys) throws BadSystemNameException {
         super(sys);
-        _parent = parent;
     }
 
-    public AbstractDigitalAction(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractDigitalAction(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _parent = parent;
     }
     
     /** {@inheritDoc} */

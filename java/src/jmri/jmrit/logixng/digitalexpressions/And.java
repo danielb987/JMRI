@@ -3,7 +3,6 @@ package jmri.jmrit.logixng.digitalexpressions;
 import java.util.List;
 import java.util.ArrayList;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -24,20 +23,19 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public And(Base parent) {
-        super(parent, InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(parent.getLogixNG()));
+    public And(LogixNG logixNG) {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(logixNG));
         init();
     }
     
-    public And(Base parent, String sys) throws BadUserNameException,
-            BadSystemNameException {
-        super(parent, sys);
+    public And(String sys) throws BadSystemNameException {
+        super(sys);
         init();
     }
 
-    public And(Base parent, String sys, String user) throws BadUserNameException,
-            BadSystemNameException {
-        super(parent, sys, user);
+    public And(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
         init();
     }
 

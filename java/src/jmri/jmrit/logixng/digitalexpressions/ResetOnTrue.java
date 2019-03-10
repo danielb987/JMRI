@@ -1,12 +1,10 @@
 package jmri.jmrit.logixng.digitalexpressions;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
@@ -32,11 +30,12 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _secondaryExpressionSocket;
     private boolean _lastMainResult = false;
     
-    public ResetOnTrue(Base parent, String sys, String user,
-            MaleDigitalExpressionSocket primaryExpression, MaleDigitalExpressionSocket secondaryExpression)
+    public ResetOnTrue(String sys, String user,
+            MaleDigitalExpressionSocket primaryExpression,
+            MaleDigitalExpressionSocket secondaryExpression)
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
         
-        super(parent, sys, user);
+        super(sys, user);
         
         _primaryExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E1");

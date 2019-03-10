@@ -67,7 +67,9 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     }
 
     protected MaleStringExpressionSocket createMaleStringExpressionSocket(StringExpression expression) {
-        return new DefaultMaleStringExpressionSocket(expression);
+        MaleStringExpressionSocket socket = new DefaultMaleStringExpressionSocket(expression);
+        expression.setParent(socket);
+        return socket;
     }
     
     /**

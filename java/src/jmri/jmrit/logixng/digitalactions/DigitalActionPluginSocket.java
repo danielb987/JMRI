@@ -1,7 +1,5 @@
 package jmri.jmrit.logixng.digitalactions;
 
-import java.util.Map;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalActionPlugin;
@@ -13,13 +11,14 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
 
     private final DigitalActionPlugin _actionPlugin;
     
-    public DigitalActionPluginSocket(Base parent, String sys, DigitalActionPlugin actionPlugin) {
-        super(parent, sys);
+    public DigitalActionPluginSocket(String sys, DigitalActionPlugin actionPlugin) {
+        super(sys);
         _actionPlugin = actionPlugin;
     }
     
-    public DigitalActionPluginSocket(Base parent, String sys, String user, DigitalActionPlugin actionPlugin) {
-        super(parent, sys, user);
+    public DigitalActionPluginSocket(
+            String sys, String user, DigitalActionPlugin actionPlugin) {
+        super(sys, user);
         _actionPlugin = actionPlugin;
     }
     

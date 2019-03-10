@@ -67,7 +67,9 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 
     protected MaleDigitalExpressionSocket createMaleExpressionSocket(DigitalExpression expression) {
-        return new DefaultMaleDigitalExpressionSocket(expression);
+        MaleDigitalExpressionSocket socket = new DefaultMaleDigitalExpressionSocket(expression);
+        expression.setParent(socket);
+        return socket;
     }
     
     /**

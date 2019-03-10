@@ -63,7 +63,9 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     }
 
     protected MaleStringActionSocket createMaleActionSocket(StringAction action) {
-        return new DefaultMaleStringActionSocket(action);
+        MaleStringActionSocket socket = new DefaultMaleStringActionSocket(action);
+        action.setParent(socket);
+        return socket;
     }
     
     /**

@@ -14,31 +14,29 @@ public class AnalogExpressionGetAnalogIO extends AbstractAnalogExpression {
 
     private AnalogIO _analogIO;
     
-    public AnalogExpressionGetAnalogIO(Base parent, String sys) throws BadUserNameException,
+    public AnalogExpressionGetAnalogIO(String sys) throws BadUserNameException,
             BadSystemNameException {
-        super(parent, sys);
-    }
-
-    public AnalogExpressionGetAnalogIO(Base parent, String sys, String user) throws BadUserNameException,
-            BadSystemNameException {
-        super(parent, sys, user);
-    }
-
-    public AnalogExpressionGetAnalogIO(
-            Base parent,
-            String sys,
-            AnalogIO analogIO) {
         
-        super(parent, sys);
+        super(sys);
+    }
+
+    public AnalogExpressionGetAnalogIO(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        
+        super(sys, user);
+    }
+
+    public AnalogExpressionGetAnalogIO(String sys, AnalogIO analogIO)
+            throws BadUserNameException, BadSystemNameException {
+        
+        super(sys);
         _analogIO = analogIO;
     }
     
-    public AnalogExpressionGetAnalogIO(
-            Base parent,
-            String sys, String user,
-            AnalogIO analogIO) {
+    public AnalogExpressionGetAnalogIO(String sys, String user, AnalogIO analogIO)
+            throws BadUserNameException, BadSystemNameException {
         
-        super(parent, sys, user);
+        super(sys, user);
         _analogIO = analogIO;
     }
     
