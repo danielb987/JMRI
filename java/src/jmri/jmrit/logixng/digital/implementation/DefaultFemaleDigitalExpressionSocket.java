@@ -1,14 +1,6 @@
 package jmri.jmrit.logixng.digital.implementation;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Set;
-import jmri.JmriException;
-import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -75,13 +67,13 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
     /** {@inheritDoc} */
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("DefaultFemaleExpressionSocket_Short");
+        return Bundle.getMessage("DefaultFemaleDigitalExpressionSocket_Short");
     }
 
     /** {@inheritDoc} */
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("DefaultFemaleExpressionSocket_Long", getName());
+        return Bundle.getMessage("DefaultFemaleDigitalExpressionSocket_Long", getName());
     }
 
     /** {@inheritDoc} */

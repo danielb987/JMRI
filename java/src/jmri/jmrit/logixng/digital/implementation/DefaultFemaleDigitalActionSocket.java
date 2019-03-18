@@ -89,12 +89,12 @@ public final class DefaultFemaleDigitalActionSocket
 
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("DefaultFemaleActionSocket_Short");
+        return Bundle.getMessage("DefaultFemaleDigitalActionSocket_Short");
     }
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("DefaultFemaleActionSocket_Long", getName());
+        return Bundle.getMessage("DefaultFemaleDigitalActionSocket_Long", getName());
     }
 
     /** {@inheritDoc} */

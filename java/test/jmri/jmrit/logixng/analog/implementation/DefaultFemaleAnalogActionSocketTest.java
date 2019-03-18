@@ -24,6 +24,12 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
         Assert.assertTrue("String matches", "A1".equals(femaleSocket.getName()));
     }
     
+    @Test
+    public void testGetDescription() {
+        Assert.assertTrue("String matches", "!~".equals(femaleSocket.getShortDescription()));
+        Assert.assertTrue("String matches", "!~ A1".equals(femaleSocket.getLongDescription()));
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {
