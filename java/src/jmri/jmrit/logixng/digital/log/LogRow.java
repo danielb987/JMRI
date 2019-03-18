@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.log.digital;
+package jmri.jmrit.logixng.digital.log;
 
 /**
  * The states of the items in one row in the log.

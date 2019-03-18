@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.log.digital;
+package jmri.jmrit.logixng.digital.log;
 
 import java.util.List;
 import java.util.ArrayList;

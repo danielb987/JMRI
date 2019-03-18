@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.log.digital;
+package jmri.jmrit.logixng.digital.log;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -1,12 +1,12 @@
-package jmri.jmrit.logixng.log.digital;
+package jmri.jmrit.logixng.digital.log;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import jmri.jmrit.logixng.log.digital.Log.UnsupportedVersionException;
-import jmri.jmrit.logixng.log.digital.Log.InvalidFormatException;
+import jmri.jmrit.logixng.digital.log.Log.UnsupportedVersionException;
+import jmri.jmrit.logixng.digital.log.Log.InvalidFormatException;
 
 /**
  * The header of the log, including the list of items.
