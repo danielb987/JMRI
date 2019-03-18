@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.stringactions;
+package jmri.jmrit.logixng.string.actions;
 
 import jmri.jmrit.logixng.StringAction;
 import jmri.util.JUnitUtil;

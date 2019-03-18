@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.stringactions;
+package jmri.jmrit.logixng.string.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.stringactions;
+package jmri.jmrit.logixng.string.actions;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
