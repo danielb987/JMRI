@@ -41,7 +41,7 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
      */
     @Override
     public Element store(Object o) {
-        Element actions = new Element("logixngActions");
+        Element actions = new Element("logixngAnalogActions");
         setStoreElementClass(actions);
         AnalogActionManager tm = (AnalogActionManager) o;
         if (tm != null) {

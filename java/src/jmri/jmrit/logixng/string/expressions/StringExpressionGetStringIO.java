@@ -14,32 +14,25 @@ public class StringExpressionGetStringIO extends AbstractStringExpression {
 
     private StringIO _stringIO;
     
-    public StringExpressionGetStringIO(Base parent, String sys) throws BadUserNameException,
-            BadSystemNameException {
-        super(parent, sys);
+    public StringExpressionGetStringIO(String sys)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys);
     }
 
-    public StringExpressionGetStringIO(Base parent, String sys, String user) throws BadUserNameException,
-            BadSystemNameException {
-        super(parent, sys, user);
+    public StringExpressionGetStringIO(String sys, String user)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
     }
 
-    public StringExpressionGetStringIO(
-            Base parent,
-            String sys,
-            StringIO stringIO) {
-        
-        super(parent, sys);
+    public StringExpressionGetStringIO(String sys, StringIO stringIO)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys);
         _stringIO = stringIO;
     }
     
-    public StringExpressionGetStringIO(
-            Base parent,
-            String sys,
-            String user,
-            StringIO stringIO) {
-        
-        super(parent, sys, user);
+    public StringExpressionGetStringIO(String sys, String user, StringIO stringIO)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
         _stringIO = stringIO;
     }
     

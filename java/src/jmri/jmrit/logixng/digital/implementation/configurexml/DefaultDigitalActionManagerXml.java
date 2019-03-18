@@ -41,7 +41,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
      */
     @Override
     public Element store(Object o) {
-        Element actions = new Element("logixngActions");
+        Element actions = new Element("logixngDigitalActions");
         setStoreElementClass(actions);
         DigitalActionManager tm = (DigitalActionManager) o;
         if (tm != null) {

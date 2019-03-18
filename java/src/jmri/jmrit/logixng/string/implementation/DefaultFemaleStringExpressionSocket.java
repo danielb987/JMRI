@@ -63,12 +63,12 @@ public final class DefaultFemaleStringExpressionSocket extends AbstractFemaleSoc
 
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("DefaultFemaleAnalogExpressionSocket_Short");
+        return Bundle.getMessage("DefaultFemaleStringExpressionSocket_Short");
     }
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("DefaultFemaleAnalogExpressionSocket_Long", getName());
+        return Bundle.getMessage("DefaultFemaleStringExpressionSocket_Long", getName());
     }
 
     /** {@inheritDoc} */

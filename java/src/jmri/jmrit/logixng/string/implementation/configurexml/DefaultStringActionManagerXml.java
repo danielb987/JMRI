@@ -41,7 +41,7 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
      */
     @Override
     public Element store(Object o) {
-        Element actions = new Element("logixngActions");
+        Element actions = new Element("logixngStringActions");
         setStoreElementClass(actions);
         StringActionManager tm = (StringActionManager) o;
         if (tm != null) {

@@ -13,18 +13,16 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractStringExpression extends AbstractNamedBean
         implements StringExpression {
 
-    private Base _parent;
+    private Base _parent = null;
     private Lock _lock = Lock.NONE;
 
 
-    public AbstractStringExpression(Base parent, String sys) throws BadSystemNameException {
+    public AbstractStringExpression(String sys) throws BadSystemNameException {
         super(sys);
-        _parent = parent;
     }
 
-    public AbstractStringExpression(Base parent, String sys, String user) throws BadUserNameException, BadSystemNameException {
+    public AbstractStringExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _parent = parent;
     }
 
     /** {@inheritDoc} */
