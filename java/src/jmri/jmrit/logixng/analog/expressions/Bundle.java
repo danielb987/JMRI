@@ -25,7 +25,7 @@ public class Bundle extends jmri.jmrit.logixng.Bundle {
 
     @Nullable
     private static final String name =
-            "jmri.jmrit.logixng.analogexpressions.AnalogExpressionBundle";
+            "jmri.jmrit.logixng.analog.expressions.AnalogExpressionBundle";
 
     //
     // below here is boilerplate to be copied exactly

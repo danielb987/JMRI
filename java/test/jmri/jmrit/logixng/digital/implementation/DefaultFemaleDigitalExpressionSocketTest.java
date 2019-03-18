@@ -1,8 +1,8 @@
-package jmri.jmrit.logixng.digital.actions;
+package jmri.jmrit.logixng.digital.implementation;
 
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalActionSocket;
+import jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,7 +14,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class SocketTest {
+public class DefaultFemaleDigitalExpressionSocketTest {
 
     @Test
     public void testCtor() {
@@ -30,7 +30,7 @@ public class SocketTest {
             }
         };
         
-        new DefaultFemaleDigitalActionSocket(null, listener, "A1");
+        new DefaultFemaleDigitalExpressionSocket(null, listener, "E1");
     }
     
     // The minimal setup for log4J

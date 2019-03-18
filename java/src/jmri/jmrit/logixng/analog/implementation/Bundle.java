@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analog.actions;
+package jmri.jmrit.logixng.analog.implementation;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Locale;
@@ -24,7 +24,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class Bundle extends jmri.jmrit.logixng.Bundle {
 
     @Nullable
-    private static final String name = "jmri.jmrit.logixng.analog.actions.AnalogActionBundle";
+    private static final String name = "jmri.jmrit.logixng.analog.implementation.AnalogImplementationBundle";
 
     //
     // below here is boilerplate to be copied exactly

@@ -1,11 +1,12 @@
-package jmri.jmrit.logixng.implementation.configurexml;
+package jmri.jmrit.logixng.analog.implementation.configurexml;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    DefaultLogixNGManagerXmlTest.class,
+    DefaultAnalogActionManagerXmlTest.class,
+    DefaultAnalogExpressionManagerXmlTest.class,
 })
 
 /**

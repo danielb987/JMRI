@@ -1,11 +1,13 @@
-package jmri.jmrit.logixng.implementation.configurexml;
+package jmri.jmrit.logixng.string.implementation.configurexml;
 
+import jmri.jmrit.logixng.implementation.configurexml.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    DefaultLogixNGManagerXmlTest.class,
+    DefaultStringActionManagerXmlTest.class,
+    DefaultStringExpressionManagerXmlTest.class,
 })
 
 /**

@@ -1,11 +1,14 @@
-package jmri.jmrit.logixng.implementation.configurexml;
+package jmri.jmrit.logixng.digital.implementation.configurexml;
 
+import jmri.jmrit.logixng.implementation.configurexml.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    DefaultLogixNGManagerXmlTest.class,
+    DefaultDigitalActionManagerXmlTest.class,
+    DefaultDigitalExpressionManagerXmlTest.class,
+    DefaultMaleDigitalActionSocketXmlTest.class,
 })
 
 /**
