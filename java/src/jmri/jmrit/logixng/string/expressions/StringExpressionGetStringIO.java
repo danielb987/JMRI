@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.stringexpressions;
+package jmri.jmrit.logixng.string.expressions;
 
 import jmri.StringIO;
 import jmri.jmrit.logixng.Base;

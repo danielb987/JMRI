@@ -1,5 +1,6 @@
-package jmri.jmrit.logixng.stringexpressions;
+package jmri.jmrit.logixng.string.expressions;
 
+import jmri.jmrit.logixng.string.expressions.StringExpressionGetStringIO;
 import jmri.jmrit.logixng.StringExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;

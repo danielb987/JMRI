@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.StringExpression;
-import jmri.jmrit.logixng.stringexpressions.StringExpressionGetStringIO;
+import jmri.jmrit.logixng.string.expressions.StringExpressionGetStringIO;
 
 /**
  * Test ExpressionTimer

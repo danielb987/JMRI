@@ -12,7 +12,7 @@ import org.junit.runners.Suite;
     jmri.jmrit.logixng.digital.expressions.PackageTest.class,
     jmri.jmrit.logixng.log.digital.PackageTest.class,
     jmri.jmrit.logixng.stringactions.PackageTest.class,
-    jmri.jmrit.logixng.stringexpressions.PackageTest.class,
+    jmri.jmrit.logixng.string.expressions.PackageTest.class,
     jmri.jmrit.logixng.tools.swing.PackageTest.class,
     DigitalExpressionTest.class,
     LogixNGCategoryTest.class,
