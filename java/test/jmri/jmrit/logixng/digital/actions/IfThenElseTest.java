@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions;
 
-import jmri.jmrit.logixng.digitalactions.IfThen;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;

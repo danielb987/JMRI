@@ -1,10 +1,10 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.logixng.digitalactions.Many;
+import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.Turnout;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;

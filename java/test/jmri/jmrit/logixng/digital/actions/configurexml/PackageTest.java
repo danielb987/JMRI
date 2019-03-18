@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

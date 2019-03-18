@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions;
 
-import jmri.jmrit.logixng.digitalactions.configurexml.HoldAnythingXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionDoIfXml
+ * DigitalActionPluginSocket
  * 
  * @author Daniel Bergqvist 2018
  */
-public class HoldAnythingXmlTest {
+public class DigitalActionPluginSocketTest {
 
     @Test
     public void testCtor() {
-        new HoldAnythingXml();
+        new DigitalActionPluginSocket("", null);
     }
     
     // The minimal setup for log4J

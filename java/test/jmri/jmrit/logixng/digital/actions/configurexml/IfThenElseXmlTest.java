@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
-import jmri.jmrit.logixng.digitalactions.configurexml.ManyXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionDoIfXml
+ * Test IfThenXml
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ManyXmlTest {
+public class IfThenElseXmlTest {
 
     @Test
     public void testCtor() {
-        new ManyXml();
+        new IfThenXml();
     }
     
     // The minimal setup for log4J

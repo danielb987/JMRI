@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -9,7 +9,7 @@ import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.digitalactions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;

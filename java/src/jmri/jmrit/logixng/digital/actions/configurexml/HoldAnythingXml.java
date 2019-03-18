@@ -1,10 +1,10 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.logixng.digitalactions.HoldAnything;
+import jmri.jmrit.logixng.digital.actions.HoldAnything;
 import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;

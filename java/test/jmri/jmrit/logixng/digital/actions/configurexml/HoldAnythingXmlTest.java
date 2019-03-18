@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
-import jmri.jmrit.logixng.digitalactions.DoStringAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test DoStringAction
+ * Test ActionDoIfXml
  * 
- * @author Daniel Bergqvist 2019
+ * @author Daniel Bergqvist 2018
  */
-public class DoStringActionTest {
+public class HoldAnythingXmlTest {
 
     @Test
     public void testCtor() {
-        new DoStringAction("IQA55:A321");
+        new HoldAnythingXml();
     }
     
     // The minimal setup for log4J
@@ -26,11 +25,6 @@ public class DoStringActionTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixNGManager();
-        JUnitUtil.initDigitalExpressionManager();
-        JUnitUtil.initDigitalActionManager();
-        JUnitUtil.initStringExpressionManager();
-        JUnitUtil.initStringActionManager();
     }
 
     @After

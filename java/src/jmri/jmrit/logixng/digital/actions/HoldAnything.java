@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;

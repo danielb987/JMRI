@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.digitalactions.Many;
+import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.jmrit.logixng.DigitalAction;
 
 /**

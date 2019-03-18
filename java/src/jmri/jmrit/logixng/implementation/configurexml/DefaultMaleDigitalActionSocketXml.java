@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.digitalactions.Many;
+import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.jmrit.logixng.implementation.DefaultMaleDigitalActionSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;

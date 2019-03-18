@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions;
 
-import jmri.jmrit.logixng.digitalactions.Many;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test Many
+ * Test DoStringAction
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist 2019
  */
-public class ManyTest {
+public class DoStringActionTest {
 
     @Test
     public void testCtor() {
-        new Many("IQA55:A321", null);
+        new DoStringAction("IQA55:A321");
     }
     
     // The minimal setup for log4J
@@ -26,6 +25,11 @@ public class ManyTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initLogixNGManager();
+        JUnitUtil.initDigitalExpressionManager();
+        JUnitUtil.initDigitalActionManager();
+        JUnitUtil.initStringExpressionManager();
+        JUnitUtil.initStringActionManager();
     }
 
     @After

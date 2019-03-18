@@ -2,8 +2,8 @@ package jmri.jmrit.logixng;
 
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNG;
-import jmri.jmrit.logixng.digitalactions.IfThen;
-import jmri.jmrit.logixng.digitalactions.ActionTurnout;
+import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.util.JUnitUtil;

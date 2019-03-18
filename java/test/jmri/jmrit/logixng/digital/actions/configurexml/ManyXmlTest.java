@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions.configurexml;
 
-import jmri.jmrit.logixng.digitalactions.DigitalActionPluginSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * DigitalActionPluginSocket
+ * Test ActionDoIfXml
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DigitalActionPluginSocketTest {
+public class ManyXmlTest {
 
     @Test
     public void testCtor() {
-        new DigitalActionPluginSocket("", null);
+        new ManyXml();
     }
     
     // The minimal setup for log4J

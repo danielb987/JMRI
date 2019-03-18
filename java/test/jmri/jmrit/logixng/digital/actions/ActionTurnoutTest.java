@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions;
 
-import jmri.jmrit.logixng.digitalactions.DoAnalogAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionMany
+ * Test ActionTurnout
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DoAnalogActionTest {
+public class ActionTurnoutTest {
 
     @Test
     public void testCtor() {
-        new DoAnalogAction("IQA55:A321");
+        new ActionTurnout("IQA55:A321", null);
     }
     
     // The minimal setup for log4J
@@ -26,11 +25,6 @@ public class DoAnalogActionTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixNGManager();
-        JUnitUtil.initDigitalExpressionManager();
-        JUnitUtil.initDigitalActionManager();
-        JUnitUtil.initAnalogExpressionManager();
-        JUnitUtil.initAnalogActionManager();
     }
 
     @After

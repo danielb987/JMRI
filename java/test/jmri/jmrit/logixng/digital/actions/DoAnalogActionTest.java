@@ -1,6 +1,5 @@
-package jmri.jmrit.logixng.digitalactions.configurexml;
+package jmri.jmrit.logixng.digital.actions;
 
-import jmri.jmrit.logixng.digitalactions.configurexml.IfThenXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test IfThenXml
+ * Test ActionMany
  * 
  * @author Daniel Bergqvist 2018
  */
-public class IfThenElseXmlTest {
+public class DoAnalogActionTest {
 
     @Test
     public void testCtor() {
-        new IfThenXml();
+        new DoAnalogAction("IQA55:A321");
     }
     
     // The minimal setup for log4J
@@ -26,6 +25,11 @@ public class IfThenElseXmlTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initLogixNGManager();
+        JUnitUtil.initDigitalExpressionManager();
+        JUnitUtil.initDigitalActionManager();
+        JUnitUtil.initAnalogExpressionManager();
+        JUnitUtil.initAnalogActionManager();
     }
 
     @After

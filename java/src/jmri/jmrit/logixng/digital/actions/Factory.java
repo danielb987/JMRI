@@ -1,8 +1,8 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions;
 
-import jmri.jmrit.logixng.digitalactions.ActionTurnout;
-import jmri.jmrit.logixng.digitalactions.IfThen;
-import jmri.jmrit.logixng.digitalactions.Many;
+import jmri.jmrit.logixng.digital.actions.ActionTurnout;
+import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.Many;
 import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Map;

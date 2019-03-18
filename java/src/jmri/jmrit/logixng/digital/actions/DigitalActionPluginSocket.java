@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalactions;
+package jmri.jmrit.logixng.digital.actions;
 
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
