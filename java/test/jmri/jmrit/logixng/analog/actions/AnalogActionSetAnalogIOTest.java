@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analogactions;
+package jmri.jmrit.logixng.analog.actions;
 
 import jmri.jmrit.logixng.AnalogAction;
 import jmri.util.JUnitUtil;

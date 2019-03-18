@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analogactions;
+package jmri.jmrit.logixng.analog.actions;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

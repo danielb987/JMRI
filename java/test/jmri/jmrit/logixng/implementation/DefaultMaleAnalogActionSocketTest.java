@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.AnalogAction;
-import jmri.jmrit.logixng.analogactions.AnalogActionSetAnalogIO;
+import jmri.jmrit.logixng.analog.actions.AnalogActionSetAnalogIO;
 
 /**
  * Test ExpressionTimer

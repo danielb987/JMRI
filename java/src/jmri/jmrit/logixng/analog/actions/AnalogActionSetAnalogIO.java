@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analogactions;
+package jmri.jmrit.logixng.analog.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
