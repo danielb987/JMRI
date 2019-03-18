@@ -5,6 +5,8 @@ import jmri.JmriException;
 /**
  * The FemaleSocket is already connected.
  * Before a FemaleSocket can accept a connect request, it must be disconnected.
+ * 
+ * @author Daniel Bergqvist 2019
  */
 public class SocketAlreadyConnectedException extends JmriException {
 

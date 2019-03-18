@@ -1,40 +1,26 @@
 package jmri.jmrit.logixng.string.implementation;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.FemaleSocketListener;
+import jmri.jmrit.logixng.FemaleSocketTestBase;
+import jmri.jmrit.logixng.StringExpression;
+import jmri.jmrit.logixng.string.expressions.StringExpressionGetStringIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.FemaleStringExpressionSocket;
-import jmri.jmrit.logixng.MaleStringExpressionSocket;
-import jmri.jmrit.logixng.StringExpression;
-import jmri.jmrit.logixng.string.expressions.StringExpressionGetStringIO;
 
 /**
- * Test ExpressionTimer
+ * Test DefaultFemaleStringExpressionSocket
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DefaultFemaleStringExpressionSocketTest {
+public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBase {
 
     @Test
-    public void testFemaleSocket() {
-        StringExpression expression = new StringExpressionGetStringIO("IQA55:A321");
-        MaleStringExpressionSocket maleSocket = new DefaultMaleStringExpressionSocket(expression);
-        FemaleStringExpressionSocket femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {
-            @Override
-            public void connected(FemaleSocket socket) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void disconnected(FemaleSocket socket) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        }, "E1");
-        
+    public void testGetName() {
         Assert.assertTrue("String matches", "E1".equals(femaleSocket.getName()));
     }
     
@@ -45,6 +31,24 @@ public class DefaultFemaleStringExpressionSocketTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        
+        flag = new AtomicBoolean();
+        errorFlag = new AtomicBoolean();
+        StringExpression expression = new StringExpressionGetStringIO("IQA55:A321");
+        StringExpression otherExpression = new StringExpressionGetStringIO("IQA55:A322");
+        maleSocket = new DefaultMaleStringExpressionSocket(expression);
+        otherMaleSocket = new DefaultMaleStringExpressionSocket(otherExpression);
+        femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {
+            @Override
+            public void connected(FemaleSocket socket) {
+                flag.set(true);
+            }
+
+            @Override
+            public void disconnected(FemaleSocket socket) {
+                flag.set(true);
+            }
+        }, "E1");
     }
 
     @After

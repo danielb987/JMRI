@@ -545,9 +545,10 @@ public final class LogixNGEditor extends JmriJFrame {
             if (!socket.isConnected()) {
                 return -1;
             }
-            MaleSocket maleSocket = socket.getConnectedSocket();
-            for (int i = 0; i < maleSocket.getChildCount(); i++) {
-                if (child == maleSocket.getChild(i)) {
+            
+            MaleSocket connectedSocket = socket.getConnectedSocket();
+            for (int i = 0; i < connectedSocket.getChildCount(); i++) {
+                if (child == connectedSocket.getChild(i)) {
                     return i;
                 }
             }
@@ -612,9 +613,8 @@ public final class LogixNGEditor extends JmriJFrame {
             JLabel connectedItemLabel = new JLabel();
             if (socket.isConnected()) {
                 connectedItemLabel.setText(socket.getConnectedSocket().getLongDescription());
-//            } else {
-//                connectedItemLabel.setText("Not connected");
             }
+            
             panel.add(connectedItemLabel);
             
             return panel;
@@ -731,9 +731,9 @@ public final class LogixNGEditor extends JmriJFrame {
             menuItemPaste.setEnabled(!isConnected);
             
             if (femaleSocket.isConnected()) {
-                MaleSocket maleSocket = femaleSocket.getConnectedSocket();
-                menuItemLock.setEnabled(maleSocket.getLock() == Base.Lock.NONE);
-                menuItemUnlock.setEnabled(maleSocket.getLock() == Base.Lock.USER_LOCK);
+                MaleSocket connectedSocket = femaleSocket.getConnectedSocket();
+                menuItemLock.setEnabled(connectedSocket.getLock() == Base.Lock.NONE);
+                menuItemUnlock.setEnabled(connectedSocket.getLock() == Base.Lock.USER_LOCK);
             } else {
                 menuItemLock.setEnabled(false);
                 menuItemUnlock.setEnabled(false);

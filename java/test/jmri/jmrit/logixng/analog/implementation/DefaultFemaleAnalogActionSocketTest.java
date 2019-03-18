@@ -1,11 +1,11 @@
-package jmri.jmrit.logixng.string.implementation;
+package jmri.jmrit.logixng.analog.implementation;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
-import jmri.jmrit.logixng.StringAction;
-import jmri.jmrit.logixng.string.actions.StringActionSetStringIO;
+import jmri.jmrit.logixng.AnalogAction;
+import jmri.jmrit.logixng.analog.actions.AnalogActionSetAnalogIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -17,7 +17,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
+public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
 
     @Test
     public void testGetName() {
@@ -34,11 +34,11 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringAction action = new StringActionSetStringIO("IQA55:A321");
-        StringAction otherAction = new StringActionSetStringIO("IQA55:A322");
-        maleSocket = new DefaultMaleStringActionSocket(action);
-        otherMaleSocket = new DefaultMaleStringActionSocket(otherAction);
-        femaleSocket = new DefaultFemaleStringActionSocket(null, new FemaleSocketListener() {
+        AnalogAction action = new AnalogActionSetAnalogIO("IQA55:A321");
+        AnalogAction otherAction = new AnalogActionSetAnalogIO("IQA55:A322");
+        maleSocket = new DefaultMaleAnalogActionSocket(action);
+        otherMaleSocket = new DefaultMaleAnalogActionSocket(otherAction);
+        femaleSocket = new DefaultFemaleAnalogActionSocket(null, new FemaleSocketListener() {
             @Override
             public void connected(FemaleSocket socket) {
                 flag.set(true);

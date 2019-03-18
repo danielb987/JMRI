@@ -16,6 +16,8 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * Abstract female socket.
+ * 
+ * @author Daniel Bergqvist 2019
  */
 public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     
@@ -80,6 +82,10 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     /** {@inheritDoc} */
     @Override
     public void disconnect() {
+        if (_socket == null) {
+            return;
+        }
+        
         _socket.setParent(null);
         _socket = null;
         _listener.disconnected(this);

@@ -14,7 +14,7 @@ public interface FemaleSocket extends Base {
     /**
      * Connect the male socket to this female socket.
      * @param socket the socket to connect
-     * @throws jmri.jmrit.logixng.SocketAlreadyConnectedException if the socket is already connected
+     * @throws SocketAlreadyConnectedException if the socket is already connected
      */
     public void connect(MaleSocket socket) throws SocketAlreadyConnectedException;
 
