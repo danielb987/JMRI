@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -7,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test And
+ * Test ExpressionTurnout
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AndTest {
+public class BufferedSensorTest {
 
     @Test
     public void testCtor() {
-        new And("IQA55:E321", null);
+        new BufferedSensor("IQA55:E321", null);
     }
     
     // The minimal setup for log4J

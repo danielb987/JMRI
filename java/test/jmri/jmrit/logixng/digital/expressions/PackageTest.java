@@ -1,11 +1,11 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    jmri.jmrit.logixng.digitalexpressions.configurexml.PackageTest.class,
+    jmri.jmrit.logixng.digital.expressions.configurexml.PackageTest.class,
     AndTest.class,
     BufferedSensorTest.class,
     HoldTest.class,

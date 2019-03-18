@@ -1,7 +1,7 @@
 package jmri.jmrit.logixng.implementation;
 
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.digitalexpressions.AbstractDigitalExpression;
+import jmri.jmrit.logixng.digital.expressions.AbstractDigitalExpression;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalExpression;
 

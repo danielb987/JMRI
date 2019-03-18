@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalexpressions.configurexml;
+package jmri.jmrit.logixng.digital.expressions.configurexml;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

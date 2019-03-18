@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.Sensor;
 import jmri.jmrit.logixng.Base;

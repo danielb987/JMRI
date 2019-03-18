@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.digitalexpressions.And;
+import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.jmrit.logixng.DigitalExpression;
 
 /**

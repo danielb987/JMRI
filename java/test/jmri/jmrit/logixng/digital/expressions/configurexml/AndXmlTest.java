@@ -1,6 +1,6 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions.configurexml;
 
-import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.digital.expressions.configurexml.AndXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -8,20 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test Timer
+ * Test ActionMany
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist 2019
  */
-public class TimerTest {
+public class AndXmlTest {
 
     @Test
     public void testCtor() {
-        new Timer("IQA55:E321", null);
-    }
-    
-    @Test
-    public void testGetCategory() {
-        Assert.assertTrue(Category.COMMON.equals(new Timer("IQA55:E321", null).getCategory()));
+        new AndXml();
     }
     
     // The minimal setup for log4J

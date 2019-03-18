@@ -13,7 +13,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digitalactions.HoldAnything;
 import jmri.jmrit.logixng.digitalactions.IfThen;
 import jmri.jmrit.logixng.digitalactions.Many;
-import jmri.jmrit.logixng.digitalexpressions.And;
+import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;

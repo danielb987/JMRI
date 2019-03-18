@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Locale;

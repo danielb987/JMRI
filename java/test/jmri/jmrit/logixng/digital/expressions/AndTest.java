@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digitalexpressions.configurexml;
+package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -7,15 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionMany
+ * Test And
  * 
- * @author Daniel Bergqvist 2019
+ * @author Daniel Bergqvist 2018
  */
-public class AndXmlTest {
+public class AndTest {
 
     @Test
     public void testCtor() {
-        new AndXml();
+        new And("IQA55:E321", null);
     }
     
     // The minimal setup for log4J

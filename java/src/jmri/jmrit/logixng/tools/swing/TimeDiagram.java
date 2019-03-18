@@ -20,7 +20,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.digitalactions.ActionTurnout;
-import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalExpression;

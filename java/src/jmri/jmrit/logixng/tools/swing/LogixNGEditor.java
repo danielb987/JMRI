@@ -50,7 +50,7 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digitalactions.IfThen;
 import jmri.jmrit.logixng.digitalactions.ActionTurnout;
-import jmri.jmrit.logixng.digitalexpressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;

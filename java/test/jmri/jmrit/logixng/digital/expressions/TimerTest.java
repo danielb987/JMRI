@@ -1,35 +1,33 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions;
 
+import jmri.jmrit.logixng.Category;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.DigitalExpression;
 
 /**
- * Test Hold
+ * Test Timer
  * 
  * @author Daniel Bergqvist 2018
  */
-public class HoldTest {
+public class TimerTest {
 
     @Test
     public void testCtor() {
-        new Hold("IQA55:E321");
+        new Timer("IQA55:E321", null);
     }
     
     @Test
-    public void testShortDescription() {
-        DigitalExpression e1 = new Hold("IQA55:E321");
-        Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getShortDescription()));
+    public void testGetCategory() {
+        Assert.assertTrue(Category.COMMON.equals(new Timer("IQA55:E321", null).getCategory()));
     }
     
     // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
-        JUnitUtil.resetProfileManager();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();

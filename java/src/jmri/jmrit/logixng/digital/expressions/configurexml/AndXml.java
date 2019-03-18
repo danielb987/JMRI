@@ -1,8 +1,8 @@
-package jmri.jmrit.logixng.digitalexpressions.configurexml;
+package jmri.jmrit.logixng.digital.expressions.configurexml;
 
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.digitalexpressions.And;
+import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.jmrit.logixng.MaleSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;

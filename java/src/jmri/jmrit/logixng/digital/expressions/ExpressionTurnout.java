@@ -1,16 +1,21 @@
-package jmri.jmrit.logixng.digitalexpressions;
+package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
 /**
- * This expression is a timer that evaluates to true then a certain time has passed.
+ * Evaluates the state of a Turnout.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class Timer extends AbstractDigitalExpression {
+public class ExpressionTurnout extends AbstractDigitalExpression {
 
-    public Timer(String sys, String user)
+    public ExpressionTurnout(String sys)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys);
+    }
+
+    public ExpressionTurnout(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
@@ -18,37 +23,36 @@ public class Timer extends AbstractDigitalExpression {
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return Category.COMMON;
+        return Category.ITEM;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return true;
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
-        // Has timer completed?
-        
-        return true;    // Mockup code for now.
+        // Do this on the correct thread??
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        // Reset timer.
+        // Do nothing.
     }
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 0;
     }
 
     @Override
