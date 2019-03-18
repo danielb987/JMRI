@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analogexpressions;
+package jmri.jmrit.logixng.analog.expressions;
 
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;

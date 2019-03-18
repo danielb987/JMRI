@@ -1,5 +1,6 @@
-package jmri.jmrit.logixng.analogexpressions;
+package jmri.jmrit.logixng.analog.expressions;
 
+import jmri.jmrit.logixng.analog.expressions.AnalogExpressionGetAnalogIO;
 import jmri.jmrit.logixng.AnalogExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;

@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.analogexpressions.AnalogExpressionGetAnalogIO;
+import jmri.jmrit.logixng.analog.expressions.AnalogExpressionGetAnalogIO;
 import jmri.jmrit.logixng.AnalogExpression;
 
 /**
