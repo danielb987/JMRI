@@ -7,7 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.analogactions.PackageTest.class,
     jmri.jmrit.logixng.analogexpressions.PackageTest.class,
-    jmri.jmrit.logixng.engine.PackageTest.class,
+    jmri.jmrit.logixng.implementation.PackageTest.class,
     jmri.jmrit.logixng.digitalactions.PackageTest.class,
     jmri.jmrit.logixng.digitalexpressions.PackageTest.class,
     jmri.jmrit.logixng.log.digital.PackageTest.class,

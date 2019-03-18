@@ -1,7 +1,7 @@
 package jmri.jmrit.logixng;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.engine.DefaultLogixNG;
+import jmri.jmrit.logixng.implementation.DefaultLogixNG;
 import jmri.jmrit.logixng.digitalactions.IfThen;
 import jmri.jmrit.logixng.digitalactions.ActionTurnout;
 import jmri.jmrit.logixng.digitalexpressions.And;
