@@ -12,27 +12,27 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class StringActionSetStringIO extends AbstractStringAction {
+public class SetStringIO extends AbstractStringAction {
 
     private StringIO _stringIO;
     
-    public StringActionSetStringIO(String sys) {
+    public SetStringIO(String sys) {
         super(sys);
     }
     
-    public StringActionSetStringIO(String sys, String user)
+    public SetStringIO(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
     
-    public StringActionSetStringIO(String sys, StringIO stringIO)
+    public SetStringIO(String sys, StringIO stringIO)
             throws BadSystemNameException {
         
         super(sys);
         _stringIO = stringIO;
     }
     
-    public StringActionSetStringIO(String sys, String user, StringIO stringIO)
+    public SetStringIO(String sys, String user, StringIO stringIO)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         _stringIO = stringIO;
@@ -83,6 +83,6 @@ public class StringActionSetStringIO extends AbstractStringAction {
         return getShortDescription();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(StringActionSetStringIO.class);
+    private final static Logger log = LoggerFactory.getLogger(SetStringIO.class);
 
 }

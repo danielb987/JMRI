@@ -1,7 +1,6 @@
 package jmri.jmrit.logixng.string.expressions;
 
 import jmri.StringIO;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -10,27 +9,27 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class StringExpressionGetStringIO extends AbstractStringExpression {
+public class GetStringIO extends AbstractStringExpression {
 
     private StringIO _stringIO;
     
-    public StringExpressionGetStringIO(String sys)
+    public GetStringIO(String sys)
             throws BadUserNameException, BadSystemNameException {
         super(sys);
     }
 
-    public StringExpressionGetStringIO(String sys, String user)
+    public GetStringIO(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
 
-    public StringExpressionGetStringIO(String sys, StringIO stringIO)
+    public GetStringIO(String sys, StringIO stringIO)
             throws BadUserNameException, BadSystemNameException {
         super(sys);
         _stringIO = stringIO;
     }
     
-    public StringExpressionGetStringIO(String sys, String user, StringIO stringIO)
+    public GetStringIO(String sys, String user, StringIO stringIO)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         _stringIO = stringIO;

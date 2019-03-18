@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test AnalogActionSetAnalogIO
+ * Test SetAnalogIO
  * 
  * @author Daniel Bergqvist 2018
  */
@@ -16,12 +16,12 @@ public class AnalogActionSetAnalogIOTest {
 
     @Test
     public void testCtor() {
-        new AnalogActionSetAnalogIO("IQA55:A321");
+        new SetAnalogIO("IQA55:A321");
     }
     
     @Test
     public void testShortDescription() {
-        AnalogAction analogAction = new AnalogActionSetAnalogIO("IQA55:A321");
+        AnalogAction analogAction = new SetAnalogIO("IQA55:A321");
         Assert.assertTrue("String matches", "Set analog none".equals(analogAction.getShortDescription()));
     }
     

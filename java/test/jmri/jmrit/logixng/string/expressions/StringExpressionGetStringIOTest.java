@@ -1,6 +1,6 @@
 package jmri.jmrit.logixng.string.expressions;
 
-import jmri.jmrit.logixng.string.expressions.StringExpressionGetStringIO;
+import jmri.jmrit.logixng.string.expressions.GetStringIO;
 import jmri.jmrit.logixng.StringExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test StringExpressionGetStringIO
+ * Test GetStringIO
  * 
  * @author Daniel Bergqvist 2019
  */
@@ -17,12 +17,12 @@ public class StringExpressionGetStringIOTest {
 
     @Test
     public void testCtor() {
-        new StringExpressionGetStringIO("IQA55:E321");
+        new GetStringIO("IQA55:E321");
     }
     
     @Test
     public void testShortDescription() {
-        StringExpression stringExpression = new StringExpressionGetStringIO("IQA55:E321");
+        StringExpression stringExpression = new GetStringIO("IQA55:E321");
         Assert.assertTrue("String matches", "Read string none".equals(stringExpression.getShortDescription()));
     }
     

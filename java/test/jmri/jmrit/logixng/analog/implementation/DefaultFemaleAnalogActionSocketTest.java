@@ -5,7 +5,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
 import jmri.jmrit.logixng.AnalogAction;
-import jmri.jmrit.logixng.analog.actions.AnalogActionSetAnalogIO;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,8 +34,8 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        AnalogAction action = new AnalogActionSetAnalogIO("IQA55:A321");
-        AnalogAction otherAction = new AnalogActionSetAnalogIO("IQA55:A322");
+        AnalogAction action = new SetAnalogIO("IQA55:A321");
+        AnalogAction otherAction = new SetAnalogIO("IQA55:A322");
         maleSocket = new DefaultMaleAnalogActionSocket(action);
         otherMaleSocket = new DefaultMaleAnalogActionSocket(otherAction);
         femaleSocket = new DefaultFemaleAnalogActionSocket(null, new FemaleSocketListener() {

@@ -16,25 +16,25 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogActionSetAnalogIO extends AbstractAnalogAction {
+public class SetAnalogIO extends AbstractAnalogAction {
 
     private AnalogIO _analogIO;
     
-    public AnalogActionSetAnalogIO(String sys) {
+    public SetAnalogIO(String sys) {
         super(sys);
     }
     
-    public AnalogActionSetAnalogIO(String sys, String user) {
+    public SetAnalogIO(String sys, String user) {
         super(sys, user);
     }
     
-    public AnalogActionSetAnalogIO(String sys, AnalogIO analogIO) {
+    public SetAnalogIO(String sys, AnalogIO analogIO) {
         
         super(sys);
         _analogIO = analogIO;
     }
     
-    public AnalogActionSetAnalogIO(String sys, String user, AnalogIO analogIO) {
+    public SetAnalogIO(String sys, String user, AnalogIO analogIO) {
         
         super(sys, user);
         _analogIO = analogIO;
@@ -85,6 +85,6 @@ public class AnalogActionSetAnalogIO extends AbstractAnalogAction {
         return getShortDescription();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(AnalogActionSetAnalogIO.class);
+    private final static Logger log = LoggerFactory.getLogger(SetAnalogIO.class);
 
 }

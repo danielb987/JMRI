@@ -1,7 +1,6 @@
 package jmri.jmrit.logixng.analog.expressions;
 
 import jmri.AnalogIO;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -10,30 +9,30 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogExpressionGetAnalogIO extends AbstractAnalogExpression {
+public class GetAnalogIO extends AbstractAnalogExpression {
 
     private AnalogIO _analogIO;
     
-    public AnalogExpressionGetAnalogIO(String sys) throws BadUserNameException,
+    public GetAnalogIO(String sys) throws BadUserNameException,
             BadSystemNameException {
         
         super(sys);
     }
 
-    public AnalogExpressionGetAnalogIO(String sys, String user)
+    public GetAnalogIO(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         
         super(sys, user);
     }
 
-    public AnalogExpressionGetAnalogIO(String sys, AnalogIO analogIO)
+    public GetAnalogIO(String sys, AnalogIO analogIO)
             throws BadUserNameException, BadSystemNameException {
         
         super(sys);
         _analogIO = analogIO;
     }
     
-    public AnalogExpressionGetAnalogIO(String sys, String user, AnalogIO analogIO)
+    public GetAnalogIO(String sys, String user, AnalogIO analogIO)
             throws BadUserNameException, BadSystemNameException {
         
         super(sys, user);

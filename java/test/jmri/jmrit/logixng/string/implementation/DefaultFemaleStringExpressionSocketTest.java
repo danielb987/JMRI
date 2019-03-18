@@ -5,7 +5,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
 import jmri.jmrit.logixng.StringExpression;
-import jmri.jmrit.logixng.string.expressions.StringExpressionGetStringIO;
+import jmri.jmrit.logixng.string.expressions.GetStringIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,8 +34,8 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringExpression expression = new StringExpressionGetStringIO("IQA55:A321");
-        StringExpression otherExpression = new StringExpressionGetStringIO("IQA55:A322");
+        StringExpression expression = new GetStringIO("IQA55:A321");
+        StringExpression otherExpression = new GetStringIO("IQA55:A322");
         maleSocket = new DefaultMaleStringExpressionSocket(expression);
         otherMaleSocket = new DefaultMaleStringExpressionSocket(otherExpression);
         femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {

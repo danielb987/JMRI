@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.AnalogAction;
-import jmri.jmrit.logixng.analog.actions.AnalogActionSetAnalogIO;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Test ExpressionTimer
@@ -18,7 +18,7 @@ public class DefaultMaleAnalogActionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogAction action = new AnalogActionSetAnalogIO("IQA55:A321");
+        AnalogAction action = new SetAnalogIO("IQA55:A321");
         new DefaultMaleAnalogActionSocket(action);
     }
     
