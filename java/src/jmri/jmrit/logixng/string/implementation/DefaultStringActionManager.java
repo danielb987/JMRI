@@ -49,7 +49,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         
         for (StringActionFactory actionFactory : ServiceLoader.load(StringActionFactory.class)) {
             actionFactory.getStringActionClasses().forEach((entry) -> {
-                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }

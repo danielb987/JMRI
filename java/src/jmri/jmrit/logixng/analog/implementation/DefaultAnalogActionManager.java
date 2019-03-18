@@ -49,7 +49,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
         
         for (AnalogActionFactory actionFactory : ServiceLoader.load(AnalogActionFactory.class)) {
             actionFactory.getAnalogActionClasses().forEach((entry) -> {
-                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }

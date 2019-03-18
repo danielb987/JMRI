@@ -48,10 +48,10 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
             expressionClassList.put(category, new ArrayList<>());
         }
         
-        System.out.format("Read expressions%n");
+//        System.out.format("Read expressions%n");
         for (StringExpressionFactory expressionFactory : ServiceLoader.load(StringExpressionFactory.class)) {
             expressionFactory.getStringExpressionClasses().forEach((entry) -> {
-                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }

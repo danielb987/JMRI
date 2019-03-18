@@ -23,7 +23,7 @@ public final class LogixNGPreferences extends PreferencesBean {
     
     public LogixNGPreferences() {
         super(ProfileManager.getDefault().getActiveProfile());
-        System.out.format("New logix preferences%n");
+//        System.out.format("LogixNG preferences%n");
         Preferences sharedPreferences = ProfileUtils.getPreferences(
                 super.getProfile(), this.getClass(), true);
         _pluginManager = new PluginManager();

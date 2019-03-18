@@ -223,7 +223,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     @Override
     public void resolveAllTrees() {
         for (LogixNG logixNG : _tsys.values()) {
-            System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
+//            System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
             logixNG.setParentForAllChildren();
         }
     }

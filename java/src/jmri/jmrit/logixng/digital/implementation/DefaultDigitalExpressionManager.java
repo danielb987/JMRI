@@ -48,19 +48,19 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
             expressionClassList.put(category, new ArrayList<>());
         }
         
-        System.out.format("Read expressions%n");
+//        System.out.format("Read expressions%n");
         for (DigitalExpressionFactory expressionFactory : ServiceLoader.load(DigitalExpressionFactory.class)) {
             expressionFactory.getExpressionClasses().forEach((entry) -> {
-                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
         
-        System.out.format("Read plugin expressions%n");
+//        System.out.format("Read plugin expressions%n");
         for (LogixNGPluginFactory expressionFactory : ServiceLoader.load(LogixNGPluginFactory.class)) {
-            System.out.format("Read plugin factory: %s%n", expressionFactory.getClass().getName());
+//            System.out.format("Read plugin factory: %s%n", expressionFactory.getClass().getName());
             expressionFactory.getExpressionClasses().forEach((entry) -> {
-                System.out.format("Add expression plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                System.out.format("Add expression plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }

@@ -48,10 +48,10 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
             expressionClassList.put(category, new ArrayList<>());
         }
         
-        System.out.format("Read expressions%n");
+//        System.out.format("Read expressions%n");
         for (AnalogExpressionFactory expressionFactory : ServiceLoader.load(AnalogExpressionFactory.class)) {
             expressionFactory.getAnalogExpressionClasses().forEach((entry) -> {
-                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
+//                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
