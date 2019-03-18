@@ -35,7 +35,6 @@ public class DefaultFemaleStringExpressionSocketTest {
             }
         }, "E1");
         
-        System.out.format("Female socket: %s%n", femaleSocket.getName());
         Assert.assertTrue("String matches", "E1".equals(femaleSocket.getName()));
     }
     
