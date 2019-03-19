@@ -164,15 +164,15 @@ public class TimeDiagram extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
 /*            
             String systemName;
-            LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
+            LogixNG newLogix = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
             System.out.format("newLogix: %s%n", newLogix);
-            systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getNewSystemName(newLogix);
+            systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(newLogix);
             DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
+            InstanceManager.getDefault(DigitalExpressionManager.class).register(expression);
 //            InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-            systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(newLogix);
+            systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(newLogix);
             DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
-            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(action);
+            InstanceManager.getDefault(DigitalActionManager.class).register(action);
 /*            
             if (f == null || !f.isVisible()) {
                 f = new OptionFrame();

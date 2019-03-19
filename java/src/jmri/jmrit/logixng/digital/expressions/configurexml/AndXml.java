@@ -1,13 +1,13 @@
 package jmri.jmrit.logixng.digital.expressions.configurexml;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.digital.expressions.And;
+import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
+import jmri.jmrit.logixng.digital.expressions.And;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalExpression;
 
 /**
  *
@@ -125,7 +125,7 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).registerExpression(h);
+        InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;
     }
 /*

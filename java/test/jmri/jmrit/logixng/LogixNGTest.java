@@ -22,12 +22,12 @@ public class LogixNGTest {
     @Test
     public void testManagers() {
         String systemName;
-        LogixNG logixNG = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getNewSystemName(logixNG);
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
+        systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(logixNG);
         DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNewSystemName(logixNG);
+        systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG);
         DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }

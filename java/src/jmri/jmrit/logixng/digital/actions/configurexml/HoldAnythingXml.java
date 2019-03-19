@@ -3,13 +3,12 @@ package jmri.jmrit.logixng.digital.actions.configurexml;
 import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
-import jmri.NamedBeanHandle;
+import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.HoldAnything;
-import jmri.Turnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalAction;
 
 /**
  *
@@ -107,7 +106,7 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).registerAction(h);
+        InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
         return true;
     }
 /*

@@ -113,7 +113,7 @@ public final class LogixNGEditor extends JmriJFrame {
     public LogixNGEditor(String sName) {
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleDigitalActionSocket", Color.RED);
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleDigitalExpressionSocket", Color.BLUE);
-        newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getBySystemName(sName);
+        newLogix = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
         
         if (newLogix.getUserName() == null) {
             setTitle(Bundle.getMessage("TitleEditLogixNG", sName));
@@ -159,19 +159,19 @@ public final class LogixNGEditor extends JmriJFrame {
         
         // For testing only
 /*        
-        InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
+        InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         String systemName;
-        LogixNG newLogix = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).getNewSystemName(newLogix);
+        LogixNG newLogix = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
+        systemName = InstanceManager.getDefault(ExpressionManager.class).getNewSystemName(newLogix);
         DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-        MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ExpressionManager.class).register(expression);
+        MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(ExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
+        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix);
         DigitalAction actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
-        MaleDigitalActionSocket actionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(actionTurnout);
-        systemName = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).getNewSystemName(newLogix);
+        MaleDigitalActionSocket actionSocket = InstanceManager.getDefault(ActionManager.class).register(actionTurnout);
+        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix);
         DigitalAction actionIfThen = new IfThen(systemName, IfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
-        actionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.ActionManager.class).register(actionIfThen);
+        actionSocket = InstanceManager.getDefault(ActionManager.class).register(actionIfThen);
         newLogix.getFemaleSocket().connect(actionSocket);
 */        
         
