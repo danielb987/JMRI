@@ -20,13 +20,14 @@ import javax.swing.AbstractButton;
 
 import jmri.*;
 import jmri.implementation.JmriConfigurationManager;
-import jmri.jmrix.ConnectionConfigManager;
-import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.WarrantManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
@@ -36,6 +37,8 @@ import jmri.jmrit.logixng.analog.implementation.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.analog.implementation.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.string.implementation.DefaultStringExpressionManager;
 import jmri.jmrit.logixng.string.implementation.DefaultStringActionManager;
+import jmri.jmrix.ConnectionConfigManager;
+import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrix.internal.InternalReporterManager;
 import jmri.jmrix.internal.InternalSensorManager;
 import jmri.managers.AbstractSignalHeadManager;
@@ -74,9 +77,6 @@ import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JDialogOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.DigitalActionManager;
 
 /**
  * Common utility methods for working with JUnit.
