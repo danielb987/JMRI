@@ -79,14 +79,19 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
      * @param expression the bean
      */
     @Override
-    public MaleStringExpressionSocket register(@Nonnull StringExpression expression)
+    public MaleStringExpressionSocket registerExpression(@Nonnull StringExpression expression)
             throws IllegalArgumentException {
+        
+        if (expression instanceof MaleStringExpressionSocket) {
+            throw new IllegalArgumentException("registerAction() cannot register a MaleStringExpressionSocket. Use the method register() instead.");
+        }
         
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException("System name is invalid");
         }
+        
         // save in the maps
         MaleStringExpressionSocket maleSocket = createMaleStringExpressionSocket(expression);
         register(maleSocket);
@@ -174,7 +179,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
             throw new IllegalArgumentException("System name is invalid");
         }
         // save in the maps
-        register(expression);
+        registerExpression(expression);
     }
 
     @Override

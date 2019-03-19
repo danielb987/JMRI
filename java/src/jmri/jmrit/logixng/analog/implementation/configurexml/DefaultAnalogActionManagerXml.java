@@ -77,8 +77,8 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Create a AnalogActionManager object of the correct class, then register and
- fill it.
+     * Create a AnalogActionManager object of the correct class, then register
+     * and fill it.
      *
      * @param sharedAction  Shared top level Element to unpack.
      * @param perNodeAction Per-node top level Element to unpack.
@@ -95,8 +95,8 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
 
     /**
      * Utility method to load the individual AnalogAction objects. If there's no
- additional info needed for a specific action type, invoke this with the
- parent of the set of AnalogAction elements.
+     * additional info needed for a specific action type, invoke this with the
+     * parent of the set of AnalogAction elements.
      *
      * @param actions Element containing the AnalogAction elements to load.
      */
@@ -166,9 +166,9 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Replace the current AnalogActionManager, if there is one, with one newly created
- during a load operation. This is skipped if they are of the same absolute
-     * type.
+     * Replace the current AnalogActionManager, if there is one, with one newly
+     * created during a load operation. This is skipped if they are of the same
+     * absolute type.
      */
     protected void replaceActionManager() {
         if (InstanceManager.getDefault(jmri.jmrit.logixng.AnalogActionManager.class).getClass().getName()

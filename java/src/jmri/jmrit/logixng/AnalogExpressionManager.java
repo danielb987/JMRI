@@ -18,7 +18,7 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleAnalogExpressionSocket register(@Nonnull AnalogExpression expression)
+    public MaleAnalogExpressionSocket registerExpression(@Nonnull AnalogExpression expression)
             throws IllegalArgumentException;
     
     /**

@@ -125,7 +125,7 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(h);
+        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).registerExpression(h);
         return true;
     }
 /*

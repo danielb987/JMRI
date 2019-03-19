@@ -73,8 +73,8 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
     }
 
     /**
-     * Create a AnalogExpressionManager object of the correct class, then register and
- fill it.
+     * Create a AnalogExpressionManager object of the correct class, then
+     * register and fill it.
      *
      * @param sharedExpression  Shared top level Element to unpack.
      * @param perNodeExpression Per-node top level Element to unpack.

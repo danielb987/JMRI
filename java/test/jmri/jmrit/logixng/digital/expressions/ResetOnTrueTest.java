@@ -2,13 +2,14 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.InstanceManager;
 import jmri.NamedBean;
+import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 
 /**
  * Test ResetOnTrue
@@ -23,9 +24,11 @@ public class ResetOnTrueTest {
                     NamedBean.BadSystemNameException,
                     SocketAlreadyConnectedException {
         ExpressionTurnout expression = new ExpressionTurnout("IQ55:DE321", null);
-        MaleDigitalExpressionSocket primaryExpressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
+        MaleDigitalExpressionSocket primaryExpressionSocket =
+                InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
         expression = new ExpressionTurnout("IQ50:DE322", null);
-        MaleDigitalExpressionSocket secondaryExpressionSocket = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).register(expression);
+        MaleDigitalExpressionSocket secondaryExpressionSocket =
+                InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
         new ResetOnTrue("IQA55:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
     }
     

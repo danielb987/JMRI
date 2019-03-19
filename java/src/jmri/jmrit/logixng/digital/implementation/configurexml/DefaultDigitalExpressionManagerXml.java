@@ -13,7 +13,6 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
- * <P>
  *
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
@@ -73,8 +72,8 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
     }
 
     /**
-     * Create a DigitalExpressionManager object of the correct class, then register and
- fill it.
+     * Create a DigitalExpressionManager object of the correct class, then
+     * register and fill it.
      *
      * @param sharedExpression  Shared top level Element to unpack.
      * @param perNodeExpression Per-node top level Element to unpack.

@@ -75,14 +75,19 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
      * @param action the bean
      */
     @Override
-    public MaleAnalogActionSocket register(@Nonnull AnalogAction action)
+    public MaleAnalogActionSocket registerAction(@Nonnull AnalogAction action)
             throws IllegalArgumentException {
+        
+        if (action instanceof MaleAnalogActionSocket) {
+            throw new IllegalArgumentException("registerAction() cannot register a MaleAnalogActionSocket. Use the method register() instead.");
+        }
         
         // Check if system name is valid
         if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException("System name is invalid");
         }
+        
         MaleAnalogActionSocket maleSocket = createMaleActionSocket(action);
         register(maleSocket);
         return maleSocket;
@@ -167,7 +172,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
             throw new IllegalArgumentException("System name is invalid");
         }
         // save in the maps
-        register(action);
+        registerAction(action);
     }
 /*
     @Override

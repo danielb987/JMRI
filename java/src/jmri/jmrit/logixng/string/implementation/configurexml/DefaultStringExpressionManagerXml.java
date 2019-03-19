@@ -14,7 +14,6 @@ import jmri.jmrit.logixng.StringExpressionManager;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
- * <P>
  *
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
@@ -74,8 +73,8 @@ public class DefaultStringExpressionManagerXml extends jmri.managers.configurexm
     }
 
     /**
-     * Create a StringExpressionManager object of the correct class, then register and
- fill it.
+     * Create a StringExpressionManager object of the correct class, then
+     * register and fill it.
      *
      * @param sharedExpression  Shared top level Element to unpack.
      * @param perNodeExpression Per-node top level Element to unpack.

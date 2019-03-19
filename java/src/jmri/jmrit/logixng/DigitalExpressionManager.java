@@ -2,8 +2,6 @@ package jmri.jmrit.logixng;
 
 import javax.annotation.Nonnull;
 import jmri.Manager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalExpression;
 
 /**
  * Manager for DigitalExpression
@@ -20,7 +18,7 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleDigitalExpressionSocket register(@Nonnull DigitalExpression expression)
+    public MaleDigitalExpressionSocket registerExpression(@Nonnull DigitalExpression expression)
             throws IllegalArgumentException;
     
     /**

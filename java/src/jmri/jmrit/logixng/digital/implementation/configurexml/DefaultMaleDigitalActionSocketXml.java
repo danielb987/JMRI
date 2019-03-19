@@ -4,12 +4,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.jmrit.logixng.digital.implementation.DefaultMaleDigitalActionSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalAction;
 
 /**
  *
@@ -110,7 +111,7 @@ public class DefaultMaleDigitalActionSocketXml extends jmri.managers.configurexm
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(h);
+        InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
         return true;
     }
 /*

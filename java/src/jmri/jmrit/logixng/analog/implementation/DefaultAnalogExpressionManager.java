@@ -22,7 +22,6 @@ import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.AnalogExpressionFactory;
 
 /**
@@ -79,14 +78,19 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
      * @param expression the bean
      */
     @Override
-    public MaleAnalogExpressionSocket register(@Nonnull AnalogExpression expression)
+    public MaleAnalogExpressionSocket registerExpression(@Nonnull AnalogExpression expression)
             throws IllegalArgumentException {
+        
+        if (expression instanceof MaleAnalogExpressionSocket) {
+            throw new IllegalArgumentException("registerAction() cannot register a MaleAnalogExpressionSocket. Use the method register() instead.");
+        }
         
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException("System name is invalid");
         }
+        
         // save in the maps
         MaleAnalogExpressionSocket maleSocket = createMaleAnalogExpressionSocket(expression);
         register(maleSocket);
@@ -172,7 +176,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
             throw new IllegalArgumentException("System name is invalid");
         }
         // save in the maps
-        register(expression);
+        registerExpression(expression);
     }
 
     @Override

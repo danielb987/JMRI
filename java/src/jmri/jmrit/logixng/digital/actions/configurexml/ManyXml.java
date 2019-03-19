@@ -132,7 +132,7 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(h);
+        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).registerAction(h);
         return true;
     }
 /*

@@ -79,14 +79,19 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
      * @param expression the bean
      */
     @Override
-    public MaleDigitalExpressionSocket register(@Nonnull DigitalExpression expression)
+    public MaleDigitalExpressionSocket registerExpression(@Nonnull DigitalExpression expression)
             throws IllegalArgumentException {
+        
+        if (expression instanceof MaleDigitalExpressionSocket) {
+            throw new IllegalArgumentException("registerAction() cannot register a MaleDigitalExpressionSocket. Use the method register() instead.");
+        }
         
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException("System name is invalid");
         }
+        
         // save in the maps
         MaleDigitalExpressionSocket maleSocket = createMaleExpressionSocket(expression);
         register(maleSocket);
@@ -172,7 +177,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
             throw new IllegalArgumentException("System name is invalid");
         }
         // save in the maps
-        register(expression);
+        registerExpression(expression);
     }
 
     @Override

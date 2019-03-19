@@ -75,14 +75,19 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
      * @param action the bean
      */
     @Override
-    public MaleDigitalActionSocket register(@Nonnull DigitalAction action)
+    public MaleDigitalActionSocket registerAction(@Nonnull DigitalAction action)
             throws IllegalArgumentException {
+        
+        if (action instanceof MaleDigitalActionSocket) {
+            throw new IllegalArgumentException("registerAction() cannot register a MaleDigitalActionSocket. Use the method register() instead.");
+        }
         
         // Check if system name is valid
         if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException("System name is invalid");
         }
+        
         MaleDigitalActionSocket maleSocket = createMaleActionSocket(action);
         register(maleSocket);
         return maleSocket;
@@ -167,7 +172,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
             throw new IllegalArgumentException("System name is invalid");
         }
         // save in the maps
-        register(action);
+        registerAction(action);
     }
 /*
     @Override

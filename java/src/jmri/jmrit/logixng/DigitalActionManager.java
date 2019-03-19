@@ -20,7 +20,7 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleDigitalActionSocket register(@Nonnull DigitalAction action)
+    public MaleDigitalActionSocket registerAction(@Nonnull DigitalAction action)
             throws IllegalArgumentException;
     
     /**

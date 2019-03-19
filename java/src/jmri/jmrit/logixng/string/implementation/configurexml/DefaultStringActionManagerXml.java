@@ -17,7 +17,6 @@ import jmri.jmrit.logixng.StringActionManager;
 
 /**
  * Provides the functionality for configuring ActionManagers
- * <P>
  *
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
@@ -77,8 +76,8 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Create a StringActionManager object of the correct class, then register and
- fill it.
+     * Create a StringActionManager object of the correct class, then register
+     * and fill it.
      *
      * @param sharedAction  Shared top level Element to unpack.
      * @param perNodeAction Per-node top level Element to unpack.
@@ -95,8 +94,8 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
 
     /**
      * Utility method to load the individual StringAction objects. If there's no
- additional info needed for a specific action type, invoke this with the
- parent of the set of StringAction elements.
+     * additional info needed for a specific action type, invoke this with the
+     * parent of the set of StringAction elements.
      *
      * @param actions Element containing the StringAction elements to load.
      */
@@ -166,8 +165,8 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Replace the current StringActionManager, if there is one, with one newly created
- during a load operation. This is skipped if they are of the same absolute
+     * Replace the current StringActionManager, if there is one, with one newly
+     * created during a load operation. This is skipped if they are of the same absolute
      * type.
      */
     protected void replaceActionManager() {

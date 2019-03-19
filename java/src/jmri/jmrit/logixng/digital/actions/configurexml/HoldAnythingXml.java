@@ -107,7 +107,7 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(h);
+        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).registerAction(h);
         return true;
     }
 /*

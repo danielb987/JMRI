@@ -17,7 +17,6 @@ import jmri.jmrit.logixng.DigitalActionManager;
 
 /**
  * Provides the functionality for configuring ActionManagers
- * <P>
  *
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
@@ -77,8 +76,8 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
     }
 
     /**
-     * Create a DigitalActionManager object of the correct class, then register and
- fill it.
+     * Create a DigitalActionManager object of the correct class, then register
+     * and fill it.
      *
      * @param sharedAction  Shared top level Element to unpack.
      * @param perNodeAction Per-node top level Element to unpack.
@@ -94,9 +93,9 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
     }
 
     /**
-     * Utility method to load the individual DigitalAction objects. If there's no
- additional info needed for a specific action type, invoke this with the
- parent of the set of DigitalAction elements.
+     * Utility method to load the individual DigitalAction objects. If there's
+     * no additional info needed for a specific action type, invoke this with
+     * the parent of the set of DigitalAction elements.
      *
      * @param actions Element containing the DigitalAction elements to load.
      */

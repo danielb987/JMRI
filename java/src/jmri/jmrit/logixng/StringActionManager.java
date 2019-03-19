@@ -18,7 +18,7 @@ public interface StringActionManager extends Manager<MaleStringActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleStringActionSocket register(@Nonnull StringAction action)
+    public MaleStringActionSocket registerAction(@Nonnull StringAction action)
             throws IllegalArgumentException;
     
     /**

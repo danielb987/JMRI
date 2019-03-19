@@ -121,7 +121,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).register(h);
+        InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).registerAction(h);
         return true;
     }
 /*

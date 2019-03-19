@@ -18,7 +18,7 @@ public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleAnalogActionSocket register(@Nonnull AnalogAction action)
+    public MaleAnalogActionSocket registerAction(@Nonnull AnalogAction action)
             throws IllegalArgumentException;
     
     /**
