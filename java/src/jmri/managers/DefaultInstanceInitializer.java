@@ -26,23 +26,8 @@ import jmri.TurnoutManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
-import jmri.jmrit.logixng.AnalogActionManager;
-import jmri.jmrit.logixng.AnalogExpressionManager;
-import jmri.jmrit.logixng.StringActionManager;
-import jmri.jmrit.logixng.StringExpressionManager;
-import jmri.jmrit.logixng.digital.implementation.DefaultDigitalActionManager;
-import jmri.jmrit.logixng.analog.implementation.DefaultAnalogActionManager;
-import jmri.jmrit.logixng.analog.implementation.DefaultAnalogExpressionManager;
-import jmri.jmrit.logixng.digital.implementation.DefaultDigitalExpressionManager;
-import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
-import jmri.jmrit.logixng.string.implementation.DefaultStringActionManager;
-import jmri.jmrit.logixng.string.implementation.DefaultStringExpressionManager;
-import jmri.jmrit.logixng.implementation.LogixNGPreferences;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import org.openide.util.lookup.ServiceProvider;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.DigitalActionManager;
 
 /**
  * Provide the usual default implementations for the
@@ -75,18 +60,6 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         // the manager also needs to be added to the method getInitalizes()
         // below.
         
-        if (type == DigitalActionManager.class) {
-            return new DefaultDigitalActionManager();
-        }
-
-        if (type == AnalogActionManager.class) {
-            return new DefaultAnalogActionManager();
-        }
-
-        if (type == AnalogExpressionManager.class) {
-            return new DefaultAnalogExpressionManager();
-        }
-
         if (type == AudioManager.class) {
             return DefaultAudioManager.instance();
         }
@@ -99,10 +72,6 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultConditionalManager();
         }
 
-        if (type == DigitalExpressionManager.class) {
-            return new DefaultDigitalExpressionManager();
-        }
-
         if (type == LightManager.class) {
             return new jmri.managers.ProxyLightManager();
         }
@@ -113,14 +82,6 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
 
         if (type == MemoryManager.class) {
             return new DefaultMemoryManager();
-        }
-
-        if (type == LogixNG_Manager.class) {
-            return new DefaultLogixNGManager();
-        }
-
-        if (type == LogixNGPreferences.class) {
-            return new LogixNGPreferences();
         }
 
         if (type == RailComManager.class) {
@@ -163,14 +124,6 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultSignalSystemManager();
         }
 
-        if (type == StringActionManager.class) {
-            return new DefaultStringActionManager();
-        }
-
-        if (type == StringExpressionManager.class) {
-            return new DefaultStringExpressionManager();
-        }
-
         if (type == Timebase.class) {
             Timebase timebase = new jmri.jmrit.simpleclock.SimpleTimebase();
             if (InstanceManager.getNullableDefault(jmri.ConfigureManager.class) != null) {
@@ -197,20 +150,15 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     @Override
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
-        set.addAll(Arrays.asList(DigitalActionManager.class,
-                AnalogActionManager.class,
-                AnalogExpressionManager.class,
+        set.addAll(Arrays.asList(
                 AudioManager.class,
                 BlockManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
-                DigitalExpressionManager.class,
                 IdTagManager.class,
                 LightManager.class,
                 LogixManager.class,
                 MemoryManager.class,
-                LogixNG_Manager.class,
-                LogixNGPreferences.class,
                 RailComManager.class,
                 ReporterManager.class,
                 RouteManager.class,
@@ -220,8 +168,6 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 SignalMastLogicManager.class,
                 SignalMastManager.class,
                 SignalSystemManager.class,
-                StringActionManager.class,
-                StringExpressionManager.class,
                 Timebase.class,
                 TurnoutManager.class,
                 VSDecoderManager.class
