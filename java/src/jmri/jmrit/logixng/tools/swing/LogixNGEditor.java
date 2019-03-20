@@ -111,8 +111,8 @@ public final class LogixNGEditor extends JmriJFrame {
      * @param sName system name of LogixNG to be edited
      */
     public LogixNGEditor(String sName) {
-        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleDigitalActionSocket", Color.RED);
-        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.engine.DefaultFemaleDigitalExpressionSocket", Color.BLUE);
+        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalActionSocket", Color.RED);
+        FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalExpressionSocket", Color.BLUE);
         newLogix = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
         
         if (newLogix.getUserName() == null) {
@@ -335,7 +335,7 @@ public final class LogixNGEditor extends JmriJFrame {
         _showReminder = true;
         // make an Add LogixNG Frame
         if (addLogixNGFrame == null) {
-            JPanel panel5 = makeAddLogixNGFrame("TitleAddLogixNG", "AddLogixNGMessage", femaleSocket);  // NOI18N
+            JPanel panel5 = makeAddFrame("AddMessage", femaleSocket);  // NOI18N
             // Create LogixNG
             create = new JButton(Bundle.getMessage("ButtonCreate"));  // NOI18N
             panel5.add(create);
@@ -345,7 +345,7 @@ public final class LogixNGEditor extends JmriJFrame {
 //                    createPressed(e);
                 }
             });
-            create.setToolTipText(Bundle.getMessage("LogixNGCreateButtonHint"));  // NOI18N
+            create.setToolTipText(Bundle.getMessage("CreateButtonHint"));  // NOI18N
         }
         addLogixNGFrame.pack();
         addLogixNGFrame.setVisible(true);
@@ -358,12 +358,11 @@ public final class LogixNGEditor extends JmriJFrame {
     /**
      * Create or copy LogixNG frame.
      *
-     * @param titleId   property key to fetch as title of the frame (using Bundle)
      * @param messageId part 1 of property key to fetch as user instruction on
      *                  pane, either 1 or 2 is added to form the whole key
      * @return the button JPanel
      */
-    JPanel makeAddLogixNGFrame(String titleId, String messageId, FemaleSocket femaleSocket) {
+    JPanel makeAddFrame(String messageId, FemaleSocket femaleSocket) {
         addLogixNGFrame = new JmriJFrame(
                 Bundle.getMessage(
                         "AddMaleSocketDialogTitle",
