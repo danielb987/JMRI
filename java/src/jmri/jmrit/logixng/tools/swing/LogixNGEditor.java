@@ -349,17 +349,14 @@ public final class LogixNGEditor extends JmriJFrame {
             // Create LogixNG
             create = new JButton(Bundle.getMessage("ButtonCreate"));  // NOI18N
             panel5.add(create);
-            create.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    MaleSocket socket = swingConfiguratorInterface.createNewObject(_systemName.getText(), _addUserName.getText());
-                    try {
-                        femaleSocket.connect(socket);
-                    } catch (SocketAlreadyConnectedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-//                    createPressed(e);
+            create.addActionListener((ActionEvent e) -> {
+                MaleSocket socket = swingConfiguratorInterface.createNewObject(_systemName.getText(), _addUserName.getText());
+                try {
+                    femaleSocket.connect(socket);
+                } catch (SocketAlreadyConnectedException ex) {
+                    throw new RuntimeException(ex);
                 }
+                addLogixNGFrame.dispose();
             });
             create.setToolTipText(Bundle.getMessage("CreateButtonHint"));  // NOI18N
         }
