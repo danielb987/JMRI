@@ -1,11 +1,14 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalAction;
 
 /**
  * The base class for LogixNG Actions
@@ -107,6 +110,11 @@ public abstract class AbstractDigitalAction extends AbstractNamedBean
             log.error("No package name found, which is not yet handled!");
             return null;
         }
+    }
+    
+    @Override
+    public MaleSocket register() {
+        return InstanceManager.getDefault(DigitalActionManager.class).registerAction(this);
     }
     
     

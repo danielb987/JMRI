@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.analog.actions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.AnalogAction;
+import jmri.jmrit.logixng.AnalogActionManager;
+import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +92,12 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
             return null;
         }
     }
+    
+    @Override
+    public MaleSocket register() {
+        return InstanceManager.getDefault(AnalogActionManager.class).registerAction(this);
+    }
+    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogAction.class);
 }

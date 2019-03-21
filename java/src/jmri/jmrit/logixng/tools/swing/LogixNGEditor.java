@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -47,6 +48,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.InstanceManager;
 import jmri.UserPreferencesManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
@@ -58,6 +60,9 @@ import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
+import jmri.jmrit.logixng.swing.SwingTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +88,13 @@ public final class LogixNGEditor extends JmriJFrame {
     private final JLabel _sysNameLabel = new JLabel(Bundle.getMessage("SystemName") + ":");  // NOI18N
     private final JLabel _userNameLabel = new JLabel(Bundle.getMessage("UserName") + ":");   // NOI18N
     private final String systemNameAuto = this.getClass().getName() + ".AutoSystemName";      // NOI18N
+    private Class maleSocketClass = null;
     private JButton create;
     boolean _showReminder = false;
+    
+    private Map<Category, List<Class<? extends Base>>> connectableClasses;
+    
+    private SwingConfiguratorInterface swingConfiguratorInterface;
     
     // Edit LogixNG Variables
     private boolean _inEditMode = false;
@@ -342,6 +352,12 @@ public final class LogixNGEditor extends JmriJFrame {
             create.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    MaleSocket socket = swingConfiguratorInterface.createNewObject(_systemName.getText(), _addUserName.getText());
+                    try {
+                        femaleSocket.connect(socket);
+                    } catch (SocketAlreadyConnectedException ex) {
+                        throw new RuntimeException(ex);
+                    }
 //                    createPressed(e);
                 }
             });
@@ -360,6 +376,8 @@ public final class LogixNGEditor extends JmriJFrame {
      *
      * @param messageId part 1 of property key to fetch as user instruction on
      *                  pane, either 1 or 2 is added to form the whole key
+     * @param femaleSocket the female socket to which we want to add something
+     * @param maleSocketClass the class of the male socket we want to add
      * @return the button JPanel
      */
     JPanel makeAddFrame(String messageId, FemaleSocket femaleSocket) {
@@ -411,15 +429,22 @@ public final class LogixNGEditor extends JmriJFrame {
         panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
         JPanel panel31 = new JPanel();
         panel31.setLayout(new FlowLayout());
-//        JLabel message1 = new JLabel(Bundle.getMessage(messageId + "1"));  // NOI18N
-        JLabel message1 = new JLabel("aaa1");  // NOI18N
+        JLabel message1 = new JLabel(Bundle.getMessage(messageId + "1"));  // NOI18N
+//        JLabel message1 = new JLabel("aaa1");  // NOI18N
         panel31.add(message1);
         JPanel panel32 = new JPanel();
-//        JLabel message2 = new JLabel(Bundle.getMessage(messageId + "2"));  // NOI18N
-        JLabel message2 = new JLabel("bbb2");  // NOI18N
+        JLabel message2 = new JLabel(Bundle.getMessage(messageId + "2"));  // NOI18N
+//        JLabel message2 = new JLabel("bbb2");  // NOI18N
         panel32.add(message2);
+        
+        connectableClasses = femaleSocket.getConnectableClasses();
+        maleSocketClass = connectableClasses.get(Category.ITEM).get(0);
+        
+        swingConfiguratorInterface = SwingTools.getSwingConfiguratorForClass(maleSocketClass);
+        JPanel panel33 = swingConfiguratorInterface.getConfigPanel(femaleSocket);
         panel3.add(panel31);
         panel3.add(panel32);
+        panel3.add(panel33);
         contentPanel.add(panel3);
 
         // set up create and cancel buttons

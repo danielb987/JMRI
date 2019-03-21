@@ -1,11 +1,14 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  *
@@ -106,6 +109,12 @@ public abstract class AbstractDigitalExpression extends AbstractNamedBean
             return null;
         }
     }
+    
+    @Override
+    public MaleSocket register() {
+        return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(this);
+    }
+    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractDigitalExpression.class);
 }

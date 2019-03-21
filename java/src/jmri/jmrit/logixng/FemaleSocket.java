@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng;
 
+import java.util.Map;
+import java.util.List;
 import javax.annotation.CheckForNull;
 
 /**
@@ -59,5 +61,12 @@ public interface FemaleSocket extends Base {
      * Get an example of a system name for this socket.
      */
     public String getExampleSystemName();
+    
+    /**
+     * Get a set of classes that are compatible with this female socket.
+     * 
+     * @return a set of entries with category and class
+     */
+    public Map<Category, List<Class<? extends Base>>> getConnectableClasses();
     
 }

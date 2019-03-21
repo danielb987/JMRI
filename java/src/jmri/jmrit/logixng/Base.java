@@ -186,5 +186,12 @@ public interface Base {
      * Note that the user interface should normally not allow editing a hard lock.
      */
     public void setLock(Lock lock);
+    
+    /**
+     * Register this class in its manager and create a male socket for it.
+     * 
+     * @return the male socket for this object
+     */
+    public MaleSocket register();
 
 }

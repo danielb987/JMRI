@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
+import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.util.Log4JUtil;
@@ -32,7 +34,7 @@ import jmri.jmrit.logixng.AnalogExpressionFactory;
 public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogExpressionSocket>
         implements AnalogExpressionManager, InstanceManagerAutoDefault {
 
-    private final Map<Category, List<Class<? extends AnalogExpression>>> expressionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
     int lastAutoExpressionRef = 0;
     
     // This is for testing only!!!
@@ -167,6 +169,12 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         
         return socket;
     }
+    
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
+        return expressionClassList;
+    }
+
 /*
     @Override
     public void addExpression(Expression expression) throws IllegalArgumentException {

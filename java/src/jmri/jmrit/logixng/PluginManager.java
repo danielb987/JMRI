@@ -112,9 +112,9 @@ public class PluginManager {
                     } else if (DigitalActionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
-                    } else if (jmri.jmrit.logixng.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
-                        System.out.format("Class %s is a plugin configurator%n", cls.getName());
-                        type = ClassType.CONFIGURATOR;
+//                    } else if (jmri.jmrit.logixng.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
+//                        System.out.format("Class %s is a plugin configurator%n", cls.getName());
+//                        type = ClassType.CONFIGURATOR;
                     } else if (DigitalExpression.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
                         type = ClassType.EXPRESSION_NOT_PLUGIN;

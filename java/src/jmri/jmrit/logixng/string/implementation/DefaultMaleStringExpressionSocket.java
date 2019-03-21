@@ -249,6 +249,11 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
         return new StringExpressionDebugConfig();
     }
 
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("A male socket cannot be registered with this method.");
+    }
+
 
 
     public static class StringExpressionDebugConfig implements MaleSocket.DebugConfig {

@@ -304,6 +304,11 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         return new AnalogExpressionDebugConfig();
     }
 
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("A male socket cannot be registered with this method.");
+    }
+
 
 
     public static class AnalogExpressionDebugConfig implements MaleSocket.DebugConfig {

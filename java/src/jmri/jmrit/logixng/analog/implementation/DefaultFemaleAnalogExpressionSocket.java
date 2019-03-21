@@ -4,10 +4,15 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.NamedBean;
+import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -75,6 +80,11 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
     @Override
     public String getExampleSystemName() {
         return getLogixNG().getSystemName() + ":AE10";
+    }
+
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
+        return InstanceManager.getDefault(AnalogExpressionManager.class).getExpressionClasses();
     }
 
 }

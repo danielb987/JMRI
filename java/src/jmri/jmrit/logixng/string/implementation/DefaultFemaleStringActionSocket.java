@@ -4,16 +4,21 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.implementation.AbstractFemaleSocket;
 
 /**
@@ -74,6 +79,11 @@ public final class DefaultFemaleStringActionSocket
     @Override
     public String getExampleSystemName() {
         return getLogixNG().getSystemName() + ":SA10";
+    }
+
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
+        return InstanceManager.getDefault(StringActionManager.class).getActionClasses();
     }
 
 }

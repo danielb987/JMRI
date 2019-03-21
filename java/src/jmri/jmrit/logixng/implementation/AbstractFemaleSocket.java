@@ -286,4 +286,9 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("A female socket cannot be registered.");
+    }
+
 }

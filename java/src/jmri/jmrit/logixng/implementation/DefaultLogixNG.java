@@ -18,6 +18,7 @@ import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * The default implementation of LogixNG.
@@ -176,4 +177,10 @@ public final class DefaultLogixNG extends AbstractNamedBean
     public void setLock(Lock lock) {
         throw new UnsupportedOperationException("Not supported.");
     }
+
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("A LogixNG cannot be registered with this method.");
+    }
+    
 }

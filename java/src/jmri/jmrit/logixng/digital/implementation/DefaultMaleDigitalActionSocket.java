@@ -298,6 +298,11 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         return new DigitalActionDebugConfig();
     }
 
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("A male socket cannot be registered with this method.");
+    }
+
 
 
     public static class DigitalActionDebugConfig implements MaleSocket.DebugConfig {

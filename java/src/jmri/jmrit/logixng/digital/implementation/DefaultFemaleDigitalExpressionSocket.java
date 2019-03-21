@@ -1,6 +1,11 @@
 package jmri.jmrit.logixng.digital.implementation;
 
+import java.util.List;
+import java.util.Map;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -80,6 +85,11 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
     @Override
     public String getExampleSystemName() {
         return getLogixNG().getSystemName() + ":DE10";
+    }
+
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
+        return InstanceManager.getDefault(DigitalExpressionManager.class).getExpressionClasses();
     }
 
 }

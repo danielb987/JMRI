@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.string.expressions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.StringExpression;
+import jmri.jmrit.logixng.StringExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +89,12 @@ public abstract class AbstractStringExpression extends AbstractNamedBean
             return null;
         }
     }
+    
+    @Override
+    public MaleSocket register() {
+        return InstanceManager.getDefault(StringExpressionManager.class).registerExpression(this);
+    }
+    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractStringExpression.class);
 }

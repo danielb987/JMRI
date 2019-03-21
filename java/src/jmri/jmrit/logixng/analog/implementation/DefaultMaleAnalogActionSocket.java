@@ -303,6 +303,11 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         return new AnalogActionDebugConfig();
     }
 
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("A male socket cannot be registered with this method.");
+    }
+
 
 
     public static class AnalogActionDebugConfig implements MaleSocket.DebugConfig {

@@ -4,6 +4,7 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.digital.expressions.AbstractDigitalExpression;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * Adapter for expression plugins.
@@ -60,12 +61,17 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public MaleSocket register() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

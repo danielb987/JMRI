@@ -1,5 +1,8 @@
 package jmri.jmrit.logixng;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import jmri.Manager;
 import jmri.jmrit.logixng.LogixNG;
@@ -39,6 +42,13 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
             FemaleSocketListener listener,
             String socketName,
             MaleDigitalActionSocket maleSocket);
+
+    /**
+     * Get a set of classes that implements the DigitalAction interface.
+     * 
+     * @return a set of entries with category and class
+     */
+    public Map<Category, List<Class<? extends Base>>> getActionClasses();
 
     /*.*
      * Add an DigitalAction.

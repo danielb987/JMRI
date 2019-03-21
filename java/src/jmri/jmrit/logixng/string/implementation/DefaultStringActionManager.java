@@ -32,7 +32,7 @@ import jmri.jmrit.logixng.StringActionFactory;
 public class DefaultStringActionManager extends AbstractManager<MaleStringActionSocket>
         implements StringActionManager {
 
-    private final Map<Category, List<Class<? extends StringAction>>> actionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private int lastAutoActionRef = 0;
     
     // This is for testing only!!!
@@ -165,6 +165,11 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         
         return socket;
     }
+    
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getActionClasses() {
+        return actionClassList;
+    }
 /*
     @Override
     public void addAction(Action action) throws IllegalArgumentException {
@@ -214,4 +219,5 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     }
     
     private final static Logger log = LoggerFactory.getLogger(DefaultStringActionManager.class);
+
 }

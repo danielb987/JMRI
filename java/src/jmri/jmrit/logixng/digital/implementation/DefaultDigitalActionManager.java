@@ -2,10 +2,13 @@ package jmri.jmrit.logixng.digital.implementation;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ServiceLoader;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import jmri.InvokeOnGuiThread;
 import jmri.util.Log4JUtil;
@@ -32,7 +35,7 @@ import jmri.managers.AbstractManager;
 public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActionSocket>
         implements DigitalActionManager {
 
-    private final Map<Category, List<Class<? extends DigitalAction>>> actionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private int lastAutoActionRef = 0;
     
     // This is for testing only!!!
@@ -163,6 +166,11 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         
         return socket;
     }
+
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getActionClasses() {
+        return actionClassList;
+    }
 /*
     @Override
     public void addAction(DigitalAction action) throws IllegalArgumentException {
@@ -212,4 +220,5 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
     
     private final static Logger log = LoggerFactory.getLogger(DefaultDigitalActionManager.class);
+
 }

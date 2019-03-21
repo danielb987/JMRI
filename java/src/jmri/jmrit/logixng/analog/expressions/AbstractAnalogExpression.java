@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +89,11 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
             log.error("No package name found, which is not yet handled!");
             return null;
         }
+    }
+    
+    @Override
+    public MaleSocket register() {
+        return InstanceManager.getDefault(AnalogExpressionManager.class).registerExpression(this);
     }
     
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogExpression.class);

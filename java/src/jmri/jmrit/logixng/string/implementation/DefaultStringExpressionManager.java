@@ -33,7 +33,7 @@ import jmri.jmrit.logixng.StringExpressionFactory;
 public class DefaultStringExpressionManager extends AbstractManager<MaleStringExpressionSocket>
         implements StringExpressionManager, InstanceManagerAutoDefault {
 
-    private final Map<Category, List<Class<? extends StringExpression>>> expressionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
     int lastAutoExpressionRef = 0;
     
     // This is for testing only!!!
@@ -170,6 +170,12 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         
         return socket;
     }
+    
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
+        return expressionClassList;
+    }
+    
 /*
     @Override
     public void addExpression(Expression expression) throws IllegalArgumentException {

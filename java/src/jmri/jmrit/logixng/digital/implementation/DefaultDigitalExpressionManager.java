@@ -33,7 +33,7 @@ import jmri.managers.AbstractManager;
 public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigitalExpressionSocket>
         implements DigitalExpressionManager, InstanceManagerAutoDefault {
 
-    private final Map<Category, List<Class<? extends DigitalExpression>>> expressionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
     int lastAutoExpressionRef = 0;
     
     // This is for testing only!!!
@@ -168,6 +168,11 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         
         return socket;
     }
+    
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
+        return expressionClassList;
+    }
 /*
     @Override
     public void addExpression(DigitalExpression expression) throws IllegalArgumentException {
@@ -217,4 +222,5 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultDigitalExpressionManager.class);
+
 }

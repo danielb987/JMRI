@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -32,7 +33,7 @@ import jmri.jmrit.logixng.AnalogActionFactory;
 public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogActionSocket>
         implements AnalogActionManager {
 
-    private final Map<Category, List<Class<? extends AnalogAction>>> actionClassList = new HashMap<>();
+    private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private int lastAutoActionRef = 0;
     
     // This is for testing only!!!
@@ -163,6 +164,12 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
         
         return socket;
     }
+    
+    @Override
+    public Map<Category, List<Class<? extends Base>>> getActionClasses() {
+        return actionClassList;
+    }
+
 /*
     @Override
     public void addAction(Action action) throws IllegalArgumentException {
