@@ -235,11 +235,6 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
         return _expression.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
-    @Override
-    public String getConfiguratorClassName() {
-        return _expression.getConfiguratorClassName();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {

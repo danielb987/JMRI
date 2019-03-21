@@ -226,11 +226,6 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
         return _stringExpression.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
-    @Override
-    public String getConfiguratorClassName() {
-        return _stringExpression.getConfiguratorClassName();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {

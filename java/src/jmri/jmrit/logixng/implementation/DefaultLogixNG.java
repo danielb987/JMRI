@@ -119,11 +119,6 @@ public final class DefaultLogixNG extends AbstractNamedBean
     }
 
     @Override
-    public String getConfiguratorClassName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
     public String getShortDescription() {
         throw new UnsupportedOperationException("Not supported.");
     }

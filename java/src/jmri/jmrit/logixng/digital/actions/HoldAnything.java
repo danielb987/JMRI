@@ -167,11 +167,6 @@ public class HoldAnything extends AbstractDigitalAction {
         }
 
         @Override
-        public String getConfiguratorClassName() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
         public String getShortDescription() {
             return "Multiple sockets for " + _femaleSocketFactory.getClass().getName();
         }

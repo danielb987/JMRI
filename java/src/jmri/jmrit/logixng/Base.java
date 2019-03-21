@@ -63,16 +63,6 @@ public interface Base {
     public String getSystemName();
     
     /**
-     * Return the class name of the configurator class.
-     * Returns the fully qualified class name of the class that is used to
-     * configurate this class. That class needs to implement the
-     * jmri.jmrit.logixng.swing.PluginConfiguratorInterface interface.
-     * 
-     * @return the fully qualified name of the configurator class
-     */
-    public String getConfiguratorClassName();
-    
-    /**
      * Get a short description of this item.
      * @return a short description
      */

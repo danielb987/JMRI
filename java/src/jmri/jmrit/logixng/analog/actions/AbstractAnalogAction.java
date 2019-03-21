@@ -72,27 +72,6 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
         _lock = lock;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String getConfiguratorClassName() {
-        String className = this.getClass().getName();
-        log.trace("handle object of class {}", className);
-        int lastDot = className.lastIndexOf(".");
-        if (lastDot > 0) {
-            // found package-class boundary OK
-            String result = className.substring(0, lastDot)
-                    + ".swing."
-                    + className.substring(lastDot + 1, className.length())
-                    + "Configurator";
-            log.trace("adapter class name is {}", result);
-            return result;
-        } else {
-            // no last dot found!
-            log.error("No package name found, which is not yet handled!");
-            return null;
-        }
-    }
-    
     @Override
     public MaleSocket register() {
         return InstanceManager.getDefault(AnalogActionManager.class).registerAction(this);

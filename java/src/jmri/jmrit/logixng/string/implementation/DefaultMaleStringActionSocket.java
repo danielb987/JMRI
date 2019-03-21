@@ -230,11 +230,6 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
         return _stringAction.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
-    @Override
-    public String getConfiguratorClassName() {
-        return _stringAction.getConfiguratorClassName();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {

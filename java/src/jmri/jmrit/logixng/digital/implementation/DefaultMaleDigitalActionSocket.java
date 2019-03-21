@@ -275,11 +275,6 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         return _action.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
-    @Override
-    public String getConfiguratorClassName() {
-        return _action.getConfiguratorClassName();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void setDebugConfig(DebugConfig config) {

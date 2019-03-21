@@ -374,7 +374,6 @@ public final class LogixNGEditor extends JmriJFrame {
      * @param messageId part 1 of property key to fetch as user instruction on
      *                  pane, either 1 or 2 is added to form the whole key
      * @param femaleSocket the female socket to which we want to add something
-     * @param maleSocketClass the class of the male socket we want to add
      * @return the button JPanel
      */
     JPanel makeAddFrame(String messageId, FemaleSocket femaleSocket) {
