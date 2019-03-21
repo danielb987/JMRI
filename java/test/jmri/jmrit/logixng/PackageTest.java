@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
     jmri.jmrit.logixng.string.actions.PackageTest.class,
     jmri.jmrit.logixng.string.expressions.PackageTest.class,
     jmri.jmrit.logixng.string.implementation.PackageTest.class,
+    jmri.jmrit.logixng.swing.PackageTest.class,
     jmri.jmrit.logixng.tools.swing.PackageTest.class,
     DigitalExpressionTest.class,
     LogixNGCategoryTest.class,

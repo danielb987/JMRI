@@ -14,6 +14,12 @@ public class ActionTurnout extends AbstractDigitalAction {
 //    private ActionTurnout _turnout;
 //    private int _newState;
     
+    public ActionTurnout(String sys)
+            throws BadUserNameException {
+        super(sys);
+//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
+    }
+
     public ActionTurnout(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);

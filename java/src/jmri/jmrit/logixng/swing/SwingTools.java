@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist 2019
  */
 public final class SwingTools {
+    
+    // Private constructor to ensure this class never get instanciated.
+    private SwingTools() {
+    }
 
     /**
      * Find the name of the adapter class for an object.
