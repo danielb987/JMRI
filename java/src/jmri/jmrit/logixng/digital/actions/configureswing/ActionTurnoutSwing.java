@@ -1,15 +1,11 @@
 package jmri.jmrit.logixng.digital.actions.configureswing;
 
-import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.NamedBean;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.Turnout;
@@ -30,11 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ActionTurnoutSwing implements SwingConfiguratorInterface {
 
-//    private final String stateThrown = InstanceManager.turnoutManagerInstance().getThrownText();
-//    private final String stateClosed = InstanceManager.turnoutManagerInstance().getClosedText();
-//    private final String[] turnoutStates = new String[]{stateClosed, stateThrown};
-//    private final int[] turnoutStateValues = new int[]{Turnout.CLOSED, Turnout.THROWN};
-    
     private JPanel panel;
     private BeanSelectCreatePanel turnoutBeanPanel;
     private JComboBox<Is_IsNot_Enum> is_IsNot_ComboBox;
@@ -83,43 +74,6 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         panel.add(turnoutBeanPanel);
         panel.add(is_IsNot_ComboBox);
         panel.add(stateComboBox);
-//        panel.add(new JTextField("Kalle"));
-/*        
-        panel.setLayout(new java.awt.GridBagLayout());
-        java.awt.GridBagConstraints c = new java.awt.GridBagConstraints();
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.anchor = java.awt.GridBagConstraints.EAST;
-        panel.add(_sysNameLabel, c);
-        c.gridy = 1;
-        panel.add(_userNameLabel, c);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.anchor = java.awt.GridBagConstraints.WEST;
-        c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
-        panel.add(_systemName, c);
-        c.gridy = 1;
-        panel.add(_addUserName, c);
-        c.gridx = 2;
-        c.gridy = 1;
-        c.anchor = java.awt.GridBagConstraints.WEST;
-        c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
-        c.gridy = 0;
-        panel.add(_autoSystemName, c);
-*/        
-        
-        
-        
-        
-        
-        
-        
-//            eto1.setVisible(true);
-//            eto1.setDefaultNamedBean(((jmri.implementation.LsDecSignalHead) curS).getGreen().getBean());
     }
     
     /** {@inheritDoc} */
