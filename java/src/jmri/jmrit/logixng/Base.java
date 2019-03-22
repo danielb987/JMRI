@@ -190,4 +190,23 @@ public interface Base {
      */
     public void setLock(Lock lock);
 
+    /**
+     * Deactivate this object, so that it releases as many resources as possible
+     * and no longer effects others.
+     * <p>
+     * For example, if this object has listeners, after a call to this method it
+     * should no longer notify those listeners. Any native or system-wide
+     * resources it maintains should be released, including threads, files, etc.
+     * <p>
+     * It is an error to invoke any other methods on this object once dispose()
+     * has been called. Note, however, that there is no guarantee about behavior
+     * in that case.
+     * <p>
+     * Afterwards, references to this object may still exist elsewhere,
+     * preventing its garbage collection. But it's formally dead, and shouldn't
+     * be keeping any other objects alive. Therefore, this method should null
+     * out any references to other objects that this object contained.
+     */
+    public void dispose();  // remove _all_ connections!
+
 }

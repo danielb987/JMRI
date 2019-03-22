@@ -115,6 +115,12 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         return _name;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void dispose() {
+        _socket.dispose();
+    }
+
     @Override
     public Category getCategory() {
         if (_socket != null) {
@@ -220,10 +226,6 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
         // Implement this!
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void dispose() {
     }
 
     @Override

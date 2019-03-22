@@ -63,10 +63,6 @@ public final class DefaultFemaleStringExpressionSocket extends AbstractFemaleSoc
     }
 
     @Override
-    public void dispose() {
-    }
-
-    @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleStringExpressionSocket_Short");
     }

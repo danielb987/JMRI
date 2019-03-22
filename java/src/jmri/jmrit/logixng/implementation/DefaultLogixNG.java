@@ -173,4 +173,10 @@ public final class DefaultLogixNG extends AbstractNamedBean
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
+    @Override
+    final public void dispose() {
+        _femaleActionSocket.dispose();
+    }
+
 }

@@ -70,6 +70,15 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
         _lock = lock;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void dispose() {
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).dispose();
+        }
+        super.dispose();
+    }
+
 
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogExpression.class);
 }

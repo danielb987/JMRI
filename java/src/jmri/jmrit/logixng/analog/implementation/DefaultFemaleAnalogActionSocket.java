@@ -67,10 +67,6 @@ public final class DefaultFemaleAnalogActionSocket
     }
 
     @Override
-    public void dispose() {
-    }
-
-    @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleAnalogActionSocket_Short");
     }

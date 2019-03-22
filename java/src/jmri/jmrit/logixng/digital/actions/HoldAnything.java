@@ -243,6 +243,13 @@ public class HoldAnything extends AbstractDigitalAction {
 //            return _action;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public void dispose() {
+            for (FemaleSocket femaleSocket : _femaleSockets) {
+                femaleSocket.dispose();
+            }
+        }
 
         public class ActionDebugConfig implements MaleSocket.DebugConfig {
 

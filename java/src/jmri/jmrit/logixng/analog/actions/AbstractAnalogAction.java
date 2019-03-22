@@ -71,6 +71,15 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
     public void setLock(Lock lock) {
         _lock = lock;
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void dispose() {
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).dispose();
+        }
+        super.dispose();
+    }
 
     
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogAction.class);

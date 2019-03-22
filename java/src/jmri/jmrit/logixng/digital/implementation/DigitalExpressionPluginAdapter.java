@@ -69,4 +69,10 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void dispose() {
+        _pluginExpression.dispose();
+    }
+
 }

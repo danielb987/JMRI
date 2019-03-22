@@ -66,11 +66,6 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
 
     /** {@inheritDoc} */
     @Override
-    public void dispose() {
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleDigitalExpressionSocket_Short");
     }
