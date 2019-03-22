@@ -137,14 +137,19 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     public MaleSocket createNewObject(@Nonnull String systemName) {
         System.out.format("System name: %s%n", systemName);
         ActionTurnout action = new ActionTurnout(systemName);
-        // nbhm.getNamedBeanHandle(to1.getDisplayName(), t1);
-        
-//        Turnout t1 = getTurnoutFromPanel(to1, "SignalHead:" + systemNameTextField.getText() + ":Green");
-        
-//                    if (t1 == null) {
-//                        addTurnoutMessage(v1Border.getTitle(), to1.getDisplayName());
-//                    }
-        
+        try {
+            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            if (turnout != null) {
+                NamedBeanHandle<Turnout> handle
+                        = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+                action.setTurnout(handle);
+            }
+            action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+            action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
+        } catch (JmriException ex) {
+            log.error("Cannot get NamedBeanHandle for turnout", ex);
+        }
         return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }
 
