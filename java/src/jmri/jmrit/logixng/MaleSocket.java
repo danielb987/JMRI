@@ -52,5 +52,11 @@ public interface MaleSocket extends Base {
      */
     public interface DebugConfig {
     }
+    
+    /**
+     * Get the object that this male socket holds.
+     * This method is used when the object is going to be configured.
+     */
+    public Base getObject();
 
 }

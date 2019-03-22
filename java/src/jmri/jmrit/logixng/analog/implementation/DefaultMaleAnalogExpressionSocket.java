@@ -299,6 +299,12 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         return new AnalogExpressionDebugConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getObject() {
+        return _expression;
+    }
+
 
 
     public static class AnalogExpressionDebugConfig implements MaleSocket.DebugConfig {

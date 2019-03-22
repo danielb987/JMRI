@@ -1,5 +1,8 @@
 package jmri.jmrit.logixng;
 
+import javax.annotation.CheckForNull;
+import jmri.NamedBean;
+
 /**
  * The base interface for LogixNG expressions and actions.
  * Used to simplify the user interface.
@@ -61,6 +64,16 @@ public interface Base {
      * Get the system name.
      */
     public String getSystemName();
+    
+    /**
+     * Get the user name.
+     */
+    public String getUserName();
+    
+    /**
+     * Get the user name.
+     */
+    public void setUserName(@CheckForNull String s) throws NamedBean.BadUserNameException;
     
     /**
      * Get a short description of this item.

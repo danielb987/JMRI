@@ -153,6 +153,18 @@ public class HoldAnything extends AbstractDigitalAction {
         public String getSystemName() {
             throw new RuntimeException("This method should never be called");
         }
+        
+        /** {@inheritDoc} */
+        @Override
+        public String getUserName() {
+            throw new RuntimeException("This method should never be called");
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setUserName(String name) {
+            throw new RuntimeException("This method should never be called");
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -222,6 +234,13 @@ public class HoldAnything extends AbstractDigitalAction {
         @Override
         public DebugConfig createDebugConfig() {
             return new ActionDebugConfig();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Base getObject() {
+            throw new UnsupportedOperationException("Not supported yet.");
+//            return _action;
         }
 
 

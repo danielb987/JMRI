@@ -244,6 +244,12 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
         return new StringExpressionDebugConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getObject() {
+        return _stringExpression;
+    }
+
 
 
     public static class StringExpressionDebugConfig implements MaleSocket.DebugConfig {

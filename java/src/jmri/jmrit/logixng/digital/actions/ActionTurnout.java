@@ -1,8 +1,12 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import jmri.InstanceManager;
+import jmri.NamedBeanHandle;
 import jmri.Turnout;
+import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 
 /**
  * This action sets the state of a turnout.
@@ -11,8 +15,9 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class ActionTurnout extends AbstractDigitalAction {
 
-//    private ActionTurnout _turnout;
-//    private int _newState;
+    private NamedBeanHandle _turnout;
+    private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
+    private TurnoutState _turnoutState = TurnoutState.THROWN;
     
     public ActionTurnout(String sys)
             throws BadUserNameException {
@@ -25,7 +30,31 @@ public class ActionTurnout extends AbstractDigitalAction {
         super(sys, user);
 //        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
-
+    
+    public void setTurnout(NamedBeanHandle handle) {
+        _turnout = handle;
+    }
+    
+    public NamedBeanHandle getTurnout() {
+        return _turnout;
+    }
+    
+    public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
+        _is_IsNot = is_IsNot;
+    }
+    
+    public Is_IsNot_Enum get_Is_IsNot() {
+        return _is_IsNot;
+    }
+    
+    public void setTurnoutState(TurnoutState state) {
+        _turnoutState = state;
+    }
+    
+    public TurnoutState getTurnoutState() {
+        return _turnoutState;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -88,7 +117,52 @@ public class ActionTurnout extends AbstractDigitalAction {
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("Turnout_Long");
+        String turnoutName;
+        if (_turnout != null) {
+            turnoutName = _turnout.getBean().getDisplayName();
+        } else {
+            turnoutName = Bundle.getMessage("BeanNotSelected");
+        }
+        return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
     }
-
+    
+    
+    
+    public enum TurnoutState {
+        CLOSED(Turnout.CLOSED, InstanceManager.getDefault(TurnoutManager.class).getClosedText()),
+        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText()),
+        OTHER(-1, Bundle.getMessage("TurnoutOtherStatus"));
+        
+        private final int _id;
+        private final String _text;
+        
+        private TurnoutState(int id, String text) {
+            this._id = id;
+            this._text = text;
+        }
+        
+        static public TurnoutState get(int id) {
+            switch (id) {
+                case Turnout.CLOSED:
+                    return CLOSED;
+                    
+                case Turnout.THROWN:
+                    return THROWN;
+                    
+                default:
+                    return OTHER;
+            }
+        }
+        
+        public int getID() {
+            return _id;
+        }
+        
+        @Override
+        public String toString() {
+            return _text;
+        }
+        
+    }
+    
 }

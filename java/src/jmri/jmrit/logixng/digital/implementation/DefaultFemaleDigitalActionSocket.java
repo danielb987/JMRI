@@ -107,6 +107,13 @@ public final class DefaultFemaleDigitalActionSocket
         return getLogixNG().getSystemName() + ":DA10";
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getNewSystemName() {
+        return InstanceManager.getDefault(DigitalActionManager.class)
+                .getNewSystemName(getLogixNG());
+    }
+
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(DigitalActionManager.class).getActionClasses();

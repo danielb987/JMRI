@@ -248,6 +248,12 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
         return new StringActionDebugConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getObject() {
+        return _stringAction;
+    }
+
 
 
     public static class StringActionDebugConfig implements MaleSocket.DebugConfig {

@@ -253,6 +253,12 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
         return new DigitalExpressionDebugConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getObject() {
+        return _expression;
+    }
+
 
 
     public static class DigitalExpressionDebugConfig implements MaleSocket.DebugConfig {

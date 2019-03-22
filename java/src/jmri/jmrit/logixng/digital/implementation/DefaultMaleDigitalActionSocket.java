@@ -293,6 +293,12 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         return new DigitalActionDebugConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getObject() {
+        return _action;
+    }
+
 
 
     public static class DigitalActionDebugConfig implements MaleSocket.DebugConfig {

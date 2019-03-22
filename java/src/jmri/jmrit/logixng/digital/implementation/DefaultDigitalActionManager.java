@@ -88,7 +88,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         // Check if system name is valid
         if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
-            throw new IllegalArgumentException("System name is invalid");
+            throw new IllegalArgumentException(String.format("System name is invalid: %s", action.getSystemName()));
         }
         
         MaleDigitalActionSocket maleSocket = createMaleActionSocket(action);

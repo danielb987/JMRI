@@ -87,6 +87,13 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
         return getLogixNG().getSystemName() + ":DE10";
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getNewSystemName() {
+        return InstanceManager.getDefault(DigitalExpressionManager.class)
+                .getNewSystemName(getLogixNG());
+    }
+
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(DigitalExpressionManager.class).getExpressionClasses();

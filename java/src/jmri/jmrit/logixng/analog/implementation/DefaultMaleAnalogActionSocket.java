@@ -298,6 +298,11 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         return new AnalogActionDebugConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getObject() {
+        return _action;
+    }
 
 
     public static class AnalogActionDebugConfig implements MaleSocket.DebugConfig {

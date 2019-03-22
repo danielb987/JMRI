@@ -81,6 +81,13 @@ public final class DefaultFemaleStringActionSocket
         return getLogixNG().getSystemName() + ":SA10";
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getNewSystemName() {
+        return InstanceManager.getDefault(StringActionManager.class)
+                .getNewSystemName(getLogixNG());
+    }
+
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(StringActionManager.class).getActionClasses();

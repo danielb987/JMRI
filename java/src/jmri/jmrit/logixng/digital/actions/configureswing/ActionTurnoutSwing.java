@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions.configureswing;
 
+import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -7,12 +8,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import jmri.InstanceManager;
+import jmri.JmriException;
+import jmri.NamedBean;
+import jmri.NamedBeanHandle;
+import jmri.NamedBeanHandleManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
+import jmri.jmrit.logixng.digital.actions.ActionTurnout.TurnoutState;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.util.swing.BeanSelectCreatePanel;
@@ -24,43 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ActionTurnoutSwing implements SwingConfiguratorInterface {
 
-    public enum TurnoutState {
-        CLOSED(Turnout.CLOSED, InstanceManager.getDefault(TurnoutManager.class).getClosedText()),
-        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText()),
-        OTHER(-1, Bundle.getMessage("TurnoutOtherStatus"));
-        
-        private final int _id;
-        private final String _text;
-        
-        private TurnoutState(int id, String text) {
-            this._id = id;
-            this._text = text;
-        }
-        
-        static public TurnoutState get(int id) {
-            switch (id) {
-                case Turnout.CLOSED:
-                    return CLOSED;
-                    
-                case Turnout.THROWN:
-                    return THROWN;
-                    
-                default:
-                    return OTHER;
-            }
-        }
-        
-        public int getID() {
-            return _id;
-        }
-        
-        @Override
-        public String toString() {
-            return _text;
-        }
-        
-    }
-    
 //    private final String stateThrown = InstanceManager.turnoutManagerInstance().getThrownText();
 //    private final String stateClosed = InstanceManager.turnoutManagerInstance().getClosedText();
 //    private final String[] turnoutStates = new String[]{stateClosed, stateThrown};
@@ -75,18 +44,20 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public JPanel getConfigPanel() throws IllegalArgumentException {
-        createPanel();
+        createPanel(null);
         return panel;
     }
     
     /** {@inheritDoc} */
     @Override
     public JPanel getConfigPanel(@Nonnull Base object) throws IllegalArgumentException {
-        createPanel();
+        createPanel(object);
         return panel;
     }
     
-    private void createPanel() {
+    private void createPanel(Base object) {
+        ActionTurnout action = (ActionTurnout)object;
+        
         panel = new JPanel();
         turnoutBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(TurnoutManager.class), null);
         
@@ -98,6 +69,14 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         stateComboBox = new JComboBox<>();
         for (TurnoutState e : TurnoutState.values()) {
             stateComboBox.addItem(e);
+        }
+        
+        if (action != null) {
+            if (action.getTurnout() != null) {
+                turnoutBeanPanel.setDefaultNamedBean(action.getTurnout().getBean());
+            }
+            is_IsNot_ComboBox.setSelectedItem(action.get_Is_IsNot());
+            stateComboBox.setSelectedItem(action.getTurnoutState());
         }
         
         panel.add(new JLabel("Turnout"));
@@ -174,13 +153,39 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionTurnout action = new ActionTurnout(systemName, userName);
+        try {
+            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            if (turnout != null) {
+                NamedBeanHandle<Turnout> handle
+                        = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+                action.setTurnout(handle);
+                action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+                action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
+            }
+        } catch (JmriException ex) {
+            log.error("Cannot get NamedBeanHandle for turnout", ex);
+        }
         return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }
     
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
-        
+        ActionTurnout action = (ActionTurnout)object;
+        try {
+            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            if (turnout != null) {
+                NamedBeanHandle<Turnout> handle
+                        = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+                action.setTurnout(handle);
+                action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+                action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
+            }
+        } catch (JmriException ex) {
+            log.error("Cannot get NamedBeanHandle for turnout", ex);
+        }
     }
     
     
@@ -203,12 +208,12 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         }
     }
     
-    private void noTurnoutMessage(String s1, String s2) {
-        log.warn("Could not provide turnout " + s2);
+//    private void noTurnoutMessage(String s1, String s2) {
+//        log.warn("Could not provide turnout " + s2);
 //        String msg = Bundle.getMessage("WarningNoTurnout", new Object[]{s1, s2});
 //        JOptionPane.showMessageDialog(editFrame, msg,
 //                Bundle.getMessage("WarningTitle"), JOptionPane.ERROR_MESSAGE);
-    }
+//    }
     
     @Override
     public void dispose() {

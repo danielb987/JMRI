@@ -38,6 +38,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -81,7 +82,8 @@ public final class LogixNGEditor extends JmriJFrame {
     private final LogixNG newLogix;
     
     // Add LogixNG Variables
-    private JmriJFrame addLogixNGFrame = null;
+    private JmriJFrame addEditLogixNGFrame = null;
+    private FemaleSocketTreeModel femaleSocketTreeModel;
     private final JTextField _systemName = new JTextField(20);
     private final JTextField _addUserName = new JTextField(20);
     private final JCheckBox _autoSystemName = new JCheckBox(Bundle.getMessage("LabelAutoSysName"));   // NOI18N
@@ -90,6 +92,7 @@ public final class LogixNGEditor extends JmriJFrame {
     private final String systemNameAuto = this.getClass().getName() + ".AutoSystemName";      // NOI18N
     private Class maleSocketClass = null;
     private JButton create;
+    private JButton edit;
     boolean _showReminder = false;
     
     private Map<Category, List<Class<? extends Base>>> connectableClasses;
@@ -199,20 +202,19 @@ public final class LogixNGEditor extends JmriJFrame {
         // Create a TreeModel object to represent our tree of files
 //        FileTreeModel model = new FileTreeModel(root);
 //        // Create a TreeModel object to represent our tree of files
-        FemaleSocketTreeModel model;
         if (newLogix != null)
-            model = new FemaleSocketTreeModel(newLogix.getFemaleSocket());
+            femaleSocketTreeModel = new FemaleSocketTreeModel(newLogix.getFemaleSocket());
         else
-            model = new FemaleSocketTreeModel(root);
+            femaleSocketTreeModel = new FemaleSocketTreeModel(root);
 
         // Create a JTree and tell it to display our model
         final JTree tree = new JTree();
-        tree.setModel(model);
+        tree.setModel(femaleSocketTreeModel);
         tree.setCellRenderer(new FemaleSocketTreeRenderer());
         
         tree.setShowsRootHandles(true);
         
-        PopupMenu popup = new PopupMenu(tree, model);
+        PopupMenu popup = new PopupMenu(tree, femaleSocketTreeModel);
         popup.init();
         
         // The JTree can get big, so allow it to scroll
@@ -337,19 +339,22 @@ public final class LogixNGEditor extends JmriJFrame {
      *
      * @param femaleSocket the female socket
      */
-    protected void addPressed(FemaleSocket femaleSocket) {
+    protected void addPressed(FemaleSocket femaleSocket, TreePath path) {
         // possible change
         if (!checkFlags(null)) {
             return;
         }
         _showReminder = true;
         // make an Add LogixNG Frame
-        if (addLogixNGFrame == null) {
-            JPanel panel5 = makeAddFrame("AddMessage", femaleSocket);  // NOI18N
+        if (addEditLogixNGFrame == null) {
+            JPanel panel5 = makeAddEditFrame("AddMessage", femaleSocket);  // NOI18N
             // Create LogixNG
             create = new JButton(Bundle.getMessage("ButtonCreate"));  // NOI18N
             panel5.add(create);
             create.addActionListener((ActionEvent e) -> {
+                if (_systemName.getText().isEmpty() && _autoSystemName.isSelected()) {
+                    _systemName.setText(femaleSocket.getNewSystemName());
+                }
                 MaleSocket socket;
                 if (_addUserName.getText().isEmpty()) {
                     socket = swingConfiguratorInterface.createNewObject(_systemName.getText());
@@ -362,12 +367,75 @@ public final class LogixNGEditor extends JmriJFrame {
                     throw new RuntimeException(ex);
                 }
                 swingConfiguratorInterface.dispose();
-                addLogixNGFrame.dispose();
+                addEditLogixNGFrame.dispose();
+                for (TreeModelListener l : femaleSocketTreeModel.listeners) {
+                    TreeModelEvent tme = new TreeModelEvent(
+                            femaleSocket,
+                            path.getPath()
+                    );
+                    l.treeNodesChanged(tme);
+                }
             });
             create.setToolTipText(Bundle.getMessage("CreateButtonHint"));  // NOI18N
         }
-        addLogixNGFrame.pack();
-        addLogixNGFrame.setVisible(true);
+        addEditLogixNGFrame.pack();
+        addEditLogixNGFrame.setVisible(true);
+        _autoSystemName.setSelected(false);
+        InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
+            _autoSystemName.setSelected(prefMgr.getSimplePreferenceState(systemNameAuto));
+        });
+    }
+
+    /**
+     * Respond to the Edit menu choice in the popup menu.
+     *
+     * @param femaleSocket the female socket
+     */
+    protected void editPressed(FemaleSocket femaleSocket, TreePath path) {
+        // possible change
+        if (!checkFlags(null)) {
+            return;
+        }
+        _showReminder = true;
+        // make an Add LogixNG Frame
+        if (addEditLogixNGFrame == null) {
+            JPanel panel5 = makeAddEditFrame(null, femaleSocket);  // NOI18N
+            // Create LogixNG
+            edit = new JButton(Bundle.getMessage("ButtonOK"));  // NOI18N
+            panel5.add(edit);
+            edit.addActionListener((ActionEvent e) -> {
+                swingConfiguratorInterface.updateObject(femaleSocket.getConnectedSocket().getObject());
+//                if (_addUserName.getText().isEmpty()) {
+//                    socket = swingConfiguratorInterface.createNewObject(_systemName.getText());
+//                } else {
+//                    socket = swingConfiguratorInterface.createNewObject(_systemName.getText(), _addUserName.getText());
+//                }
+//                try {
+//                    femaleSocket.connect(socket);
+//                } catch (SocketAlreadyConnectedException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+                swingConfiguratorInterface.dispose();
+                addEditLogixNGFrame.dispose();
+                for (TreeModelListener l : femaleSocketTreeModel.listeners) {
+                    TreeModelEvent tme = new TreeModelEvent(
+                            femaleSocket,
+                            path.getPath()
+                    );
+//                    TreeModelEvent tme = new TreeModelEvent(
+//                            femaleSocket,
+//                            path.getPath(),
+//                            indices_of_inserted_items,
+//                            inserted_items
+//                    );
+                    l.treeNodesChanged(tme);
+//                    l.treeStructureChanged(tme);
+                }
+            });
+//            edit.setToolTipText(Bundle.getMessage("EditButtonHint"));  // NOI18N
+        }
+        addEditLogixNGFrame.pack();
+        addEditLogixNGFrame.setVisible(true);
         _autoSystemName.setSelected(false);
         InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
             _autoSystemName.setSelected(prefMgr.getSimplePreferenceState(systemNameAuto));
@@ -382,15 +450,15 @@ public final class LogixNGEditor extends JmriJFrame {
      * @param femaleSocket the female socket to which we want to add something
      * @return the button JPanel
      */
-    JPanel makeAddFrame(String messageId, FemaleSocket femaleSocket) {
-        addLogixNGFrame = new JmriJFrame(
+    JPanel makeAddEditFrame(String messageId, FemaleSocket femaleSocket) {
+        addEditLogixNGFrame = new JmriJFrame(
                 Bundle.getMessage(
                         "AddMaleSocketDialogTitle",
                         femaleSocket.getLongDescription()));
-        addLogixNGFrame.addHelpMenu(
+        addEditLogixNGFrame.addHelpMenu(
                 "package.jmri.jmrit.beantable.LogixNGAddEdit", true);     // NOI18N
-        addLogixNGFrame.setLocation(50, 30);
-        Container contentPanel = addLogixNGFrame.getContentPane();
+        addEditLogixNGFrame.setLocation(50, 30);
+        Container contentPanel = addEditLogixNGFrame.getContentPane();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
         JPanel p;
@@ -421,6 +489,13 @@ public final class LogixNGEditor extends JmriJFrame {
         c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
         c.gridy = 0;
         p.add(_autoSystemName, c);
+        
+        if (femaleSocket.isConnected()) {
+            _systemName.setText(femaleSocket.getConnectedSocket().getSystemName());
+            _systemName.setEnabled(false);
+            _addUserName.setText(femaleSocket.getConnectedSocket().getUserName());
+        }
+        
         _addUserName.setToolTipText(Bundle.getMessage("UserNameHint"));    // NOI18N
 //        _addUserName.setToolTipText("LogixNGUserNameHint");    // NOI18N
         _systemName.setToolTipText(Bundle.getMessage("SystemNameHint", femaleSocket.getExampleSystemName()));   // NOI18N
@@ -430,20 +505,25 @@ public final class LogixNGEditor extends JmriJFrame {
         JPanel panel3 = new JPanel();
         panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
         JPanel panel31 = new JPanel();
-        panel31.setLayout(new FlowLayout());
-        JLabel message1 = new JLabel(Bundle.getMessage(messageId + "1"));  // NOI18N
-//        JLabel message1 = new JLabel("aaa1");  // NOI18N
-        panel31.add(message1);
+//        panel31.setLayout(new FlowLayout());
         JPanel panel32 = new JPanel();
-        JLabel message2 = new JLabel(Bundle.getMessage(messageId + "2"));  // NOI18N
-//        JLabel message2 = new JLabel("bbb2");  // NOI18N
-        panel32.add(message2);
+        if (messageId != null) {
+            JLabel message1 = new JLabel(Bundle.getMessage(messageId + "1"));  // NOI18N
+            panel31.add(message1);
+            JLabel message2 = new JLabel(Bundle.getMessage(messageId + "2"));  // NOI18N
+            panel32.add(message2);
+        }
         
         connectableClasses = femaleSocket.getConnectableClasses();
         maleSocketClass = connectableClasses.get(Category.ITEM).get(0);
         
         swingConfiguratorInterface = SwingTools.getSwingConfiguratorForClass(maleSocketClass);
-        JPanel panel33 = swingConfiguratorInterface.getConfigPanel(femaleSocket);
+        JPanel panel33;
+        if (femaleSocket.isConnected()) {
+            panel33 = swingConfiguratorInterface.getConfigPanel(femaleSocket.getConnectedSocket().getObject());
+        } else {
+            panel33 = swingConfiguratorInterface.getConfigPanel();
+        }
         panel3.add(panel31);
         panel3.add(panel32);
         panel3.add(panel33);
@@ -464,7 +544,7 @@ public final class LogixNGEditor extends JmriJFrame {
 //        cancel.setToolTipText(Bundle.getMessage("CancelLogixButtonHint"));      // NOI18N
         cancel.setToolTipText("CancelLogixButtonHint");      // NOI18N
 
-        addLogixNGFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+        addEditLogixNGFrame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
                 cancelAddPressed(null);
@@ -482,9 +562,9 @@ public final class LogixNGEditor extends JmriJFrame {
         });
         System.out.format("Component: %s%n", c.getClass().getName());
 //        addLogixNGFrame.setLocationRelativeTo(component);
-        addLogixNGFrame.setLocationRelativeTo(null);
-        addLogixNGFrame.pack();
-        addLogixNGFrame.setVisible(true);
+        addEditLogixNGFrame.setLocationRelativeTo(null);
+        addEditLogixNGFrame.pack();
+        addEditLogixNGFrame.setVisible(true);
         
         return panel5;
     }
@@ -511,10 +591,10 @@ public final class LogixNGEditor extends JmriJFrame {
      * @param e The event heard
      */
     void cancelAddPressed(ActionEvent e) {
-        addLogixNGFrame.setVisible(false);
+        addEditLogixNGFrame.setVisible(false);
         swingConfiguratorInterface.dispose();
-        addLogixNGFrame.dispose();
-        addLogixNGFrame = null;
+        addEditLogixNGFrame.dispose();
+        addEditLogixNGFrame = null;
 //        _inCopyMode = false;
         this.setVisible(true);
     }
@@ -664,6 +744,7 @@ public final class LogixNGEditor extends JmriJFrame {
         private final JTree _tree;
 //        private final FemaleSocketTreeModel _model;
         private FemaleSocket _currentFemaleSocket;
+        private TreePath _currentPath;
         private int _x;
         private int _y;
         
@@ -735,7 +816,7 @@ public final class LogixNGEditor extends JmriJFrame {
                                         System.out.format("femaleSocket is a %s. %s%n", femaleSocket.getClass().getName(), femaleSocket.getLongDescription());
                                         _tree.getLocationOnScreen();
                                         _tree.getX();
-                                        showPopup(e.getX(), e.getY(), femaleSocket);
+                                        showPopup(e.getX(), e.getY(), femaleSocket, path);
                                     }
                                 }
                             }
@@ -744,8 +825,9 @@ public final class LogixNGEditor extends JmriJFrame {
             );
         }
         
-        private void showPopup(int x, int y, FemaleSocket femaleSocket) {
+        private void showPopup(int x, int y, FemaleSocket femaleSocket, TreePath path) {
             _currentFemaleSocket = femaleSocket;
+            _currentPath = path;
             _x = x;
             _y = y;
             
@@ -772,7 +854,7 @@ public final class LogixNGEditor extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
                 case ACTION_COMMAND_ADD:
-                    addPressed(_currentFemaleSocket);
+                    addPressed(_currentFemaleSocket, _currentPath);
 //                    EditMaleSocketDialog addDialog =
 //                            new EditMaleSocketDialog(_currentFemaleSocket);
 //                    addDialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
@@ -781,9 +863,10 @@ public final class LogixNGEditor extends JmriJFrame {
                     break;
                     
                 case ACTION_COMMAND_EDIT:
-                    EditMaleSocketDialog editDialog =
-                            new EditMaleSocketDialog(_currentFemaleSocket);
-                    editDialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
+                    editPressed(_currentFemaleSocket, _currentPath);
+//                    EditMaleSocketDialog editDialog =
+//                            new EditMaleSocketDialog(_currentFemaleSocket);
+//                    editDialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
 //                    dialog.init(_x, _y);
 //                    dialog.setVisible(true);
                     break;

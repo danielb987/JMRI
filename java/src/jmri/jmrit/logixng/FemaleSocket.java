@@ -58,9 +58,18 @@ public interface FemaleSocket extends Base {
     public String getName();
     
     /**
-     * Get an example of a system name for this socket.
+     * Get an example of a system name for an object that can be connected to
+     * this socket.
      */
     public String getExampleSystemName();
+    
+    /**
+     * Create a new system name for a new object that can be connected to this
+     * socket.
+     *
+     * @return a new system name
+     */
+    public String getNewSystemName();
     
     /**
      * Get a set of classes that are compatible with this female socket.
