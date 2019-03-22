@@ -745,8 +745,6 @@ public final class LogixNGEditor extends JmriJFrame {
 //        private final FemaleSocketTreeModel _model;
         private FemaleSocket _currentFemaleSocket;
         private TreePath _currentPath;
-        private int _x;
-        private int _y;
         
         private JMenuItem menuItemAdd;
         private JMenuItem menuItemRemove;
@@ -828,8 +826,6 @@ public final class LogixNGEditor extends JmriJFrame {
         private void showPopup(int x, int y, FemaleSocket femaleSocket, TreePath path) {
             _currentFemaleSocket = femaleSocket;
             _currentPath = path;
-            _x = x;
-            _y = y;
             
             boolean isConnected = femaleSocket.isConnected();
             menuItemAdd.setEnabled(!isConnected);
@@ -855,11 +851,6 @@ public final class LogixNGEditor extends JmriJFrame {
             switch (e.getActionCommand()) {
                 case ACTION_COMMAND_ADD:
                     addPressed(_currentFemaleSocket, _currentPath);
-//                    EditMaleSocketDialog addDialog =
-//                            new EditMaleSocketDialog(_currentFemaleSocket);
-//                    addDialog.init(((Component)e.getSource()).getX()+_x, ((Component)e.getSource()).getY()+_y, (Component)e.getSource());
-////                    dialog.init(_x, _y);
-////                    dialog.setVisible(true);
                     break;
                     
                 case ACTION_COMMAND_EDIT:
