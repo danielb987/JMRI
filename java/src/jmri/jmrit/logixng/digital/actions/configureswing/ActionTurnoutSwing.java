@@ -160,9 +160,9 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
                                 .getNamedBeanHandle(turnout.getDisplayName(), turnout);
                 action.setTurnout(handle);
-                action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
-                action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
             }
+            action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+            action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
         } catch (JmriException ex) {
             log.error("Cannot get NamedBeanHandle for turnout", ex);
         }
@@ -180,9 +180,9 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
                                 .getNamedBeanHandle(turnout.getDisplayName(), turnout);
                 action.setTurnout(handle);
-                action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
-                action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
             }
+            action.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+            action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
         } catch (JmriException ex) {
             log.error("Cannot get NamedBeanHandle for turnout", ex);
         }
