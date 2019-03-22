@@ -69,9 +69,4 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public MaleSocket register() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
 }

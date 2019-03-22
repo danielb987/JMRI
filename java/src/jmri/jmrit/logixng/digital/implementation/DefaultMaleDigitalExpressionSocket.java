@@ -253,11 +253,6 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
         return new DigitalExpressionDebugConfig();
     }
 
-    @Override
-    public MaleSocket register() {
-        throw new UnsupportedOperationException("A male socket cannot be registered with this method.");
-    }
-
 
 
     public static class DigitalExpressionDebugConfig implements MaleSocket.DebugConfig {

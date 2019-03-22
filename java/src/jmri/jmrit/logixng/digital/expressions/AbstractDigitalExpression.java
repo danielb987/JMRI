@@ -89,11 +89,6 @@ public abstract class AbstractDigitalExpression extends AbstractNamedBean
         throw new RuntimeException("Unable to find a new socket name");
     }
     
-    @Override
-    public MaleSocket register() {
-        return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(this);
-    }
-    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractDigitalExpression.class);
 }

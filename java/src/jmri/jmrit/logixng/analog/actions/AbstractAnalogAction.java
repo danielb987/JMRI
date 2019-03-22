@@ -72,11 +72,6 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
         _lock = lock;
     }
 
-    @Override
-    public MaleSocket register() {
-        return InstanceManager.getDefault(AnalogActionManager.class).registerAction(this);
-    }
-    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogAction.class);
 }

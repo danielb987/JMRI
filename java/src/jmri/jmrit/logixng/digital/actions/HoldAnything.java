@@ -224,12 +224,6 @@ public class HoldAnything extends AbstractDigitalAction {
             return new ActionDebugConfig();
         }
 
-        @Override
-        public MaleSocket register() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-
 
         public class ActionDebugConfig implements MaleSocket.DebugConfig {
 

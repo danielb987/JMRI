@@ -70,10 +70,6 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
         _lock = lock;
     }
 
-    @Override
-    public MaleSocket register() {
-        return InstanceManager.getDefault(AnalogExpressionManager.class).registerExpression(this);
-    }
-    
+
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogExpression.class);
 }

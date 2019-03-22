@@ -173,9 +173,4 @@ public final class DefaultLogixNG extends AbstractNamedBean
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    @Override
-    public MaleSocket register() {
-        throw new UnsupportedOperationException("A LogixNG cannot be registered with this method.");
-    }
-    
 }

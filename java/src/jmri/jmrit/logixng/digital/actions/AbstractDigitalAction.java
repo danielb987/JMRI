@@ -91,11 +91,5 @@ public abstract class AbstractDigitalAction extends AbstractNamedBean
     }
     
     
-    @Override
-    public MaleSocket register() {
-        return InstanceManager.getDefault(DigitalActionManager.class).registerAction(this);
-    }
-    
-    
     private final static Logger log = LoggerFactory.getLogger(AbstractDigitalAction.class);
 }
