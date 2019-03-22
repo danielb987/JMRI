@@ -68,4 +68,10 @@ public interface SwingConfiguratorInterface {
      */
     public void updateObject(@Nonnull Base object);
     
+    /**
+     * Dispose the panel and remove all the listeners that this class may have
+     * registered.
+     */
+    public void dispose();
+    
 }

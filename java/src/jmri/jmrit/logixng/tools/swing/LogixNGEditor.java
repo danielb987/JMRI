@@ -361,6 +361,7 @@ public final class LogixNGEditor extends JmriJFrame {
                 } catch (SocketAlreadyConnectedException ex) {
                     throw new RuntimeException(ex);
                 }
+                swingConfiguratorInterface.dispose();
                 addLogixNGFrame.dispose();
             });
             create.setToolTipText(Bundle.getMessage("CreateButtonHint"));  // NOI18N
@@ -394,7 +395,7 @@ public final class LogixNGEditor extends JmriJFrame {
 
         JPanel p;
         p = new JPanel();
-        p.setLayout(new FlowLayout());
+//        p.setLayout(new FlowLayout());
         p.setLayout(new java.awt.GridBagLayout());
         java.awt.GridBagConstraints c = new java.awt.GridBagConstraints();
         c.gridwidth = 1;
@@ -511,6 +512,7 @@ public final class LogixNGEditor extends JmriJFrame {
      */
     void cancelAddPressed(ActionEvent e) {
         addLogixNGFrame.setVisible(false);
+        swingConfiguratorInterface.dispose();
         addLogixNGFrame.dispose();
         addLogixNGFrame = null;
 //        _inCopyMode = false;
