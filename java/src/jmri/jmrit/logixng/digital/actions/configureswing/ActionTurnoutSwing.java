@@ -30,7 +30,17 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         panel.add(new JTextField("Kalle"));
         return panel;
     }
-
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean validate(@Nonnull StringBuilder errorMessage) {
+        if (1==0) {
+            errorMessage.append("An error");
+            return false;
+        }
+        return true;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
@@ -45,6 +55,12 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionTurnout action = new ActionTurnout(systemName, userName);
         return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void updateObject(@Nonnull Base object) {
+        
     }
 
 }

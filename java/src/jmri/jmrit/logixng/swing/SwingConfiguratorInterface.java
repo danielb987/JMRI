@@ -29,10 +29,18 @@ public interface SwingConfiguratorInterface {
      * 
      * @param object the object for which to return a configuration panel
      * @return a panel that configures this object
-     * @throws IllegalArgumentException if this class does not support the class
-     * with the name given in parameter 'className'
      */
     public JPanel getConfigPanel(@Nonnull Base object) throws IllegalArgumentException;
+    
+    /**
+     * Validate the form.
+     * The parameter errorMessage is used to give the error message in case of
+     * an error. The caller must ensure that errorMessage.length() is zero.
+     * 
+     * @param errorMessage the error message in case of an error
+     * @return true if data in the form is valid, false otherwise
+     */
+    public boolean validate(@Nonnull StringBuilder errorMessage);
     
     /**
      * Create a new object with the data entered.
@@ -52,5 +60,12 @@ public interface SwingConfiguratorInterface {
      * @return a male socket for the new object
      */
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName);
+    
+    /**
+     * Updates the object with the data in the form.
+     * 
+     * @param object the object to update
+     */
+    public void updateObject(@Nonnull Base object);
     
 }
