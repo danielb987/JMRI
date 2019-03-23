@@ -70,7 +70,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
             stateComboBox.setSelectedItem(action.getTurnoutState());
         }
         
-        panel.add(new JLabel("Turnout"));
+        panel.add(new JLabel(Bundle.getMessage("Turnout")));
         panel.add(turnoutBeanPanel);
         panel.add(is_IsNot_ComboBox);
         panel.add(stateComboBox);
