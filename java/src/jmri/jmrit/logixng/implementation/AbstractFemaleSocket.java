@@ -119,7 +119,9 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     /** {@inheritDoc} */
     @Override
     public void dispose() {
-        _socket.dispose();
+        if (_socket != null) {
+            _socket.dispose();
+        }
     }
 
     /** {@inheritDoc} */
