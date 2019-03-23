@@ -30,10 +30,10 @@
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/actions/actionIfThen-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/actions/actionMany-4.13.4.xsd"/>
 
-    <xs:complexType name="LogixNGManagerType">
+    <xs:complexType name="LogixNG_ManagerType">
       <xs:annotation>
         <xs:documentation>
-          Define the XML stucture for storing the contents of a LogixNGManager implementation.
+          Define the XML stucture for storing the contents of a LogixNG_Manager implementation.
         </xs:documentation>
         <xs:appinfo>
             <jmri:usingclass configurexml="true">jmri.jmrit.logixng.engine.configurexml.DefaultLogixNGManagerXml</jmri:usingclass>
@@ -64,7 +64,7 @@
 
 
 
-    <xs:complexType name="LogixNGActionManagerType">
+    <xs:complexType name="LogixNG_DigitalActionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.
@@ -147,7 +147,7 @@
     </xs:complexType>
 
 
-    <xs:complexType name="LogixNGExpressionManagerType">
+    <xs:complexType name="LogixNG_DigitalExpressionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.
@@ -190,7 +190,7 @@
 
 
 
-    <xs:complexType name="LogixNGAnalogActionManagerType">
+    <xs:complexType name="LogixNG_AnalogActionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.
@@ -224,7 +224,7 @@
     </xs:complexType>
 
 
-    <xs:complexType name="LogixNGAnalogExpressionManagerType">
+    <xs:complexType name="LogixNG_AnalogExpressionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.
@@ -259,7 +259,7 @@
 
 
 
-    <xs:complexType name="LogixNGStringActionManagerType">
+    <xs:complexType name="LogixNG_StringActionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.
@@ -293,7 +293,7 @@
     </xs:complexType>
 
 
-    <xs:complexType name="LogixNGStringExpressionManagerType">
+    <xs:complexType name="LogixNG_StringExpressionManagerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionManager implementation.

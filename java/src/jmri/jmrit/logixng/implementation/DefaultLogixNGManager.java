@@ -29,6 +29,7 @@ import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.zTest.TestLogixNG;
 
 /**
  * Class providing the basic logic of the LogixNG_Manager interface.
@@ -38,6 +39,9 @@ import jmri.jmrit.logixng.MaleDigitalActionSocket;
 public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         implements LogixNG_Manager {
 
+    // FOR TESTING ONLY. REMOVE LATER.
+    private TestLogixNG dialog;
+    
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     int lastAutoLogixNGRef = 0;
@@ -238,6 +242,13 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
         }
 //        throw new UnsupportedOperationException("Not supported yet.");
+        
+        
+        // FOR TESTING ONLY. REMOVE LATER.
+        if (dialog == null) {
+            dialog = new TestLogixNG(new javax.swing.JFrame(), false);
+            dialog.setVisible(true);
+        }
     }
 
     @Override

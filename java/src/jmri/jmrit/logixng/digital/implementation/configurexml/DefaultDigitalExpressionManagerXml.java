@@ -36,7 +36,7 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
      */
     @Override
     public Element store(Object o) {
-        Element expressions = new Element("logixngExpressions");
+        Element expressions = new Element("logixngDigitalExpressions");
         setStoreElementClass(expressions);
         DigitalExpressionManager tm = (DigitalExpressionManager) o;
         if (tm != null) {

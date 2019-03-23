@@ -30,8 +30,8 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
      */
     @Override
     public Element store(Object o) {
-        Element newLogixs = new Element("logixngs");
-        setStoreElementClass(newLogixs);
+        Element logixNGs = new Element("logixngs");
+        setStoreElementClass(logixNGs);
         LogixNG_Manager tm = (LogixNG_Manager) o;
         if (tm != null) {
             for (LogixNG logixNG : tm.getNamedBeanSet()) {
@@ -56,10 +56,10 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
                     elem.setAttribute("enabled", "no");  // NOI18N
                 }
                 
-                newLogixs.addContent(elem);
+                logixNGs.addContent(elem);
             }
         }
-        return (newLogixs);
+        return (logixNGs);
     }
 
     /**
@@ -80,7 +80,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
 
     /**
      * Create a LogixNG_Manager object of the correct class, then register and
- fill it.
+     * fill it.
      *
      * @param sharedLogixNG  Shared top level Element to unpack.
      * @param perNodeLogixNG Per-node top level Element to unpack.
@@ -100,10 +100,10 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
      * additional info needed for a specific logix type, invoke this with the
      * parent of the set of Logix elements.
      *
-     * @param newLogixs Element containing the Logix elements to load.
+     * @param logixNGs Element containing the Logix elements to load.
      */
-    public void loadLogixNGs(Element newLogixs) {
-        List<Element> newLogixList = newLogixs.getChildren("logixng");  // NOI18N
+    public void loadLogixNGs(Element logixNGs) {
+        List<Element> newLogixList = logixNGs.getChildren("logixng");  // NOI18N
         if (log.isDebugEnabled()) {
             log.debug("Found " + newLogixList.size() + " logixngs");  // NOI18N
         }
@@ -171,7 +171,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
      * type.
      */
     protected void replaceLogixNGManager() {
-        if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
+        if (InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).getClass().getName()
                 .equals(DefaultLogixNGManager.class.getName())) {
             return;
         }
@@ -190,7 +190,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
-            cmOD.registerConfig(pManager, jmri.Manager.LOGIXS);
+            cmOD.registerConfig(pManager, jmri.Manager.LOGIXNGS);
         }
     }
 

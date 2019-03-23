@@ -37,7 +37,7 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
      */
     @Override
     public Element store(Object o) {
-        Element expressions = new Element("logixngExpressions");
+        Element expressions = new Element("logixngAnalogExpressions");
         setStoreElementClass(expressions);
         AnalogExpressionManager tm = (AnalogExpressionManager) o;
         if (tm != null) {

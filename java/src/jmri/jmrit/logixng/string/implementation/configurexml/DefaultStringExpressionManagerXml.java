@@ -37,7 +37,7 @@ public class DefaultStringExpressionManagerXml extends jmri.managers.configurexm
      */
     @Override
     public Element store(Object o) {
-        Element expressions = new Element("logixngExpressions");
+        Element expressions = new Element("logixngStringExpressions");
         setStoreElementClass(expressions);
         StringExpressionManager tm = (StringExpressionManager) o;
         if (tm != null) {
