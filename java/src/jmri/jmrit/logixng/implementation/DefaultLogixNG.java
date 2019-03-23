@@ -28,18 +28,29 @@ import jmri.jmrit.logixng.MaleSocket;
 public final class DefaultLogixNG extends AbstractNamedBean
         implements LogixNG, FemaleSocketListener {
     
-//    private DigitalAction _action;
+    private Base _parent = null;
     private final FemaleDigitalActionSocket _femaleActionSocket;
     private boolean _enabled = false;
+    private boolean _userEnabled = false;
     
     public DefaultLogixNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
         _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
     }
-
+    
     public DefaultLogixNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
         _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
+    }
+    
+    @Override
+    public Base getParent() {
+        return _parent;
+    }
+    
+    @Override
+    public void setParent(Base parent) {
+        _parent = parent;
     }
     
     /** {@inheritDoc} */
@@ -51,11 +62,14 @@ public final class DefaultLogixNG extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     public void execute() {
-        if (_enabled) {
-            _enabled = _femaleActionSocket.executeStart();
-        } else {
-            _enabled = _femaleActionSocket.executeContinue();
+        if (isEnabled()) {
+            _femaleActionSocket.executeStart();
         }
+//        if (_enabled) {
+//            _enabled = _femaleActionSocket.executeStart();
+//        } else {
+//            _enabled = _femaleActionSocket.executeContinue();
+//        }
     }
 
     @Override
@@ -74,11 +88,11 @@ public final class DefaultLogixNG extends AbstractNamedBean
         return UNKNOWN;
     }
 
-    /**
+    /*.*
      * Set enabled status. Enabled is a bound property All conditionals are set
      * to UNKNOWN state and recalculated when the Logix is enabled, provided the
      * Logix has been previously activated.
-     */
+     *./
     @Override
     public void setEnabled(boolean state) {
 
@@ -95,16 +109,16 @@ public final class DefaultLogixNG extends AbstractNamedBean
             }
             firePropertyChange("Enabled", Boolean.valueOf(old), Boolean.valueOf(state));  // NOI18N
 */            
-        }
-    }
+//        }
+//    }
 
-    /**
+    /*.*
      * Get enabled status
      */
-    @Override
-    public boolean getEnabled() {
-        return _enabled;
-    }
+//    @Override
+//    public boolean getEnabled() {
+//        return _enabled;
+//    }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultLogixNG.class);
 
@@ -125,16 +139,6 @@ public final class DefaultLogixNG extends AbstractNamedBean
 
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Base getParent() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setParent(Base parent) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -177,6 +181,37 @@ public final class DefaultLogixNG extends AbstractNamedBean
     @Override
     final public void dispose() {
         _femaleActionSocket.dispose();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _userEnabled;
+//        return _enabled && _userEnabled && _parent.isEnabled();
+    }
+    
+    /**
+     * Set whenether this object is enabled or disabled by the user.
+     * 
+     * @param enable true if this object should be enabled, false otherwise
+     */
+    public void setUserEnabled(boolean enable) {
+        _userEnabled = enable;
+    }
+    
+    /**
+     * Determines whether this object is enabled by the user.
+     * 
+     * @return true if the object is enabled, false otherwise
+     */
+    public boolean isUserEnabled() {
+        return _userEnabled;
     }
 
 }

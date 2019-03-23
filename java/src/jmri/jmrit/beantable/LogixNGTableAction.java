@@ -172,11 +172,11 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                 if (col == EDITCOL) {
                     return Bundle.getMessage("ButtonSelect");  // NOI18N
                 } else if (col == ENABLECOL) {
-                    LogixNG newLogix = (LogixNG) getValueAt(row, SYSNAMECOL);
-                    if (newLogix == null) {
+                    LogixNG logixNG = (LogixNG) getValueAt(row, SYSNAMECOL);
+                    if (logixNG == null) {
                         return null;
                     }
-                    return Boolean.valueOf(newLogix.getEnabled());
+                    return logixNG.isEnabled();
                 } else {
                     return super.getValueAt(row, col);
                 }
@@ -203,7 +203,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                 } else if (col == ENABLECOL) {
                     // alternate
                     LogixNG x = (LogixNG) getValueAt(row, SYSNAMECOL);
-                    boolean v = x.getEnabled();
+                    boolean v = x.isEnabled();
                     x.setEnabled(!v);
                 } else {
                     super.setValueAt(value, row, col);
@@ -1262,7 +1262,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         JPanel topPanel = new JPanel();
         String tStr = Bundle.getMessage("BrowserLogix") + " " + _curLogixNG.getSystemName() + "    " // NOI18N
                 + _curLogixNG.getUserName() + "    "
-                + (Boolean.valueOf(_curLogixNG.getEnabled())
+                + (Boolean.valueOf(_curLogixNG.isEnabled())
                         ? Bundle.getMessage("BrowserEnabled") // NOI18N
                         : Bundle.getMessage("BrowserDisabled"));  // NOI18N
         topPanel.add(new JLabel(tStr));
@@ -1344,7 +1344,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         // Create the file content
         String tStr = Bundle.getMessage("BrowserLogix") + " " + _curLogixNG.getSystemName() + "    "  // NOI18N
                 + _curLogixNG.getUserName() + "    "
-                + (_curLogixNG.getEnabled()
+                + (_curLogixNG.isEnabled()
                         ? Bundle.getMessage("BrowserEnabled")    // NOI18N
                         : Bundle.getMessage("BrowserDisabled"));  // NOI18N
 //        JTextArea textContent = buildConditionalListing();

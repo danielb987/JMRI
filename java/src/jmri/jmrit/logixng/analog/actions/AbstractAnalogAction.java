@@ -20,6 +20,7 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
+    private boolean _userEnabled = false;
 
 
     public AbstractAnalogAction(String sys) throws BadSystemNameException {
@@ -80,7 +81,37 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
         }
         super.dispose();
     }
-
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        // Do nothing. This is handled by the male socket.
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _userEnabled && _parent.isEnabled();
+    }
+    
+    /**
+     * Set whenether this object is enabled or disabled by the user.
+     * 
+     * @param enable true if this object should be enabled, false otherwise
+     */
+    public void setUserEnabled(boolean enable) {
+        _userEnabled = enable;
+    }
+    
+    /**
+     * Determines whether this object is enabled by the user.
+     * 
+     * @return true if the object is enabled, false otherwise
+     */
+    public boolean isUserEnabled() {
+        return _userEnabled;
+    }
+    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogAction.class);
 }

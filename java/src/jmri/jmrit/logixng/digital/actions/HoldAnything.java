@@ -132,6 +132,7 @@ public class HoldAnything extends AbstractDigitalAction {
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
         private Lock _lock = Lock.NONE;
         private DebugConfig _debugConfig = null;
+        private boolean _enabled = false;
         
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
@@ -250,7 +251,20 @@ public class HoldAnything extends AbstractDigitalAction {
                 femaleSocket.dispose();
             }
         }
-
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setEnabled(boolean enable) {
+            _enabled = enable;
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public boolean isEnabled() {
+            return _enabled && getParent().isEnabled();
+        }
+        
+        
         public class ActionDebugConfig implements MaleSocket.DebugConfig {
 
         }

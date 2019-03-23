@@ -21,19 +21,5 @@ public interface LogixNG extends Base, NamedBean {
      * its action.
      */
     public void execute();
-    
-    /**
-     * Set enabled status.
-     *
-     * @param state true if LogixNG should be enabled; false otherwise
-     */
-    public void setEnabled(boolean state);
-
-    /**
-     * Get enabled status.
-     *
-     * @return true if enabled; false otherwise
-     */
-    public boolean getEnabled();
 
 }

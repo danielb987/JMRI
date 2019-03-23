@@ -26,6 +26,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     private final StringExpression _stringExpression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
+    private boolean _enabled = false;
 
 
     public DefaultMaleStringExpressionSocket(@Nonnull StringExpression stringExpression) {
@@ -248,6 +249,18 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     @Override
     public Base getObject() {
         return _stringExpression;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _parent.isEnabled();
     }
 
 

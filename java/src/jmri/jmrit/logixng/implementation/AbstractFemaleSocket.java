@@ -31,6 +31,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     private MaleSocket _socket = null;
     private String _name = null;
     private Lock _lock = Lock.NONE;
+    private boolean _enabled = false;
     
     
     public AbstractFemaleSocket(Base parent, FemaleSocketListener listener, String name) {
@@ -119,6 +120,18 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     @Override
     public void dispose() {
         _socket.dispose();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _parent.isEnabled();
     }
 
     @Override

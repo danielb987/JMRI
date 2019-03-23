@@ -28,6 +28,10 @@ public final class DefaultFemaleDigitalActionSocket
         extends AbstractFemaleSocket
         implements FemaleDigitalActionSocket {
 
+
+    private boolean _enabled = false;
+    
+    
     public DefaultFemaleDigitalActionSocket(Base parent, FemaleSocketListener listener, String name) {
         super(parent, listener, name);
     }
@@ -113,6 +117,18 @@ public final class DefaultFemaleDigitalActionSocket
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(DigitalActionManager.class).getActionClasses();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && getParent().isEnabled();
     }
 
 }

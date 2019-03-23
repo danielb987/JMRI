@@ -53,10 +53,6 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
 
     public LogixNG getBySystemName(String name);
     
-//    public MaleActionSocket createMaleActionSocket(Action action);
-
-//    public MaleExpressionSocket createMaleExpressionSocket(Expression expression);
-    
     /**
      * Resolve all the LogixNG trees.
      * <P>

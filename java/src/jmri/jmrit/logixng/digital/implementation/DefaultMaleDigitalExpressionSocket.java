@@ -27,6 +27,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     private boolean lastEvaluationResult = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
+    private boolean _enabled = false;
 
 
     public DefaultMaleDigitalExpressionSocket(@Nonnull DigitalExpression expression) {
@@ -257,6 +258,18 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     @Override
     public Base getObject() {
         return _expression;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _parent.isEnabled();
     }
 
 

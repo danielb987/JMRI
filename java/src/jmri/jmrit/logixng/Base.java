@@ -209,4 +209,20 @@ public interface Base {
      */
     public void dispose();  // remove _all_ connections!
 
+    /**
+     * Set whenether this object is enabled or disabled.
+     * If the parent is disabled, this object must also be disabled, regardless
+     * of this flag.
+     * 
+     * @param enable true if this object should be enabled, false otherwise
+     */
+    public void setEnabled(boolean enable);
+    
+    /**
+     * Determines whether this object is enabled.
+     * 
+     * @return true if the object is enabled, false otherwise
+     */
+    public boolean isEnabled();
+
 }

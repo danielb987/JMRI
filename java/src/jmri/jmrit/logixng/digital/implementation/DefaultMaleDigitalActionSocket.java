@@ -27,6 +27,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     private boolean _isActive = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
+    private boolean _enabled = false;
     
     
     public DefaultMaleDigitalActionSocket(@Nonnull DigitalAction action) {
@@ -297,6 +298,18 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     @Override
     public Base getObject() {
         return _action;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _parent.isEnabled();
     }
 
 

@@ -34,11 +34,11 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         setStoreElementClass(newLogixs);
         LogixNG_Manager tm = (LogixNG_Manager) o;
         if (tm != null) {
-            for (LogixNG newLogix : tm.getNamedBeanSet()) {
-                log.debug("logix system name is " + newLogix.getSystemName());  // NOI18N
-                boolean enabled = newLogix.getEnabled();
+            for (LogixNG logixNG : tm.getNamedBeanSet()) {
+                log.debug("logix system name is " + logixNG.getSystemName());  // NOI18N
+                boolean enabled = logixNG.isEnabled();
                 Element elem = new Element("logixng");  // NOI18N
-                elem.addContent(new Element("systemName").addContent(newLogix.getSystemName()));  // NOI18N
+                elem.addContent(new Element("systemName").addContent(logixNG.getSystemName()));  // NOI18N
 
 //                // As a work-around for backward compatibility, store systemName and username as attribute.
 //                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
@@ -48,7 +48,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
 //                }
 
                 // store common part
-                storeCommon(newLogix, elem);
+                storeCommon(logixNG, elem);
 
                 if (enabled) {
                     elem.setAttribute("enabled", "yes");  // NOI18N

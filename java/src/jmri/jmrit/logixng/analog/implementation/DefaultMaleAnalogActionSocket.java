@@ -30,6 +30,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
+    private boolean _enabled = false;
     
     
     public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
@@ -302,6 +303,18 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     @Override
     public Base getObject() {
         return _action;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _parent.isEnabled();
     }
 
 

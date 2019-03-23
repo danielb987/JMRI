@@ -26,6 +26,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     private final StringAction _stringAction;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
+    private boolean _enabled = false;
     
     
     public DefaultMaleStringActionSocket(@Nonnull StringAction stringAction) {
@@ -252,6 +253,18 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     @Override
     public Base getObject() {
         return _stringAction;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        _enabled = enable;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled() {
+        return _enabled && _parent.isEnabled();
     }
 
 
