@@ -139,7 +139,7 @@ public class HoldAnything extends AbstractDigitalAction {
                 m._femaleSockets.clear();
                 
                 for (String systemName : m._systemNames) {
-                    FemaleSocket socket = m._femaleSocketFactory.create();
+                    FemaleSocket socket = m._femaleSocketFactory.create(m, m);
                     m._femaleSockets.add(socket);
                     try {
                         socket.connect(m._femaleSocketFactory.getBeanBySystemName(systemName));
@@ -167,7 +167,7 @@ public class HoldAnything extends AbstractDigitalAction {
         
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
-            _femaleSockets.add(femaleSocketFactory.create());
+            _femaleSockets.add(femaleSocketFactory.create(this, this));
         }
         
         @Override

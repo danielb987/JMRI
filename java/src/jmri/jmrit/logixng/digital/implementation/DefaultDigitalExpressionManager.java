@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
 import jmri.jmrit.logixng.Category;
@@ -22,6 +23,7 @@ import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionFactory;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.managers.AbstractManager;
 
@@ -43,6 +45,9 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     
     public DefaultDigitalExpressionManager() {
         super();
+        
+        InstanceManager.getDefault(LogixNG_Manager.class)
+                .registerFemaleSocketFactory(new DefaultFemaleDigitalExpressionSocketFactory());
         
         for (Category category : Category.values()) {
             expressionClassList.put(category, new ArrayList<>());

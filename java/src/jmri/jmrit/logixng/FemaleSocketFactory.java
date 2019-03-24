@@ -11,8 +11,11 @@ public interface FemaleSocketFactory {
     
     /**
      * Create a FemaleSocket.
+     * 
+     * @param parent the parent of this object
+     * @param listener the listener of the female socket
      */
-    public FemaleSocket create();
+    public FemaleSocket create(Base parent, FemaleSocketListener listener);
     
     /**
      * Get a named bean by system name.

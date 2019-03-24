@@ -2,14 +2,12 @@ package jmri.jmrit.logixng.digital.implementation;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.ServiceLoader;
-import java.util.Set;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -19,6 +17,7 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionFactory;
@@ -45,6 +44,9 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     
     public DefaultDigitalActionManager() {
         super();
+        
+        InstanceManager.getDefault(LogixNG_Manager.class)
+                .registerFemaleSocketFactory(new DefaultFemaleDigitalActionSocketFactory());
         
         for (Category category : Category.values()) {
             actionClassList.put(category, new ArrayList<>());
