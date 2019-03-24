@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.implementation;
 
+import java.awt.GraphicsEnvironment;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -245,7 +246,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         
         
         // FOR TESTING ONLY. REMOVE LATER.
-        if (dialog == null) {
+        if ((dialog == null) && (!GraphicsEnvironment.isHeadless())) {
             dialog = new TestLogixNG(new javax.swing.JFrame(), false);
             dialog.setVisible(true);
         }
