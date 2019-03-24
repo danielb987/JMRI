@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.digital.actions.configureswing;
+package jmri.jmrit.logixng.digital.expressions.configureswing;
 
 import javax.annotation.Nonnull;
 import javax.swing.JComboBox;
@@ -11,22 +11,24 @@ import jmri.NamedBeanHandleManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.digital.actions.ActionTurnout;
-import jmri.jmrit.logixng.digital.actions.ActionTurnout.TurnoutState;
+import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout.TurnoutState;
+import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.util.swing.BeanSelectCreatePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Configures an ActionTurnout object with a Swing JPanel.
+ * Configures an ExpressionTurnout object with a Swing JPanel.
  */
-public class ActionTurnoutSwing implements SwingConfiguratorInterface {
+public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
     private BeanSelectCreatePanel turnoutBeanPanel;
+    private JComboBox<Is_IsNot_Enum> is_IsNot_ComboBox;
     private JComboBox<TurnoutState> stateComboBox;
     
     
@@ -45,25 +47,32 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     }
     
     private void createPanel(Base object) {
-        ActionTurnout action = (ActionTurnout)object;
+        ExpressionTurnout expression = (ExpressionTurnout)object;
         
         panel = new JPanel();
         turnoutBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(TurnoutManager.class), null);
+        
+        is_IsNot_ComboBox = new JComboBox<>();
+        for (Is_IsNot_Enum e : Is_IsNot_Enum.values()) {
+            is_IsNot_ComboBox.addItem(e);
+        }
         
         stateComboBox = new JComboBox<>();
         for (TurnoutState e : TurnoutState.values()) {
             stateComboBox.addItem(e);
         }
         
-        if (action != null) {
-            if (action.getTurnout() != null) {
-                turnoutBeanPanel.setDefaultNamedBean(action.getTurnout().getBean());
+        if (expression != null) {
+            if (expression.getTurnout() != null) {
+                turnoutBeanPanel.setDefaultNamedBean(expression.getTurnout().getBean());
             }
-            stateComboBox.setSelectedItem(action.getTurnoutState());
+            is_IsNot_ComboBox.setSelectedItem(expression.get_Is_IsNot());
+            stateComboBox.setSelectedItem(expression.getTurnoutState());
         }
         
         panel.add(new JLabel(Bundle.getMessage("Turnout")));
         panel.add(turnoutBeanPanel);
+        panel.add(is_IsNot_ComboBox);
         panel.add(stateComboBox);
     }
     
@@ -81,55 +90,58 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
         System.out.format("System name: %s%n", systemName);
-        ActionTurnout action = new ActionTurnout(systemName);
+        ExpressionTurnout expression = new ExpressionTurnout(systemName);
         try {
             Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
                                 .getNamedBeanHandle(turnout.getDisplayName(), turnout);
-                action.setTurnout(handle);
+                expression.setTurnout(handle);
             }
-            action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
+            expression.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+            expression.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
         } catch (JmriException ex) {
             log.error("Cannot get NamedBeanHandle for turnout", ex);
         }
-        return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
+        return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
 
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
-        ActionTurnout action = new ActionTurnout(systemName, userName);
+        ExpressionTurnout expression = new ExpressionTurnout(systemName, userName);
         try {
             Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
                                 .getNamedBeanHandle(turnout.getDisplayName(), turnout);
-                action.setTurnout(handle);
+                expression.setTurnout(handle);
             }
-            action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
+            expression.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+            expression.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
         } catch (JmriException ex) {
             log.error("Cannot get NamedBeanHandle for turnout", ex);
         }
-        return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
+        return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
     
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
-        ActionTurnout action = (ActionTurnout)object;
+        ExpressionTurnout expression = (ExpressionTurnout)object;
         try {
             Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
                                 .getNamedBeanHandle(turnout.getDisplayName(), turnout);
-                action.setTurnout(handle);
+                expression.setTurnout(handle);
             }
-            action.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
+            expression.set_Is_IsNot((Is_IsNot_Enum)is_IsNot_ComboBox.getSelectedItem());
+            expression.setTurnoutState((TurnoutState)stateComboBox.getSelectedItem());
         } catch (JmriException ex) {
             log.error("Cannot get NamedBeanHandle for turnout", ex);
         }
@@ -137,7 +149,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     
     
     /**
-     * Create Turnout object for the action
+     * Create Turnout object for the expression
      *
      * @param reference Turnout application description
      * @return The new output as Turnout object
@@ -170,6 +182,6 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     }
     
     
-    private final static Logger log = LoggerFactory.getLogger(ActionTurnoutSwing.class);
+    private final static Logger log = LoggerFactory.getLogger(ExpressionTurnoutSwing.class);
     
 }

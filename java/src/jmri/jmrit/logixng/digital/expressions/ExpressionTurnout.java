@@ -29,6 +29,30 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
+    
+    public void setTurnout(NamedBeanHandle handle) {
+        _turnout = handle;
+    }
+    
+    public NamedBeanHandle getTurnout() {
+        return _turnout;
+    }
+    
+    public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
+        _is_IsNot = is_IsNot;
+    }
+    
+    public Is_IsNot_Enum get_Is_IsNot() {
+        return _is_IsNot;
+    }
+    
+    public void setTurnoutState(TurnoutState state) {
+        _turnoutState = state;
+    }
+    
+    public TurnoutState getTurnoutState() {
+        return _turnoutState;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -67,12 +91,18 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("Turnout_Short");
     }
 
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String turnoutName;
+        if (_turnout != null) {
+            turnoutName = _turnout.getBean().getDisplayName();
+        } else {
+            turnoutName = Bundle.getMessage("BeanNotSelected");
+        }
+        return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
     }
     
     public void setTurnout_SystemName(String turnoutSystemName) {
@@ -92,7 +122,8 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
     
     public enum TurnoutState {
         CLOSED(Turnout.CLOSED, InstanceManager.getDefault(TurnoutManager.class).getClosedText()),
-        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText());
+        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText()),
+        OTHER(-1, Bundle.getMessage("TurnoutOtherStatus"));
         
         private final int _id;
         private final String _text;
@@ -111,7 +142,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
                     return THROWN;
                     
                 default:
-                    throw new IllegalArgumentException("invalid turnout state");
+                    return OTHER;
             }
         }
         

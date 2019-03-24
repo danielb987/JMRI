@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    jmri.jmrit.logixng.digital.expressions.configureswing.PackageTest.class,
     jmri.jmrit.logixng.digital.expressions.configurexml.PackageTest.class,
     AndTest.class,
     BufferedSensorTest.class,

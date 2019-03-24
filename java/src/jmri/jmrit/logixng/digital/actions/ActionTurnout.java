@@ -17,7 +17,6 @@ public class ActionTurnout extends AbstractDigitalAction {
 
     private String _turnoutSystemName;
     private NamedBeanHandle _turnout;
-    private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
     
     public ActionTurnout(String sys)
@@ -38,14 +37,6 @@ public class ActionTurnout extends AbstractDigitalAction {
     
     public NamedBeanHandle getTurnout() {
         return _turnout;
-    }
-    
-    public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
-        _is_IsNot = is_IsNot;
-    }
-    
-    public Is_IsNot_Enum get_Is_IsNot() {
-        return _is_IsNot;
     }
     
     public void setTurnoutState(TurnoutState state) {
@@ -124,7 +115,7 @@ public class ActionTurnout extends AbstractDigitalAction {
         } else {
             turnoutName = Bundle.getMessage("BeanNotSelected");
         }
-        return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
+        return Bundle.getMessage("Turnout_Long", turnoutName, _turnoutState._text);
     }
     
     public void setTurnout_SystemName(String turnoutSystemName) {
@@ -144,8 +135,7 @@ public class ActionTurnout extends AbstractDigitalAction {
     
     public enum TurnoutState {
         CLOSED(Turnout.CLOSED, InstanceManager.getDefault(TurnoutManager.class).getClosedText()),
-        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText()),
-        OTHER(-1, Bundle.getMessage("TurnoutOtherStatus"));
+        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText());
         
         private final int _id;
         private final String _text;
@@ -164,7 +154,7 @@ public class ActionTurnout extends AbstractDigitalAction {
                     return THROWN;
                     
                 default:
-                    return OTHER;
+                    throw new IllegalArgumentException("invalid turnout state");
             }
         }
         
