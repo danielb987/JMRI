@@ -37,7 +37,7 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
     public Element store(Object o) {
         And p = (And) o;
 
-        Element element = new Element("expressionAnd");
+        Element element = new Element("and");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {

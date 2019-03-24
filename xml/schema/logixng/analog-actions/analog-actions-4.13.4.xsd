@@ -13,8 +13,7 @@
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
 
-<!-- This file contains definitions for LogixNG, Expressions and Actions,  -->
-<!-- since they are so intimately coupled -->
+<!-- This file contains definitions for LogixNG AnalogActions.              -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:xsi ="http://www.w3.org/2001/XMLSchema-instance"
@@ -25,39 +24,30 @@
                 http://docbook.org/ns/docbook http://jmri.org/xml/schema/docbook/docbook.xsd
             "
         >
-
+<!--
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionHoldAnything-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionIfThen-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionMany-4.13.4.xsd"/>
-
-    <xs:complexType name="LogixNG_ManagerType">
+-->
+    <xs:complexType name="LogixNG_AnalogActionManagerType">
       <xs:annotation>
         <xs:documentation>
-          Define the XML stucture for storing the contents of a LogixNG_Manager implementation.
+          Define the XML stucture for storing the contents of a AnalogActionManager implementation.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.engine.configurexml.DefaultLogixNGManagerXml</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXml</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>
         
-        <xs:element name="logixng" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
-              <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element name="logixConditional" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="systemName" type="systemNameType" use="required" />
-                  <xs:attribute name="order" type="xs:nonNegativeInteger" />
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute name="enabled" type="yesNoType" />
-          </xs:complexType>
-        </xs:element>
-            
+        <!-- Permit any of these tags in any order in any number -->
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+<!--
+            <xs:element name="actionHoldAnything"  type="LogixNG_ActionHoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="actionIfThen"        type="LogixNG_ActionIfThenType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="actionMany"          type="LogixNG_ActionManyType" minOccurs="0" maxOccurs="unbounded" />
+-->
+          </xs:choice>
       </xs:sequence>
       <xs:attribute name="class" type="classType" use="required"/>
     </xs:complexType>

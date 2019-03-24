@@ -48,7 +48,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
     public Element store(Object o) {
         IfThen p = (IfThen) o;
 
-        Element element = new Element("actionIfThen");
+        Element element = new Element("if-then");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {

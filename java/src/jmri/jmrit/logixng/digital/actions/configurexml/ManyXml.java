@@ -39,7 +39,7 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
     public Element store(Object o) {
         Many p = (Many) o;
 
-        Element element = new Element("actionMany");
+        Element element = new Element("many");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {

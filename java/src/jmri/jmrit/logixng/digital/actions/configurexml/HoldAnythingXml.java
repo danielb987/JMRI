@@ -37,7 +37,7 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
     public Element store(Object o) {
         HoldAnything p = (HoldAnything) o;
 
-        Element element = new Element("actionHoldAnything");
+        Element element = new Element("hold-anything");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {

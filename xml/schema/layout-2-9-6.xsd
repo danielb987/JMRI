@@ -78,6 +78,12 @@ signals - obsolete, EMPTY, never used
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/entryexitpair.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/filehistory.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/logixng-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/analog-actions/analog-actions-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/analog-expressions/analog-expressions-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/digital-actions-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-expressions/digital-expressions-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/string-actions/string-actions-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/string-expressions/string-expressions-4.13.4.xsd"/>
 
   <xs:element name="layout-config">
     <xs:complexType>
@@ -351,10 +357,10 @@ signals - obsolete, EMPTY, never used
         <xs:element name="conditionals" type="ConditionalManagerType" minOccurs="0" maxOccurs="unbounded" />
 
         <xs:element name="logixngs"                  type="LogixNG_ManagerType" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="logixngDigitalActions"     type="LogixNG_DigitalActionManagerType" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="logixngDigitalExpressions" type="LogixNG_DigitalExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="logixngAnalogActions"      type="LogixNG_AnalogActionManagerType" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="logixngAnalogExpressions"  type="LogixNG_AnalogExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngDigitalActions"     type="LogixNG_DigitalActionManagerType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="logixngDigitalExpressions" type="LogixNG_DigitalExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="logixngStringActions"      type="LogixNG_StringActionManagerType" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="logixngStringExpressions"  type="LogixNG_StringExpressionManagerType" minOccurs="0" maxOccurs="unbounded" />
 
