@@ -119,25 +119,28 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         LogixNG_Manager tm = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
 
         for (int i = 0; i < logixNGList.size(); i++) {
+            
+            Element logixNG_Element = logixNGList.get(i);
 
-            String sysName = getSystemName(logixNGList.get(i));
+            String sysName = getSystemName(logixNG_Element);
             if (sysName == null) {
-                log.warn("unexpected null in systemName " + logixNGList.get(i));  // NOI18N
+                log.warn("unexpected null in systemName " + logixNG_Element);  // NOI18N
                 break;
             }
 
-            String userName = getUserName(logixNGList.get(i));
+            String userName = getUserName(logixNG_Element);
 
             String yesno = "";
             if (logixNGList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = logixNGList.get(i).getAttribute("enabled").getValue();  // NOI18N
+                yesno = logixNG_Element.getAttribute("enabled").getValue();  // NOI18N
             }
             if (log.isDebugEnabled()) {
                 log.debug("create logixng: (" + sysName + ")("  // NOI18N
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            LogixNG x = tm.createLogixNG(sysName, userName);
+            // Create a new LogixNG but don't setup the initial tree.
+            LogixNG x = tm.createLogixNG(sysName, userName, false);
             if (x != null) {
                 // load common part
                 loadCommon(x, logixNGList.get(i));

@@ -93,7 +93,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     }
 
     @Override
-    public LogixNG createLogixNG(String systemName, String userName)
+    public LogixNG createLogixNG(String systemName, String userName, boolean setupTree)
             throws IllegalArgumentException {
         
         // Check that Logix does not already exist
@@ -133,19 +133,21 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             }
         }
         
-        // Setup initial tree for the LogixNG
-//        setupInitialLogixNGTree(x);
+        if (setupTree) {
+            // Setup initial tree for the LogixNG
+            setupInitialLogixNGTree(x);
+        }
         
         return x;
     }
 
     @Override
-    public LogixNG createLogixNG(String userName) throws IllegalArgumentException {
+    public LogixNG createLogixNG(String userName, boolean setupTree) throws IllegalArgumentException {
         int nextAutoLogixNGRef = lastAutoLogixNGRef + 1;
         StringBuilder b = new StringBuilder("IQA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
-        return createLogixNG(b.toString(), userName);
+        return createLogixNG(b.toString(), userName, setupTree);
     }
 
     @Override
