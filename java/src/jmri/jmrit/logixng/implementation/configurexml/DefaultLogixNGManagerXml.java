@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * Provides the functionality for configuring LogixNGManagers
@@ -40,9 +41,17 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
                 Element elem = new Element("logixng");  // NOI18N
                 elem.addContent(new Element("systemName").addContent(logixNG.getSystemName()));  // NOI18N
 
+                Element e2 = new Element("socket");
+                e2.addContent(new Element("socketName").addContent(logixNG.getChild(0).getName()));
+                MaleSocket socket = logixNG.getChild(0).getConnectedSocket();
+                if (socket != null) {
+                    e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
+                }
+                elem.addContent(e2);
+            
 //                // As a work-around for backward compatibility, store systemName and username as attribute.
 //                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
-//                String uName = newLogix.getUserName();
+//                String uName = logixNG.getUserName();
 //                if (uName != null && !uName.isEmpty()) {
 //                    elem.setAttribute("userName", uName);  // NOI18N
 //                }
@@ -103,25 +112,25 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
      * @param logixNGs Element containing the Logix elements to load.
      */
     public void loadLogixNGs(Element logixNGs) {
-        List<Element> newLogixList = logixNGs.getChildren("logixng");  // NOI18N
+        List<Element> logixNGList = logixNGs.getChildren("logixng");  // NOI18N
         if (log.isDebugEnabled()) {
-            log.debug("Found " + newLogixList.size() + " logixngs");  // NOI18N
+            log.debug("Found " + logixNGList.size() + " logixngs");  // NOI18N
         }
         LogixNG_Manager tm = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
 
-        for (int i = 0; i < newLogixList.size(); i++) {
+        for (int i = 0; i < logixNGList.size(); i++) {
 
-            String sysName = getSystemName(newLogixList.get(i));
+            String sysName = getSystemName(logixNGList.get(i));
             if (sysName == null) {
-                log.warn("unexpected null in systemName " + newLogixList.get(i));  // NOI18N
+                log.warn("unexpected null in systemName " + logixNGList.get(i));  // NOI18N
                 break;
             }
 
-            String userName = getUserName(newLogixList.get(i));
+            String userName = getUserName(logixNGList.get(i));
 
             String yesno = "";
-            if (newLogixList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = newLogixList.get(i).getAttribute("enabled").getValue();  // NOI18N
+            if (logixNGList.get(i).getAttribute("enabled") != null) {  // NOI18N
+                yesno = logixNGList.get(i).getAttribute("enabled").getValue();  // NOI18N
             }
             if (log.isDebugEnabled()) {
                 log.debug("create logixng: (" + sysName + ")("  // NOI18N
@@ -131,7 +140,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
             LogixNG x = tm.createLogixNG(sysName, userName);
             if (x != null) {
                 // load common part
-                loadCommon(x, newLogixList.get(i));
+                loadCommon(x, logixNGList.get(i));
 
                 // set enabled/disabled if attribute was present
                 if ((yesno != null) && (!yesno.equals(""))) {
@@ -143,7 +152,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
                 }
 /*                
                 // load conditionals, if there are any
-                List<Element> logixConditionalList = newLogixList.get(i).getChildren("logixConditional");  // NOI18N
+                List<Element> logixConditionalList = logixNGList.get(i).getChildren("logixConditional");  // NOI18N
                 if (logixConditionalList.size() > 0) {
                     // add conditionals
                     for (int n = 0; n < logixConditionalList.size(); n++) {

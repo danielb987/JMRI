@@ -73,9 +73,9 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     @Test
     public void testLogixBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
 
-        newLogixTable.browserPressed("IQ101");  // NOI18N
+        logixNGTable.browserPressed("IQ101");  // NOI18N
 
         JFrame frame = JFrameOperator.waitJFrame(Bundle.getMessage("BrowserTitle"), true, true);  // NOI18N
         Assert.assertNotNull(frame);
@@ -88,27 +88,27 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         InstanceManager.getDefault(jmri.UserPreferencesManager.class).
                 setProperty("jmri.jmrit.beantable.LogixNGTableAction", "Edit Mode", "TREEEDIT");  // NOI18N
         a.actionPerformed(null);
-        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
-        JFrameOperator newLogixFrame = new JFrameOperator(Bundle.getMessage("TitleLogixNGTable"));  // NOI18N
-        Assert.assertNotNull(newLogixFrame);
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
+        JFrameOperator logixNGFrame = new JFrameOperator(Bundle.getMessage("TitleLogixNGTable"));  // NOI18N
+        Assert.assertNotNull(logixNGFrame);
 
-        newLogixTable.editPressed("IQ104");  // NOI18N
+        logixNGTable.editPressed("IQ104");  // NOI18N
         JFrameOperator cdlFrame = new JFrameOperator(jmri.Bundle.formatMessage(rbxLogixNGSwing.getString("TitleEditLogixNG"), "IQ104"));  // NOI18N
         Assert.assertNotNull(cdlFrame);
         new JMenuBarOperator(cdlFrame).pushMenuNoBlock(Bundle.getMessage("MenuFile")+"|"+rbxLogixNGSwing.getString("CloseWindow"), "|");  // NOI18N
-        newLogixFrame.dispose();
+        logixNGFrame.dispose();
     }
 
     @Test
     public void testAddLogixNGAutoName() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
 
-        newLogixTable.actionPerformed(null); // show table
-        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
-        Assert.assertNotNull("Found LogixNG Frame", newLogixFrame);  // NOI18N
+        logixNGTable.actionPerformed(null); // show table
+        JFrame logixNGFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
+        Assert.assertNotNull("Found LogixNG Frame", logixNGFrame);  // NOI18N
 
-        newLogixTable.addPressed(null);
+        logixNGTable.addPressed(null);
         JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddLogixNG"));  // NOI18N
         Assert.assertNotNull("Found Add LogixNG Frame", addFrame);  // NOI18N
 
@@ -123,19 +123,19 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxLogixNGSwing.getString("TitleEditLogixNG2"), "IQA0001", "LogixNG 999"), true, true);  // NOI18N
         JUnitUtil.dispose(editFrame);
 
-        JUnitUtil.dispose(newLogixFrame);
+        JUnitUtil.dispose(logixNGFrame);
     }
 
     @Test
     public void testAddLogixNG() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
 
-        newLogixTable.actionPerformed(null); // show table
-        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
-        Assert.assertNotNull("Found LogixNG Frame", newLogixFrame);  // NOI18N
+        logixNGTable.actionPerformed(null); // show table
+        JFrame logixNGFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
+        Assert.assertNotNull("Found LogixNG Frame", logixNGFrame);  // NOI18N
 
-        newLogixTable.addPressed(null);
+        logixNGTable.addPressed(null);
         JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddLogixNG"));  // NOI18N
         Assert.assertNotNull("Found Add LogixNG Frame", addFrame);  // NOI18N
 
@@ -150,33 +150,33 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         JFrame editFrame = JFrameOperator.waitJFrame(jmri.Bundle.formatMessage(rbxLogixNGSwing.getString("TitleEditLogixNG2"), "IQ105", "LogixNG 105"), true, true);  // NOI18N
         JUnitUtil.dispose(editFrame);
 
-        JUnitUtil.dispose(newLogixFrame);
+        JUnitUtil.dispose(logixNGFrame);
     }
 
     @Test
     public void testDeleteLogixNG() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        LogixNGTableAction newLogixTable = (LogixNGTableAction) a;
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
 
-        newLogixTable.actionPerformed(null); // show table
-        JFrame newLogixFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
-        Assert.assertNotNull("Found LogixNG Frame", newLogixFrame);  // NOI18N
+        logixNGTable.actionPerformed(null); // show table
+        JFrame logixNGFrame = JFrameOperator.waitJFrame(Bundle.getMessage("TitleLogixNGTable"), true, true);  // NOI18N
+        Assert.assertNotNull("Found LogixNG Frame", logixNGFrame);  // NOI18N
 
         // Delete IQ102, respond No
         Thread t1 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonNo"));  // NOI18N
-        newLogixTable.deletePressed("IQ102");  // NOI18N
+        logixNGTable.deletePressed("IQ102");  // NOI18N
         t1.join();
         LogixNG chk102 = jmri.InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName("IQ102");  // NOI18N
         Assert.assertNotNull("Verify IQ102 Not Deleted", chk102);  // NOI18N
 
         // Delete IQ103, respond Yes
         Thread t2 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonYes"));  // NOI18N
-        newLogixTable.deletePressed("IQ103");  // NOI18N
+        logixNGTable.deletePressed("IQ103");  // NOI18N
         t2.join();
         LogixNG chk103 = jmri.InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName("IQ103");  // NOI18N
         Assert.assertNull("Verify IQ103 Is Deleted", chk103);  // NOI18N
 
-        JUnitUtil.dispose(newLogixFrame);
+        JUnitUtil.dispose(logixNGFrame);
     }
 
     Thread createModalDialogOperatorThread(String dialogTitle, String buttonText) {

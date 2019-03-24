@@ -134,7 +134,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         }
         
         // Setup initial tree for the LogixNG
-        setupInitialLogixNGTree(x);
+//        setupInitialLogixNGTree(x);
         
         return x;
     }

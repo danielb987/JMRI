@@ -11,12 +11,12 @@ import jmri.jmrit.logixng.digital.log.Log.InvalidFormatException;
  */
 public class AsciiOneBitPerCharDecoder implements LogReaderDecoder {
 
-    private Log _newLogixLog;
+    private Log _logixNGLog;
     private InputStream _input;
     
     /** {@inheritDoc} */
-    public void init(Log newLogixLog, InputStream input) {
-        _newLogixLog = newLogixLog;
+    public void init(Log logixNGLog, InputStream input) {
+        _logixNGLog = logixNGLog;
         _input = input;
     }
     
@@ -29,7 +29,7 @@ public class AsciiOneBitPerCharDecoder implements LogReaderDecoder {
     /** {@inheritDoc} */
     @Override
     public LogRow read() throws IOException, InvalidFormatException {
-        LogRow row = new LogRowArray(_newLogixLog.getNumItems());
+        LogRow row = new LogRowArray(_logixNGLog.getNumItems());
         
         for (int i=0; i < row.getNumStates(); i++) {
             int ch = _input.read();

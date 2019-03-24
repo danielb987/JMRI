@@ -139,9 +139,9 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
     }
 
     @Override
-    public String getNewSystemName(LogixNG newLogix) {
+    public String getNewSystemName(LogixNG logixNG) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(newLogix.getSystemName());
+        StringBuilder b = new StringBuilder(logixNG.getSystemName());
         b.append(":AAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

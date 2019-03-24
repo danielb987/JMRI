@@ -164,13 +164,13 @@ public class TimeDiagram extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
 /*            
             String systemName;
-            LogixNG newLogix = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
-            System.out.format("newLogix: %s%n", newLogix);
-            systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(newLogix);
+            LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
+            System.out.format("logixNG: %s%n", logixNG);
+            systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(logixNG);
             DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
             InstanceManager.getDefault(DigitalExpressionManager.class).register(expression);
 //            InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-            systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(newLogix);
+            systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG);
             DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
             InstanceManager.getDefault(DigitalActionManager.class).register(action);
 /*            

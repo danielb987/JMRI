@@ -786,10 +786,10 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         log.debug("copyPressed started for {}", sName);  // NOI18N
         javax.swing.SwingUtilities.invokeLater(t);
         _inCopyMode = true;
-        _newLogixSysName = sName;
+        _logixNGSysName = sName;
     }
 
-    String _newLogixSysName;
+    String _logixNGSysName;
 
     /**
      * Copy the LogixNG as configured in the Copy set up pane.
@@ -818,7 +818,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             targetLogixNG = _logixNGManager.getBySystemName(sName);
             if (targetLogixNG != null) {
                 int result = JOptionPane.showConfirmDialog(f,
-                        Bundle.getMessage("ConfirmLogixDuplicate", sName, _newLogixSysName), // NOI18N
+                        Bundle.getMessage("ConfirmLogixDuplicate", sName, _logixNGSysName), // NOI18N
                         Bundle.getMessage("QuestionTitle"), JOptionPane.YES_NO_OPTION,    // NOI18N
                         JOptionPane.QUESTION_MESSAGE);
                 if (JOptionPane.NO_OPTION == result) {
@@ -848,7 +848,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                 targetLogixNG.setUserName(uName);
             }
         }
-        LogixNG srcLogic = _logixNGManager.getBySystemName(_newLogixSysName);
+        LogixNG srcLogic = _logixNGManager.getBySystemName(_logixNGSysName);
         for (int i = 0; i < srcLogic.getNumConditionals(); i++) {
             String cSysName = srcLogic.getConditionalByNumberOrder(i);
             copyConditionalToLogix(cSysName, srcLogic, targetLogixNG);
@@ -928,7 +928,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         if (_inCopyMode) {
             // Already editing a LogixNG, ask for completion of that edit
             JOptionPane.showMessageDialog(null,
-                    Bundle.getMessage("LogixNGError31", _newLogixSysName),
+                    Bundle.getMessage("LogixNGError31", _logixNGSysName),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
                     JOptionPane.ERROR_MESSAGE);
             return false;
@@ -1048,7 +1048,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             
             _treeEdit.addLogixNGEventListener(new LogixNGEditor.LogixNGEventListener() {
                 @Override
-                public void newLogixEventOccurred() {
+                public void logixNGEventOccurred() {
                     String lgxName = sName;
                     _treeEdit.logixData.forEach((key, value) -> {
                         if (key.equals("Finish")) {                  // NOI18N
@@ -1312,7 +1312,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         userFileChooser.setApproveButtonText(Bundle.getMessage("BrowserSaveDialogApprove"));  // NOI18N
         userFileChooser.setDialogTitle(Bundle.getMessage("BrowserSaveDialogTitle"));  // NOI18N
         userFileChooser.rescanCurrentDirectory();
-        // Default to newLogix system name.txt
+        // Default to logixNG system name.txt
         userFileChooser.setSelectedFile(new File(_curLogixNG.getSystemName() + ".txt"));  // NOI18N
         int retVal = userFileChooser.showSaveDialog(null);
         if (retVal != JFileChooser.APPROVE_OPTION) {

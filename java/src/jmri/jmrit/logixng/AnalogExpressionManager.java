@@ -26,10 +26,10 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
     /**
      * Create a new system name for an Expression.
      *
-     * @param newLogix the LogixNG that this analog expression belongs to
+     * @param logixNG the LogixNG that this analog expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG newLogix);
+    public String getNewSystemName(LogixNG logixNG);
 
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

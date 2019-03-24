@@ -79,7 +79,7 @@ public final class LogixNGEditor extends JmriJFrame {
     
     private static final Map<String, Color> FEMALE_SOCKET_COLORS = new HashMap<>();
     
-    private final LogixNG newLogix;
+    private final LogixNG logixNG;
     
     // Add LogixNG Variables
     private JmriJFrame addEditLogixNGFrame = null;
@@ -115,7 +115,7 @@ public final class LogixNGEditor extends JmriJFrame {
     public HashMap<String, String> logixData = new HashMap<>();
     
     LogixNGEditor() {
-        newLogix = null;
+        logixNG = null;
     }
     
     /**
@@ -126,12 +126,12 @@ public final class LogixNGEditor extends JmriJFrame {
     public LogixNGEditor(String sName) {
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalActionSocket", Color.RED);
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalExpressionSocket", Color.BLUE);
-        newLogix = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
+        logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
         
-        if (newLogix.getUserName() == null) {
+        if (logixNG.getUserName() == null) {
             setTitle(Bundle.getMessage("TitleEditLogixNG", sName));
         } else {
-            setTitle(Bundle.getMessage("TitleEditLogixNG2", sName, newLogix.getUserName()));
+            setTitle(Bundle.getMessage("TitleEditLogixNG2", sName, logixNG.getUserName()));
         }
     }
     
@@ -174,36 +174,36 @@ public final class LogixNGEditor extends JmriJFrame {
 /*        
         InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         String systemName;
-        LogixNG newLogix = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(ExpressionManager.class).getNewSystemName(newLogix);
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
+        systemName = InstanceManager.getDefault(ExpressionManager.class).getNewSystemName(logixNG);
         DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(ExpressionManager.class).register(expression);
 //        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix);
+        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(logixNG);
         DigitalAction actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleDigitalActionSocket actionSocket = InstanceManager.getDefault(ActionManager.class).register(actionTurnout);
-        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(newLogix);
+        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(logixNG);
         DigitalAction actionIfThen = new IfThen(systemName, IfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
         actionSocket = InstanceManager.getDefault(ActionManager.class).register(actionIfThen);
-        newLogix.getFemaleSocket().connect(actionSocket);
+        logixNG.getFemaleSocket().connect(actionSocket);
 */        
         
         // Figure out where in the filesystem to start displaying
 //        File root;
 //        root = new File(System.getProperty("user.home"));
         FemaleSocket root;
-        SortedSet<LogixNG> newLogixSet = InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet();
-        for (LogixNG nl : newLogixSet) {
+        SortedSet<LogixNG> logixNGSet = InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet();
+        for (LogixNG nl : logixNGSet) {
             System.out.format("LogixNG: %s%n", nl.toString());
             System.out.format("LogixNG female socket: %s. Connected: %b%n", nl.getFemaleSocket().toString(), nl.getFemaleSocket().isConnected());
         }
-        root = newLogixSet.first().getFemaleSocket();
+        root = logixNGSet.first().getFemaleSocket();
 
         // Create a TreeModel object to represent our tree of files
 //        FileTreeModel model = new FileTreeModel(root);
 //        // Create a TreeModel object to represent our tree of files
-        if (newLogix != null)
-            femaleSocketTreeModel = new FemaleSocketTreeModel(newLogix.getFemaleSocket());
+        if (logixNG != null)
+            femaleSocketTreeModel = new FemaleSocketTreeModel(logixNG.getFemaleSocket());
         else
             femaleSocketTreeModel = new FemaleSocketTreeModel(root);
 
@@ -260,7 +260,7 @@ public final class LogixNGEditor extends JmriJFrame {
     @Override
     public void windowClosed(WindowEvent e) {
         logixData.clear();
-        logixData.put("Finish", newLogix.getSystemName());  // NOI18N
+        logixData.put("Finish", logixNG.getSystemName());  // NOI18N
         fireLogixNGEvent();
     }
     
@@ -273,14 +273,14 @@ public final class LogixNGEditor extends JmriJFrame {
      */
     void fireLogixNGEvent() {
         for (LogixNGEventListener l : listenerList) {
-            l.newLogixEventOccurred();
+            l.logixNGEventOccurred();
         }
     }
     
     
     public interface LogixNGEventListener extends EventListener {
         
-        public void newLogixEventOccurred();
+        public void logixNGEventOccurred();
     }
     
     
@@ -310,7 +310,7 @@ public final class LogixNGEditor extends JmriJFrame {
         if (_inCopyMode) {
             // Already editing a LogixNG, ask for completion of that edit
             JOptionPane.showMessageDialog(null,
-                    Bundle.getMessage("LogixNGError31", _newLogixSysName),
+                    Bundle.getMessage("LogixNGError31", _logixNGSysName),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
                     JOptionPane.ERROR_MESSAGE);
             return false;

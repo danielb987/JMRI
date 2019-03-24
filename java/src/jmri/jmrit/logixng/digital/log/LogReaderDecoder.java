@@ -14,10 +14,10 @@ public interface LogReaderDecoder {
     /**
      * Init the decoder.
      * 
-     * @param newLogixLog the log
+     * @param logixNGLog the log
      * @param input the input stream
      */
-    public void init(Log newLogixLog, InputStream input);
+    public void init(Log logixNGLog, InputStream input);
     
     /**
      * Get the encoding this decoder implements.

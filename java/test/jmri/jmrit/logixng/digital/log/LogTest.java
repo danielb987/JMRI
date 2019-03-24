@@ -42,13 +42,13 @@ public class LogTest {
         
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         
-        Log _newLogixLog = new DefaultLog();
-        _newLogixLog.addItem("IQ121:E52");
-        _newLogixLog.addItem("IQ121:E3");
-        _newLogixLog.addItem("IQ121:A12");
-        _newLogixLog.addItem("IQ121:E1321");
+        Log _logixNGLog = new DefaultLog();
+        _logixNGLog.addItem("IQ121:E52");
+        _logixNGLog.addItem("IQ121:E3");
+        _logixNGLog.addItem("IQ121:A12");
+        _logixNGLog.addItem("IQ121:E1321");
         
-        LogWriter logWriter = new LogWriter(_newLogixLog, output, "Log something");
+        LogWriter logWriter = new LogWriter(_logixNGLog, output, "Log something");
         
         logWriter.write(new LogRowArray("0000"));
         logWriter.write(new LogRowArray("0100"));

@@ -138,9 +138,9 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     }
 
     @Override
-    public String getNewSystemName(LogixNG newLogix) {
+    public String getNewSystemName(LogixNG logixNG) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(newLogix.getSystemName());
+        StringBuilder b = new StringBuilder(logixNG.getSystemName());
         b.append(":SAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

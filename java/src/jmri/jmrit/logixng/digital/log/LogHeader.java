@@ -27,13 +27,13 @@ public class LogHeader {
      */
     private static final int SUPPORTED_VERSION = 1;
     
-    private final Log _newLogixLog;
+    private final Log _logixNGLog;
     private Encodings _encoding = Encodings.ASCII_ONE_BIT_PER_CHAR;
     private String _name = "";
     private int _version = SUPPORTED_VERSION;
     
-    public LogHeader(Log newLogixLog) {
-        _newLogixLog = newLogixLog;
+    public LogHeader(Log logixNGLog) {
+        _logixNGLog = logixNGLog;
     }
     
     /**
@@ -97,11 +97,11 @@ public class LogHeader {
     private void readItemLines(StreamReader reader) throws IOException,
             InvalidFormatException {
         
-        _newLogixLog.clearItemList();
+        _logixNGLog.clearItemList();
         
         String line;
         while ((line = reader.readLine('[')) != null) {
-            _newLogixLog.addItem(line);
+            _logixNGLog.addItem(line);
         }
     }
     
@@ -156,7 +156,7 @@ public class LogHeader {
         
         // Write the system names of the items
         output.write("[items]\n".getBytes(StandardCharsets.UTF_8));
-        for (String item : _newLogixLog.getItemList()) {
+        for (String item : _logixNGLog.getItemList()) {
             output.write(String.format("%s\n", item).getBytes(StandardCharsets.UTF_8));
         }
         

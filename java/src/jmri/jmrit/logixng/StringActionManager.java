@@ -26,10 +26,10 @@ public interface StringActionManager extends Manager<MaleStringActionSocket> {
     /**
      * Create a new system name for an StringAction.
      *
-     * @param newLogix the LogixNG that this analog action belongs to
+     * @param logixNG the LogixNG that this analog action belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG newLogix);
+    public String getNewSystemName(LogixNG logixNG);
 
     public FemaleStringActionSocket createFemaleStringActionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

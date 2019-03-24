@@ -144,9 +144,9 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     }
 
     @Override
-    public String getNewSystemName(LogixNG newLogix) {
+    public String getNewSystemName(LogixNG logixNG) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(newLogix.getSystemName());
+        StringBuilder b = new StringBuilder(logixNG.getSystemName());
         b.append(":AEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

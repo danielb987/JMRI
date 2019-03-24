@@ -26,10 +26,10 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
     /**
      * Create a new system name for an DigitalExpression.
      *
-     * @param newLogix the LogixNG that this expression belongs to
+     * @param logixNG the LogixNG that this expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG newLogix);
+    public String getNewSystemName(LogixNG logixNG);
 
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName);
