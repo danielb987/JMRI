@@ -10,6 +10,7 @@ import org.junit.runners.Suite;
     DigitalActionPluginSocketTest.class,
     DoAnalogActionTest.class,
     DoStringActionTest.class,
+    HoldAnythingTest.class,
     IfThenElseTest.class,
     ManyTest.class,
     SocketTest.class,
