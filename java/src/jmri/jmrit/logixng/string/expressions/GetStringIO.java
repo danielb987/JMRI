@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.string.expressions;
 
+import jmri.InstanceManager;
 import jmri.StringIO;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -11,6 +12,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class GetStringIO extends AbstractStringExpression {
 
+    private String _stringIO_SystemName;
     private StringIO _stringIO;
     
     public GetStringIO(String sys)
@@ -80,6 +82,18 @@ public class GetStringIO extends AbstractStringExpression {
     @Override
     public String getLongDescription() {
         return getShortDescription();
+    }
+
+    public void setAnalogIO_SystemName(String stringIO_SystemName) {
+        _stringIO_SystemName = stringIO_SystemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        if ((_stringIO == null) && (_stringIO_SystemName != null)) {
+//            _stringIO = InstanceManager.getDefault(StringIOManager.class).getBeanBySystemName(_stringIO_SystemName);
+        }
     }
 
 }

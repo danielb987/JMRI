@@ -4,9 +4,11 @@ import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * An Expression that keeps its status even if its child expression doesn't.
@@ -20,6 +22,8 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class Hold extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private String _holdExpressionSocketSystemName;
+    private String _triggerExpressionSocketSystemName;
     private final FemaleDigitalExpressionSocket _holdExpressionSocket;
     private final FemaleDigitalExpressionSocket _triggerExpressionSocket;
     private boolean _isActive = false;
@@ -143,6 +147,34 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     @Override
     public String getLongDescription() {
         return getShortDescription();
+    }
+
+    public void setHoldActionSocketSystemName(String systemName) {
+        _holdExpressionSocketSystemName = systemName;
+    }
+
+    public void setTriggerExpressionSocketSystemName(String systemName) {
+        _triggerExpressionSocketSystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        try {
+            if ((!_holdExpressionSocket.isConnected()) && (_holdExpressionSocketSystemName != null)) {
+                _holdExpressionSocket.connect(
+                        InstanceManager.getDefault(DigitalActionManager.class)
+                                .getBeanBySystemName(_holdExpressionSocketSystemName));
+            }
+            if ((!_triggerExpressionSocket.isConnected()) && (_triggerExpressionSocketSystemName != null)) {
+                _triggerExpressionSocket.connect(
+                        InstanceManager.getDefault(DigitalExpressionManager.class)
+                                .getBeanBySystemName(_triggerExpressionSocketSystemName));
+            }
+        } catch (SocketAlreadyConnectedException ex) {
+            // This shouldn't happen and is a runtime error if it does.
+            throw new RuntimeException("socket is already connected");
+        }
     }
 
 }

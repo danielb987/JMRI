@@ -11,6 +11,7 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * Executes an action when the expression is True.
@@ -50,6 +51,8 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     private Type _type;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
+    private String _ifExpressionSocketSystemName;
+    private String _thenActionSocketSystemName;
     private final FemaleDigitalExpressionSocket _ifExpressionSocket;
     private final FemaleDigitalActionSocket _thenActionSocket;
     
@@ -264,6 +267,34 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("IfThen_Long", _ifExpressionSocket.getName(), _thenActionSocket.getName());
+    }
+
+    public void setIfExpressionSocketSystemName(String systemName) {
+        _ifExpressionSocketSystemName = systemName;
+    }
+
+    public void setThenExpressionSocketSystemName(String systemName) {
+        _thenActionSocketSystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        try {
+            if ((!_ifExpressionSocket.isConnected()) && (_ifExpressionSocketSystemName != null)) {
+                _ifExpressionSocket.connect(
+                        InstanceManager.getDefault(DigitalActionManager.class)
+                                .getBeanBySystemName(_ifExpressionSocketSystemName));
+            }
+            if ((!_thenActionSocket.isConnected()) && (_thenActionSocketSystemName != null)) {
+                _thenActionSocket.connect(
+                        InstanceManager.getDefault(DigitalExpressionManager.class)
+                                .getBeanBySystemName(_thenActionSocketSystemName));
+            }
+        } catch (SocketAlreadyConnectedException ex) {
+            // This shouldn't happen and is a runtime error if it does.
+            throw new RuntimeException("socket is already connected");
+        }
     }
 
 }

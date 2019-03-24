@@ -123,7 +123,8 @@ public interface Base {
      * <P>
      * The following rules apply
      * <ul>
-     * <li>LogixNGs has no parent. The method throws an UnsupportedOperationException if called.</li>
+     * <li>ExecutionGroups has no parent. The method throws an UnsupportedOperationException if called.</li>
+     * <li>LogixNGs has the execution group as its parent.</li>
      * <li>Expressions and actions has the male socket that they are connected to as their parent.</li>
      * <li>Male sockets has the female socket that they are connected to as their parent.</li>
      * <li>The parent of a female sockets is the LogixNG, expression or action that
@@ -131,6 +132,7 @@ public interface Base {
      * <li>The parent of a male sockets is the same parent as the expression or
      * action that it contains.</li>
      * </ul>
+     * @param parent the parent of this object
      */
     public void setParent(Base parent);
     
@@ -190,6 +192,13 @@ public interface Base {
      */
     public void setLock(Lock lock);
 
+    /**
+     * Setup this object and its children.
+     * This method is used to lookup system names for child sockets, turnouts,
+     * sensors, and so on.
+     */
+    public void setup();
+    
     /**
      * Deactivate this object, so that it releases as many resources as possible
      * and no longer effects others.

@@ -1,6 +1,8 @@
 package jmri.jmrit.logixng.analog.expressions;
 
 import jmri.AnalogIO;
+import jmri.InstanceManager;
+import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -11,6 +13,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class GetAnalogIO extends AbstractAnalogExpression {
 
+    private String _analogIO_SystemName;
     private AnalogIO _analogIO;
     
     public GetAnalogIO(String sys) throws BadUserNameException,
@@ -84,6 +87,18 @@ public class GetAnalogIO extends AbstractAnalogExpression {
     @Override
     public String getLongDescription() {
         return getShortDescription();
+    }
+
+    public void setAnalogIO_SystemName(String analogIO_SystemName) {
+        _analogIO_SystemName = analogIO_SystemName;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        if ((_analogIO == null) && (_analogIO_SystemName != null)) {
+//            _analogIO = InstanceManager.getDefault(AnalogIOManager.class).getBeanBySystemName(_analogIO_SystemName);
+        }
     }
 
 }

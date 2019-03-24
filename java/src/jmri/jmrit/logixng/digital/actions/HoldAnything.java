@@ -15,6 +15,7 @@ import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * An action that can hold everything but doesn't do anything.
@@ -120,6 +121,21 @@ public class HoldAnything extends AbstractDigitalAction {
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("HoldAnything_Long");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+/*        
+        for (Many.ActionEntry ae : actionEntries) {
+            try {
+                ae._socket.connect(InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName));
+            } catch (SocketAlreadyConnectedException ex) {
+                // This shouldn't happen and is a runtime error if it does.
+                throw new RuntimeException("socket is already connected");
+            }
+        }
+*/
     }
 
     

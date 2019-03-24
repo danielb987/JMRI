@@ -10,6 +10,7 @@ import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * Evaluates to True if all the child expressions evaluate to true.
@@ -18,7 +19,8 @@ import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
  */
 public class And extends AbstractDigitalExpression implements FemaleSocketListener {
 
-    List<FemaleDigitalExpressionSocket> children = new ArrayList<>();
+    List<String> _childrenSystemNames;
+    List<FemaleDigitalExpressionSocket> _children = new ArrayList<>();
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
@@ -38,9 +40,21 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         super(sys, user);
         init();
     }
+    
+    public And(String sys, List<String> childrenSystemNames) throws BadSystemNameException {
+        super(sys);
+        _childrenSystemNames = childrenSystemNames;
+    }
+
+    public And(String sys, String user, List<String> childrenSystemNames)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+        _childrenSystemNames = childrenSystemNames;
+    }
 
     private void init() {
-        children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, this, getNewSocketName()));
+        _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleExpressionSocket(this, this, getNewSocketName()));
     }
 
     /** {@inheritDoc} */
@@ -59,7 +73,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     @Override
     public boolean evaluate() {
         boolean result = true;
-        for (DigitalExpression e : children) {
+        for (DigitalExpression e : _children) {
             if (! e.evaluate()) {
                 result = false;
             }
@@ -70,19 +84,19 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        for (DigitalExpression e : children) {
+        for (DigitalExpression e : _children) {
             e.reset();
         }
     }
     
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return children.get(index);
+        return _children.get(index);
     }
     
     @Override
     public int getChildCount() {
-        return children.size();
+        return _children.size();
     }
     
     @Override
@@ -98,20 +112,46 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
-        for (FemaleDigitalExpressionSocket child : children) {
+        for (FemaleDigitalExpressionSocket child : _children) {
             hasFreeSocket = !child.isConnected();
             if (hasFreeSocket) {
                 break;
             }
         }
         if (!hasFreeSocket) {
-            children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, this, getNewSocketName()));
+            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, this, getNewSocketName()));
         }
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        if (!_children.isEmpty()) {
+            throw new RuntimeException("expression system names cannot be set more than once");
+        }
+        
+        DigitalExpressionManager manager =
+                InstanceManager.getDefault(DigitalExpressionManager.class);
+        
+        for (String systemName : _childrenSystemNames) {
+            FemaleDigitalExpressionSocket femaleSocket =
+                    manager.createFemaleExpressionSocket(this, this, getNewSocketName());
+            
+            try {
+                femaleSocket.connect(manager.getBeanBySystemName(systemName));
+            } catch (SocketAlreadyConnectedException ex) {
+                // This shouldn't happen and is a runtime error if it does.
+                throw new RuntimeException("socket is already connected");
+            }
+        }
+        
+        // Add one extra empty socket
+        _children.add(manager.createFemaleExpressionSocket(this, this, getNewSocketName()));
     }
 
 }

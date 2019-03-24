@@ -237,12 +237,13 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     
     /** {@inheritDoc} */
     @Override
-    public void activateAllLogixNGs() {
+    public void setupAllLogixNGs() {
 //        jmri.configurexml.ConfigXmlManager a;
 //        jmri.managers.configurexml.AbstractSignalHeadManagerXml b;
 //        jmri.implementation.configurexml.SE8cSignalHeadXml c;
         for (LogixNG logixNG : _tsys.values()) {
             System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
+            logixNG.setup();
         }
 //        throw new UnsupportedOperationException("Not supported yet.");
         

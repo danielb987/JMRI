@@ -4,7 +4,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.digital.expressions.AbstractDigitalExpression;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalExpression;
-import jmri.jmrit.logixng.MaleSocket;
 
 /**
  * Adapter for expression plugins.
@@ -73,6 +72,12 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
     @Override
     public void dispose() {
         _pluginExpression.dispose();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        _pluginExpression.setup();
     }
 
 }

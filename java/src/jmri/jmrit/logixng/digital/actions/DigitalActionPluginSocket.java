@@ -73,4 +73,10 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
 //        return Bundle.getMessage("ActionPluginSocket_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        _actionPlugin.setup();
+    }
+
 }

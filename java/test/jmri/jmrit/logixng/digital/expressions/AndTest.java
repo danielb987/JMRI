@@ -15,7 +15,7 @@ public class AndTest {
 
     @Test
     public void testCtor() {
-        new And("IQA55:E321", null);
+        new And("IQA55:E321");
     }
     
     // The minimal setup for log4J

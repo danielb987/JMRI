@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import jmri.AnalogIO;
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.jmrit.logixng.AnalogActionManager;
-import jmri.jmrit.logixng.AnalogExpressionManager;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -18,6 +15,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class SetAnalogIO extends AbstractAnalogAction {
 
+    private String _analogIO_SystemName;
     private AnalogIO _analogIO;
     
     public SetAnalogIO(String sys) {
@@ -85,6 +83,19 @@ public class SetAnalogIO extends AbstractAnalogAction {
         return getShortDescription();
     }
 
+    public void setAnalogIO_SystemName(String analogIO_SystemName) {
+        _analogIO_SystemName = analogIO_SystemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        if ((_analogIO == null) && (_analogIO_SystemName != null)) {
+//            _analogIO = InstanceManager.getDefault(AnalogIOManager.class).getBeanBySystemName(_analogIO_SystemName);
+        }
+    }
+    
+    
     private final static Logger log = LoggerFactory.getLogger(SetAnalogIO.class);
 
 }

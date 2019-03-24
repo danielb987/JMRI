@@ -8,6 +8,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.implementation.DefaultLogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleSocket;
 
@@ -140,7 +141,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
             }
 
             // Create a new LogixNG but don't setup the initial tree.
-            LogixNG x = tm.createLogixNG(sysName, userName, false);
+            DefaultLogixNG x = (DefaultLogixNG)tm.createLogixNG(sysName, userName, false);
             if (x != null) {
                 // load common part
                 loadCommon(x, logixNGList.get(i));
@@ -152,6 +153,12 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
                     } else if (yesno.equals("no")) {  // NOI18N
                         x.setEnabled(false);
                     }
+                }
+                
+//                Element socketElement = logixNG_Element.getChild("socket");
+                Element socketSystemName = logixNG_Element.getChild("socket").getChild("systemName");
+                if (socketSystemName != null) {
+                    x.setSocketSystemName(socketSystemName.getTextTrim());
                 }
 /*                
                 // load conditionals, if there are any

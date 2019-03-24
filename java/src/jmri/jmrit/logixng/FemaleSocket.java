@@ -78,4 +78,12 @@ public interface FemaleSocket extends Base {
      */
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses();
     
+    /** {@inheritDoc} */
+    @Override
+    default public void setup() {
+        if (isConnected()) {
+            getConnectedSocket().setup();
+        }
+    }
+
 }

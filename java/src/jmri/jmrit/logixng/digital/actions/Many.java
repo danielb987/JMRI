@@ -7,10 +7,9 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
-import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * Execute many Actions in a specific order.
@@ -39,6 +38,17 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         super(sys, user);
         init();
     }
+
+    public Many(String sys, List<String> actionSystemNames) throws BadSystemNameException {
+        super(sys);
+        setActionSystemNames(actionSystemNames);
+    }
+
+    public Many(String sys, String user, List<String> actionSystemNames)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+        setActionSystemNames(actionSystemNames);
+    }
     
     private void init() {
         actionEntries
@@ -63,8 +73,8 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     public boolean executeStart() {
         boolean state = false;
         for (ActionEntry actionEntry : actionEntries) {
-            actionEntry.status = actionEntry.socket.executeStart();
-            state |= actionEntry.status;
+            actionEntry._status = actionEntry._socket.executeStart();
+            state |= actionEntry._status;
         }
         return state;
     }
@@ -74,8 +84,8 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     public boolean executeRestart() {
         boolean state = false;
         for (ActionEntry actionEntry : actionEntries) {
-            actionEntry.status = actionEntry.socket.executeRestart();
-            state |= actionEntry.status;
+            actionEntry._status = actionEntry._socket.executeRestart();
+            state |= actionEntry._status;
         }
         return state;
     }
@@ -85,9 +95,9 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     public boolean executeContinue() {
         boolean state = false;
         for (ActionEntry actionEntry : actionEntries) {
-            if (actionEntry.status) {
-                actionEntry.status = actionEntry.socket.executeContinue();
-                state |= actionEntry.status;
+            if (actionEntry._status) {
+                actionEntry._status = actionEntry._socket.executeContinue();
+                state |= actionEntry._status;
             }
         }
         return state;
@@ -97,14 +107,14 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     @Override
     public void abort() {
         for (ActionEntry actionEntry : actionEntries) {
-            actionEntry.socket.abort();
-            actionEntry.status = false;
+            actionEntry._socket.abort();
+            actionEntry._status = false;
         }
     }
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return actionEntries.get(index).socket;
+        return actionEntries.get(index)._socket;
     }
 
     @Override
@@ -116,7 +126,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
         for (ActionEntry actionEntry : actionEntries) {
-            hasFreeSocket = !actionEntry.socket.isConnected();
+            hasFreeSocket = !actionEntry._socket.isConnected();
             if (hasFreeSocket) {
                 break;
             }
@@ -141,14 +151,47 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         return Bundle.getMessage("Many_Long");
     }
 
+    private void setActionSystemNames(List<String> systemNames) {
+        if (!actionEntries.isEmpty()) {
+            throw new RuntimeException("action system names cannot be set more than once");
+        }
+        
+        for (String systemName : systemNames) {
+            FemaleDigitalActionSocket socket =
+                    InstanceManager.getDefault(DigitalActionManager.class)
+                            .createFemaleActionSocket(this, this, getNewSocketName());
+            
+            actionEntries.add(new ActionEntry(socket, systemName));
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        for (ActionEntry ae : actionEntries) {
+            try {
+                ae._socket.connect(InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName));
+            } catch (SocketAlreadyConnectedException ex) {
+                // This shouldn't happen and is a runtime error if it does.
+                throw new RuntimeException("socket is already connected");
+            }
+        }
+    }
+
 
 //    /* This class is public since ActionManyXml needs to access it. */
     private static class ActionEntry {
-        private final FemaleDigitalActionSocket socket;
-        private boolean status;
+        private String _socketSystemName;
+        private final FemaleDigitalActionSocket _socket;
+        private boolean _status;
+        
+        private ActionEntry(FemaleDigitalActionSocket socket, String socketSystemName) {
+            _socketSystemName = socketSystemName;
+            _socket = socket;
+        }
         
         private ActionEntry(FemaleDigitalActionSocket socket) {
-            this.socket = socket;
+            this._socket = socket;
         }
         
 //        public DigitalAction getAction() {

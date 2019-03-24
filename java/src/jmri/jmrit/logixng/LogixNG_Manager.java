@@ -88,10 +88,10 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
     public void resolveAllTrees();
 
     /**
-     * Activate all LogixNGs that are not currently active. This method is
-     * called after a configuration file is loaded.
+     * Setup all LogixNGs. This method is called after a configuration file is
+     * loaded.
      */
-    public void activateAllLogixNGs();
+    public void setupAllLogixNGs();
 
     /**
      * Delete LogixNG by removing it from the manager. The LogixNG must first

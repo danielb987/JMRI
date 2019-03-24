@@ -10,6 +10,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * Executes an analog action with the result of an analog expression.
@@ -20,6 +21,8 @@ public class DoAnalogAction
         extends AbstractDigitalAction
         implements FemaleSocketListener {
 
+    private String _analogExpressionSocketSystemName;
+    private String _analogActionSocketSystemName;
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
     private final FemaleAnalogActionSocket _analogActionSocket;
     
@@ -142,6 +145,34 @@ public class DoAnalogAction
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("ActionDoAnalogAction", _analogExpressionSocket.getName(), _analogActionSocket.getName());
+    }
+
+    public void setAnalogActionSocketSystemName(String systemName) {
+        _analogActionSocketSystemName = systemName;
+    }
+
+    public void setAnalogExpressionSocketSystemName(String systemName) {
+        _analogExpressionSocketSystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        try {
+            if ((!_analogActionSocket.isConnected()) && (_analogActionSocketSystemName != null)) {
+                _analogActionSocket.connect(
+                        InstanceManager.getDefault(AnalogActionManager.class)
+                                .getBeanBySystemName(_analogActionSocketSystemName));
+            }
+            if ((!_analogExpressionSocket.isConnected()) && (_analogExpressionSocketSystemName != null)) {
+                _analogExpressionSocket.connect(
+                        InstanceManager.getDefault(AnalogExpressionManager.class)
+                                .getBeanBySystemName(_analogExpressionSocketSystemName));
+            }
+        } catch (SocketAlreadyConnectedException ex) {
+            // This shouldn't happen and is a runtime error if it does.
+            throw new RuntimeException("socket is already connected");
+        }
     }
 
 }

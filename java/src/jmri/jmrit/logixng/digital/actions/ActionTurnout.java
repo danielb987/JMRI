@@ -15,6 +15,7 @@ import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
  */
 public class ActionTurnout extends AbstractDigitalAction {
 
+    private String _turnoutSystemName;
     private NamedBeanHandle _turnout;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
@@ -124,6 +125,19 @@ public class ActionTurnout extends AbstractDigitalAction {
             turnoutName = Bundle.getMessage("BeanNotSelected");
         }
         return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
+    }
+    
+    public void setTurnout_SystemName(String turnoutSystemName) {
+        _turnoutSystemName = turnoutSystemName;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        if ((_turnout == null) && (_turnoutSystemName != null)) {
+            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
+            _turnout = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+        }
     }
     
     

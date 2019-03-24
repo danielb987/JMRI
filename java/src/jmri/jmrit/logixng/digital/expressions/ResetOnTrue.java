@@ -26,6 +26,8 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private String _primaryExpressionSocketSystemName;
+    private String _secondaryExpressionSocketSystemName;
     private final FemaleDigitalExpressionSocket _primaryExpressionSocket;
     private final FemaleDigitalExpressionSocket _secondaryExpressionSocket;
     private boolean _lastMainResult = false;
@@ -105,6 +107,34 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     @Override
     public void disconnected(FemaleSocket socket) {
         // This class doesn't care.
+    }
+
+    public void setPrimaryExpressionSocketSystemName(String systemName) {
+        _primaryExpressionSocketSystemName = systemName;
+    }
+
+    public void setSecondaryExpressionSocketSystemName(String systemName) {
+        _secondaryExpressionSocketSystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        try {
+            if ((!_primaryExpressionSocket.isConnected()) && (_primaryExpressionSocketSystemName != null)) {
+                _primaryExpressionSocket.connect(
+                        InstanceManager.getDefault(DigitalExpressionManager.class)
+                                .getBeanBySystemName(_primaryExpressionSocketSystemName));
+            }
+            if ((!_secondaryExpressionSocket.isConnected()) && (_secondaryExpressionSocketSystemName != null)) {
+                _secondaryExpressionSocket.connect(
+                        InstanceManager.getDefault(DigitalExpressionManager.class)
+                                .getBeanBySystemName(_secondaryExpressionSocketSystemName));
+            }
+        } catch (SocketAlreadyConnectedException ex) {
+            // This shouldn't happen and is a runtime error if it does.
+            throw new RuntimeException("socket is already connected");
+        }
     }
 
 }

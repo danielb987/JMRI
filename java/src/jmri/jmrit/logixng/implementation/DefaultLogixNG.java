@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.implementation;
 
 import static jmri.NamedBean.UNKNOWN;
 
-import java.util.SortedSet;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
@@ -13,12 +12,11 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
  * The default implementation of LogixNG.
@@ -29,13 +27,24 @@ public final class DefaultLogixNG extends AbstractNamedBean
         implements LogixNG, FemaleSocketListener {
     
     private Base _parent = null;
+    private String _socketSystemName = null;
     private final FemaleDigitalActionSocket _femaleActionSocket;
     private boolean _enabled = false;
     private boolean _userEnabled = false;
     
+    public DefaultLogixNG(String sys) throws BadUserNameException, BadSystemNameException  {
+        super(sys);
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+    }
+    
     public DefaultLogixNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
         _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+    }
+    
+    public DefaultLogixNG(String sys, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
+        super(sys);
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
     }
     
     public DefaultLogixNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
@@ -175,6 +184,29 @@ public final class DefaultLogixNG extends AbstractNamedBean
     @Override
     public void setLock(Lock lock) {
         throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public void setSocketSystemName(String systemName) {
+        _socketSystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    final public void setup() {
+        if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
+            try {
+                MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);
+                _femaleActionSocket.connect(maleSocket);
+                maleSocket.setup();
+            } catch (SocketAlreadyConnectedException ex) {
+                // This shouldn't happen and is a runtime error if it does.
+                throw new RuntimeException("socket is already connected");
+            }
+        }
+        
+        if (_femaleActionSocket != null) {
+            _femaleActionSocket.setup();
+        }
     }
 
     /** {@inheritDoc} */

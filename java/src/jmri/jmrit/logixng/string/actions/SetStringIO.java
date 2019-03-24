@@ -2,10 +2,12 @@ package jmri.jmrit.logixng.string.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.InstanceManager;
 import jmri.StringIO;
 import jmri.JmriException;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.StringActionManager;
 
 /**
  * Sets an AnalogIO.
@@ -14,6 +16,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class SetStringIO extends AbstractStringAction {
 
+    private String _stringIO_SystemName;
     private StringIO _stringIO;
     
     public SetStringIO(String sys) {
@@ -81,6 +84,18 @@ public class SetStringIO extends AbstractStringAction {
     @Override
     public String getLongDescription() {
         return getShortDescription();
+    }
+
+    public void setStringIO_SystemName(String stringIO_SystemName) {
+        _stringIO_SystemName = stringIO_SystemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        if ((_stringIO == null) && (_stringIO_SystemName != null)) {
+//            _stringIO = InstanceManager.getDefault(StringIOManager.class).getBeanBySystemName(_stringIO_SystemName);
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(SetStringIO.class);

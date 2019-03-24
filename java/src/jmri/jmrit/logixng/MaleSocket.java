@@ -59,4 +59,10 @@ public interface MaleSocket extends Base {
      */
     public Base getObject();
 
+    /** {@inheritDoc} */
+    @Override
+    default public void setup() {
+        getObject().setup();
+    }
+
 }

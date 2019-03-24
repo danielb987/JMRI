@@ -21,6 +21,7 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class TriggerOnce extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private String _childExpressionSystemName;
     private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
@@ -91,6 +92,25 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     @Override
     public String getLongDescription() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void setAnalogActionSocketSystemName(String systemName) {
+        _childExpressionSystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setup() {
+        try {
+            if ((!_childExpression.isConnected()) && (_childExpressionSystemName != null)) {
+                _childExpression.connect(
+                        InstanceManager.getDefault(DigitalExpressionManager.class)
+                                .getBeanBySystemName(_childExpressionSystemName));
+            }
+        } catch (SocketAlreadyConnectedException ex) {
+            // This shouldn't happen and is a runtime error if it does.
+            throw new RuntimeException("socket is already connected");
+        }
     }
 
 }
