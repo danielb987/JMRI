@@ -123,19 +123,33 @@ public class HoldAnything extends AbstractDigitalAction {
         return Bundle.getMessage("HoldAnything_Long");
     }
 
+    public void setInitialSystemNames(String factoryClass, List<String> systemNames) {
+        for (MultipleSockets m : _multipleSockets) {
+            if (factoryClass.equals(m._femaleSocketFactory.getClass().getName())) {
+                m._systemNames = systemNames;
+            }
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {
-/*        
-        for (Many.ActionEntry ae : actionEntries) {
-            try {
-                ae._socket.connect(InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName));
-            } catch (SocketAlreadyConnectedException ex) {
-                // This shouldn't happen and is a runtime error if it does.
-                throw new RuntimeException("socket is already connected");
+        for (MultipleSockets m : _multipleSockets) {
+            if (m._systemNames != null) {
+                m._femaleSockets.clear();
+                
+                for (String systemName : m._systemNames) {
+                    FemaleSocket socket = m._femaleSocketFactory.create();
+                    m._femaleSockets.add(socket);
+                    try {
+                        socket.connect(m._femaleSocketFactory.getBeanBySystemName(systemName));
+                    } catch (SocketAlreadyConnectedException ex) {
+                        // This shouldn't happen and is a runtime error if it does.
+                        throw new RuntimeException("socket is already connected");
+                    }
+                }
             }
         }
-*/
     }
 
     
@@ -145,6 +159,7 @@ public class HoldAnything extends AbstractDigitalAction {
     private class MultipleSockets implements MaleSocket, FemaleSocketListener {
 
         private final FemaleSocketFactory _femaleSocketFactory;
+        private List<String> _systemNames;
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
         private Lock _lock = Lock.NONE;
         private DebugConfig _debugConfig = null;
