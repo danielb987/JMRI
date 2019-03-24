@@ -25,7 +25,7 @@
             "
         >
 
-    <xs:complexType name="LogixNG_DigitalAction_IfThenType">
+    <xs:complexType name="LogixNG_DigitalAction_TurnoutType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionHoldAnything class.
@@ -36,22 +36,36 @@
       </xs:annotation>
         
             <xs:sequence>
+
               <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
               <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
               <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element name="ifSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="thenSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="turnout" type="beanNameType" minOccurs="0" maxOccurs="1"/>
+
+              <xs:element name="is_isNot" minOccurs="1" maxOccurs="1">
+                <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                    <xs:enumeration value="IS"/>
+                    <xs:enumeration value="IS_NOT"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+
+              <xs:element name="turnoutState" minOccurs="1" maxOccurs="1">
+                <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                    <xs:enumeration value="CLOSED"/>
+                    <xs:enumeration value="THROWN"/>
+                    <xs:enumeration value="OTHER"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+
+              <xs:element name="enabled" type="yesNoType" />
+
             </xs:sequence>
-            <xs:attribute name="type" use="required">
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="TRIGGER_ACTION"/>
-                  <xs:enumeration value="CONTINOUS_ACTION"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:attribute>
-            <xs:attribute name="enabled" type="yesNoType" />
-            <xs:attribute name="class" type="classType" use="required"/>
+            
+			<xs:attribute name="class" type="classType" use="required"/>
         
     </xs:complexType>
 

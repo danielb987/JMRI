@@ -13,8 +13,7 @@
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
 
-<!-- This file contains definitions for LogixNG, Expressions and Actions,  -->
-<!-- since they are so intimately coupled -->
+<!-- This file contains definitions for LogixNG                             -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:xsi ="http://www.w3.org/2001/XMLSchema-instance"
@@ -32,7 +31,7 @@
           Define the XML stucture for storing the contents of a ActionHoldAnything class.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.actions.configurexml.ActionMany</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.digital.expressions.configurexml.And</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
 

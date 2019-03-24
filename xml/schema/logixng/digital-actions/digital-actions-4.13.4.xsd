@@ -28,6 +28,7 @@
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/hold-anything-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/if-then-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/many-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/turnout-4.13.4.xsd"/>
 
     <xs:complexType name="LogixNG_DigitalActionManagerType">
       <xs:annotation>
@@ -42,70 +43,12 @@
         
         <!-- Permit any of these tags in any order in any number -->
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="hold-anything"  type="LogixNG_ActionHoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="if-then"        type="LogixNG_ActionIfThenType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="many"          type="LogixNG_ActionManyType" minOccurs="0" maxOccurs="unbounded" />
-<!--
-            <xs:element name="actionMany" minOccurs="0" maxOccurs="unbounded">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
-                  <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
-                  <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-                  <xs:element name="actions" minOccurs="1" maxOccurs="1">
-                    <xs:complexType>
-                      <xs:sequence>
-                        <xs:element name="socketName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        <xs:element name="systemName" type="systemNameType" minOccurs="0" maxOccurs="unbounded"/>
-                      </xs:sequence>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-                <xs:attribute name="enabled" type="yesNoType" />
-                <xs:attribute name="class" type="classType" use="required"/>
-              </xs:complexType>
-            </xs:element>
             
-            <xs:element name="actionHoldAnything" minOccurs="0" maxOccurs="unbounded">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
-                  <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
-                  <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-                  <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                      <xs:attribute name="socketClass" type="systemNameType" use="required" />
-                      <xs:attribute name="systemName" type="systemNameType" use="required" />
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-                <xs:attribute name="enabled" type="yesNoType" />
-                <xs:attribute name="class" type="classType" use="required"/>
-              </xs:complexType>
-            </xs:element>
+            <xs:element name="hold-anything"   type="LogixNG_DigitalAction_HoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="if-then"         type="LogixNG_DigitalAction_IfThenType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="many"            type="LogixNG_DigitalAction_ManyType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="action-turnout"  type="LogixNG_DigitalAction_TurnoutType" minOccurs="0" maxOccurs="unbounded" />
             
-            <xs:element name="actionIfThen" minOccurs="0" maxOccurs="unbounded">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
-                  <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
-                  <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-                  <xs:element name="ifSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
-                  <xs:element name="thenSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
-                </xs:sequence>
-                <xs:attribute name="type" use="required">
-                  <xs:simpleType>
-                    <xs:restriction base="xs:token">
-                      <xs:enumeration value="TRIGGER_ACTION"/>
-                      <xs:enumeration value="CONTINOUS_ACTION"/>
-                    </xs:restriction>
-                  </xs:simpleType>
-                </xs:attribute>
-                <xs:attribute name="enabled" type="yesNoType" />
-                <xs:attribute name="class" type="classType" use="required"/>
-              </xs:complexType>
-            </xs:element>
--->
           </xs:choice>
       </xs:sequence>
       <xs:attribute name="class" type="classType" use="required"/>
