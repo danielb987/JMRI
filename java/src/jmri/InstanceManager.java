@@ -631,6 +631,7 @@ public final class InstanceManager {
         TurnoutManager apm = getDefault(TurnoutManager.class);
         if (apm instanceof jmri.managers.AbstractProxyManager<?>) { // <?> due to type erasure
             ((jmri.managers.AbstractProxyManager<Turnout>) apm).addManager(p);
+            ((jmri.managers.AbstractProxyManager<DigitalIO>) apm).addManager(p);
         } else {
             log.error("Incorrect setup: TurnoutManager default isn't an AbstractProxyManager<Turnout>");
         }
