@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -9,7 +10,10 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Execute many Actions in a specific order.
@@ -39,12 +43,12 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         init();
     }
 
-    public Many(String sys, List<String> actionSystemNames) throws BadSystemNameException {
+    public Many(String sys, List<Map.Entry<String, String>> actionSystemNames) throws BadSystemNameException {
         super(sys);
         setActionSystemNames(actionSystemNames);
     }
 
-    public Many(String sys, String user, List<String> actionSystemNames)
+    public Many(String sys, String user, List<Map.Entry<String, String>> actionSystemNames)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         setActionSystemNames(actionSystemNames);
@@ -151,29 +155,41 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         return Bundle.getMessage("Many_Long");
     }
 
-    private void setActionSystemNames(List<String> systemNames) {
+    private void setActionSystemNames(List<Map.Entry<String, String>> systemNames) {
         if (!actionEntries.isEmpty()) {
             throw new RuntimeException("action system names cannot be set more than once");
         }
         
-        for (String systemName : systemNames) {
+        for (Map.Entry<String, String> entry : systemNames) {
+//            System.out.format("Many: systemName: %s%n", entry);
+            System.err.format("AAA Many: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalActionSocket socket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .createFemaleActionSocket(this, this, getNewSocketName());
+                            .createFemaleActionSocket(this, this, entry.getKey());
             
-            actionEntries.add(new ActionEntry(socket, systemName));
+            actionEntries.add(new ActionEntry(socket, entry.getValue()));
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        System.err.format("AAAA setup()%n");
         for (ActionEntry ae : actionEntries) {
-            try {
-                ae._socket.connect(InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName));
-            } catch (SocketAlreadyConnectedException ex) {
-                // This shouldn't happen and is a runtime error if it does.
-                throw new RuntimeException("socket is already connected");
+            if (ae._socketSystemName != null) {
+                System.err.format("AA SocketName: %s, SystemName: %s%n", ae._socket.getName(), ae._socketSystemName);
+                try {
+                    MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName);
+                    if (maleSocket != null) {
+                        ae._socket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital action " + ae._socketSystemName);
+                    }
+                } catch (SocketAlreadyConnectedException ex) {
+                    // This shouldn't happen and is a runtime error if it does.
+                    throw new RuntimeException("socket is already connected");
+                }
             }
         }
     }
@@ -199,5 +215,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
 //        }
         
     }
+
+    private final static Logger log = LoggerFactory.getLogger(Many.class);
 
 }

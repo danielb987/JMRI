@@ -242,7 +242,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
 //        jmri.managers.configurexml.AbstractSignalHeadManagerXml b;
 //        jmri.implementation.configurexml.SE8cSignalHeadXml c;
         for (LogixNG logixNG : _tsys.values()) {
-            System.out.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
+            System.err.format("LogixNG loaded: %s, %s%n", logixNG.getSystemName(), logixNG.getUserName());
             logixNG.setup();
         }
 //        throw new UnsupportedOperationException("Not supported yet.");

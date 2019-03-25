@@ -96,9 +96,9 @@ public class GetAnalogIO extends AbstractAnalogExpression {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_analogIO == null) && (_analogIO_SystemName != null)) {
+//        if ((_analogIO == null) && (_analogIO_SystemName != null)) {
 //            _analogIO = InstanceManager.getDefault(AnalogIOManager.class).getBeanBySystemName(_analogIO_SystemName);
-        }
+//        }
     }
 
 }

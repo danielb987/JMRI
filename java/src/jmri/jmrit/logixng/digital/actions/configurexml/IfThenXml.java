@@ -110,7 +110,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalAction h;
+        IfThen h;
         if (uname == null) {
             h = new IfThen(sys, IfThen.Type.TRIGGER_ACTION);
         } else {
@@ -119,6 +119,15 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
 
         loadCommon(h, shared);
 
+        Element ifSystemNameElement = shared.getChild("ifSystemName");
+        if (ifSystemNameElement != null) {
+            h.setIfExpressionSocketSystemName(ifSystemNameElement.getTextTrim());
+        }
+        Element thenSystemNameElement = shared.getChild("thenSystemName");
+        if (thenSystemNameElement != null) {
+            h.setThenActionSocketSystemName(thenSystemNameElement.getTextTrim());
+        }
+        
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
         return true;
     }

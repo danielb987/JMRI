@@ -11,7 +11,10 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes an action when the expression is True.
@@ -273,7 +276,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         _ifExpressionSocketSystemName = systemName;
     }
 
-    public void setThenExpressionSocketSystemName(String systemName) {
+    public void setThenActionSocketSystemName(String systemName) {
         _thenActionSocketSystemName = systemName;
     }
 
@@ -282,19 +285,31 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     public void setup() {
         try {
             if ((!_ifExpressionSocket.isConnected()) && (_ifExpressionSocketSystemName != null)) {
-                _ifExpressionSocket.connect(
-                        InstanceManager.getDefault(DigitalActionManager.class)
-                                .getBeanBySystemName(_ifExpressionSocketSystemName));
+                MaleSocket maleSocket =
+                        InstanceManager.getDefault(DigitalExpressionManager.class)
+                                .getBeanBySystemName(_ifExpressionSocketSystemName);
+                if (maleSocket != null) {
+                    _ifExpressionSocket.connect(maleSocket);
+                } else {
+                    log.error("cannot load digital expression " + _ifExpressionSocketSystemName);
+                }
             }
             if ((!_thenActionSocket.isConnected()) && (_thenActionSocketSystemName != null)) {
-                _thenActionSocket.connect(
-                        InstanceManager.getDefault(DigitalExpressionManager.class)
-                                .getBeanBySystemName(_thenActionSocketSystemName));
+                MaleSocket maleSocket =
+                        InstanceManager.getDefault(DigitalActionManager.class)
+                                .getBeanBySystemName(_thenActionSocketSystemName);
+                if (maleSocket != null) {
+                    _thenActionSocket.connect(maleSocket);
+                } else {
+                    log.error("cannot load digital action " + _thenActionSocketSystemName);
+                }
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
             throw new RuntimeException("socket is already connected");
         }
     }
+
+    private final static Logger log = LoggerFactory.getLogger(IfThen.class);
 
 }

@@ -196,16 +196,16 @@ public final class DefaultLogixNG extends AbstractNamedBean
         if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
             try {
                 MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);
-                _femaleActionSocket.connect(maleSocket);
-                maleSocket.setup();
+                if (maleSocket != null) {
+                    _femaleActionSocket.connect(maleSocket);
+                    maleSocket.setup();
+                } else {
+                    log.error("digital action is not found: " + _socketSystemName);
+                }
             } catch (SocketAlreadyConnectedException ex) {
                 // This shouldn't happen and is a runtime error if it does.
                 throw new RuntimeException("socket is already connected");
             }
-        }
-        
-        if (_femaleActionSocket != null) {
-            _femaleActionSocket.setup();
         }
     }
 

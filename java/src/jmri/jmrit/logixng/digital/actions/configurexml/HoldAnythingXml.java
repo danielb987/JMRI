@@ -45,15 +45,17 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
         }
 
         for (int i=0; i < p.getChildCount(); i++) {
-            try {
+//            try {
 //                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
-                Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(p.getChild(i).getConnectedSocket());
-                if (e != null) {
-                    element.addContent(e);
+                if (p.getChild(i).isConnected()) {
+//                    Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(p.getChild(i).getConnectedSocket());
+//                    if (e != null) {
+//                        element.addContent(e);
+//                    }
                 }
-            } catch (Exception e) {
-                log.error("Error storing action: {}", e, e);
-            }
+//            } catch (Exception e) {
+//                log.error("Error storing action: {}", e, e);
+//            }
         }
         
         storeCommon(p, element);

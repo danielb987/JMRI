@@ -1,7 +1,10 @@
 package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
@@ -118,19 +121,34 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
         NamedBeanHandle<Turnout> low = loadTurnout(l.get(0));
         NamedBeanHandle<Turnout> high = loadTurnout(l.get(1));
 */        
+        List<Map.Entry<String, String>> actionSystemNames = new ArrayList<>();
+        
+        Element actionElement = shared.getChild("actions");
+        for (Element socketElement : actionElement.getChildren()) {
+            String socketName = socketElement.getChild("socketName").getTextTrim();
+            Element systemNameElement = socketElement.getChild("systemName");
+            String systemName = null;
+            if (systemNameElement != null) {
+                systemName = systemNameElement.getTextTrim();
+            }
+            actionSystemNames.add(new AbstractMap.SimpleEntry<>(socketName, systemName));
+        }
+        
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         DigitalAction h;
         if (uname == null) {
-            h = new Many(sys);
+            h = new Many(sys, actionSystemNames);
         } else {
-            h = new Many(sys, uname);
+            h = new Many(sys, uname, actionSystemNames);
         }
 
         loadCommon(h, shared);
 
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
+        
+        log.error("Register action: " + h.getSystemName() + ", " + h.getLongDescription());
         return true;
     }
 /*
@@ -175,4 +193,5 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
     }
 
     private final static Logger log = LoggerFactory.getLogger(ManyXml.class);
+
 }

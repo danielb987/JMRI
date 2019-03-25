@@ -25,6 +25,9 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
      */
     @Override
     public Element store(Object o) {
+        if (1==1)
+            throw new RuntimeException("Daniel");
+        
         ActionTurnout p = (ActionTurnout) o;
 
         Element element = new Element("action-turnout");

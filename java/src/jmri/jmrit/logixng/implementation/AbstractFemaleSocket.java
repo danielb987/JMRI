@@ -67,6 +67,10 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     /** {@inheritDoc} */
     @Override
     public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
+        if (socket == null) {
+            throw new NullPointerException("socket cannot be null");
+        }
+        
         if (_socket != null) {
             throw new SocketAlreadyConnectedException("Socket is already connected");
         }

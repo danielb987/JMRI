@@ -1,19 +1,23 @@
 package jmri.jmrit.logixng.digital.implementation.configurexml;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
+import jmri.configurexml.JmriConfigureXmlException;
+import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.implementation.DefaultDigitalActionManager;
-import jmri.util.Log4JUtil;
-import jmri.util.ThreadingUtil;
+import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalAction;
-import jmri.jmrit.logixng.DigitalActionManager;
 
 /**
  * Provides the functionality for configuring ActionManagers
@@ -23,6 +27,8 @@ import jmri.jmrit.logixng.DigitalActionManager;
  */
 public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
+    private final Map<String, Class<?>> xmlClasses = new HashMap<>();
+    
     public DefaultDigitalActionManagerXml() {
     }
 
@@ -46,6 +52,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
         if (tm != null) {
             for (DigitalAction action : tm.getNamedBeanSet()) {
                 log.debug("action system name is " + action.getSystemName());  // NOI18N
+                log.error("action system name is " + action.getSystemName() + ", " + action.getLongDescription());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getAction(action));
                     if (e != null) {
@@ -100,15 +107,54 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
      * @param actions Element containing the DigitalAction elements to load.
      */
     public void loadActions(Element actions) {
-/*        
-        List<Element> actionList = actions.getChildren("action");  // NOI18N
+        
+//        List<Element> actionList = actions.getChildren("logixngDigitalActions");  // NOI18N
+        List<Element> actionList = actions.getChildren();  // NOI18N
         if (log.isDebugEnabled()) {
             log.debug("Found " + actionList.size() + " actions");  // NOI18N
         }
-        DigitalActionManager tm = InstanceManager.getDefault(jmri.DigitalActionManager.class);
+        DigitalActionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class);
 
         for (int i = 0; i < actionList.size(); i++) {
-
+//            if (1==1)
+//                throw new RuntimeException("Daniel");
+            
+            String className = actionList.get(i).getAttribute("class").getValue();
+            log.error("className: " + className);
+            
+            Class<?> clazz = xmlClasses.get(className);
+            
+            if (clazz == null) {
+                try {
+                    clazz = Class.forName(className);
+                    xmlClasses.put(className, clazz);
+                } catch (ClassNotFoundException ex) {
+                    log.error("cannot load class " + className, ex);
+                }
+            }
+            
+            if (clazz != null) {
+                Constructor<?> c = null;
+                try {
+                    c = clazz.getConstructor();
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    log.error("cannot create constructor", ex);
+                }
+                
+                if (c != null) {
+                    try {
+                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        
+                        o.load(actionList.get(i), null);
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        log.error("cannot create object", ex);
+                    } catch (JmriConfigureXmlException ex) {
+                        log.error("cannot load action", ex);
+                    }
+                }
+            }
+        }
+/*
             String sysName = getSystemName(actionList.get(i));
             if (sysName == null) {
                 log.warn("unexpected null in systemName " + actionList.get(i));  // NOI18N
@@ -121,11 +167,12 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
             if (actionList.get(i).getAttribute("enabled") != null) {  // NOI18N
                 yesno = actionList.get(i).getAttribute("enabled").getValue();  // NOI18N
             }
-            if (log.isDebugEnabled()) {
-                log.debug("create action: (" + sysName + ")("  // NOI18N
+//            if (log.isDebugEnabled()) {
+                log.error("create action: (" + sysName + ")("  // NOI18N
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-            }
-
+//            }
+        }
+/*
             DigitalAction x = tm.createNewAction(sysName, userName);
             if (x != null) {
                 // load common part
@@ -165,9 +212,9 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
     }
 
     /**
-     * Replace the current DigitalActionManager, if there is one, with one newly created
- during a load operation. This is skipped if they are of the same absolute
-     * type.
+     * Replace the current DigitalActionManager, if there is one, with one newly
+     * created during a load operation. This is skipped if they are of the same
+     * absolute type.
      */
     protected void replaceActionManager() {
         if (InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getClass().getName()

@@ -93,9 +93,9 @@ public class SetStringIO extends AbstractStringAction {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_stringIO == null) && (_stringIO_SystemName != null)) {
+//        if ((_stringIO == null) && (_stringIO_SystemName != null)) {
 //            _stringIO = InstanceManager.getDefault(StringIOManager.class).getBeanBySystemName(_stringIO_SystemName);
-        }
+//        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(SetStringIO.class);
