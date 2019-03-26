@@ -823,14 +823,14 @@ public class JUnitUtil {
     public static void initAnalogExpressionManager() {
         AnalogExpressionManager m = new DefaultAnalogExpressionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGEXPRESSIONS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOG_EXPRESSIONS);
         }
     }
 
     public static void initAnalogActionManager() {
         AnalogActionManager m = new DefaultAnalogActionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOGACTIONS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOG_ACTIONS);
         }
     }
 
@@ -844,21 +844,21 @@ public class JUnitUtil {
     public static void initDigitalActionManager() {
         DigitalActionManager m = new DefaultDigitalActionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ACTIONS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.DIGITAL_ACTIONS);
         }
     }
 
     public static void initStringExpressionManager() {
         StringExpressionManager m = new DefaultStringExpressionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRINGEXPRESSIONS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRING_EXPRESSIONS);
         }
     }
 
     public static void initStringActionManager() {
         StringActionManager m = new DefaultStringActionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRINGACTIONS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRING_ACTIONS);
         }
     }
 

@@ -182,7 +182,11 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
 
     @Override
     public String getNewSystemName(LogixNG logixNG) {
-        int nextAutoLogixNGRef = lastAutoExpressionRefMap.get(logixNG) + 1;
+        Integer lastAutoLogixNGRef = lastAutoExpressionRefMap.get(logixNG);
+        if (lastAutoLogixNGRef == null) {
+            lastAutoLogixNGRef = 0;
+        }
+        int nextAutoLogixNGRef = lastAutoLogixNGRef + 1;
         StringBuilder b = new StringBuilder(logixNG.getSystemName());
         b.append(":DEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
