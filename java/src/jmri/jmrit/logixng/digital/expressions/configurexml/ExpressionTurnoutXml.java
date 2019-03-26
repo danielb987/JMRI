@@ -1,10 +1,11 @@
-package jmri.jmrit.logixng.digital.actions.configurexml;
+package jmri.jmrit.logixng.digital.expressions.configurexml;
 
+import jmri.jmrit.logixng.digital.expressions.configurexml.*;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.logixng.DigitalAction;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.digital.actions.ActionTurnout;
+import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,9 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public ActionTurnoutXml() {
+    public ExpressionTurnoutXml() {
     }
     
     /**
@@ -25,12 +26,12 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
      */
     @Override
     public Element store(Object o) {
-        if (1==1)
+        if (1==0)
             throw new RuntimeException("Daniel");
         
-        ActionTurnout p = (ActionTurnout) o;
+        ExpressionTurnout p = (ExpressionTurnout) o;
 
-        Element element = new Element("action-turnout");
+        Element element = new Element("expression-turnout");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
         if (p.getUserName() != null) {
@@ -41,7 +42,7 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
         if (turnout != null) {
             element.addContent(new Element("turnout").addContent(turnout.getName()));
         }
-//        element.addContent(new Element("is_isNot").addContent(p.get_Is_IsNot().name()));
+        element.addContent(new Element("is_isNot").addContent(p.get_Is_IsNot().name()));
         element.addContent(new Element("turnoutState").addContent(p.getTurnoutState().name()));
         
         if (p.isUserEnabled()) {
@@ -88,19 +89,16 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalAction h;
+        DigitalExpression h;
         if (uname == null) {
-            h = new ActionTurnout(sys);
+            h = new ExpressionTurnout(sys);
         } else {
-            h = new ActionTurnout(sys, uname);
+            h = new ExpressionTurnout(sys, uname);
         }
 
         loadCommon(h, shared);
 
-        // this.checkedNamedBeanReference()
-        // <T extends NamedBean> T checkedNamedBeanReference(String name, @Nonnull T type, @Nonnull Manager<T> m) {
-
-        InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
+        InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;
     }
     
@@ -109,5 +107,5 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ActionTurnoutXml.class);
+    private final static Logger log = LoggerFactory.getLogger(ExpressionTurnoutXml.class);
 }

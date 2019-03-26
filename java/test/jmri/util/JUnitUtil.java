@@ -837,7 +837,7 @@ public class JUnitUtil {
     public static void initDigitalExpressionManager() {
         DigitalExpressionManager m = new DefaultDigitalExpressionManager();
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.EXPRESSIONS);
+            InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.DIGITAL_EXPRESSIONS);
         }
     }
 

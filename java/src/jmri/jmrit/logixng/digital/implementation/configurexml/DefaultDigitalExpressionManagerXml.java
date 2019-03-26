@@ -1,15 +1,21 @@
 package jmri.jmrit.logixng.digital.implementation.configurexml;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
+import jmri.configurexml.JmriConfigureXmlException;
+import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.digital.implementation.DefaultDigitalExpressionManager;
+import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalExpression;
-import jmri.jmrit.logixng.DigitalExpressionManager;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
@@ -19,6 +25,8 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
  */
 public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
+    private final Map<String, Class<?>> xmlClasses = new HashMap<>();
+    
     public DefaultDigitalExpressionManagerXml() {
     }
 
@@ -36,6 +44,8 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
      */
     @Override
     public Element store(Object o) {
+        if (1==0)
+            throw new RuntimeException("Daniel");
         Element expressions = new Element("logixngDigitalExpressions");
         setStoreElementClass(expressions);
         DigitalExpressionManager tm = (DigitalExpressionManager) o;
@@ -96,85 +106,69 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
      * @param expressions Element containing the Logix elements to load.
      */
     public void loadExpressions(Element expressions) {
-/*        
-        List<Element> expressionList = expressions.getChildren("expression");  // NOI18N
+        
+        List<Element> expressionList = expressions.getChildren();  // NOI18N
         if (log.isDebugEnabled()) {
             log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
         }
-        DigitalExpressionManager tm = InstanceManager.getDefault(jmri.DigitalExpressionManager.class);
+//        DigitalExpressionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class);
 
         for (int i = 0; i < expressionList.size(); i++) {
-
-            String sysName = getSystemName(expressionList.get(i));
-            if (sysName == null) {
-                log.warn("unexpected null in systemName " + expressionList.get(i));  // NOI18N
-                break;
+//            if (1==1)
+//                throw new RuntimeException("Daniel");
+            
+            String className = expressionList.get(i).getAttribute("class").getValue();
+            log.error("className: " + className);
+            
+            Class<?> clazz = xmlClasses.get(className);
+            
+            if (clazz == null) {
+                try {
+                    clazz = Class.forName(className);
+                    xmlClasses.put(className, clazz);
+                } catch (ClassNotFoundException ex) {
+                    log.error("cannot load class " + className, ex);
+                }
             }
-
-            String userName = getUserName(expressionList.get(i));
-
-            String yesno = "";
-            if (expressionList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = expressionList.get(i).getAttribute("enabled").getValue();  // NOI18N
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("create expression: (" + sysName + ")("  // NOI18N
-                        + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-            }
-
-            DigitalExpression x = tm.createNewExpression(sysName, userName);
-            if (x != null) {
-                // load common part
-                loadCommon(x, expressionList.get(i));
-
-                // set enabled/disabled if attribute was present
-                if ((yesno != null) && (!yesno.equals(""))) {
-                    if (yesno.equals("yes")) {  // NOI18N
-                        x.setEnabled(true);
-                    } else if (yesno.equals("no")) {  // NOI18N
-                        x.setEnabled(false);
+            
+            if (clazz != null) {
+                Constructor<?> c = null;
+                try {
+                    c = clazz.getConstructor();
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    log.error("cannot create constructor", ex);
+                }
+                
+                if (c != null) {
+                    try {
+                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        
+                        o.load(expressionList.get(i), null);
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        log.error("cannot create object", ex);
+                    } catch (JmriConfigureXmlException ex) {
+                        log.error("cannot load action", ex);
                     }
                 }
-/*                
-                // load conditionals, if there are any
-                List<Element> logixConditionalList = expressionList.get(i).getChildren("logixConditional");  // NOI18N
-                if (logixConditionalList.size() > 0) {
-                    // add conditionals
-                    for (int n = 0; n < logixConditionalList.size(); n++) {
-                        if (logixConditionalList.get(n).getAttribute("systemName") == null) {  // NOI18N
-                            log.warn("unexpected null in systemName " + logixConditionalList.get(n)  // NOI18N
-                                    + " " + logixConditionalList.get(n).getAttributes());
-                            break;
-                        }
-                        String cSysName = logixConditionalList.get(n)
-                                .getAttribute("systemName").getValue();  // NOI18N
-                        int cOrder = Integer.parseInt(logixConditionalList.get(n)
-                                .getAttribute("order").getValue());  // NOI18N
-                        // add conditional to logix
-                        x.addConditional(cSysName, cOrder);
-                    }
-                }
-*./                
             }
         }
-*/
     }
 
     /**
-     * Replace the current LogixManager, if there is one, with one newly created
+     * Replace the current DigitalExpressionManager, if there is one, with one newly created
      * during a load operation. This is skipped if they are of the same absolute
      * type.
      */
     protected void replaceExpressionManager() {
-        if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
+        if (InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getClass().getName()
                 .equals(DefaultDigitalExpressionManager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
-        if (InstanceManager.getNullableDefault(jmri.LogixManager.class) != null) {
+        if (InstanceManager.getNullableDefault(jmri.jmrit.logixng.DigitalExpressionManager.class) != null) {
             ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
             if (cmOD != null) {
-                cmOD.deregister(InstanceManager.getDefault(jmri.LogixManager.class));
+                cmOD.deregister(InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class));
             }
 
         }
@@ -185,7 +179,7 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
-            cmOD.registerConfig(pManager, jmri.Manager.LOGIXS);
+            cmOD.registerConfig(pManager, jmri.Manager.DIGITAL_EXPRESSIONS);
         }
     }
 

@@ -36,7 +36,9 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         implements DigitalExpressionManager, InstanceManagerAutoDefault {
 
     private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
-    int lastAutoExpressionRef = 0;
+    
+    private final Map<LogixNG, Integer> lastAutoExpressionRefMap = new HashMap<>();
+//    int lastAutoExpressionRef = 0;
     
     // This is for testing only!!!
     // This number needs to be saved and restored.
@@ -97,6 +99,37 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
             throw new IllegalArgumentException("System name is invalid");
         }
         
+        String[] systemNameParts = expression.getSystemName().split("\\:");
+        
+        // Get the system name of the LogixNG that this expression belongs to.
+        // That is, get the part of the system name before the colon.
+        String logixNGSystemName = systemNameParts[0];
+        String exprSystemName = systemNameParts[1];
+        
+        LogixNG logixNG = null;
+        if (expression.getParent() != null) {
+            logixNG = expression.getLogixNG();
+            
+            if (!logixNGSystemName.equals(logixNG.getSystemName())) {
+                // The system name of the expression doesn't start with the system
+                // name of the LogixNG that it belongs to.
+                throw new IllegalArgumentException(
+                        "the expression doesn't belong to the logixNG it thinks it belongs to");
+            }
+        } else {
+            logixNG = InstanceManager.getDefault(LogixNG_Manager.class)
+                    .getBeanBySystemName(logixNGSystemName);
+        }
+        
+        Integer lastAutoExpressionRef = lastAutoExpressionRefMap.get(logixNG);
+        // Remove the letters in the beginning to get only the number of the
+        // system name.
+        String exprNumberStr = exprSystemName.replaceAll("DEA?", "");
+        int exprNumber = Integer.parseInt(exprNumberStr);
+        if ((lastAutoExpressionRef == null) || (lastAutoExpressionRef < exprNumber)) {
+            lastAutoExpressionRefMap.put(logixNG, exprNumber);
+        }
+        
         // save in the maps
         MaleDigitalExpressionSocket maleSocket = createMaleExpressionSocket(expression);
         register(maleSocket);
@@ -133,12 +166,12 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     public NameValidity validSystemNameFormat(String systemName) {
         // I - Internal
         // Q - LogixNG
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // Optional: A - Automatic (if the system name is created by the software and not by the user
         // \d+ - The LogixNG ID number
         // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // E - DigitalExpression
+        // D - Digital
+        // E - Expression
+        // Optional: A - Automatic (if the system name is created by the software and not by the user
         // \d+ - The DigitalExpression ID number
         if (systemName.matches("IQA?\\d+:DEA?\\d+")) {
             return NameValidity.VALID;
@@ -149,7 +182,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
 
     @Override
     public String getNewSystemName(LogixNG logixNG) {
-        int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
+        int nextAutoLogixNGRef = lastAutoExpressionRefMap.get(logixNG) + 1;
         StringBuilder b = new StringBuilder(logixNG.getSystemName());
         b.append(":DEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);

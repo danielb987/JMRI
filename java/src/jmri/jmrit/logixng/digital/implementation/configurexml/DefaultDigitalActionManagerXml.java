@@ -6,10 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.InvokeOnGuiThread;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
@@ -113,7 +111,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
         if (log.isDebugEnabled()) {
             log.debug("Found " + actionList.size() + " actions");  // NOI18N
         }
-        DigitalActionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class);
+//        DigitalActionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class);
 
         for (int i = 0; i < actionList.size(); i++) {
 //            if (1==1)
@@ -236,7 +234,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
-            cmOD.registerConfig(pManager, jmri.Manager.ACTIONS);
+            cmOD.registerConfig(pManager, jmri.Manager.DIGITAL_ACTIONS);
         }
     }
 

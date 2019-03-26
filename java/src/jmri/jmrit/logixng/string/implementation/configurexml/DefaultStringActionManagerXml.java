@@ -189,7 +189,7 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
-            cmOD.registerConfig(pManager, jmri.Manager.ACTIONS);
+            cmOD.registerConfig(pManager, jmri.Manager.STRING_ACTIONS);
         }
     }
 
