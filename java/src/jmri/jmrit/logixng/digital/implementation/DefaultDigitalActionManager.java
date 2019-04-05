@@ -37,8 +37,6 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private int lastAutoActionRef = 0;
     
-    // This is for testing only!!!
-    // This number needs to be saved and restored.
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
@@ -93,6 +91,34 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
             throw new IllegalArgumentException(String.format("System name is invalid: %s", action.getSystemName()));
         }
         
+        String[] systemNameParts = action.getSystemName().split("\\:");
+        
+        // Get the system name of the LogixNG that this expression belongs to.
+        // That is, get the part of the system name before the colon.
+        String logixNGSystemName = systemNameParts[0];
+        String actionSystemName = systemNameParts[1];
+        
+        LogixNG logixNG;
+        if (action.getParent() != null) {
+            logixNG = action.getLogixNG();
+            
+            if (!logixNGSystemName.equals(logixNG.getSystemName())) {
+                // The system name of the action doesn't start with the system
+                // name of the LogixNG that it belongs to.
+                throw new IllegalArgumentException(
+                        "the expression doesn't belong to the logixNG it thinks it belongs to");
+            }
+        }
+        
+        // Remove the letters in the beginning to get only the number of the
+        // system name.
+        String actionNumberStr = actionSystemName.replaceAll("DAA?", "");
+        int actionNumber = Integer.parseInt(actionNumberStr);
+        if (lastAutoActionRef < actionNumber) {
+            lastAutoActionRef = actionNumber;
+        }
+        
+        // save in the maps
         MaleDigitalActionSocket maleSocket = createMaleActionSocket(action);
         register(maleSocket);
         return maleSocket;

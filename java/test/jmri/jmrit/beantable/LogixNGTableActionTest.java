@@ -19,6 +19,7 @@ import org.netbeans.jemmy.operators.JMenuBarOperator;
 import org.netbeans.jemmy.operators.JTextFieldOperator;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.util.junit.annotations.ToDo;
 
 
 /*
@@ -68,6 +69,25 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     @Test
     public void testIncludeAddButton() {
         Assert.assertTrue("Default include add button", a.includeAddButton());  // NOI18N
+    }
+
+    @Override
+    public String getAddFrameName(){
+        return Bundle.getMessage("TitleAddLogixNG");
+    }
+
+    @Test
+    @Ignore("LogixNG create frame does not have a hardware address")
+    @ToDo("Re-write parent class test to use the right name")
+    @Override
+    public void testAddThroughDialog() {
+    }
+
+    @Test
+    @Ignore("LogixNG create frame does not have a hardware address")
+    @ToDo("Re-write parent class test to use the right name")
+    @Override
+    public void testEditButton() {
     }
 
     @Test

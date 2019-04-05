@@ -490,10 +490,15 @@ public final class LogixNGEditor extends JmriJFrame {
         c.gridy = 0;
         p.add(_autoSystemName, c);
         
+        System.out.format("isConnected: %b%n", femaleSocket.isConnected());
         if (femaleSocket.isConnected()) {
             _systemName.setText(femaleSocket.getConnectedSocket().getSystemName());
             _systemName.setEnabled(false);
             _addUserName.setText(femaleSocket.getConnectedSocket().getUserName());
+        } else {
+            _systemName.setText("");
+            _systemName.setEnabled(true);
+            _addUserName.setText("");
         }
         
         _addUserName.setToolTipText(Bundle.getMessage("UserNameHint"));    // NOI18N

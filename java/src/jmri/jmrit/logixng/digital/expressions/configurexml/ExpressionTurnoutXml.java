@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.digital.expressions.configurexml;
 
-import jmri.jmrit.logixng.digital.expressions.configurexml.*;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.jmrit.logixng.DigitalExpression;
@@ -26,9 +25,6 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
      */
     @Override
     public Element store(Object o) {
-        if (1==0)
-            throw new RuntimeException("Daniel");
-        
         ExpressionTurnout p = (ExpressionTurnout) o;
 
         Element element = new Element("expression-turnout");
