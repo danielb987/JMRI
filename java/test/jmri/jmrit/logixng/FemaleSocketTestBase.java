@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.util.junit.annotations.ToDo;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,6 +19,16 @@ public class FemaleSocketTestBase {
     protected MaleSocket maleSocket;
     protected MaleSocket otherMaleSocket;
     protected FemaleSocket femaleSocket;
+    
+    @Test
+    @ToDo("Implement proper testing of FemaleSocket.setup()")
+    public void testSetup() {
+        // Do proper testing later
+        if (femaleSocket.isConnected()) {
+            femaleSocket.disconnect();
+        }
+        femaleSocket.setup();
+    }
     
     @Test
     public void testConnect() {

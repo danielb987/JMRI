@@ -8,15 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test AndXml
+ * Test ExpressionTurnoutXml
  * 
  * @author Daniel Bergqvist 2019
  */
-public class AndXmlTest {
+public class ExpressionTurnoutXmlTest {
 
     @Test
     public void testCtor() {
-        new AndXml();
+        new ExpressionTurnoutXml();
     }
     
     // The minimal setup for log4J
