@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.digital.expressions.configurexml;
 
-import jmri.jmrit.logixng.digital.expressions.configurexml.AndXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
