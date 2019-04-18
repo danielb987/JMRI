@@ -146,30 +146,22 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
 
     @Override
     public Category getCategory() {
-        if (_socket != null) {
-            return _socket.getCategory();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public boolean isExternal() {
-        if (_socket != null) {
-            return _socket.isExternal();
-        } else {
-            throw new UnsupportedOperationException("Not supported.");
-        }
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public FemaleSocket getChild(int index) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
