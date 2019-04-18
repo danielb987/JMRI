@@ -188,13 +188,28 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     }
 
     @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l, String name, String listenerRef) {
+        _expression.addPropertyChangeListener(propertyName, l, name, listenerRef);
+    }
+
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
         _expression.addPropertyChangeListener(l);
     }
 
     @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _expression.addPropertyChangeListener(propertyName, l);
+    }
+
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
         _expression.removePropertyChangeListener(l);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _expression.removePropertyChangeListener(propertyName, l);
     }
 
     @Override
@@ -220,6 +235,16 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     @Override
     public int getNumPropertyChangeListeners() {
         return _expression.getNumPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners() {
+        return _expression.getPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return _expression.getPropertyChangeListeners(propertyName);
     }
 
     @Override

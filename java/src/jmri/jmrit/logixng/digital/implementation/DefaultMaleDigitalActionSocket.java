@@ -177,13 +177,28 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     }
 
     @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l, String name, String listenerRef) {
+        _action.addPropertyChangeListener(propertyName, l, name, listenerRef);
+    }
+
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
         _action.addPropertyChangeListener(l);
     }
 
     @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _action.addPropertyChangeListener(propertyName, l);
+    }
+
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
         _action.removePropertyChangeListener(l);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _action.removePropertyChangeListener(propertyName, l);
     }
 
     @Override
@@ -209,6 +224,16 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     @Override
     public int getNumPropertyChangeListeners() {
         return _action.getNumPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners() {
+        return _action.getPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return _action.getPropertyChangeListeners(propertyName);
     }
 
     @Override

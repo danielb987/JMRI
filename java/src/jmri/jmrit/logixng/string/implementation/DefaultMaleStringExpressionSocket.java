@@ -23,14 +23,14 @@ import jmri.jmrit.logixng.StringExpression;
 public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSocket {
 
     private Base _parent = null;
-    private final StringExpression _stringExpression;
+    private final StringExpression _expression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = false;
 
 
     public DefaultMaleStringExpressionSocket(@Nonnull StringExpression stringExpression) {
-        _stringExpression = stringExpression;
+        _expression = stringExpression;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return _stringExpression.getCategory();
+        return _expression.getCategory();
     }
 
     /** {@inheritDoc} */
@@ -74,7 +74,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
                 && ((StringExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((StringExpressionDebugConfig)_debugConfig)._result;
         }
-        return _stringExpression.evaluate();
+        return _expression.evaluate();
     }
 
     @Override
@@ -84,97 +84,122 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return _stringExpression.getChild(index);
+        return _expression.getChild(index);
     }
 
     @Override
     public int getChildCount() {
-        return _stringExpression.getChildCount();
+        return _expression.getChildCount();
     }
 
     @Override
     public String getShortDescription() {
-        return _stringExpression.getShortDescription();
+        return _expression.getShortDescription();
     }
 
     @Override
     public String getLongDescription() {
-        return _stringExpression.getLongDescription();
+        return _expression.getLongDescription();
     }
 
     @Override
     public String getUserName() {
-        return _stringExpression.getUserName();
+        return _expression.getUserName();
     }
 
     @Override
     public void setUserName(String s) throws BadUserNameException {
-        _stringExpression.setUserName(s);
+        _expression.setUserName(s);
     }
 
     @Override
     public String getSystemName() {
-        return _stringExpression.getSystemName();
+        return _expression.getSystemName();
     }
 
     @Override
     public String getDisplayName() {
-        return _stringExpression.getDisplayName();
+        return _expression.getDisplayName();
     }
 
     @Override
     public String getFullyFormattedDisplayName() {
-        return _stringExpression.getFullyFormattedDisplayName();
+        return _expression.getFullyFormattedDisplayName();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        _stringExpression.addPropertyChangeListener(l, name, listenerRef);
+        _expression.addPropertyChangeListener(l, name, listenerRef);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l, String name, String listenerRef) {
+        _expression.addPropertyChangeListener(propertyName, l, name, listenerRef);
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        _stringExpression.addPropertyChangeListener(l);
+        _expression.addPropertyChangeListener(l);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _expression.addPropertyChangeListener(propertyName, l);
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
-        _stringExpression.removePropertyChangeListener(l);
+        _expression.removePropertyChangeListener(l);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _expression.removePropertyChangeListener(propertyName, l);
     }
 
     @Override
     public void updateListenerRef(PropertyChangeListener l, String newName) {
-        _stringExpression.updateListenerRef(l, newName);
+        _expression.updateListenerRef(l, newName);
     }
 
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        _stringExpression.vetoableChange(evt);
+        _expression.vetoableChange(evt);
     }
 
     @Override
     public String getListenerRef(PropertyChangeListener l) {
-        return _stringExpression.getListenerRef(l);
+        return _expression.getListenerRef(l);
     }
 
     @Override
     public ArrayList<String> getListenerRefs() {
-        return _stringExpression.getListenerRefs();
+        return _expression.getListenerRefs();
     }
 
     @Override
     public int getNumPropertyChangeListeners() {
-        return _stringExpression.getNumPropertyChangeListeners();
+        return _expression.getNumPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners() {
+        return _expression.getPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return _expression.getPropertyChangeListeners(propertyName);
     }
 
     @Override
     public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        return _stringExpression.getPropertyChangeListenersByReference(name);
+        return _expression.getPropertyChangeListenersByReference(name);
     }
 
     @Override
     public void dispose() {
-        _stringExpression.dispose();
+        _expression.dispose();
     }
 
     @Override
@@ -189,42 +214,42 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
 
     @Override
     public String getComment() {
-        return _stringExpression.getComment();
+        return _expression.getComment();
     }
 
     @Override
     public void setComment(String comment) {
-        _stringExpression.setComment(comment);
+        _expression.setComment(comment);
     }
 
     @Override
     public void setProperty(String key, Object value) {
-        _stringExpression.setProperty(key, value);
+        _expression.setProperty(key, value);
     }
 
     @Override
     public Object getProperty(String key) {
-        return _stringExpression.getProperty(key);
+        return _expression.getProperty(key);
     }
 
     @Override
     public void removeProperty(String key) {
-        _stringExpression.removeProperty(key);
+        _expression.removeProperty(key);
     }
 
     @Override
     public Set<String> getPropertyKeys() {
-        return _stringExpression.getPropertyKeys();
+        return _expression.getPropertyKeys();
     }
 
     @Override
     public String getBeanType() {
-        return _stringExpression.getBeanType();
+        return _expression.getBeanType();
     }
 
     @Override
     public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        return _stringExpression.compareSystemNameSuffix(suffix1, suffix2, n2);
+        return _expression.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
     /** {@inheritDoc} */
@@ -248,7 +273,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     /** {@inheritDoc} */
     @Override
     public Base getObject() {
-        return _stringExpression;
+        return _expression;
     }
     
     /** {@inheritDoc} */

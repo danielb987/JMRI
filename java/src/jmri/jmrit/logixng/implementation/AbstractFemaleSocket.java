@@ -2,11 +2,15 @@ package jmri.jmrit.logixng.implementation;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
 import jmri.NamedBean;
+import jmri.beans.Beans;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -193,58 +197,131 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    // implementing classes will typically have a function/listener to get
+    // updates from the layout, which will then call
+    //  public void firePropertyChange(String propertyName,
+    //             Object oldValue,
+    //      Object newValue)
+    // _once_ if anything has changed state
+    // since we can't do a "super(this)" in the ctor to inherit from PropertyChangeSupport, we'll
+    // reflect to it
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    protected final HashMap<PropertyChangeListener, String> register = new HashMap<>();
+    protected final HashMap<PropertyChangeListener, String> listenerRefs = new HashMap<>();
+
     @Override
-    public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void addPropertyChangeListener(PropertyChangeListener l, String beanRef, String listenerRef) {
+        pcs.addPropertyChangeListener(l);
+        if (beanRef != null) {
+            register.put(l, beanRef);
+        }
+        if (listenerRef != null) {
+            listenerRefs.put(l, listenerRef);
+        }
     }
 
     @Override
-    public void addPropertyChangeListener(PropertyChangeListener l) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener l, String beanRef, String listenerRef) {
+        pcs.addPropertyChangeListener(propertyName, l);
+        if (beanRef != null) {
+            register.put(l, beanRef);
+        }
+        if (listenerRef != null) {
+            listenerRefs.put(l, listenerRef);
+        }
     }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener l) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void updateListenerRef(PropertyChangeListener l, String newName) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+        if (listener != null && !Beans.contains(pcs.getPropertyChangeListeners(), listener)) {
+            register.remove(listener);
+            listenerRefs.remove(listener);
+        }
+    }
+
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(propertyName, listener);
+        if (listener != null && !Beans.contains(pcs.getPropertyChangeListeners(), listener)) {
+            register.remove(listener);
+            listenerRefs.remove(listener);
+        }
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
+        ArrayList<PropertyChangeListener> list = new ArrayList<>();
+        register.entrySet().forEach((entry) -> {
+            PropertyChangeListener l = entry.getKey();
+            if (entry.getValue().equals(name)) {
+                list.add(l);
+            }
+        });
+        return list.toArray(new PropertyChangeListener[list.size()]);
+    }
+
+    /**
+     * Get a meaningful list of places where the bean is in use.
+     *
+     * @return ArrayList of the listeners
+     */
+    @Override
+    public synchronized ArrayList<String> getListenerRefs() {
+        return new ArrayList<>(listenerRefs.values());
+    }
+
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public synchronized void updateListenerRef(PropertyChangeListener l, String newName) {
+        if (listenerRefs.containsKey(l)) {
+            listenerRefs.put(l, newName);
+        }
+    }
+
+    @Override
+    public synchronized String getListenerRef(PropertyChangeListener l) {
+        return listenerRefs.get(l);
+    }
+
+    /**
+     * Get the number of current listeners.
+     *
+     * @return -1 if the information is not available for some reason.
+     */
+    @Override
+    public synchronized int getNumPropertyChangeListeners() {
+        return pcs.getPropertyChangeListeners().length;
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners() {
+        return pcs.getPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return pcs.getPropertyChangeListeners(propertyName);
     }
 
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String getListenerRef(PropertyChangeListener l) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ArrayList<String> getListenerRefs() {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int getNumPropertyChangeListeners() {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        // Implement this!
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

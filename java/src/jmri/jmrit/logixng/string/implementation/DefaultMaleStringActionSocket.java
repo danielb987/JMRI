@@ -23,14 +23,14 @@ import jmri.jmrit.logixng.StringAction;
 public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
 
     private Base _parent = null;
-    private final StringAction _stringAction;
+    private final StringAction _action;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = false;
     
     
     public DefaultMaleStringActionSocket(@Nonnull StringAction stringAction) {
-        _stringAction = stringAction;
+        _action = stringAction;
     }
     
     @Override
@@ -58,7 +58,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return _stringAction.getCategory();
+        return _action.getCategory();
     }
 
     /** {@inheritDoc} */
@@ -77,158 +77,183 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
                 && ((StringActionDebugConfig)_debugConfig)._dontExecute) {
             return;
         }
-        _stringAction.setValue(value);
+        _action.setValue(value);
     }
 
     @Override
     public String getShortDescription() {
-        return _stringAction.getShortDescription();
+        return _action.getShortDescription();
     }
 
     @Override
     public String getLongDescription() {
-        return _stringAction.getLongDescription();
+        return _action.getLongDescription();
     }
 
     @Override
     public FemaleSocket getChild(int index)
             throws IllegalArgumentException, UnsupportedOperationException {
-        return _stringAction.getChild(index);
+        return _action.getChild(index);
     }
 
     @Override
     public int getChildCount() {
-        return _stringAction.getChildCount();
+        return _action.getChildCount();
     }
 
     @Override
     public String getUserName() {
-        return _stringAction.getUserName();
+        return _action.getUserName();
     }
 
     @Override
     public void setUserName(String s) throws BadUserNameException {
-        _stringAction.setUserName(s);
+        _action.setUserName(s);
     }
 
     @Override
     public String getSystemName() {
-        return _stringAction.getSystemName();
+        return _action.getSystemName();
     }
 
     @Override
     public String getDisplayName() {
-        return _stringAction.getDisplayName();
+        return _action.getDisplayName();
     }
 
     @Override
     public String getFullyFormattedDisplayName() {
-        return _stringAction.getFullyFormattedDisplayName();
+        return _action.getFullyFormattedDisplayName();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
-        _stringAction.addPropertyChangeListener(l, name, listenerRef);
+        _action.addPropertyChangeListener(l, name, listenerRef);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l, String name, String listenerRef) {
+        _action.addPropertyChangeListener(propertyName, l, name, listenerRef);
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        _stringAction.addPropertyChangeListener(l);
+        _action.addPropertyChangeListener(l);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _action.addPropertyChangeListener(propertyName, l);
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
-        _stringAction.removePropertyChangeListener(l);
+        _action.removePropertyChangeListener(l);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
+        _action.removePropertyChangeListener(propertyName, l);
     }
 
     @Override
     public void updateListenerRef(PropertyChangeListener l, String newName) {
-        _stringAction.updateListenerRef(l, newName);
+        _action.updateListenerRef(l, newName);
     }
 
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        _stringAction.vetoableChange(evt);
+        _action.vetoableChange(evt);
     }
 
     @Override
     public String getListenerRef(PropertyChangeListener l) {
-        return _stringAction.getListenerRef(l);
+        return _action.getListenerRef(l);
     }
 
     @Override
     public ArrayList<String> getListenerRefs() {
-        return _stringAction.getListenerRefs();
+        return _action.getListenerRefs();
     }
 
     @Override
     public int getNumPropertyChangeListeners() {
-        return _stringAction.getNumPropertyChangeListeners();
+        return _action.getNumPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners() {
+        return _action.getPropertyChangeListeners();
+    }
+
+    @Override
+    public synchronized PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return _action.getPropertyChangeListeners(propertyName);
     }
 
     @Override
     public PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        return _stringAction.getPropertyChangeListenersByReference(name);
+        return _action.getPropertyChangeListenersByReference(name);
     }
 
     @Override
     public void dispose() {
-        _stringAction.dispose();
+        _action.dispose();
     }
 
     @Override
     public void setState(int s) throws JmriException {
-        _stringAction.setState(s);
+        _action.setState(s);
     }
 
     @Override
     public int getState() {
-        return _stringAction.getState();
+        return _action.getState();
     }
 
     @Override
     public String describeState(int state) {
-        return _stringAction.describeState(state);
+        return _action.describeState(state);
     }
 
     @Override
     public String getComment() {
-        return _stringAction.getComment();
+        return _action.getComment();
     }
 
     @Override
     public void setComment(String comment) {
-        _stringAction.setComment(comment);
+        _action.setComment(comment);
     }
 
     @Override
     public void setProperty(String key, Object value) {
-        _stringAction.setProperty(key, value);
+        _action.setProperty(key, value);
     }
 
     @Override
     public Object getProperty(String key) {
-        return _stringAction.getProperty(key);
+        return _action.getProperty(key);
     }
 
     @Override
     public void removeProperty(String key) {
-        _stringAction.removeProperty(key);
+        _action.removeProperty(key);
     }
 
     @Override
     public Set<String> getPropertyKeys() {
-        return _stringAction.getPropertyKeys();
+        return _action.getPropertyKeys();
     }
 
     @Override
     public String getBeanType() {
-        return _stringAction.getBeanType();
+        return _action.getBeanType();
     }
 
     @Override
     public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        return _stringAction.compareSystemNameSuffix(suffix1, suffix2, n2);
+        return _action.compareSystemNameSuffix(suffix1, suffix2, n2);
     }
 
     /** {@inheritDoc} */
@@ -252,7 +277,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     /** {@inheritDoc} */
     @Override
     public Base getObject() {
-        return _stringAction;
+        return _action;
     }
     
     /** {@inheritDoc} */
