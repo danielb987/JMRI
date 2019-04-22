@@ -21,6 +21,7 @@ public class LogixNGMenu extends JMenu {
 
         add(new LogixNGEditorAction());
         add(new TimeDiagramAction());
+        add(new ImportLogixAction());
     }
 
 //    private final static Logger log = LoggerFactory.getLogger(LogixNGMenu.class);

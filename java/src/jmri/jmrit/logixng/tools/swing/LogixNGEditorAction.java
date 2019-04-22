@@ -20,18 +20,18 @@ public class LogixNGEditorAction extends AbstractAction {
         this(Bundle.getMessage("MenuLogixNGEditor")); // NOI18N
     }
 
-    static LogixNGEditor newLogixEditorFrame = null;
+    static LogixNGEditor logixNGEditorFrame = null;
 
     @Override
     @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Only one LogixNGEditorFrame")
     public void actionPerformed(ActionEvent e) {
         // create a settings frame
-        if (newLogixEditorFrame == null || !newLogixEditorFrame.isVisible()) {
-            newLogixEditorFrame = new LogixNGEditor();
-            newLogixEditorFrame.initComponents();
+        if (logixNGEditorFrame == null || !logixNGEditorFrame.isVisible()) {
+            logixNGEditorFrame = new LogixNGEditor();
+            logixNGEditorFrame.initComponents();
         }
-        newLogixEditorFrame.setExtendedState(Frame.NORMAL);
-        newLogixEditorFrame.setVisible(true); // this also brings the frame into focus
+        logixNGEditorFrame.setExtendedState(Frame.NORMAL);
+        logixNGEditorFrame.setVisible(true); // this also brings the frame into focus
     }
     
 }
