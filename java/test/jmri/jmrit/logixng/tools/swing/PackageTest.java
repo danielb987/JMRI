@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     LogixNGEditorTest.class,
     TimeDiagramTest.class,
+    ImportLogixTest.class,
 })
 
 /**
