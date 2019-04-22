@@ -1,13 +1,13 @@
 package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.IfThen;
+import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,13 +108,20 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         NamedBeanHandle<Turnout> high = loadTurnout(l.get(1));
 */        
         // put it together
+        
+        IfThen.Type type = IfThen.Type.TRIGGER_ACTION;
+        Attribute typeAttribute = shared.getAttribute("type");
+        if (typeAttribute != null) {
+            type = IfThen.Type.valueOf(typeAttribute.getValue());
+        }
+        
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         IfThen h;
         if (uname == null) {
-            h = new IfThen(sys, IfThen.Type.TRIGGER_ACTION);
+            h = new IfThen(sys, type);
         } else {
-            h = new IfThen(sys, uname, IfThen.Type.TRIGGER_ACTION);
+            h = new IfThen(sys, uname, type);
         }
 
         loadCommon(h, shared);

@@ -50,7 +50,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
         if (tm != null) {
             for (DigitalAction action : tm.getNamedBeanSet()) {
                 log.debug("action system name is " + action.getSystemName());  // NOI18N
-                log.error("action system name is " + action.getSystemName() + ", " + action.getLongDescription());  // NOI18N
+//                log.error("action system name is " + action.getSystemName() + ", " + action.getLongDescription());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getAction(action));
                     if (e != null) {
@@ -114,11 +114,9 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
 //        DigitalActionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class);
 
         for (int i = 0; i < actionList.size(); i++) {
-//            if (1==1)
-//                throw new RuntimeException("Daniel");
             
             String className = actionList.get(i).getAttribute("class").getValue();
-            log.error("className: " + className);
+//            log.error("className: " + className);
             
             Class<?> clazz = xmlClasses.get(className);
             
