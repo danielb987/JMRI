@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -35,7 +36,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
@@ -102,12 +105,6 @@ public final class ImportLogixFrame extends JmriJFrame {
     private boolean _inEditMode = false;
     
     
-    /**
-     * This contains a list of commands to be processed by the listener
-     * recipient.
-     */
-    public HashMap<String, String> logixData = new HashMap<>();
-    
     ImportLogixFrame() {
         logixNG = null;
     }
@@ -132,6 +129,161 @@ public final class ImportLogixFrame extends JmriJFrame {
     @Override
     public void initComponents() {
         super.initComponents();
+        
+        Container contentPanel = getContentPane();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+        JPanel p2 = new JPanel();
+        p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+        
+        p2.add(new JLabel("Which Logixs to import?"));
+        JRadioButton r1 = new JRadioButton("Import all Logixs");
+        JRadioButton r2 = new JRadioButton("Import all active Logixs");
+        JRadioButton r3 = new JRadioButton("Import selected Logixs");
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(r1);
+        buttonGroup.add(r2);
+        buttonGroup.add(r3);
+        r2.setSelected(true);
+        r1.setAlignmentX(LEFT_ALIGNMENT);
+        r2.setAlignmentX(LEFT_ALIGNMENT);
+        r3.setAlignmentX(LEFT_ALIGNMENT);
+        p2.add(r1);
+        p2.add(r2);
+        p2.add(r3);
+        
+        p2.add(new JLabel("What to do with the Logixs after the import?"));
+        JRadioButton r4 = new JRadioButton("Nothing");
+        JRadioButton r5 = new JRadioButton("Disable the Logixs");
+        JRadioButton r6 = new JRadioButton("Delete the Logixs - Warning!");
+        ButtonGroup buttonGroup2 = new ButtonGroup();
+        buttonGroup2.add(r4);
+        buttonGroup2.add(r5);
+        buttonGroup2.add(r6);
+        r5.setSelected(true);
+        r4.setAlignmentX(LEFT_ALIGNMENT);
+        r5.setAlignmentX(LEFT_ALIGNMENT);
+        r6.setAlignmentX(LEFT_ALIGNMENT);
+        p2.add(r4);
+        p2.add(r5);
+        p2.add(r6);
+        
+        String warningMessage
+                = "Warning\n"
+                + "The import tool will do its best to import the requested\n"
+                + "Logixs to LogixNG. But LogixNG works in a different way\n"
+                + "than Logix and therefore there may be subtle differences\n"
+                + "between the original Logix and the imported LogixNG.\n"
+                + "\n"
+                + "Also, there may be special Logixs not known to the import\n"
+                + "tool that should not be imported to LogixNG, for example\n"
+                + "the Logix that handles sensor groups. The import tool\n"
+                + "knows about some of these Logix (SYS and RTX), but there\n"
+                + "may be others not known to the import tool.";
+        JTextArea warning = new JTextArea(warningMessage);
+        warning.setEditable(false);
+        warning.setAlignmentX(LEFT_ALIGNMENT);
+        warning.setColumns(60);
+        p2.add(warning);
+        
+        JPanel p;
+        p = new JPanel();
+//        p.setLayout(new FlowLayout());
+        p.setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagConstraints c = new java.awt.GridBagConstraints();
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = java.awt.GridBagConstraints.EAST;
+        p.add(_sysNameLabel, c);
+        c.gridy = 1;
+        p.add(_userNameLabel, c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.anchor = java.awt.GridBagConstraints.WEST;
+        c.weightx = 1.0;
+        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+        p.add(_systemName, c);
+        c.gridy = 1;
+        p.add(_addUserName, c);
+        c.gridx = 2;
+        c.gridy = 1;
+        c.anchor = java.awt.GridBagConstraints.WEST;
+        c.weightx = 1.0;
+        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+        c.gridy = 0;
+        p.add(_autoSystemName, c);
+        
+        _systemName.setText("");
+        _systemName.setEnabled(true);
+        _addUserName.setText("");
+        
+        _addUserName.setToolTipText(Bundle.getMessage("UserNameHint"));    // NOI18N
+//        _addUserName.setToolTipText("LogixNGUserNameHint");    // NOI18N
+        _systemName.setToolTipText(Bundle.getMessage("SystemNameHint", "aaa"));   // NOI18N
+//        _systemName.setToolTipText("LogixNGSystemNameHint");   // NOI18N
+
+
+
+        contentPanel.add(p2);
+        // set up message
+        JPanel panel3 = new JPanel();
+        panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
+        JPanel panel31 = new JPanel();
+//        panel31.setLayout(new FlowLayout());
+        JPanel panel32 = new JPanel();
+        
+        String messageId = "AAAAA";
+        if (messageId != null) {
+            JLabel message1 = new JLabel(messageId + "1");  // NOI18N
+            panel31.add(message1);
+            JLabel message2 = new JLabel(messageId + "2");  // NOI18N
+            panel32.add(message2);
+        }
+        
+        JPanel panel33 = new JPanel();
+        panel3.add(panel31);
+        panel3.add(panel32);
+        panel3.add(panel33);
+        contentPanel.add(panel3);
+
+        // set up create and cancel buttons
+        JPanel panel5 = new JPanel();
+        panel5.setLayout(new FlowLayout());
+        // Cancel
+        JButton cancel = new JButton(Bundle.getMessage("ButtonCancel"));    // NOI18N
+        panel5.add(cancel);
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+//        cancel.setToolTipText(Bundle.getMessage("CancelLogixButtonHint"));      // NOI18N
+        cancel.setToolTipText("CancelLogixButtonHint");      // NOI18N
+
+        contentPanel.add(panel5);
+
+        _autoSystemName.addItemListener(
+                new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                autoSystemName();
+            }
+        });
+        System.out.format("Component: %s%n", c.getClass().getName());
+//        addLogixNGFrame.setLocationRelativeTo(component);
+        setLocationRelativeTo(null);
+        pack();
+        setVisible(true);
+        
+        if (1==1)
+            return;
+        
+        
+        
+        
         // build menu
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu(Bundle.getMessage("MenuFile"));
@@ -232,145 +384,6 @@ public final class ImportLogixFrame extends JmriJFrame {
         setVisible(true);
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public void windowClosed(WindowEvent e) {
-        logixData.clear();
-        logixData.put("Finish", logixNG.getSystemName());  // NOI18N
-    }
-    
-    /**
-     * Create or copy LogixNG frame.
-     *
-     * @param messageId part 1 of property key to fetch as user instruction on
-     *                  pane, either 1 or 2 is added to form the whole key
-     * @param femaleSocket the female socket to which we want to add something
-     * @return the button JPanel
-     */
-    JPanel makeAddEditFrame(String messageId, FemaleSocket femaleSocket) {
-        addEditLogixNGFrame = new JmriJFrame(
-                Bundle.getMessage(
-                        "AddMaleSocketDialogTitle",
-                        femaleSocket.getLongDescription()));
-        addEditLogixNGFrame.addHelpMenu(
-                "package.jmri.jmrit.beantable.LogixNGAddEdit", true);     // NOI18N
-        addEditLogixNGFrame.setLocation(50, 30);
-        Container contentPanel = addEditLogixNGFrame.getContentPane();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-
-        JPanel p;
-        p = new JPanel();
-//        p.setLayout(new FlowLayout());
-        p.setLayout(new java.awt.GridBagLayout());
-        java.awt.GridBagConstraints c = new java.awt.GridBagConstraints();
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.anchor = java.awt.GridBagConstraints.EAST;
-        p.add(_sysNameLabel, c);
-        c.gridy = 1;
-        p.add(_userNameLabel, c);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.anchor = java.awt.GridBagConstraints.WEST;
-        c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
-        p.add(_systemName, c);
-        c.gridy = 1;
-        p.add(_addUserName, c);
-        c.gridx = 2;
-        c.gridy = 1;
-        c.anchor = java.awt.GridBagConstraints.WEST;
-        c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
-        c.gridy = 0;
-        p.add(_autoSystemName, c);
-        
-        System.out.format("isConnected: %b%n", femaleSocket.isConnected());
-        if (femaleSocket.isConnected()) {
-            _systemName.setText(femaleSocket.getConnectedSocket().getSystemName());
-            _systemName.setEnabled(false);
-            _addUserName.setText(femaleSocket.getConnectedSocket().getUserName());
-        } else {
-            _systemName.setText("");
-            _systemName.setEnabled(true);
-            _addUserName.setText("");
-        }
-        
-        _addUserName.setToolTipText(Bundle.getMessage("UserNameHint"));    // NOI18N
-//        _addUserName.setToolTipText("LogixNGUserNameHint");    // NOI18N
-        _systemName.setToolTipText(Bundle.getMessage("SystemNameHint", femaleSocket.getExampleSystemName()));   // NOI18N
-//        _systemName.setToolTipText("LogixNGSystemNameHint");   // NOI18N
-        contentPanel.add(p);
-        // set up message
-        JPanel panel3 = new JPanel();
-        panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
-        JPanel panel31 = new JPanel();
-//        panel31.setLayout(new FlowLayout());
-        JPanel panel32 = new JPanel();
-        if (messageId != null) {
-            JLabel message1 = new JLabel(Bundle.getMessage(messageId + "1"));  // NOI18N
-            panel31.add(message1);
-            JLabel message2 = new JLabel(Bundle.getMessage(messageId + "2"));  // NOI18N
-            panel32.add(message2);
-        }
-        
-        connectableClasses = femaleSocket.getConnectableClasses();
-        maleSocketClass = connectableClasses.get(Category.ITEM).get(0);
-        
-        swingConfiguratorInterface = SwingTools.getSwingConfiguratorForClass(maleSocketClass);
-        JPanel panel33;
-        if (femaleSocket.isConnected()) {
-            panel33 = swingConfiguratorInterface.getConfigPanel(femaleSocket.getConnectedSocket().getObject());
-        } else {
-            panel33 = swingConfiguratorInterface.getConfigPanel();
-        }
-        panel3.add(panel31);
-        panel3.add(panel32);
-        panel3.add(panel33);
-        contentPanel.add(panel3);
-
-        // set up create and cancel buttons
-        JPanel panel5 = new JPanel();
-        panel5.setLayout(new FlowLayout());
-        // Cancel
-        JButton cancel = new JButton(Bundle.getMessage("ButtonCancel"));    // NOI18N
-        panel5.add(cancel);
-        cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancelAddPressed(e);
-            }
-        });
-//        cancel.setToolTipText(Bundle.getMessage("CancelLogixButtonHint"));      // NOI18N
-        cancel.setToolTipText("CancelLogixButtonHint");      // NOI18N
-
-        addEditLogixNGFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                cancelAddPressed(null);
-            }
-        });
-
-        contentPanel.add(panel5);
-
-        _autoSystemName.addItemListener(
-                new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                autoSystemName();
-            }
-        });
-        System.out.format("Component: %s%n", c.getClass().getName());
-//        addLogixNGFrame.setLocationRelativeTo(component);
-        addEditLogixNGFrame.setLocationRelativeTo(null);
-        addEditLogixNGFrame.pack();
-        addEditLogixNGFrame.setVisible(true);
-        
-        return panel5;
-    }
-    
     /**
      * Enable/disable fields for data entry when user selects to have system
      * name automatically generated.
@@ -385,22 +398,6 @@ public final class ImportLogixFrame extends JmriJFrame {
         }
     }
 
-    /**
-     * Respond to the Cancel button in Add LogixNG window.
-     * <p>
-     * Note: Also get there if the user closes the Add LogixNG window.
-     *
-     * @param e The event heard
-     */
-    void cancelAddPressed(ActionEvent e) {
-        addEditLogixNGFrame.setVisible(false);
-        swingConfiguratorInterface.dispose();
-        addEditLogixNGFrame.dispose();
-        addEditLogixNGFrame = null;
-//        _inCopyMode = false;
-        this.setVisible(true);
-    }
-    
     
     private final static Logger log = LoggerFactory.getLogger(ImportLogixFrame.class);
 
