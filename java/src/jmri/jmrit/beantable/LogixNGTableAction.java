@@ -1050,7 +1050,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                 @Override
                 public void logixNGEventOccurred() {
                     String lgxName = sName;
-                    _treeEdit.logixData.forEach((key, value) -> {
+                    _treeEdit.logixNGData.forEach((key, value) -> {
                         if (key.equals("Finish")) {                  // NOI18N
                             _treeEdit = null;
                             _inEditMode = false;

@@ -112,7 +112,7 @@ public final class LogixNGEditor extends JmriJFrame {
      * This contains a list of commands to be processed by the listener
      * recipient.
      */
-    public HashMap<String, String> logixData = new HashMap<>();
+    public HashMap<String, String> logixNGData = new HashMap<>();
     
     LogixNGEditor() {
         logixNG = null;
@@ -259,8 +259,8 @@ public final class LogixNGEditor extends JmriJFrame {
     /** {@inheritDoc} */
     @Override
     public void windowClosed(WindowEvent e) {
-        logixData.clear();
-        logixData.put("Finish", logixNG.getSystemName());  // NOI18N
+        logixNGData.clear();
+        logixNGData.put("Finish", logixNG.getSystemName());  // NOI18N
         fireLogixNGEvent();
     }
     

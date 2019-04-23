@@ -63,6 +63,8 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
      * + ActionMany
      *   + ActionHoldAnything
      *   + ActionDoIf
+     * 
+     * @param logixNG the LogixNG to be initialized with a tree
      */
     public void setupInitialLogixNGTree(LogixNG logixNG);
 

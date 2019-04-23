@@ -19,7 +19,7 @@ public class ImportLogixTest {
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        new ImportLogix();
+        new ImportLogixFrame();
     }
 
     // The minimal setup for log4J

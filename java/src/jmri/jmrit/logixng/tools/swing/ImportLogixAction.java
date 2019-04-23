@@ -20,14 +20,14 @@ public class ImportLogixAction extends AbstractAction {
         this(Bundle.getMessage("MenuImportLogix")); // NOI18N
     }
 
-    static ImportLogix importLogixFrame = null;
+    static ImportLogixFrame importLogixFrame = null;
 
     @Override
     @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "Only one ImportLogixFrame")
     public void actionPerformed(ActionEvent e) {
         // create a settings frame
         if (importLogixFrame == null || !importLogixFrame.isVisible()) {
-            importLogixFrame = new ImportLogix();
+            importLogixFrame = new ImportLogixFrame();
             importLogixFrame.initComponents();
         }
         importLogixFrame.setExtendedState(Frame.NORMAL);
