@@ -2,6 +2,7 @@ package jmri.jmrit.logixng;
 
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNG;
+import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.expressions.And;
@@ -23,11 +24,13 @@ public class LogixNGTest {
     public void testManagers() {
         String systemName;
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(logixNG);
+        ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
+        logixNG.addConditionalNG(conditionalNG);
+        systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG);
         DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG);
+        systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG);
         DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }

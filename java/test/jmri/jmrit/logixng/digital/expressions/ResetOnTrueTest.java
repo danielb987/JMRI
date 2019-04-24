@@ -23,13 +23,13 @@ public class ResetOnTrueTest {
             throws NamedBean.BadUserNameException,
                     NamedBean.BadSystemNameException,
                     SocketAlreadyConnectedException {
-        ExpressionTurnout expression = new ExpressionTurnout("IQ55:DE321", null);
+        ExpressionTurnout expression = new ExpressionTurnout("IQ55:1:DE321", null);
         MaleDigitalExpressionSocket primaryExpressionSocket =
                 InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-        expression = new ExpressionTurnout("IQ50:DE322", null);
+        expression = new ExpressionTurnout("IQ50:1:DE322", null);
         MaleDigitalExpressionSocket secondaryExpressionSocket =
                 InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-        new ResetOnTrue("IQA55:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
+        new ResetOnTrue("IQA55:1:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
     }
     
     // The minimal setup for log4J

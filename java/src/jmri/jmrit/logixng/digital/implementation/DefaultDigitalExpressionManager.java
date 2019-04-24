@@ -162,11 +162,13 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         // Optional: A - Automatic (if the system name is created by the software and not by the user
         // \d+ - The LogixNG ID number
         // :
+        // \d+ - The ConditionalNG ID number
+        // :
         // D - Digital
         // E - Expression
         // Optional: A - Automatic (if the system name is created by the software and not by the user
         // \d+ - The DigitalExpression ID number
-        if (systemName.matches("IQA?\\d+:DEA?\\d+")) {
+        if (systemName.matches("IQA?\\d+:\\d:DEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

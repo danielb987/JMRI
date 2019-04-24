@@ -137,7 +137,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         if (setupTree) {
             // Setup initial tree for the LogixNG
 //            setupInitialConditionalNGTree(x);
-            throw new UnsupportedOperationException("Throw exception for now until this is fixed");
+//            throw new UnsupportedOperationException("Throw exception for now until this is fixed");
         }
         
         return x;

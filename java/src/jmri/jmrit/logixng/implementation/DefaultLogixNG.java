@@ -240,7 +240,6 @@ public final class DefaultLogixNG extends AbstractNamedBean
     
     /**
      * Maintain a list of conditional objects.  The key is the conditional system name
-     * @since 4.7.4
      */
     HashMap<String, ConditionalNG> _conditionalNGMap = new HashMap<>();
     
@@ -291,43 +290,24 @@ public final class DefaultLogixNG extends AbstractNamedBean
     }
 
     /**
-     * Add a ConditionalNG to this Logix Returns true if ConditionalNG was
-     * successfully added, returns false if the maximum number of conditionals
-     * has been exceeded.
-     *
-     * @param systemName The ConditionalNG system name
-     * @param order       the order this conditional should calculate in if
-     *                   order is negative, the conditional is added at the end
-     *                   of current group of conditionals
-     */
-    @Override
-    public boolean addConditionalNG(String systemName, int order) {
-        _conditionalNGSystemNames.add(systemName);
-        return (true);
-    }
-
-    /**
      * Add a child ConditionalNG to the parent Logix.
      *
-     * @since 4.7.4
-     * @param systemName The system name for the ConditionalNG object.
-     * @param conditional The ConditionalNG object.
+     * @param conditionalNG The ConditionalNG object.
      * @return true if the ConditionalNG was added, false otherwise.
      */
     @Override
-    public boolean addConditionalNG(String systemName, ConditionalNG conditional) {
-        ConditionalNG chkDuplicate = _conditionalNGMap.putIfAbsent(systemName, conditional);
+    public boolean addConditionalNG(ConditionalNG conditionalNG) {
+        ConditionalNG chkDuplicate = _conditionalNGMap.putIfAbsent(conditionalNG.getSystemName(), conditionalNG);
         if (chkDuplicate == null) {
             return (true);
         }
-        log.error("ConditionalNG '{}' has already been added to Logix '{}'", systemName, getSystemName());  // NOI18N
+        log.error("ConditionalNG '{}' has already been added to Logix '{}'", conditionalNG.getSystemName(), getSystemName());  // NOI18N
         return (false);
     }
 
     /**
      * Get a ConditionalNG belonging to this Logix.
      *
-     * @since 4.7.4
      * @param systemName The name of the ConditionalNG object.
      * @return the ConditionalNG object or null if not found.
      */

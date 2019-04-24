@@ -155,14 +155,15 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     public NameValidity validSystemNameFormat(String systemName) {
         // I - Internal
         // Q - LogixNG
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
+        // Optional: A - Automatic (if the system name is created by the software and not by the user
         // \d+ - The LogixNG ID number
+        // :
+        // \d+ - The ConditionalNG ID number
         // :
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // A - DigitalAction
         // \d+ - The DigitalAction ID number
-        if (systemName.matches("IQA?\\d+:DAA?\\d+")) {
+        if (systemName.matches("IQA?\\d+:\\d+:DAA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

@@ -37,31 +37,16 @@ public interface LogixNG extends Base, NamedBean {
     public String getConditionalNGByNumberOrder(int order);
 
     /**
-     * Add a ConditionalNG name and sequence number to this LogixNG.
-     *
-     * @param systemName The ConditionalNG system name
-     * @param order      the order this conditional should calculate in if
-     *                   order is negative, the conditional is added at the end
-     *                   of current group of conditionals
-     * @return true if the ConditionalNG was added, false otherwise (most likely
-     *         false indicates that maximum number of ConditionalNGs was exceeded)
-     */
-    public boolean addConditionalNG(String systemName, int order);
-
-    /**
      * Add a child ConditionalNG to the parent LogixNG.
      *
-     * @since 4.7.4
-     * @param systemName The system name for the ConditionalNG object.
-     * @param conditional The ConditionalNG object.
+     * @param conditionalNG The ConditionalNG object.
      * @return true if the ConditionalNG was added, false otherwise.
      */
-    public boolean addConditionalNG(String systemName, ConditionalNG conditional);
+    public boolean addConditionalNG(ConditionalNG conditionalNG);
 
     /**
      * Get a ConditionalNG belonging to this LogixNG.
      *
-     * @since 4.7.4
      * @param systemName The name of the ConditionalNG object.
      * @return the ConditionalNG object or null if not found.
      */
