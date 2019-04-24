@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.actions;
 
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
@@ -62,8 +63,8 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public IfThen(LogixNG logixNG, Type type) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG));
+    public IfThen(ConditionalNG conditionalNG, Type type) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E");

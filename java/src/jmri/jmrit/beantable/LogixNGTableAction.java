@@ -43,7 +43,8 @@ import javax.swing.table.TableColumn;
 import jmri.InstanceManager;
 import jmri.Manager;
 import jmri.UserPreferencesManager;
-import jmri.jmrit.logixng.tools.swing.LogixNGEditor;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.tools.swing.ConditionalNGEditor;
 import jmri.jmrit.sensorgroup.SensorGroupFrame;
 import jmri.util.FileUtil;
 import jmri.util.JmriJFrame;
@@ -532,7 +533,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     LogixNG_Manager _logixNGManager = null;  // set when LogixNGAction is created
 
-    LogixNGEditor _treeEdit = null;
+    ConditionalNGEditor _treeEdit = null;
 
     boolean _showReminder = false;
     jmri.jmrit.picker.PickFrame _pickTables;
@@ -1041,12 +1042,15 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
         // Create a new LogixNG edit view, add the listener.
         if (_editMode == EditMode.TREEEDIT) {
-            _treeEdit = new LogixNGEditor(sName);
+            throw new UnsupportedOperationException("Throw exception for now until this is fixed");
+/*
+            ConditionalNG conditionalNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
+            _treeEdit = new ConditionalNGEditor(conditionalNG);
             _treeEdit.initComponents();
             _treeEdit.setVisible(true);
             _inEditMode = true;
             
-            _treeEdit.addLogixNGEventListener(new LogixNGEditor.LogixNGEventListener() {
+            _treeEdit.addLogixNGEventListener(new ConditionalNGEditor.LogixNGEventListener() {
                 @Override
                 public void logixNGEventOccurred() {
                     String lgxName = sName;
@@ -1066,6 +1070,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                     });
                 }
             });
+*/
         }
     }
 

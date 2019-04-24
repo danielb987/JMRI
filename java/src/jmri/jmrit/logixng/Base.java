@@ -88,17 +88,17 @@ public interface Base {
     public String getLongDescription();
     
     /**
-     * Get the LogixNG of this item.
+     * Get the ConditionalNG of this item.
      */
-    default public LogixNG getLogixNG() {
-        if (this instanceof LogixNG) {
-            return (LogixNG) this;
+    default public ConditionalNG getConditionalNG() {
+        if (this instanceof ConditionalNG) {
+            return (ConditionalNG) this;
         } else {
             Base parent = getParent();
-            while (! (parent instanceof LogixNG)) {
+            while (! (parent instanceof ConditionalNG)) {
                 parent = parent.getParent();
             }
-            return (LogixNG) parent;
+            return (ConditionalNG) parent;
         }
     }
     
@@ -141,8 +141,29 @@ public interface Base {
      */
     default public void setParentForAllChildren() {
         
+        traverseAllChildren((b) -> {
+            for (int i=0; i < getChildCount(); i++) {
+                Base child = getChild(i);
+                child.setParent(b);
+            }
+        });
+        
+/*
         for (int i=0; i < getChildCount(); i++) {
             FemaleSocket femaleSocket = getChild(i);
+            femaleSocket.setParent(this);
+            if (femaleSocket.isConnected()) {
+                femaleSocket.getConnectedSocket().setParent(femaleSocket);
+            }
+        }
+*/
+    }
+    
+    default public void traverseAllChildren(RunnableWithBase r) {
+        
+        for (int i=0; i < getChildCount(); i++) {
+            FemaleSocket femaleSocket = getChild(i);
+            r.run(femaleSocket);
             femaleSocket.setParent(this);
             if (femaleSocket.isConnected()) {
                 femaleSocket.getConnectedSocket().setParent(femaleSocket);
@@ -233,5 +254,23 @@ public interface Base {
      * @return true if the object is enabled, false otherwise
      */
     public boolean isEnabled();
-
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    default public void registerListeners() {
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    default public void unregisterListeners() {
+    }
+    
+    
+    
+    public interface RunnableWithBase {
+        public void run(Base b);
+    }
+    
 }

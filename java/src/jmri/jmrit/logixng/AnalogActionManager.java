@@ -26,10 +26,10 @@ public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
     /**
      * Create a new system name for an AnalogAction.
      *
-     * @param logixNG the LogixNG that this analog action belongs to
+     * @param conditionalNG the ConditionalNG that this analog action belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG logixNG);
+    public String getNewSystemName(ConditionalNG conditionalNG);
 
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

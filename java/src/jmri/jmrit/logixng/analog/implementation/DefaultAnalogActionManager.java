@@ -24,6 +24,7 @@ import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.AnalogActionFactory;
+import jmri.jmrit.logixng.ConditionalNG;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -139,9 +140,9 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
     }
 
     @Override
-    public String getNewSystemName(LogixNG logixNG) {
+    public String getNewSystemName(ConditionalNG conditionalNG) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(logixNG.getSystemName());
+        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
         b.append(":AAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

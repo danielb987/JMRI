@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
@@ -95,14 +96,14 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         
         // Get the system name of the LogixNG that this expression belongs to.
         // That is, get the part of the system name before the colon.
-        String logixNGSystemName = systemNameParts[0];
-        String actionSystemName = systemNameParts[1];
+        String conditionalNGSystemName = systemNameParts[0] + ":" + systemNameParts[1];
+        String actionSystemName = systemNameParts[2];
         
-        LogixNG logixNG;
+        ConditionalNG conditionalNG;
         if (action.getParent() != null) {
-            logixNG = action.getLogixNG();
+            conditionalNG = action.getConditionalNG();
             
-            if (!logixNGSystemName.equals(logixNG.getSystemName())) {
+            if (!conditionalNGSystemName.equals(conditionalNG.getSystemName())) {
                 // The system name of the action doesn't start with the system
                 // name of the LogixNG that it belongs to.
                 throw new IllegalArgumentException(
@@ -169,9 +170,9 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
 
     @Override
-    public String getNewSystemName(LogixNG logixNG) {
+    public String getNewSystemName(ConditionalNG conditionalNG) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(logixNG.getSystemName());
+        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
         b.append(":DAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

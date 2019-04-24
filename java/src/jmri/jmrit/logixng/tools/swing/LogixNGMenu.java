@@ -19,7 +19,6 @@ public class LogixNGMenu extends JMenu {
 
         setText(Bundle.getMessage("MenuLogixNG"));
 
-        add(new LogixNGEditorAction());
         add(new TimeDiagramAction());
         add(new ImportLogixAction());
     }

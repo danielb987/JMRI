@@ -29,10 +29,10 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
     /**
      * Create a new system name for an DigitalAction.
      *
-     * @param logixNG the LogixNG that this expression belongs to
+     * @param conditionalNG the ConditionalNG that this expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG logixNG);
+    public String getNewSystemName(ConditionalNG conditionalNG);
 
     public FemaleDigitalActionSocket createFemaleActionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

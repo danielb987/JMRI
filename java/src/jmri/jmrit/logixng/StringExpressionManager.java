@@ -26,10 +26,10 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
     /**
      * Create a new system name for an Expression.
      *
-     * @param logixNG the LogixNG that this analog expression belongs to
+     * @param conditionalNG the ConditionalNG that this analog expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG logixNG);
+    public String getNewSystemName(ConditionalNG conditionalNG);
 
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

@@ -21,7 +21,7 @@ import jmri.jmrit.logixng.StringExpression;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
-import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringExpressionFactory;
 
@@ -143,9 +143,9 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     }
 
     @Override
-    public String getNewSystemName(LogixNG logixNG) {
+    public String getNewSystemName(ConditionalNG conditionalNG) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(logixNG.getSystemName());
+        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
         b.append(":SEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

@@ -75,14 +75,14 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getLogixNG().getSystemName() + ":AE10";
+        return getConditionalNG().getSystemName() + ":AE10";
     }
 
     /** {@inheritDoc} */
     @Override
     public String getNewSystemName() {
         return InstanceManager.getDefault(AnalogExpressionManager.class)
-                .getNewSystemName(getLogixNG());
+                .getNewSystemName(getConditionalNG());
     }
 
     @Override

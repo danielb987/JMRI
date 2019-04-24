@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
@@ -25,8 +26,8 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public And(LogixNG logixNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(logixNG));
+    public And(ConditionalNG conditionalNG) {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
         init();
     }
     

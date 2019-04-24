@@ -16,6 +16,7 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
@@ -99,14 +100,14 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         
         // Get the system name of the LogixNG that this expression belongs to.
         // That is, get the part of the system name before the colon.
-        String logixNGSystemName = systemNameParts[0];
-        String expressionSystemName = systemNameParts[1];
+        String conditionalNGSystemName = systemNameParts[0] + ":" + systemNameParts[1];
+        String expressionSystemName = systemNameParts[2];
         
-        LogixNG logixNG;
+        ConditionalNG conditionalNG;
         if (expression.getParent() != null) {
-            logixNG = expression.getLogixNG();
+            conditionalNG = expression.getConditionalNG();
             
-            if (!logixNGSystemName.equals(logixNG.getSystemName())) {
+            if (!conditionalNGSystemName.equals(conditionalNG.getSystemName())) {
                 // The system name of the expression doesn't start with the system
                 // name of the LogixNG that it belongs to.
                 throw new IllegalArgumentException(
@@ -173,9 +174,9 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 
     @Override
-    public String getNewSystemName(LogixNG logixNG) {
+    public String getNewSystemName(ConditionalNG conditionalNG) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(logixNG.getSystemName());
+        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
         b.append(":DEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

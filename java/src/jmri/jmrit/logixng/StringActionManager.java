@@ -29,7 +29,7 @@ public interface StringActionManager extends Manager<MaleStringActionSocket> {
      * @param logixNG the LogixNG that this analog action belongs to
      * @return a new system name
      */
-    public String getNewSystemName(LogixNG logixNG);
+    public String getNewSystemName(ConditionalNG conditionalNG);
 
     public FemaleStringActionSocket createFemaleStringActionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

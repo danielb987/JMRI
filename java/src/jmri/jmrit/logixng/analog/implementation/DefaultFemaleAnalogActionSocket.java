@@ -79,14 +79,14 @@ public final class DefaultFemaleAnalogActionSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getLogixNG().getSystemName() + ":AA10";
+        return getConditionalNG().getSystemName() + ":AA10";
     }
 
     /** {@inheritDoc} */
     @Override
     public String getNewSystemName() {
         return InstanceManager.getDefault(AnalogActionManager.class)
-                .getNewSystemName(getLogixNG());
+                .getNewSystemName(getConditionalNG());
     }
 
 }

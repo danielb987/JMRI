@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
@@ -27,8 +28,8 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     /**
      * Create a new instance of ActionMany and generate a new system name.
      */
-    public Many(LogixNG logixNG) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG));
+    public Many(ConditionalNG conditionalNG) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
         init();
     }
 

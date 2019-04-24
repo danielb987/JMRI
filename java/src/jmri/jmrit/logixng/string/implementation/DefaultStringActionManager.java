@@ -20,7 +20,7 @@ import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.managers.AbstractManager;
-import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringActionFactory;
 
@@ -138,9 +138,9 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     }
 
     @Override
-    public String getNewSystemName(LogixNG logixNG) {
+    public String getNewSystemName(ConditionalNG conditionalNG) {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(logixNG.getSystemName());
+        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
         b.append(":SAA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);

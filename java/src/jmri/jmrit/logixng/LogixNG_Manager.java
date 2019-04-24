@@ -64,9 +64,9 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
      *   + ActionHoldAnything
      *   + ActionDoIf
      * 
-     * @param logixNG the LogixNG to be initialized with a tree
+     * @param conditionalNG the ConditionalNG to be initialized with a tree
      */
-    public void setupInitialLogixNGTree(LogixNG logixNG);
+    public void setupInitialConditionalNGTree(ConditionalNG conditionalNG);
 
     /**
      * Locate via user name, then system name if needed. Does not create a new

@@ -20,6 +20,7 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalExpression;
@@ -135,7 +136,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         
         if (setupTree) {
             // Setup initial tree for the LogixNG
-            setupInitialLogixNGTree(x);
+//            setupInitialConditionalNGTree(x);
+            throw new UnsupportedOperationException("Throw exception for now until this is fixed");
         }
         
         return x;
@@ -151,24 +153,24 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     }
 
     @Override
-    public void setupInitialLogixNGTree(LogixNG logixNG) {
+    public void setupInitialConditionalNGTree(ConditionalNG conditionalNG) {
         try {
-            FemaleSocket femaleSocket = logixNG.getFemaleSocket();
+            FemaleSocket femaleSocket = conditionalNG.getFemaleSocket();
             MaleDigitalActionSocket actionManySocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).registerAction(new Many(femaleSocket.getLogixNG()));
+                    InstanceManager.getDefault(DigitalActionManager.class).registerAction(new Many(femaleSocket.getConditionalNG()));
             femaleSocket.connect(actionManySocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             femaleSocket = actionManySocket.getChild(0);
             MaleDigitalActionSocket actionHoldAnythingSocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).registerAction(new HoldAnything(femaleSocket.getLogixNG()));
+                    InstanceManager.getDefault(DigitalActionManager.class).registerAction(new HoldAnything(femaleSocket.getConditionalNG()));
             femaleSocket.connect(actionHoldAnythingSocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             femaleSocket = actionManySocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .registerAction(new IfThen(femaleSocket.getLogixNG(), IfThen.Type.TRIGGER_ACTION));
+                            .registerAction(new IfThen(femaleSocket.getConditionalNG(), IfThen.Type.TRIGGER_ACTION));
             femaleSocket.connect(actionIfThenSocket);
 
             /* FOR TESTING ONLY */
@@ -178,13 +180,13 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             femaleSocket = actionIfThenSocket.getChild(0);
             MaleDigitalExpressionSocket expressionAndSocket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
-                            .registerExpression(new And(femaleSocket.getLogixNG()));
+                            .registerExpression(new And(femaleSocket.getConditionalNG()));
             femaleSocket.connect(expressionAndSocket);
             
             femaleSocket = actionIfThenSocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket2 =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .registerAction(new IfThen(femaleSocket.getLogixNG(), IfThen.Type.CONTINOUS_ACTION));
+                            .registerAction(new IfThen(femaleSocket.getConditionalNG(), IfThen.Type.CONTINOUS_ACTION));
             femaleSocket.connect(actionIfThenSocket2);
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */

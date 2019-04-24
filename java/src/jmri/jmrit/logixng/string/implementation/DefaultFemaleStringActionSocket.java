@@ -74,14 +74,14 @@ public final class DefaultFemaleStringActionSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getLogixNG().getSystemName() + ":SA10";
+        return getConditionalNG().getSystemName() + ":SA10";
     }
 
     /** {@inheritDoc} */
     @Override
     public String getNewSystemName() {
         return InstanceManager.getDefault(StringActionManager.class)
-                .getNewSystemName(getLogixNG());
+                .getNewSystemName(getConditionalNG());
     }
 
     @Override

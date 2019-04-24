@@ -12,7 +12,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -31,8 +31,8 @@ public class HoldAnything extends AbstractDigitalAction {
     /**
      * Create a new instance of ActionMany and generate a new system name.
      */
-    public HoldAnything(LogixNG logixNG) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG));
+    public HoldAnything(ConditionalNG conditionalNG) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
         init();
     }
 

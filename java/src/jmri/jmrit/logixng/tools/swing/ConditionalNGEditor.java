@@ -55,7 +55,7 @@ import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
-import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
@@ -72,14 +72,14 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist 2018
  */
-public final class LogixNGEditor extends JmriJFrame {
+public final class ConditionalNGEditor extends JmriJFrame {
 
     private static final int panelWidth700 = 700;
     private static final int panelHeight500 = 500;
     
     private static final Map<String, Color> FEMALE_SOCKET_COLORS = new HashMap<>();
     
-    private final LogixNG logixNG;
+    private final ConditionalNG _conditionalNG;
     
     // Add LogixNG Variables
     private JmriJFrame addEditLogixNGFrame = null;
@@ -114,24 +114,25 @@ public final class LogixNGEditor extends JmriJFrame {
      */
     public HashMap<String, String> logixNGData = new HashMap<>();
     
-    LogixNGEditor() {
-        logixNG = null;
+    ConditionalNGEditor() {
+        _conditionalNG = null;
     }
     
     /**
      * Construct a LogixNGEditor.
      *
-     * @param sName system name of LogixNG to be edited
+     * @param conditionalNG the ConditionalNG to be edited
      */
-    public LogixNGEditor(String sName) {
+    public ConditionalNGEditor(ConditionalNG conditionalNG) {
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalActionSocket", Color.RED);
         FEMALE_SOCKET_COLORS.put("jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalExpressionSocket", Color.BLUE);
-        logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
+//        conditionalNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
+        this._conditionalNG = conditionalNG;
         
-        if (logixNG.getUserName() == null) {
-            setTitle(Bundle.getMessage("TitleEditLogixNG", sName));
+        if (_conditionalNG.getUserName() == null) {
+            setTitle(Bundle.getMessage("TitleEditLogixNG", _conditionalNG.getSystemName()));
         } else {
-            setTitle(Bundle.getMessage("TitleEditLogixNG2", sName, logixNG.getUserName()));
+            setTitle(Bundle.getMessage("TitleEditLogixNG2", _conditionalNG.getSystemName(), _conditionalNG.getUserName()));
         }
     }
     
@@ -191,22 +192,24 @@ public final class LogixNGEditor extends JmriJFrame {
         // Figure out where in the filesystem to start displaying
 //        File root;
 //        root = new File(System.getProperty("user.home"));
-        FemaleSocket root;
-        SortedSet<LogixNG> logixNGSet = InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet();
-        for (LogixNG nl : logixNGSet) {
-            System.out.format("LogixNG: %s%n", nl.toString());
-            System.out.format("LogixNG female socket: %s. Connected: %b%n", nl.getFemaleSocket().toString(), nl.getFemaleSocket().isConnected());
-        }
-        root = logixNGSet.first().getFemaleSocket();
+//        FemaleSocket root;
+//        SortedSet<LogixNG> logixNGSet = InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet();
+//        for (LogixNG nl : logixNGSet) {
+//            System.out.format("LogixNG: %s%n", nl.toString());
+//            System.out.format("LogixNG female socket: %s. Connected: %b%n", nl.getFemaleSocket().toString(), nl.getFemaleSocket().isConnected());
+//        }
+//        root = logixNGSet.first().getFemaleSocket();
 
         // Create a TreeModel object to represent our tree of files
 //        FileTreeModel model = new FileTreeModel(root);
 //        // Create a TreeModel object to represent our tree of files
-        if (logixNG != null)
-            femaleSocketTreeModel = new FemaleSocketTreeModel(logixNG.getFemaleSocket());
-        else
-            femaleSocketTreeModel = new FemaleSocketTreeModel(root);
-
+//        if (_conditionalNG != null)
+//            femaleSocketTreeModel = new FemaleSocketTreeModel(_conditionalNG.getFemaleSocket());
+//        else
+//            femaleSocketTreeModel = new FemaleSocketTreeModel(root);
+        
+        femaleSocketTreeModel = new FemaleSocketTreeModel(_conditionalNG.getFemaleSocket());
+        
         // Create a JTree and tell it to display our model
         final JTree tree = new JTree();
         tree.setModel(femaleSocketTreeModel);
@@ -260,7 +263,7 @@ public final class LogixNGEditor extends JmriJFrame {
     @Override
     public void windowClosed(WindowEvent e) {
         logixNGData.clear();
-        logixNGData.put("Finish", logixNG.getSystemName());  // NOI18N
+        logixNGData.put("Finish", _conditionalNG.getSystemName());  // NOI18N
         fireLogixNGEvent();
     }
     
@@ -892,6 +895,6 @@ public final class LogixNGEditor extends JmriJFrame {
         
     }
     
-    private final static Logger log = LoggerFactory.getLogger(LogixNGEditor.class);
+    private final static Logger log = LoggerFactory.getLogger(ConditionalNGEditor.class);
 
 }

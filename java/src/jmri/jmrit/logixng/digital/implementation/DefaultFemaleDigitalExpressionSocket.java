@@ -79,14 +79,14 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getLogixNG().getSystemName() + ":DE10";
+        return getConditionalNG().getSystemName() + ":DE10";
     }
 
     /** {@inheritDoc} */
     @Override
     public String getNewSystemName() {
         return InstanceManager.getDefault(DigitalExpressionManager.class)
-                .getNewSystemName(getLogixNG());
+                .getNewSystemName(getConditionalNG());
     }
 
     @Override

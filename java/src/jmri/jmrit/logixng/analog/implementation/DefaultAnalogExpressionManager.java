@@ -25,6 +25,7 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.AnalogExpressionFactory;
+import jmri.jmrit.logixng.ConditionalNG;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -144,9 +145,9 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     }
 
     @Override
-    public String getNewSystemName(LogixNG logixNG) {
+    public String getNewSystemName(ConditionalNG conditionalNG) {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(logixNG.getSystemName());
+        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
         b.append(":AEA");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
