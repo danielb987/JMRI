@@ -160,6 +160,6 @@ public final class ImportLogixFrame extends JmriJFrame {
     }
     
     
-    private final static Logger log = LoggerFactory.getLogger(ImportLogixFrame.class);
+//    private final static Logger log = LoggerFactory.getLogger(ImportLogixFrame.class);
 
 }
