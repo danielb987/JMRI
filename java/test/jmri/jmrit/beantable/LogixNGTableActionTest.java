@@ -91,7 +91,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-    public void testLogixBrowser() {
+    public void testLogixNGBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
 
@@ -217,6 +217,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
         jmri.util.JUnitUtil.initLogixManager();
+        jmri.util.JUnitUtil.initLogixNGManager();
         jmri.util.JUnitUtil.initDefaultUserMessagePreferences();
 
         InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("IQ101", "LogixNG 101");
@@ -224,7 +225,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("IQ103", "LogixNG 103");
         InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("IQ104", "LogixNG 104");
 
-        helpTarget = "package.jmri.jmrit.beantable.LogixTable"; 
+        helpTarget = "package.jmri.jmrit.beantable.LogixNGTable"; 
         a = new LogixNGTableAction();
     }
 

@@ -525,7 +525,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     @Override
     protected String helpTarget() {
-        return "package.jmri.jmrit.beantable.LogixTable";  // NOI18N
+        return "package.jmri.jmrit.beantable.LogixNGTable";  // NOI18N
     }
 
     // ------------ variable definitions ------------
