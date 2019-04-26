@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.tools.swing.LogixNGEditor;
 
 /**
  * Swing action to create and register a LogixNG Table.
@@ -89,9 +90,9 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         // set up managers - no need to use InstanceManager since both managers are
         // Default only (internal). We use InstanceManager to get managers for
         // compatibility with other facilities.
-        _logixNGManager = InstanceManager.getNullableDefault(LogixNG_Manager.class);
+        _logixNG_Manager = InstanceManager.getNullableDefault(LogixNG_Manager.class);
         // disable ourself if there is no LogixNG manager
-        if (_logixNGManager == null) {
+        if (_logixNG_Manager == null) {
             setEnabled(false);
         }
     }
@@ -222,7 +223,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             void doDelete(LogixNG bean) {
                 bean.setEnabled(false);
                 // delete the LogixNG
-                _logixNGManager.deleteLogixNG(bean);
+                _logixNG_Manager.deleteLogixNG(bean);
             }
 
             @Override
@@ -519,7 +520,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
     }
 
     void enableAll(boolean enable) {
-        for (LogixNG x : _logixNGManager.getNamedBeanSet()) {
+        for (LogixNG x : _logixNG_Manager.getNamedBeanSet()) {
             x.setEnabled(enable);
         }
     }
@@ -531,9 +532,10 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
     // ------------ variable definitions ------------
 
-    LogixNG_Manager _logixNGManager = null;  // set when LogixNGAction is created
+    LogixNG_Manager _logixNG_Manager = null;  // set when LogixNGAction is created
 
-    ConditionalNGEditor _treeEdit = null;
+    LogixNGEditor _logixNGEdit = null;
+//    ConditionalNGEditor _treeEdit = null;
 
     boolean _showReminder = false;
     jmri.jmrit.picker.PickFrame _pickTables;
@@ -808,7 +810,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             if (!checkLogixNGUserName(uName)) {
                 return;
             }
-            targetLogixNG = _logixNGManager.createLogixNG(uName);
+            targetLogixNG = _logixNG_Manager.createLogixNG(uName);
         } else {
             if (!checkLogixNGSysName()) {
                 return;
@@ -816,7 +818,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             String sName = _systemName.getText().trim();
             // check if a LogixNG with this name already exists
             boolean createLogix = true;
-            targetLogixNG = _logixNGManager.getBySystemName(sName);
+            targetLogixNG = _logixNG_Manager.getBySystemName(sName);
             if (targetLogixNG != null) {
                 int result = JOptionPane.showConfirmDialog(f,
                         Bundle.getMessage("ConfirmLogixDuplicate", sName, _logixNGSysName), // NOI18N
@@ -836,7 +838,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             }
             if (createLogix) {
                 // Create the new LogixNG
-                targetLogixNG = _logixNGManager.createLogixNG(sName, uName);
+                targetLogixNG = _logixNG_Manager.createLogixNG(sName, uName);
                 if (targetLogixNG == null) {
                     // should never get here unless there is an assignment conflict
                     log.error("Failure to create LogixNG with System Name: {}", sName);  // NOI18N
@@ -849,7 +851,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                 targetLogixNG.setUserName(uName);
             }
         }
-        LogixNG srcLogic = _logixNGManager.getBySystemName(_logixNGSysName);
+        LogixNG srcLogic = _logixNG_Manager.getBySystemName(_logixNGSysName);
         for (int i = 0; i < srcLogic.getNumConditionals(); i++) {
             String cSysName = srcLogic.getConditionalByNumberOrder(i);
             copyConditionalToLogix(cSysName, srcLogic, targetLogixNG);
@@ -867,7 +869,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
     boolean checkLogixNGUserName(String uName) {
         // check if a LogixNG with the same user name exists
         if (uName != null && uName.trim().length() > 0) {
-            LogixNG x = _logixNGManager.getByUserName(uName);
+            LogixNG x = _logixNG_Manager.getByUserName(uName);
             if (x != null) {
                 // LogixNG with this user name already exists
                 JOptionPane.showMessageDialog(addLogixNGFrame,
@@ -919,9 +921,9 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                     Bundle.getMessage("LogixNGError32", _curLogixNG.getSystemName()),
                     Bundle.getMessage("ErrorTitle"),
                     JOptionPane.ERROR_MESSAGE);
-            if (_treeEdit != null) {
-                _treeEdit.toFront();
-//                _treeEdit.bringToFront();
+            if (_logixNGEdit != null) {
+//                _logixNGEdit.toFront();
+                _logixNGEdit.bringToFront();
             }
             return false;
         }
@@ -937,7 +939,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
         if (sName != null) {
             // check if a LogixNG with this name exists
-            LogixNG x = _logixNGManager.getBySystemName(sName);
+            LogixNG x = _logixNG_Manager.getBySystemName(sName);
             if (x == null) {
                 // LogixNG does not exist, so cannot be edited
                 log.error("No LogixNG with system name: " + sName);
@@ -968,7 +970,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             if (!checkLogixNGUserName(uName)) {
                 return;
             }
-            _curLogixNG = _logixNGManager.createLogixNG(uName);
+            _curLogixNG = _logixNG_Manager.createLogixNG(uName);
             sName = _curLogixNG.getSystemName();
         } else {
             if (!checkLogixNGSysName()) {
@@ -979,7 +981,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             // check if a LogixNG with this name already exists
             LogixNG x = null;
             try {
-                x = _logixNGManager.getBySystemName(sName);
+                x = _logixNG_Manager.getBySystemName(sName);
             } catch (Exception ex) {
                 // user input no good
                 handleCreateException(sName);
@@ -996,7 +998,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                 return;
             }
             // Create the new LogixNG
-            _curLogixNG = _logixNGManager.createLogixNG(sName, uName);
+            _curLogixNG = _logixNG_Manager.createLogixNG(sName, uName);
             if (_curLogixNG == null) {
                 // should never get here unless there is an assignment conflict
                 log.error("Failure to create LogixNG with System Name: {}", sName);  // NOI18N
@@ -1026,7 +1028,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
      * @param sName system name of LogixNG to be edited
      */
     void editPressed(String sName) {
-        _curLogixNG = _logixNGManager.getBySystemName(sName);
+        _curLogixNG = _logixNG_Manager.getBySystemName(sName);
         if (!checkFlags(sName)) {
             return;
         }
@@ -1042,7 +1044,28 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
 
         // Create a new LogixNG edit view, add the listener.
         if (_editMode == EditMode.TREEEDIT) {
-            throw new UnsupportedOperationException("Throw exception for now until this is fixed");
+            _logixNGEdit = new LogixNGEditor(f, m, sName);
+            _inEditMode = true;
+            _logixNGEdit.addLogixNGEventListener(new LogixNGEditor.LogixNGEventListener() {
+                @Override
+                public void logixNGEventOccurred() {
+                    String lgxName = sName;
+                    _logixNGEdit.logixData.forEach((key, value) -> {
+                        if (key.equals("Finish")) {                  // NOI18N
+                            _logixNGEdit = null;
+                            _inEditMode = false;
+                            _curLogixNG.activateLogixNG();
+                            f.setVisible(true);
+                        } else if (key.equals("Delete")) {           // NOI18N
+                            deletePressed(value);
+                        } else if (key.equals("chgUname")) {         // NOI18N
+                            LogixNG x = _logixNG_Manager.getBySystemName(lgxName);
+                            x.setUserName(value);
+                            m.fireTableDataChanged();
+                        }
+                    });
+                }
+            });
 /*
             ConditionalNG conditionalNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName(sName);
             _treeEdit = new ConditionalNGEditor(conditionalNG);
@@ -1063,7 +1086,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                         } else if (key.equals("Delete")) {           // NOI18N
                             deletePressed(value);
                         } else if (key.equals("chgUname")) {         // NOI18N
-                            LogixNG x = _logixNGManager.getBySystemName(lgxName);
+                            LogixNG x = _logixNG_Manager.getBySystemName(lgxName);
                             x.setUserName(value);
                             m.fireTableDataChanged();
                         }
@@ -1109,12 +1132,12 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
             return;
         }
         
-        final LogixNG x = _logixNGManager.getBySystemName(sName);
+        final LogixNG x = _logixNG_Manager.getBySystemName(sName);
         final jmri.UserPreferencesManager p;
         p = jmri.InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class);
         if (p != null && p.getMultipleChoiceOption(getClassName(), "delete") == 0x02) {     // NOI18N
             if (x != null) {
-                _logixNGManager.deleteLogixNG(x);
+                _logixNG_Manager.deleteLogixNG(x);
 //                deleteSourceWhereUsed();
             }
         } else {
@@ -1162,7 +1185,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
                         p.setMultipleChoiceOption(getClassName(), "delete", 0x02);  // NOI18N
                     }
                     if (x != null) {
-                        _logixNGManager.deleteLogixNG(x);
+                        _logixNG_Manager.deleteLogixNG(x);
 //                        deleteSourceWhereUsed();
                     }
                     dialog.dispose();
@@ -1249,7 +1272,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
      */
     void browserPressed(String sName) {
         // LogixNG was found, create the window
-        _curLogixNG = _logixNGManager.getBySystemName(sName);
+        _curLogixNG = _logixNG_Manager.getBySystemName(sName);
         makeBrowserWindow();
     }
 

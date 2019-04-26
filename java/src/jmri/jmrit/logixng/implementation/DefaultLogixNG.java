@@ -248,18 +248,13 @@ public final class DefaultLogixNG extends AbstractNamedBean
      */
     private boolean _isActivated = false;
     
-    /**
-     * Get number of ConditionalNGs for this Logix
-     */
+    /** {@inheritDoc} */
     @Override
     public int getNumConditionalNGs() {
         return _conditionalNGSystemNames.size();
     }
 
-    /**
-     * Move 'row' to 'nextInOrder' and shift all between 'row' and 'nextInOrder'
-     * up one position {@literal ( row > nextInOrder )}
-     */
+    /** {@inheritDoc} */
     @Override
     public void swapConditionalNG(int nextInOrder, int row) {
         if (row <= nextInOrder) {
@@ -272,14 +267,17 @@ public final class DefaultLogixNG extends AbstractNamedBean
         _conditionalNGSystemNames.set(nextInOrder, temp);
     }
 
-    /**
-     * Returns the system name of the conditional that will calculate in the
-     * specified order. This is also the order the ConditionalNG is listed in the
-     * Add/Edit Logix dialog. If 'order' is greater than the number of
-     * ConditionalNGs for this Logix, and empty String is returned.
-     *
-     * @param order  order in which the ConditionalNG calculates.
-     */
+    /** {@inheritDoc} */
+    @Override
+    public ConditionalNG getConditionalNG(int order) {
+        try {
+            return getConditionalNG(_conditionalNGSystemNames.get(order));
+        } catch (java.lang.IndexOutOfBoundsException ioob) {
+            return null;
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public String getConditionalNGByNumberOrder(int order) {
         try {
@@ -289,12 +287,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
         }
     }
 
-    /**
-     * Add a child ConditionalNG to the parent Logix.
-     *
-     * @param conditionalNG The ConditionalNG object.
-     * @return true if the ConditionalNG was added, false otherwise.
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean addConditionalNG(ConditionalNG conditionalNG) {
         ConditionalNG chkDuplicate = _conditionalNGMap.putIfAbsent(conditionalNG.getSystemName(), conditionalNG);
@@ -305,29 +298,24 @@ public final class DefaultLogixNG extends AbstractNamedBean
         return (false);
     }
 
-    /**
-     * Get a ConditionalNG belonging to this Logix.
-     *
-     * @param systemName The name of the ConditionalNG object.
-     * @return the ConditionalNG object or null if not found.
-     */
+    /** {@inheritDoc} */
     @Override
     public ConditionalNG getConditionalNG(String systemName) {
         return _conditionalNGMap.get(systemName);
     }
     
-    /**
-     * Delete a Conditional and remove it from this Logix
-     * <P>
-     * Note: Since each Logix must have at least one Conditional to do anything,
-     * the user is warned in Logix Table Action when the last Conditional is
-     * deleted.
-     * <P>
-     * Returns true if Conditional was successfully deleted, otherwise returns
-     * false.
-     *
-     * @param systemName The Conditional system name
-     */
+    /** {@inheritDoc} */
+    @Override
+    public ConditionalNG getConditionalNGByUserName(String userName) {
+        for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
+            if (userName.equals(conditionalNG.getUserName())) {
+                return conditionalNG;
+            }
+        }
+        return null;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public void deleteConditionalNG(String systemName) {
         if (_conditionalNGSystemNames.size() <= 0) {
@@ -342,13 +330,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
         _conditionalNGMap.remove(systemName);
     }
     
-    /**
-     * Activate the Logix, starts Logix processing by connecting all inputs that
-     * are included the Conditionals in this Logix.
-     * <P>
-     * A Logix must be activated before it will calculate any of its
-     * Conditionals.
-     */
+    /** {@inheritDoc} */
     @Override
     public void activateLogixNG() {
         // if the Logix is already busy, simply return
@@ -374,12 +356,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
 */
     }
 
-    /**
-     * Deactivate the Logix. This method disconnects the Logix from all input
-     * objects and stops it from being triggered to calculate.
-     * <P>
-     * A Logix must be deactivated before it's Conditionals are changed.
-     */
+    /** {@inheritDoc} */
     @Override
     public void deActivateLogixNG() {
         if (_isActivated) {
@@ -395,10 +372,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
         }
     }
 
-    /**
-     * Calculate all Conditionals, triggering action if the user specified
-     * conditions are met, and the Logix is enabled.
-     */
+    /** {@inheritDoc} */
     @Override
     public void calculateConditionalNGs() {
         // are there Conditionals to calculate?

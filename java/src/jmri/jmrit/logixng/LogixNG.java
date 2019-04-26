@@ -26,6 +26,17 @@ public interface LogixNG extends Base, NamedBean {
     public void swapConditionalNG(int nextInOrder, int row);
 
     /**
+     * Returns the conditional that will calculate in the specified order.
+     * This is also the order the ConditionalNG is listed in the
+     * Add/Edit LogixNG dialog. If 'order' is greater than the number of
+     * ConditionalNGs for this LogixNG, and empty String is returned.
+     *
+     * @param order order in which the ConditionalNG calculates
+     * @return system name of conditional or an empty String
+     */
+    public ConditionalNG getConditionalNG(int order);
+
+    /**
      * Returns the system name of the conditional that will calculate in the
      * specified order. This is also the order the ConditionalNG is listed in the
      * Add/Edit LogixNG dialog. If 'order' is greater than the number of
@@ -51,6 +62,14 @@ public interface LogixNG extends Base, NamedBean {
      * @return the ConditionalNG object or null if not found.
      */
     public ConditionalNG getConditionalNG(String systemName);
+
+    /**
+     * Get a ConditionalNG belonging to this LogixNG.
+     *
+     * @param userName The name of the ConditionalNG object.
+     * @return the ConditionalNG object or null if not found.
+     */
+    public ConditionalNG getConditionalNGByUserName(String userName);
 
     /**
      * Delete a ConditionalNG from this LogixNG.
