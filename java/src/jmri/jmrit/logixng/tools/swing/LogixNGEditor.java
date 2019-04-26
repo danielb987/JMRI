@@ -432,8 +432,6 @@ public final class LogixNGEditor {
 
     /**
      * Respond to the Delete button in the Edit LogixNG window.
-     *
-     * @param e The event heard
      */
     void deletePressed() {
         if (checkEditConditionalNG()) {
