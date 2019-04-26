@@ -1,13 +1,12 @@
-package jmri.jmrit.logixng.tools.swing;
+package jmri.jmrit.logixng.tools;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    LogixNGEditorTest.class,
-    TimeDiagramTest.class,
-    ImportLogixFrameTest.class,
+    jmri.jmrit.logixng.tools.swing.PackageTest.class,
+    ImportLogixTest.class,
 })
 
 /**

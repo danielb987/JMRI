@@ -13,7 +13,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist Copyright (C) 2018
  */
-public class ImportLogixTest {
+public class ImportLogixFrameTest {
 
     @Test
     public void testCTor() {
