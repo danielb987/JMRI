@@ -41,32 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The traditional list based conditional editor based on the original editor
- * included in LogixNGTableAction.
- * <p>
- * ConditionalNGs now have two policies to trigger execution of their action
- * lists:
- * <ol>
- *   <li>the previous policy - Trigger on change of state only
- *   <li>the new default - Trigger on any enabled state calculation
- * </ol>
- * Jan 15, 2011 - Pete Cressman
- * <p>
- * Two additional action and variable name selection methods have been added:
- * <ol>
- *     <li>Single Pick List
- *     <li>Combo Box Selection
- * </ol>
- * The traditional tabbed Pick List with text entry is the default method.
- * The Options menu has been expanded to list the 3 methods.
- * Mar 27, 2017 - Dave Sand
- * <p>
- * Add a Browse Option to the LogixNG Select Menu. This will display a window that
- * creates a formatted list of the contents of the selected LogixNG with each
- * ConditionalNG, Variable and Action. The code is courtesy of Chuck Catania and
- * is used with his permission. Apr 2, 2017 - Dave Sand
- * <p>
- * Compare with the other ConditionalNG Edit tool {@link ConditionalNGTreeEdit}
+ * Editor for LogixNG
  *
  * @author Dave Duchamp Copyright (C) 2007  (ConditionalListEdit)
  * @author Pete Cressman Copyright (C) 2009, 2010, 2011  (ConditionalListEdit)
