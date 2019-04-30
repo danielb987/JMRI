@@ -70,11 +70,6 @@ public class TurnoutManagerScaffold implements TurnoutManager {
     }
 
     @Override
-    public String[] getSystemNameArray() {
-        return null;
-    }
-
-    @Override
     public String getClosedText() {
         return null;
     }

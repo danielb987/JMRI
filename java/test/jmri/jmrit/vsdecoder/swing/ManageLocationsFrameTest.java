@@ -2,8 +2,11 @@ package jmri.jmrit.vsdecoder.swing;
 
 import java.awt.GraphicsEnvironment;
 import java.util.List;
+import java.util.SortedSet;
+import jmri.Block;
 import jmri.BlockManager;
 import jmri.InstanceManager;
+import jmri.Reporter;
 import jmri.ReporterManager;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.LocationManager;
@@ -22,14 +25,12 @@ public class ManageLocationsFrameTest extends jmri.util.JmriJFrameTestBase {
         jmri.util.JUnitUtil.setUp();
         ListeningSpot s = new ListeningSpot();
         ReporterManager rmgr = jmri.InstanceManager.getDefault(jmri.ReporterManager.class);
-        String[] reporterNameArray = rmgr.getSystemNameArray(); // deprecated, but we test until removed
-        jmri.util.JUnitAppender.suppressWarnMessage("Manager#getSystemNameArray() is deprecated");
+        SortedSet<Reporter> reporterSet = rmgr.getNamedBeanSet();
 
-        Object[][] reporterTable = new Object[reporterNameArray.length][6];
+        Object[][] reporterTable = new Object[reporterSet.size()][6];
         BlockManager bmgr = jmri.InstanceManager.getDefault(jmri.BlockManager.class);
-        String[] blockNameArray = bmgr.getSystemNameArray(); // deprecated, but we test until removed
-        jmri.util.JUnitAppender.suppressWarnMessage("Manager#getSystemNameArray() is deprecated");
-        Object[][] blockTable = new Object[blockNameArray.length][6];
+        SortedSet<Block> blockSet = bmgr.getNamedBeanSet();
+        Object[][] blockTable = new Object[blockSet.size()][6];
 
         LocationManager lmgr = InstanceManager.getDefault(LocationManager.class);
         List<Location> locations = lmgr.getLocationsByIdList();
