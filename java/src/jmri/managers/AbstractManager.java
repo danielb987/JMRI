@@ -331,19 +331,6 @@ abstract public class AbstractManager<E extends NamedBean> implements Manager<E>
     @CheckReturnValue
     public int getObjectCount() { return _beans.size();}    
 
-    /** {@inheritDoc} */
-    @Override
-    @Deprecated  // will be removed when superclass method is removed due to @Override
-    public String[] getSystemNameArray() {
-        jmri.util.Log4JUtil.deprecationWarning(log, "getSystemNameArray");
-        if (log.isTraceEnabled()) log.trace("Manager#getSystemNameArray() called", new Exception("traceback"));
-
-        if (cachedSystemNameArray == null) {
-            cachedSystemNameArray = getSystemNameList().toArray(new String[_beans.size()]);
-        }
-        return cachedSystemNameArray;
-    }
-
     
     /** {@inheritDoc} */
     @Override

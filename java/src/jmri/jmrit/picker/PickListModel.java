@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -130,14 +131,13 @@ public abstract class PickListModel<E extends NamedBean> extends BeanTableDataMo
                 _pickList.get(i).removePropertyChangeListener(this);
             }
         }
-        List<String> systemNameList = getManager().getSystemNameList();
+        SortedSet<E> namedBeanSet = getManager().getNamedBeanSet();
         TreeSet<E> ts = new TreeSet<>(new NamedBeanComparator());
 
-        Iterator<String> iter = systemNameList.iterator();
-        while (iter.hasNext()) {
-            ts.add(getBySystemName(iter.next()));
+        for (E b : namedBeanSet) {
+            ts.add(b);
         }
-        _pickList = new ArrayList<>(systemNameList.size());
+        _pickList = new ArrayList<>(namedBeanSet.size());
 
         Iterator<E> it = ts.iterator();
         while (it.hasNext()) {

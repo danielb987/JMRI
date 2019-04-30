@@ -114,14 +114,8 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
                 }
             }
         }
-        sysNameList = getManager().getSystemNameList();
-        // and add them back in
-        for (int i = 0; i < sysNameList.size(); i++) {
-            // if object has been deleted, it's not here; ignore it
-            T b = getBySystemName(sysNameList.get(i));
-            if (b != null) {
-                b.addPropertyChangeListener(this, null, "Table View");
-            }
+        for (T b : getManager().getNamedBeanSet()) {
+            b.addPropertyChangeListener(this, null, "Table View");
         }
     }
 
@@ -850,12 +844,10 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
         }
 
         JComboBox<String> box = new JComboBox<>();
-        List<String> nameList = getManager().getSystemNameList();
-        for (int i = 0; i < nameList.size(); i++) {
-            T nb = getBySystemName(nameList.get(i));
+        for (T nb : getManager().getNamedBeanSet()) {
             //Only add items that do not have a username assigned.
-            if (nb.getDisplayName().equals(nameList.get(i))) {
-                box.addItem(nameList.get(i));
+            if (nb.getDisplayName().equals(nb.getSystemName())) {
+                box.addItem(nb.getSystemName());
             }
         }
 
