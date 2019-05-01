@@ -72,8 +72,10 @@ public class DoAnalogAction
     private DoAnalogAction(DoAnalogAction template, String sys) {
         super(sys);
         _template = template;
-        _analogExpressionSocket = null;
-        _analogActionSocket = null;
+        _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
+                .createFemaleAnalogExpressionSocket(this, this, _template._analogExpressionSocket.getName());
+        _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
+                .createFemaleAnalogActionSocket(this, this, _template._analogActionSocket.getName());
     }
     
     /** {@inheritDoc} */

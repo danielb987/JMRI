@@ -28,6 +28,7 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
         super(sys);
         _actionPlugin = null;
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */

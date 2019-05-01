@@ -48,6 +48,7 @@ public class GetAnalogIO extends AbstractAnalogExpression {
     private GetAnalogIO(GetAnalogIO template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */

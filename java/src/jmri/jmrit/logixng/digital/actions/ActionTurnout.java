@@ -37,6 +37,7 @@ public class ActionTurnout extends AbstractDigitalAction {
     private ActionTurnout(ActionTurnout template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */

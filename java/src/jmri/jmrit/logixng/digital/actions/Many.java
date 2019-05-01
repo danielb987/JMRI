@@ -58,15 +58,16 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         setActionSystemNames(actionSystemNames);
     }
     
+    private Many(Many template, String sys) {
+        super(sys);
+        _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
+    }
+    
     private void init() {
         actionEntries
                 .add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class)
                         .createFemaleSocket(this, this, getNewSocketName())));
-    }
-    
-    private Many(Many template, String sys) {
-        super(sys);
-        _template = template;
     }
     
     /** {@inheritDoc} */

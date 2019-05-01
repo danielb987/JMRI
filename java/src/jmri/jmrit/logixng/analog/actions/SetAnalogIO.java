@@ -43,6 +43,7 @@ public class SetAnalogIO extends AbstractAnalogAction {
     private SetAnalogIO(SetAnalogIO template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */
