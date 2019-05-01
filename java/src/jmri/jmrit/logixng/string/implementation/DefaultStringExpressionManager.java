@@ -153,7 +153,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     }
 
     @Override
-    public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
+    public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
         return new DefaultFemaleStringExpressionSocket(parent, listener, socketName);
     }

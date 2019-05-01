@@ -15,7 +15,7 @@ public class DefaultFemaleDigitalExpressionSocketFactory implements FemaleSocket
 
     @Override
     public FemaleSocket create(Base parent, FemaleSocketListener listener) {
-        return InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(parent, listener, getNewSocketName(parent));
+        return InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleSocket(parent, listener, getNewSocketName(parent));
     }
 
     @Override

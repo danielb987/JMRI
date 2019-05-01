@@ -181,7 +181,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
 
     @Override
-    public FemaleDigitalActionSocket createFemaleActionSocket(
+    public FemaleDigitalActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
         return new DefaultFemaleDigitalActionSocket(parent, listener, socketName);
     }

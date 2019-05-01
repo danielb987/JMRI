@@ -40,12 +40,12 @@ public final class DefaultLogixNG extends AbstractNamedBean
     
     public DefaultLogixNG(String sys) throws BadUserNameException, BadSystemNameException  {
         super(sys);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     public DefaultLogixNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     public DefaultLogixNG(String sys, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
@@ -61,7 +61,8 @@ public final class DefaultLogixNG extends AbstractNamedBean
     private DefaultLogixNG(DefaultLogixNG template, String sys) {
         super(sys);
         _template = template;
-        _femaleActionSocket = null;
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
+                .createFemaleSocket(this, this, _template._femaleActionSocket.getName());
     }
     
     /** {@inheritDoc} */

@@ -69,7 +69,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     
     private void init() {
         _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, getNewSocketName()));
+                .createFemaleSocket(this, this, getNewSocketName()));
     }
 
     /** {@inheritDoc} */
@@ -134,7 +134,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
             }
         }
         if (!hasFreeSocket) {
-            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleExpressionSocket(this, this, getNewSocketName()));
+            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleSocket(this, this, getNewSocketName()));
         }
     }
 
@@ -155,7 +155,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         
         for (String systemName : _childrenSystemNames) {
             FemaleDigitalExpressionSocket femaleSocket =
-                    manager.createFemaleExpressionSocket(this, this, getNewSocketName());
+                    manager.createFemaleSocket(this, this, getNewSocketName());
             
             try {
                 femaleSocket.connect(manager.getBeanBySystemName(systemName));
@@ -166,7 +166,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         }
         
         // Add one extra empty socket
-        _children.add(manager.createFemaleExpressionSocket(this, this, getNewSocketName()));
+        _children.add(manager.createFemaleSocket(this, this, getNewSocketName()));
     }
 
 }

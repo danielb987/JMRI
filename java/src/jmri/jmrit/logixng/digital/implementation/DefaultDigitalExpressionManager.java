@@ -186,7 +186,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 
     @Override
-    public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
+    public FemaleDigitalExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
         return new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName);
     }

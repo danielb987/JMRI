@@ -34,7 +34,7 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
      */
     public String getNewSystemName(ConditionalNG conditionalNG);
 
-    public FemaleDigitalActionSocket createFemaleActionSocket(
+    public FemaleDigitalActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleDigitalActionSocket createFemaleActionSocket(

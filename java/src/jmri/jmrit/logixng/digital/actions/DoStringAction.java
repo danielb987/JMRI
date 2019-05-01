@@ -12,7 +12,6 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.jmrit.logixng.MaleStringExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Executes an string action with the result of an string expression.
@@ -32,17 +31,17 @@ public class DoStringAction
     public DoStringAction(String sys) {
         super(sys);
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
-                .createFemaleStringExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
-                .createFemaleStringActionSocket(this, this, "A1");
+                .createFemaleSocket(this, this, "A1");
     }
     
     public DoStringAction(String sys, String user) {
         super(sys, user);
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
-                .createFemaleStringExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
-                .createFemaleStringActionSocket(this, this, "A1");
+                .createFemaleSocket(this, this, "A1");
     }
     
     public DoStringAction(
@@ -72,8 +71,10 @@ public class DoStringAction
     private DoStringAction(DoStringAction template, String sys) {
         super(sys);
         _template = template;
-        _stringExpressionSocket = null;
-        _stringActionSocket = null;
+        _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
+                .createFemaleSocket(this, this, _template._stringExpressionSocket.getName());
+        _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
+                .createFemaleSocket(this, this, _template._stringActionSocket.getName());
     }
     
     /** {@inheritDoc} */

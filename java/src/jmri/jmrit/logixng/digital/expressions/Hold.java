@@ -36,9 +36,9 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
         super(sys);
         
         _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E2");
+                .createFemaleSocket(this, this, "E2");
     }
 
     public Hold(String sys, String user)
@@ -47,9 +47,9 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
         super(sys, user);
         
         _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E2");
+                .createFemaleSocket(this, this, "E2");
     }
 
     public Hold(
@@ -93,8 +93,10 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     private Hold(Hold template, String sys) {
         super(sys);
         _template = template;
-        _holdExpressionSocket = null;
-        _triggerExpressionSocket = null;
+        _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, _template._holdExpressionSocket.getName());
+        _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, _template._triggerExpressionSocket.getName());
     }
     
     /** {@inheritDoc} */

@@ -31,7 +31,7 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
      */
     public String getNewSystemName(ConditionalNG conditionalNG);
 
-    public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
+    public FemaleDigitalExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(

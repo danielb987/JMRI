@@ -31,7 +31,7 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
      */
     public String getNewSystemName(ConditionalNG conditionalNG);
 
-    public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
+    public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(

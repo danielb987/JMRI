@@ -9,7 +9,6 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * An Expression that returns True only once while its child expression returns
@@ -34,14 +33,15 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
         super(sys, user);
         
         _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _childExpression.connect(expression);
     }
     
     private TriggerOnce(TriggerOnce template, String sys) {
         super(sys);
         _template = template;
-        _childExpression = null;
+        _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, _template._childExpression.getName());
     }
     
     /** {@inheritDoc} */

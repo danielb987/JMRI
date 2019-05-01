@@ -15,7 +15,7 @@ public class DefaultFemaleDigitalActionSocketFactory implements FemaleSocketFact
 
     @Override
     public FemaleSocket create(Base parent, FemaleSocketListener listener) {
-        return InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(parent, listener, getNewSocketName(parent));
+        return InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(parent, listener, getNewSocketName(parent));
     }
 
     @Override

@@ -61,7 +61,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     private void init() {
         actionEntries
                 .add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class)
-                        .createFemaleActionSocket(this, this, getNewSocketName())));
+                        .createFemaleSocket(this, this, getNewSocketName())));
     }
     
     private Many(Many template, String sys) {
@@ -151,7 +151,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
             }
         }
         if (!hasFreeSocket) {
-            actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, getNewSocketName())));
+            actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, getNewSocketName())));
         }
     }
 
@@ -180,7 +180,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
             System.err.format("AAA Many: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalActionSocket socket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .createFemaleActionSocket(this, this, entry.getKey());
+                            .createFemaleSocket(this, this, entry.getKey());
             
             actionEntries.add(new ActionEntry(socket, entry.getValue()));
         }

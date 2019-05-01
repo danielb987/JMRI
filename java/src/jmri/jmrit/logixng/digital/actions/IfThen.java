@@ -70,27 +70,27 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E");
+                .createFemaleSocket(this, this, "E");
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, this, "A");
+                .createFemaleSocket(this, this, "A");
     }
     
     public IfThen(String sys, Type type) {
         super(sys);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E");
+                .createFemaleSocket(this, this, "E");
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, this, "A");
+                .createFemaleSocket(this, this, "A");
     }
     
     public IfThen(String sys, String user, Type type) {
         super(sys, user);
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(this, this, "E");
+                .createFemaleSocket(this, this, "E");
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleActionSocket(this, this, "A");
+                .createFemaleSocket(this, this, "A");
     }
     
     public IfThen(
@@ -126,8 +126,10 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     private IfThen(IfThen template, String sys) {
         super(sys);
         _template = template;
-        _ifExpressionSocket = null;
-        _thenActionSocket = null;
+        _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, _template._ifExpressionSocket.getName());
+        _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
+                .createFemaleSocket(this, this, _template._thenActionSocket.getName());
     }
     
     /** {@inheritDoc} */

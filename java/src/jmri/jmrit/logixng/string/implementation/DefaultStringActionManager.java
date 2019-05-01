@@ -148,7 +148,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     }
 
     @Override
-    public FemaleStringActionSocket createFemaleStringActionSocket(
+    public FemaleStringActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
         return new DefaultFemaleStringActionSocket(parent, listener, socketName);
     }

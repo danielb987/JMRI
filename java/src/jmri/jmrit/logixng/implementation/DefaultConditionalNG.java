@@ -37,12 +37,12 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     
     public DefaultConditionalNG(String sys) throws BadUserNameException, BadSystemNameException  {
         super(sys);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     public DefaultConditionalNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     public DefaultConditionalNG(String sys, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
@@ -58,7 +58,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     private DefaultConditionalNG(DefaultConditionalNG template, String sys) {
         super(sys);
         _template = template;
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     /** {@inheritDoc} */

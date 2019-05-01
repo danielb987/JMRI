@@ -31,7 +31,7 @@ public interface StringActionManager extends Manager<MaleStringActionSocket> {
      */
     public String getNewSystemName(ConditionalNG conditionalNG);
 
-    public FemaleStringActionSocket createFemaleStringActionSocket(
+    public FemaleStringActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
     public FemaleStringActionSocket createFemaleStringActionSocket(
