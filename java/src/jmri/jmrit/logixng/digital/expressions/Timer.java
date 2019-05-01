@@ -22,6 +22,7 @@ public class Timer extends AbstractDigitalExpression {
     private Timer(Timer template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */

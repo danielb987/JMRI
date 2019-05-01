@@ -47,6 +47,7 @@ public class SetStringIO extends AbstractStringAction {
     private SetStringIO(SetStringIO template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */

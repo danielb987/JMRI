@@ -49,6 +49,7 @@ public class BufferedSensor extends AbstractDigitalExpression {
     private BufferedSensor(BufferedSensor template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */

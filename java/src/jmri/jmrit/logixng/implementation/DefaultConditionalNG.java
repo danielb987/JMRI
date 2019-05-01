@@ -58,7 +58,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     private DefaultConditionalNG(DefaultConditionalNG template, String sys) {
         super(sys);
         _template = template;
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, _template._femaleActionSocket.getName());
     }
     
     /** {@inheritDoc} */

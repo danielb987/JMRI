@@ -59,6 +59,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     private And(And template, String sys) {
         super(sys);
         _template = template;
+        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
     /** {@inheritDoc} */
