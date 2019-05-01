@@ -104,8 +104,19 @@ public class TemplateTest {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
         JUnitUtil.resetInstanceManager();
-        JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initRouteManager();
+        JUnitUtil.initMemoryManager();
+        JUnitUtil.initReporterManager();
+        JUnitUtil.initOBlockManager();
+        JUnitUtil.initWarrantManager();
+        JUnitUtil.initSignalMastLogicManager();
+        JUnitUtil.initLayoutBlockManager();
+        JUnitUtil.initSectionManager();
+        JUnitUtil.initInternalSignalHeadManager();
+        JUnitUtil.initDefaultSignalMastManager();
     }
 
     @After
