@@ -23,6 +23,7 @@ import jmri.SignalMast;
 import jmri.SignalMastManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
+import jmri.jmrit.audio.DefaultAudioManager;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.util.JUnitUtil;
@@ -117,6 +118,11 @@ public class TemplateTest {
         JUnitUtil.initSectionManager();
         JUnitUtil.initInternalSignalHeadManager();
         JUnitUtil.initDefaultSignalMastManager();
+        
+        // Setup AudioManager
+        jmri.AudioManager am = new DefaultAudioManager();
+        jmri.InstanceManager.setDefault(jmri.AudioManager.class,am);
+        am.init();
     }
 
     @After
