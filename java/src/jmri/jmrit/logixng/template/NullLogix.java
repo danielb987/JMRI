@@ -18,7 +18,6 @@ public class NullLogix extends AbstractNullNamedBean {
      */
     public NullLogix(@Nonnull String sys) {
         super(sys);
-        jmri.Logix a;
     }
 
     @Override

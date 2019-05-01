@@ -18,7 +18,6 @@ public class NullOBlock extends AbstractNullNamedBean {
      */
     public NullOBlock(@Nonnull String sys) {
         super(sys);
-        jmri.Block a;
     }
 
     @Override

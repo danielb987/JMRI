@@ -39,7 +39,7 @@ public interface NullNamedBeanInitializer {
      * default instances for.
      *
      * @return the set of classes this NullNamedBeanInitializer supports; if empty,
-     *         {@link #getDefault(java.lang.Class)} will never be called.
+     *         {@link #create(java.lang.Class, java.lang.String)} will never be called.
      */
     @Nonnull
     public Set<Class<?>> getInitalizes();
