@@ -1,6 +1,9 @@
 package jmri.jmrit.logixng.template;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import jmri.InstanceManager;
 import jmri.Manager;
@@ -42,12 +45,36 @@ public class TemplateInstanceManager implements LogixNG_InstanceManager {
     public <M extends Manager, N extends NamedBean> N provide(
             Class<M> type, Class<N> clazz, String name) {
         
+        // Step 1: Try provide() if it's a providing manager
+        // Step 2: Try get()
+        // Step 3: Try to create it ourself
+        
         if (type.isInstance(ProvidingManager.class)) {
-            return ((ProvidingManager<N>)InstanceManager.getDefault(type))
-                    .provide(name);
-        } else {
-            return null;
+            try {
+                return ((ProvidingManager<N>)InstanceManager.getDefault(type))
+                        .provide(name);
+            } catch (IllegalArgumentException e) {
+                log.warn("TemplateInstanceManager.provide() : "+e.getLocalizedMessage(), e);
+            }
         }
+        
+        N nb = (N) InstanceManager.getDefault(type).getNamedBean(name);
+        if (nb != null) {
+            return nb;
+        }
+        
+        NullNamedBeanInitializer initializer = initializers.get(clazz);
+        if (initializer != null) {
+            try {
+                nb = (N) initializer.create(clazz, name);
+                InstanceManager.getDefault(type).register(nb);
+                return nb;
+            } catch (IllegalArgumentException e) {
+                log.warn("TemplateInstanceManager.provide() : "+e.getLocalizedMessage(), e);
+            }
+        }
+        
+        return null;
     }
 
 

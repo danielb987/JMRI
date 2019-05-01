@@ -4,14 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import jmri.ConditionalManager;
-import jmri.LightManager;
-import jmri.LogixManager;
-import jmri.MemoryManager;
-import jmri.RailComManager;
-import jmri.ReporterManager;
-import jmri.RouteManager;
-import jmri.SensorManager;
+import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logixng.NullNamedBeanInitializer;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -30,48 +23,52 @@ public class DefaultNullNamedBeanInitializer implements NullNamedBeanInitializer
         // In order for getDefault() to create a new object, the type also
         // needs to be added to the method getInitalizes() below.
 
-        if (type == NullTurnout.class) {
+        if (type == NullAudio.class) {
             return new NullAudio(name);
         }
 
-        if (type == NullSensor.class) {
+        if (type == NullIdTag.class) {
             return new NullIdTag(name);
         }
 
-        if (type == ConditionalManager.class) {
+//        if (type == NullConditional.class) {
+//            return new NullConditional(name);
+//        }
+
+        if (type == NullLight.class) {
             return new NullLight(name);
         }
 
-        if (type == LightManager.class) {
+        if (type == NullLogix.class) {
             return new NullLogix(name);
         }
 
-        if (type == LogixManager.class) {
+        if (type == NullMemory.class) {
             return new NullMemory(name);
         }
 
-        if (type == MemoryManager.class) {
-            return new NullOBlock(name);
-        }
-
-        if (type == RailComManager.class) {
+        if (type == NullReporter.class) {
             return new NullReporter(name);
         }
 
-        if (type == ReporterManager.class) {
+        if (type == NullSensor.class) {
             return new NullSensor(name);
         }
 
-        if (type == RouteManager.class) {
+        if (type == NullSignalHead.class) {
             return new NullSignalHead(name);
         }
 
-        if (type == SensorManager.class) {
+        if (type == NullSignalMast.class) {
             return new NullSignalMast(name);
         }
 
         if (type == NullTurnout.class) {
             return new NullTurnout(name);
+        }
+
+        if (type == OBlock.class) {
+            return new OBlock(name);
         }
 
         throw new IllegalArgumentException();
@@ -86,12 +83,12 @@ public class DefaultNullNamedBeanInitializer implements NullNamedBeanInitializer
                 NullLight.class,
                 NullLogix.class,
                 NullMemory.class,
-                NullOBlock.class,
                 NullReporter.class,
                 NullSensor.class,
                 NullSignalHead.class,
                 NullSignalMast.class,
-                NullTurnout.class
+                NullTurnout.class,
+                OBlock.class
         ));
         return set;
     }
