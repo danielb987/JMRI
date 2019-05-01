@@ -118,11 +118,6 @@ public class TemplateTest {
         JUnitUtil.initSectionManager();
         JUnitUtil.initInternalSignalHeadManager();
         JUnitUtil.initDefaultSignalMastManager();
-        
-        // Setup AudioManager
-        jmri.AudioManager am = new DefaultAudioManager();
-        jmri.InstanceManager.setDefault(jmri.AudioManager.class,am);
-        am.init();
     }
 
     @After

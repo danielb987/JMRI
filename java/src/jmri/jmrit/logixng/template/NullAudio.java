@@ -25,7 +25,7 @@ public class NullAudio extends AbstractAudio {
 
     @Override
     public char getSubType() {
-        throw new UnsupportedOperationException("Not supported.");
+        return 'B';     // B = Buffer
     }
 
     @Override
