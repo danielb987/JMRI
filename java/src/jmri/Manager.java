@@ -158,23 +158,6 @@ public interface Manager<E extends NamedBean> extends PropertyChangeProvider, Ve
 
     /**
      * This provides an
-     * {@linkplain java.util.Collections#unmodifiableList unmodifiable} List
-     * of NamedBeans in system-name order.
-     * <p>
-     * Note: Access via {@link #getNamedBeanSet()} is faster.
-     * <p>
-     * Note: This is not a live list; the contents don't stay up to date
-     * @return Unmodifiable access to a List of NamedBeans
-     * @deprecated 4.11.5 - use direct access via 
-     *                  {@link #getNamedBeanSet()} 
-     */
-    @Deprecated // 4.11.5
-    @CheckReturnValue
-    @Nonnull
-    public List<E> getNamedBeanList();
-
-    /**
-     * This provides an
      * {@linkplain java.util.Collections#unmodifiableSet unmodifiable}
      * SortedSet of NamedBeans in system-name order.
      * <p>

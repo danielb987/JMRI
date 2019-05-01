@@ -101,9 +101,7 @@ abstract public class AbstractManager<E extends NamedBean> implements Manager<E>
     // Storage for getSystemNameOriginalList
     protected ArrayList<String> _originalOrderList = new ArrayList<>();
     // caches
-    private String[] cachedSystemNameArray = null;
     private ArrayList<String> cachedSystemNameList = null;
-    private ArrayList<E> cachedNamedBeanList = null;
     
     /**
      * Now obsolete. Used {@link #getBeanBySystemName} instead.
@@ -184,10 +182,8 @@ abstract public class AbstractManager<E extends NamedBean> implements Manager<E>
             }
         }
 
-        // clear caches
-        cachedSystemNameArray = null;
+        // clear cache
         cachedSystemNameList = null;
-        cachedNamedBeanList = null;
         
         // save this bean
         _beans.add(s);
@@ -256,10 +252,8 @@ abstract public class AbstractManager<E extends NamedBean> implements Manager<E>
     public void deregister(E s) {
         int position = getPosition(s);
 
-        // clear caches
-        cachedSystemNameArray = null;
+        // clear cache
         cachedSystemNameList = null;
-        cachedNamedBeanList = null;
 
         // stop listening for user name changes
         s.removePropertyChangeListener(this);
@@ -355,17 +349,6 @@ abstract public class AbstractManager<E extends NamedBean> implements Manager<E>
         return Collections.unmodifiableList(_originalOrderList);
     }
 
-
-    /** {@inheritDoc} */
-    @Override
-    @Deprecated  // will be removed when superclass method is removed due to @Override
-    public List<E> getNamedBeanList() {
-        jmri.util.Log4JUtil.deprecationWarning(log, "getNamedBeanList");
-        if (cachedNamedBeanList == null) {
-            cachedNamedBeanList = new ArrayList<>(_beans);
-        }
-        return Collections.unmodifiableList(cachedNamedBeanList);
-    }
 
     /** {@inheritDoc} */
     @Override

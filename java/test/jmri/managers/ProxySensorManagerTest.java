@@ -212,7 +212,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("type 1", Manager.ManagerDataEvent.INTERVAL_ADDED, lastType);
         Assert.assertEquals("start == end 1", lastEvent0, lastEvent1);
         Assert.assertEquals("index 1", 1, lastEvent0);
-        Assert.assertEquals("content at index 1", s2, l.getNamedBeanList().get(lastEvent0));
+        Assert.assertEquals("content at index 1", s2, l.getNamedBeanSet().toArray()[lastEvent0]);
 
         // add an item
         Sensor s3 = l.newSensor("IS3", "Sensor 3");
@@ -227,7 +227,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("type 2", Manager.ManagerDataEvent.INTERVAL_ADDED, lastType);
         Assert.assertEquals("start == end 2", lastEvent0, lastEvent1);
         Assert.assertEquals("index 2", 2, lastEvent0);
-        Assert.assertEquals("content at index 2", s3, l.getNamedBeanList().get(lastEvent0));
+        Assert.assertEquals("content at index 2", s3, l.getNamedBeanSet().toArray()[lastEvent0]);
 
         // can add a manager and still get notifications
         l.addManager(new InternalSensorManager() { {prefix = "Z";} });
@@ -243,7 +243,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("type 2", Manager.ManagerDataEvent.INTERVAL_ADDED, lastType);
         Assert.assertEquals("start == end 2", lastEvent0, lastEvent1);
         Assert.assertEquals("index 3", 3, lastEvent0);
-        Assert.assertEquals("content at added index", s4, l.getNamedBeanList().get(lastEvent0));
+        Assert.assertEquals("content at added index", s4, l.getNamedBeanSet().toArray()[lastEvent0]);
         
         
     }
@@ -257,7 +257,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         l.provideSensor("IS3");
         
         l.addDataListener(this);
-        List<Sensor> tlist = l.getNamedBeanList();
+        SortedSet<Sensor> tset = l.getNamedBeanSet();
 
         l.deregister(s2);
     
@@ -267,7 +267,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("type", Manager.ManagerDataEvent.INTERVAL_REMOVED, lastType);
         Assert.assertEquals("start == end 2", lastEvent0, lastEvent1);
         Assert.assertEquals("index", 1, lastEvent0);
-        Assert.assertEquals("content at index", s2, tlist.get(lastEvent0));       
+        Assert.assertEquals("content at index", s2, tset.toArray()[lastEvent0]);
     }
 
     @Test
@@ -282,7 +282,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         l.provideSensor("JS3");
         
         l.addDataListener(this);
-        List<Sensor> tlist = l.getNamedBeanList();
+        SortedSet<Sensor> tset = l.getNamedBeanSet();
 
         l.deregister(s2);
     
@@ -292,7 +292,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("type", Manager.ManagerDataEvent.INTERVAL_REMOVED, lastType);
         Assert.assertEquals("start == end 2", lastEvent0, lastEvent1);
         Assert.assertEquals("index", 3, lastEvent0);
-        Assert.assertEquals("content at index", s2, tlist.get(lastEvent0));       
+        Assert.assertEquals("content at index", s2, tset.toArray()[lastEvent0]);
     }
 
     @Test
@@ -351,7 +351,6 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Sensor s2 = l.provideSensor("IS2");
         
         List<String> sortedList = l.getSystemNameList();
-        List<Sensor> beanList = l.getNamedBeanList();
         SortedSet<Sensor> beanSet = l.getNamedBeanSet();
         jmri.util.JUnitAppender.suppressWarnMessage("Manager#getSystemNameArray() is deprecated");
         List<String> orderedList = l.getSystemNameAddedOrderList();
@@ -359,10 +358,6 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("sorted list length", 2, sortedList.size());
         Assert.assertEquals("sorted list 1st", "IS2", sortedList.get(0));
         Assert.assertEquals("sorted list 2nd", "IS4", sortedList.get(1));
-
-        Assert.assertEquals("bean list length", 2, beanList.size());
-        Assert.assertEquals("bean list 1st", s2, beanList.get(0));
-        Assert.assertEquals("bean list 2nd", s4, beanList.get(1));
 
         Assert.assertEquals("bean set length", 2, beanSet.size());
         Iterator<Sensor> iter = beanSet.iterator();
@@ -387,10 +382,6 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("sorted list 1st", "IS2", sortedList.get(0));
         Assert.assertEquals("sorted list 2nd", "IS4", sortedList.get(1));
 
-        Assert.assertEquals("bean list length", 2, beanList.size());
-        Assert.assertEquals("bean list 1st", s2, beanList.get(0));
-        Assert.assertEquals("bean list 2nd", s4, beanList.get(1));
-
         Assert.assertEquals("bean set length", 4, beanSet.size());
         iter = beanSet.iterator();
         Assert.assertEquals("bean set 1st", s1, iter.next());
@@ -401,7 +392,6 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         // update and test update
         orderedList = l.getSystemNameAddedOrderList();
         sortedList = l.getSystemNameList();
-        beanList = l.getNamedBeanList();
         beanSet = l.getNamedBeanSet();
         jmri.util.JUnitAppender.suppressWarnMessage("Manager#getSystemNameArray() is deprecated");
         
@@ -417,12 +407,6 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         Assert.assertEquals("sorted list 3rd", "IS3", sortedList.get(2));
         Assert.assertEquals("sorted list 4th", "IS4", sortedList.get(3));
 
-        Assert.assertEquals("bean list length", 4, beanList.size());
-        Assert.assertEquals("bean list 1st", s1, beanList.get(0));
-        Assert.assertEquals("bean list 2nd", s2, beanList.get(1));
-        Assert.assertEquals("bean list 3rd", s3, beanList.get(2));
-        Assert.assertEquals("bean list 4th", s4, beanList.get(3));
-
         Assert.assertEquals("bean set length", 4, beanSet.size());
         iter = beanSet.iterator();
         Assert.assertEquals("bean set 1st", s1, iter.next());
@@ -437,7 +421,6 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         l.provideSensor("IS2");
         
         List<String> nameList = l.getSystemNameList();
-        List<Sensor> beanList = l.getNamedBeanList();
         SortedSet<Sensor> beanSet = l.getNamedBeanSet();
 
         try {
@@ -446,7 +429,7 @@ public class ProxySensorManagerTest implements Manager.ManagerDataListener<Senso
         } catch (UnsupportedOperationException e) { /* this is OK */}
 
         try {
-            beanList.add(s1);
+            beanSet.add(s1);
             Assert.fail("beanList should have thrown");
         } catch (UnsupportedOperationException e) { /* this is OK */}
 

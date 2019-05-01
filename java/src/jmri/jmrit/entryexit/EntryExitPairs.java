@@ -290,7 +290,7 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
     @Override
     @CheckReturnValue
     public int getObjectCount() { 
-        return getNamedBeanList().size(); // not efficient
+        return getNamedBeanSet().size(); // not efficient
     }
 
     /** {@inheritDoc} */
@@ -298,24 +298,6 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
     @Deprecated  // will be removed when superclass method is removed due to @Override
     public List<String> getSystemNameList() {
         return getEntryExitList();
-    }
-
-    /**
-     * Implemented to support the Conditional combo box name list
-     * @since 4.9.3
-     * @return a list of Destination Point beans
-     */
-    @Override
-    @Deprecated  // will be removed when superclass method is removed due to @Override
-    public List<DestinationPoints> getNamedBeanList() {
-        List<DestinationPoints> beanList = new ArrayList<>();
-        for (Source e : nxpair.values()) {
-            List<String> uidList = e.getDestinationUniqueId();
-            for (String uid : uidList) {
-                beanList.add(e.getByUniqueId(uid));
-            }
-        }
-        return beanList;
     }
 
     /**
