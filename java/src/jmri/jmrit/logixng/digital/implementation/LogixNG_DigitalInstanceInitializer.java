@@ -1,11 +1,11 @@
-package jmri.jmrit.logixng.analog.implementation;
+package jmri.jmrit.logixng.digital.implementation;
 
 import java.util.Arrays;
 import java.util.Set;
 import jmri.InstanceInitializer;
 import jmri.implementation.AbstractInstanceInitializer;
-import jmri.jmrit.logixng.AnalogActionManager;
-import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.DigitalActionManager;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -30,7 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @since 2.9.4
  */
 @ServiceProvider(service = InstanceInitializer.class)
-public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
+public class LogixNG_DigitalInstanceInitializer extends AbstractInstanceInitializer {
 
     @Override
     public <T> Object getDefault(Class<T> type) {
@@ -38,13 +38,13 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         // In order for getDefault() to be called for a particular manager,
         // the manager also needs to be added to the method getInitalizes()
         // below.
-
-        if (type == AnalogActionManager.class) {
-            return new DefaultAnalogActionManager();
+        
+        if (type == DigitalActionManager.class) {
+            return new DefaultDigitalActionManager();
         }
 
-        if (type == AnalogExpressionManager.class) {
-            return new DefaultAnalogExpressionManager();
+        if (type == DigitalExpressionManager.class) {
+            return new DefaultDigitalExpressionManager();
         }
 
         return super.getDefault(type);
@@ -54,8 +54,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
         set.addAll(Arrays.asList(
-                AnalogActionManager.class,
-                AnalogExpressionManager.class
+                DigitalActionManager.class,
+                DigitalExpressionManager.class
         ));
         return set;
     }

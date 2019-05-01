@@ -18,6 +18,7 @@ import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * The default implementation of ConditionalNG.
@@ -27,6 +28,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 public final class DefaultConditionalNG extends AbstractNamedBean
         implements ConditionalNG, FemaleSocketListener {
     
+    private DefaultConditionalNG _template;
     private Base _parent = null;
     private String _socketSystemName = null;
     private final FemaleDigitalActionSocket _femaleActionSocket;
@@ -51,6 +53,18 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     public DefaultConditionalNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
         _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
+    }
+    
+    private DefaultConditionalNG(DefaultConditionalNG template, String sys) {
+        super(sys);
+        _template = template;
+        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new DefaultConditionalNG(this, sys);
     }
     
     @Override

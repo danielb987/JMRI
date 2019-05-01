@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -8,6 +9,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * An Expression that returns True only once while its child expression returns
@@ -21,6 +23,7 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class TriggerOnce extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private TriggerOnce _template;
     private String _childExpressionSystemName;
     private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
@@ -33,6 +36,18 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
         _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, "E1");
         _childExpression.connect(expression);
+    }
+    
+    private TriggerOnce(TriggerOnce template, String sys) {
+        super(sys);
+        _template = template;
+        _childExpression = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new TriggerOnce(this, sys);
     }
     
     /** {@inheritDoc} */

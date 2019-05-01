@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import jmri.AnalogIO;
 import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 
@@ -15,6 +16,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class SetAnalogIO extends AbstractAnalogAction {
 
+    private SetAnalogIO _template;
     private String _analogIO_SystemName;
     private AnalogIO _analogIO;
     
@@ -36,6 +38,17 @@ public class SetAnalogIO extends AbstractAnalogAction {
         
         super(sys, user);
         _analogIO = analogIO;
+    }
+    
+    private SetAnalogIO(SetAnalogIO template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new SetAnalogIO(this, sys);
     }
     
     @Override

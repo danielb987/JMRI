@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -13,6 +14,7 @@ import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Many extends AbstractDigitalAction implements FemaleSocketListener {
 
+    private Many _template;
     private final List<ActionEntry> actionEntries = new ArrayList<>();
     
     /**
@@ -59,6 +62,17 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         actionEntries
                 .add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class)
                         .createFemaleActionSocket(this, this, getNewSocketName())));
+    }
+    
+    private Many(Many template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new Many(this, sys);
     }
     
     /** {@inheritDoc} */

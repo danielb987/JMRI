@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -8,6 +9,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * This Expression has two expressions, the primary expression and the secondary
@@ -26,6 +28,7 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
  */
 public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private ResetOnTrue _template;
     private String _primaryExpressionSocketSystemName;
     private String _secondaryExpressionSocketSystemName;
     private final FemaleDigitalExpressionSocket _primaryExpressionSocket;
@@ -46,6 +49,19 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
         
         _primaryExpressionSocket.connect(primaryExpression);
         _secondaryExpressionSocket.connect(secondaryExpression);
+    }
+    
+    private ResetOnTrue(ResetOnTrue template, String sys) {
+        super(sys);
+        _template = template;
+        _primaryExpressionSocket = null;
+        _secondaryExpressionSocket = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new ResetOnTrue(this, sys);
     }
     
     /** {@inheritDoc} */

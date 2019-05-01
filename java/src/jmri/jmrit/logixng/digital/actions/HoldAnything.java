@@ -16,6 +16,7 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * An action that can hold everything but doesn't do anything.
@@ -56,6 +57,12 @@ public class HoldAnything extends AbstractDigitalAction {
             
             _multipleSockets.add(new MultipleSockets(factory));
         }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return null;
     }
     
     /** {@inheritDoc} */
@@ -168,6 +175,12 @@ public class HoldAnything extends AbstractDigitalAction {
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
             _femaleSockets.add(femaleSocketFactory.create(this, this));
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public Base getNewObjectBasedOnTemplate(String sys) {
+            return null;
         }
         
         @Override

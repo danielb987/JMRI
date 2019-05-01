@@ -29,7 +29,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @since 2.9.4
  */
 @ServiceProvider(service = InstanceInitializer.class)
-public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
+public class LogixNG_InstanceInitializer extends AbstractInstanceInitializer {
 
     @Override
     public <T> Object getDefault(Class<T> type) {

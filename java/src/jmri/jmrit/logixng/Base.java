@@ -29,7 +29,15 @@ public interface Base {
          * user. But it can be removed by editing the xml file. This lock is
          * used for items that normally shouldn't be changed.
          */
-        HARD_LOCK;
+        HARD_LOCK,
+        
+        /**
+         * The item is based on a template and therefore cannot be changed.
+         * The item should never be changed directly, not even by editing the
+         * xml file, but instead all changes must be done by editing the
+         * template.
+         */
+        TEMPLATE_LOCK,
     }
     
     /**
@@ -88,6 +96,19 @@ public interface Base {
     public String getLongDescription();
     
     /**
+     * Returns a new object which is using this object as a template.
+     * <P>
+     * If this object never should be used as a template, it's valid for it to
+     * return null. If this method returns null, the caller must handle this
+     * object as if it never existed.
+     * 
+     * @param sys the system name
+     * @return the new object or null if this object is not valid as a template
+     */
+    @CheckForNull
+    public Base getNewObjectBasedOnTemplate(String sys);
+    
+    /**
      * Get the ConditionalNG of this item.
      */
     default public ConditionalNG getConditionalNG() {
@@ -99,6 +120,23 @@ public interface Base {
                 parent = parent.getParent();
             }
             return (ConditionalNG) parent;
+        }
+    }
+    
+    /**
+     * Get the LogixNG_InstanceManager.
+     * 
+     * This method will ask the parent about the instance manager, and if no
+     * parent exist, it will return the default instance manager.
+     * 
+     * @return the instance manager that this object should use
+     */
+    default public LogixNG_InstanceManager getInstanceManager() {
+        Base parent = getParent();
+        if (parent != null) {
+            return parent.getInstanceManager();
+        } else {
+            return InstanceManagerContainer.defaultInstanceManager;
         }
     }
     
@@ -271,6 +309,17 @@ public interface Base {
     
     public interface RunnableWithBase {
         public void run(Base b);
+    }
+    
+    
+    
+    /**
+     * This class is used to keep the field instanceManager private.
+     */
+    static final class InstanceManagerContainer {
+        
+        static private LogixNG_InstanceManager defaultInstanceManager =
+                new jmri.jmrit.logixng.implementation.DefaultLogixNG_InstanceManager();
     }
     
 }

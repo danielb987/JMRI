@@ -1,7 +1,9 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * This expression is a timer that evaluates to true then a certain time has passed.
@@ -10,11 +12,24 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class Timer extends AbstractDigitalExpression {
 
+    private Timer _template;
+    
     public Timer(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
 
+    private Timer(Timer template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new Timer(this, sys);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {

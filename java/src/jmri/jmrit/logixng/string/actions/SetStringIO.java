@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import jmri.InstanceManager;
 import jmri.StringIO;
 import jmri.JmriException;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Sets an AnalogIO.
@@ -16,6 +18,7 @@ import jmri.jmrit.logixng.StringActionManager;
  */
 public class SetStringIO extends AbstractStringAction {
 
+    private SetStringIO _template;
     private String _stringIO_SystemName;
     private StringIO _stringIO;
     
@@ -39,6 +42,17 @@ public class SetStringIO extends AbstractStringAction {
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         _stringIO = stringIO;
+    }
+    
+    private SetStringIO(SetStringIO template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new SetStringIO(this, sys);
     }
     
     @Override

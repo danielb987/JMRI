@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.Category;
@@ -11,6 +12,7 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.jmrit.logixng.MaleStringExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Executes an string action with the result of an string expression.
@@ -21,6 +23,7 @@ public class DoStringAction
         extends AbstractDigitalAction
         implements FemaleSocketListener {
 
+    private DoStringAction _template;
     private String _stringExpressionSocketSocketSystemName;
     private String _stringActionSocketSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
@@ -64,6 +67,19 @@ public class DoStringAction
                 .createFemaleStringExpressionSocket(this, this, expressionSocketName, expression);
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
                 .createFemaleStringActionSocket(this, this, actionSocketName, action);
+    }
+    
+    private DoStringAction(DoStringAction template, String sys) {
+        super(sys);
+        _template = template;
+        _stringExpressionSocket = null;
+        _stringActionSocket = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new DoStringAction(this, sys);
     }
     
     /** {@inheritDoc} */

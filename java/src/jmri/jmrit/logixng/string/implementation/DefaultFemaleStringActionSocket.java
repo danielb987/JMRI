@@ -49,6 +49,13 @@ public final class DefaultFemaleStringActionSocket
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        // Female sockets have special handling
+        throw new UnsupportedOperationException();
+    }
+    
     @Override
     public boolean isCompatible(MaleSocket socket) {
         return socket instanceof MaleStringActionSocket;

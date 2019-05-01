@@ -4,8 +4,10 @@ import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.Turnout;
 import jmri.TurnoutManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 
 /**
@@ -15,6 +17,7 @@ import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
  */
 public class ActionTurnout extends AbstractDigitalAction {
 
+    private ActionTurnout _template;
     private String _turnoutSystemName;
     private NamedBeanHandle _turnout;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
@@ -29,6 +32,17 @@ public class ActionTurnout extends AbstractDigitalAction {
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
 //        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
+    }
+    
+    private ActionTurnout(ActionTurnout template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new ActionTurnout(this, sys);
     }
     
     public void setTurnout(NamedBeanHandle handle) {

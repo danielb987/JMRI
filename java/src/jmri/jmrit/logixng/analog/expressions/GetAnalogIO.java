@@ -3,8 +3,10 @@ package jmri.jmrit.logixng.analog.expressions;
 import jmri.AnalogIO;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Reads an AnalogIO.
@@ -13,6 +15,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class GetAnalogIO extends AbstractAnalogExpression {
 
+    private GetAnalogIO _template;
     private String _analogIO_SystemName;
     private AnalogIO _analogIO;
     
@@ -40,6 +43,17 @@ public class GetAnalogIO extends AbstractAnalogExpression {
         
         super(sys, user);
         _analogIO = analogIO;
+    }
+    
+    private GetAnalogIO(GetAnalogIO template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new GetAnalogIO(this, sys);
     }
     
     /** {@inheritDoc} */

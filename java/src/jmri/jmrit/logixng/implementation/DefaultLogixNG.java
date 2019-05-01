@@ -21,6 +21,7 @@ import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * The default implementation of LogixNG.
@@ -30,6 +31,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 public final class DefaultLogixNG extends AbstractNamedBean
         implements LogixNG, FemaleSocketListener {
     
+    private DefaultLogixNG _template;
     private Base _parent = null;
     private String _socketSystemName = null;
     private final FemaleDigitalActionSocket _femaleActionSocket;
@@ -54,6 +56,18 @@ public final class DefaultLogixNG extends AbstractNamedBean
     public DefaultLogixNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
         _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
+    }
+    
+    private DefaultLogixNG(DefaultLogixNG template, String sys) {
+        super(sys);
+        _template = template;
+        _femaleActionSocket = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new DefaultLogixNG(this, sys);
     }
     
     @Override

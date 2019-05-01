@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -9,6 +10,7 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * An Expression that keeps its status even if its child expression doesn't.
@@ -22,6 +24,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
  */
 public class Hold extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private Hold _template;
     private String _holdExpressionSocketSystemName;
     private String _triggerExpressionSocketSystemName;
     private final FemaleDigitalExpressionSocket _holdExpressionSocket;
@@ -87,6 +90,19 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
                         this, this, triggerExpressionSocketName, triggerExpression);
     }
 
+    private Hold(Hold template, String sys) {
+        super(sys);
+        _template = template;
+        _holdExpressionSocket = null;
+        _triggerExpressionSocket = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new Hold(this, sys);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {

@@ -4,6 +4,7 @@ import jmri.Sensor;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
     // For this expression to work, the LogixNG engine needs to notify those
     // who wants to be notified when all LogixNGs are finished running.
@@ -31,6 +32,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class BufferedSensor extends AbstractDigitalExpression {
 
+    private BufferedSensor _template;
 //    private final Sensor sensor;
     
     public BufferedSensor(String sys) throws BadSystemNameException {
@@ -44,6 +46,17 @@ public class BufferedSensor extends AbstractDigitalExpression {
 //        sensor = null;
     }
 
+    private BufferedSensor(BufferedSensor template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new BufferedSensor(this, sys);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {

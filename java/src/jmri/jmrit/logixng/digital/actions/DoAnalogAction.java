@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.actions;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
@@ -11,6 +12,7 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Executes an analog action with the result of an analog expression.
@@ -21,6 +23,7 @@ public class DoAnalogAction
         extends AbstractDigitalAction
         implements FemaleSocketListener {
 
+    private DoAnalogAction _template;
     private String _analogExpressionSocketSystemName;
     private String _analogActionSocketSystemName;
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
@@ -64,6 +67,19 @@ public class DoAnalogAction
                 .createFemaleAnalogExpressionSocket(this, this, expressionSocketName, expression);
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, actionSocketName, action);
+    }
+    
+    private DoAnalogAction(DoAnalogAction template, String sys) {
+        super(sys);
+        _template = template;
+        _analogExpressionSocket = null;
+        _analogActionSocket = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new DoAnalogAction(this, sys);
     }
     
     /** {@inheritDoc} */

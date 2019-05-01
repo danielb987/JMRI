@@ -34,6 +34,12 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         _action = action;
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return _action.getNewObjectBasedOnTemplate(sys);
+    }
+    
     @Override
     public Base getParent() {
         return _parent;

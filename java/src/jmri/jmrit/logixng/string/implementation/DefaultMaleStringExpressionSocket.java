@@ -33,6 +33,12 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
         _expression = stringExpression;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return _expression.getNewObjectBasedOnTemplate(sys);
+    }
+    
     @Override
     public Base getParent() {
         return _parent;

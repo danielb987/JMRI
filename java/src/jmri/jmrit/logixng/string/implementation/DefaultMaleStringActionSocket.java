@@ -33,6 +33,12 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
         _action = stringAction;
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return _action.getNewObjectBasedOnTemplate(sys);
+    }
+    
     @Override
     public Base getParent() {
         return _parent;

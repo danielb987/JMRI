@@ -34,6 +34,12 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
         _expression = expression;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return _expression.getNewObjectBasedOnTemplate(sys);
+    }
+    
     @Override
     public Base getParent() {
         return _parent;

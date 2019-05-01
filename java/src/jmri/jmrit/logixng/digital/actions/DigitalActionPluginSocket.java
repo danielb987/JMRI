@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalActionPlugin;
@@ -9,6 +10,7 @@ import jmri.jmrit.logixng.DigitalActionPlugin;
  */
 public class DigitalActionPluginSocket extends AbstractDigitalAction {
 
+    private DigitalActionPluginSocket _template;
     private final DigitalActionPlugin _actionPlugin;
     
     public DigitalActionPluginSocket(String sys, DigitalActionPlugin actionPlugin) {
@@ -20,6 +22,18 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
             String sys, String user, DigitalActionPlugin actionPlugin) {
         super(sys, user);
         _actionPlugin = actionPlugin;
+    }
+    
+    private DigitalActionPluginSocket(DigitalActionPluginSocket template, String sys) {
+        super(sys);
+        _actionPlugin = null;
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new DigitalActionPluginSocket(this, sys);
     }
     
     @Override

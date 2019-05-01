@@ -1,11 +1,11 @@
-package jmri.jmrit.logixng.digital.implementation;
+package jmri.jmrit.logixng.string.implementation;
 
 import java.util.Arrays;
 import java.util.Set;
 import jmri.InstanceInitializer;
 import jmri.implementation.AbstractInstanceInitializer;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.StringExpressionManager;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -30,7 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @since 2.9.4
  */
 @ServiceProvider(service = InstanceInitializer.class)
-public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
+public class LogixNG_StringInstanceInitializer extends AbstractInstanceInitializer {
 
     @Override
     public <T> Object getDefault(Class<T> type) {
@@ -39,12 +39,12 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         // the manager also needs to be added to the method getInitalizes()
         // below.
         
-        if (type == DigitalActionManager.class) {
-            return new DefaultDigitalActionManager();
+        if (type == StringActionManager.class) {
+            return new DefaultStringActionManager();
         }
 
-        if (type == DigitalExpressionManager.class) {
-            return new DefaultDigitalExpressionManager();
+        if (type == StringExpressionManager.class) {
+            return new DefaultStringExpressionManager();
         }
 
         return super.getDefault(type);
@@ -54,8 +54,8 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
         set.addAll(Arrays.asList(
-                DigitalActionManager.class,
-                DigitalExpressionManager.class
+                StringActionManager.class,
+                StringExpressionManager.class
         ));
         return set;
     }

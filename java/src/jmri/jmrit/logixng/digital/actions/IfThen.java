@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -14,6 +15,7 @@ import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         CONTINOUS_ACTION,
     }
 
+    private IfThen _template;
     private Type _type;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
@@ -118,6 +121,19 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 .createFemaleExpressionSocket(this, this, ifExpressionSocketName, ifExpression);
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
                 .createFemaleActionSocket(this, this, thenActionSocketName, thenAction);
+    }
+    
+    private IfThen(IfThen template, String sys) {
+        super(sys);
+        _template = template;
+        _ifExpressionSocket = null;
+        _thenActionSocket = null;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new IfThen(this, sys);
     }
     
     /** {@inheritDoc} */

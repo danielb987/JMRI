@@ -2,8 +2,10 @@ package jmri.jmrit.logixng.string.expressions;
 
 import jmri.InstanceManager;
 import jmri.StringIO;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Reads an AnalogIO.
@@ -12,6 +14,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class GetStringIO extends AbstractStringExpression {
 
+    private GetStringIO _template;
     private String _stringIO_SystemName;
     private StringIO _stringIO;
     
@@ -35,6 +38,17 @@ public class GetStringIO extends AbstractStringExpression {
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         _stringIO = stringIO;
+    }
+    
+    private GetStringIO(GetStringIO template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new GetStringIO(this, sys);
     }
     
     /** {@inheritDoc} */

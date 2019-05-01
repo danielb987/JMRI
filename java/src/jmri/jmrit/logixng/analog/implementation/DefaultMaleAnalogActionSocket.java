@@ -37,6 +37,12 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         _action = action;
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return _action.getNewObjectBasedOnTemplate(sys);
+    }
+    
     @Override
     public Base getParent() {
         return _parent;

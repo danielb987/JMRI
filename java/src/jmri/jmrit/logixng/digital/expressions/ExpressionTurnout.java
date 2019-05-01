@@ -4,6 +4,7 @@ import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.Turnout;
 import jmri.TurnoutManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
@@ -15,6 +16,7 @@ import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
  */
 public class ExpressionTurnout extends AbstractDigitalExpression {
 
+    private ExpressionTurnout _template;
     private String _turnoutSystemName;
     private NamedBeanHandle _turnout;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
@@ -28,6 +30,17 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
     public ExpressionTurnout(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+    }
+    
+    private ExpressionTurnout(ExpressionTurnout template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new ExpressionTurnout(this, sys);
     }
     
     public void setTurnout(NamedBeanHandle handle) {

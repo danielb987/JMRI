@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.expressions;
 import java.util.List;
 import java.util.ArrayList;
 import jmri.InstanceManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -12,6 +13,7 @@ import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Evaluates to True if all the child expressions evaluate to true.
@@ -20,6 +22,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
  */
 public class And extends AbstractDigitalExpression implements FemaleSocketListener {
 
+    private And _template;
     List<String> _childrenSystemNames;
     List<FemaleDigitalExpressionSocket> _children = new ArrayList<>();
     
@@ -53,6 +56,17 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         _childrenSystemNames = childrenSystemNames;
     }
 
+    private And(And template, String sys) {
+        super(sys);
+        _template = template;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Base getNewObjectBasedOnTemplate(String sys) {
+        return new And(this, sys);
+    }
+    
     private void init() {
         _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleExpressionSocket(this, this, getNewSocketName()));
