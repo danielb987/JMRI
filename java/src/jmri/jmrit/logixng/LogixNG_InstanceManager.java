@@ -2,7 +2,6 @@ package jmri.jmrit.logixng;
 
 import jmri.Manager;
 import jmri.NamedBean;
-import jmri.InstanceManager;
 
 /**
  * Instance manager for LogixNG, which allows LogixNG to use templates.
