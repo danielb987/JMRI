@@ -28,8 +28,8 @@ public class VirtualNamespace implements Namespace, PropertyChangeListener, Veto
     @Override
     public <M extends Manager> void registerName(Namespace namespace, Class<M> type, String name) throws UnsupportedOperationException {
         namespaceMap.put(name, null);
-        jmri.NamedBeanHandle a;
-        jmri.NamedBeanHandleManager b;
+//        jmri.NamedBeanHandle a;
+//        jmri.NamedBeanHandleManager b;
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
