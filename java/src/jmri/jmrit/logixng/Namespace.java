@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.implementation;
+package jmri.jmrit.logixng;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;

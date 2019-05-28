@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.implementation;
 
+import jmri.jmrit.logixng.Namespace;
 import jmri.beans.PropertyChangeProvider;
 import jmri.beans.VetoableChangeProvider;
 

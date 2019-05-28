@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.implementation;
 
+import jmri.jmrit.logixng.Namespace;
 import java.util.Map;
 import java.util.HashMap;
 import java.beans.PropertyChangeEvent;
