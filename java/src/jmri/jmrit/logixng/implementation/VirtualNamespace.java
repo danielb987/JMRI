@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A namespace for virtual names.
  */
-public class VirtualNamespace implements Namespace {
+public class VirtualNamespace implements Namespace, PropertyChangeListener, VetoableChangeListener {
 
     Map<String, String> namespaceMap = new HashMap<>();
     
@@ -33,11 +33,13 @@ public class VirtualNamespace implements Namespace {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <M extends Manager, N extends NamedBean> N get(Namespace namespace, Class<M> type, Class<N> clazz, String name) {
         return (N) InstanceManager.getDefault(type).getNamedBean(name);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <M extends Manager, N extends NamedBean> N provide(Namespace namespace, Class<M> type, Class<N> clazz, String name) {
         
@@ -144,6 +146,8 @@ public class VirtualNamespace implements Namespace {
     @SuppressWarnings("unchecked") // The cast of getSource() to E can't be checked due to type erasure, but we catch errors
     @OverridingMethodsMustInvokeSuper
     public void propertyChange(PropertyChangeEvent e) {
+        throw new UnsupportedOperationException("Not inplemented yet.");
+/*
         if (e.getPropertyName().equals("UserName")) {
             String old = (String) e.getOldValue();  // previous user name
             String now = (String) e.getNewValue();  // current user name
@@ -168,6 +172,7 @@ public class VirtualNamespace implements Namespace {
             // called DisplayListName, as DisplayName might get used at some point by a NamedBean
             firePropertyChange("DisplayListName", old, now); //IN18N
         }
+*/
     }
 
     VetoableChangeSupport vcs = new VetoableChangeSupport(this);
@@ -263,6 +268,8 @@ public class VirtualNamespace implements Namespace {
     @OverridingMethodsMustInvokeSuper
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
 
+        throw new UnsupportedOperationException("Not inplemented yet.");
+/*        
         if ("CanDelete".equals(evt.getPropertyName())) { //IN18N
             StringBuilder message = new StringBuilder();
             message.append(jmri.managers.Bundle.getMessage("VetoFoundIn", getBeanTypeHandled()))
@@ -295,6 +302,7 @@ public class VirtualNamespace implements Namespace {
                 }
             }
         }
+*/
     }
 
 

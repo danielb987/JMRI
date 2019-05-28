@@ -26,11 +26,13 @@ public class JMRI_NativeNamespace implements Namespace, PropertyChangeListener, 
         throw new UnsupportedOperationException("Not supported by the JMRI_NativeNamespace.");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <M extends Manager, N extends NamedBean> N get(Namespace namespace, Class<M> type, Class<N> clazz, String name) {
         return (N) InstanceManager.getDefault(type).getNamedBean(name);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <M extends Manager, N extends NamedBean> N provide(Namespace namespace, Class<M> type, Class<N> clazz, String name) {
         
@@ -137,6 +139,8 @@ public class JMRI_NativeNamespace implements Namespace, PropertyChangeListener, 
     @SuppressWarnings("unchecked") // The cast of getSource() to E can't be checked due to type erasure, but we catch errors
     @OverridingMethodsMustInvokeSuper
     public void propertyChange(PropertyChangeEvent e) {
+        throw new UnsupportedOperationException("Not inplemented yet.");
+/*        
         if (e.getPropertyName().equals("UserName")) {
             String old = (String) e.getOldValue();  // previous user name
             String now = (String) e.getNewValue();  // current user name
@@ -161,6 +165,7 @@ public class JMRI_NativeNamespace implements Namespace, PropertyChangeListener, 
             // called DisplayListName, as DisplayName might get used at some point by a NamedBean
             firePropertyChange("DisplayListName", old, now); //IN18N
         }
+*/
     }
 
     VetoableChangeSupport vcs = new VetoableChangeSupport(this);
@@ -256,6 +261,8 @@ public class JMRI_NativeNamespace implements Namespace, PropertyChangeListener, 
     @OverridingMethodsMustInvokeSuper
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
 
+        throw new UnsupportedOperationException("Not inplemented yet.");
+/*
         if ("CanDelete".equals(evt.getPropertyName())) { //IN18N
             StringBuilder message = new StringBuilder();
             message.append(jmri.managers.Bundle.getMessage("VetoFoundIn", getBeanTypeHandled()))
@@ -288,6 +295,7 @@ public class JMRI_NativeNamespace implements Namespace, PropertyChangeListener, 
                 }
             }
         }
+*/
     }
 
 

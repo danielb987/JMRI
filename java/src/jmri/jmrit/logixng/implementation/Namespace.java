@@ -1,8 +1,13 @@
 package jmri.jmrit.logixng.implementation;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import jmri.Manager;
 import jmri.NamedBean;
+import java.beans.PropertyChangeListener;
 import jmri.beans.PropertyChangeProvider;
+import java.beans.VetoableChangeListener;
 import jmri.beans.VetoableChangeProvider;
 
 /**
@@ -52,5 +57,42 @@ public interface Namespace extends PropertyChangeProvider, VetoableChangeProvide
      */
     public <M extends Manager, N extends NamedBean> N provide(
             Namespace namespace, Class<M> type, Class<N> clazz, String name);
+
+    /**
+     * Request a call-back when a bound property changes. Bound properties are
+     * the known state, commanded state, user and system names.
+     *
+     * @param listener    The listener. This may change in the future to be a
+     *                        subclass of NamedProprtyChangeListener that
+     *                        carries the name and listenerRef values internally
+     * @param name        The name (either system or user) that the listener
+     *                        uses for this namedBean, this parameter is used to
+     *                        help determine when which listeners should be
+     *                        moved when the username is moved from one bean to
+     *                        another
+     * @param listenerRef A textual reference for the listener, that can be
+     *                        presented to the user when a delete is called
+     */
+    public void addPropertyChangeListener(@Nonnull PropertyChangeListener listener, String name, String listenerRef);
+
+    /**
+     * Request a call-back when a bound property changes. Bound properties are
+     * the known state, commanded state, user and system names.
+     *
+     * @param propertyName The name of the property to listen to
+     * @param listener     The listener. This may change in the future to be a
+     *                         subclass of NamedProprtyChangeListener that
+     *                         carries the name and listenerRef values
+     *                         internally
+     * @param name         The name (either system or user) that the listener
+     *                         uses for this namedBean, this parameter is used
+     *                         to help determine when which listeners should be
+     *                         moved when the username is moved from one bean to
+     *                         another
+     * @param listenerRef  A textual reference for the listener, that can be
+     *                         presented to the user when a delete is called
+     */
+    public void addPropertyChangeListener(@Nonnull String propertyName, @Nonnull PropertyChangeListener listener,
+            String name, String listenerRef);
 
 }
