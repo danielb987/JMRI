@@ -37,7 +37,23 @@ public interface Base {
          * xml file, but instead all changes must be done by editing the
          * template.
          */
-        TEMPLATE_LOCK,
+        TEMPLATE_LOCK;
+        
+        
+        public final boolean isChangeableByUser() {
+            switch (this) {
+                case NONE:
+                case USER_LOCK:
+                    return true;
+                    
+                case HARD_LOCK:
+                case TEMPLATE_LOCK:
+                    return false;
+                    
+                default:
+                    throw new RuntimeException("lock has unknown value: "+this.name());
+            }
+        }
     }
     
     /**

@@ -55,6 +55,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     }
 
     private IfThen _template;
+    private boolean _enableExecution;
     private Type _type;
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
@@ -144,6 +145,24 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         return Category.OTHER;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean supportsEnableExecution() {
+        return true;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableExecution(boolean b) {
+        _enableExecution = b;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecutionEnabled() {
+        return _enableExecution;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {

@@ -82,6 +82,41 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     public FemaleSocket getFemaleSocket() {
         return _femaleActionSocket;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean supportsEnableExecution() {
+        
+        // This action does not support EnableExecution if the user may change
+        // the child.
+        if (getLock().isChangeableByUser()) {
+            return false;
+        }
+        
+        return _femaleActionSocket.supportsEnableExecution();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableExecution(boolean b) {
+        if (supportsEnableExecution()) {
+            _femaleActionSocket.setEnableExecution(b);
+        } else {
+            log.error("This conditionalNG does not supports the method setEnableExecution()");
+            throw new UnsupportedOperationException("This digital action does not supports the method setEnableExecution()");
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecutionEnabled() {
+        if (supportsEnableExecution()) {
+            return _femaleActionSocket.isExecutionEnabled();
+        } else {
+            log.error("This conditionalNG does not supports the method isExecutionEnabled()");
+            throw new UnsupportedOperationException("This digital action does not supports the method isExecutionEnabled()");
+        }
+    }
     
     /** {@inheritDoc} */
     @Override

@@ -27,6 +27,7 @@ import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
  */
 public class HoldAnything extends AbstractDigitalAction {
 
+    private boolean _enableExecution;
     private final List<MultipleSockets> _multipleSockets = new ArrayList<>();
     
     /**
@@ -63,6 +64,25 @@ public class HoldAnything extends AbstractDigitalAction {
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean supportsEnableExecution() {
+        // This action supports EnableExecution since it never executes anything.
+        return true;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableExecution(boolean b) {
+        _enableExecution = b;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecutionEnabled() {
+        return _enableExecution;
     }
     
     /** {@inheritDoc} */

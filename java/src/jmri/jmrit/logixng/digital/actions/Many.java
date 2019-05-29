@@ -14,7 +14,6 @@ import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public class Many extends AbstractDigitalAction implements FemaleSocketListener {
 
     private Many _template;
+    private boolean _enableExecution;
     private final List<ActionEntry> actionEntries = new ArrayList<>();
     
     /**
@@ -74,6 +74,48 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
         return new Many(this, sys);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean supportsEnableExecution() {
+        
+        // This action does not support EnableExecution if the user may add or
+        // remove child actions.
+        if (getLock().isChangeableByUser()) {
+            return false;
+        }
+        
+        // This action supports EnableExecution if all the children supports it.
+        boolean support = true;
+        for (ActionEntry actionEntry : actionEntries) {
+            if (actionEntry._socket.isConnected()) {
+                support &= actionEntry._socket.supportsEnableExecution();
+            }
+        }
+        return support;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableExecution(boolean b) {
+        if (supportsEnableExecution()) {
+            _enableExecution = b;
+        } else {
+            log.error("This digital action does not supports the method setEnableExecution()");
+            throw new UnsupportedOperationException("This digital action does not supports the method setEnableExecution()");
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecutionEnabled() {
+        if (supportsEnableExecution()) {
+            return _enableExecution;
+        } else {
+            log.error("This digital action does not supports the method setEnableExecution()");
+            throw new UnsupportedOperationException("This digital action does not supports the method isExecutionEnabled()");
+        }
     }
     
     /** {@inheritDoc} */

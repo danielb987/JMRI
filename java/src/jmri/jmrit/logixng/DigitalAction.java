@@ -1,6 +1,8 @@
 package jmri.jmrit.logixng;
 
 import jmri.NamedBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A LogixNG action.
@@ -9,6 +11,47 @@ import jmri.NamedBean;
  */
 public interface DigitalAction extends NamedBean, Base {
 
+    /**
+     * Determines whether this action supports enable execution for this
+     * digital action. An action for which execution is disabled will evaluate
+     * its expressions, if it has that, but not execute any actions.
+     * <p>
+     * Note that enable execution for LogixNG is the equivalent of enable for Logix.
+     * 
+     * @return true if execution is enbaled for the digital action, false otherwise
+     */
+    default public boolean supportsEnableExecution() {
+        return false;
+    }
+    
+    /**
+     * Enables or disables execution for this digital action. An action for
+     * which execution is disabled will evaluate its expressions, if it has that,
+     * but not execute any actions.
+     * <p>
+     * Note that enable execution for LogixNG is the equivalent of enable for Logix.
+     * 
+     * @param b if true, enables execution, otherwise disables execution
+     */
+    default public void setEnableExecution(boolean b) {
+        log.error("This digital action does not supports the method setEnableExecution()");
+        throw new UnsupportedOperationException("This digital action does not supports the method setEnableExecution()");
+    }
+    
+    /**
+     * Determines whether execution is enabled for this digital action. An
+     * action for which execution is disabled will evaluate its expressions,
+     * if it has that, but not execute any actions.
+     * <p>
+     * Note that EnableExecution for LogixNG is the equivalent of enable for Logix.
+     * 
+     * @return true if execution is enbaled for the digital action, false otherwise
+     */
+    default public boolean isExecutionEnabled() {
+        log.error("This digital action does not supports the method isExecutionEnabled()");
+        throw new UnsupportedOperationException("This digital action does not supports the method isExecutionEnabled()");
+    }
+    
     /**
      * Start execution of this DigitalAction.
      * 
@@ -43,5 +86,7 @@ public interface DigitalAction extends NamedBean, Base {
      * but the last call to executeStart() returned True.
      */
     public void abort();
+    
+    final static Logger log = LoggerFactory.getLogger(DigitalAction.class);
     
 }
