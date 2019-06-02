@@ -15,7 +15,7 @@ public class JMRI_NativeNamespaceTest {
 
     @Test
     public void testCtor() {
-        new JMRI_NativeNamespaceTest();
+        new JMRI_NativeNamespace();
     }
     
     // The minimal setup for log4J
