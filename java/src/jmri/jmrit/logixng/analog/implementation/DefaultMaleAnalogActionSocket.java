@@ -177,6 +177,11 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     }
 
     @Override
+    public String getFullyFormattedDisplayName(boolean userNameFirst) {
+        return _action.getFullyFormattedDisplayName(userNameFirst);
+    }
+
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
         _action.addPropertyChangeListener(l, name, listenerRef);
     }
