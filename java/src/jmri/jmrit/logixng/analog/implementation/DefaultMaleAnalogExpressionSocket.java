@@ -189,6 +189,11 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     }
 
     @Override
+    public String getFullyFormattedDisplayName(boolean userNameFirst) {
+        return _expression.getFullyFormattedDisplayName(userNameFirst);
+    }
+
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener l, String name, String listenerRef) {
         _expression.addPropertyChangeListener(l, name, listenerRef);
     }

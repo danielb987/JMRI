@@ -189,6 +189,12 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
+    @Override
+    final public String getFullyFormattedDisplayName(boolean userNameFirst) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
     // implementing classes will typically have a function/listener to get
     // updates from the layout, which will then call
     //  public void firePropertyChange(String propertyName,
