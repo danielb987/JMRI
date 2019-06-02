@@ -22,6 +22,7 @@ import org.junit.runners.Suite;
     DigitalExpressionTest.class,
     LogixNGCategoryTest.class,
     LogixNGTest.class,
+    LogixNG_InstanceManagerTest.class,
 })
 
 /**
