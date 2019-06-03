@@ -254,6 +254,14 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         if ((dialog == null) && (!GraphicsEnvironment.isHeadless())) {
             dialog = new TestLogixNG(new javax.swing.JFrame(), false);
             dialog.setVisible(true);
+            
+            for (jmri.Logix l : InstanceManager.getDefault(jmri.LogixManager.class).getNamedBeanSet()) {
+                String sysName = l.getSystemName();
+                if (!sysName.equals("SYS") && !sysName.startsWith("RTX")) {
+                    jmri.jmrit.logixng.tools.ImportLogix il = new jmri.jmrit.logixng.tools.ImportLogix(l);
+                    il.doImport();
+                }
+            }
         }
     }
 
