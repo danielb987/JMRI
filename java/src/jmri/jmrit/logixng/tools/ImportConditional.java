@@ -17,6 +17,7 @@ import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Warrant;
 import jmri.jmrit.logix.WarrantManager;
 import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import org.slf4j.Logger;
@@ -59,33 +60,43 @@ public class ImportConditional {
             switch (cv.getType().getItemType()) {
                 case SENSOR:
                     Sensor sn = (Sensor)nb;
+                    getSensorExpression(cv, sn);
                     break;
                 case TURNOUT:
                     Turnout tn = (Turnout)nb;
+                    getTurnoutExpression(cv, tn);
                     break;
                 case MEMORY:
                     Memory my = (Memory)nb;
+                    getMemoryExpression(cv, my);
                     break;
                 case LIGHT:
                     Light l = (Light)nb;
+                    getLightExpression(cv, l);
                     break;
                 case SIGNALHEAD:
                     SignalHead s = (SignalHead)nb;
+                    getSignalHeadExpression(cv, s);
                     break;
                 case SIGNALMAST:
                     SignalMast sm = (SignalMast)nb;
+                    getSignalMastExpression(cv, sm);
                     break;
                 case ENTRYEXIT:
 //                    NamedBean nb = jmri.InstanceManager.getDefault(jmri.jmrit.entryexit.EntryExitPairs.class).getBySystemName(_name);
+//                    getSensorExpression(cv, sn);
                     break;
                 case CONDITIONAL:
                     Conditional c = (Conditional)nb;
+                    getConditionalExpression(cv, c);
                     break;
                 case WARRANT:
                     Warrant w = (Warrant)nb;
+                    getWarrantExpression(cv, w);
                     break;
                 case OBLOCK:
                     OBlock b = (OBlock)nb;
+                    getOBlockExpression(cv, b);
                     break;
 
                 default:
@@ -101,6 +112,51 @@ public class ImportConditional {
 //            Conditional c = _logix.getConditional(_logix.getConditionalByNumberOrder(i));
 //            log.error("Import Conditional {} to ConditionalNG {}", c.getSystemName(), _logixNG.getSystemName());
 //        }
+    }
+    
+    
+    private DigitalExpression getSensorExpression(ConditionalVariable cv, Sensor sn) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getTurnoutExpression(ConditionalVariable cv, Turnout tn) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getMemoryExpression(ConditionalVariable cv, Memory my) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getLightExpression(ConditionalVariable cv, Light l) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getSignalHeadExpression(ConditionalVariable cv, SignalHead s) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getSignalMastExpression(ConditionalVariable cv, SignalMast sm) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getConditionalExpression(ConditionalVariable cv, Conditional c) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getWarrantExpression(ConditionalVariable cv, Warrant w) {
+        return null;
+    }
+    
+    
+    private DigitalExpression getOBlockExpression(ConditionalVariable cv, OBlock b) {
+        return null;
     }
     
     
