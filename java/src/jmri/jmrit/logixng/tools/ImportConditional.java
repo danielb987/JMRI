@@ -49,12 +49,21 @@ public class ImportConditional {
     }
     
     public void doImport() {
-        Conditional.AntecedentOperator ao = _conditional.getLogicType();
-        String antecedentExpression = _conditional.getAntecedentExpression();
+//        Conditional.AntecedentOperator ao = _conditional.getLogicType();
+//        String antecedentExpression = _conditional.getAntecedentExpression();
         List<ConditionalVariable> conditionalVariables = _conditional.getCopyOfStateVariables();
-        boolean triggerOnChange = _conditional.getTriggerOnChange();
-        List<ConditionalAction> conditionalActions = _conditional.getCopyOfActions();
+//        boolean triggerOnChange = _conditional.getTriggerOnChange();
+//        List<ConditionalAction> conditionalActions = _conditional.getCopyOfActions();
         
+        buildExpression(conditionalVariables);
+        
+//        for (ConditionalAction ca : conditionalActions) {
+            
+//        }
+    }
+    
+    
+    private DigitalExpression buildExpression(List<ConditionalVariable> conditionalVariables) {
         for (ConditionalVariable cv : conditionalVariables) {
             NamedBean nb = cv.getNamedBeanData();
             switch (cv.getType().getItemType()) {
@@ -105,13 +114,7 @@ public class ImportConditional {
             }
         }
         
-        for (ConditionalAction ca : conditionalActions) {
-            
-        }
-//        for (int i=0; i < _logix.getNumConditionals(); i++) {
-//            Conditional c = _logix.getConditional(_logix.getConditionalByNumberOrder(i));
-//            log.error("Import Conditional {} to ConditionalNG {}", c.getSystemName(), _logixNG.getSystemName());
-//        }
+        return null;
     }
     
     
