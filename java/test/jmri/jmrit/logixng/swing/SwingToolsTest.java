@@ -18,7 +18,7 @@ import org.junit.Test;
 public class SwingToolsTest {
 
     @Test
-    public void testCtor() {
+    public void testSwingTools() {
 //        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         DigitalAction action = new ActionTurnout("IQ1:DA1");
