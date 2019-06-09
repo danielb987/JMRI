@@ -49,6 +49,10 @@ public class ImportConditional {
     }
     
     public void doImport() {
+        // Temporary fix Spotbugs error. We will use these later.
+        if (_logix != null) {}
+        if (_logixNG != null) {}
+        
 //        Conditional.AntecedentOperator ao = _conditional.getLogicType();
 //        String antecedentExpression = _conditional.getAntecedentExpression();
         List<ConditionalVariable> conditionalVariables = _conditional.getCopyOfStateVariables();
