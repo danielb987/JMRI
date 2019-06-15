@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
     jmri.jmrit.logixng.digital.expressions.configureswing.PackageTest.class,
     jmri.jmrit.logixng.digital.expressions.configurexml.PackageTest.class,
     AndTest.class,
+    AntecedentTest.class,
     BufferedSensorTest.class,
     HoldTest.class,
     ResetOnTrueTest.class,

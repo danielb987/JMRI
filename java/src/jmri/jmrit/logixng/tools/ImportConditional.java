@@ -19,6 +19,7 @@ import jmri.jmrit.logix.WarrantManager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.digital.expressions.Antecedent;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,21 +50,18 @@ public class ImportConditional {
     }
     
     public void doImport() {
-        // Temporary fix Spotbugs error. We will use these later.
-        if (_logix != null) {}
-        if (_logixNG != null) {}
-        
-//        Conditional.AntecedentOperator ao = _conditional.getLogicType();
-//        String antecedentExpression = _conditional.getAntecedentExpression();
+        Conditional.AntecedentOperator ao = _conditional.getLogicType();
+        String antecedentExpression = _conditional.getAntecedentExpression();
         List<ConditionalVariable> conditionalVariables = _conditional.getCopyOfStateVariables();
-//        boolean triggerOnChange = _conditional.getTriggerOnChange();
-//        List<ConditionalAction> conditionalActions = _conditional.getCopyOfActions();
+        boolean triggerOnChange = _conditional.getTriggerOnChange();
+        List<ConditionalAction> conditionalActions = _conditional.getCopyOfActions();
         
+        Antecedent antecedent = new Antecedent(_conditionalNG, antecedentExpression);
         buildExpression(conditionalVariables);
         
-//        for (ConditionalAction ca : conditionalActions) {
+        for (ConditionalAction ca : conditionalActions) {
             
-//        }
+        }
     }
     
     

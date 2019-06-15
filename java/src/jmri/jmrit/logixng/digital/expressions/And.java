@@ -8,12 +8,10 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Evaluates to True if all the child expressions evaluate to true.
