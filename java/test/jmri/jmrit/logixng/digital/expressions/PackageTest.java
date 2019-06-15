@@ -10,10 +10,12 @@ import org.junit.runners.Suite;
     AndTest.class,
     AntecedentTest.class,
     BufferedSensorTest.class,
+    FalseTest.class,
     HoldTest.class,
     ResetOnTrueTest.class,
     TimerTest.class,
     TriggerOnceTest.class,
+    TrueTest.class,
     ExpressionTurnoutTest.class,
 })
 

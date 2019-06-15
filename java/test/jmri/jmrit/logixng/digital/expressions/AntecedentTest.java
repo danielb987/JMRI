@@ -34,8 +34,8 @@ public class AntecedentTest {
     
     @Test
     public void testCtor() {
-        Antecedent a = new Antecedent("IQA55:E321", null, "R1");
-        Assert.assertNotNull("New object is not null", a);
+        Antecedent t = new Antecedent("IQA55:E321", null, "R1");
+        Assert.assertNotNull("exists",t);
     }
     
     
