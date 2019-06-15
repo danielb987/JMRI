@@ -1,7 +1,5 @@
 package jmri.jmrit.logixng;
 
-import static jmri.jmrit.logixng.DigitalAction.log;
-
 import jmri.NamedBean;
 
 /**

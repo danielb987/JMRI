@@ -309,7 +309,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
         if (chkDuplicate == null) {
             return (true);
         }
-        log.error("ConditionalNG '{}' has already been added to Logix '{}'", conditionalNG.getSystemName(), getSystemName());  // NOI18N
+        log.error("ConditionalNG '{}' has already been added to LogixNG '{}'", conditionalNG.getSystemName(), getSystemName());  // NOI18N
         return (false);
     }
 
