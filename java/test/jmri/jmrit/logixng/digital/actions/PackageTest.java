@@ -13,6 +13,7 @@ import org.junit.runners.Suite;
     HoldAnythingTest.class,
     IfThenTest.class,
     ManyTest.class,
+    ShutdownComputer.class,
     SocketTest.class,
     ActionTurnoutTest.class,
 })

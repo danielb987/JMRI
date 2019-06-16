@@ -21,7 +21,13 @@ public enum Category {
     COMMON,
     
     /**
-     * Everything else.
+     * Other things.
      */
     OTHER,
+    
+    /**
+     * Extravaganza. Things seldom used, included mostly for fun, but maybe
+     * useful in some cases.
+     */
+    EXRAVAGANZA,
 }
