@@ -18,7 +18,6 @@ import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * The default implementation of ConditionalNG.
@@ -33,7 +32,6 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     private String _socketSystemName = null;
     private final FemaleDigitalActionSocket _femaleActionSocket;
     private boolean _enabled = false;
-    private boolean _userEnabled = false;
     
     public DefaultConditionalNG(String sys) throws BadUserNameException, BadSystemNameException  {
         super(sys);
@@ -124,11 +122,6 @@ public final class DefaultConditionalNG extends AbstractNamedBean
         if (isEnabled()) {
             _femaleActionSocket.executeStart();
         }
-//        if (_enabled) {
-//            _enabled = _femaleActionSocket.executeStart();
-//        } else {
-//            _enabled = _femaleActionSocket.executeContinue();
-//        }
     }
 
     @Override
@@ -274,26 +267,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _userEnabled;
-//        return _enabled && _userEnabled && _parent.isEnabled();
-    }
-    
-    /**
-     * Set whenether this object is enabled or disabled by the user.
-     * 
-     * @param enable true if this object should be enabled, false otherwise
-     */
-    public void setUserEnabled(boolean enable) {
-        _userEnabled = enable;
-    }
-    
-    /**
-     * Determines whether this object is enabled by the user.
-     * 
-     * @return true if the object is enabled, false otherwise
-     */
-    public boolean isUserEnabled() {
-        return _userEnabled;
+        return _enabled;
     }
 
 }
