@@ -309,19 +309,6 @@ public interface Base {
      */
     public boolean isEnabled();
     
-    /**
-     * Register listeners if this object needs that.
-     */
-    default public void registerListeners() {
-    }
-    
-    /**
-     * Register listeners if this object needs that.
-     */
-    default public void unregisterListeners() {
-    }
-    
-    
     
     public interface RunnableWithBase {
         public void run(Base b);

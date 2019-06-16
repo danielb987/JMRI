@@ -291,6 +291,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        _expression.setEnabled(enable);
     }
     
     /** {@inheritDoc} */

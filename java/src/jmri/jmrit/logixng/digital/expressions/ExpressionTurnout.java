@@ -1,12 +1,17 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
+import jmri.NamedBeanHandleManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 
@@ -15,13 +20,18 @@ import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionTurnout extends AbstractDigitalExpression {
+public class ExpressionTurnout extends AbstractDigitalExpression implements PropertyChangeListener {
 
     private ExpressionTurnout _template;
     private String _turnoutSystemName;
-    private NamedBeanHandle _turnout;
+    private NamedBeanHandle<Turnout> _turnoutHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
+
+    public ExpressionTurnout(ConditionalNG conditionalNG)
+            throws BadUserNameException {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    }
 
     public ExpressionTurnout(String sys)
             throws BadUserNameException, BadSystemNameException {
@@ -45,12 +55,17 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
         return new ExpressionTurnout(this, sys);
     }
     
-    public void setTurnout(NamedBeanHandle handle) {
-        _turnout = handle;
+    public void setTurnout(NamedBeanHandle<Turnout> handle) {
+        _turnoutHandle = handle;
+    }
+    
+    public void setTurnout(Turnout turnout) {
+        _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
     }
     
     public NamedBeanHandle getTurnout() {
-        return _turnout;
+        return _turnoutHandle;
     }
     
     public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
@@ -84,14 +99,18 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
     /** {@inheritDoc} */
     @Override
     public void initEvaluation() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Do nothing
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
-        // Do this on the correct thread??
-        throw new UnsupportedOperationException("Not supported yet.");
+        TurnoutState currentTurnoutState = TurnoutState.get(_turnoutHandle.getBean().getCommandedState());
+        if (_is_IsNot == Is_IsNot_Enum.IS) {
+            return currentTurnoutState == _turnoutState;
+        } else {
+            return currentTurnoutState != _turnoutState;
+        }
     }
 
     /** {@inheritDoc} */
@@ -118,8 +137,8 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
     @Override
     public String getLongDescription() {
         String turnoutName;
-        if (_turnout != null) {
-            turnoutName = _turnout.getBean().getDisplayName();
+        if (_turnoutHandle != null) {
+            turnoutName = _turnoutHandle.getBean().getDisplayName();
         } else {
             turnoutName = Bundle.getMessage("BeanNotSelected");
         }
@@ -133,10 +152,27 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_turnout == null) && (_turnoutSystemName != null)) {
+        if ((_turnoutHandle == null) && (_turnoutSystemName != null)) {
             Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
-            _turnout = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
         }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled(boolean enable) {
+        super.setEnabled(enable);
+        if (enable) {
+            _turnoutHandle.getBean().addPropertyChangeListener("CommandedState", this);
+        } else {
+            _turnoutHandle.getBean().removePropertyChangeListener("CommandedState", this);
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        getConditionalNG().execute();
     }
     
     

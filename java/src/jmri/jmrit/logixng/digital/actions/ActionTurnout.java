@@ -2,13 +2,16 @@ package jmri.jmrit.logixng.digital.actions;
 
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
+import jmri.NamedBeanHandleManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
-import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import jmri.util.ThreadingUtil;
+import jmri.util.ThreadingUtil.ThreadAction;
 
 /**
  * This action sets the state of a turnout.
@@ -19,9 +22,14 @@ public class ActionTurnout extends AbstractDigitalAction {
 
     private ActionTurnout _template;
     private String _turnoutSystemName;
-    private NamedBeanHandle _turnout;
+    private NamedBeanHandle<Turnout> _turnoutHandle;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
     
+    public ActionTurnout(ConditionalNG conditionalNG)
+            throws BadUserNameException {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+    }
+
     public ActionTurnout(String sys)
             throws BadUserNameException {
         super(sys);
@@ -46,12 +54,17 @@ public class ActionTurnout extends AbstractDigitalAction {
         return new ActionTurnout(this, sys);
     }
     
-    public void setTurnout(NamedBeanHandle handle) {
-        _turnout = handle;
+    public void setTurnout(NamedBeanHandle<Turnout> handle) {
+        _turnoutHandle = handle;
     }
     
-    public NamedBeanHandle getTurnout() {
-        return _turnout;
+    public void setTurnout(Turnout turnout) {
+        _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+    }
+    
+    public NamedBeanHandle<Turnout> getTurnout() {
+        return _turnoutHandle;
     }
     
     public void setTurnoutState(TurnoutState state) {
@@ -77,10 +90,13 @@ public class ActionTurnout extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        throw new UnsupportedOperationException("Not supported yet.");
-        // Do this on the LayoutThread
-//        _turnout.setState(_newState);
-//        return false;
+        final Turnout t = _turnoutHandle.getBean();
+        final int newState = _turnoutState.getID();
+        ThreadingUtil.runOnLayout(() -> {
+            t.setCommandedState(newState);
+//            _turnoutHandle.getBean().setCommandedState(_turnoutState.getID());
+        });
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -125,8 +141,8 @@ public class ActionTurnout extends AbstractDigitalAction {
     @Override
     public String getLongDescription() {
         String turnoutName;
-        if (_turnout != null) {
-            turnoutName = _turnout.getBean().getDisplayName();
+        if (_turnoutHandle != null) {
+            turnoutName = _turnoutHandle.getBean().getDisplayName();
         } else {
             turnoutName = Bundle.getMessage("BeanNotSelected");
         }
@@ -140,9 +156,9 @@ public class ActionTurnout extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_turnout == null) && (_turnoutSystemName != null)) {
+        if ((_turnoutHandle == null) && (_turnoutSystemName != null)) {
             Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
-            _turnout = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
         }
     }
     

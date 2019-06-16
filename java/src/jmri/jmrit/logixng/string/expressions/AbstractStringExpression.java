@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.string.expressions;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
@@ -72,6 +73,7 @@ public abstract class AbstractStringExpression extends AbstractNamedBean
 
     /** {@inheritDoc} */
     @Override
+    @OverridingMethodsMustInvokeSuper
     public void dispose() {
         for (int i=0; i < getChildCount(); i++) {
             getChild(i).dispose();
@@ -82,7 +84,9 @@ public abstract class AbstractStringExpression extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     public void setEnabled(boolean enable) {
-        // Do nothing. This is handled by the male socket.
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).setEnabled(enable);
+        }
     }
     
     /** {@inheritDoc} */

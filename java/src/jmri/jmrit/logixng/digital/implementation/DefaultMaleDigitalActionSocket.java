@@ -340,6 +340,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        _action.setEnabled(enable);
     }
     
     /** {@inheritDoc} */

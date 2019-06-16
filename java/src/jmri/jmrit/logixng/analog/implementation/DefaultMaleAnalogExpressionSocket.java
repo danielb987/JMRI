@@ -346,6 +346,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        _expression.setEnabled(enable);
     }
     
     /** {@inheritDoc} */

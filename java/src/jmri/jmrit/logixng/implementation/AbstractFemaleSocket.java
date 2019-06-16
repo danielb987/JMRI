@@ -136,6 +136,9 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        if (isConnected()) {
+            _socket.setEnabled(enable);
+        }
     }
 
     /** {@inheritDoc} */

@@ -307,6 +307,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        _expression.setEnabled(enable);
     }
     
     /** {@inheritDoc} */

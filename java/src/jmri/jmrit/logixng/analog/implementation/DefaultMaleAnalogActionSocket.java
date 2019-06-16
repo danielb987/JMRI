@@ -345,6 +345,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        _action.setEnabled(enable);
     }
     
     /** {@inheritDoc} */

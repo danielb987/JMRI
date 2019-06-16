@@ -93,7 +93,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
-            throw new IllegalArgumentException("System name is invalid");
+            throw new IllegalArgumentException("System name is invalid: "+expression.getSystemName());
         }
         
         String[] systemNameParts = expression.getSystemName().split("\\:");
@@ -168,7 +168,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         // E - Expression
         // Optional: A - Automatic (if the system name is created by the software and not by the user
         // \d+ - The DigitalExpression ID number
-        if (systemName.matches("IQA?\\d+:\\d:DEA?\\d+")) {
+        if (systemName.matches("IQA?\\d+:\\d+:DEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
