@@ -13,10 +13,11 @@ public interface AnalogExpression extends NamedBean, Base {
     /**
      * Evaluate this expression.
      * 
+     * @param parentValue a value passed down from the parent.
      * @return the result of the evaluation. The male socket that holds this
      * expression throws an exception if this value is a Float.NaN or an
      * infinite number.
      */
-    public float evaluate();
+    public float evaluate(float parentValue);
     
 }

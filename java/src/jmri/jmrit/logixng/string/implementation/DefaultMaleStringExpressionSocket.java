@@ -75,12 +75,12 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     
     /** {@inheritDoc} */
     @Override
-    public String evaluate() {
+    public String evaluate(String parentValue) {
         if ((_debugConfig != null)
                 && ((StringExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((StringExpressionDebugConfig)_debugConfig)._result;
         }
-        return _expression.evaluate();
+        return _expression.evaluate(parentValue);
     }
 
     @Override

@@ -99,7 +99,7 @@ public class DoAnalogAction
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        float result = _analogExpressionSocket.evaluate();
+        float result = _analogExpressionSocket.evaluate(0.0f);
         
         _analogActionSocket.setValue(result);
 

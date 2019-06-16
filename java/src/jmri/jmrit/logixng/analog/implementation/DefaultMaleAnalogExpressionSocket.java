@@ -89,8 +89,8 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     /**
      * Get the value of the AnalogExpression.
      */
-    public float internalEvaluate() {
-        float result = _expression.evaluate();
+    public float internalEvaluate(float parentValue) {
+        float result = _expression.evaluate(parentValue);
         
         if (Float.isNaN(result)) {
             throw new IllegalArgumentException("The result is NaN");
@@ -106,14 +106,14 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     /** {@inheritDoc} */
     @Override
-    public float evaluate() {
+    public float evaluate(float parentValue) {
         if ((_debugConfig != null)
                 && ((AnalogExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((AnalogExpressionDebugConfig)_debugConfig)._result;
         }
         
         try {
-            return internalEvaluate();
+            return internalEvaluate(parentValue);
         } catch (Exception e) {
             switch (_errorHandlingType) {
                 case SHOW_DIALOG_BOX:

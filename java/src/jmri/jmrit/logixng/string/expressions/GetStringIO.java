@@ -66,7 +66,7 @@ public class GetStringIO extends AbstractStringExpression {
     
     /** {@inheritDoc} */
     @Override
-    public String evaluate() {
+    public String evaluate(String parentValue) {
         if (_stringIO != null) {
             return _stringIO.getKnownStringValue();
         } else {

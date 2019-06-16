@@ -98,7 +98,7 @@ public class DoStringAction
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        String result = _stringExpressionSocket.evaluate();
+        String result = _stringExpressionSocket.evaluate("");
         
         _stringActionSocket.setValue(result);
 

@@ -13,8 +13,9 @@ public interface StringExpression extends NamedBean, Base {
     /**
      * Evaluate this expression.
      * 
+     * @param parentValue a value passed down from the parent.
      * @return the result of the evaluation
      */
-    public String evaluate();
+    public String evaluate(String parentValue);
     
 }

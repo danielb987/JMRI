@@ -61,9 +61,9 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
     }
     
     @Override
-    public float evaluate() {
+    public float evaluate(float parentValue) {
         if (isConnected()) {
-            return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate();
+            return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(parentValue);
         } else {
             return (float) 0.0;
         }

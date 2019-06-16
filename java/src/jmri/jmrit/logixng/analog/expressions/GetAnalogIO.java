@@ -71,7 +71,7 @@ public class GetAnalogIO extends AbstractAnalogExpression {
     
     /** {@inheritDoc} */
     @Override
-    public float evaluate() {
+    public float evaluate(float parentValue) {
         if (_analogIO != null) {
             return _analogIO.getKnownAnalogValue();
         } else {

@@ -61,9 +61,9 @@ public final class DefaultFemaleStringExpressionSocket extends AbstractFemaleSoc
     }
     
     @Override
-    public String evaluate() {
+    public String evaluate(String parentValue) {
         if (isConnected()) {
-            return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate();
+            return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(parentValue);
         } else {
             return "";
         }

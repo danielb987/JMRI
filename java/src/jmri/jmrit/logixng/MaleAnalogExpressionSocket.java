@@ -16,6 +16,6 @@ public interface MaleAnalogExpressionSocket
      * If an error occurs and are handled, the method returns the value 0.0f.
      */
     @Override
-    public float evaluate();
+    public float evaluate(float parentValue);
 
 }
