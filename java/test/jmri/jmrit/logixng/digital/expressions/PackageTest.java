@@ -12,6 +12,7 @@ import org.junit.runners.Suite;
     BufferedSensorTest.class,
     FalseTest.class,
     HoldTest.class,
+    OrTest.class,
     ResetOnTrueTest.class,
     TimerTest.class,
     TriggerOnceTest.class,

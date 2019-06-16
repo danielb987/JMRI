@@ -6,6 +6,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.tools.swing.PackageTest.class,
+    ImportConditionalTest.class,
     ImportLogixTest.class,
 })
 
