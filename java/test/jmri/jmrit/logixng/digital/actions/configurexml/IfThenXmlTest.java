@@ -11,7 +11,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class IfThenElseXmlTest {
+public class IfThenXmlTest {
 
     @Test
     public void testCtor() {

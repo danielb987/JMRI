@@ -11,7 +11,7 @@ import org.junit.runners.Suite;
     DoAnalogActionTest.class,
     DoStringActionTest.class,
     HoldAnythingTest.class,
-    IfThenElseTest.class,
+    IfThenTest.class,
     ManyTest.class,
     SocketTest.class,
     ActionTurnoutTest.class,

@@ -14,47 +14,47 @@ import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
- * Evaluates to True if all of the children expressions evaluate to true.
+ * Evaluates to True if any of the children expressions evaluate to true.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class And extends AbstractDigitalExpression implements FemaleSocketListener {
+public class Or extends AbstractDigitalExpression implements FemaleSocketListener {
 
-    private And _template;
+    private Or _template;
     List<String> _childrenSystemNames;
     List<FemaleDigitalExpressionSocket> _children = new ArrayList<>();
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public And(ConditionalNG conditionalNG) {
+    public Or(ConditionalNG conditionalNG) {
         super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
         init();
     }
     
-    public And(String sys) throws BadSystemNameException {
+    public Or(String sys) throws BadSystemNameException {
         super(sys);
         init();
     }
 
-    public And(String sys, String user)
+    public Or(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         init();
     }
     
-    public And(String sys, List<String> childrenSystemNames) throws BadSystemNameException {
+    public Or(String sys, List<String> childrenSystemNames) throws BadSystemNameException {
         super(sys);
         _childrenSystemNames = childrenSystemNames;
     }
 
-    public And(String sys, String user, List<String> childrenSystemNames)
+    public Or(String sys, String user, List<String> childrenSystemNames)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         _childrenSystemNames = childrenSystemNames;
     }
 
-    private And(And template, String sys) {
+    private Or(Or template, String sys) {
         super(sys);
         _template = template;
         if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
@@ -63,7 +63,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
-        return new And(this, sys);
+        return new Or(this, sys);
     }
     
     private void init() {
@@ -86,10 +86,10 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public boolean evaluate() {
-        boolean result = true;
+        boolean result = false;
         for (DigitalExpression e : _children) {
-            if (! e.evaluate()) {
-                result = false;
+            if (e.evaluate()) {
+                result = true;
             }
         }
         return result;

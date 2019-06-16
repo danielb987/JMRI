@@ -12,7 +12,7 @@ import jmri.jmrit.logixng.DigitalAction;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class IfThenElseTest {
+public class IfThenTest {
 
     @Test
     public void testCtor() {

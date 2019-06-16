@@ -1,9 +1,11 @@
 package jmri.jmrit.logixng.tools;
 
+import java.util.logging.Level;
 import jmri.Conditional;
 import jmri.InstanceManager;
 import jmri.Logix;
 import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,13 @@ public class ImportLogix {
             Conditional c = _logix.getConditional(_logix.getConditionalByNumberOrder(i));
             log.error("Import Conditional {} to ConditionalNG {}", c.getSystemName(), _logixNG.getSystemName());
             ImportConditional ic = new ImportConditional(_logix, c, _logixNG, _logixNG.getSystemName()+":"+Integer.toString(i));
-            ic.doImport();
+            
+            try {
+                ic.doImport();
+            } catch (SocketAlreadyConnectedException ex) {
+                ex.printStackTrace();
+                log.error("Import Conditional {} to ConditionalNG {}", c.getSystemName(), _logixNG.getSystemName(), ex);
+            }
         }
     }
     

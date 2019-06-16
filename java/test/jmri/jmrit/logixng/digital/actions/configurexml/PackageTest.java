@@ -7,7 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     ActionTurnoutXmlTest.class,
     HoldAnythingXmlTest.class,
-    IfThenElseXmlTest.class,
+    IfThenXmlTest.class,
     ManyXmlTest.class,
 })
 
