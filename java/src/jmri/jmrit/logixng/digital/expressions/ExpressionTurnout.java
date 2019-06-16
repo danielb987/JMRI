@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.Turnout;
@@ -82,7 +83,13 @@ public class ExpressionTurnout extends AbstractDigitalExpression {
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         // Do this on the correct thread??
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.ConditionalNG;
@@ -52,6 +53,8 @@ public class AntecedentTest {
     }
     
     private void testCalculate(int expectedResult, String antecedent, List<DigitalExpression> conditionalVariablesList, String errorMessage) throws SocketAlreadyConnectedException {
+        
+        AtomicBoolean isCompleted = new AtomicBoolean(true);
         Antecedent ix1 = new Antecedent("IXIC 1", null, antecedent);
         
 //        for (int i=0; i < ix1.getChildCount(); i++) {
@@ -67,12 +70,12 @@ public class AntecedentTest {
         switch (expectedResult) {
             case Antecedent.FALSE:
                 Assert.assertFalse("validateAntecedent() returns FALSE for '"+antecedent+"'",
-                        ix1.evaluate());
+                        ix1.evaluate(isCompleted));
                 break;
                 
             case Antecedent.TRUE:
                 Assert.assertTrue("validateAntecedent() returns TRUE for '"+antecedent+"'",
-                        ix1.evaluate());
+                        ix1.evaluate(isCompleted));
                 break;
                 
             default:

@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
@@ -76,13 +77,19 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        _expression.initEvaluation();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         if ((_debugConfig != null)
                 && ((DigitalExpressionDebugConfig)_debugConfig)._forceResult) {
             lastEvaluationResult = ((DigitalExpressionDebugConfig)_debugConfig)._result;
             return lastEvaluationResult;
         }
-        lastEvaluationResult = _expression.evaluate();
+        lastEvaluationResult = _expression.evaluate(isCompleted);
         return lastEvaluationResult;
     }
 

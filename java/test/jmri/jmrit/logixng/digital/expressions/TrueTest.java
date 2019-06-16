@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -22,8 +23,9 @@ public class TrueTest {
     
     @Test
     public void testExpression() {
+        AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
         DigitalExpression t = new True("IQA55:E321");
-        Assert.assertTrue("Expression is true",t.evaluate());
+        Assert.assertTrue("Expression is true",t.evaluate(isExpressionCompleted));
     }
     
     // The minimal setup for log4J

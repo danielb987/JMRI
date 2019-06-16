@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -85,10 +86,18 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        for (DigitalExpression e : _children) {
+            e.initEvaluation();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         boolean result = false;
         for (DigitalExpression e : _children) {
-            if (e.evaluate()) {
+            if (e.evaluate(isCompleted)) {
                 result = true;
             }
         }

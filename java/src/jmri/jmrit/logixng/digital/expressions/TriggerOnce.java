@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -64,12 +65,18 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
-        if (_childExpression.evaluate() && !_childLastState) {
+    public void initEvaluation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
+        if (_childExpression.evaluate(isCompleted) && !_childLastState) {
             _childLastState = true;
             return true;
         }
-        _childLastState = _childExpression.evaluate();
+        _childLastState = _childExpression.evaluate(isCompleted);
         return false;
     }
 

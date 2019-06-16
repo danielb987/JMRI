@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -80,13 +81,19 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
-        boolean result = _primaryExpressionSocket.evaluate();
+    public void initEvaluation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
+        boolean result = _primaryExpressionSocket.evaluate(isCompleted);
         if (!_lastMainResult && result) {
             _secondaryExpressionSocket.reset();
         }
         _lastMainResult = result;
-        result |= _secondaryExpressionSocket.evaluate();
+        result |= _secondaryExpressionSocket.evaluate(isCompleted);
         return result;
     }
 

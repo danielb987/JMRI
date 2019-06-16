@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.implementation;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.digital.expressions.AbstractDigitalExpression;
@@ -45,8 +46,14 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
-        return _pluginExpression.evaluate();
+    public void initEvaluation() {
+        _pluginExpression.initEvaluation();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
+        return _pluginExpression.evaluate(isCompleted);
     }
     
     /** {@inheritDoc} */

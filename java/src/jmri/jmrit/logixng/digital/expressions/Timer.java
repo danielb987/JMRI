@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -45,7 +46,13 @@ public class Timer extends AbstractDigitalExpression {
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         // Has timer completed?
         
         return true;    // Mockup code for now.

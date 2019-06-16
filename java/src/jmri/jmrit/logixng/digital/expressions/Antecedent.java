@@ -7,6 +7,7 @@ import static jmri.Conditional.OPERATOR_OR;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.Base;
@@ -111,7 +112,15 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        for (DigitalExpression e : _children) {
+            e.initEvaluation();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         
         if (_antecedent.isEmpty()) {
             return false;
@@ -136,7 +145,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
             for (DigitalExpression e : _children) {
                 list.add(e);
             }
-            DataPair dp = parseCalculate(new String(ch, 0, n), list);
+            DataPair dp = parseCalculate(isCompleted, new String(ch, 0, n), list);
             result = dp.result;
         } catch (NumberFormatException nfe) {
             result = false;
@@ -253,6 +262,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      * @return error message string if not well formed
      */
     public String validateAntecedent(String ant, List<DigitalExpression> variableList) {
+        AtomicBoolean isCompleted = new AtomicBoolean(true);
         char[] ch = ant.toCharArray();
         int n = 0;
         for (int j = 0; j < ch.length; j++) {
@@ -283,7 +293,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                     rbx.getString("ParseError7"), new Object[]{'('});  // NOI18N
         }
         try {
-            DataPair dp = parseCalculate(new String(ch, 0, n), variableList);
+            DataPair dp = parseCalculate(isCompleted, new String(ch, 0, n), variableList);
             if (n != dp.indexCount) {
                 return java.text.MessageFormat.format(
                         rbx.getString("ParseError4"), new Object[]{ch[dp.indexCount - 1]});  // NOI18N
@@ -314,7 +324,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      *         variable indices used.
      * @throws jmri.JmriException if unable to compute the logic
      */
-    DataPair parseCalculate(String s, List<DigitalExpression> variableList)
+    DataPair parseCalculate(AtomicBoolean isCompleted, String s, List<DigitalExpression> variableList)
             throws JmriException {
 
         // for simplicity, we force the string to upper case before scanning
@@ -329,7 +339,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         int i = 0;      // index of String s
         //int numArgs = 0;
         if (s.charAt(i) == '(') {
-            dp = parseCalculate(s.substring(++i), variableList);
+            dp = parseCalculate(isCompleted, s.substring(++i), variableList);
             leftArg = dp.result;
             i += dp.indexCount;
             argsUsed.or(dp.argsUsed);
@@ -342,7 +352,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                 } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                     k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                 }
-                leftArg = variableList.get(k - 1).evaluate();
+                leftArg = variableList.get(k - 1).evaluate(isCompleted);
                 i++;
                 argsUsed.set(k - 1);
             } else if ("NOT".equals(s.substring(i, i + 3))) {  // NOI18N
@@ -350,7 +360,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
 
                 // not leftArg
                 if (s.charAt(i) == '(') {
-                    dp = parseCalculate(s.substring(++i), variableList);
+                    dp = parseCalculate(isCompleted, s.substring(++i), variableList);
                     leftArg = dp.result;
                     i += dp.indexCount;
                     argsUsed.or(dp.argsUsed);
@@ -361,7 +371,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                     } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                         k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                     }
-                    leftArg = variableList.get(k - 1).evaluate();
+                    leftArg = variableList.get(k - 1).evaluate(isCompleted);
                     i++;
                     argsUsed.set(k - 1);
                 } else {
@@ -389,7 +399,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                             rbx.getString("ParseError2"), new Object[]{s.substring(i)}));  // NOI18N
                 }
                 if (s.charAt(i) == '(') {
-                    dp = parseCalculate(s.substring(++i), variableList);
+                    dp = parseCalculate(isCompleted, s.substring(++i), variableList);
                     rightArg = dp.result;
                     i += dp.indexCount;
                     argsUsed.or(dp.argsUsed);
@@ -402,14 +412,14 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                         } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                             k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                         }
-                        rightArg = variableList.get(k - 1).evaluate();
+                        rightArg = variableList.get(k - 1).evaluate(isCompleted);
                         i++;
                         argsUsed.set(k - 1);
                     } else if ("NOT".equals(s.substring(i, i + 3))) {  // NOI18N
                         i += 3;
                         // not rightArg
                         if (s.charAt(i) == '(') {
-                            dp = parseCalculate(s.substring(++i), variableList);
+                            dp = parseCalculate(isCompleted, s.substring(++i), variableList);
                             rightArg = dp.result;
                             i += dp.indexCount;
                             argsUsed.or(dp.argsUsed);
@@ -420,7 +430,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                             } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                                 k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                             }
-                            rightArg = variableList.get(k - 1).evaluate();
+                            rightArg = variableList.get(k - 1).evaluate(isCompleted);
                             i++;
                             argsUsed.set(k - 1);
                         } else {

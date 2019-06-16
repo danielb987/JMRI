@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -55,6 +56,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     private IfThen _template;
     private boolean _enableExecution;
     private Type _type;
+    private final AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
     private String _ifExpressionSocketSystemName;
@@ -170,14 +172,14 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        _lastExpressionResult = _ifExpressionSocket.evaluate();
+        _lastExpressionResult = _ifExpressionSocket.evaluate(isExpressionCompleted);
         _lastActionResult = false;
 
         if (_lastExpressionResult) {
             _lastActionResult = _thenActionSocket.executeStart();
         }
 
-        return _lastActionResult;
+        return _lastActionResult && !isExpressionCompleted.get();
     }
 
     /**
@@ -196,7 +198,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 break;
                 
             case CONTINOUS_ACTION:
-                boolean exprResult = _ifExpressionSocket.evaluate();
+                boolean exprResult = _ifExpressionSocket.evaluate(isExpressionCompleted);
                 if (exprResult) {
                     _lastActionResult = _thenActionSocket.executeContinue();
                 } else {
@@ -209,7 +211,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 throw new RuntimeException(String.format("Unknown type '%s'", _type.name()));
         }
         
-        return _lastActionResult;
+        return _lastActionResult || !isExpressionCompleted.get();
     }
 
     /**
@@ -223,13 +225,17 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
      */
     @Override
     public boolean executeRestart() {
+        if (!isExpressionCompleted.get()) {
+            _ifExpressionSocket.reset();
+        }
+        
         switch (_type) {
             case TRIGGER_ACTION:
                 _lastActionResult = _thenActionSocket.executeRestart();
                 break;
                 
             case CONTINOUS_ACTION:
-                boolean exprResult = _ifExpressionSocket.evaluate();
+                boolean exprResult = _ifExpressionSocket.evaluate(isExpressionCompleted);
                 if (exprResult) {
                     _lastActionResult = _thenActionSocket.executeRestart();
                 } else {
@@ -242,12 +248,13 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 throw new RuntimeException(String.format("Unknown type '%s'", _type.name()));
         }
         
-        return _lastActionResult;
+        return _lastActionResult && !isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
     @Override
     public void abort() {
+        _ifExpressionSocket.reset();
         _thenActionSocket.abort();
     }
     
@@ -262,8 +269,13 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
      * Set the type.
      */
     public void setType(Type type) {
-        if ((_type != type) && _lastActionResult) {
-            _thenActionSocket.abort();
+        if (_type != type) {
+            if (!isExpressionCompleted.get()) {
+                _ifExpressionSocket.reset();
+            }
+            if (_lastActionResult) {
+                _thenActionSocket.abort();
+            }
         }
         _type = type;
     }

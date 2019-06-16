@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.Sensor;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -69,8 +70,14 @@ public class BufferedSensor extends AbstractDigitalExpression {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

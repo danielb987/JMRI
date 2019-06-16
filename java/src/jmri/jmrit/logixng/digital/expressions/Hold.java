@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -119,11 +120,17 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     
     /** {@inheritDoc} */
     @Override
-    public boolean evaluate() {
+    public void initEvaluation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean evaluate(AtomicBoolean isCompleted) {
         if (_isActive) {
-            _isActive = _holdExpressionSocket.evaluate();
+            _isActive = _holdExpressionSocket.evaluate(isCompleted);
         } else {
-            _isActive = _holdExpressionSocket.evaluate() && _triggerExpressionSocket.evaluate();
+            _isActive = _holdExpressionSocket.evaluate(isCompleted) && _triggerExpressionSocket.evaluate(isCompleted);
         }
         return _isActive;
     }
