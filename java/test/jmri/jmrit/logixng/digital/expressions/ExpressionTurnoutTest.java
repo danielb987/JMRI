@@ -33,7 +33,8 @@ public class ExpressionTurnoutTest {
 
     @Test
     public void testCtor() {
-        new ExpressionTurnout("IQA55:E321", null);
+        DigitalExpression t = new ExpressionTurnout("IQA55:E321", null);
+        Assert.assertNotNull("exists",t);
     }
     
     @Test

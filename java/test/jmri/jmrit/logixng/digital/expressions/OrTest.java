@@ -8,15 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test And
+ * Test Or
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AndTest {
+public class OrTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression t = new And("IQA55:E321");
+        DigitalExpression t = new Or("IQA55:E321");
         Assert.assertNotNull("exists",t);
     }
     

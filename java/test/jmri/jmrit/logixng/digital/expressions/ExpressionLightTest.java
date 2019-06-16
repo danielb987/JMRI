@@ -33,7 +33,8 @@ public class ExpressionLightTest {
 
     @Test
     public void testCtor() {
-        new ExpressionLight("IQA55:E321", null);
+        DigitalExpression t = new ExpressionLight("IQA55:E321", null);
+        Assert.assertNotNull("exists",t);
     }
     
     @Test

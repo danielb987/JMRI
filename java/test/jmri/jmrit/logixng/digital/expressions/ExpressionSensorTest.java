@@ -33,7 +33,8 @@ public class ExpressionSensorTest {
 
     @Test
     public void testCtor() {
-        new ExpressionSensor("IQA55:E321", null);
+        DigitalExpression t = new ExpressionSensor("IQA55:E321", null);
+        Assert.assertNotNull("exists",t);
     }
     
     @Test
