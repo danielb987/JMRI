@@ -51,6 +51,27 @@ public class ActionTurnoutTest {
         conditionalNG.execute();
         // The action should now be executed so the turnout should be thrown
         Assert.assertTrue("turnout is thrown",turnout.getCommandedState() == Turnout.THROWN);
+        
+        // Test to set turnout to closed
+        actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.CLOSED);
+        // Execute the conditional
+        conditionalNG.execute();
+        // The action should now be executed so the turnout should be thrown
+        Assert.assertTrue("turnout is thrown",turnout.getCommandedState() == Turnout.CLOSED);
+        
+        // Test to set turnout to toggle
+        actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.TOGGLE);
+        // Execute the conditional
+        conditionalNG.execute();
+        // The action should now be executed so the turnout should be thrown
+        Assert.assertTrue("turnout is thrown",turnout.getCommandedState() == Turnout.THROWN);
+        
+        // Test to set turnout to toggle
+        actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.TOGGLE);
+        // Execute the conditional
+        conditionalNG.execute();
+        // The action should now be executed so the turnout should be thrown
+        Assert.assertTrue("turnout is thrown",turnout.getCommandedState() == Turnout.CLOSED);
     }
     
     // The minimal setup for log4J

@@ -91,10 +91,18 @@ public class ActionTurnout extends AbstractDigitalAction {
     @Override
     public boolean executeStart() {
         final Turnout t = _turnoutHandle.getBean();
-        final int newState = _turnoutState.getID();
+//        final int newState = _turnoutState.getID();
         ThreadingUtil.runOnLayout(() -> {
-            t.setCommandedState(newState);
-//            _turnoutHandle.getBean().setCommandedState(_turnoutState.getID());
+            if (_turnoutState == TurnoutState.TOGGLE) {
+//                t.setCommandedState(newState);
+                if (t.getCommandedState() == Turnout.CLOSED) {
+                    t.setCommandedState(Turnout.THROWN);
+                } else {
+                    t.setCommandedState(Turnout.CLOSED);
+                }
+            } else {
+                t.setCommandedState(_turnoutState.getID());
+            }
         });
         return false;
     }
@@ -166,7 +174,8 @@ public class ActionTurnout extends AbstractDigitalAction {
     
     public enum TurnoutState {
         CLOSED(Turnout.CLOSED, InstanceManager.getDefault(TurnoutManager.class).getClosedText()),
-        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText());
+        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText()),
+        TOGGLE(-1, Bundle.getMessage("TurnoutToggleStatus"));
         
         private final int _id;
         private final String _text;
