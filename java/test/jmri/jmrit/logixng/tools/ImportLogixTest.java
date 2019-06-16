@@ -25,7 +25,6 @@ public class ImportLogixTest {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Logix logix = InstanceManager.getDefault(LogixManager.class).createNewLogix("A new logix for test");  // NOI18N
-//        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         
         new ImportLogix(logix);
     }
