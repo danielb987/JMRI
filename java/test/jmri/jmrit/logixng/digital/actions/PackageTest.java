@@ -15,6 +15,8 @@ import org.junit.runners.Suite;
     ManyTest.class,
     ShutdownComputerTest.class,
     SocketTest.class,
+    ActionLightTest.class,
+    ActionSensorTest.class,
     ActionTurnoutTest.class,
 })
 

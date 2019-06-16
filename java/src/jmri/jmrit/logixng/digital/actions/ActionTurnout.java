@@ -11,7 +11,6 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.ThreadingUtil;
-import jmri.util.ThreadingUtil.ThreadAction;
 
 /**
  * This action sets the state of a turnout.

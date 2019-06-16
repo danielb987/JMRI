@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
-import jmri.Turnout;
-import jmri.TurnoutManager;
+import jmri.Light;
+import jmri.LightManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
@@ -16,34 +16,34 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 
 /**
- * Evaluates the state of a Turnout.
+ * Evaluates the state of a Light.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionTurnout extends AbstractDigitalExpression implements PropertyChangeListener {
+public class ExpressionLight extends AbstractDigitalExpression implements PropertyChangeListener {
 
-    private ExpressionTurnout _template;
-    private String _turnoutSystemName;
-    private NamedBeanHandle<Turnout> _turnoutHandle;
+    private ExpressionLight _template;
+    private String _lightSystemName;
+    private NamedBeanHandle<Light> _lightHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
-    private TurnoutState _turnoutState = TurnoutState.THROWN;
+    private LightState _lightState = LightState.ON;
 
-    public ExpressionTurnout(ConditionalNG conditionalNG)
+    public ExpressionLight(ConditionalNG conditionalNG)
             throws BadUserNameException {
         super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
     }
 
-    public ExpressionTurnout(String sys)
+    public ExpressionLight(String sys)
             throws BadUserNameException, BadSystemNameException {
         super(sys);
     }
 
-    public ExpressionTurnout(String sys, String user)
+    public ExpressionLight(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
     }
     
-    private ExpressionTurnout(ExpressionTurnout template, String sys) {
+    private ExpressionLight(ExpressionLight template, String sys) {
         super(sys);
         _template = template;
         if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
@@ -52,20 +52,20 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
-        return new ExpressionTurnout(this, sys);
+        return new ExpressionLight(this, sys);
     }
     
-    public void setTurnout(NamedBeanHandle<Turnout> handle) {
-        _turnoutHandle = handle;
+    public void setLight(NamedBeanHandle<Light> handle) {
+        _lightHandle = handle;
     }
     
-    public void setTurnout(Turnout turnout) {
-        _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
-                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+    public void setLight(Light light) {
+        _lightHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                .getNamedBeanHandle(light.getDisplayName(), light);
     }
     
-    public NamedBeanHandle getTurnout() {
-        return _turnoutHandle;
+    public NamedBeanHandle getLight() {
+        return _lightHandle;
     }
     
     public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
@@ -76,12 +76,12 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         return _is_IsNot;
     }
     
-    public void setTurnoutState(TurnoutState state) {
-        _turnoutState = state;
+    public void setLightState(LightState state) {
+        _lightState = state;
     }
     
-    public TurnoutState getTurnoutState() {
-        return _turnoutState;
+    public LightState getLightState() {
+        return _lightState;
     }
 
     /** {@inheritDoc} */
@@ -105,11 +105,11 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     /** {@inheritDoc} */
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
-        TurnoutState currentTurnoutState = TurnoutState.get(_turnoutHandle.getBean().getCommandedState());
+        LightState currentLightState = LightState.get(_lightHandle.getBean().getCommandedState());
         if (_is_IsNot == Is_IsNot_Enum.IS) {
-            return currentTurnoutState == _turnoutState;
+            return currentLightState == _lightState;
         } else {
-            return currentTurnoutState != _turnoutState;
+            return currentLightState != _lightState;
         }
     }
 
@@ -131,30 +131,30 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
 
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("Turnout_Short");
+        return Bundle.getMessage("Light_Short");
     }
 
     @Override
     public String getLongDescription() {
-        String turnoutName;
-        if (_turnoutHandle != null) {
-            turnoutName = _turnoutHandle.getBean().getDisplayName();
+        String lightName;
+        if (_lightHandle != null) {
+            lightName = _lightHandle.getBean().getDisplayName();
         } else {
-            turnoutName = Bundle.getMessage("BeanNotSelected");
+            lightName = Bundle.getMessage("BeanNotSelected");
         }
-        return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
+        return Bundle.getMessage("Light_Long", lightName, _is_IsNot.toString(), _lightState._text);
     }
     
-    public void setTurnout_SystemName(String turnoutSystemName) {
-        _turnoutSystemName = turnoutSystemName;
+    public void setLight_SystemName(String lightSystemName) {
+        _lightSystemName = lightSystemName;
     }
     
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_turnoutHandle == null) && (_turnoutSystemName != null)) {
-            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
-            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+        if ((_lightHandle == null) && (_lightSystemName != null)) {
+            Light t = InstanceManager.getDefault(LightManager.class).getBeanBySystemName(_lightSystemName);
+            _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
         }
     }
     
@@ -163,9 +163,9 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     public void setEnabled(boolean enable) {
         super.setEnabled(enable);
         if (enable) {
-            _turnoutHandle.getBean().addPropertyChangeListener("KnownState", this);
+            _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
         } else {
-            _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
+            _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
         }
     }
     
@@ -177,26 +177,26 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     
     
     
-    public enum TurnoutState {
-        CLOSED(Turnout.CLOSED, InstanceManager.getDefault(TurnoutManager.class).getClosedText()),
-        THROWN(Turnout.THROWN, InstanceManager.getDefault(TurnoutManager.class).getThrownText()),
-        OTHER(-1, Bundle.getMessage("TurnoutOtherStatus"));
+    public enum LightState {
+        OFF(Light.OFF, Bundle.getMessage("StateOff")),
+        ON(Light.ON, Bundle.getMessage("StateOn")),
+        OTHER(-1, Bundle.getMessage("LightOtherStatus"));
         
         private final int _id;
         private final String _text;
         
-        private TurnoutState(int id, String text) {
+        private LightState(int id, String text) {
             this._id = id;
             this._text = text;
         }
         
-        static public TurnoutState get(int id) {
+        static public LightState get(int id) {
             switch (id) {
-                case Turnout.CLOSED:
-                    return CLOSED;
+                case Light.OFF:
+                    return OFF;
                     
-                case Turnout.THROWN:
-                    return THROWN;
+                case Light.ON:
+                    return ON;
                     
                 default:
                     return OTHER;
