@@ -1,12 +1,10 @@
 package jmri.jmrit.logixng.digital.actions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
