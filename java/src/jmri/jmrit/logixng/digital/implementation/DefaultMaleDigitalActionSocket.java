@@ -77,6 +77,10 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
+        if (! _enabled) {
+            return false;
+        }
+        
         if (_isActive) {
             throw new RuntimeException("executeStart() must not be called on an active action");
         }
@@ -340,13 +344,17 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _action.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _parent.isEnabled();
+        return _enabled;
     }
 
 

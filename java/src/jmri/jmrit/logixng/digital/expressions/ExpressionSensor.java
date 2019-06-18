@@ -24,7 +24,7 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
 
     private ExpressionSensor _template;
     private String _lightSystemName;
-    private NamedBeanHandle<Sensor> _lightHandle;
+    private NamedBeanHandle<Sensor> _sensorHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private SensorState _lightState = SensorState.ACTIVE;
 
@@ -56,16 +56,16 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     }
     
     public void setSensor(NamedBeanHandle<Sensor> handle) {
-        _lightHandle = handle;
+        _sensorHandle = handle;
     }
     
     public void setSensor(Sensor light) {
-        _lightHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+        _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                 .getNamedBeanHandle(light.getDisplayName(), light);
     }
     
     public NamedBeanHandle getSensor() {
-        return _lightHandle;
+        return _sensorHandle;
     }
     
     public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
@@ -105,7 +105,7 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     /** {@inheritDoc} */
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
-        SensorState currentSensorState = SensorState.get(_lightHandle.getBean().getCommandedState());
+        SensorState currentSensorState = SensorState.get(_sensorHandle.getBean().getCommandedState());
         if (_is_IsNot == Is_IsNot_Enum.IS) {
             return currentSensorState == _lightState;
         } else {
@@ -137,8 +137,8 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     @Override
     public String getLongDescription() {
         String lightName;
-        if (_lightHandle != null) {
-            lightName = _lightHandle.getBean().getDisplayName();
+        if (_sensorHandle != null) {
+            lightName = _sensorHandle.getBean().getDisplayName();
         } else {
             lightName = Bundle.getMessage("BeanNotSelected");
         }
@@ -152,21 +152,22 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_lightHandle == null) && (_lightSystemName != null)) {
+        if ((_sensorHandle == null) && (_lightSystemName != null)) {
             Sensor t = InstanceManager.getDefault(SensorManager.class).getBeanBySystemName(_lightSystemName);
-            _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+            _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
         }
     }
     
     /** {@inheritDoc} */
     @Override
-    public void setEnabled(boolean enable) {
-        super.setEnabled(enable);
-        if (enable) {
-            _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
-        } else {
-            _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
-        }
+    public void registerListeners() {
+        _sensorHandle.getBean().addPropertyChangeListener("KnownState", this);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListeners() {
+        _sensorHandle.getBean().removePropertyChangeListener("KnownState", this);
     }
     
     /** {@inheritDoc} */

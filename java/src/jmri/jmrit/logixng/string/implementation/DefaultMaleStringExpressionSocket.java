@@ -76,6 +76,10 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     /** {@inheritDoc} */
     @Override
     public String evaluate(String parentValue) {
+        if (! _enabled) {
+            return "";
+        }
+        
         if ((_debugConfig != null)
                 && ((StringExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((StringExpressionDebugConfig)_debugConfig)._result;
@@ -291,13 +295,17 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _expression.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _parent.isEnabled();
+        return _enabled;
     }
 
 

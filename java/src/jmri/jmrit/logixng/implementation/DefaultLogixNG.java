@@ -219,6 +219,11 @@ public final class DefaultLogixNG extends AbstractNamedBean
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
@@ -353,6 +358,13 @@ public final class DefaultLogixNG extends AbstractNamedBean
             return;
         }
         
+        _isActivated = true;
+        
+        for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
+//            if (conditionalNG.isE
+            conditionalNG.registerListeners();
+        }
+        
         throw new UnsupportedOperationException("Throw exception for now until this is fixed");
 /*        
         // set the state of all Conditionals to UNKNOWN
@@ -378,6 +390,9 @@ public final class DefaultLogixNG extends AbstractNamedBean
             // Logix is active, deactivate it and all listeners
             _isActivated = false;
             // remove listeners if there are any
+            for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
+                conditionalNG.unregisterListeners();
+            }
             throw new UnsupportedOperationException("Throw exception for now until this is fixed");
 /*        
             for (int i = _listeners.size() - 1; i >= 0; i--) {

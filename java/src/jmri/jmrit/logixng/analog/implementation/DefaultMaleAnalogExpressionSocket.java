@@ -107,6 +107,10 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     /** {@inheritDoc} */
     @Override
     public float evaluate(float parentValue) {
+        if (! _enabled) {
+            return 0.0f;
+        }
+        
         if ((_debugConfig != null)
                 && ((AnalogExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((AnalogExpressionDebugConfig)_debugConfig)._result;
@@ -346,13 +350,17 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _expression.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _parent.isEnabled();
+        return _enabled;
     }
 
 

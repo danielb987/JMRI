@@ -160,13 +160,14 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     
     /** {@inheritDoc} */
     @Override
-    public void setEnabled(boolean enable) {
-        super.setEnabled(enable);
-        if (enable) {
-            _turnoutHandle.getBean().addPropertyChangeListener("KnownState", this);
-        } else {
-            _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
-        }
+    public void registerListeners() {
+        _turnoutHandle.getBean().addPropertyChangeListener("KnownState", this);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListeners() {
+        _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
     }
     
     /** {@inheritDoc} */

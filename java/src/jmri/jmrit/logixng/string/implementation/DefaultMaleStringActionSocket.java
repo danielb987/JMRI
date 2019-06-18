@@ -79,6 +79,10 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
      * Set a string value.
      */
     public void setValue(String value) {
+        if (! _enabled) {
+            return;
+        }
+        
         if ((_debugConfig != null)
                 && ((StringActionDebugConfig)_debugConfig)._dontExecute) {
             return;
@@ -295,13 +299,17 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _action.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _parent.isEnabled();
+        return _enabled;
     }
 
 

@@ -40,13 +40,13 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
         }
 //        element.addContent(new Element("is_isNot").addContent(p.get_Is_IsNot().name()));
         element.addContent(new Element("turnoutState").addContent(p.getTurnoutState().name()));
-        
+/*        
         if (p.isUserEnabled()) {
             element.addContent(new Element("enabled").addContent("yes"));
         } else {
             element.addContent(new Element("enabled").addContent("no"));
         }
-
+*/
         storeCommon(p, element);
 
         return element;

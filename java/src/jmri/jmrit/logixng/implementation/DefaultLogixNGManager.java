@@ -251,6 +251,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         
         
         // FOR TESTING ONLY. REMOVE LATER.
+        if (1==0)
         if ((dialog == null) && (!GraphicsEnvironment.isHeadless())) {
             dialog = new TestLogixNG(new javax.swing.JFrame(), false);
             dialog.setVisible(true);

@@ -10,6 +10,22 @@ import jmri.NamedBean;
 public interface LogixNG extends Base, NamedBean {
 
     /**
+     * Set whenether this LogixNG is enabled or disabled.
+     * <P>
+     * This method must call registerListeners() / unregisterListeners().
+     * 
+     * @param enable true if this LogixNG should be enabled, false otherwise
+     */
+    public void setEnabled(boolean enable);
+    
+    /**
+     * Determines whether this LogixNG is enabled.
+     * 
+     * @return true if the LogixNG is enabled, false otherwise
+     */
+    public boolean isEnabled();
+    
+    /**
      * Get number of ConditionalNGs for this LogixNG.
      *
      * @return the number of conditionals

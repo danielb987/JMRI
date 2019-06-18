@@ -84,6 +84,10 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     /** {@inheritDoc} */
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
+        if (! _enabled) {
+            return false;
+        }
+        
         if ((_debugConfig != null)
                 && ((DigitalExpressionDebugConfig)_debugConfig)._forceResult) {
             lastEvaluationResult = ((DigitalExpressionDebugConfig)_debugConfig)._result;
@@ -307,13 +311,17 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _expression.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _parent.isEnabled();
+        return _enabled;
     }
 
 

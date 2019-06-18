@@ -13,6 +13,8 @@ public interface MaleAnalogExpressionSocket
      * infinity or positive infinity. If that is the case, it must throw an
      * IllegalArgumentException before checking if an error has occured.
      * <P>
+     * If the socket is not enabled, the method returns the value 0.0f.
+     * <P>
      * If an error occurs and are handled, the method returns the value 0.0f.
      */
     @Override

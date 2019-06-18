@@ -12,7 +12,6 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
@@ -262,7 +261,11 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _femaleActionSocket.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */

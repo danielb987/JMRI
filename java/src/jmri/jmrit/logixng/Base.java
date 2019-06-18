@@ -194,33 +194,13 @@ public interface Base {
      * Set the parent for all the children.
      */
     default public void setParentForAllChildren() {
-        
-        traverseAllChildren((b) -> {
-            for (int i=0; i < getChildCount(); i++) {
-                Base child = getChild(i);
-                child.setParent(b);
-            }
-        });
-        
-/*
         for (int i=0; i < getChildCount(); i++) {
             FemaleSocket femaleSocket = getChild(i);
             femaleSocket.setParent(this);
             if (femaleSocket.isConnected()) {
-                femaleSocket.getConnectedSocket().setParent(femaleSocket);
-            }
-        }
-*/
-    }
-    
-    default public void traverseAllChildren(RunnableWithBase r) {
-        
-        for (int i=0; i < getChildCount(); i++) {
-            FemaleSocket femaleSocket = getChild(i);
-            r.run(femaleSocket);
-            femaleSocket.setParent(this);
-            if (femaleSocket.isConnected()) {
-                femaleSocket.getConnectedSocket().setParent(femaleSocket);
+                MaleSocket connectedSocket = femaleSocket.getConnectedSocket();
+                connectedSocket.setParent(femaleSocket);
+                connectedSocket.setParentForAllChildren();
             }
         }
     }
@@ -300,14 +280,33 @@ public interface Base {
      * 
      * @param enable true if this object should be enabled, false otherwise
      */
-    public void setEnabled(boolean enable);
+//    public void setEnabled(boolean enable);
     
     /**
      * Determines whether this object is enabled.
      * 
      * @return true if the object is enabled, false otherwise
      */
-    public boolean isEnabled();
+//    public boolean isEnabled();
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    default public void registerListeners() {
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).registerListeners();
+        }
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    default public void unregisterListeners() {
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).registerListeners();
+        }
+    }
+    
     
     
     public interface RunnableWithBase {

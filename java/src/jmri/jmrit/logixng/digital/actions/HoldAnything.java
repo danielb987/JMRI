@@ -325,7 +325,7 @@ public class HoldAnything extends AbstractDigitalAction {
         /** {@inheritDoc} */
         @Override
         public boolean isEnabled() {
-            return _enabled && getParent().isEnabled();
+            return _enabled;
         }
         
         

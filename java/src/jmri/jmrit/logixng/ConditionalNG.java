@@ -27,6 +27,22 @@ public interface ConditionalNG extends Base, NamedBean {
     public boolean supportsEnableExecution();
     
     /**
+     * Set whenether this ConditionalNG is enabled or disabled.
+     * <P>
+     * This method must call registerListeners() / unregisterListeners().
+     * 
+     * @param enable true if this ConditionalNG should be enabled, false otherwise
+     */
+    public void setEnabled(boolean enable);
+    
+    /**
+     * Determines whether this ConditionalNG is enabled.
+     * 
+     * @return true if the ConditionalNG is enabled, false otherwise
+     */
+    public boolean isEnabled();
+    
+    /**
      * Enables or disables execution for the digital action of this ConditionalNG.
      * An action which is disabled execution will evaluate its expressions, if
      * it has that, but not execute any actions.

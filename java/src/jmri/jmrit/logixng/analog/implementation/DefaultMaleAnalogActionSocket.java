@@ -105,6 +105,10 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     /** {@inheritDoc} */
     @Override
     public void setValue(float value) {
+        if (! _enabled) {
+            return;
+        }
+        
         if ((_debugConfig != null)
                 && ((AnalogActionDebugConfig)_debugConfig)._dontExecute) {
             return;
@@ -345,13 +349,17 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        _action.setEnabled(enable);
+        if (enable) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _parent.isEnabled();
+        return _enabled;
     }
 
 

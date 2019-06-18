@@ -16,6 +16,22 @@ public interface MaleSocket extends Base {
     }
     
     /**
+     * Set whenether this male socket is enabled or disabled.
+     * <P>
+     * This method must call registerListeners() / unregisterListeners().
+     * 
+     * @param enable true if this male socket should be enabled, false otherwise
+     */
+    public void setEnabled(boolean enable);
+    
+    /**
+     * Determines whether this male socket is enabled.
+     * 
+     * @return true if the male socket is enabled, false otherwise
+     */
+    public boolean isEnabled();
+    
+    /**
      * Set the debug configuration for this male socket.
      * <P>
      * Each implementation of MaleSocket has their own implementation of

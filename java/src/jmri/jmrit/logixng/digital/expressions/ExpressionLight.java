@@ -160,13 +160,14 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     
     /** {@inheritDoc} */
     @Override
-    public void setEnabled(boolean enable) {
-        super.setEnabled(enable);
-        if (enable) {
-            _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
-        } else {
-            _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
-        }
+    public void registerListeners() {
+        _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListeners() {
+        _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
     }
     
     /** {@inheritDoc} */

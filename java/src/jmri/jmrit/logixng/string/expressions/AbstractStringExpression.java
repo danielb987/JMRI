@@ -1,13 +1,10 @@
 package jmri.jmrit.logixng.string.expressions;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.StringExpression;
-import jmri.jmrit.logixng.StringExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +16,6 @@ public abstract class AbstractStringExpression extends AbstractNamedBean
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
-    private boolean _userEnabled = false;
 
 
     public AbstractStringExpression(String sys) throws BadSystemNameException {
@@ -81,38 +77,6 @@ public abstract class AbstractStringExpression extends AbstractNamedBean
         super.dispose();
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public void setEnabled(boolean enable) {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).setEnabled(enable);
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean isEnabled() {
-        return _userEnabled && _parent.isEnabled();
-    }
-    
-    /**
-     * Set whenether this object is enabled or disabled by the user.
-     * 
-     * @param enable true if this object should be enabled, false otherwise
-     */
-    public void setUserEnabled(boolean enable) {
-        _userEnabled = enable;
-    }
-    
-    /**
-     * Determines whether this object is enabled by the user.
-     * 
-     * @return true if the object is enabled, false otherwise
-     */
-    public boolean isUserEnabled() {
-        return _userEnabled;
-    }
-
 
     private final static Logger log = LoggerFactory.getLogger(AbstractStringExpression.class);
 }
