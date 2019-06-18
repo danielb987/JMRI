@@ -27,7 +27,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     private boolean _isActive = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
-    private boolean _enabled = false;
+    private boolean _enabled = true;
     
     
     public DefaultMaleDigitalActionSocket(@Nonnull DigitalAction action) {
@@ -261,6 +261,22 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
         _action.dispose();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        _action.registerListeners();
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        _action.unregisterListeners();
+    }
+    
     @Override
     public void setState(int s) throws JmriException {
         _action.setState(s);

@@ -140,6 +140,21 @@ public interface Base {
     }
     
     /**
+     * Get the ConditionalNG of this item.
+     */
+    default public LogixNG getLogixNG() {
+        if (this instanceof LogixNG) {
+            return (LogixNG) this;
+        } else {
+            Base parent = getParent();
+            while (! (parent instanceof LogixNG)) {
+                parent = parent.getParent();
+            }
+            return (LogixNG) parent;
+        }
+    }
+    
+    /**
      * Get the LogixNG_InstanceManager.
      * 
      * This method will ask the parent about the instance manager, and if no
@@ -303,7 +318,7 @@ public interface Base {
      */
     default public void unregisterListeners() {
         for (int i=0; i < getChildCount(); i++) {
-            getChild(i).registerListeners();
+            getChild(i).unregisterListeners();
         }
     }
     

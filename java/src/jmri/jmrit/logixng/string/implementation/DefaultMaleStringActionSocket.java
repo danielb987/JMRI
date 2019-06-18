@@ -26,7 +26,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     private final StringAction _action;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
-    private boolean _enabled = false;
+    private boolean _enabled = true;
     
     
     public DefaultMaleStringActionSocket(@Nonnull StringAction stringAction) {
@@ -216,6 +216,22 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
         _action.dispose();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        _action.registerListeners();
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        _action.unregisterListeners();
+    }
+    
     @Override
     public void setState(int s) throws JmriException {
         _action.setState(s);

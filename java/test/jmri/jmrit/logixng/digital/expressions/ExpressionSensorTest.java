@@ -45,6 +45,7 @@ public class ExpressionSensorTest {
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
+        logixNG.activateLogixNG();
         
         DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);

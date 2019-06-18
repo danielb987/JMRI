@@ -131,6 +131,26 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         }
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        if (isConnected()) {
+            getConnectedSocket().registerListeners();
+        }
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        if (isConnected()) {
+            getConnectedSocket().unregisterListeners();
+        }
+    }
+    
     @Override
     public Category getCategory() {
         throw new UnsupportedOperationException("Not supported.");

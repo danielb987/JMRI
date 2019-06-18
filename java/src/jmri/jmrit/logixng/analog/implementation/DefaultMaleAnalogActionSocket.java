@@ -30,7 +30,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
-    private boolean _enabled = false;
+    private boolean _enabled = true;
     
     
     public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
@@ -266,6 +266,22 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         _action.dispose();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        _action.registerListeners();
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        _action.unregisterListeners();
+    }
+    
     @Override
     public void setState(int s) throws JmriException {
         _action.setState(s);

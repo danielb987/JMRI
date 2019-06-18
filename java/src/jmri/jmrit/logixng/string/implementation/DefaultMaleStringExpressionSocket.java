@@ -26,7 +26,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     private final StringExpression _expression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
-    private boolean _enabled = false;
+    private boolean _enabled = true;
 
 
     public DefaultMaleStringExpressionSocket(@Nonnull StringExpression stringExpression) {
@@ -217,6 +217,22 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
         _expression.dispose();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        _expression.registerListeners();
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        _expression.unregisterListeners();
+    }
+    
     @Override
     public void setState(int s) throws JmriException {
         // Do nothing

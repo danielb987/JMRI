@@ -28,7 +28,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     private boolean lastEvaluationResult = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
-    private boolean _enabled = false;
+    private boolean _enabled = true;
 
 
     public DefaultMaleDigitalExpressionSocket(@Nonnull DigitalExpression expression) {
@@ -233,6 +233,22 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
         _expression.dispose();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        _expression.registerListeners();
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        _expression.unregisterListeners();
+    }
+    
     @Override
     public void setState(int s) throws JmriException {
         _expression.setState(s);

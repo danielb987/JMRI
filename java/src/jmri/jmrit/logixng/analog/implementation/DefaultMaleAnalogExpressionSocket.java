@@ -30,7 +30,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
-    private boolean _enabled = false;
+    private boolean _enabled = true;
 
 
     public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
@@ -272,6 +272,22 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         _expression.dispose();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void registerListeners() {
+        _expression.registerListeners();
+    }
+    
+    /**
+     * Register listeners if this object needs that.
+     */
+    @Override
+    public void unregisterListeners() {
+        _expression.unregisterListeners();
+    }
+    
     @Override
     public void setState(int s) throws JmriException {
         // Do nothing

@@ -261,7 +261,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        if (enable) {
+        if (enable && getLogixNG().isActive()) {
             registerListeners();
         } else {
             unregisterListeners();

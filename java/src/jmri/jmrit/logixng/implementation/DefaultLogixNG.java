@@ -312,6 +312,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
     public boolean addConditionalNG(ConditionalNG conditionalNG) {
         ConditionalNG chkDuplicate = _conditionalNGMap.putIfAbsent(conditionalNG.getSystemName(), conditionalNG);
         if (chkDuplicate == null) {
+            conditionalNG.setParent(this);
             return (true);
         }
         log.error("ConditionalNG '{}' has already been added to LogixNG '{}'", conditionalNG.getSystemName(), getSystemName());  // NOI18N
@@ -351,6 +352,11 @@ public final class DefaultLogixNG extends AbstractNamedBean
     }
     
     /** {@inheritDoc} */
+    public boolean isActive() {
+        return _isActivated;
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public void activateLogixNG() {
         // if the Logix is already busy, simply return
@@ -360,12 +366,15 @@ public final class DefaultLogixNG extends AbstractNamedBean
         
         _isActivated = true;
         
-        for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
-//            if (conditionalNG.isE
-            conditionalNG.registerListeners();
+        if (_enabled) {
+            for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
+                if (conditionalNG.isEnabled()) {
+                    conditionalNG.registerListeners();
+                }
+            }
         }
         
-        throw new UnsupportedOperationException("Throw exception for now until this is fixed");
+//        throw new UnsupportedOperationException("Throw exception for now until this is fixed");
 /*        
         // set the state of all Conditionals to UNKNOWN
         resetConditionals();
