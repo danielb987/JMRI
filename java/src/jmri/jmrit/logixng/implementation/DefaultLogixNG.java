@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.implementation;
 
 import static jmri.NamedBean.UNKNOWN;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import jmri.InstanceManager;
@@ -21,7 +22,6 @@ import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * The default implementation of LogixNG.
@@ -255,7 +255,8 @@ public final class DefaultLogixNG extends AbstractNamedBean
     /**
      * Persistant instance variables (saved between runs)
      */
-    ArrayList<String> _conditionalNGSystemNames = new ArrayList<>();
+    List<ConditionalNG> _conditionalNG_List = new ArrayList<>();
+//    ArrayList<String> _conditionalNG_List = new ArrayList<>();
     ArrayList<JmriSimplePropertyListener> _listeners = new ArrayList<>();
     
     /**
@@ -271,7 +272,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     public int getNumConditionalNGs() {
-        return _conditionalNGSystemNames.size();
+        return _conditionalNG_List.size();
     }
 
     /** {@inheritDoc} */
@@ -280,28 +281,18 @@ public final class DefaultLogixNG extends AbstractNamedBean
         if (row <= nextInOrder) {
             return;
         }
-        String temp = _conditionalNGSystemNames.get(row);
+        ConditionalNG temp = _conditionalNG_List.get(row);
         for (int i = row; i > nextInOrder; i--) {
-            _conditionalNGSystemNames.set(i, _conditionalNGSystemNames.get(i - 1));
+            _conditionalNG_List.set(i, _conditionalNG_List.get(i - 1));
         }
-        _conditionalNGSystemNames.set(nextInOrder, temp);
+        _conditionalNG_List.set(nextInOrder, temp);
     }
 
     /** {@inheritDoc} */
     @Override
     public ConditionalNG getConditionalNG(int order) {
         try {
-            return getConditionalNG(_conditionalNGSystemNames.get(order));
-        } catch (java.lang.IndexOutOfBoundsException ioob) {
-            return null;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getConditionalNGByNumberOrder(int order) {
-        try {
-            return _conditionalNGSystemNames.get(order);
+            return _conditionalNG_List.get(order);
         } catch (java.lang.IndexOutOfBoundsException ioob) {
             return null;
         }
@@ -312,6 +303,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
     public boolean addConditionalNG(ConditionalNG conditionalNG) {
         ConditionalNG chkDuplicate = _conditionalNGMap.putIfAbsent(conditionalNG.getSystemName(), conditionalNG);
         if (chkDuplicate == null) {
+            _conditionalNG_List.add(conditionalNG);
             conditionalNG.setParent(this);
             return (true);
         }
@@ -338,20 +330,21 @@ public final class DefaultLogixNG extends AbstractNamedBean
     
     /** {@inheritDoc} */
     @Override
-    public void deleteConditionalNG(String systemName) {
-        if (_conditionalNGSystemNames.size() <= 0) {
+    public void deleteConditionalNG(ConditionalNG conditionalNG) {
+        if (_conditionalNG_List.size() <= 0) {
             return;
         }
 
         // Remove Conditional from this logix
-        if (!_conditionalNGSystemNames.remove(systemName)) {
-            log.error("attempt to delete ConditionalNG not in LogixNG: " + systemName);  // NOI18N
+        if (!_conditionalNG_List.remove(conditionalNG)) {
+            log.error("attempt to delete ConditionalNG not in LogixNG: {}", conditionalNG.getSystemName());  // NOI18N
             return;
         }
-        _conditionalNGMap.remove(systemName);
+        _conditionalNGMap.remove(conditionalNG.getSystemName());
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isActive() {
         return _isActivated;
     }
@@ -372,24 +365,13 @@ public final class DefaultLogixNG extends AbstractNamedBean
                     conditionalNG.registerListeners();
                 }
             }
+            
+            for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
+                if (conditionalNG.isEnabled() && conditionalNG.isExecutionEnabled()) {
+                    conditionalNG.execute();
+                }
+            }
         }
-        
-//        throw new UnsupportedOperationException("Throw exception for now until this is fixed");
-/*        
-        // set the state of all Conditionals to UNKNOWN
-        resetConditionals();
-        // assemble a list of needed listeners
-        assembleListenerList();
-        // create and attach the needed property change listeners
-        // start a minute Listener if needed
-        for (int i = 0; i < _listeners.size(); i++) {
-            startListener(_listeners.get(i));
-        }
-        // mark this Logix as busy
-        _isActivated = true;
-        // calculate this Logix to set initial state of Conditionals
-        calculateConditionals();
-*/
     }
 
     /** {@inheritDoc} */
@@ -402,33 +384,14 @@ public final class DefaultLogixNG extends AbstractNamedBean
             for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
                 conditionalNG.unregisterListeners();
             }
-            throw new UnsupportedOperationException("Throw exception for now until this is fixed");
-/*        
-            for (int i = _listeners.size() - 1; i >= 0; i--) {
-                removeListener(_listeners.get(i));
-            }
-*/
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public void calculateConditionalNGs() {
-        // are there Conditionals to calculate?
-        // There are conditionals to calculate
-        String cName = "";
-        ConditionalNG c = null;
-        for (int i = 0; i < _conditionalNGSystemNames.size(); i++) {
-            cName = _conditionalNGSystemNames.get(i);
-            c = getConditionalNG(cName);
-            if (c == null) {
-                log.error("Invalid conditional system name when calculating Logix - " + cName);  // NOI18N
-            } else {
-                // Execute the conditionalNG
-                c.execute();
-                // calculate without taking any action unless Logix is enabled
-//                c.calculate(null);
-            }
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.execute();
         }
     }
 

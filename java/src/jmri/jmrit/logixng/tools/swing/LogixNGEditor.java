@@ -731,7 +731,7 @@ public final class LogixNGEditor {
                         return Integer.toString(rx + 1);
                     }
                 case SNAME_COLUMN:
-                    return _curLogixNG.getConditionalNGByNumberOrder(rx);
+                    return _curLogixNG.getConditionalNG(rx);
                 case UNAME_COLUMN: {
                     //log.debug("ConditionalNGTableModel: {}", _curLogixNG.getConditionalNGByNumberOrder(rx));  // NOI18N
                     ConditionalNG c = _curLogixNG.getConditionalNG(rx);
