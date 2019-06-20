@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.tools.swing;
 
-import jmri.jmrit.logixng.tools.swing.ConditionalNGEditor;
 import java.awt.GraphicsEnvironment;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -14,13 +13,14 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class LogixNGEditorTest {
+public class ConditionalNGEditorTest {
 
     @Test
     public void testCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        new ConditionalNGEditor();
+        ConditionalNGEditor editor = new ConditionalNGEditor();
+        Assert.assertNotNull("object not null", editor);
     }
     
     // The minimal setup for log4J

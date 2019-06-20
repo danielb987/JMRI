@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    LogixNGEditorTest.class,
+    ConditionalNGEditorTest.class,
     TimeDiagramTest.class,
     ImportLogixFrameTest.class,
 })
