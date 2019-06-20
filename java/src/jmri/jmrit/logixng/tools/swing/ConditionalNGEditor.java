@@ -869,12 +869,10 @@ public final class ConditionalNGEditor extends JmriJFrame {
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
                 case ACTION_COMMAND_ADD:
-                    log.error("Daniel: ACTION_COMMAND_ADD");
                     addPressed(_currentFemaleSocket, _currentPath);
                     break;
                     
                 case ACTION_COMMAND_EDIT:
-                    log.error("Daniel: ACTION_COMMAND_EDIT");
                     editPressed(_currentFemaleSocket, _currentPath);
 //                    EditMaleSocketDialog editDialog =
 //                            new EditMaleSocketDialog(_currentFemaleSocket);
