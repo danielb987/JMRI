@@ -483,17 +483,17 @@ public final class LogixNGEditor {
             _treeEdit.setVisible(true);
             _inEditMode = true;
             
+            final LogixNGEditor logixNGEditor = this;
             _treeEdit.addLogixNGEventListener(new ConditionalNGEditor.LogixNGEventListener() {
                 @Override
                 public void logixNGEventOccurred() {
-//                    String lgxName = sName;
                     String lgxName = _curLogixNG.getSystemName();
                     _treeEdit.logixNGData.forEach((key, value) -> {
                         if (key.equals("Finish")) {                  // NOI18N
                             _treeEdit = null;
                             _inEditMode = false;
                             _curLogixNG.setEnabled(true);
-                            beanTableFrame.setVisible(true);
+                            logixNGEditor.bringToFront();
                         } else if (key.equals("Delete")) {           // NOI18N
                             deletePressed();
                         } else if (key.equals("chgUname")) {         // NOI18N
