@@ -161,7 +161,7 @@ public class DoStringAction
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("DoStringAction", _stringExpressionSocket.getName(), _stringActionSocket.getName());
+        return Bundle.getMessage("DoStringAction_Long", _stringExpressionSocket.getName(), _stringActionSocket.getName());
     }
 
     public void setAnalogActionSocketSystemName(String systemName) {

@@ -124,12 +124,12 @@ public class ShutdownComputer extends AbstractDigitalAction {
 
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("ShutDown_Short");
+        return Bundle.getMessage("ShutdownComputer_Short");
     }
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("ShutDown_Long", _seconds);
+        return Bundle.getMessage("ShutdownComputer_Long", _seconds);
     }
     
     /** {@inheritDoc} */

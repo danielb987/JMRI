@@ -62,7 +62,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
             stateComboBox.setSelectedItem(action.getTurnoutState());
         }
         
-        panel.add(new JLabel(Bundle.getMessage("Turnout")));
+        panel.add(new JLabel(Bundle.getMessage("BeanNameTurnout")));
         panel.add(turnoutBeanPanel);
         panel.add(stateComboBox);
     }
@@ -165,7 +165,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ActionTurnout");
+        return Bundle.getMessage("Turnout_Short");
     }
     
     @Override

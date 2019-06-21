@@ -157,12 +157,12 @@ public class DoAnalogAction
 
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("ActionDoAnalogAction_Short");
+        return Bundle.getMessage("DoAnalogAction_Short");
     }
 
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("ActionDoAnalogAction", _analogExpressionSocket.getName(), _analogActionSocket.getName());
+        return Bundle.getMessage("DoAnalogAction_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
     }
 
     public void setAnalogActionSocketSystemName(String systemName) {
