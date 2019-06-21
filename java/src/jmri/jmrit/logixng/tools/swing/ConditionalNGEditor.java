@@ -139,9 +139,9 @@ public final class ConditionalNGEditor extends JmriJFrame {
         fileMenu.add(closeWindowItem);
         menuBar.add(fileMenu);
         
+/*        
         JMenu toolMenu = new JMenu(Bundle.getMessage("MenuTools"));
         toolMenu.add(new TimeDiagram.CreateNewLogixNGAction("Create a LogixNG"));
-/*        
         toolMenu.add(new CreateNewLogixNGAction(Bundle.getMessage("TitleOptions")));
         toolMenu.add(new PrintOptionAction());
         toolMenu.add(new BuildReportOptionAction());
@@ -150,50 +150,11 @@ public final class ConditionalNGEditor extends JmriJFrame {
         toolMenu.add(new LoadDemoAction(Bundle.getMessage("LoadDemo")));
         toolMenu.add(new ResetAction(Bundle.getMessage("ResetOperations")));
         toolMenu.add(new ManageBackupsAction(Bundle.getMessage("ManageAutoBackups")));
-*/
         menuBar.add(toolMenu);
-//        menuBar.add(new jmri.jmrit.operations.OperationsMenu());
+*/
 
         setJMenuBar(menuBar);
 //        addHelpMenu("package.jmri.jmrit.operations.Operations_Settings", true); // NOI18N
-        
-        
-        // For testing only
-/*        
-        InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        String systemName;
-        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
-        systemName = InstanceManager.getDefault(ExpressionManager.class).getNewSystemName(logixNG);
-        DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-        MaleDigitalExpressionSocket expressionSocket = InstanceManager.getDefault(ExpressionManager.class).register(expression);
-//        InstanceManager.getDefault(jmri.ExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(logixNG);
-        DigitalAction actionTurnout = new ActionTurnout(systemName, "An action for test");  // NOI18N
-        MaleDigitalActionSocket actionSocket = InstanceManager.getDefault(ActionManager.class).register(actionTurnout);
-        systemName = InstanceManager.getDefault(ActionManager.class).getNewSystemName(logixNG);
-        DigitalAction actionIfThen = new IfThen(systemName, IfThen.Type.TRIGGER_ACTION, "A", "B", expressionSocket, actionSocket);
-        actionSocket = InstanceManager.getDefault(ActionManager.class).register(actionIfThen);
-        logixNG.getFemaleSocket().connect(actionSocket);
-*/        
-        
-        // Figure out where in the filesystem to start displaying
-//        File root;
-//        root = new File(System.getProperty("user.home"));
-//        FemaleSocket root;
-//        SortedSet<LogixNG> logixNGSet = InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet();
-//        for (LogixNG nl : logixNGSet) {
-//            System.out.format("LogixNG: %s%n", nl.toString());
-//            System.out.format("LogixNG female socket: %s. Connected: %b%n", nl.getFemaleSocket().toString(), nl.getFemaleSocket().isConnected());
-//        }
-//        root = logixNGSet.first().getFemaleSocket();
-
-        // Create a TreeModel object to represent our tree of files
-//        FileTreeModel model = new FileTreeModel(root);
-//        // Create a TreeModel object to represent our tree of files
-//        if (_conditionalNG != null)
-//            femaleSocketTreeModel = new FemaleSocketTreeModel(_conditionalNG.getFemaleSocket());
-//        else
-//            femaleSocketTreeModel = new FemaleSocketTreeModel(root);
         
         femaleSocketTreeModel = new FemaleSocketTreeModel(_conditionalNG.getFemaleSocket());
         
