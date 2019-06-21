@@ -66,7 +66,7 @@ public class FalseSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionFalse");
+        return Bundle.getMessage("False_Short");
     }
     
     @Override

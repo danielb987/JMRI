@@ -66,7 +66,7 @@ public class AndSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionAnd");
+        return Bundle.getMessage("And_Short");
     }
     
     @Override

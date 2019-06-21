@@ -20,6 +20,7 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -896,7 +897,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         /*
 	 *  Create an empty model that will use the specified Comparator
          */
-        public SortedComboBoxModel(Comparator<E> comparator) {
+        public SortedComboBoxModel(@Nonnull Comparator<E> comparator) {
             super();
             this.comparator = comparator;
         }
@@ -912,26 +913,19 @@ public final class ConditionalNGEditor extends JmriJFrame {
             int size = getSize();
 
             //  Determine where to insert element to keep model in sorted order
-            for (index = 0; index < size; index++) {
-                if (comparator != null) {
-                    E o = getElementAt(index);
+            int i = 0;
+            for (; i < size; i++) {
+                E o = getElementAt(i);
 
-                    if (comparator.compare(o, element) > 0) {
-                        break;
-                    }
-                } else {
-                    Comparable c = (Comparable) getElementAt(index);
-
-                    if (c.compareTo(element) > 0) {
-                        break;
-                    }
+                if (comparator.compare(o, element) > 0) {
+                    break;
                 }
             }
 
-            super.insertElementAt(element, index);
+            super.insertElementAt(element, i);
 
             //  Select an element when it is added to the beginning of the model
-            if (index == 0 && element != null) {
+            if (i == 0 && element != null) {
                 setSelectedItem(element);
             }
         }

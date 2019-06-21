@@ -177,7 +177,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionLight");
+        return Bundle.getMessage("Light_Short");
     }
     
     @Override

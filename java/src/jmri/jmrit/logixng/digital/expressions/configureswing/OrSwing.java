@@ -66,7 +66,7 @@ public class OrSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionOr");
+        return Bundle.getMessage("Or_Short");
     }
     
     @Override

@@ -177,7 +177,7 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionSensor");
+        return Bundle.getMessage("Sensor_Short");
     }
     
     @Override

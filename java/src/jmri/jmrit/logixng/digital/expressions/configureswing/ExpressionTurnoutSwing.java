@@ -89,7 +89,6 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         ExpressionTurnout expression = new ExpressionTurnout(systemName);
         try {
             Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
@@ -110,7 +109,6 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionTurnout expression = new ExpressionTurnout(systemName, userName);
         try {
             Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
@@ -177,7 +175,7 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionTurnout");
+        return Bundle.getMessage("Turnout_Short");
     }
     
     @Override

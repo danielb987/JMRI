@@ -177,7 +177,7 @@ public class HoldSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionHold");
+        return Bundle.getMessage("Hold_Short");
     }
     
     @Override

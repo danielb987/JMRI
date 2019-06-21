@@ -177,7 +177,7 @@ public class ResetOnTrueSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionResetOnTrue");
+        return Bundle.getMessage("ResetOnTrue_Short");
     }
     
     @Override

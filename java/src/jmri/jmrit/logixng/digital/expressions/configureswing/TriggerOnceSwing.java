@@ -177,7 +177,7 @@ public class TriggerOnceSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionTriggerOnce");
+        return Bundle.getMessage("TriggerOnce_Short");
     }
     
     @Override

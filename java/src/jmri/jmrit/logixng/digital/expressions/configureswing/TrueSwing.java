@@ -66,7 +66,7 @@ public class TrueSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionTrue");
+        return Bundle.getMessage("True_Short");
     }
     
     @Override

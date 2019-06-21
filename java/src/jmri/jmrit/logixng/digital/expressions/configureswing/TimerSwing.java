@@ -177,7 +177,7 @@ public class TimerSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return Bundle.getMessage("ExpressionTimer");
+        return Bundle.getMessage("Timer_Short");
     }
     
     @Override
