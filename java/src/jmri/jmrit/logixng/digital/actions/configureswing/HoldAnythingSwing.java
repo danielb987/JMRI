@@ -73,7 +73,4 @@ public class HoldAnythingSwing implements SwingConfiguratorInterface {
     public void dispose() {
     }
     
-    
-    private final static Logger log = LoggerFactory.getLogger(HoldAnythingSwing.class);
-    
 }

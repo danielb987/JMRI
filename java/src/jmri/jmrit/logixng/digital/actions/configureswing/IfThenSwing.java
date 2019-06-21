@@ -74,7 +74,4 @@ public class IfThenSwing implements SwingConfiguratorInterface {
     public void dispose() {
     }
     
-    
-    private final static Logger log = LoggerFactory.getLogger(IfThenSwing.class);
-    
 }

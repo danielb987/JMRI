@@ -73,7 +73,4 @@ public class DoAnalogActionSwing implements SwingConfiguratorInterface {
     public void dispose() {
     }
     
-    
-    private final static Logger log = LoggerFactory.getLogger(DoAnalogActionSwing.class);
-    
 }

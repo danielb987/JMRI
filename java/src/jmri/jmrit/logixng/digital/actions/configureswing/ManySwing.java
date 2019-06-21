@@ -73,7 +73,4 @@ public class ManySwing implements SwingConfiguratorInterface {
     public void dispose() {
     }
     
-    
-    private final static Logger log = LoggerFactory.getLogger(ManySwing.class);
-    
 }

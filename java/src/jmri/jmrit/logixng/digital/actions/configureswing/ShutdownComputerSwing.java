@@ -74,7 +74,4 @@ public class ShutdownComputerSwing implements SwingConfiguratorInterface {
     public void dispose() {
     }
     
-    
-    private final static Logger log = LoggerFactory.getLogger(ShutdownComputerSwing.class);
-    
 }
