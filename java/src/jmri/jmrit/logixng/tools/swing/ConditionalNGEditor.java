@@ -368,7 +368,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         }
         addLogixNGFrame.pack();
         addLogixNGFrame.setVisible(true);
-        _autoSystemName.setSelected(false);
+        _autoSystemName.setSelected(true);
         InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
             _autoSystemName.setSelected(prefMgr.getSimplePreferenceState(systemNameAuto));
         });
@@ -424,7 +424,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         }
         editLogixNGFrame.pack();
         editLogixNGFrame.setVisible(true);
-        _autoSystemName.setSelected(false);
+        _autoSystemName.setSelected(true);
         InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
             _autoSystemName.setSelected(prefMgr.getSimplePreferenceState(systemNameAuto));
         });
