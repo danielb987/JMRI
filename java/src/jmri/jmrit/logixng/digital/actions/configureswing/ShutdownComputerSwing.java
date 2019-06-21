@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class ShutdownComputerSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    int seconds;
+    int seconds = 0;
     
     
     /** {@inheritDoc} */
