@@ -335,7 +335,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         _showReminder = true;
         // make an Add LogixNG Frame
         if (addLogixNGFrame == null) {
-            JPanel panel5 = makeAddEditFrame(true, "AddMessage", femaleSocket);  // NOI18N
+            JPanel panel5 = makeAddEditFrame("AddMessage", femaleSocket);  // NOI18N
             // Create LogixNG
             create = new JButton(Bundle.getMessage("ButtonCreate"));  // NOI18N
             panel5.add(create);
@@ -363,6 +363,9 @@ public final class ConditionalNGEditor extends JmriJFrame {
                     );
                     l.treeNodesChanged(tme);
                 }
+                InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
+                    prefMgr.setSimplePreferenceState(systemNameAuto, _autoSystemName.isSelected());
+                });
             });
             create.setToolTipText(Bundle.getMessage("CreateButtonHint"));  // NOI18N
         }
@@ -387,7 +390,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         _showReminder = true;
         // make an Add LogixNG Frame
         if (editLogixNGFrame == null) {
-            JPanel panel5 = makeAddEditFrame(false, null, femaleSocket);  // NOI18N
+            JPanel panel5 = makeAddEditFrame(null, femaleSocket);  // NOI18N
             // Create LogixNG
             edit = new JButton(Bundle.getMessage("ButtonOK"));  // NOI18N
             panel5.add(edit);
@@ -432,13 +435,16 @@ public final class ConditionalNGEditor extends JmriJFrame {
 
     /**
      * Create or copy LogixNG frame.
+     * <P>
+     * If the femaleSocket is connected, we edit the connected item. If the
+     * femaleSocket is not connected, we add something new to it.
      *
      * @param messageId part 1 of property key to fetch as user instruction on
      *                  pane, either 1 or 2 is added to form the whole key
      * @param femaleSocket the female socket to which we want to add something
      * @return the button JPanel
      */
-    JPanel makeAddEditFrame(boolean add, String messageId, FemaleSocket femaleSocket) {
+    JPanel makeAddEditFrame(String messageId, FemaleSocket femaleSocket) {
         JmriJFrame frame  = new JmriJFrame(
                 Bundle.getMessage(
                         "AddMaleSocketDialogTitle",
@@ -470,13 +476,15 @@ public final class ConditionalNGEditor extends JmriJFrame {
         p.add(_systemName, c);
         c.gridy = 1;
         p.add(_addUserName, c);
-        c.gridx = 2;
-        c.gridy = 1;
-        c.anchor = java.awt.GridBagConstraints.WEST;
-        c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
-        c.gridy = 0;
-        p.add(_autoSystemName, c);
+        if (!femaleSocket.isConnected()) {
+            c.gridx = 2;
+            c.gridy = 1;
+            c.anchor = java.awt.GridBagConstraints.WEST;
+            c.weightx = 1.0;
+            c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+            c.gridy = 0;
+            p.add(_autoSystemName, c);
+        }
         
         System.out.format("isConnected: %b%n", femaleSocket.isConnected());
         if (femaleSocket.isConnected()) {
@@ -537,6 +545,8 @@ public final class ConditionalNGEditor extends JmriJFrame {
 //        cancel.setToolTipText(Bundle.getMessage("CancelLogixButtonHint"));      // NOI18N
         cancel.setToolTipText("CancelLogixButtonHint");      // NOI18N
 
+        final boolean add = !femaleSocket.isConnected();
+        
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -563,7 +573,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         frame.pack();
         frame.setVisible(true);
         
-        if (add) {
+        if (!femaleSocket.isConnected()) {
             addLogixNGFrame = frame;
         } else {
             editLogixNGFrame = frame;
