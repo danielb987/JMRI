@@ -2,7 +2,7 @@ package jmri.jmrit.logixng.digital.actions.configureswing;
 
 import java.awt.GraphicsEnvironment;
 import jmri.util.JUnitUtil;
-import jmri.jmrit.logixng.digital.actions.ActionTurnout;
+import jmri.jmrit.logixng.digital.actions.ActionSensor;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -10,17 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionTurnout
+ * Test ActionSensor
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionTurnoutSwingTest {
+public class ActionSensorSwingTest {
 
     @Test
     public void testCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        ActionTurnoutSwing t = new ActionTurnoutSwing();
+        ActionSensorSwing t = new ActionSensorSwing();
         Assert.assertNotNull("exists",t);
     }
     
@@ -29,9 +29,9 @@ public class ActionTurnoutSwingTest {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Assert.assertTrue("panel is not null",
-            null != new ActionTurnoutSwing().getConfigPanel());
+            null != new ActionSensorSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ActionTurnoutSwing().getConfigPanel(new ActionTurnout("IQ1:DA1")));
+            null != new ActionSensorSwing().getConfigPanel(new ActionSensor("IQ1:DA1")));
     }
     
     // The minimal setup for log4J
@@ -40,7 +40,7 @@ public class ActionTurnoutSwingTest {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
-        JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initInternalSensorManager();
     }
 
     @After
