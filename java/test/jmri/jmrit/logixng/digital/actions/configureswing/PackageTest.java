@@ -5,7 +5,15 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    ActionLightSwingTest.class,
+    ActionSensorSwingTest.class,
     ActionTurnoutSwingTest.class,
+    DoAnalogActionSwingTest.class,
+    DoStringActionSwingTest.class,
+    IfThenSwingTest.class,
+    HoldAnythingSwingTest.class,
+    ManySwingTest.class,
+    ShutdownComputerSwingTest.class,
 })
 
 /**
