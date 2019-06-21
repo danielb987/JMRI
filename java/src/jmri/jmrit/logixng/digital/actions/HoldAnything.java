@@ -175,7 +175,21 @@ public class HoldAnything extends AbstractDigitalAction {
             }
         }
     }
-
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerListeners() {
+        // Do nothing. The children should not be able to register
+        // their listeners.
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListeners() {
+        // Do nothing. The children should not be able to unregister
+        // their listeners.
+    }
+    
     
     
     // This class can not be static since it needs to access the outer class.
