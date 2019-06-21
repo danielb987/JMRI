@@ -5,7 +5,19 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    AndSwingTest.class,
+    AntecedentSwingTest.class,
+    ExpressionBufferedSensorSwingTest.class,
+    ExpressionLightSwingTest.class,
+    ExpressionSensorSwingTest.class,
     ExpressionTurnoutSwingTest.class,
+    FalseSwingTest.class,
+    HoldSwingTest.class,
+    OrSwingTest.class,
+    ResetOnTrueSwingTest.class,
+    TimerSwingTest.class,
+    TriggerOnceSwingTest.class,
+    TrueSwingTest.class,
 })
 
 /**

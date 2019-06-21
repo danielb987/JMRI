@@ -2,8 +2,10 @@ package jmri.jmrit.logixng.digital.expressions.configureswing;
 
 import java.awt.GraphicsEnvironment;
 import javax.swing.JPanel;
+import jmri.NamedBean;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.util.JUnitUtil;
-import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -11,17 +13,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionTurnout
+ * Test ActionLight
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTurnoutSwingTest {
+public class TriggerOnceSwingTest {
 
     @Test
     public void testCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        ExpressionTurnoutSwing t = new ExpressionTurnoutSwing();
+        TriggerOnceSwing t = new TriggerOnceSwing();
         Assert.assertNotNull("exists",t);
     }
     
@@ -29,19 +31,19 @@ public class ExpressionTurnoutSwingTest {
     public void testPanel() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        ExpressionTurnoutSwing t = new ExpressionTurnoutSwing();
+        TriggerOnceSwing t = new TriggerOnceSwing();
         JPanel panel = t.getConfigPanel();
         Assert.assertNotNull("exists",panel);
     }
     
     @Test
-    public void testCreatePanel() {
+    public void testCreatePanel() throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException, SocketAlreadyConnectedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Assert.assertTrue("panel is not null",
-            null != new ExpressionTurnoutSwing().getConfigPanel());
+            null != new TriggerOnceSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ExpressionTurnoutSwing().getConfigPanel(new ExpressionTurnout("IQ1:DA1")));
+            null != new TriggerOnceSwing().getConfigPanel(new TriggerOnce("IQ1:DA1", null)));
     }
     
     // The minimal setup for log4J
@@ -49,8 +51,6 @@ public class ExpressionTurnoutSwingTest {
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
-        JUnitUtil.initInternalSensorManager();
-        JUnitUtil.initInternalTurnoutManager();
     }
 
     @After

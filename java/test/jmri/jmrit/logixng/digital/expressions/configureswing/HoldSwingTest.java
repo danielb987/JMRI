@@ -3,7 +3,7 @@ package jmri.jmrit.logixng.digital.expressions.configureswing;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JPanel;
 import jmri.util.JUnitUtil;
-import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digital.expressions.Hold;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -11,17 +11,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionTurnout
+ * Test ActionLight
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ExpressionTurnoutSwingTest {
+public class HoldSwingTest {
 
     @Test
     public void testCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        ExpressionTurnoutSwing t = new ExpressionTurnoutSwing();
+        HoldSwing t = new HoldSwing();
         Assert.assertNotNull("exists",t);
     }
     
@@ -29,7 +29,7 @@ public class ExpressionTurnoutSwingTest {
     public void testPanel() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        ExpressionTurnoutSwing t = new ExpressionTurnoutSwing();
+        HoldSwing t = new HoldSwing();
         JPanel panel = t.getConfigPanel();
         Assert.assertNotNull("exists",panel);
     }
@@ -39,9 +39,9 @@ public class ExpressionTurnoutSwingTest {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Assert.assertTrue("panel is not null",
-            null != new ExpressionTurnoutSwing().getConfigPanel());
+            null != new HoldSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ExpressionTurnoutSwing().getConfigPanel(new ExpressionTurnout("IQ1:DA1")));
+            null != new HoldSwing().getConfigPanel(new Hold("IQ1:DA1")));
     }
     
     // The minimal setup for log4J
@@ -49,8 +49,6 @@ public class ExpressionTurnoutSwingTest {
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
-        JUnitUtil.initInternalSensorManager();
-        JUnitUtil.initInternalTurnoutManager();
     }
 
     @After

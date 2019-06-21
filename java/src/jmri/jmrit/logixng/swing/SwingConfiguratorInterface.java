@@ -2,6 +2,8 @@ package jmri.jmrit.logixng.swing;
 
 import javax.annotation.Nonnull;
 import javax.swing.JPanel;
+import jmri.NamedBean.BadUserNameException;
+import jmri.NamedBean.BadSystemNameException;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.MaleSocket;
 
@@ -49,7 +51,8 @@ public interface SwingConfiguratorInterface {
      * @param systemName system name
      * @return a male socket for the new object
      */
-    public MaleSocket createNewObject(@Nonnull String systemName);
+    public MaleSocket createNewObject(@Nonnull String systemName)
+            throws BadUserNameException, BadSystemNameException;
     
     /**
      * Create a new object with the data entered.
@@ -59,7 +62,8 @@ public interface SwingConfiguratorInterface {
      * @param userName user name
      * @return a male socket for the new object
      */
-    public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName);
+    public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName)
+            throws BadUserNameException, BadSystemNameException;
     
     /**
      * Updates the object with the data in the form.

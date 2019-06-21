@@ -28,6 +28,15 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
+    public TriggerOnce(String sys, String user)
+            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+        
+        super(sys, user);
+        
+        _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, "E1");
+    }
+    
     public TriggerOnce(String sys, String user, MaleDigitalExpressionSocket expression)
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
         

@@ -1,10 +1,15 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.InstanceManager;
+import jmri.NamedBeanHandle;
+import jmri.NamedBeanHandleManager;
 import jmri.Sensor;
+import jmri.SensorManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 
     // For this expression to work, the LogixNG engine needs to notify those
     // who wants to be notified when all LogixNGs are finished running.
@@ -33,7 +38,10 @@ import jmri.jmrit.logixng.FemaleSocket;
 public class ExpressionBufferedSensor extends AbstractDigitalExpression {
 
     private ExpressionBufferedSensor _template;
-//    private final Sensor sensor;
+    private String _sensorSystemName;
+    private NamedBeanHandle<Sensor> _sensorHandle;
+    private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
+    private ExpressionSensor.SensorState _sensorState = ExpressionSensor.SensorState.ACTIVE;
     
     public ExpressionBufferedSensor(String sys) throws BadSystemNameException {
         super(sys);
@@ -52,6 +60,35 @@ public class ExpressionBufferedSensor extends AbstractDigitalExpression {
         if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
     }
     
+    public void setSensor(NamedBeanHandle<Sensor> handle) {
+        _sensorHandle = handle;
+    }
+    
+    public void setSensor(Sensor sensor) {
+        _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                .getNamedBeanHandle(sensor.getDisplayName(), sensor);
+    }
+    
+    public NamedBeanHandle getSensor() {
+        return _sensorHandle;
+    }
+    
+    public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
+        _is_IsNot = is_IsNot;
+    }
+    
+    public Is_IsNot_Enum get_Is_IsNot() {
+        return _is_IsNot;
+    }
+    
+    public void setSensorState(ExpressionSensor.SensorState state) {
+        _sensorState = state;
+    }
+    
+    public ExpressionSensor.SensorState getSensorState() {
+        return _sensorState;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
@@ -87,7 +124,7 @@ public class ExpressionBufferedSensor extends AbstractDigitalExpression {
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
@@ -104,10 +141,18 @@ public class ExpressionBufferedSensor extends AbstractDigitalExpression {
     public String getLongDescription() {
         return Bundle.getMessage("BufferedSensor_Long");
     }
-
+    
+    public void setSensor_SystemName(String sensorSystemName) {
+        _sensorSystemName = sensorSystemName;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        if ((_sensorHandle == null) && (_sensorSystemName != null)) {
+            Sensor t = InstanceManager.getDefault(SensorManager.class).getBeanBySystemName(_sensorSystemName);
+            _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_sensorSystemName, t);
+        }
     }
     
 }
