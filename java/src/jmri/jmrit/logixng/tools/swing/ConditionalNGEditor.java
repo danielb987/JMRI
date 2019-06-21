@@ -65,6 +65,8 @@ public final class ConditionalNGEditor extends JmriJFrame {
     
     private final ConditionalNG _conditionalNG;
     
+    JTree tree;
+    
     // Add LogixNG Variables
     private JmriJFrame addLogixNGFrame = null;
     private JmriJFrame editLogixNGFrame = null;
@@ -196,7 +198,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         femaleSocketTreeModel = new FemaleSocketTreeModel(_conditionalNG.getFemaleSocket());
         
         // Create a JTree and tell it to display our model
-        final JTree tree = new JTree();
+        tree = new JTree();
         tree.setModel(femaleSocketTreeModel);
         tree.setCellRenderer(new FemaleSocketTreeRenderer());
         
@@ -215,25 +217,9 @@ public final class ConditionalNGEditor extends JmriJFrame {
         // Display it all in a window and make the window appear
         pPanel.add(scrollpane, "Center");
 
-        // Test
-//        JPanel pComment = new JPanel();
-//        pComment.setLayout(new GridBagLayout());
-//        pComment.setBorder(BorderFactory.createTitledBorder("Test"));
-//        addItem(pComment, "Testar", 1, 0);
-//        pOptional.add(pComment);
-        
-        // button panel
-//        JPanel pButtons = new JPanel();
-//        pButtons.setLayout(new GridBagLayout());
-//        addItem(pButtons, deleteButton, 0, 25);
-//        addItem(pButtons, addButton, 1, 25);
-//        addItem(pButtons, saveButton, 3, 25);
-        
         // add panels
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         getContentPane().add(pPanel);
-//        getContentPane().add(pButtons);
-        
         
         initMinimumSize(new Dimension(panelWidth700, panelHeight500));
     }
@@ -356,6 +342,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
                 }
                 swingConfiguratorInterface.dispose();
                 addLogixNGFrame.dispose();
+                addLogixNGFrame = null;
                 for (TreeModelListener l : femaleSocketTreeModel.listeners) {
                     TreeModelEvent tme = new TreeModelEvent(
                             femaleSocket,
@@ -363,6 +350,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
                     );
                     l.treeNodesChanged(tme);
                 }
+                tree.updateUI();
                 InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
                     prefMgr.setSimplePreferenceState(systemNameAuto, _autoSystemName.isSelected());
                 });
@@ -387,6 +375,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         if (!checkFlags(null)) {
             return;
         }
+        //DANIEL
         _showReminder = true;
         // make an Add LogixNG Frame
         if (editLogixNGFrame == null) {
@@ -408,6 +397,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
 //                }
                 swingConfiguratorInterface.dispose();
                 editLogixNGFrame.dispose();
+                editLogixNGFrame = null;
                 for (TreeModelListener l : femaleSocketTreeModel.listeners) {
                     TreeModelEvent tme = new TreeModelEvent(
                             femaleSocket,
@@ -539,7 +529,11 @@ public final class ConditionalNGEditor extends JmriJFrame {
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cancelAddPressed(e);
+                if (!femaleSocket.isConnected()) {
+                    cancelAddPressed(null);
+                } else {
+                    cancelEditPressed(null);
+                }
             }
         });
 //        cancel.setToolTipText(Bundle.getMessage("CancelLogixButtonHint"));      // NOI18N
@@ -631,8 +625,8 @@ public final class ConditionalNGEditor extends JmriJFrame {
     
     
     /**
-     * The methods in this class allow the JTree component to traverse the file
-     * system tree and display the files and directories.
+     * The methods in this class allow the JTree component to traverse the
+     * female sockets of the ConditionalNG tree.
      */
     private static class FemaleSocketTreeModel implements TreeModel {
 
