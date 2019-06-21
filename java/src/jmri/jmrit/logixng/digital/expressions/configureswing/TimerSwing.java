@@ -8,8 +8,6 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.expressions.Timer;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Configures an ExpressionTurnout object with a Swing JPanel.
@@ -77,8 +75,5 @@ public class TimerSwing implements SwingConfiguratorInterface {
     @Override
     public void dispose() {
     }
-    
-    
-    private final static Logger log = LoggerFactory.getLogger(TimerSwing.class);
     
 }
