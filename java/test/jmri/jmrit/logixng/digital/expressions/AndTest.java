@@ -20,6 +20,13 @@ public class AndTest {
         Assert.assertNotNull("exists",t);
     }
     
+    @Test
+    public void testDescription() {
+        DigitalExpression e1 = new And("IQA55:E321");
+        Assert.assertTrue("And".equals(e1.getShortDescription()));
+        Assert.assertTrue("And".equals(e1.getLongDescription()));
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {

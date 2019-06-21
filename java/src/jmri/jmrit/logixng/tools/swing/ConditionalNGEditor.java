@@ -15,11 +15,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -33,7 +35,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeCellRenderer;
@@ -76,8 +77,15 @@ public final class ConditionalNGEditor extends JmriJFrame {
     private FemaleSocketTreeModel femaleSocketTreeModel;
     private final JTextField _systemName = new JTextField(20);
     private final JTextField _addUserName = new JTextField(20);
+    
+    private final Comparator<SwingConfiguratorInterface> _swingConfiguratorComboBoxComparator
+            = (SwingConfiguratorInterface o1, SwingConfiguratorInterface o2) -> o1.toString().compareTo(o2.toString());;
+    
+    private final SortedComboBoxModel<SwingConfiguratorInterface> _swingConfiguratorComboBoxModel
+            = new SortedComboBoxModel<>(_swingConfiguratorComboBoxComparator);
+    
     private final JComboBox<Category> _categoryComboBox = new JComboBox<>();
-    private final JComboBox<SwingConfiguratorInterface> _swingConfiguratorComboBox = new JComboBox<>();
+    private final JComboBox<SwingConfiguratorInterface> _swingConfiguratorComboBox = new JComboBox<>(_swingConfiguratorComboBoxModel);
     private final JCheckBox _autoSystemName = new JCheckBox(Bundle.getMessage("LabelAutoSysName"));   // NOI18N
     private final JLabel _sysNameLabel = new JLabel(Bundle.getMessage("SystemName") + ":");  // NOI18N
     private final JLabel _userNameLabel = new JLabel(Bundle.getMessage("UserName") + ":");   // NOI18N
@@ -487,6 +495,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
         _showReminder = true;
         // make an Add LogixNG Frame
         if (editLogixNGFrame == null) {
+            editSwingConfiguratorInterface = SwingTools.getSwingConfiguratorForClass(femaleSocket.getConnectedSocket().getObject().getClass());
             JPanel panel5 = makeAddEditFrame(null, femaleSocket, editSwingConfiguratorInterface);  // NOI18N
             // Create LogixNG
             edit = new JButton(Bundle.getMessage("ButtonOK"));  // NOI18N
@@ -621,6 +630,8 @@ public final class ConditionalNGEditor extends JmriJFrame {
 //        swingConfiguratorInterface = SwingTools.getSwingConfiguratorForClass(maleSocketClass);
         JPanel panel33;
         if (femaleSocket.isConnected()) {
+            femaleSocket.getConnectedSocket().getObject();
+            swingConfiguratorInterface.getConfigPanel();
             panel33 = swingConfiguratorInterface.getConfigPanel(femaleSocket.getConnectedSocket().getObject());
         } else {
             panel33 = swingConfiguratorInterface.getConfigPanel();
@@ -875,6 +886,55 @@ public final class ConditionalNGEditor extends JmriJFrame {
             return panel;
         }
         
+    }
+    
+    
+    private static final class SortedComboBoxModel<E> extends DefaultComboBoxModel<E> {
+
+        private final Comparator<E> comparator;
+
+        /*
+	 *  Create an empty model that will use the specified Comparator
+         */
+        public SortedComboBoxModel(Comparator<E> comparator) {
+            super();
+            this.comparator = comparator;
+        }
+
+        @Override
+        public void addElement(E element) {
+            insertElementAt(element, 0);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void insertElementAt(E element, int index) {
+            int size = getSize();
+
+            //  Determine where to insert element to keep model in sorted order
+            for (index = 0; index < size; index++) {
+                if (comparator != null) {
+                    E o = getElementAt(index);
+
+                    if (comparator.compare(o, element) > 0) {
+                        break;
+                    }
+                } else {
+                    Comparable c = (Comparable) getElementAt(index);
+
+                    if (c.compareTo(element) > 0) {
+                        break;
+                    }
+                }
+            }
+
+            super.insertElementAt(element, index);
+
+            //  Select an element when it is added to the beginning of the model
+            if (index == 0 && element != null) {
+                setSelectedItem(element);
+            }
+        }
     }
     
     

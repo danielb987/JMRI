@@ -164,14 +164,14 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("Hold",
-                _holdExpressionSocket.getName(),
-                _triggerExpressionSocket.getName());
+        return Bundle.getMessage("Hold_Short");
     }
     
     @Override
     public String getLongDescription() {
-        return getShortDescription();
+        return Bundle.getMessage("Hold_Long",
+                _holdExpressionSocket.getName(),
+                _triggerExpressionSocket.getName());
     }
 
     public void setHoldActionSocketSystemName(String systemName) {

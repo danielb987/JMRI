@@ -38,8 +38,24 @@ public class ExpressionSensorTest {
     }
     
     @Test
+    public void testDescription() {
+        ExpressionSensor expressionSensor = new ExpressionSensor("IQA55:E321");
+        Assert.assertTrue("Get sensor".equals(expressionSensor.getShortDescription()));
+        Assert.assertTrue("Sensor Not selected is Active".equals(expressionSensor.getLongDescription()));
+        Sensor sensor = InstanceManager.getDefault(SensorManager.class).provide("IS1");
+        expressionSensor.setSensor(sensor);
+        expressionSensor.set_Is_IsNot(Is_IsNot_Enum.IS);
+        expressionSensor.setSensorState(ExpressionSensor.SensorState.INACTIVE);
+        Assert.assertTrue("Sensor IS1 is Inactive".equals(expressionSensor.getLongDescription()));
+        expressionSensor.set_Is_IsNot(Is_IsNot_Enum.IS_NOT);
+        Assert.assertTrue("Sensor IS1 is not Inactive".equals(expressionSensor.getLongDescription()));
+        expressionSensor.setSensorState(ExpressionSensor.SensorState.OTHER);
+        Assert.assertTrue("Sensor IS1 is not Other".equals(expressionSensor.getLongDescription()));
+    }
+    
+    @Test
     public void testExpression() throws SocketAlreadyConnectedException, JmriException {
-        Sensor sensor = InstanceManager.getDefault(SensorManager.class).provide("IT1");
+        Sensor sensor = InstanceManager.getDefault(SensorManager.class).provide("IS1");
         sensor.setCommandedState(Sensor.INACTIVE);
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");

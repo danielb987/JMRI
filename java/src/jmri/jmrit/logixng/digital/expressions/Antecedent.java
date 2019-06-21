@@ -199,12 +199,12 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("Antecedent");
+        return Bundle.getMessage("Antecedent_Short");
     }
     
     @Override
     public String getLongDescription() {
-        return getShortDescription();
+        return Bundle.getMessage("Antecedent_Long", _antecedent);
     }
 
     @Override

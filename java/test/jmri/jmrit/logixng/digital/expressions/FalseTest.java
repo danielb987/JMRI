@@ -22,6 +22,13 @@ public class FalseTest {
     }
     
     @Test
+    public void testDescription() {
+        DigitalExpression e1 = new False("IQA55:E321");
+        Assert.assertTrue("Always false".equals(e1.getShortDescription()));
+        Assert.assertTrue("Always false".equals(e1.getLongDescription()));
+    }
+    
+    @Test
     public void testExpression() {
         AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
         DigitalExpression t = new False("IQA55:E321");

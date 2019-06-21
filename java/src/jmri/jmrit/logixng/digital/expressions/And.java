@@ -124,12 +124,12 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("And");
+        return Bundle.getMessage("And_Short");
     }
     
     @Override
     public String getLongDescription() {
-        return getShortDescription();
+        return Bundle.getMessage("And_Long");
     }
 
     @Override

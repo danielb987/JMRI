@@ -38,6 +38,22 @@ public class ExpressionTurnoutTest {
     }
     
     @Test
+    public void testDescription() {
+        ExpressionTurnout expressionTurnout = new ExpressionTurnout("IQA55:E321");
+        Assert.assertTrue("Get turnout".equals(expressionTurnout.getShortDescription()));
+        Assert.assertTrue("Turnout Not selected is Thrown".equals(expressionTurnout.getLongDescription()));
+        Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
+        expressionTurnout.setTurnout(turnout);
+        expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IS);
+        expressionTurnout.setTurnoutState(ExpressionTurnout.TurnoutState.CLOSED);
+        Assert.assertTrue("Turnout IT1 is Closed".equals(expressionTurnout.getLongDescription()));
+        expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IS_NOT);
+        Assert.assertTrue("Turnout IT1 is not Closed".equals(expressionTurnout.getLongDescription()));
+        expressionTurnout.setTurnoutState(ExpressionTurnout.TurnoutState.OTHER);
+        Assert.assertTrue("Turnout IT1 is not Other".equals(expressionTurnout.getLongDescription()));
+    }
+    
+    @Test
     public void testExpression() throws SocketAlreadyConnectedException, JmriException {
         Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
         turnout.setCommandedState(Turnout.CLOSED);
@@ -86,7 +102,7 @@ public class ExpressionTurnoutTest {
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
-        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initInternalTurnoutManager();
     }
 

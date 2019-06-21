@@ -97,12 +97,12 @@ public class False extends AbstractDigitalExpression {
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("True");
+        return Bundle.getMessage("False_Short");
     }
     
     @Override
     public String getLongDescription() {
-        return getShortDescription();
+        return Bundle.getMessage("False_Long");
     }
 
     /** {@inheritDoc} */

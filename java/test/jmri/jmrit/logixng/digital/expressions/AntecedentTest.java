@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
-import jmri.NamedBean;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
@@ -39,6 +38,12 @@ public class AntecedentTest {
         Assert.assertNotNull("exists",t);
     }
     
+    @Test
+    public void testDescription() {
+        DigitalExpression e1 = new Antecedent("IQA55:E321");
+        Assert.assertTrue("Antecedent".equals(e1.getShortDescription()));
+        Assert.assertTrue("Antecedent: null".equals(e1.getLongDescription()));
+    }
     
     private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpression> conditionalVariablesList) {
         Antecedent ix1 = new Antecedent("IXIC 1");

@@ -76,12 +76,12 @@ public class Timer extends AbstractDigitalExpression {
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("Timer_Short");
     }
-
+    
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("Timer_Long");
     }
 
     /** {@inheritDoc} */

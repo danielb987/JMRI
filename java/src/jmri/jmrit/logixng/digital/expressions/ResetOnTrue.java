@@ -116,12 +116,12 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("ResetOnTrue_Short");
     }
-
+    
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("ResetOnTrue_Long");
     }
 
     @Override

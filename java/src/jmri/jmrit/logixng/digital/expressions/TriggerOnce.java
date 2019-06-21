@@ -108,12 +108,12 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("TriggerOnce_Short");
     }
-
+    
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("TriggerOnce_Long");
     }
 
     public void setAnalogActionSocketSystemName(String systemName) {

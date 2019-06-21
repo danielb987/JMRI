@@ -22,6 +22,13 @@ public class TrueTest {
     }
     
     @Test
+    public void testDescription() {
+        DigitalExpression e1 = new True("IQA55:E321");
+        Assert.assertTrue("Always true".equals(e1.getShortDescription()));
+        Assert.assertTrue("Always true".equals(e1.getLongDescription()));
+    }
+    
+    @Test
     public void testExpression() {
         AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
         DigitalExpression t = new True("IQA55:E321");

@@ -13,21 +13,33 @@ public enum Category {
     /**
      * A item on the layout, for example turnout, sensor and signal mast.
      */
-    ITEM,
+    ITEM("CategoryItem"),
     
     /**
      * Common.
      */
-    COMMON,
+    COMMON("CategoryCommon"),
     
     /**
      * Other things.
      */
-    OTHER,
+    OTHER("CategoryOther"),
     
     /**
      * Extravaganza. Things seldom used, included mostly for fun, but maybe
      * useful in some cases.
      */
-    EXRAVAGANZA,
+    EXRAVAGANZA("CategoryExtravaganza");
+    
+    
+    private final String _bundleKey;
+    
+    private Category(String bundleKey) {
+        _bundleKey = bundleKey;
+    }
+    
+    public String toString() {
+        return Bundle.getMessage(_bundleKey);
+    }
+    
 }

@@ -5,7 +5,6 @@ import jmri.Sensor;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
     // For this expression to work, the LogixNG engine needs to notify those
     // who wants to be notified when all LogixNGs are finished running.
@@ -31,23 +30,23 @@ import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class BufferedSensor extends AbstractDigitalExpression {
+public class ExpressionBufferedSensor extends AbstractDigitalExpression {
 
-    private BufferedSensor _template;
+    private ExpressionBufferedSensor _template;
 //    private final Sensor sensor;
     
-    public BufferedSensor(String sys) throws BadSystemNameException {
+    public ExpressionBufferedSensor(String sys) throws BadSystemNameException {
         super(sys);
 //        sensor = null;
     }
 
-    public BufferedSensor(String sys, String user)
+    public ExpressionBufferedSensor(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
 //        sensor = null;
     }
 
-    private BufferedSensor(BufferedSensor template, String sys) {
+    private ExpressionBufferedSensor(ExpressionBufferedSensor template, String sys) {
         super(sys);
         _template = template;
         if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
@@ -56,7 +55,7 @@ public class BufferedSensor extends AbstractDigitalExpression {
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
-        return new BufferedSensor(this, sys);
+        return new ExpressionBufferedSensor(this, sys);
     }
     
     /** {@inheritDoc} */
@@ -98,12 +97,12 @@ public class BufferedSensor extends AbstractDigitalExpression {
 
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("BufferedSensor_Short");
     }
-
+    
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Bundle.getMessage("BufferedSensor_Long");
     }
 
     /** {@inheritDoc} */

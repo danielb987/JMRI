@@ -124,12 +124,12 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("And");
+        return Bundle.getMessage("Or_Short");
     }
     
     @Override
     public String getLongDescription() {
-        return getShortDescription();
+        return Bundle.getMessage("Or_Long");
     }
 
     @Override

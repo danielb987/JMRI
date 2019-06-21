@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.DigitalExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -16,7 +17,15 @@ public class TimerTest {
 
     @Test
     public void testCtor() {
-        new Timer("IQA55:E321", null);
+        DigitalExpression t = new Timer("IQA55:E321", null);
+        Assert.assertNotNull("exists",t);
+    }
+    
+    @Test
+    public void testDescription() {
+        DigitalExpression e1 = new Timer("IQA55:E321", null);
+        Assert.assertTrue("Timer".equals(e1.getShortDescription()));
+        Assert.assertTrue("Timer".equals(e1.getLongDescription()));
     }
     
     @Test

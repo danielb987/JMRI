@@ -16,13 +16,15 @@ public class HoldTest {
 
     @Test
     public void testCtor() {
-        new Hold("IQA55:E321");
+        DigitalExpression t = new Hold("IQA55:E321");
+        Assert.assertNotNull("exists",t);
     }
     
     @Test
-    public void testShortDescription() {
+    public void testDescription() {
         DigitalExpression e1 = new Hold("IQA55:E321");
-        Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getShortDescription()));
+        Assert.assertTrue("Hold".equals(e1.getShortDescription()));
+        Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getLongDescription()));
     }
     
     // The minimal setup for log4J

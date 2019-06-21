@@ -38,8 +38,24 @@ public class ExpressionLightTest {
     }
     
     @Test
+    public void testDescription() {
+        ExpressionLight expressionLight = new ExpressionLight("IQA55:E321");
+        Assert.assertTrue("Get light".equals(expressionLight.getShortDescription()));
+        Assert.assertTrue("Light Not selected is On".equals(expressionLight.getLongDescription()));
+        Light light = InstanceManager.getDefault(LightManager.class).provide("IL1");
+        expressionLight.setLight(light);
+        expressionLight.set_Is_IsNot(Is_IsNot_Enum.IS);
+        expressionLight.setLightState(ExpressionLight.LightState.OFF);
+        Assert.assertTrue("Light IL1 is Off".equals(expressionLight.getLongDescription()));
+        expressionLight.set_Is_IsNot(Is_IsNot_Enum.IS_NOT);
+        Assert.assertTrue("Light IL1 is not Off".equals(expressionLight.getLongDescription()));
+        expressionLight.setLightState(ExpressionLight.LightState.OTHER);
+        Assert.assertTrue("Light IL1 is not Other".equals(expressionLight.getLongDescription()));
+    }
+    
+    @Test
     public void testExpression() throws SocketAlreadyConnectedException, JmriException {
-        Light light = InstanceManager.getDefault(LightManager.class).provide("IT1");
+        Light light = InstanceManager.getDefault(LightManager.class).provide("IL1");
         light.setCommandedState(Light.OFF);
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");

@@ -20,6 +20,13 @@ public class OrTest {
         Assert.assertNotNull("exists",t);
     }
     
+    @Test
+    public void testDescription() {
+        DigitalExpression e1 = new Or("IQA55:E321");
+        Assert.assertTrue("Or".equals(e1.getShortDescription()));
+        Assert.assertTrue("Or".equals(e1.getLongDescription()));
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {

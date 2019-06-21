@@ -98,12 +98,12 @@ public class True extends AbstractDigitalExpression {
     
     @Override
     public String getShortDescription() {
-        return Bundle.getMessage("True");
+        return Bundle.getMessage("True_Short");
     }
     
     @Override
     public String getLongDescription() {
-        return getShortDescription();
+        return Bundle.getMessage("True_Long");
     }
 
     /** {@inheritDoc} */
