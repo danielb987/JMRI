@@ -204,6 +204,11 @@ public final class ConditionalNGEditor extends JmriJFrame {
         
         tree.setShowsRootHandles(true);
         
+        // Expand the entire tree
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
+        
         PopupMenu popup = new PopupMenu(tree, femaleSocketTreeModel);
         popup.init();
         

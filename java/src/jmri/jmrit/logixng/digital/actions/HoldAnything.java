@@ -1,9 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import jmri.InstanceManager;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
@@ -16,7 +14,6 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * An action that can hold everything but doesn't do anything.
