@@ -69,6 +69,14 @@ public interface SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object);
     
     /**
+     * Returns the name of the class that this class configures.
+     *
+     * @return the name of the class this class configures.
+     */
+    @Override
+    public String toString();
+    
+    /**
      * Dispose the panel and remove all the listeners that this class may have
      * registered.
      */

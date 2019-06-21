@@ -162,6 +162,12 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
 //                Bundle.getMessage("WarningTitle"), JOptionPane.ERROR_MESSAGE);
 //    }
     
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return Bundle.getMessage("ActionTurnout");
+    }
+    
     @Override
     public void dispose() {
         if (turnoutBeanPanel != null) {

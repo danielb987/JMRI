@@ -174,6 +174,12 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
 //                Bundle.getMessage("WarningTitle"), JOptionPane.ERROR_MESSAGE);
 //    }
     
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return Bundle.getMessage("ExpressionTurnout");
+    }
+    
     @Override
     public void dispose() {
         if (turnoutBeanPanel != null) {
