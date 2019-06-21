@@ -380,7 +380,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
         if (!checkFlags(null)) {
             return;
         }
-        //DANIEL
         _showReminder = true;
         // make an Add LogixNG Frame
         if (editLogixNGFrame == null) {
