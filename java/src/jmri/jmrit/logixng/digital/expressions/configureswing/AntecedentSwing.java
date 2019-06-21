@@ -76,6 +76,6 @@ public class AntecedentSwing implements SwingConfiguratorInterface {
     }
     
     
-    private final static Logger log = LoggerFactory.getLogger(TrueSwing.class);
+//    private final static Logger log = LoggerFactory.getLogger(AntecedentSwing.class);
     
 }

@@ -47,14 +47,12 @@ public class OrSwing implements SwingConfiguratorInterface {
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
         Or expression = new Or(systemName);
-        System.out.format("System name: %s. Type: %s%n", systemName, expression.getClass().getName());
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
 
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         Or expression = new Or(systemName);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
@@ -76,6 +74,6 @@ public class OrSwing implements SwingConfiguratorInterface {
     }
     
     
-    private final static Logger log = LoggerFactory.getLogger(TrueSwing.class);
+//    private final static Logger log = LoggerFactory.getLogger(OrSwing.class);
     
 }

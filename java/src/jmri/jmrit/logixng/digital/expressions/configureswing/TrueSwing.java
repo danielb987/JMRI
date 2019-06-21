@@ -46,7 +46,6 @@ public class TrueSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         True expression = new True(systemName);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
@@ -54,7 +53,6 @@ public class TrueSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         True expression = new True(systemName);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
@@ -76,6 +74,6 @@ public class TrueSwing implements SwingConfiguratorInterface {
     }
     
     
-    private final static Logger log = LoggerFactory.getLogger(TrueSwing.class);
+//    private final static Logger log = LoggerFactory.getLogger(TrueSwing.class);
     
 }

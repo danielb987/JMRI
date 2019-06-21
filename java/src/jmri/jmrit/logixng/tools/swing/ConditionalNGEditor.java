@@ -79,7 +79,7 @@ public final class ConditionalNGEditor extends JmriJFrame {
     private final JTextField _addUserName = new JTextField(20);
     
     private final Comparator<SwingConfiguratorInterface> _swingConfiguratorComboBoxComparator
-            = (SwingConfiguratorInterface o1, SwingConfiguratorInterface o2) -> o1.toString().compareTo(o2.toString());;
+            = (SwingConfiguratorInterface o1, SwingConfiguratorInterface o2) -> o1.toString().compareTo(o2.toString());
     
     private final SortedComboBoxModel<SwingConfiguratorInterface> _swingConfiguratorComboBoxModel
             = new SortedComboBoxModel<>(_swingConfiguratorComboBoxComparator);

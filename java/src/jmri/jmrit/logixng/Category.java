@@ -38,6 +38,7 @@ public enum Category {
         _bundleKey = bundleKey;
     }
     
+    @Override
     public String toString() {
         return Bundle.getMessage(_bundleKey);
     }
