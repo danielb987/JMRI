@@ -4,8 +4,6 @@ import java.awt.GraphicsEnvironment;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.JmriException;
@@ -14,7 +12,6 @@ import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
-import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.HoldAnything;
 import jmri.jmrit.logixng.digital.actions.IfThen;
@@ -28,20 +25,15 @@ import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
 import jmri.jmrit.logixng.zTest.TestLogixNG;
-import org.junit.Assert;
 
 /**
  * Class providing the basic logic of the LogixNG_Manager interface.
