@@ -220,7 +220,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
 
     @Override
     public Lock getLock() {
-        throw new UnsupportedOperationException("Not supported.");
+        return Lock.NONE;
     }
 
     @Override
@@ -235,6 +235,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     final public void setup() {
+        log.error("setup(): Socket system name: {}", _socketSystemName);
         if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
             try {
                 MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);

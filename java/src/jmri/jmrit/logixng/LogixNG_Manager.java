@@ -17,11 +17,9 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
      * @param userName   the user name
      * @return a new LogixNG or null if unable to create
      */
-    default public LogixNG createLogixNG(String systemName, String userName)
-            throws IllegalArgumentException {
-        return createLogixNG(systemName, userName, true);
-    }
-
+    public LogixNG createLogixNG(String systemName, String userName)
+            throws IllegalArgumentException;
+    
     /**
      * For use with User GUI, to allow the auto generation of systemNames, where
      * the user can optionally supply a username.
@@ -29,31 +27,7 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
      * @param userName the user name
      * @return a new LogixNG or null if unable to create
      */
-    default public LogixNG createLogixNG(String userName)
-            throws IllegalArgumentException {
-        return createLogixNG(userName, true);
-    }
-    
-    /**
-     * Create a new LogixNG if the LogixNG does not exist.
-     *
-     * @param systemName the system name
-     * @param userName   the user name
-     * @param setupTree  true if the initial tree should be setup, false otherwise
-     * @return a new LogixNG or null if unable to create
-     */
-    public LogixNG createLogixNG(String systemName, String userName, boolean setupTree)
-            throws IllegalArgumentException;
-
-    /**
-     * For use with User GUI, to allow the auto generation of systemNames, where
-     * the user can optionally supply a username.
-     *
-     * @param userName  the user name
-     * @param setupTree true if the initial tree should be setup, false otherwise
-     * @return a new LogixNG or null if unable to create
-     */
-    public LogixNG createLogixNG(String userName, boolean setupTree)
+    public LogixNG createLogixNG(String userName)
             throws IllegalArgumentException;
     
     /**

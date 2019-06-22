@@ -30,7 +30,7 @@ public class ImportLogix {
         
         _logix = logix;
         _logixNG = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class)
-                .createLogixNG("Logix: "+_logix.getDisplayName(), false);
+                .createLogixNG("Logix: "+_logix.getDisplayName());
         
         log.debug("Import Logix {} to LogixNG {}", _logix.getSystemName(), _logixNG.getSystemName());
     }

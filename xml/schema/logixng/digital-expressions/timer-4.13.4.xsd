@@ -25,48 +25,38 @@
             "
         >
 
-    <xs:complexType name="LogixNG_DigitalAction_TurnoutType">
+    <xs:complexType name="LogixNG_DigitalExpression_TimerType">
       <xs:annotation>
         <xs:documentation>
           Define the XML stucture for storing the contents of a ActionHoldAnything class.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.digital.actions.configurexml.ActionIfThen</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.digital.expressions.configurexml.And</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
-        
-            <xs:sequence>
 
+            <xs:sequence>
               <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
               <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
               <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element name="turnout" type="beanNameType" minOccurs="0" maxOccurs="1"/>
-<!--
-              <xs:element name="is_isNot" minOccurs="1" maxOccurs="1">
-                <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                    <xs:enumeration value="IS"/>
-                    <xs:enumeration value="IS_NOT"/>
-                  </xs:restriction>
-                </xs:simpleType>
+              <xs:element name="expressions" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="socket" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="socketName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                          <xs:element name="systemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
               </xs:element>
--->
-              <xs:element name="turnoutState" minOccurs="1" maxOccurs="1">
-                <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                    <xs:enumeration value="CLOSED"/>
-                    <xs:enumeration value="THROWN"/>
-                    <xs:enumeration value="OTHER"/>
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:element>
-
-              <xs:element name="enabled" type="yesNoType" />
-
             </xs:sequence>
-            
-			<xs:attribute name="class" type="classType" use="required"/>
-        
+            <xs:attribute name="enabled" type="yesNoType" />
+            <xs:attribute name="class" type="classType" use="required"/>
+
     </xs:complexType>
 
 </xs:schema>

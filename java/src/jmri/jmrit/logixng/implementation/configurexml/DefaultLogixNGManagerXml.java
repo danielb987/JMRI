@@ -3,6 +3,8 @@ package jmri.jmrit.logixng.implementation.configurexml;
 import java.util.List;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
+import jmri.JmriException;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -25,9 +27,9 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
     }
 
     /**
-     * Default implementation for storing the contents of a LogixManager
+     * Default implementation for storing the contents of a LogixNG_Manager
      *
-     * @param o Object to store, of type LogixManager
+     * @param o Object to store, of type LogixNG_Manager
      * @return Element containing the complete info
      */
     @Override
@@ -37,11 +39,20 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
         LogixNG_Manager tm = (LogixNG_Manager) o;
         if (tm != null) {
             for (LogixNG logixNG : tm.getNamedBeanSet()) {
-                log.debug("logix system name is " + logixNG.getSystemName());  // NOI18N
+                log.debug("logixng system name is " + logixNG.getSystemName());  // NOI18N
                 boolean enabled = logixNG.isEnabled();
                 Element elem = new Element("logixng");  // NOI18N
                 elem.addContent(new Element("systemName").addContent(logixNG.getSystemName()));  // NOI18N
 
+                // store common part
+                storeCommon(logixNG, elem);
+
+                // add conditionalNG elements
+                DefaultConditionalNGXml defaultConditionalNGXml = new DefaultConditionalNGXml();
+                for (int i=0; i < logixNG.getNumConditionalNGs(); i++) {
+                    elem.addContent(defaultConditionalNGXml.store(logixNG.getConditionalNG(i)));
+                }
+/*                
                 Element e2 = new Element("socket");
                 e2.addContent(new Element("socketName").addContent(logixNG.getChild(0).getName()));
                 MaleSocket socket = logixNG.getChild(0).getConnectedSocket();
@@ -49,16 +60,13 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
                     e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
                 }
                 elem.addContent(e2);
-            
+*/            
 //                // As a work-around for backward compatibility, store systemName and username as attribute.
 //                // Remove this in e.g. JMRI 4.11.1 and then update all the loadref comparison files
 //                String uName = logixNG.getUserName();
 //                if (uName != null && !uName.isEmpty()) {
 //                    elem.setAttribute("userName", uName);  // NOI18N
 //                }
-
-                // store common part
-                storeCommon(logixNG, elem);
 
                 if (enabled) {
                     elem.setAttribute("enabled", "yes");  // NOI18N
@@ -141,25 +149,56 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
             }
 
             // Create a new LogixNG but don't setup the initial tree.
-            DefaultLogixNG x = (DefaultLogixNG)tm.createLogixNG(sysName, userName, false);
-            if (x != null) {
+            DefaultLogixNG logixNG = (DefaultLogixNG)tm.createLogixNG(sysName, userName);
+            if (logixNG != null) {
                 // load common part
-                loadCommon(x, logixNGList.get(i));
+                loadCommon(logixNG, logixNGList.get(i));
 
                 // set enabled/disabled if attribute was present
                 if ((yesno != null) && (!yesno.equals(""))) {
                     if (yesno.equals("yes")) {  // NOI18N
-                        x.setEnabled(true);
+                        logixNG.setEnabled(true);
                     } else if (yesno.equals("no")) {  // NOI18N
-                        x.setEnabled(false);
+                        logixNG.setEnabled(false);
                     }
                 }
                 
-//                Element socketElement = logixNG_Element.getChild("socket");
+                // load conditionals, if there are any
+                List<Element> logixNGConditionalList = logixNG_Element.getChildren("conditionalng");  // NOI18N
+                if (logixNGConditionalList.size() > 0) {
+                    
+                    // add conditionalNGs
+                    DefaultConditionalNGXml defaultConditionalNGXml = new DefaultConditionalNGXml();
+                    
+                    for (int n = 0; n < logixNGConditionalList.size(); n++) {
+                        try {
+                            logixNG.addConditionalNG(defaultConditionalNGXml.loadConditionalNG(logixNG, logixNGConditionalList.get(n)));
+                        } catch (JmriException e) {
+                            log.error("exception thrown", e);
+                        }
+/*                        
+                        if (logixNG_Element.getAttribute("systemName") == null) {  // NOI18N
+                            log.warn("unexpected null in systemName " + logixNGConditionalList.get(n)  // NOI18N
+                                    + " " + logixNG_Element.getAttributes());
+                            break;
+                        }
+                        String cSysName = logixNG_Element.getAttribute("systemName").getValue();  // NOI18N
+//                        int cOrder = Integer.parseInt(logixNG_Element
+//                                .getAttribute("order").getValue());  // NOI18N
+                        
+                        ConditionalNG conditionalNG;
+                        // add conditional to logix
+                        x.addConditionalNG(conditionalNG);
+//                        x.addConditionalNG(cSysName);
+*/                        
+                    }
+                }
+/*                
                 Element socketSystemName = logixNG_Element.getChild("socket").getChild("systemName");
                 if (socketSystemName != null) {
                     x.setSocketSystemName(socketSystemName.getTextTrim());
                 }
+*/                
 /*                
                 // load conditionals, if there are any
                 List<Element> logixConditionalList = logixNGList.get(i).getChildren("logixConditional");  // NOI18N

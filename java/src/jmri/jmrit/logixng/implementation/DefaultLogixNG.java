@@ -29,40 +29,41 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
  * @author Daniel Bergqvist Copyright 2018
  */
 public final class DefaultLogixNG extends AbstractNamedBean
-        implements LogixNG, FemaleSocketListener {
+        implements LogixNG {
+//        implements LogixNG, FemaleSocketListener {
     
-    private DefaultLogixNG _template;
+//    private DefaultLogixNG _template;
     private Base _parent = null;
-    private String _socketSystemName = null;
-    private final FemaleDigitalActionSocket _femaleActionSocket;
+//    private String _socketSystemName = null;
+//    private final FemaleDigitalActionSocket _femaleActionSocket;
     private boolean _enabled = false;
     private boolean _userEnabled = false;
     
     public DefaultLogixNG(String sys) throws BadUserNameException, BadSystemNameException  {
         super(sys);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
+//        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     public DefaultLogixNG(String sys, String user) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
+//        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
     public DefaultLogixNG(String sys, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
+//        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
     }
     
     public DefaultLogixNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
         super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
+//        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
     }
     
     private DefaultLogixNG(DefaultLogixNG template, String sys) {
         super(sys);
-        _template = template;
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
-                .createFemaleSocket(this, this, _template._femaleActionSocket.getName());
+//        _template = template;
+//        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
+//                .createFemaleSocket(this, this, _template._femaleActionSocket.getName());
     }
     
     /** {@inheritDoc} */
@@ -130,7 +131,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
 //    }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultLogixNG.class);
-
+/*
     @Override
     public void connected(FemaleSocket socket) {
         // Do nothing
@@ -140,7 +141,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
     public void disconnected(FemaleSocket socket) {
         // Do nothing
     }
-
+*/
     @Override
     public String getShortDescription() {
         throw new UnsupportedOperationException("Not supported.");
@@ -153,17 +154,21 @@ public final class DefaultLogixNG extends AbstractNamedBean
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported.");
+/*        
         if (index != 0) {
             throw new IllegalArgumentException(
                     String.format("index has invalid value: %d", index));
         }
         
         return _femaleActionSocket;
+*/        
     }
 
     @Override
     public int getChildCount() {
-        return 1;
+        throw new UnsupportedOperationException("Not supported.");
+//        return 1;
     }
 
     @Override
@@ -186,13 +191,44 @@ public final class DefaultLogixNG extends AbstractNamedBean
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public void setSocketSystemName(String systemName) {
-        _socketSystemName = systemName;
-    }
+//    public void setSocketSystemName(String systemName) {
+//        _socketSystemName = systemName;
+//    }
 
     /** {@inheritDoc} */
     @Override
+    public void setParentForAllChildren() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.setParentForAllChildren();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerListeners() {
+        if (_enabled && _userEnabled) {
+            for (ConditionalNG c : _conditionalNG_List) {
+                c.registerListeners();
+            }
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListeners() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.unregisterListeners();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     final public void setup() {
+        log.error("LogixNG: setup()");
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.setup();
+        }
+/*        
         if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
             try {
                 MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);
@@ -207,12 +243,13 @@ public final class DefaultLogixNG extends AbstractNamedBean
                 throw new RuntimeException("socket is already connected");
             }
         }
+*/        
     }
 
     /** {@inheritDoc} */
     @Override
     final public void dispose() {
-        _femaleActionSocket.dispose();
+//        _femaleActionSocket.dispose();
     }
     
     /** {@inheritDoc} */
