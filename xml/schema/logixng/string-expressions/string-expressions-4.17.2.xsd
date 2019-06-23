@@ -13,7 +13,7 @@
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
 
-<!-- This file contains definitions for LogixNG AnalogActions.              -->
+<!-- This file contains definitions for LogixNG StringExpressions.          -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:xsi ="http://www.w3.org/2001/XMLSchema-instance"
@@ -25,17 +25,17 @@
             "
         >
 <!--
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionHoldAnything-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionIfThen-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionMany-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionHoldAnything-4.17.2.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionIfThen-4.17.2.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionMany-4.17.2.xsd"/>
 -->
-    <xs:complexType name="LogixNG_AnalogActionManagerType">
+    <xs:complexType name="LogixNG_StringExpressionManagerType">
       <xs:annotation>
         <xs:documentation>
-          Define the XML stucture for storing the contents of a AnalogActionManager implementation.
+          Define the XML stucture for storing the contents of a StringExpressionManager implementation.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXml</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringExpressionManagerXml</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
       <xs:sequence>

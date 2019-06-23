@@ -77,13 +77,7 @@ signals - obsolete, EMPTY, never used
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/switchboardeditor.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/entryexitpair.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/filehistory.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/logixng-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/analog-actions/analog-actions-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/analog-expressions/analog-expressions-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/digital-actions-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-expressions/digital-expressions-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/string-actions/string-actions-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/string-expressions/string-expressions-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/logixng-4.17.2.xsd"/>
 
   <xs:element name="layout-config">
     <xs:complexType>
