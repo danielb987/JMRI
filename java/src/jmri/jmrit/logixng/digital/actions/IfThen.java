@@ -338,6 +338,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                                 .getBeanBySystemName(_ifExpressionSocketSystemName);
                 if (maleSocket != null) {
                     _ifExpressionSocket.connect(maleSocket);
+                    maleSocket.setup();
                 } else {
                     log.error("cannot load digital expression " + _ifExpressionSocketSystemName);
                 }
@@ -348,6 +349,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                                 .getBeanBySystemName(_thenActionSocketSystemName);
                 if (maleSocket != null) {
                     _thenActionSocket.connect(maleSocket);
+                    maleSocket.setup();
                 } else {
                     log.error("cannot load digital action " + _thenActionSocketSystemName);
                 }

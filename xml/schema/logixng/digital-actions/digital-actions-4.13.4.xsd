@@ -25,10 +25,15 @@
             "
         >
 
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/action-light-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/action-sensor-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/action-turnout-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/do-analog-action-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/do-string-action-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/hold-anything-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/if-then-4.13.4.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/many-4.13.4.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/turnout-4.13.4.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/shutdown-computer-4.13.4.xsd"/>
 
     <xs:complexType name="LogixNG_DigitalActionManagerType">
       <xs:annotation>
@@ -44,10 +49,15 @@
         <!-- Permit any of these tags in any order in any number -->
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             
-            <xs:element name="hold-anything"   type="LogixNG_DigitalAction_HoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="if-then"         type="LogixNG_DigitalAction_IfThenType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="many"            type="LogixNG_DigitalAction_ManyType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="action-turnout"  type="LogixNG_DigitalAction_TurnoutType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="action-light"      type="LogixNG_DigitalAction_LightType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="action-sensor"     type="LogixNG_DigitalAction_SensorType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="action-turnout"    type="LogixNG_DigitalAction_TurnoutType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="do-analog-action"  type="LogixNG_DigitalAction_DoAnalogActionType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="do-string-action"  type="LogixNG_DigitalAction_DoStringActionType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="hold-anything"     type="LogixNG_DigitalAction_HoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="if-then"           type="LogixNG_DigitalAction_IfThenType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="many"              type="LogixNG_DigitalAction_ManyType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="shutdown-computer" type="LogixNG_DigitalAction_ShutdownComputerType" minOccurs="0" maxOccurs="unbounded" />
             
           </xs:choice>
       </xs:sequence>

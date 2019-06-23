@@ -11,6 +11,8 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Expression has two expressions, the primary expression and the secondary
@@ -36,8 +38,7 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _secondaryExpressionSocket;
     private boolean _lastMainResult = false;
     
-    public ResetOnTrue(ConditionalNG conditionalNG)
-            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+    public ResetOnTrue(ConditionalNG conditionalNG) {
         
         super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
         
@@ -47,8 +48,7 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
                 .createFemaleSocket(this, this, "E2");
     }
     
-    public ResetOnTrue(String sys, String user)
-            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+    public ResetOnTrue(String sys, String user) {
         
         super(sys, user);
         
@@ -60,8 +60,7 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     
     public ResetOnTrue(String sys, String user,
             MaleDigitalExpressionSocket primaryExpression,
-            MaleDigitalExpressionSocket secondaryExpression)
-            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+            MaleDigitalExpressionSocket secondaryExpression) {
         
         super(sys, user);
         
@@ -70,8 +69,12 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
         _secondaryExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E2");
         
-        _primaryExpressionSocket.connect(primaryExpression);
-        _secondaryExpressionSocket.connect(secondaryExpression);
+        try {
+            _primaryExpressionSocket.connect(primaryExpression);
+            _secondaryExpressionSocket.connect(secondaryExpression);
+        } catch (SocketAlreadyConnectedException ex) {
+            log.error("socket is already connected", ex);
+        }
     }
     
     private ResetOnTrue(ResetOnTrue template, String sys) {
@@ -194,4 +197,5 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
         }
     }
 
+    private final static Logger log = LoggerFactory.getLogger(ResetOnTrue.class);
 }

@@ -286,7 +286,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         // FOR TESTING ONLY. REMOVE LATER.
         int test = 1;
         if (test == 1) {
-            int store = 1;
+            int store = 0;
             try {
                 if (store == 1) {
                     Light light1 = InstanceManager.getDefault(LightManager.class).provide("IL1_Daniel");

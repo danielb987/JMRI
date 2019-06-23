@@ -229,6 +229,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        if (1==1) return;
         if (!_children.isEmpty()) {
             throw new RuntimeException("expression system names cannot be set more than once");
         }

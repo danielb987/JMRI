@@ -20,12 +20,6 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
     public IfThenXml() {
     }
 
-    private IfThen.Type getType(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_type");
-        f.setAccessible(true);
-        return (IfThen.Type) f.get(action);
-    }
-
     private FemaleDigitalExpressionSocket getIfExpressionSocket(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_ifExpressionSocket");
         f.setAccessible(true);
@@ -55,8 +49,9 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
             element.addContent(new Element("userName").addContent(p.getUserName()));
         }
 
+        element.setAttribute("type", p.getType().name());
+        
         try {
-            element.setAttribute("type", getType(p).name());
             FemaleDigitalExpressionSocket ifExpressionSocket = getIfExpressionSocket(p);
             if (ifExpressionSocket.isConnected()) {
                 element.addContent(new Element("ifSystemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));

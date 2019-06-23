@@ -154,6 +154,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        if (1==1) return;
         if (!_children.isEmpty()) {
             throw new RuntimeException("expression system names cannot be set more than once");
         }

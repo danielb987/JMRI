@@ -25,48 +25,26 @@
             "
         >
 
-    <xs:complexType name="LogixNG_DigitalExpression_ExpressionSensorType">
+    <xs:complexType name="LogixNG_DigitalAction_DoStringActionType">
       <xs:annotation>
         <xs:documentation>
-          Define the XML stucture for storing the contents of a ExpressionSensor class.
+          Define the XML stucture for storing the contents of a DoStringAction class.
         </xs:documentation>
         <xs:appinfo>
-            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionSensor</jmri:usingclass>
+            <jmri:usingclass configurexml="true">jmri.jmrit.logixng.digital.actions.configurexml.ActionIfThen</jmri:usingclass>
         </xs:appinfo>
       </xs:annotation>
-
+        
             <xs:sequence>
-
               <xs:element name="systemName" type="systemNameType" minOccurs="1" maxOccurs="1"/>
               <xs:element name="userName" type="userNameType" minOccurs="0" maxOccurs="1"/>
               <xs:element name="comment" type="commentType" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element name="sensor" type="beanNameType" minOccurs="0" maxOccurs="1"/>
-
-              <xs:element name="is_isNot" minOccurs="1" maxOccurs="1">
-                <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                    <xs:enumeration value="IS"/>
-                    <xs:enumeration value="IS_NOT"/>
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:element>
-
-              <xs:element name="sensorState" minOccurs="1" maxOccurs="1">
-                <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                    <xs:enumeration value="INACTIVE"/>
-                    <xs:enumeration value="ACTIVE"/>
-                    <xs:enumeration value="OTHER"/>
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:element>
-
-<!--              <xs:element name="enabled" type="yesNoType" /> -->
-
+              <xs:element name="ifSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="thenSystemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
 <!--            <xs:attribute name="enabled" type="yesNoType" /> -->
             <xs:attribute name="class" type="classType" use="required"/>
-
+        
     </xs:complexType>
 
 </xs:schema>

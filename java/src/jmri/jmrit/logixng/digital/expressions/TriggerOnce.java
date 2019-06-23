@@ -11,6 +11,8 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Expression that returns True only once while its child expression returns
@@ -29,8 +31,7 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
-    public TriggerOnce(ConditionalNG conditionalNG)
-            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+    public TriggerOnce(ConditionalNG conditionalNG) {
         
         super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
         
@@ -38,8 +39,7 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
                 .createFemaleSocket(this, this, "E1");
     }
     
-    public TriggerOnce(String sys, String user)
-            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+    public TriggerOnce(String sys, String user) {
         
         super(sys, user);
         
@@ -47,14 +47,18 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
                 .createFemaleSocket(this, this, "E1");
     }
     
-    public TriggerOnce(String sys, String user, MaleDigitalExpressionSocket expression)
-            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+    public TriggerOnce(String sys, String user, MaleDigitalExpressionSocket expression) {
         
         super(sys, user);
         
         _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E1");
-        _childExpression.connect(expression);
+        
+        try {
+            _childExpression.connect(expression);
+        } catch (SocketAlreadyConnectedException ex) {
+            log.error("socket is already connected", ex);
+        }
     }
     
     private TriggerOnce(TriggerOnce template, String sys) {
@@ -159,4 +163,5 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
         }
     }
 
+    private final static Logger log = LoggerFactory.getLogger(TriggerOnce.class);
 }
