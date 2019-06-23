@@ -229,23 +229,25 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if (1==1) return;
-        if (!_children.isEmpty()) {
-            throw new RuntimeException("expression system names cannot be set more than once");
-        }
         
         DigitalExpressionManager manager =
                 InstanceManager.getDefault(DigitalExpressionManager.class);
         
-        for (String systemName : _childrenSystemNames) {
-            FemaleDigitalExpressionSocket femaleSocket =
-                    manager.createFemaleSocket(this, this, getNewSocketName());
+        if (_childrenSystemNames != null) {
+            if (!_children.isEmpty()) {
+                throw new RuntimeException("expression system names cannot be set more than once");
+            }
             
-            try {
-                femaleSocket.connect(manager.getBeanBySystemName(systemName));
-            } catch (SocketAlreadyConnectedException ex) {
-                // This shouldn't happen and is a runtime error if it does.
-                throw new RuntimeException("socket is already connected");
+            for (String systemName : _childrenSystemNames) {
+                FemaleDigitalExpressionSocket femaleSocket =
+                        manager.createFemaleSocket(this, this, getNewSocketName());
+
+                try {
+                    femaleSocket.connect(manager.getBeanBySystemName(systemName));
+                } catch (SocketAlreadyConnectedException ex) {
+                    // This shouldn't happen and is a runtime error if it does.
+                    throw new RuntimeException("socket is already connected");
+                }
             }
         }
         
