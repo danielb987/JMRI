@@ -1,10 +1,12 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * This expression is a timer that evaluates to true then a certain time has passed.
@@ -15,8 +17,11 @@ public class Timer extends AbstractDigitalExpression {
 
     private Timer _template;
     
-    public Timer(String sys, String user)
-            throws BadUserNameException, BadSystemNameException {
+    public Timer(ConditionalNG conditionalNG) {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    }
+
+    public Timer(String sys, String user) {
         super(sys, user);
     }
 
@@ -66,12 +71,12 @@ public class Timer extends AbstractDigitalExpression {
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 0;
     }
 
     @Override

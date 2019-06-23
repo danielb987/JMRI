@@ -9,33 +9,52 @@ import java.util.List;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.JmriException;
+import jmri.Light;
+import jmri.LightManager;
+import jmri.Sensor;
+import jmri.SensorManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
+import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.digital.actions.ActionLight;
+import jmri.jmrit.logixng.digital.actions.ActionSensor;
+import jmri.jmrit.logixng.digital.actions.ActionTurnout;
+import jmri.jmrit.logixng.digital.actions.DoAnalogAction;
+import jmri.jmrit.logixng.digital.actions.DoStringAction;
 import jmri.jmrit.logixng.digital.actions.HoldAnything;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.digital.actions.Many;
+import jmri.jmrit.logixng.digital.actions.ShutdownComputer;
 import jmri.jmrit.logixng.digital.expressions.And;
+import jmri.jmrit.logixng.digital.expressions.Antecedent;
+import jmri.jmrit.logixng.digital.expressions.ExpressionLight;
+import jmri.jmrit.logixng.digital.expressions.ExpressionSensor;
+import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
+import jmri.jmrit.logixng.digital.expressions.False;
+import jmri.jmrit.logixng.digital.expressions.Hold;
+import jmri.jmrit.logixng.digital.expressions.Or;
+import jmri.jmrit.logixng.digital.expressions.ResetOnTrue;
+import jmri.jmrit.logixng.digital.expressions.Timer;
+import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
+import jmri.jmrit.logixng.digital.expressions.True;
+import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import jmri.jmrit.logixng.zTest.TestLogixNG;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
-import jmri.jmrit.logixng.DigitalAction;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.MaleDigitalActionSocket;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
-import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
-import jmri.jmrit.logixng.zTest.TestLogixNG;
 
 /**
  * Class providing the basic logic of the LogixNG_Manager interface.
@@ -181,6 +200,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
+/*            
             femaleSocket = actionIfThenSocket.getChild(0);
             MaleDigitalExpressionSocket expressionAndSocket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
@@ -192,6 +212,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     InstanceManager.getDefault(DigitalActionManager.class)
                             .registerAction(new IfThen(femaleSocket.getConditionalNG(), IfThen.Type.CONTINOUS_ACTION));
             femaleSocket.connect(actionIfThenSocket2);
+*/            
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
@@ -265,49 +286,136 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         // FOR TESTING ONLY. REMOVE LATER.
         int test = 1;
         if (test == 1) {
-            int store = 0;
+            int store = 1;
             try {
                 if (store == 1) {
-                    Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1_Daniel");
-                    turnout.setCommandedState(Turnout.CLOSED);
+                    Light light1 = InstanceManager.getDefault(LightManager.class).provide("IL1_Daniel");
+                    light1.setCommandedState(Light.OFF);
+                    Light light2 = InstanceManager.getDefault(LightManager.class).provide("IL2_Daniel");
+                    light2.setCommandedState(Light.OFF);
+                    Sensor sensor1 = InstanceManager.getDefault(SensorManager.class).provide("IS1_Daniel");
+                    sensor1.setCommandedState(Sensor.INACTIVE);
+                    Sensor sensor2 = InstanceManager.getDefault(SensorManager.class).provide("IS2_Daniel");
+                    sensor2.setCommandedState(Sensor.INACTIVE);
+                    Turnout turnout1 = InstanceManager.getDefault(TurnoutManager.class).provide("IT1_Daniel");
+                    turnout1.setCommandedState(Turnout.CLOSED);
+                    Turnout turnout2 = InstanceManager.getDefault(TurnoutManager.class).provide("IT2_Daniel");
+                    turnout2.setCommandedState(Turnout.CLOSED);
     //                AtomicBoolean atomicBoolean = new AtomicBoolean(false);
                     LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
                     ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
+                    InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
+                    
                     logixNG.addConditionalNG(conditionalNG);
-                    logixNG.activateLogixNG();
 
-                    DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
-                    MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
-                    conditionalNG.getChild(0).connect(socketIfThen);
+//                    DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
+//                    MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
+//                    conditionalNG.getChild(0).connect(socketIfThen);
 
+                    MaleSocket socketMany = conditionalNG.getChild(0).getConnectedSocket();
+                    MaleSocket socketIfThen = socketMany.getChild(1).getConnectedSocket();
+                    
+                    Or expressionOr = new Or(conditionalNG);
+                    MaleSocket socketOr = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionOr);
+                    socketIfThen.getChild(0).connect(socketOr);
+                    
+                    int index = 0;
+                    
+                    And expressionAnd = new And(conditionalNG);
+                    MaleSocket socketAnd = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAnd);
+                    socketOr.getChild(index++).connect(socketAnd);
+                    
+                    Antecedent expressionAntecedent = new Antecedent(conditionalNG);
+                    MaleSocket socketAntecedent = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAntecedent);
+                    socketOr.getChild(index++).connect(socketAntecedent);
+                    
+                    False expressionFalse = new False(conditionalNG);
+                    MaleSocket socketFalse = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionFalse);
+                    socketOr.getChild(index++).connect(socketFalse);
+                    
+                    Hold expressionHold = new Hold(conditionalNG);
+                    MaleSocket socketHold = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionHold);
+                    socketOr.getChild(index++).connect(socketHold);
+                    
+                    ResetOnTrue expressionResetOnTrue = new ResetOnTrue(conditionalNG);
+                    MaleSocket socketResetOnTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue);
+                    socketOr.getChild(index++).connect(socketResetOnTrue);
+                    
+                    Timer expressionTimer = new Timer(conditionalNG);
+                    MaleSocket socketTimer = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTimer);
+                    socketOr.getChild(index++).connect(socketTimer);
+                    
+                    TriggerOnce expressionTriggerOnce = new TriggerOnce(conditionalNG);
+                    MaleSocket socketTriggerOnce = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTriggerOnce);
+                    socketOr.getChild(index++).connect(socketTriggerOnce);
+                    
+                    True expressionTrue = new True(conditionalNG);
+                    MaleSocket socketTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue);
+                    socketOr.getChild(index++).connect(socketTrue);
+                    
+                    ExpressionLight expressionLight = new ExpressionLight(conditionalNG);
+                    expressionLight.setLight(light1);
+                    expressionLight.set_Is_IsNot(Is_IsNot_Enum.IS);
+                    expressionLight.setLightState(ExpressionLight.LightState.ON);
+                    MaleSocket socketLight = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionLight);
+                    socketOr.getChild(index++).connect(socketLight);
+                    
+                    ExpressionSensor expressionSensor = new ExpressionSensor(conditionalNG);
+                    expressionSensor.setSensor(sensor1);
+                    expressionSensor.set_Is_IsNot(Is_IsNot_Enum.IS);
+                    expressionSensor.setSensorState(ExpressionSensor.SensorState.ACTIVE);
+                    MaleSocket socketSensor = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionSensor);
+                    socketOr.getChild(index++).connect(socketSensor);
+                    
                     ExpressionTurnout expressionTurnout = new ExpressionTurnout(conditionalNG);
-                    expressionTurnout.setTurnout(turnout);
+                    expressionTurnout.setTurnout(turnout1);
                     expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IS);
                     expressionTurnout.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
                     MaleSocket socketTurnout = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout);
-                    socketIfThen.getChild(0).connect(socketTurnout);
+                    socketOr.getChild(index++).connect(socketTurnout);
+                    
+                    
+                    
+                    Many expressionMany = new Many(conditionalNG);
+                    MaleSocket socketSecondMany = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionMany);
+                    socketIfThen.getChild(1).connect(socketSecondMany);
+                    
+                    index = 0;
+                    
+                    DoAnalogAction expressionDoAnalogAction = new DoAnalogAction(conditionalNG);
+                    MaleSocket socketDoAnalogAction = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionDoAnalogAction);
+                    socketSecondMany.getChild(index++).connect(socketDoAnalogAction);
+                    
+                    DoStringAction expressionDoStringAction = new DoStringAction(conditionalNG);
+                    MaleSocket socketDoStringAction = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionDoStringAction);
+                    socketSecondMany.getChild(index++).connect(socketDoStringAction);
+                    
+                    ShutdownComputer expressionShutdownComputer = new ShutdownComputer(conditionalNG, 10);
+                    MaleSocket socketShutdownComputer = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionShutdownComputer);
+                    socketSecondMany.getChild(index++).connect(socketShutdownComputer);
+                    
+                    ActionLight actionLight = new ActionLight(conditionalNG);
+                    actionLight.setLight(light2);
+                    actionLight.setLightState(ActionLight.LightState.ON);
+                    MaleSocket socketLight2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
+                    socketSecondMany.getChild(index++).connect(socketLight2);
+                    
+                    ActionSensor actionSensor = new ActionSensor(conditionalNG);
+                    actionSensor.setSensor(sensor2);
+                    actionSensor.setSensorState(ActionSensor.SensorState.ACTIVE);
+                    MaleSocket socketSensor2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
+                    socketSecondMany.getChild(index++).connect(socketSensor2);
+                    
+                    ActionTurnout actionTurnout = new ActionTurnout(conditionalNG);
+                    actionTurnout.setTurnout(turnout2);
+                    actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.THROWN);
+                    MaleSocket socketTurnout2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
+                    socketSecondMany.getChild(index++).connect(socketTurnout2);
 
-    //                DigitalAction actionAtomicBoolean = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
-    //                MaleSocket socketAtomicBoolean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionAtomicBoolean);
-    //                socketIfThen.getChild(1).connect(socketAtomicBoolean);
-
-                    // The action is not yet executed so the atomic boolean should be false
-    //                Assert.assertFalse("atomicBoolean is false",atomicBoolean.get());
-                    // Throw the switch. This should not execute the conditional.
-                    turnout.setCommandedState(Turnout.THROWN);
-                    // The conditionalNG is not yet enabled so it shouldn't be executed.
-                    // So the atomic boolean should be false
-    //                Assert.assertFalse("atomicBoolean is false",atomicBoolean.get());
-                    // Close the switch. This should not execute the conditional.
-                    turnout.setCommandedState(Turnout.CLOSED);
-                    // Enable the conditionalNG and all its children.
+                    logixNG.setEnabled(true);
                     conditionalNG.setEnabled(true);
-                    // The action is not yet executed so the atomic boolean should be false
-    //                Assert.assertFalse("atomicBoolean is false",atomicBoolean.get());
-                    // Throw the switch. This should execute the conditional.
-                    turnout.setCommandedState(Turnout.THROWN);
-                    // The action should now be executed so the atomic boolean should be true
-    //                Assert.assertTrue("atomicBoolean is true",atomicBoolean.get());
+    
+//                    logixNG.activateLogixNG();
                 }
                 
                 // Store panels

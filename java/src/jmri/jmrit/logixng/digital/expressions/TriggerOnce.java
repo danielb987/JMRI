@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -27,6 +28,15 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     private String _childExpressionSystemName;
     private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
+    
+    public TriggerOnce(ConditionalNG conditionalNG)
+            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+        
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        
+        _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, "E1");
+    }
     
     public TriggerOnce(String sys, String user)
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
@@ -97,12 +107,17 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (index == 0) {
+            return _childExpression;
+        } else {
+                throw new IllegalArgumentException(
+                        String.format("index has invalid value: %d", index));
+        }
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 1;
     }
     
     @Override

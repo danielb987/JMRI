@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalActionManager;
@@ -32,6 +33,17 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     private final FemaleDigitalExpressionSocket _triggerExpressionSocket;
     private boolean _isActive = false;
     
+    public Hold(ConditionalNG conditionalNG)
+            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+        
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        
+        _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, "E1");
+        _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, "E2");
+    }
+
     public Hold(String sys) throws BadUserNameException, BadSystemNameException {
         
         super(sys);
@@ -144,12 +156,22 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        switch (index) {
+            case 0:
+                return _holdExpressionSocket;
+                
+            case 1:
+                return _triggerExpressionSocket;
+                
+            default:
+                throw new IllegalArgumentException(
+                        String.format("index has invalid value: %d", index));
+        }
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 2;
     }
     
     @Override

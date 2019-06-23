@@ -5,6 +5,8 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -27,6 +29,14 @@ public class DoStringAction
     private String _stringActionSocketSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
+    
+    public DoStringAction(ConditionalNG conditionalNG) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
+                .createFemaleSocket(this, this, "E1");
+        _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
+                .createFemaleSocket(this, this, "A1");
+    }
     
     public DoStringAction(String sys) {
         super(sys);

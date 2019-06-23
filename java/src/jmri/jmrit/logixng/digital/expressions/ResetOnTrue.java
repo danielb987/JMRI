@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -34,6 +35,17 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _primaryExpressionSocket;
     private final FemaleDigitalExpressionSocket _secondaryExpressionSocket;
     private boolean _lastMainResult = false;
+    
+    public ResetOnTrue(ConditionalNG conditionalNG)
+            throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
+        
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        
+        _primaryExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, "E1");
+        _secondaryExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
+                .createFemaleSocket(this, this, "E2");
+    }
     
     public ResetOnTrue(String sys, String user)
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
@@ -116,12 +128,22 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        switch (index) {
+            case 0:
+                return _primaryExpressionSocket;
+                
+            case 1:
+                return _secondaryExpressionSocket;
+                
+            default:
+                throw new IllegalArgumentException(
+                        String.format("index has invalid value: %d", index));
+        }
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 2;
     }
 
     @Override

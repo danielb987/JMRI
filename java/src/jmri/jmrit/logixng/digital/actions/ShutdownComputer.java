@@ -2,8 +2,11 @@ package jmri.jmrit.logixng.digital.actions;
 
 import apps.AppsBase;
 import java.io.IOException;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.SystemType;
 import org.slf4j.Logger;
@@ -19,6 +22,12 @@ public class ShutdownComputer extends AbstractDigitalAction {
     private ShutdownComputer _template;
     private int _seconds;
     
+    public ShutdownComputer(ConditionalNG conditionalNG, int seconds)
+            throws BadUserNameException {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
+    }
+
     public ShutdownComputer(String sys, int seconds)
             throws BadUserNameException {
         super(sys);

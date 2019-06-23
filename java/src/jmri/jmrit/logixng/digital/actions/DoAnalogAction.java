@@ -5,6 +5,8 @@ import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -12,7 +14,6 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Executes an analog action with the result of an analog expression.
@@ -28,6 +29,14 @@ public class DoAnalogAction
     private String _analogActionSocketSystemName;
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
     private final FemaleAnalogActionSocket _analogActionSocket;
+    
+    public DoAnalogAction(ConditionalNG conditionalNG) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
+                .createFemaleAnalogExpressionSocket(this, this, "E1");
+        _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
+                .createFemaleAnalogActionSocket(this, this, "A1");
+    }
     
     public DoAnalogAction(String sys) {
         super(sys);
