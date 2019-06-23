@@ -285,7 +285,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         // FOR TESTING ONLY. REMOVE LATER.
         int test = 1;
         if (test == 1) {
-            int store = 0;
+            int store = 1;
             try {
                 if (store == 1) {
                     Light light1 = InstanceManager.getDefault(LightManager.class).provide("IL1_Daniel");
@@ -300,6 +300,12 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     turnout1.setCommandedState(Turnout.CLOSED);
                     Turnout turnout2 = InstanceManager.getDefault(TurnoutManager.class).provide("IT2_Daniel");
                     turnout2.setCommandedState(Turnout.CLOSED);
+                    Turnout turnout3 = InstanceManager.getDefault(TurnoutManager.class).provide("IT3_Daniel");
+                    turnout3.setCommandedState(Turnout.CLOSED);
+                    Turnout turnout4 = InstanceManager.getDefault(TurnoutManager.class).provide("IT4_Daniel");
+                    turnout4.setCommandedState(Turnout.CLOSED);
+                    Turnout turnout5 = InstanceManager.getDefault(TurnoutManager.class).provide("IT5_Daniel");
+                    turnout5.setCommandedState(Turnout.CLOSED);
     //                AtomicBoolean atomicBoolean = new AtomicBoolean(false);
                     LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
                     ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
@@ -323,6 +329,26 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     And expressionAnd = new And(conditionalNG);
                     MaleSocket socketAnd = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAnd);
                     socketOr.getChild(index++).connect(socketAnd);
+                    
+                    ExpressionTurnout expressionTurnout3 = new ExpressionTurnout(conditionalNG);
+                    expressionTurnout3.setTurnout(turnout3);
+                    expressionTurnout3.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
+                    MaleSocket socketTurnout3 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout3);
+                    expressionAnd.getChild(0).connect(socketTurnout3);
+                    
+                    ExpressionTurnout expressionTurnout4 = new ExpressionTurnout(conditionalNG);
+                    expressionTurnout4.setTurnout(turnout4);
+                    expressionTurnout4.setTurnoutState(ExpressionTurnout.TurnoutState.CLOSED);
+                    expressionTurnout4.set_Is_IsNot(Is_IsNot_Enum.IS);
+                    MaleSocket socketTurnout4 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout4);
+                    expressionAnd.getChild(1).connect(socketTurnout4);
+                    
+                    ExpressionTurnout expressionTurnout5 = new ExpressionTurnout(conditionalNG);
+                    expressionTurnout5.setTurnout(turnout5);
+                    expressionTurnout5.setTurnoutState(ExpressionTurnout.TurnoutState.OTHER);
+                    expressionTurnout5.set_Is_IsNot(Is_IsNot_Enum.IS_NOT);
+                    MaleSocket socketTurnout5 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout5);
+                    expressionAnd.getChild(2).connect(socketTurnout5);
                     
                     Antecedent expressionAntecedent = new Antecedent(conditionalNG);
                     MaleSocket socketAntecedent = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAntecedent);

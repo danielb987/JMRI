@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
@@ -11,7 +12,10 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Evaluates to True if all of the children expressions evaluate to true.
@@ -21,7 +25,6 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 public class And extends AbstractDigitalExpression implements FemaleSocketListener {
 
     private And _template;
-    List<String> _childrenSystemNames;
     private final List<ExpressionEntry> _expressionEntries = new ArrayList<>();
     
     /**
@@ -43,15 +46,15 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         init();
     }
     
-    public And(String sys, List<String> childrenSystemNames) throws BadSystemNameException {
+    public And(String sys, List<Map.Entry<String, String>> expressionSystemNames) throws BadSystemNameException {
         super(sys);
-        _childrenSystemNames = childrenSystemNames;
+        setExpressionSystemNames(expressionSystemNames);
     }
 
-    public And(String sys, String user, List<String> childrenSystemNames)
+    public And(String sys, String user, List<Map.Entry<String, String>> expressionSystemNames)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _childrenSystemNames = childrenSystemNames;
+        setExpressionSystemNames(expressionSystemNames);
     }
 
     private And(And template, String sys) {
@@ -132,6 +135,22 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         return Bundle.getMessage("And_Long");
     }
 
+    private void setExpressionSystemNames(List<Map.Entry<String, String>> systemNames) {
+        if (!_expressionEntries.isEmpty()) {
+            throw new RuntimeException("expression system names cannot be set more than once");
+        }
+        
+        for (Map.Entry<String, String> entry : systemNames) {
+//            System.out.format("Many: systemName: %s%n", entry);
+            System.err.format("AAA And: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
+            FemaleDigitalExpressionSocket socket =
+                    InstanceManager.getDefault(DigitalExpressionManager.class)
+                            .createFemaleSocket(this, this, entry.getKey());
+            
+            _expressionEntries.add(new ExpressionEntry(socket, entry.getValue()));
+        }
+    }
+    
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
@@ -157,30 +176,22 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        DigitalExpressionManager manager =
-                InstanceManager.getDefault(DigitalExpressionManager.class);
-        
-        if (_childrenSystemNames != null) {
-            if (!_expressionEntries.isEmpty()) {
-                throw new RuntimeException("expression system names cannot be set more than once");
-            }
-            
-            for (String systemName : _childrenSystemNames) {
-                FemaleDigitalExpressionSocket femaleSocket =
-                        manager.createFemaleSocket(this, this, getNewSocketName());
-
+        for (ExpressionEntry ee : _expressionEntries) {
+            if (ee._socketSystemName != null) {
                 try {
-                    femaleSocket.connect(manager.getBeanBySystemName(systemName));
+                    MaleSocket maleSocket = InstanceManager.getDefault(DigitalExpressionManager.class).getBeanBySystemName(ee._socketSystemName);
+                    if (maleSocket != null) {
+                        ee._socket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + ee._socketSystemName);
+                    }
                 } catch (SocketAlreadyConnectedException ex) {
                     // This shouldn't happen and is a runtime error if it does.
                     throw new RuntimeException("socket is already connected");
                 }
             }
         }
-        
-        // Add one extra empty socket
-        _expressionEntries
-                .add(new ExpressionEntry(manager.createFemaleSocket(this, this, getNewSocketName())));
     }
     
     
@@ -198,5 +209,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
             this._socket = socket;
         }
     }
+    
+    private final static Logger log = LoggerFactory.getLogger(And.class);
     
 }
