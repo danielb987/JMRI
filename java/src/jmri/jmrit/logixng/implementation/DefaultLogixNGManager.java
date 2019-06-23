@@ -258,7 +258,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         }
         
         // FOR TESTING ONLY. REMOVE LATER.
-        if (1==1) {
+        int test = 1;
+        if (test == 1) {
             int store = 0;
             try {
                 if (store == 1) {
