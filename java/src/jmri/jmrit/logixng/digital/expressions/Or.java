@@ -10,7 +10,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -26,8 +25,7 @@ import org.slf4j.LoggerFactory;
 public class Or extends AbstractDigitalExpression implements FemaleSocketListener {
 
     private Or _template;
-    List<FemaleDigitalExpressionSocket> _children = new ArrayList<>();
-    private final List<ExpressionEntry> expressionEntries = new ArrayList<>();
+    private final List<ExpressionEntry> _expressionEntries = new ArrayList<>();
     
     /**
      * Create a new instance of ExpressionIfThen and generate a new system name.
@@ -72,8 +70,9 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     }
     
     private void init() {
-        _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleSocket(this, this, getNewSocketName()));
+        _expressionEntries
+                .add(new ExpressionEntry(InstanceManager.getDefault(DigitalExpressionManager.class)
+                        .createFemaleSocket(this, this, getNewSocketName())));
     }
 
     /** {@inheritDoc} */
@@ -91,8 +90,8 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     /** {@inheritDoc} */
     @Override
     public void initEvaluation() {
-        for (DigitalExpression e : _children) {
-            e.initEvaluation();
+        for (ExpressionEntry e : _expressionEntries) {
+            e._socket.initEvaluation();
         }
     }
     
@@ -100,8 +99,8 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
         boolean result = false;
-        for (DigitalExpression e : _children) {
-            if (e.evaluate(isCompleted)) {
+        for (ExpressionEntry e : _expressionEntries) {
+            if (e._socket.evaluate(isCompleted)) {
                 result = true;
             }
         }
@@ -111,19 +110,19 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        for (DigitalExpression e : _children) {
-            e.reset();
+        for (ExpressionEntry e : _expressionEntries) {
+            e._socket.reset();
         }
     }
     
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return _children.get(index);
+        return _expressionEntries.get(index)._socket;
     }
     
     @Override
     public int getChildCount() {
-        return _children.size();
+        return _expressionEntries.size();
     }
     
     @Override
@@ -137,7 +136,7 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     }
 
     private void setExpressionSystemNames(List<Map.Entry<String, String>> systemNames) {
-        if (!expressionEntries.isEmpty()) {
+        if (!_expressionEntries.isEmpty()) {
             throw new RuntimeException("expression system names cannot be set more than once");
         }
         
@@ -148,21 +147,24 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
                     InstanceManager.getDefault(DigitalExpressionManager.class)
                             .createFemaleSocket(this, this, entry.getKey());
             
-            expressionEntries.add(new ExpressionEntry(socket, entry.getValue()));
+            _expressionEntries.add(new ExpressionEntry(socket, entry.getValue()));
         }
     }
     
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
-        for (FemaleDigitalExpressionSocket child : _children) {
-            hasFreeSocket = !child.isConnected();
+        for (ExpressionEntry entry : _expressionEntries) {
+            hasFreeSocket = !entry._socket.isConnected();
             if (hasFreeSocket) {
                 break;
             }
         }
         if (!hasFreeSocket) {
-            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleSocket(this, this, getNewSocketName()));
+            _expressionEntries.add(
+                    new ExpressionEntry(
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .createFemaleSocket(this, this, getNewSocketName())));
         }
     }
 
@@ -174,10 +176,8 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        System.err.format("AAAA setup()%n");
-        for (ExpressionEntry ee : expressionEntries) {
+        for (ExpressionEntry ee : _expressionEntries) {
             if (ee._socketSystemName != null) {
-                System.err.format("AA SocketName: %s, SystemName: %s%n", ee._socket.getName(), ee._socketSystemName);
                 try {
                     MaleSocket maleSocket = InstanceManager.getDefault(DigitalExpressionManager.class).getBeanBySystemName(ee._socketSystemName);
                     if (maleSocket != null) {
@@ -195,7 +195,7 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     }
     
     
-//    /* This class is public since ExpressionManyXml needs to access it. */
+    /* This class is public since ExpressionOrXml needs to access it. */
     private static class ExpressionEntry {
         private String _socketSystemName;
         private final FemaleDigitalExpressionSocket _socket;
@@ -208,11 +208,6 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
         private ExpressionEntry(FemaleDigitalExpressionSocket socket) {
             this._socket = socket;
         }
-        
-//        public DigitalExpression getExpression() {
-//            return (MaleDigitalExpressionSocket) socket.getConnectedSocket();
-//        }
-        
     }
     
     private final static Logger log = LoggerFactory.getLogger(Or.class);

@@ -22,7 +22,6 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;

@@ -7,6 +7,7 @@ import static jmri.Conditional.OPERATOR_OR;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.JmriException;
@@ -15,9 +16,9 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,8 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     static final java.util.ResourceBundle rbx = java.util.ResourceBundle.getBundle("jmri.jmrit.conditional.ConditionalBundle");  // NOI18N
     
     private Antecedent _template;
-    String _antecedent;
-    List<String> _childrenSystemNames;
-    List<FemaleDigitalExpressionSocket> _children = new ArrayList<>();
+    String _antecedent = "";
+    private final List<ExpressionEntry> _expressionEntries = new ArrayList<>();
     
     /**
      * Create a new instance of Antecedent and generate a new system name.
@@ -69,10 +69,10 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
 //        _childrenSystemNames = childrenSystemNames;
 //    }
 
-    public Antecedent(String sys, String user, List<String> childrenSystemNames)
+    public Antecedent(String sys, String user, List<Map.Entry<String, String>> expressionSystemNames)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-        _childrenSystemNames = childrenSystemNames;
+        setExpressionSystemNames(expressionSystemNames);
     }
 
     public Antecedent(String sys, String user, String antecedent)
@@ -94,8 +94,9 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     }
     
     private void init() {
-        _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleSocket(this, this, getNewSocketName()));
+        _expressionEntries
+                .add(new ExpressionEntry(InstanceManager.getDefault(DigitalExpressionManager.class)
+                        .createFemaleSocket(this, this, getNewSocketName())));
     }
 
     /** {@inheritDoc} */
@@ -113,8 +114,8 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /** {@inheritDoc} */
     @Override
     public void initEvaluation() {
-        for (DigitalExpression e : _children) {
-            e.initEvaluation();
+        for (ExpressionEntry e : _expressionEntries) {
+            e._socket.initEvaluation();
         }
     }
     
@@ -141,22 +142,18 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
             }
         }
         try {
-            List<DigitalExpression> list = new ArrayList<>();
-            for (DigitalExpression e : _children) {
+            List<ExpressionEntry> list = new ArrayList<>();
+            for (ExpressionEntry e : _expressionEntries) {
                 list.add(e);
             }
             DataPair dp = parseCalculate(isCompleted, new String(ch, 0, n), list);
             result = dp.result;
-        } catch (NumberFormatException nfe) {
+        } catch (NumberFormatException | IndexOutOfBoundsException | JmriException nfe) {
             result = false;
             log.error(getDisplayName() + " parseCalculation error antecedent= " + _antecedent + ", ex= " + nfe);  // NOI18N
-        } catch (IndexOutOfBoundsException ioob) {
-            result = false;
-            log.error(getDisplayName() + " parseCalculation error antecedent= " + _antecedent + ", ex= " + ioob);  // NOI18N
-        } catch (JmriException je) {
-            result = false;
-            log.error(getDisplayName() + " parseCalculation error antecedent= " + _antecedent + ", ex= " + je);  // NOI18N
         }
+        // NOI18N
+        // NOI18N
         
         return result;
     }
@@ -164,36 +161,38 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        for (DigitalExpression e : _children) {
-            e.reset();
+        for (ExpressionEntry e : _expressionEntries) {
+            e._socket.reset();
         }
     }
     
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return _children.get(index);
+        return _expressionEntries.get(index)._socket;
     }
     
     @Override
     public int getChildCount() {
-        return _children.size();
+        return _expressionEntries.size();
     }
     
     public void setChildCount(int count) {
         // Is there too many children?
-        while (_children.size() > count) {
-            int childNo = _children.size()-1;
-            FemaleSocket socket = _children.get(childNo);
+        while (_expressionEntries.size() > count) {
+            int childNo = _expressionEntries.size()-1;
+            FemaleSocket socket = _expressionEntries.get(childNo)._socket;
             if (socket.isConnected()) {
                 socket.disconnect();
             }
-            _children.remove(childNo);
+            _expressionEntries.remove(childNo);
         }
         
         // Is there not enough children?
-        while (_children.size() < count) {
-            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
-                    .createFemaleSocket(this, this, getNewSocketName()));
+        while (_expressionEntries.size() < count) {
+            _expressionEntries
+                    .add(new ExpressionEntry(
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .createFemaleSocket(this, this, getNewSocketName())));
         }
     }
     
@@ -207,17 +206,36 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         return Bundle.getMessage("Antecedent_Long", _antecedent);
     }
 
+    private void setExpressionSystemNames(List<Map.Entry<String, String>> systemNames) {
+        if (!_expressionEntries.isEmpty()) {
+            throw new RuntimeException("expression system names cannot be set more than once");
+        }
+        
+        for (Map.Entry<String, String> entry : systemNames) {
+//            System.out.format("Many: systemName: %s%n", entry);
+            System.err.format("AAA Or: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
+            FemaleDigitalExpressionSocket socket =
+                    InstanceManager.getDefault(DigitalExpressionManager.class)
+                            .createFemaleSocket(this, this, entry.getKey());
+            
+            _expressionEntries.add(new ExpressionEntry(socket, entry.getValue()));
+        }
+    }
+    
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
-        for (FemaleDigitalExpressionSocket child : _children) {
-            hasFreeSocket = !child.isConnected();
+        for (ExpressionEntry entry : _expressionEntries) {
+            hasFreeSocket = !entry._socket.isConnected();
             if (hasFreeSocket) {
                 break;
             }
         }
         if (!hasFreeSocket) {
-            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleSocket(this, this, getNewSocketName()));
+            _expressionEntries
+                    .add(new ExpressionEntry(
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .createFemaleSocket(this, this, getNewSocketName())));
         }
     }
 
@@ -229,30 +247,22 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        
-        DigitalExpressionManager manager =
-                InstanceManager.getDefault(DigitalExpressionManager.class);
-        
-        if (_childrenSystemNames != null) {
-            if (!_children.isEmpty()) {
-                throw new RuntimeException("expression system names cannot be set more than once");
-            }
-            
-            for (String systemName : _childrenSystemNames) {
-                FemaleDigitalExpressionSocket femaleSocket =
-                        manager.createFemaleSocket(this, this, getNewSocketName());
-
+        for (ExpressionEntry ee : _expressionEntries) {
+            if (ee._socketSystemName != null) {
                 try {
-                    femaleSocket.connect(manager.getBeanBySystemName(systemName));
+                    MaleSocket maleSocket = InstanceManager.getDefault(DigitalExpressionManager.class).getBeanBySystemName(ee._socketSystemName);
+                    if (maleSocket != null) {
+                        ee._socket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + ee._socketSystemName);
+                    }
                 } catch (SocketAlreadyConnectedException ex) {
                     // This shouldn't happen and is a runtime error if it does.
                     throw new RuntimeException("socket is already connected");
                 }
             }
         }
-        
-        // Add one extra empty socket
-        _children.add(manager.createFemaleSocket(this, this, getNewSocketName()));
     }
 
 
@@ -264,7 +274,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      * @param variableList arraylist of existing Conditional variables
      * @return error message string if not well formed
      */
-    public String validateAntecedent(String ant, List<DigitalExpression> variableList) {
+    public String validateAntecedent(String ant, List<ExpressionEntry> variableList) {
         AtomicBoolean isCompleted = new AtomicBoolean(true);
         char[] ch = ant.toCharArray();
         int n = 0;
@@ -327,7 +337,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      *         variable indices used.
      * @throws jmri.JmriException if unable to compute the logic
      */
-    DataPair parseCalculate(AtomicBoolean isCompleted, String s, List<DigitalExpression> variableList)
+    DataPair parseCalculate(AtomicBoolean isCompleted, String s, List<ExpressionEntry> variableList)
             throws JmriException {
 
         // for simplicity, we force the string to upper case before scanning
@@ -355,7 +365,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                 } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                     k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                 }
-                leftArg = variableList.get(k - 1).evaluate(isCompleted);
+                leftArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
                 i++;
                 argsUsed.set(k - 1);
             } else if ("NOT".equals(s.substring(i, i + 3))) {  // NOI18N
@@ -374,7 +384,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                     } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                         k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                     }
-                    leftArg = variableList.get(k - 1).evaluate(isCompleted);
+                    leftArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
                     i++;
                     argsUsed.set(k - 1);
                 } else {
@@ -415,7 +425,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                         } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                             k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                         }
-                        rightArg = variableList.get(k - 1).evaluate(isCompleted);
+                        rightArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
                         i++;
                         argsUsed.set(k - 1);
                     } else if ("NOT".equals(s.substring(i, i + 3))) {  // NOI18N
@@ -433,7 +443,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                             } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                                 k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                             }
-                            rightArg = variableList.get(k - 1).evaluate(isCompleted);
+                            rightArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
                             i++;
                             argsUsed.set(k - 1);
                         } else {
@@ -470,5 +480,20 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         BitSet argsUsed = null;     // error detection for missing arguments
     }
 
+    /* This class is public since ExpressionAntecedentXml needs to access it. */
+    private static class ExpressionEntry {
+        private String _socketSystemName;
+        private final FemaleDigitalExpressionSocket _socket;
+        
+        private ExpressionEntry(FemaleDigitalExpressionSocket socket, String socketSystemName) {
+            _socketSystemName = socketSystemName;
+            _socket = socket;
+        }
+        
+        private ExpressionEntry(FemaleDigitalExpressionSocket socket) {
+            this._socket = socket;
+        }
+    }
+    
     private final static Logger log = LoggerFactory.getLogger(Antecedent.class);
 }

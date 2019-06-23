@@ -194,7 +194,10 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
             }
         }
         if (!hasFreeSocket) {
-            actionEntries.add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, getNewSocketName())));
+            actionEntries.add(
+                    new ActionEntry(
+                            InstanceManager.getDefault(DigitalActionManager.class)
+                                    .createFemaleSocket(this, this, getNewSocketName())));
         }
     }
 

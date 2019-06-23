@@ -404,8 +404,16 @@ public final class DefaultLogixNG extends AbstractNamedBean
             }
             
             for (ConditionalNG conditionalNG : _conditionalNGMap.values()) {
-                if (conditionalNG.isEnabled() && conditionalNG.isExecutionEnabled()) {
-                    conditionalNG.execute();
+                if (conditionalNG.isEnabled()) {
+                    if (conditionalNG.supportsEnableExecution()) {
+                        if (conditionalNG.isEnabled() && conditionalNG.isExecutionEnabled()) {
+                            conditionalNG.execute();
+                        }
+                    } else {
+                        // The conditionalNG doesn't support enableExecution
+                        // so we don't test if execution is enabled.
+                        conditionalNG.execute();
+                    }
                 }
             }
         }

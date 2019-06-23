@@ -9,7 +9,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -23,7 +22,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
 
     private And _template;
     List<String> _childrenSystemNames;
-    List<FemaleDigitalExpressionSocket> _children = new ArrayList<>();
+    private final List<ExpressionEntry> _expressionEntries = new ArrayList<>();
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
@@ -68,8 +67,9 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     }
     
     private void init() {
-        _children.add(InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleSocket(this, this, getNewSocketName()));
+        _expressionEntries
+                .add(new ExpressionEntry(InstanceManager.getDefault(DigitalExpressionManager.class)
+                        .createFemaleSocket(this, this, getNewSocketName())));
     }
 
     /** {@inheritDoc} */
@@ -87,8 +87,8 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public void initEvaluation() {
-        for (DigitalExpression e : _children) {
-            e.initEvaluation();
+        for (ExpressionEntry e : _expressionEntries) {
+            e._socket.initEvaluation();
         }
     }
     
@@ -96,8 +96,8 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
         boolean result = true;
-        for (DigitalExpression e : _children) {
-            if (! e.evaluate(isCompleted)) {
+        for (ExpressionEntry e : _expressionEntries) {
+            if (! e._socket.evaluate(isCompleted)) {
                 result = false;
             }
         }
@@ -107,19 +107,19 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        for (DigitalExpression e : _children) {
-            e.reset();
+        for (ExpressionEntry e : _expressionEntries) {
+            e._socket.reset();
         }
     }
     
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return _children.get(index);
+        return _expressionEntries.get(index)._socket;
     }
     
     @Override
     public int getChildCount() {
-        return _children.size();
+        return _expressionEntries.size();
     }
     
     @Override
@@ -135,14 +135,17 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
-        for (FemaleDigitalExpressionSocket child : _children) {
-            hasFreeSocket = !child.isConnected();
+        for (ExpressionEntry entry : _expressionEntries) {
+            hasFreeSocket = !entry._socket.isConnected();
             if (hasFreeSocket) {
                 break;
             }
         }
         if (!hasFreeSocket) {
-            _children.add(InstanceManager.getDefault(DigitalExpressionManager.class).createFemaleSocket(this, this, getNewSocketName()));
+            _expressionEntries
+                    .add(new ExpressionEntry(
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .createFemaleSocket(this, this, getNewSocketName())));
         }
     }
 
@@ -158,7 +161,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
                 InstanceManager.getDefault(DigitalExpressionManager.class);
         
         if (_childrenSystemNames != null) {
-            if (!_children.isEmpty()) {
+            if (!_expressionEntries.isEmpty()) {
                 throw new RuntimeException("expression system names cannot be set more than once");
             }
             
@@ -176,7 +179,24 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         }
         
         // Add one extra empty socket
-        _children.add(manager.createFemaleSocket(this, this, getNewSocketName()));
+        _expressionEntries
+                .add(new ExpressionEntry(manager.createFemaleSocket(this, this, getNewSocketName())));
     }
-
+    
+    
+    /* This class is public since ExpressionAndXml needs to access it. */
+    private static class ExpressionEntry {
+        private String _socketSystemName;
+        private final FemaleDigitalExpressionSocket _socket;
+        
+        private ExpressionEntry(FemaleDigitalExpressionSocket socket, String socketSystemName) {
+            _socketSystemName = socketSystemName;
+            _socket = socket;
+        }
+        
+        private ExpressionEntry(FemaleDigitalExpressionSocket socket) {
+            this._socket = socket;
+        }
+    }
+    
 }
