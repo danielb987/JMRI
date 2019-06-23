@@ -27,6 +27,7 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     private NamedBeanHandle<Light> _lightHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private LightState _lightState = LightState.ON;
+    private boolean _listenersAreRegistered = false;
 
     public ExpressionLight(ConditionalNG conditionalNG)
             throws BadUserNameException {
@@ -161,13 +162,19 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     /** {@inheritDoc} */
     @Override
     public void registerListeners() {
-        _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
+        if (! _listenersAreRegistered) {
+            _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
+            _listenersAreRegistered = true;
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public void unregisterListeners() {
-        _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
+        if (_listenersAreRegistered) {
+            _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
+            _listenersAreRegistered = false;
+        }
     }
     
     /** {@inheritDoc} */

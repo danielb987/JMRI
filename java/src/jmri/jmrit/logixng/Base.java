@@ -306,6 +306,9 @@ public interface Base {
     
     /**
      * Register listeners if this object needs that.
+     * <P>
+     * Important: This method may be called more than once. Methods overriding
+     * this method must ensure that listeners are not registered more than once.
      */
     default public void registerListeners() {
         for (int i=0; i < getChildCount(); i++) {
@@ -315,6 +318,9 @@ public interface Base {
     
     /**
      * Register listeners if this object needs that.
+     * <P>
+     * Important: This method may be called more than once. Methods overriding
+     * this method must ensure that listeners are not unregistered more than once.
      */
     default public void unregisterListeners() {
         for (int i=0; i < getChildCount(); i++) {

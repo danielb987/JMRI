@@ -27,6 +27,7 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     private NamedBeanHandle<Sensor> _sensorHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private SensorState _lightState = SensorState.ACTIVE;
+    private boolean _listenersAreRegistered = false;
 
     public ExpressionSensor(ConditionalNG conditionalNG)
             throws BadUserNameException {
@@ -161,13 +162,19 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     /** {@inheritDoc} */
     @Override
     public void registerListeners() {
-        _sensorHandle.getBean().addPropertyChangeListener("KnownState", this);
+        if (! _listenersAreRegistered) {
+            _sensorHandle.getBean().addPropertyChangeListener("KnownState", this);
+            _listenersAreRegistered = true;
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public void unregisterListeners() {
-        _sensorHandle.getBean().removePropertyChangeListener("KnownState", this);
+        if (! _listenersAreRegistered) {
+            _sensorHandle.getBean().removePropertyChangeListener("KnownState", this);
+            _listenersAreRegistered = false;
+        }
     }
     
     /** {@inheritDoc} */

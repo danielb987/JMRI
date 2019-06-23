@@ -27,6 +27,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
+    private boolean _listenersAreRegistered = false;
 
     public ExpressionTurnout(ConditionalNG conditionalNG)
             throws BadUserNameException {
@@ -161,13 +162,19 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     /** {@inheritDoc} */
     @Override
     public void registerListeners() {
-        _turnoutHandle.getBean().addPropertyChangeListener("KnownState", this);
+        if (! _listenersAreRegistered) {
+            _turnoutHandle.getBean().addPropertyChangeListener("KnownState", this);
+            _listenersAreRegistered = true;
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public void unregisterListeners() {
-        _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
+        if (! _listenersAreRegistered) {
+            _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
+            _listenersAreRegistered = false;
+        }
     }
     
     /** {@inheritDoc} */
