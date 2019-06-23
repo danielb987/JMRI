@@ -1,25 +1,13 @@
 package jmri.jmrit.logixng.digital.expressions.configureswing;
 
 import javax.annotation.Nonnull;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import jmri.InstanceManager;
-import jmri.JmriException;
-import jmri.NamedBeanHandle;
-import jmri.NamedBeanHandleManager;
-import jmri.Turnout;
-import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.digital.expressions.ResetOnTrue;
 import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
-import jmri.util.swing.BeanSelectCreatePanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Configures an ExpressionTurnout object with a Swing JPanel.
@@ -82,8 +70,5 @@ public class TriggerOnceSwing implements SwingConfiguratorInterface {
     @Override
     public void dispose() {
     }
-    
-    
-    private final static Logger log = LoggerFactory.getLogger(TriggerOnceSwing.class);
     
 }
