@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.implementation;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.awt.GraphicsEnvironment;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -239,6 +241,9 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         }
     }
     
+    @SuppressFBWarnings(
+            value={"DM_EXIT", "DMI_HARDCODED_ABSOLUTE_FILENAME"},
+            justification="This is a test method that must be removed before merging this PR")
     public void testLogixNGs() {
         
         // FOR TESTING ONLY. REMOVE LATER.
