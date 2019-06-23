@@ -57,13 +57,7 @@ public class ResetOnTrueSwing implements SwingConfiguratorInterface {
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName)
             throws BadUserNameException, BadSystemNameException {
-        ResetOnTrue expression;
-        try {
-            expression = new ResetOnTrue(systemName, null);
-        } catch (SocketAlreadyConnectedException ex) {
-            log.error("SocketAlreadyConnectedException", ex);
-            return null;
-        }
+        ResetOnTrue expression = new ResetOnTrue(systemName, null);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
 
@@ -71,13 +65,7 @@ public class ResetOnTrueSwing implements SwingConfiguratorInterface {
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName)
             throws BadUserNameException, BadSystemNameException {
-        ResetOnTrue expression;
-        try {
-            expression = new ResetOnTrue(systemName, userName);
-        } catch (SocketAlreadyConnectedException ex) {
-            log.error("SocketAlreadyConnectedException", ex);
-            return null;
-        }
+        ResetOnTrue expression = new ResetOnTrue(systemName, userName);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
     

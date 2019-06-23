@@ -56,26 +56,14 @@ public class TriggerOnceSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        TriggerOnce expression;
-        try {
-            expression = new TriggerOnce(systemName, null);
-        } catch (SocketAlreadyConnectedException ex) {
-            log.error("SocketAlreadyConnectedException", ex);
-            return null;
-        }
+        TriggerOnce expression = new TriggerOnce(systemName, null);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
 
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        TriggerOnce expression;
-        try {
-            expression = new TriggerOnce(systemName, null);
-        } catch (SocketAlreadyConnectedException ex) {
-            log.error("SocketAlreadyConnectedException", ex);
-            return null;
-        }
+        TriggerOnce expression = new TriggerOnce(systemName, null);
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
     
