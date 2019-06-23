@@ -64,21 +64,22 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         init();
     }
     
+    public Antecedent(String sys, String user, String antecedent)
+            throws BadUserNameException, BadSystemNameException {
+        super(sys, user);
+        _antecedent = antecedent;
+    }
+
 //    public Antecedent(String sys, List<String> childrenSystemNames) throws BadSystemNameException {
 //        super(sys);
 //        _childrenSystemNames = childrenSystemNames;
 //    }
 
-    public Antecedent(String sys, String user, List<Map.Entry<String, String>> expressionSystemNames)
-            throws BadUserNameException, BadSystemNameException {
-        super(sys, user);
-        setExpressionSystemNames(expressionSystemNames);
-    }
-
-    public Antecedent(String sys, String user, String antecedent)
+    public Antecedent(String sys, String user, String antecedent, List<Map.Entry<String, String>> expressionSystemNames)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
         _antecedent = antecedent;
+        setExpressionSystemNames(expressionSystemNames);
     }
 
     private Antecedent(Antecedent template, String sys) {
@@ -203,7 +204,11 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     
     @Override
     public String getLongDescription() {
-        return Bundle.getMessage("Antecedent_Long", _antecedent);
+        if (_antecedent.isEmpty()) {
+            return Bundle.getMessage("Antecedent_Long_Empty");
+        } else {
+            return Bundle.getMessage("Antecedent_Long", _antecedent);
+        }
     }
 
     private void setExpressionSystemNames(List<Map.Entry<String, String>> systemNames) {
@@ -271,10 +276,10 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      * Check that an antecedent is well formed.
      *
      * @param ant the antecedent string description
-     * @param variableList arraylist of existing Conditional variables
+     * @param expressionEntryList arraylist of existing ExpressionEntries
      * @return error message string if not well formed
      */
-    public String validateAntecedent(String ant, List<ExpressionEntry> variableList) {
+    public String validateAntecedent(String ant, List<ExpressionEntry> expressionEntryList) {
         AtomicBoolean isCompleted = new AtomicBoolean(true);
         char[] ch = ant.toCharArray();
         int n = 0;
@@ -306,16 +311,16 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                     rbx.getString("ParseError7"), new Object[]{'('});  // NOI18N
         }
         try {
-            DataPair dp = parseCalculate(isCompleted, new String(ch, 0, n), variableList);
+            DataPair dp = parseCalculate(isCompleted, new String(ch, 0, n), expressionEntryList);
             if (n != dp.indexCount) {
                 return java.text.MessageFormat.format(
                         rbx.getString("ParseError4"), new Object[]{ch[dp.indexCount - 1]});  // NOI18N
             }
             int index = dp.argsUsed.nextClearBit(0);
-            if (index >= 0 && index < variableList.size()) {
+            if (index >= 0 && index < expressionEntryList.size()) {
                 return java.text.MessageFormat.format(
                         rbx.getString("ParseError5"),  // NOI18N
-                        new Object[]{variableList.size(), index + 1});
+                        new Object[]{expressionEntryList.size(), index + 1});
             }
         } catch (NumberFormatException | IndexOutOfBoundsException | JmriException nfe) {
             return rbx.getString("ParseError6") + nfe.getMessage();  // NOI18N
@@ -331,19 +336,19 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      * variable is washed.
      *
      * @param s            The expression to be parsed
-     * @param variableList ConditionalVariables for R1, R2, etc
+     * @param expressionEntryList ExpressionEntries for R1, R2, etc
      * @return a data pair consisting of the truth value of the level a count of
      *         the indices consumed to parse the level and a bitmap of the
      *         variable indices used.
      * @throws jmri.JmriException if unable to compute the logic
      */
-    DataPair parseCalculate(AtomicBoolean isCompleted, String s, List<ExpressionEntry> variableList)
+    DataPair parseCalculate(AtomicBoolean isCompleted, String s, List<ExpressionEntry> expressionEntryList)
             throws JmriException {
 
         // for simplicity, we force the string to upper case before scanning
         s = s.toUpperCase();
 
-        BitSet argsUsed = new BitSet(variableList.size());
+        BitSet argsUsed = new BitSet(expressionEntryList.size());
         DataPair dp = null;
         boolean leftArg = false;
         boolean rightArg = false;
@@ -352,7 +357,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         int i = 0;      // index of String s
         //int numArgs = 0;
         if (s.charAt(i) == '(') {
-            dp = parseCalculate(isCompleted, s.substring(++i), variableList);
+            dp = parseCalculate(isCompleted, s.substring(++i), expressionEntryList);
             leftArg = dp.result;
             i += dp.indexCount;
             argsUsed.or(dp.argsUsed);
@@ -365,7 +370,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                 } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                     k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                 }
-                leftArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
+                leftArg = expressionEntryList.get(k - 1)._socket.evaluate(isCompleted);
                 i++;
                 argsUsed.set(k - 1);
             } else if ("NOT".equals(s.substring(i, i + 3))) {  // NOI18N
@@ -373,7 +378,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
 
                 // not leftArg
                 if (s.charAt(i) == '(') {
-                    dp = parseCalculate(isCompleted, s.substring(++i), variableList);
+                    dp = parseCalculate(isCompleted, s.substring(++i), expressionEntryList);
                     leftArg = dp.result;
                     i += dp.indexCount;
                     argsUsed.or(dp.argsUsed);
@@ -384,7 +389,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                     } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                         k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                     }
-                    leftArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
+                    leftArg = expressionEntryList.get(k - 1)._socket.evaluate(isCompleted);
                     i++;
                     argsUsed.set(k - 1);
                 } else {
@@ -412,7 +417,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                             rbx.getString("ParseError2"), new Object[]{s.substring(i)}));  // NOI18N
                 }
                 if (s.charAt(i) == '(') {
-                    dp = parseCalculate(isCompleted, s.substring(++i), variableList);
+                    dp = parseCalculate(isCompleted, s.substring(++i), expressionEntryList);
                     rightArg = dp.result;
                     i += dp.indexCount;
                     argsUsed.or(dp.argsUsed);
@@ -425,14 +430,14 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                         } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                             k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                         }
-                        rightArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
+                        rightArg = expressionEntryList.get(k - 1)._socket.evaluate(isCompleted);
                         i++;
                         argsUsed.set(k - 1);
                     } else if ("NOT".equals(s.substring(i, i + 3))) {  // NOI18N
                         i += 3;
                         // not rightArg
                         if (s.charAt(i) == '(') {
-                            dp = parseCalculate(isCompleted, s.substring(++i), variableList);
+                            dp = parseCalculate(isCompleted, s.substring(++i), expressionEntryList);
                             rightArg = dp.result;
                             i += dp.indexCount;
                             argsUsed.or(dp.argsUsed);
@@ -443,7 +448,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
                             } catch (NumberFormatException | IndexOutOfBoundsException nfe) {
                                 k = Integer.parseInt(String.valueOf(s.charAt(++i)));
                             }
-                            rightArg = variableList.get(k - 1)._socket.evaluate(isCompleted);
+                            rightArg = expressionEntryList.get(k - 1)._socket.evaluate(isCompleted);
                             i++;
                             argsUsed.set(k - 1);
                         } else {
@@ -481,11 +486,11 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     }
 
     /* This class is public since ExpressionAntecedentXml needs to access it. */
-    private static class ExpressionEntry {
+    public static class ExpressionEntry {
         private String _socketSystemName;
         private final FemaleDigitalExpressionSocket _socket;
         
-        private ExpressionEntry(FemaleDigitalExpressionSocket socket, String socketSystemName) {
+        public ExpressionEntry(FemaleDigitalExpressionSocket socket, String socketSystemName) {
             _socketSystemName = socketSystemName;
             _socket = socket;
         }
@@ -493,6 +498,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         private ExpressionEntry(FemaleDigitalExpressionSocket socket) {
             this._socket = socket;
         }
+        
     }
     
     private final static Logger log = LoggerFactory.getLogger(Antecedent.class);

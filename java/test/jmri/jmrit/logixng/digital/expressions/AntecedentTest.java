@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -7,10 +8,14 @@ import jmri.InstanceManager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.FemaleSocket;
+import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.digital.expressions.Antecedent.ExpressionEntry;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -23,7 +28,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AntecedentTest {
+public class AntecedentTest implements FemaleSocketListener {
 
     private static final boolean EXPECT_SUCCESS = true;
     private static final boolean EXPECT_FAILURE = false;
@@ -42,18 +47,29 @@ public class AntecedentTest {
     public void testDescription() {
         DigitalExpression e1 = new Antecedent("IQA55:E321");
         Assert.assertTrue("Antecedent".equals(e1.getShortDescription()));
-        Assert.assertTrue("Antecedent: null".equals(e1.getLongDescription()));
+        Assert.assertTrue("Antecedent: empty".equals(e1.getLongDescription()));
     }
     
-    private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpression> conditionalVariablesList) {
+    private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpression> conditionalVariablesList) throws SocketAlreadyConnectedException {
         Antecedent ix1 = new Antecedent("IXIC 1");
+        
+        int count = 0;
+        List<ExpressionEntry> expressionEntryList = new ArrayList<>();
+        for (DigitalExpression expression : conditionalVariablesList) {
+            String socketName = "E"+Integer.toString(count++);
+            FemaleDigitalExpressionSocket socket =
+                    InstanceManager.getDefault(DigitalExpressionManager.class)
+                            .createFemaleSocket(null, this, socketName);
+            socket.connect((MaleSocket) expression);
+            expressionEntryList.add(new ExpressionEntry(socket, socketName));
+        }
         
         if (expectedResult) {
             Assert.assertTrue("validateAntecedent() returns null for '"+antecedent+"'",
-                    ix1.validateAntecedent(antecedent, conditionalVariablesList) == null);
+                    ix1.validateAntecedent(antecedent, expressionEntryList) == null);
         } else {
             Assert.assertTrue("validateAntecedent() returns error message for '"+antecedent+"'",
-                    ix1.validateAntecedent(antecedent, conditionalVariablesList) != null);
+                    ix1.validateAntecedent(antecedent, expressionEntryList) != null);
         }
     }
     
@@ -93,7 +109,7 @@ public class AntecedentTest {
     }
     
     @Test
-    public void testValidate() {
+    public void testValidate() throws SocketAlreadyConnectedException {
         DigitalExpression[] conditionalVariables_Empty = { };
         List<DigitalExpression> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
         
@@ -282,6 +298,16 @@ public class AntecedentTest {
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+
+    @Override
+    public void connected(FemaleSocket socket) {
+        // Do nothing
+    }
+
+    @Override
+    public void disconnected(FemaleSocket socket) {
+        // Do nothing
     }
     
 }
