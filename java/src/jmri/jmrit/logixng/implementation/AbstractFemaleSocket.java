@@ -39,8 +39,9 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     
     public AbstractFemaleSocket(Base parent, FemaleSocketListener listener, String name) {
         _listener = listener;
-        _name = name;
+//        _name = name;
         _parent = parent;
+        setName(name);
     }
     
     /** {@inheritDoc} */
@@ -113,7 +114,23 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     
     /** {@inheritDoc} */
     @Override
-    public void setName(String name) {
+    public final boolean validateName(String name) {
+        for (int i=0; i < name.length(); i++) {
+            if ((i == 0) && !Character.isLetter(name.charAt(i))) {
+                return false;
+            } else if (!Character.isLetterOrDigit(name.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public final void setName(String name) {
+        if (!validateName(name)) {
+            throw new IllegalArgumentException("the name is not valid: " + name);
+        }
         _name = name;
     }
 

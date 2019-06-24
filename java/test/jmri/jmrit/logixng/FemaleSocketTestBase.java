@@ -80,4 +80,52 @@ public class FemaleSocketTestBase {
         Assert.assertFalse("Socket is not disconnected again", flag.get());
     }
     
+    private boolean setName_verifyException(String newName, String expectedExceptionMessage) {
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        try {
+            femaleSocket.setName(newName);
+        } catch (IllegalArgumentException ex) {
+            hasThrown.set(true);
+            Assert.assertTrue("Error message is correct", ex.getMessage().equals(expectedExceptionMessage));
+        }
+        return hasThrown.get();
+    }
+    
+    @Test
+    public void testSetName() {
+        // Both letters and digits is OK
+        femaleSocket.setName("X12");
+        Assert.assertTrue("name matches", "X12".equals(femaleSocket.getName()));
+        
+        // Only letters is OK
+        femaleSocket.setName("Xyz");
+        Assert.assertTrue("name matches", "Xyz".equals(femaleSocket.getName()));
+        
+        // Both letters and digits in random order is OK as long as the first
+        // character is a letter
+        femaleSocket.setName("X1b2c3Y");
+        Assert.assertTrue("name matches", "X1b2c3Y".equals(femaleSocket.getName()));
+        
+        // The name must start with a letter, not a digit
+        Assert.assertTrue("exception is thrown", setName_verifyException("123", "the name is not valid: 123"));
+        
+        // The name must not contain any spaces
+        Assert.assertTrue("exception is thrown", setName_verifyException(" A123", "the name is not valid:  A123"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A1 23", "the name is not valid: A1 23"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A123 ", "the name is not valid: A123 "));
+        
+        // The name must not contain any character that's not a letter nor a digit
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12!3", "the name is not valid: A12!3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A+123", "the name is not valid: A+123"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("=A123", "the name is not valid: =A123"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12*3", "the name is not valid: A12*3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A123/", "the name is not valid: A123/"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12(3", "the name is not valid: A12(3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12)3", "the name is not valid: A12)3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12[3", "the name is not valid: A12[3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12]3", "the name is not valid: A12]3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12{3", "the name is not valid: A12{3"));
+        Assert.assertTrue("exception is thrown", setName_verifyException("A12}3", "the name is not valid: A12}3"));
+    }
+    
 }

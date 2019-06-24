@@ -45,7 +45,22 @@ public interface FemaleSocket extends Base {
     public boolean isCompatible(MaleSocket socket);
     
     /**
+     * Validates a name for a FemaleSocket.
+     * <P>
+     * The name must have at least one character and only alphanumeric
+     * characters. The first character must not be a digit.
+     * 
+     * @param name the name
+     * @return true if the name is valid, false otherwise
+     */
+    public boolean validateName(String name);
+    
+    /**
      * Set the name of this socket.
+     * <P>
+     * The name must have at least one character and only alphanumeric
+     * characters. The first character must not be a digit.
+     * 
      * @param name the name
      */
     public void setName(String name);
@@ -85,5 +100,5 @@ public interface FemaleSocket extends Base {
             getConnectedSocket().setup();
         }
     }
-
+    
 }

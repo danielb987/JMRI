@@ -342,6 +342,11 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     expressionTurnout4.set_Is_IsNot(Is_IsNot_Enum.IS);
                     MaleSocket socketTurnout4 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout4);
                     expressionAnd.getChild(1).connect(socketTurnout4);
+                    expressionAnd.getChild(0).setName("A1");
+                    expressionAnd.getChild(0).setName("1A");
+                    expressionAnd.getChild(0).setName("A1 ");
+                    expressionAnd.getChild(0).setName(" A1");
+                    expressionAnd.getChild(0).setName("A 1");
                     
                     ExpressionTurnout expressionTurnout5 = new ExpressionTurnout(conditionalNG);
                     expressionTurnout5.setTurnout(turnout5);
