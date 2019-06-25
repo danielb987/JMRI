@@ -261,9 +261,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         }
     }
     
-    @SuppressFBWarnings(
-            value={"DM_EXIT", "DMI_HARDCODED_ABSOLUTE_FILENAME"},
-            justification="This is a test method that must be removed before merging this PR")
+    @SuppressFBWarnings(value = {"DM_EXIT", "DMI_HARDCODED_ABSOLUTE_FILENAME"},
+            justification = "This is a test method that must be removed before merging this PR")
     public void testLogixNGs() {
         
         // FOR TESTING ONLY. REMOVE LATER.
