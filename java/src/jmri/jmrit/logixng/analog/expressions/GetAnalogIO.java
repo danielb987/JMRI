@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import jmri.AnalogIO;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
@@ -71,12 +73,24 @@ public class GetAnalogIO extends AbstractAnalogExpression {
     
     /** {@inheritDoc} */
     @Override
-    public float evaluate(float parentValue) {
+    public void initEvaluation() {
+        // Do nothing
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public float evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (_analogIO != null) {
             return _analogIO.getKnownAnalogValue();
         } else {
             return (float) 0.0;
         }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        // Do nothing
     }
     
     @Override

@@ -1,20 +1,14 @@
 package jmri.jmrit.logixng.analog.implementation;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import jmri.InstanceManager;
-import jmri.JmriException;
-import jmri.NamedBean;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
-import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -55,25 +49,45 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
         throw new UnsupportedOperationException();
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean isCompatible(MaleSocket socket) {
         return socket instanceof MaleAnalogExpressionSocket;
     }
     
+    /** {@inheritDoc} */
     @Override
-    public float evaluate(float parentValue) {
+    public void initEvaluation() {
         if (isConnected()) {
-            return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(parentValue);
+            ((MaleAnalogExpressionSocket)getConnectedSocket()).initEvaluation();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public float evaluate(@Nonnull AtomicBoolean isCompleted) {
+        if (isConnected()) {
+            return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
         } else {
             return (float) 0.0;
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        if (isConnected()) {
+            ((MaleAnalogExpressionSocket)getConnectedSocket()).reset();
+        }
+    }
 
+    /** {@inheritDoc} */
     @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleAnalogExpressionSocket_Short");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("DefaultFemaleAnalogExpressionSocket_Long", getName());
@@ -92,6 +106,7 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
                 .getNewSystemName(getConditionalNG());
     }
 
+    /** {@inheritDoc} */
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(AnalogExpressionManager.class).getExpressionClasses();

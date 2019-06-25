@@ -66,7 +66,8 @@ public final class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSo
     @Override
     public boolean evaluate(AtomicBoolean isCompleted) {
         if (isConnected()) {
-            return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
+            return ((MaleDigitalExpressionSocket)getConnectedSocket())
+                    .evaluate(isCompleted);
         } else {
             return false;
         }

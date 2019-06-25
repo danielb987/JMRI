@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.string.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import jmri.InstanceManager;
 import jmri.StringIO;
 import jmri.jmrit.logixng.Base;
@@ -66,12 +68,24 @@ public class GetStringIO extends AbstractStringExpression {
     
     /** {@inheritDoc} */
     @Override
-    public String evaluate(String parentValue) {
+    public void initEvaluation() {
+        // Do nothing
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (_stringIO != null) {
             return _stringIO.getKnownStringValue();
         } else {
             return "";
         }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        // Do nothing
     }
     
     @Override

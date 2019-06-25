@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
@@ -86,11 +87,15 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         return false;
     }
     
-    /**
-     * Get the value of the AnalogExpression.
-     */
-    public float internalEvaluate(float parentValue) {
-        float result = _expression.evaluate(parentValue);
+    /** {@inheritDoc} */
+    @Override
+    public void initEvaluation() {
+        _expression.initEvaluation();
+    }
+    
+    /** {@inheritDoc} */
+    public float internalEvaluate(@Nonnull AtomicBoolean isCompleted) {
+        float result = _expression.evaluate(isCompleted);
         
         if (Float.isNaN(result)) {
             throw new IllegalArgumentException("The result is NaN");
@@ -106,7 +111,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     /** {@inheritDoc} */
     @Override
-    public float evaluate(float parentValue) {
+    public float evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (! _enabled) {
             return 0.0f;
         }
@@ -117,7 +122,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         }
         
         try {
-            return internalEvaluate(parentValue);
+            return internalEvaluate(isCompleted);
         } catch (Exception e) {
             switch (_errorHandlingType) {
                 case SHOW_DIALOG_BOX:
@@ -140,6 +145,12 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
                     throw e;
             }
         }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        _expression.reset();
     }
 
     @Override

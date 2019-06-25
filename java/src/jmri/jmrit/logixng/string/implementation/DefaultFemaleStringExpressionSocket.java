@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.NamedBean;
@@ -55,25 +57,45 @@ public final class DefaultFemaleStringExpressionSocket extends AbstractFemaleSoc
         throw new UnsupportedOperationException();
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean isCompatible(MaleSocket socket) {
         return socket instanceof MaleStringExpressionSocket;
     }
     
+    /** {@inheritDoc} */
     @Override
-    public String evaluate(String parentValue) {
+    public void initEvaluation() {
         if (isConnected()) {
-            return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(parentValue);
+            ((MaleStringExpressionSocket)getConnectedSocket()).initEvaluation();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
+        if (isConnected()) {
+            return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
         } else {
             return "";
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        if (isConnected()) {
+            ((MaleStringExpressionSocket)getConnectedSocket()).reset();
+        }
+    }
 
+    /** {@inheritDoc} */
     @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleStringExpressionSocket_Short");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("DefaultFemaleStringExpressionSocket_Long", getName());
@@ -92,6 +114,7 @@ public final class DefaultFemaleStringExpressionSocket extends AbstractFemaleSoc
                 .getNewSystemName(getConditionalNG());
     }
 
+    /** {@inheritDoc} */
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(StringExpressionManager.class).getExpressionClasses();

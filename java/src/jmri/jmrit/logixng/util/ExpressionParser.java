@@ -29,6 +29,37 @@ public class ExpressionParser<E> {
     
     public ParsedExpression<E> parseExpression(String expression) throws InvalidSyntaxException {
         List<Token> tokens = getTokens(expression);
+        
+//        ParsedExpression<E> expr = new ParsedExpression<>();
+        
+        TokenType lastTokenType = TokenType.NONE;
+        ExpressionNode<E> exprNode;
+        
+        for (int i = tokens.size(); i > 0; i--) {
+//            System.out.println(tokens.get(i));
+            Token token = tokens.get(i);
+            switch (token.tokenType) {
+                case LEFT_PARENTHESIS:
+                case RIGHT_PARENTHESIS:
+                    if ((lastTokenType == TokenType.NONE) || (lastTokenType == TokenType.NON_ALPHANUMERIC)) {
+                        
+                    }
+                case NON_ALPHANUMERIC:   // Might be an operator, for example => or &&
+                case IDENTIFIER:
+                case NUMBER:
+                case STRING:
+                    
+                case ERROR:          // Invalid token, for example an identifier starting with a digit
+                case SAME_AS_LAST:   // The same token as last time
+                case NONE:
+                case SPACE:
+                    throw new RuntimeException("this token type should not be here: "+token.tokenType);
+                    
+                default:
+                    throw new RuntimeException("unknown token type: "+token.tokenType);
+            }
+        }
+        
         return null;
     }
     

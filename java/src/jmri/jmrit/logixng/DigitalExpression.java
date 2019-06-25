@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import jmri.NamedBean;
 
 /**
@@ -50,7 +51,7 @@ public interface DigitalExpression extends NamedBean, Base {
      * expression sets this to false.
      * @return the result of the evaluation
      */
-    public boolean evaluate(AtomicBoolean isCompleted);
+    public boolean evaluate(@Nonnull AtomicBoolean isCompleted);
     
     /**
      * Reset the evaluation.

@@ -56,7 +56,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     private IfThen _template;
     private boolean _enableExecution;
     private Type _type;
-    private final AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
+    private final AtomicBoolean _isExpressionCompleted = new AtomicBoolean(true);
     private boolean _lastExpressionResult = false;
     private boolean _lastActionResult = false;
     private String _ifExpressionSocketSystemName;
@@ -172,14 +172,15 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        _lastExpressionResult = _ifExpressionSocket.evaluate(isExpressionCompleted);
+        _isExpressionCompleted.set(true);
+        _lastExpressionResult = _ifExpressionSocket.evaluate(_isExpressionCompleted);
         _lastActionResult = false;
 
         if (_lastExpressionResult) {
             _lastActionResult = _thenActionSocket.executeStart();
         }
 
-        return _lastActionResult && !isExpressionCompleted.get();
+        return _lastActionResult && !_isExpressionCompleted.get();
     }
 
     /**
@@ -192,13 +193,14 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
      */
     @Override
     public boolean executeContinue() {
+        _isExpressionCompleted.set(true);
         switch (_type) {
             case TRIGGER_ACTION:
                 _lastActionResult = _thenActionSocket.executeContinue();
                 break;
                 
             case CONTINOUS_ACTION:
-                boolean exprResult = _ifExpressionSocket.evaluate(isExpressionCompleted);
+                boolean exprResult = _ifExpressionSocket.evaluate(_isExpressionCompleted);
                 if (exprResult) {
                     _lastActionResult = _thenActionSocket.executeContinue();
                 } else {
@@ -211,7 +213,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 throw new RuntimeException(String.format("Unknown type '%s'", _type.name()));
         }
         
-        return _lastActionResult || !isExpressionCompleted.get();
+        return _lastActionResult || !_isExpressionCompleted.get();
     }
 
     /**
@@ -225,8 +227,9 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
      */
     @Override
     public boolean executeRestart() {
-        if (!isExpressionCompleted.get()) {
+        if (!_isExpressionCompleted.get()) {
             _ifExpressionSocket.reset();
+            _isExpressionCompleted.set(true);
         }
         
         switch (_type) {
@@ -235,7 +238,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 break;
                 
             case CONTINOUS_ACTION:
-                boolean exprResult = _ifExpressionSocket.evaluate(isExpressionCompleted);
+                boolean exprResult = _ifExpressionSocket.evaluate(_isExpressionCompleted);
                 if (exprResult) {
                     _lastActionResult = _thenActionSocket.executeRestart();
                 } else {
@@ -248,7 +251,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
                 throw new RuntimeException(String.format("Unknown type '%s'", _type.name()));
         }
         
-        return _lastActionResult && !isExpressionCompleted.get();
+        return _lastActionResult && !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
@@ -256,6 +259,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     public void abort() {
         _ifExpressionSocket.reset();
         _thenActionSocket.abort();
+        _isExpressionCompleted.set(true);
     }
     
     /**
@@ -270,7 +274,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
      */
     public void setType(Type type) {
         if (_type != type) {
-            if (!isExpressionCompleted.get()) {
+            if (!_isExpressionCompleted.get()) {
                 _ifExpressionSocket.reset();
             }
             if (_lastActionResult) {

@@ -1,5 +1,8 @@
 package jmri.jmrit.logixng;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
+
 /**
  * A LogixNG male AnalogExpression socket.
  */
@@ -18,6 +21,6 @@ public interface MaleAnalogExpressionSocket
      * If an error occurs and are handled, the method returns the value 0.0f.
      */
     @Override
-    public float evaluate(float parentValue);
+    public float evaluate(@Nonnull AtomicBoolean isCompleted);
 
 }

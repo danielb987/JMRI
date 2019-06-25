@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
@@ -25,6 +26,7 @@ public class DoAnalogAction
         implements FemaleSocketListener {
 
     private DoAnalogAction _template;
+    private final AtomicBoolean _isExpressionCompleted = new AtomicBoolean(true);
     private String _analogExpressionSocketSystemName;
     private String _analogActionSocketSystemName;
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
@@ -108,30 +110,43 @@ public class DoAnalogAction
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        float result = _analogExpressionSocket.evaluate(0.0f);
+        _isExpressionCompleted.set(true);
+        
+        float result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
         
         _analogActionSocket.setValue(result);
 
-        return false;
+        return !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean executeContinue() {
-        // We should never be here since executeStart() always return false.
-        throw new UnsupportedOperationException("Not supported.");
+        _isExpressionCompleted.set(true);
+        
+        float result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
+        
+        _analogActionSocket.setValue(result);
+
+        return !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
-        return executeStart();
+        _isExpressionCompleted.set(true);
+        
+        float result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
+        
+        _analogActionSocket.setValue(result);
+
+        return !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
     @Override
     public void abort() {
-        // Do nothing
+        _isExpressionCompleted.set(true);
     }
     
     @Override

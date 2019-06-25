@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
@@ -75,7 +76,13 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     
     /** {@inheritDoc} */
     @Override
-    public String evaluate(String parentValue) {
+    public void initEvaluation() {
+        _expression.initEvaluation();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (! _enabled) {
             return "";
         }
@@ -84,7 +91,13 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
                 && ((StringExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((StringExpressionDebugConfig)_debugConfig)._result;
         }
-        return _expression.evaluate(parentValue);
+        return _expression.evaluate(isCompleted);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        _expression.reset();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringActionManager;
@@ -25,6 +26,7 @@ public class DoStringAction
         implements FemaleSocketListener {
 
     private DoStringAction _template;
+    private final AtomicBoolean _isExpressionCompleted = new AtomicBoolean(true);
     private String _stringExpressionSocketSocketSystemName;
     private String _stringActionSocketSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
@@ -108,24 +110,37 @@ public class DoStringAction
     /** {@inheritDoc} */
     @Override
     public boolean executeStart() {
-        String result = _stringExpressionSocket.evaluate("");
+        _isExpressionCompleted.set(true);
+        
+        String result = _stringExpressionSocket.evaluate(_isExpressionCompleted);
         
         _stringActionSocket.setValue(result);
 
-        return false;
+        return !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean executeContinue() {
-        // We should never be here since executeStart() always return false.
-        throw new UnsupportedOperationException("Not supported.");
+        _isExpressionCompleted.set(true);
+        
+        String result = _stringExpressionSocket.evaluate(_isExpressionCompleted);
+        
+        _stringActionSocket.setValue(result);
+
+        return !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean executeRestart() {
-        return executeStart();
+        _isExpressionCompleted.set(true);
+        
+        String result = _stringExpressionSocket.evaluate(_isExpressionCompleted);
+        
+        _stringActionSocket.setValue(result);
+
+        return !_isExpressionCompleted.get();
     }
 
     /** {@inheritDoc} */
