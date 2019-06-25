@@ -93,8 +93,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         _expression.initEvaluation();
     }
     
-    /** {@inheritDoc} */
-    public float internalEvaluate(@Nonnull AtomicBoolean isCompleted) {
+    private float internalEvaluate(@Nonnull AtomicBoolean isCompleted) {
         float result = _expression.evaluate(isCompleted);
         
         if (Float.isNaN(result)) {
