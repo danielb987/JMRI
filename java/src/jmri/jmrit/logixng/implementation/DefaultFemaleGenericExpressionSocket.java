@@ -9,6 +9,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jmri.InstanceManager;
+import jmri.Reportable;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -36,17 +37,45 @@ public class DefaultFemaleGenericExpressionSocket
         extends AbstractFemaleSocket
         implements FemaleGenericExpressionSocket, FemaleSocketListener {
 
-    private SocketType _socketType = SocketType.GENERIC;    // The type of the socket the user has selected
-    private SocketType _currentSocketType;                  // The current type of the socket.
-    private FemaleSocket _currentActiveSocket;              // The socket that is currently in use, if any. Null otherwise.
-    private final FemaleAnalogExpressionSocket analogSocket = new DefaultFemaleAnalogExpressionSocket(this, this, "A");
-    private final FemaleDigitalExpressionSocket digitalSocket = new DefaultFemaleDigitalExpressionSocket(this, this, "D");
-    private final FemaleStringExpressionSocket stringSocket = new DefaultFemaleStringExpressionSocket(this, this, "S");
+    private SocketType _socketType;             // The type of the socket the user has selected
+    private SocketType _currentSocketType;      // The current type of the socket.
+    private FemaleSocket _currentActiveSocket;  // The socket that is currently in use, if any. Null otherwise.
+    private final FemaleAnalogExpressionSocket _analogSocket = new DefaultFemaleAnalogExpressionSocket(this, this, "A");
+    private final FemaleDigitalExpressionSocket _digitalSocket = new DefaultFemaleDigitalExpressionSocket(this, this, "D");
+    private final FemaleStringExpressionSocket _stringSocket = new DefaultFemaleStringExpressionSocket(this, this, "S");
     
-    public DefaultFemaleGenericExpressionSocket(Base parent, FemaleSocketListener listener, String name) {
+    public DefaultFemaleGenericExpressionSocket(
+            SocketType socketType,
+            Base parent,
+            FemaleSocketListener listener,
+            String name) {
+        
         super(parent, listener, name);
+        
+        _socketType = socketType;
+        
+        switch (_socketType) {
+            case ANALOG:
+                _currentActiveSocket = _analogSocket;
+                break;
+                
+            case DIGITAL:
+                _currentActiveSocket = _digitalSocket;
+                break;
+                
+            case STRING:
+                _currentActiveSocket = _stringSocket;
+                break;
+                
+            case GENERIC:
+                _currentActiveSocket = null;
+                break;
+                
+            default:
+                throw new RuntimeException("invalid value: "+_socketType.name());
+        }
     }
-    
+/*    
     public DefaultFemaleGenericExpressionSocket(
             Base parent,
             FemaleSocketListener listener,
@@ -63,7 +92,7 @@ public class DefaultFemaleGenericExpressionSocket
             throw new RuntimeException(e);
         }
     }
-    
+*/    
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
@@ -159,12 +188,15 @@ public class DefaultFemaleGenericExpressionSocket
             switch (_currentSocketType) {
                 case DIGITAL:
                     ((MaleDigitalExpressionSocket)getConnectedSocket()).reset();
+                    break;
                     
                 case ANALOG:
                     ((MaleAnalogExpressionSocket)getConnectedSocket()).reset();
+                    break;
                     
                 case STRING:
                     ((MaleStringExpressionSocket)getConnectedSocket()).reset();
+                    break;
                     
                 default:
                     throw new RuntimeException("_currentSocketType has invalid value: "+_currentSocketType.name());
@@ -224,27 +256,118 @@ public class DefaultFemaleGenericExpressionSocket
         return classes;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
+        if (socket == null) {
+            throw new NullPointerException("socket cannot be null");
+        }
+        
+        // If _currentActiveSocket is not null, the socket is either connected
+        // or locked to a particular type.
+        if (_currentActiveSocket != null) {
+            if (_currentActiveSocket.isConnected()) {
+                throw new SocketAlreadyConnectedException("Socket is already connected");
+            } else {
+                _currentActiveSocket.connect(socket);
+            }
+        }
+        
+        // If we are here, the socket is not connected and is not locked to a
+        // particular type.
+        
+        if (_digitalSocket.isCompatible(socket)) {
+            _currentSocketType = SocketType.DIGITAL;
+            _currentActiveSocket = _digitalSocket;
+            _currentActiveSocket.connect(socket);
+        } else if (_analogSocket.isCompatible(socket)) {
+            _currentSocketType = SocketType.ANALOG;
+            _currentActiveSocket = _analogSocket;
+            _currentActiveSocket.connect(socket);
+        } else if (_stringSocket.isCompatible(socket)) {
+            _currentSocketType = SocketType.STRING;
+            _currentActiveSocket = _stringSocket;
+            _currentActiveSocket.connect(socket);
+        } else {
+            throw new UnsupportedOperationException("Socket is not compatible");
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void disconnect() {
+        if ((_currentActiveSocket != null) && _currentActiveSocket.isConnected()) {
+            
+            _currentActiveSocket.disconnect();
+        }
+    }
+
     @Override
     public void connected(FemaleSocket socket) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _listener.connected(socket);
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (_currentSocketType == SocketType.GENERIC) {
+            _currentActiveSocket = null;
+        }
+        _listener.disconnected(socket);
     }
 
+    @Override
     public boolean convertToBoolean(@Nullable Object value) {
-        return false;
+        if (value == null) {
+            return false;
+        }
+        
+        if (value instanceof Reportable) {
+            value = ((Reportable)value).toReportString();
+        }
+        
+        if (value instanceof Number) {
+//            return ((Number)value).floatValue();
+            return false;
+        } else if (value instanceof Boolean) {
+            return (Boolean)value;
+        } else {
+            String str = value.toString();
+            return false;
+        }
     }
     
+    @Override
     public float convertToFloat(@Nullable Object value) {
-        return 0.0f;
+        if (value == null) {
+            return 0.0f;
+        }
+        
+        if (value instanceof Reportable) {
+            value = ((Reportable)value).toReportString();
+        }
+        
+        if (value instanceof Number) {
+            return ((Number)value).floatValue();
+        } else if (value instanceof Boolean) {
+            return ((Boolean)value) ? 1 : 0;
+        } else {
+            String str = value.toString();
+            return 0.0f;
+        }
     }
     
     @Nonnull
+    @Override
     public String convertToString(@Nullable Object value) {
-        return "";
+        if (value == null) {
+            return "";
+        }
+        
+        if (value instanceof Reportable) {
+            return ((Reportable)value).toReportString();
+        }
+        
+        return value.toString();
     }
     
 }

@@ -31,7 +31,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     // better to let AbstractFemaleSocket implement these.
     
     private Base _parent;
-    private final FemaleSocketListener _listener;
+    protected final FemaleSocketListener _listener;
     private MaleSocket _socket = null;
     private String _name = null;
     private Lock _lock = Lock.NONE;

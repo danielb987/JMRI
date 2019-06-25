@@ -39,11 +39,13 @@ public class ExpressionParser<E> {
 //            System.out.println(tokens.get(i));
             Token token = tokens.get(i);
             switch (token.tokenType) {
+                //$FALL-THROUGH$
                 case LEFT_PARENTHESIS:
                 case RIGHT_PARENTHESIS:
                     if ((lastTokenType == TokenType.NONE) || (lastTokenType == TokenType.NON_ALPHANUMERIC)) {
                         
                     }
+                //$FALL-THROUGH$
                 case NON_ALPHANUMERIC:   // Might be an operator, for example => or &&
                 case IDENTIFIER:
                 case NUMBER:
