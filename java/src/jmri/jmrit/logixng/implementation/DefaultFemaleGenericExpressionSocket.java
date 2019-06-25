@@ -72,7 +72,7 @@ public class DefaultFemaleGenericExpressionSocket
                 break;
                 
             default:
-                throw new RuntimeException("invalid value: "+_socketType.name());
+                throw new RuntimeException("_socketType has invalid value: "+socketType.name());
         }
     }
 /*    
@@ -110,6 +110,74 @@ public class DefaultFemaleGenericExpressionSocket
     
     /** {@inheritDoc} */
     @Override
+    public void setSocketType(SocketType socketType)
+            throws SocketAlreadyConnectedException {
+        
+        if (socketType == _socketType) {
+            return;
+        }
+        
+        switch (socketType) {
+            case DIGITAL:
+                if ((_currentActiveSocket == null)
+                        || (_currentActiveSocket == _digitalSocket)) {
+                    
+                    _socketType = SocketType.DIGITAL;
+                    _currentSocketType = SocketType.DIGITAL;
+                    _currentActiveSocket = _digitalSocket;
+                } else {
+                    throw new SocketAlreadyConnectedException("Socket is already connected");
+                }
+                break;
+                
+            case ANALOG:
+                if ((_currentActiveSocket == null)
+                        || (_currentActiveSocket == _analogSocket)) {
+                    
+                    _socketType = SocketType.ANALOG;
+                    _currentSocketType = SocketType.ANALOG;
+                    _currentActiveSocket = _analogSocket;
+                } else {
+                    throw new SocketAlreadyConnectedException("Socket is already connected");
+                }
+                break;
+                
+            case STRING:
+                if ((_currentActiveSocket == null)
+                        || (_currentActiveSocket == _stringSocket)) {
+                    
+                    _socketType = SocketType.STRING;
+                    _currentSocketType = SocketType.STRING;
+                    _currentActiveSocket = _stringSocket;
+                } else {
+                    throw new SocketAlreadyConnectedException("Socket is already connected");
+                }
+                break;
+                
+            case GENERIC:
+                _socketType = SocketType.GENERIC;
+                _currentSocketType = SocketType.GENERIC;
+                
+                if ((_currentActiveSocket != null)
+                        && !_currentActiveSocket.isConnected()) {
+                    
+                    _currentActiveSocket = null;
+                }
+                break;
+                
+            default:
+                throw new RuntimeException("socketType has invalid value: "+socketType.name());
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public SocketType getSocketType() {
+        return _socketType;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public void initEvaluation() {
         if (isConnected()) {
             ((MaleDigitalExpressionSocket)getConnectedSocket()).initEvaluation();
@@ -133,7 +201,7 @@ public class DefaultFemaleGenericExpressionSocket
     @Override
     public float evaluateFloat(@Nonnull AtomicBoolean isCompleted) {
         if (isConnected()) {
-            if (_currentSocketType == SocketType.DIGITAL) {
+            if (_currentSocketType == SocketType.ANALOG) {
                 return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
                 return convertToFloat(evaluateFloat(isCompleted));
@@ -146,7 +214,7 @@ public class DefaultFemaleGenericExpressionSocket
     @Override
     public String evaluateString(@Nonnull AtomicBoolean isCompleted) {
         if (isConnected()) {
-            if (_currentSocketType == SocketType.DIGITAL) {
+            if (_currentSocketType == SocketType.STRING) {
                 return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
                 return convertToString(evaluateString(isCompleted));

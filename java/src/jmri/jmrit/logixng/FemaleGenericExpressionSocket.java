@@ -30,11 +30,28 @@ public interface FemaleGenericExpressionSocket
         
     }
     
+    /**
+     * Set the type of the socket.
+     * 
+     * @param socketType the type of socket.
+     * @throws SocketAlreadyConnectedException if the socket is already
+     * connected and if the new type doesn't match the currently connected
+     * socket.
+     */
+    public void setSocketType(SocketType socketType)
+            throws SocketAlreadyConnectedException;
+    
+    /**
+     * Get the type of the socket.
+     * 
+     * @return the type of socket
+     */
+    public SocketType getSocketType();
     
     /**
      * Initialize evaluation.
      * Must be called before evaluation if isCompleted was false after the last
- call to evaluateGeneric().
+     * call to evaluateGeneric().
      */
     public void initEvaluation();
     
