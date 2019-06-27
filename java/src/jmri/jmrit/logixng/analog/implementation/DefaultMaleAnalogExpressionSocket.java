@@ -93,16 +93,16 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         _expression.initEvaluation();
     }
     
-    private float internalEvaluate(@Nonnull AtomicBoolean isCompleted) {
-        float result = _expression.evaluate(isCompleted);
+    private double internalEvaluate(@Nonnull AtomicBoolean isCompleted) {
+        double result = _expression.evaluate(isCompleted);
         
-        if (Float.isNaN(result)) {
+        if (Double.isNaN(result)) {
             throw new IllegalArgumentException("The result is NaN");
         }
-        if (result == Float.NEGATIVE_INFINITY) {
+        if (result == Double.NEGATIVE_INFINITY) {
             throw new IllegalArgumentException("The result is negative infinity");
         }
-        if (result == Float.POSITIVE_INFINITY) {
+        if (result == Double.POSITIVE_INFINITY) {
             throw new IllegalArgumentException("The result is positive infinity");
         }
         return result;
@@ -110,9 +110,9 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
 
     /** {@inheritDoc} */
     @Override
-    public float evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (! _enabled) {
-            return 0.0f;
+            return 0.0;
         }
         
         if ((_debugConfig != null)
@@ -127,15 +127,15 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
                 case SHOW_DIALOG_BOX:
                     // We don't show a dialog box yet so log instead.
                     log.error("expression {} thrown an exception: {}", _expression.toString(), e);
-                    return 0.0f;
+                    return 0.0;
                     
                 case LOG_ERROR:
                     log.error("expression {} thrown an exception: {}", _expression.toString(), e);
-                    return 0.0f;
+                    return 0.0;
                     
                 case LOG_ERROR_ONCE:
                     Log4JUtil.warnOnce(log, "expression {} thrown an exception: {}", _expression.toString(), e);
-                    return 0.0f;
+                    return 0.0;
                     
                 case THROW:
                     throw e;

@@ -26,10 +26,10 @@ public interface AnalogExpression extends NamedBean, Base {
      * ensure its initiated to true. If the evaluation is not completed, the
      * expression sets this to false.
      * @return the result of the evaluation. The male socket that holds this
-     * expression throws an exception if this value is a Float.NaN or an
+     * expression throws an exception if this value is a Double.NaN or an
      * infinite number.
      */
-    public float evaluate(@Nonnull AtomicBoolean isCompleted);
+    public double evaluate(@Nonnull AtomicBoolean isCompleted);
     
     /**
      * Reset the evaluation.

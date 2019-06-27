@@ -89,14 +89,14 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     /**
      * Set the value of the AnalogAction.
      */
-    private void internalSetValue(float value) {
-        if (Float.isNaN(value)) {
+    private void internalSetValue(double value) {
+        if (Double.isNaN(value)) {
             throw new IllegalArgumentException("The value is NaN");
         }
-        if (value == Float.NEGATIVE_INFINITY) {
+        if (value == Double.NEGATIVE_INFINITY) {
             throw new IllegalArgumentException("The value is negative infinity");
         }
-        if (value == Float.POSITIVE_INFINITY) {
+        if (value == Double.POSITIVE_INFINITY) {
             throw new IllegalArgumentException("The value is positive infinity");
         }
         _action.setValue(value);
@@ -104,7 +104,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     
     /** {@inheritDoc} */
     @Override
-    public void setValue(float value) {
+    public void setValue(double value) {
         if (! _enabled) {
             return;
         }

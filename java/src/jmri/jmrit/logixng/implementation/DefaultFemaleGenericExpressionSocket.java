@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import jmri.InstanceManager;
-import jmri.Reportable;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -29,6 +27,9 @@ import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.analog.implementation.DefaultFemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.string.implementation.DefaultFemaleStringExpressionSocket;
+import jmri.util.TypeConversionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,6 +44,7 @@ public class DefaultFemaleGenericExpressionSocket
     private final FemaleAnalogExpressionSocket _analogSocket = new DefaultFemaleAnalogExpressionSocket(this, this, "A");
     private final FemaleDigitalExpressionSocket _digitalSocket = new DefaultFemaleDigitalExpressionSocket(this, this, "D");
     private final FemaleStringExpressionSocket _stringSocket = new DefaultFemaleStringExpressionSocket(this, this, "S");
+    private boolean do_i18n;
     
     public DefaultFemaleGenericExpressionSocket(
             SocketType socketType,
@@ -191,7 +193,7 @@ public class DefaultFemaleGenericExpressionSocket
             if (_currentSocketType == SocketType.DIGITAL) {
                 return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
-                return convertToBoolean(evaluateBoolean(isCompleted));
+                return TypeConversionUtil.convertToBoolean(evaluateBoolean(isCompleted), do_i18n);
             }
         } else {
             return false;
@@ -199,12 +201,12 @@ public class DefaultFemaleGenericExpressionSocket
     }
 
     @Override
-    public float evaluateFloat(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluateDouble(@Nonnull AtomicBoolean isCompleted) {
         if (isConnected()) {
             if (_currentSocketType == SocketType.ANALOG) {
                 return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
-                return convertToFloat(evaluateFloat(isCompleted));
+                return TypeConversionUtil.convertToDouble(evaluateDouble(isCompleted), do_i18n);
             }
         } else {
             return 0.0f;
@@ -217,7 +219,7 @@ public class DefaultFemaleGenericExpressionSocket
             if (_currentSocketType == SocketType.STRING) {
                 return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
-                return convertToString(evaluateString(isCompleted));
+                return TypeConversionUtil.convertToString(evaluateString(isCompleted), do_i18n);
             }
         } else {
             return "";
@@ -383,59 +385,6 @@ public class DefaultFemaleGenericExpressionSocket
         _listener.disconnected(socket);
     }
 
-    @Override
-    public boolean convertToBoolean(@Nullable Object value) {
-        if (value == null) {
-            return false;
-        }
-        
-        if (value instanceof Reportable) {
-            value = ((Reportable)value).toReportString();
-        }
-        
-        if (value instanceof Number) {
-//            return ((Number)value).floatValue();
-            return false;
-        } else if (value instanceof Boolean) {
-            return (Boolean)value;
-        } else {
-            String str = value.toString();
-            return false;
-        }
-    }
     
-    @Override
-    public float convertToFloat(@Nullable Object value) {
-        if (value == null) {
-            return 0.0f;
-        }
-        
-        if (value instanceof Reportable) {
-            value = ((Reportable)value).toReportString();
-        }
-        
-        if (value instanceof Number) {
-            return ((Number)value).floatValue();
-        } else if (value instanceof Boolean) {
-            return ((Boolean)value) ? 1 : 0;
-        } else {
-            String str = value.toString();
-            return 0.0f;
-        }
-    }
-    
-    @Nonnull
-    @Override
-    public String convertToString(@Nullable Object value) {
-        if (value == null) {
-            return "";
-        }
-        
-        if (value instanceof Reportable) {
-            return ((Reportable)value).toReportString();
-        }
-        
-        return value.toString();
-    }
-    
+    private final static Logger log = LoggerFactory.getLogger(DefaultFemaleGenericExpressionSocket.class);
 }

@@ -112,7 +112,7 @@ public class DoAnalogAction
     public boolean executeStart() {
         _isExpressionCompleted.set(true);
         
-        float result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
+        double result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
         
         _analogActionSocket.setValue(result);
 
@@ -124,7 +124,7 @@ public class DoAnalogAction
     public boolean executeContinue() {
         _isExpressionCompleted.set(true);
         
-        float result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
+        double result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
         
         _analogActionSocket.setValue(result);
 
@@ -136,7 +136,7 @@ public class DoAnalogAction
     public boolean executeRestart() {
         _isExpressionCompleted.set(true);
         
-        float result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
+        double result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
         
         _analogActionSocket.setValue(result);
 

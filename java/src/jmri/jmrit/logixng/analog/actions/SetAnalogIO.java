@@ -53,10 +53,10 @@ public class SetAnalogIO extends AbstractAnalogAction {
     }
     
     @Override
-    public void setValue(float value) {
+    public void setValue(double value) {
         if (_analogIO != null) {
             try {
-                _analogIO.setCommandedAnalogValue(value);
+                _analogIO.setCommandedAnalogValue((float)value);
             } catch (JmriException ex) {
                 log.warn("AnalogActionSetAnalogIO", ex);
             }

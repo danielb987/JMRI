@@ -341,11 +341,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     expressionTurnout4.set_Is_IsNot(Is_IsNot_Enum.IS);
                     MaleSocket socketTurnout4 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout4);
                     expressionAnd.getChild(1).connect(socketTurnout4);
-                    expressionAnd.getChild(0).setName("A1");
-                    expressionAnd.getChild(0).setName("1A");
-                    expressionAnd.getChild(0).setName("A1 ");
-                    expressionAnd.getChild(0).setName(" A1");
-                    expressionAnd.getChild(0).setName("A 1");
                     
                     ExpressionTurnout expressionTurnout5 = new ExpressionTurnout(conditionalNG);
                     expressionTurnout5.setTurnout(turnout5);
@@ -524,8 +519,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         return (_instance);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManager.class);
-
     @Override
     public void registerFemaleSocketFactory(FemaleSocketFactory factory) {
         _femaleSocketFactories.add(factory);
@@ -535,4 +528,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     public List<FemaleSocketFactory> getFemaleSocketFactories() {
         return new ArrayList<>(_femaleSocketFactories);
     }
+
+    private final static Logger log = LoggerFactory.getLogger(DefaultLogixNGManager.class);
 }

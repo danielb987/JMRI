@@ -67,7 +67,7 @@ public final class DefaultFemaleAnalogActionSocket
     }
 
     @Override
-    public void setValue(float value) {
+    public void setValue(double value) {
         if (isConnected()) {
             ((MaleAnalogActionSocket)getConnectedSocket()).setValue(value);
         }

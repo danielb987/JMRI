@@ -74,16 +74,16 @@ public interface FemaleGenericExpressionSocket
     /**
      * Evaluate this expression.
      * <P>
-     * The return value of the evaluation is converted to a float if necessary.
+     * The return value of the evaluation is converted to a double if necessary.
      * 
      * @param isCompleted true if the evaluation is completed. The caller must
      * ensure its initiated to true. If the evaluation is not completed, the
      * expression sets this to false.
      * @return the result of the evaluation. The male socket that holds this
-     * expression throws an exception if this value is a Float.NaN or an
+     * expression throws an exception if this value is a Double.NaN or an
      * infinite number.
      */
-    public float evaluateFloat(@Nonnull AtomicBoolean isCompleted);
+    public double evaluateDouble(@Nonnull AtomicBoolean isCompleted);
     
     /**
      * Evaluate this expression.
@@ -126,30 +126,5 @@ public interface FemaleGenericExpressionSocket
      * is reset().
      */
     public void reset();
-    
-    /**
-     * Convert a value to a boolean.
-     * 
-     * @param value the value to convert
-     * @return the boolean value
-     */
-    public boolean convertToBoolean(@Nullable Object value);
-    
-    /**
-     * Convert a value to a float.
-     * 
-     * @param value the value to convert
-     * @return the float value
-     */
-    public float convertToFloat(@Nullable Object value);
-    
-    /**
-     * Convert a value to a String.
-     * 
-     * @param value the value to convert
-     * @return the String value
-     */
-    @Nonnull
-    public String convertToString(@Nullable Object value);
     
 }

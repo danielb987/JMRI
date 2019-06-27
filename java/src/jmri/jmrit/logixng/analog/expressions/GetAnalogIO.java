@@ -3,12 +3,9 @@ package jmri.jmrit.logixng.analog.expressions;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import jmri.AnalogIO;
-import jmri.InstanceManager;
-import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Reads an AnalogIO.
@@ -79,11 +76,11 @@ public class GetAnalogIO extends AbstractAnalogExpression {
     
     /** {@inheritDoc} */
     @Override
-    public float evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (_analogIO != null) {
             return _analogIO.getKnownAnalogValue();
         } else {
-            return (float) 0.0;
+            return 0.0;
         }
     }
     

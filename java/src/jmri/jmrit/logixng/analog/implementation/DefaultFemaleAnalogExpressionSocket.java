@@ -65,11 +65,11 @@ public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSoc
     
     /** {@inheritDoc} */
     @Override
-    public float evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (isConnected()) {
             return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
         } else {
-            return (float) 0.0;
+            return 0.0;
         }
     }
     

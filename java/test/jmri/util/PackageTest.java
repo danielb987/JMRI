@@ -20,6 +20,7 @@ import org.junit.runners.Suite;
         AlphanumComparatorTest.class,
         ColorUtilTest.class,
         MathUtilTest.class,
+        TypeConversionUtilTest.class,
         JUnitSwingUtilTest.class,
         SwingTestCaseTest.class,
         

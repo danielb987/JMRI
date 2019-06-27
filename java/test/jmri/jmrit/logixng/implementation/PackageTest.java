@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.implementation.configurexml.PackageTest.class,
     JMRI_NativeNamespaceTest.class,
+    DefaultFemaleGenericExpressionSocketTest.class,
     DefaultLogixNGTest.class,
     DefaultLogixNG_InstanceManagerTest.class,
     VirtualNamespaceTest.class,

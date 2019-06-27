@@ -12,7 +12,7 @@ public interface MaleAnalogExpressionSocket
     /**
      * {@inheritDoc}
      * <P>
-     * This method must ensure that the result is not a Float.NaN, negative
+     * This method must ensure that the result is not a Double.NaN, negative
      * infinity or positive infinity. If that is the case, it must throw an
      * IllegalArgumentException before checking if an error has occured.
      * <P>
@@ -21,6 +21,6 @@ public interface MaleAnalogExpressionSocket
      * If an error occurs and are handled, the method returns the value 0.0f.
      */
     @Override
-    public float evaluate(@Nonnull AtomicBoolean isCompleted);
+    public double evaluate(@Nonnull AtomicBoolean isCompleted);
 
 }
