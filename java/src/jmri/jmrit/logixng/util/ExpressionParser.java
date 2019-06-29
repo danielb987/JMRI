@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Parses and calculates an expression, for example "sin(2*pi*x)/3"
@@ -42,11 +43,6 @@ public class ExpressionParser<E> {
                 //$FALL-THROUGH$
                 case LEFT_PARENTHESIS:
                 case RIGHT_PARENTHESIS:
-                    if ((lastTokenType == TokenType.NONE) || (lastTokenType == TokenType.NON_ALPHANUMERIC)) {
-                        
-                    }
-                //$FALL-THROUGH$
-                case NON_ALPHANUMERIC:   // Might be an operator, for example => or &&
                 case IDENTIFIER:
                 case NUMBER:
                 case STRING:
@@ -73,6 +69,8 @@ public class ExpressionParser<E> {
         System.out.format("%n%n%n");
         System.out.format("getTokens(): %s%n", expression);
         
+        AtomicBoolean eatNextChar = new AtomicBoolean(false);
+        
         for (int i=0; i < expression.length(); i++) {
             char ch = expression.charAt(i);
             char nextChar = ' ';    // An extra space at the end of the string doesn't matter
@@ -92,7 +90,7 @@ public class ExpressionParser<E> {
                 continue;
             }
             
-            TokenType nextToken = getTokenType(currentToken, ch, nextChar);
+            TokenType nextToken = getTokenType(currentToken, ch, nextChar, eatNextChar);
             System.out.format("index %d: %s, %c%n", i, nextToken.name(), ch);
             
             if (nextToken == TokenType.SAME_AS_LAST) {
@@ -106,7 +104,30 @@ public class ExpressionParser<E> {
                     
                 case LEFT_PARENTHESIS:
                 case RIGHT_PARENTHESIS:
-                case NON_ALPHANUMERIC:
+                case LEFT_SQUARE_BRACKET:
+                case RIGHT_SQUARE_BRACKET:
+                case LEFT_CURLY_BRACKET:
+                case RIGHT_CURLY_BRACKET:
+                case DOT_DOT:
+                case COMMA:
+                case EQUAL:
+                case NOT_EQUAL:
+                case LESS:
+                case LESS_THAN:
+                case GREATER:
+                case GREATER_THAN:
+                case ADD:
+                case SUBTRACKT:
+                case MULTIPLY:
+                case DIVIDE:
+                case POWER:
+                case BOOLEAN_AND:
+                case BOOLEAN_OR:
+                case BOOLEAN_NOT:
+                case BINARY_AND:
+                case BINARY_OR:
+                case BINARY_NOT:
+//                case NON_ALPHANUMERIC:
                 case IDENTIFIER:
                     if ((currentToken.tokenType != TokenType.NONE) && (currentToken.tokenType != TokenType.SPACE)) {
                         System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken.tokenType.name(), currentToken.string, ch, nextChar);
@@ -163,6 +184,10 @@ public class ExpressionParser<E> {
             if (currentToken.tokenType != TokenType.SPACE) {
                 currentToken.string += ch;
             }
+            
+            if (eatNextChar.get()) {
+                i++;
+            }
             System.out.format("New string: '%s'%n", currentToken.string);
         }
         
@@ -173,7 +198,10 @@ public class ExpressionParser<E> {
         return tokens;
     }
     
-    private TokenType getTokenType(Token currentToken, char ch, char nextChar) {
+    private TokenType getTokenType(Token currentToken, char ch, char nextChar, AtomicBoolean eatNextChar) {
+        
+        eatNextChar.set(false);
+        
         if (ch == '"') {
             return TokenType.STRING;
         }
@@ -186,20 +214,111 @@ public class ExpressionParser<E> {
             return TokenType.SAME_AS_LAST;
         }
         
+        if ((ch == '.') && (nextChar == '.')) {
+            if ((currentToken.tokenType != TokenType.DOT_DOT)) {
+                eatNextChar.set(true);
+                return TokenType.DOT_DOT;
+            } else {
+                // Three dots in a row is an error
+                return TokenType.ERROR;
+            }
+        }
+        
+        if (ch == '<') {
+            if (nextChar == '=') {
+                eatNextChar.set(true);
+                return TokenType.LESS_THAN;
+            } else {
+                return TokenType.LESS;
+            }
+        }
+        
+        if (ch == '>') {
+            if (nextChar == '=') {
+                eatNextChar.set(true);
+                return TokenType.GREATER_THAN;
+            } else {
+                return TokenType.GREATER;
+            }
+        }
+        
+        if (ch == '=') {
+            if (nextChar == '=') {
+                eatNextChar.set(true);
+                return TokenType.EQUAL;
+            } else {
+                return TokenType.ERROR;
+            }
+        }
+        
+        if (ch == '!') {
+            if (nextChar == '=') {
+                eatNextChar.set(true);
+                return TokenType.NOT_EQUAL;
+            } else {
+                return TokenType.BOOLEAN_NOT;
+            }
+        }
+        
+        if (ch == '&') {
+            if (nextChar == '&') {
+                eatNextChar.set(true);
+                return TokenType.BOOLEAN_AND;
+            } else {
+                return TokenType.BINARY_AND;
+            }
+        }
+        
+        if (ch == '~') {
+            return TokenType.BINARY_NOT;
+        }
+        
+        if (ch == ',') {
+            return TokenType.COMMA;
+        }
+        
+        if (ch == '+') {
+            return TokenType.ADD;
+        }
+        
+        if (ch == '-') {
+            return TokenType.SUBTRACKT;
+        }
+        
+        if (ch == '*') {
+            return TokenType.MULTIPLY;
+        }
+        
+        if (ch == '/') {
+            return TokenType.DIVIDE;
+        }
+        
+        if (ch == '^') {
+            return TokenType.POWER;
+        }
+        
         if (ch == '(') {
             return TokenType.LEFT_PARENTHESIS;
         }
         
-        if ((currentToken.tokenType != TokenType.LEFT_PARENTHESIS) && (ch == ')')) {
+        if (ch == ')') {
             return TokenType.RIGHT_PARENTHESIS;
         }
         
-        if (!Character.isLetterOrDigit(ch) && (ch != '.')) {
-            if (currentToken.tokenType == TokenType.NON_ALPHANUMERIC) {
-                return TokenType.SAME_AS_LAST;
-            } else {
-                return TokenType.NON_ALPHANUMERIC;
-            }
+        if (ch == '[') {
+            return TokenType.LEFT_SQUARE_BRACKET;
+        }
+        
+        if (ch == ']') {
+            return TokenType.RIGHT_SQUARE_BRACKET;
+        }
+        
+        if (ch == '{') {
+            return TokenType.LEFT_CURLY_BRACKET;
+        }
+        
+        if (ch == '}') {
+            return TokenType.RIGHT_CURLY_BRACKET;
         }
         
         if ((currentToken.tokenType == TokenType.NUMBER) &&
@@ -254,10 +373,33 @@ public class ExpressionParser<E> {
         ERROR,          // Invalid token, for example an identifier starting with a digit
         SAME_AS_LAST,   // The same token as last time
         NONE,
-        SPACE,
-        LEFT_PARENTHESIS,
-        RIGHT_PARENTHESIS,
-        NON_ALPHANUMERIC,   // Might be an operator, for example => or &&
+        SPACE,          // Any space character outside of a string, like space, newline, ...
+        EQUAL,          // ==
+        NOT_EQUAL,      // !=
+        LESS,           // <
+        LESS_THAN,      // <=
+        GREATER,        // >
+        GREATER_THAN,   // >=
+        ADD,            // +
+        SUBTRACKT,      // -
+        MULTIPLY,       // *
+        DIVIDE,         // /
+        POWER,          // ^
+        BOOLEAN_AND,    // &&
+        BOOLEAN_OR,     // ||
+        BOOLEAN_NOT,    // !
+        BINARY_AND,     // &
+        BINARY_OR,      // |
+        BINARY_NOT,     // ~
+        COMMA,          // ,
+        LEFT_PARENTHESIS,       // (
+        RIGHT_PARENTHESIS,      // )
+        LEFT_SQUARE_BRACKET,    // [
+        RIGHT_SQUARE_BRACKET,   // ]
+        LEFT_CURLY_BRACKET,     // {
+        RIGHT_CURLY_BRACKET,    // }
+        DOT_DOT,                // .. , used for intervalls
+//        NON_ALPHANUMERIC,   // Might be an operator, for example => or &&
         IDENTIFIER,
         NUMBER,
         STRING,

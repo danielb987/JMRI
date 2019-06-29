@@ -90,12 +90,12 @@ public class ExpressionParserTest {
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = parser.getTokens("&&");
-        checkFirstToken(tokens, TokenType.NON_ALPHANUMERIC, "&&");
+        checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the string.
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = parser.getTokens("R1 && R2");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
-        checkFirstToken(tokens, TokenType.NON_ALPHANUMERIC, "&&");
+        checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R2");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
@@ -104,6 +104,100 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = parser.getTokens("R1[x]");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
+        checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
+        checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = parser.getTokens("{x,y,z}[a]");
+        checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "z");
+        checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
+        checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
+        checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = parser.getTokens("{x,y,z}[a..b]");
+        checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "z");
+        checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
+        checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
+        checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = parser.getTokens("{x,y,z}[a..b,c]");
+        checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "z");
+        checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
+        checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "c");
+        checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = parser.getTokens("{x,y,z}[a,b..c]");
+        checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "z");
+        checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
+        checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "c");
+        checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = parser.getTokens("{x,y,z}[a,b..c,d,e,f..g]");
+        checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "z");
+        checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
+        checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "c");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "d");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "e");
+        checkFirstToken(tokens, TokenType.COMMA, ",");
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "f");
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.IDENTIFIER, "g");
+        checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = parser.getTokens("(R1(x))");
@@ -115,20 +209,20 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1(x)*(y+21.2)-2.12*R12");
+        tokens = parser.getTokens("R1(x)*(y+21.2)-2.12/R12");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
-        checkFirstToken(tokens, TokenType.NON_ALPHANUMERIC, "*");
+        checkFirstToken(tokens, TokenType.MULTIPLY, "*");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
-        checkFirstToken(tokens, TokenType.NON_ALPHANUMERIC, "+");
+        checkFirstToken(tokens, TokenType.ADD, "+");
         checkFirstToken(tokens, TokenType.NUMBER, "21.2");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
-        checkFirstToken(tokens, TokenType.NON_ALPHANUMERIC, "-");
+        checkFirstToken(tokens, TokenType.SUBTRACKT, "-");
         checkFirstToken(tokens, TokenType.NUMBER, "2.12");
-        checkFirstToken(tokens, TokenType.NON_ALPHANUMERIC, "*");
+        checkFirstToken(tokens, TokenType.DIVIDE, "/");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R12");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
