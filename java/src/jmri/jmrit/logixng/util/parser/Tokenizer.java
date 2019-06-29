@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class Tokenizer<E> {
+public class Tokenizer {
     
     public static List<Token> getTokens(String expression) throws InvalidSyntaxException {
         

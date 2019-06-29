@@ -95,7 +95,7 @@ public class TokenizerTest {
     
     @Test
     public void testGetTokens() throws InvalidSyntaxException {
-        Tokenizer<Float> parser = new Tokenizer<>();
+        Tokenizer parser = new Tokenizer();
         Assert.assertNotNull("not null", parser);
         
         List<Token> tokens;
