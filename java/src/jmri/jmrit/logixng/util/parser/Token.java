@@ -3,13 +3,14 @@ package jmri.jmrit.logixng.util.parser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- *
+ * A token used by the tokenizer and the parser
  */
 public final class Token {
 
-    @SuppressFBWarnings(value="CI_CONFUSED_INHERITANCE", justification="These fields are updated by the Tokenizer class")
-    
+    @SuppressFBWarnings(value="CI_CONFUSED_INHERITANCE", justification="This field is updated by the Tokenizer class")
     protected TokenType _tokenType;
+    
+    @SuppressFBWarnings(value="CI_CONFUSED_INHERITANCE", justification="This field is updated by the Tokenizer class")
     protected String _string;
 
     protected Token() {
