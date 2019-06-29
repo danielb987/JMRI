@@ -71,5 +71,4 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
         JUnitUtil.tearDown();
     }
     
-    private final static Logger log = LoggerFactory.getLogger(DefaultFemaleGenericExpressionSocketTest.class);
 }
