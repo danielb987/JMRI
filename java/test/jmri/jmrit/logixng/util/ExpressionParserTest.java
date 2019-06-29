@@ -13,7 +13,7 @@ import org.junit.Test;
 /**
  * Test ExpressionParser
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist 2019
  */
 public class ExpressionParserTest {
 

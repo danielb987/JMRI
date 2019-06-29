@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Parses and calculates an expression, for example "sin(2*pi*x)/3"
+ * 
+ * @author Daniel Bergqvist 2019
  */
 public class ExpressionParser<E> {
     

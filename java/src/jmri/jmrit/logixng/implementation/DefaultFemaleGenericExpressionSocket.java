@@ -385,6 +385,4 @@ public class DefaultFemaleGenericExpressionSocket
         _listener.disconnected(socket);
     }
 
-    
-    private final static Logger log = LoggerFactory.getLogger(DefaultFemaleGenericExpressionSocket.class);
 }
