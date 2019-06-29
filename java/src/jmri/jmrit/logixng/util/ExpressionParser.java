@@ -120,14 +120,13 @@ public class ExpressionParser<E> {
                 case SUBTRACKT:
                 case MULTIPLY:
                 case DIVIDE:
-                case POWER:
+                case MODULO:
                 case BOOLEAN_AND:
                 case BOOLEAN_OR:
                 case BOOLEAN_NOT:
                 case BINARY_AND:
                 case BINARY_OR:
                 case BINARY_NOT:
-//                case NON_ALPHANUMERIC:
                 case IDENTIFIER:
                     if ((currentToken.tokenType != TokenType.NONE) && (currentToken.tokenType != TokenType.SPACE)) {
                         System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken.tokenType.name(), currentToken.string, ch, nextChar);
@@ -228,6 +227,9 @@ public class ExpressionParser<E> {
             if (nextChar == '=') {
                 eatNextChar.set(true);
                 return TokenType.LESS_THAN;
+            } else if (nextChar == '<') {
+                eatNextChar.set(true);
+                return TokenType.SHIFT_LEFT;
             } else {
                 return TokenType.LESS;
             }
@@ -237,6 +239,9 @@ public class ExpressionParser<E> {
             if (nextChar == '=') {
                 eatNextChar.set(true);
                 return TokenType.GREATER_THAN;
+            } else if (nextChar == '>') {
+                eatNextChar.set(true);
+                return TokenType.SHIFT_RIGHT;
             } else {
                 return TokenType.GREATER;
             }
@@ -293,8 +298,12 @@ public class ExpressionParser<E> {
             return TokenType.DIVIDE;
         }
         
+        if (ch == '%') {
+            return TokenType.MODULO;
+        }
+        
         if (ch == '^') {
-            return TokenType.POWER;
+            return TokenType.BINARY_XOR;
         }
         
         if (ch == '(') {
@@ -370,39 +379,73 @@ public class ExpressionParser<E> {
     
     
     protected enum TokenType {
-        ERROR,          // Invalid token, for example an identifier starting with a digit
-        SAME_AS_LAST,   // The same token as last time
-        NONE,
-        SPACE,          // Any space character outside of a string, like space, newline, ...
-        EQUAL,          // ==
-        NOT_EQUAL,      // !=
-        LESS,           // <
-        LESS_THAN,      // <=
-        GREATER,        // >
-        GREATER_THAN,   // >=
-        ADD,            // +
-        SUBTRACKT,      // -
-        MULTIPLY,       // *
-        DIVIDE,         // /
-        POWER,          // ^
-        BOOLEAN_AND,    // &&
-        BOOLEAN_OR,     // ||
-        BOOLEAN_NOT,    // !
-        BINARY_AND,     // &
-        BINARY_OR,      // |
-        BINARY_NOT,     // ~
-        COMMA,          // ,
-        LEFT_PARENTHESIS,       // (
-        RIGHT_PARENTHESIS,      // )
-        LEFT_SQUARE_BRACKET,    // [
-        RIGHT_SQUARE_BRACKET,   // ]
-        LEFT_CURLY_BRACKET,     // {
-        RIGHT_CURLY_BRACKET,    // }
-        DOT_DOT,                // .. , used for intervalls
-//        NON_ALPHANUMERIC,   // Might be an operator, for example => or &&
-        IDENTIFIER,
-        NUMBER,
-        STRING,
+        // For precedence, see: https://introcs.cs.princeton.edu/java/11precedence/
+        
+        ERROR(-1),          // Invalid token, for example an identifier starting with a digit
+        SAME_AS_LAST(-1),   // The same token as last time
+        NONE(-1),
+        SPACE(-1),          // Any space character outside of a string, like space, newline, ...
+        
+        BOOLEAN_OR(3),     // ||
+        BOOLEAN_AND(4),    // &&
+        
+        BINARY_OR(5),       // |
+        BINARY_XOR(6),      // ^
+        BINARY_AND(7),      // &
+        
+        EQUAL(8),           // ==
+        NOT_EQUAL(8),       // !=
+        
+        LESS(9),            // <
+        LESS_THAN(9),       // <=
+        GREATER(9),         // >
+        GREATER_THAN(9),    // >=
+        
+        SHIFT_LEFT(10),     // <<
+        SHIFT_RIGHT(10),    // >>
+        
+        ADD(11),            // +
+        SUBTRACKT(11),      // -
+        
+        MULTIPLY(12),       // *
+        DIVIDE(12),         // /
+        MODULO(12),         // %
+        
+        BOOLEAN_NOT(14),    // !
+        BINARY_NOT(14),     // ~
+        
+        LEFT_PARENTHESIS(16),       // (
+        RIGHT_PARENTHESIS(16),      // )
+        LEFT_SQUARE_BRACKET(16),    // [
+        RIGHT_SQUARE_BRACKET(16),   // ]
+        LEFT_CURLY_BRACKET(16),     // {
+        RIGHT_CURLY_BRACKET(16),    // }
+        
+        COMMA(20),      // , , used for parameter lists
+        DOT_DOT(20),    // .. , used for intervalls
+        
+        IDENTIFIER(Integer.MAX_VALUE),
+        NUMBER(Integer.MAX_VALUE),
+        STRING(Integer.MAX_VALUE);
+        
+        private final int _priority;
+        
+        private TokenType(int priority) {
+            _priority = priority;
+        }
+        
+        public boolean hasLowerPrecedence(TokenType tokenType) {
+            return _priority < tokenType._priority;
+        }
+        
+        public boolean hasSamePrecedence(TokenType tokenType) {
+            return _priority == tokenType._priority;
+        }
+        
+        public boolean hasHigherPrecedence(TokenType tokenType) {
+            return _priority > tokenType._priority;
+        }
+        
     }
     
     protected final class Token {
