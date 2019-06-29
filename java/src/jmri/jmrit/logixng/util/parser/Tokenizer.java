@@ -1,9 +1,7 @@
-package jmri.jmrit.logixng.util;
+package jmri.jmrit.logixng.util.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -11,59 +9,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class ExpressionParser<E> {
+public class Tokenizer<E> {
     
-    private final Map<String, OperatorInfo<E>> unaryOperators = new HashMap<>();
-    private final Map<String, OperatorInfo<E>> binaryOperators = new HashMap<>();
-    private final Map<String, OperatorInfo<E>> functions = new HashMap<>();
-    
-    
-    public void addUnaryOperator(String operator, OperatorInfo<E> operatorInfo) {
-        unaryOperators.put(operator, operatorInfo);
-    }
-    
-    public void addBinaryOperator(String operator, OperatorInfo<E> operatorInfo) {
-        unaryOperators.put(operator, operatorInfo);
-    }
-    
-    public void addFunction(String operator, OperatorInfo<E> operatorInfo) {
-        unaryOperators.put(operator, operatorInfo);
-    }
-    
-    public ParsedExpression<E> parseExpression(String expression) throws InvalidSyntaxException {
-        List<Token> tokens = getTokens(expression);
-        
-//        ParsedExpression<E> expr = new ParsedExpression<>();
-        
-        TokenType lastTokenType = TokenType.NONE;
-        ExpressionNode<E> exprNode;
-        
-        for (int i = tokens.size(); i > 0; i--) {
-//            System.out.println(tokens.get(i));
-            Token token = tokens.get(i);
-            switch (token.tokenType) {
-                //$FALL-THROUGH$
-                case LEFT_PARENTHESIS:
-                case RIGHT_PARENTHESIS:
-                case IDENTIFIER:
-                case NUMBER:
-                case STRING:
-                    
-                case ERROR:          // Invalid token, for example an identifier starting with a digit
-                case SAME_AS_LAST:   // The same token as last time
-                case NONE:
-                case SPACE:
-                    throw new RuntimeException("this token type should not be here: "+token.tokenType);
-                    
-                default:
-                    throw new RuntimeException("unknown token type: "+token.tokenType);
-            }
-        }
-        
-        return null;
-    }
-    
-    protected List<Token> getTokens(String expression) throws InvalidSyntaxException {
+    public static List<Token> getTokens(String expression) throws InvalidSyntaxException {
         
         List<Token> tokens = new ArrayList<>();
         Token currentToken = new Token();
@@ -75,19 +23,19 @@ public class ExpressionParser<E> {
         
         for (int i=0; i < expression.length(); i++) {
             char ch = expression.charAt(i);
-            char nextChar = ' ';    // An extra space at the end of the string doesn't matter
+            char nextChar = ' ';    // An extra space at the end of the _string doesn't matter
             if (i+1 < expression.length()) {
                 nextChar = expression.charAt(i+1);
             }
             
-            System.out.format("index %d: %s, %s, %c, %c%n", i, currentToken.tokenType.name(), currentToken.string, ch, nextChar);
+            System.out.format("index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
             
             // Handle escaped characters
-            if ((currentToken.tokenType == TokenType.STRING)
+            if ((currentToken._tokenType == TokenType.STRING)
                     && (ch == '\\')
                     && ((nextChar == '\\') || (nextChar == '"'))) {
                 
-                currentToken.string += nextChar;
+                currentToken._string += nextChar;
                 i++;
                 continue;
             }
@@ -96,7 +44,7 @@ public class ExpressionParser<E> {
             System.out.format("index %d: %s, %c%n", i, nextToken.name(), ch);
             
             if (nextToken == TokenType.SAME_AS_LAST) {
-                currentToken.string += ch;
+                currentToken._string += ch;
                 continue;
             }
             
@@ -130,76 +78,76 @@ public class ExpressionParser<E> {
                 case BINARY_OR:
                 case BINARY_NOT:
                 case IDENTIFIER:
-                    if ((currentToken.tokenType != TokenType.NONE) && (currentToken.tokenType != TokenType.SPACE)) {
-                        System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken.tokenType.name(), currentToken.string, ch, nextChar);
+                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
+                        System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
                         tokens.add(currentToken);
                         currentToken = new Token();
                     }
-                    currentToken.tokenType = nextToken;
+                    currentToken._tokenType = nextToken;
                     break;
                     
                 case NUMBER:
-                    if ((currentToken.tokenType == TokenType.NUMBER) && !currentToken.string.isEmpty() && !isNumber(currentToken.string)) {
-                        System.out.format("Not a number: '%s'%n", currentToken.string);
+                    if ((currentToken._tokenType == TokenType.NUMBER) && !currentToken._string.isEmpty() && !isNumber(currentToken._string)) {
+                        System.out.format("Not a number: '%s'%n", currentToken._string);
                         throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
                     }
-                    if ((currentToken.tokenType != TokenType.NONE) && (currentToken.tokenType != TokenType.SPACE)) {
+                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         tokens.add(currentToken);
                         currentToken = new Token();
                     }
-                    currentToken.tokenType = nextToken;
+                    currentToken._tokenType = nextToken;
                     break;
                     
                 case STRING:
-                    if (!currentToken.string.endsWith("\"")) {
+                    if (!currentToken._string.endsWith("\"")) {
                         throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
                     }
-                    if ((currentToken.tokenType != TokenType.NONE) && (currentToken.tokenType != TokenType.SPACE)) {
+                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         tokens.add(currentToken);
                         currentToken = new Token();
                     }
-                    currentToken.tokenType = nextToken;
+                    currentToken._tokenType = nextToken;
                     break;
                     
                 case SPACE:
-//                    if (currentToken.tokenType == TokenType.SPACE) {
+//                    if (currentToken._tokenType == TokenType.SPACE) {
 //                        continue;
 //                    }
                     // Fall through
                     
                 case NONE:
-                    if ((currentToken.tokenType == TokenType.STRING) && !currentToken.string.endsWith("\"")) {
+                    if ((currentToken._tokenType == TokenType.STRING) && !currentToken._string.endsWith("\"")) {
                         throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
                     }
-                    if ((currentToken.tokenType != TokenType.NONE) && (currentToken.tokenType != TokenType.SPACE)) {
+                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         tokens.add(currentToken);
                         currentToken = new Token();
                     }
-                    currentToken.tokenType = nextToken;
+                    currentToken._tokenType = nextToken;
                     break;
                     
                 default:
                     throw new RuntimeException("unknown token type: "+nextToken.name());
             }
             
-            if (currentToken.tokenType != TokenType.SPACE) {
-                currentToken.string += ch;
+            if (currentToken._tokenType != TokenType.SPACE) {
+                currentToken._string += ch;
             }
             
             if (eatNextChar.get()) {
                 i++;
             }
-            System.out.format("New string: '%s'%n", currentToken.string);
+            System.out.format("New string: '%s'%n", currentToken._string);
         }
         
-        if (currentToken.tokenType != TokenType.NONE) {
+        if (currentToken._tokenType != TokenType.NONE) {
             tokens.add(currentToken);
         }
         
         return tokens;
     }
     
-    private TokenType getTokenType(Token currentToken, char ch, char nextChar, AtomicBoolean eatNextChar) {
+    private static TokenType getTokenType(Token currentToken, char ch, char nextChar, AtomicBoolean eatNextChar) {
         
         eatNextChar.set(false);
         
@@ -211,12 +159,12 @@ public class ExpressionParser<E> {
             return TokenType.SPACE;
         }
         
-        if ((currentToken.tokenType == TokenType.STRING) && (ch != '"')) {
+        if ((currentToken._tokenType == TokenType.STRING) && (ch != '"')) {
             return TokenType.SAME_AS_LAST;
         }
         
         if ((ch == '.') && (nextChar == '.')) {
-            if ((currentToken.tokenType != TokenType.DOT_DOT)) {
+            if ((currentToken._tokenType != TokenType.DOT_DOT)) {
                 eatNextChar.set(true);
                 return TokenType.DOT_DOT;
             } else {
@@ -332,12 +280,12 @@ public class ExpressionParser<E> {
             return TokenType.RIGHT_CURLY_BRACKET;
         }
         
-        if ((currentToken.tokenType == TokenType.NUMBER) &&
-                (isNumber(currentToken.string+ch) || isNumber(currentToken.string+ch+nextChar))) {
+        if ((currentToken._tokenType == TokenType.NUMBER) &&
+                (isNumber(currentToken._string+ch) || isNumber(currentToken._string+ch+nextChar))) {
             return TokenType.SAME_AS_LAST;
         }
         
-        if ((currentToken.tokenType == TokenType.IDENTIFIER) && (Character.isLetterOrDigit(ch))) {
+        if ((currentToken._tokenType == TokenType.IDENTIFIER) && (Character.isLetterOrDigit(ch))) {
             return TokenType.SAME_AS_LAST;
         }
         
@@ -345,7 +293,7 @@ public class ExpressionParser<E> {
             return TokenType.NUMBER;
         }
         
-        if ((currentToken.tokenType == TokenType.NUMBER) &&
+        if ((currentToken._tokenType == TokenType.NUMBER) &&
                 (Character.isLetterOrDigit(ch))) {
             return TokenType.ERROR;
         }
@@ -361,103 +309,8 @@ public class ExpressionParser<E> {
         return TokenType.ERROR;
     }
     
-    private boolean isNumber(String str) {
+    private static boolean isNumber(String str) {
         return str.matches("\\d+") || str.matches("\\d+\\.\\d+");
-    }
-    
-    public interface Function<E> {
-        
-        public E call(E param1, E param2);
-    }
-    
-    
-    public interface OperatorInfo<E> {
-        
-        public Function<E> getFunction();
-        
-        public int getPriority();
-        
-    }
-    
-    
-    protected enum TokenType {
-        // For precedence, see: https://introcs.cs.princeton.edu/java/11precedence/
-        
-        ERROR(-1),          // Invalid token, for example an identifier starting with a digit
-        SAME_AS_LAST(-1),   // The same token as last time
-        NONE(-1),
-        SPACE(-1),          // Any space character outside of a string, like space, newline, ...
-        
-        BOOLEAN_OR(3),     // ||
-        BOOLEAN_AND(4),    // &&
-        
-        BINARY_OR(5),       // |
-        BINARY_XOR(6),      // ^
-        BINARY_AND(7),      // &
-        
-        EQUAL(8),           // ==
-        NOT_EQUAL(8),       // !=
-        
-        LESS(9),            // <
-        LESS_THAN(9),       // <=
-        GREATER(9),         // >
-        GREATER_THAN(9),    // >=
-        
-        SHIFT_LEFT(10),     // <<
-        SHIFT_RIGHT(10),    // >>
-        
-        ADD(11),            // +
-        SUBTRACKT(11),      // -
-        
-        MULTIPLY(12),       // *
-        DIVIDE(12),         // /
-        MODULO(12),         // %
-        
-        BOOLEAN_NOT(14),    // !
-        BINARY_NOT(14),     // ~
-        
-        LEFT_PARENTHESIS(16),       // (
-        RIGHT_PARENTHESIS(16),      // )
-        LEFT_SQUARE_BRACKET(16),    // [
-        RIGHT_SQUARE_BRACKET(16),   // ]
-        LEFT_CURLY_BRACKET(16),     // {
-        RIGHT_CURLY_BRACKET(16),    // }
-        
-        COMMA(20),      // , , used for parameter lists
-        DOT_DOT(20),    // .. , used for intervalls
-        
-        IDENTIFIER(Integer.MAX_VALUE),
-        NUMBER(Integer.MAX_VALUE),
-        STRING(Integer.MAX_VALUE);
-        
-        private final int _priority;
-        
-        private TokenType(int priority) {
-            _priority = priority;
-        }
-        
-        public boolean hasLowerPrecedence(TokenType tokenType) {
-            return _priority < tokenType._priority;
-        }
-        
-        public boolean hasSamePrecedence(TokenType tokenType) {
-            return _priority == tokenType._priority;
-        }
-        
-        public boolean hasHigherPrecedence(TokenType tokenType) {
-            return _priority > tokenType._priority;
-        }
-        
-    }
-    
-    protected final class Token {
-        protected TokenType tokenType;
-        protected String string;
-        
-        protected Token() {
-            tokenType = TokenType.NONE;
-            string = "";
-        }
     }
     
 }

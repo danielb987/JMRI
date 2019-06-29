@@ -1,9 +1,10 @@
-package jmri.jmrit.logixng.util;
+package jmri.jmrit.logixng.util.parser;
 
 import java.util.List;
-import jmri.jmrit.logixng.util.ExpressionParser.Function;
-import jmri.jmrit.logixng.util.ExpressionParser.OperatorInfo;
-import jmri.jmrit.logixng.util.ExpressionParser.TokenType;
+import jmri.jmrit.logixng.util.parser.InvalidSyntaxException;
+import jmri.jmrit.logixng.util.parser.Token;
+import jmri.jmrit.logixng.util.parser.Tokenizer;
+import jmri.jmrit.logixng.util.parser.TokenType;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -11,15 +12,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ExpressionParser
+ * Test Tokenizer
  * 
  * @author Daniel Bergqvist 2019
  */
-public class ExpressionParserTest {
+public class TokenizerTest {
 
     @Test
     public void testCtor() {
-        ExpressionParser t = new ExpressionParser();
+        Tokenizer t = new Tokenizer();
         Assert.assertNotNull("not null", t);
     }
     
@@ -81,23 +82,23 @@ public class ExpressionParserTest {
     }
     
     private void checkFirstToken(
-            List<ExpressionParser<Float>.Token> tokens,
+            List<Token> tokens,
             TokenType tokenType, String string) {
         
         Assert.assertTrue("list is not empty", tokens.size() > 0);
-        System.out.format("Type: %s, String: '%s'%n", tokens.get(0).tokenType, tokens.get(0).string);
-        Assert.assertTrue("token type matches", tokens.get(0).tokenType == tokenType);
-        Assert.assertTrue("string matches", string.equals(tokens.get(0).string));
+        System.out.format("Type: %s, String: '%s'%n", tokens.get(0).getTokenType(), tokens.get(0).getString());
+        Assert.assertTrue("token type matches", tokens.get(0).getTokenType() == tokenType);
+        Assert.assertTrue("string matches", string.equals(tokens.get(0).getString()));
         
         tokens.remove(0);
     }
     
     @Test
     public void testGetTokens() throws InvalidSyntaxException {
-        ExpressionParser<Float> parser = new ExpressionParser<>();
+        Tokenizer<Float> parser = new Tokenizer<>();
         Assert.assertNotNull("not null", parser);
         
-        List<ExpressionParser<Float>.Token> tokens;
+        List<Token> tokens;
         
         tokens = parser.getTokens("");
         Assert.assertTrue("list is empty", tokens.isEmpty());
@@ -147,12 +148,12 @@ public class ExpressionParserTest {
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = parser.getTokens("&&");
-        checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the _string.
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = parser.getTokens("R1 && R2");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
-        checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R2");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
@@ -193,7 +194,7 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
         checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
-        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
@@ -208,7 +209,7 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.RIGHT_CURLY_BRACKET, "}");
         checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
-        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
         checkFirstToken(tokens, TokenType.COMMA, ",");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "c");
@@ -227,7 +228,7 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
         checkFirstToken(tokens, TokenType.COMMA, ",");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
-        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "c");
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
@@ -244,7 +245,7 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.IDENTIFIER, "a");
         checkFirstToken(tokens, TokenType.COMMA, ",");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "b");
-        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "c");
         checkFirstToken(tokens, TokenType.COMMA, ",");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "d");
@@ -252,7 +253,7 @@ public class ExpressionParserTest {
         checkFirstToken(tokens, TokenType.IDENTIFIER, "e");
         checkFirstToken(tokens, TokenType.COMMA, ",");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "f");
-        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the string.
+        checkFirstToken(tokens, TokenType.DOT_DOT, ".");    // The second dot is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "g");
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
@@ -285,18 +286,6 @@ public class ExpressionParserTest {
         
     }
     
-    @Test
-    public void testParseAndCalculate() {
-        ExpressionParser<Float> parser = new ExpressionParser<>();
-        Assert.assertNotNull("not null", parser);
-        
-//        parser.addUnaryOperator("-", negateOperator);
-        parser.addBinaryOperator("+", addOperator);
-        parser.addBinaryOperator("-", subtractOperator);
-        parser.addBinaryOperator("*", multiplyOperator);
-        parser.addBinaryOperator("/", divideOperator);
-    }
-    
     // The minimal setup for log4J
     @Before
     public void setUp() {
@@ -310,68 +299,5 @@ public class ExpressionParserTest {
     public void tearDown() {
         JUnitUtil.tearDown();
     }
-    
-    
-/*    
-    private final OperatorInfo<Float> negateOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 + param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 1;
-            }
-        };
-*/    
-    private final OperatorInfo<Float> addOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 + param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 1;
-            }
-        };
-    
-    private final OperatorInfo<Float> subtractOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 - param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 1;
-            }
-        };
-    
-    private final OperatorInfo<Float> multiplyOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 * param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 2;
-            }
-        };
-    
-    private final OperatorInfo<Float> divideOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 / param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 2;
-            }
-        };
-    
     
 }

@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.util;
+package jmri.jmrit.logixng.util.parser;
 
 /**
  * A parsed expression

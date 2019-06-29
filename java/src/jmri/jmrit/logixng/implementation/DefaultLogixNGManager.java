@@ -48,7 +48,6 @@ import jmri.jmrit.logixng.digital.expressions.Timer;
 import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
 import jmri.jmrit.logixng.digital.expressions.True;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
-import jmri.jmrit.logixng.zTest.TestLogixNG;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -64,7 +63,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         implements LogixNG_Manager {
 
     // FOR TESTING ONLY. REMOVE LATER.
-    private TestLogixNG dialog;
+    private boolean hasRunOnce = false;
     
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
@@ -267,10 +266,10 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         
         // FOR TESTING ONLY. REMOVE LATER.
         if (1==0) {
-            if ((dialog == null) && (!GraphicsEnvironment.isHeadless())) {
-                dialog = new TestLogixNG(new javax.swing.JFrame(), false);
-                dialog.setVisible(true);
+            if ((!hasRunOnce) && (!GraphicsEnvironment.isHeadless())) {
 
+                hasRunOnce = true;
+                
                 for (jmri.Logix l : InstanceManager.getDefault(jmri.LogixManager.class).getNamedBeanSet()) {
                     String sysName = l.getSystemName();
                     if (!sysName.equals("SYS") && !sysName.startsWith("RTX")) {

@@ -1,5 +1,6 @@
-package jmri.jmrit.logixng.util;
+package jmri.jmrit.logixng.util.parser;
 
+import jmri.jmrit.logixng.util.parser.ParsedExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
