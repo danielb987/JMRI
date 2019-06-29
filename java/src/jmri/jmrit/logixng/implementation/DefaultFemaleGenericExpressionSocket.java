@@ -28,8 +28,6 @@ import jmri.jmrit.logixng.analog.implementation.DefaultFemaleAnalogExpressionSoc
 import jmri.jmrit.logixng.digital.implementation.DefaultFemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.string.implementation.DefaultFemaleStringExpressionSocket;
 import jmri.util.TypeConversionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,7 +42,7 @@ public class DefaultFemaleGenericExpressionSocket
     private final FemaleAnalogExpressionSocket _analogSocket = new DefaultFemaleAnalogExpressionSocket(this, this, "A");
     private final FemaleDigitalExpressionSocket _digitalSocket = new DefaultFemaleDigitalExpressionSocket(this, this, "D");
     private final FemaleStringExpressionSocket _stringSocket = new DefaultFemaleStringExpressionSocket(this, this, "S");
-    private boolean do_i18n;
+    private boolean _do_i18n;
     
     public DefaultFemaleGenericExpressionSocket(
             SocketType socketType,
@@ -178,6 +176,14 @@ public class DefaultFemaleGenericExpressionSocket
         return _socketType;
     }
     
+    public void setDoI18N(boolean do_i18n) {
+        _do_i18n = do_i18n;
+    }
+    
+    public boolean getDoI18N() {
+        return _do_i18n;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void initEvaluation() {
@@ -193,7 +199,7 @@ public class DefaultFemaleGenericExpressionSocket
             if (_currentSocketType == SocketType.DIGITAL) {
                 return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
-                return TypeConversionUtil.convertToBoolean(evaluateBoolean(isCompleted), do_i18n);
+                return TypeConversionUtil.convertToBoolean(evaluateBoolean(isCompleted), _do_i18n);
             }
         } else {
             return false;
@@ -206,7 +212,7 @@ public class DefaultFemaleGenericExpressionSocket
             if (_currentSocketType == SocketType.ANALOG) {
                 return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
-                return TypeConversionUtil.convertToDouble(evaluateDouble(isCompleted), do_i18n);
+                return TypeConversionUtil.convertToDouble(evaluateDouble(isCompleted), _do_i18n);
             }
         } else {
             return 0.0f;
@@ -219,7 +225,7 @@ public class DefaultFemaleGenericExpressionSocket
             if (_currentSocketType == SocketType.STRING) {
                 return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
-                return TypeConversionUtil.convertToString(evaluateString(isCompleted), do_i18n);
+                return TypeConversionUtil.convertToString(evaluateString(isCompleted), _do_i18n);
             }
         } else {
             return "";
