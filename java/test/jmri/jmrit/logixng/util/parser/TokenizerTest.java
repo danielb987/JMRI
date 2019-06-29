@@ -1,10 +1,6 @@
 package jmri.jmrit.logixng.util.parser;
 
 import java.util.List;
-import jmri.jmrit.logixng.util.parser.InvalidSyntaxException;
-import jmri.jmrit.logixng.util.parser.Token;
-import jmri.jmrit.logixng.util.parser.Tokenizer;
-import jmri.jmrit.logixng.util.parser.TokenType;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -95,83 +91,81 @@ public class TokenizerTest {
     
     @Test
     public void testGetTokens() throws InvalidSyntaxException {
-        Tokenizer parser = new Tokenizer();
-        Assert.assertNotNull("not null", parser);
         
         List<Token> tokens;
         
-        tokens = parser.getTokens("");
+        tokens = Tokenizer.getTokens("");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1ABC");
+        tokens = Tokenizer.getTokens("R1ABC");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1ABC");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1ABC");
+        tokens = Tokenizer.getTokens("R1ABC");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1ABC");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("321");
+        tokens = Tokenizer.getTokens("321");
         checkFirstToken(tokens, TokenType.NUMBER, "321");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("32.221");
+        tokens = Tokenizer.getTokens("32.221");
         checkFirstToken(tokens, TokenType.NUMBER, "32.221");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("321 353");
+        tokens = Tokenizer.getTokens("321 353");
         checkFirstToken(tokens, TokenType.NUMBER, "321");
         checkFirstToken(tokens, TokenType.NUMBER, "353");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("321   353");
+        tokens = Tokenizer.getTokens("321   353");
         checkFirstToken(tokens, TokenType.NUMBER, "321");
         checkFirstToken(tokens, TokenType.NUMBER, "353");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("321354");
+        tokens = Tokenizer.getTokens("321354");
         checkFirstToken(tokens, TokenType.NUMBER, "321354");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("(");
+        tokens = Tokenizer.getTokens("(");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens(")");
+        tokens = Tokenizer.getTokens(")");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("(R1)");
+        tokens = Tokenizer.getTokens("(R1)");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("&&");
+        tokens = Tokenizer.getTokens("&&");
         checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the _string.
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1 && R2");
+        tokens = Tokenizer.getTokens("R1 && R2");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.BOOLEAN_AND, "&");    // The second & is eaten by the parser and not included in the _string.
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R2");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1(x)");
+        tokens = Tokenizer.getTokens("R1(x)");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1[x]");
+        tokens = Tokenizer.getTokens("R1[x]");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.LEFT_SQUARE_BRACKET, "[");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("{x,y,z}[a]");
+        tokens = Tokenizer.getTokens("{x,y,z}[a]");
         checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.COMMA, ",");
@@ -184,7 +178,7 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("{x,y,z}[a..b]");
+        tokens = Tokenizer.getTokens("{x,y,z}[a..b]");
         checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.COMMA, ",");
@@ -199,7 +193,7 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("{x,y,z}[a..b,c]");
+        tokens = Tokenizer.getTokens("{x,y,z}[a..b,c]");
         checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.COMMA, ",");
@@ -216,7 +210,7 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("{x,y,z}[a,b..c]");
+        tokens = Tokenizer.getTokens("{x,y,z}[a,b..c]");
         checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.COMMA, ",");
@@ -233,7 +227,7 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("{x,y,z}[a,b..c,d,e,f..g]");
+        tokens = Tokenizer.getTokens("{x,y,z}[a,b..c,d,e,f..g]");
         checkFirstToken(tokens, TokenType.LEFT_CURLY_BRACKET, "{");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
         checkFirstToken(tokens, TokenType.COMMA, ",");
@@ -258,7 +252,7 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.RIGHT_SQUARE_BRACKET, "]");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("(R1(x))");
+        tokens = Tokenizer.getTokens("(R1(x))");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
@@ -267,7 +261,7 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
-        tokens = parser.getTokens("R1(x)*(y+21.2)-2.12/R12");
+        tokens = Tokenizer.getTokens("R1(x)*(y+21.2)-2.12/R12");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "x");
