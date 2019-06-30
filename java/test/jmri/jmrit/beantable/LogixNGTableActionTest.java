@@ -159,7 +159,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddLogixNG"));  // NOI18N
         Assert.assertNotNull("Found Add LogixNG Frame", addFrame);  // NOI18N
 
-        new JTextFieldOperator(addFrame, 0).setText("105");  // NOI18N
+        new JTextFieldOperator(addFrame, 0).setText("IQ105");  // NOI18N
         new JTextFieldOperator(addFrame, 1).setText("LogixNG 105");  // NOI18N
         new JButtonOperator(addFrame, Bundle.getMessage("ButtonCreate")).push();  // NOI18N
 
