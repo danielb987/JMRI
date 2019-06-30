@@ -106,7 +106,7 @@ public enum TokenType {
         if ((this == TokenType.LEFT_SQUARE_BRACKET)
                 && ((previousTokenType == TokenType.RIGHT_PARENTHESIS)
                         || (previousTokenType == TokenType.RIGHT_CURLY_BRACKET)
-                        || ((previousTokenType != null) && previousTokenType.isLeaf()))) {
+                        || (previousTokenType.isLeaf()))) {
             // The left parenthesis or bracket may follow any operator
             return true;
         }
@@ -116,7 +116,7 @@ public enum TokenType {
                         || (previousTokenType == TokenType.RIGHT_PARENTHESIS)
                         || (previousTokenType == TokenType.RIGHT_SQUARE_BRACKET)
                         || (previousTokenType == TokenType.RIGHT_CURLY_BRACKET)
-                        || ((previousTokenType != null) && previousTokenType.isLeaf()))) {
+                        || (previousTokenType.isLeaf()))) {
             // The left parenthesis or bracket may follow any operator
             return true;
         }
@@ -136,7 +136,7 @@ public enum TokenType {
                         || (previousTokenType == TokenType.RIGHT_PARENTHESIS)
                         || (previousTokenType == TokenType.RIGHT_SQUARE_BRACKET)
                         || (previousTokenType == TokenType.RIGHT_CURLY_BRACKET)
-                        || ((previousTokenType != null) && previousTokenType.isLeaf()))) {
+                        || (previousTokenType.isLeaf()))) {
             // The left parenthesis or bracket may follow any operator
             return true;
         }
