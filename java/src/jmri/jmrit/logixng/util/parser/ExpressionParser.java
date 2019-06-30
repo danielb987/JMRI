@@ -37,15 +37,15 @@ public class ExpressionParser<E> {
     public ParsedExpression parseExpression(String expression) throws InvalidSyntaxException {
         List<Token> tokens = Tokenizer.getTokens(expression);
         
-        List<ExpressionNode> expressionNodeList = new ArrayList<>();
+//        List<ExpressionNode> expressionNodeList = new ArrayList<>();
 //        ParsedExpression<E> expr = new ParsedExpression<>();
         
 //        TokenType lastTokenType = TokenType.NONE;
 //        ExpressionNode<E> exprNode;
         
-        List<ExpressionNode> currentExpressionNodeList = new ArrayList<>();
+//        List<ExpressionNode> currentExpressionNodeList = new ArrayList<>();
         
-        Stack<ExpressionNode> stack = new Stack<>();
+//        Stack<ExpressionNode> stack = new Stack<>();
         
         ExpressionNode lastExpressionNode = null;
         
@@ -61,7 +61,7 @@ public class ExpressionParser<E> {
                 throw new RuntimeException("token is null");
             }
             
-            TokenType lastTokenType = (token != null) ? token.getTokenType() : null;
+            TokenType lastTokenType = token.getTokenType();
             if ((lastToken != null) && (! token.getTokenType().canFollow(lastTokenType))) {
                 throw new InvalidSyntaxException("invalid syntax", token.getPos());
             }
