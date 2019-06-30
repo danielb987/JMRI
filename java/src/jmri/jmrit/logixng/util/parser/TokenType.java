@@ -74,6 +74,10 @@ public enum TokenType {
      */
     public boolean canFollow(TokenType previousTokenType) {
         
+        if (previousTokenType == null) {
+            return true;
+        }
+        
         // These tokens are only used by the Tokenizer and should never be
         // visible outside of the Tokenizer.
         if ((this == ERROR)
