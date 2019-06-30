@@ -5,10 +5,10 @@ package jmri.jmrit.logixng.util.parser;
  */
 public class ExpressionNodeIdentifier implements ExpressionNode {
 
-    private final Token _token;
+//    private final Token _token;
     
     ExpressionNodeIdentifier(Token token) {
-        _token = token;
+//        _token = token;
     }
     
     @Override
