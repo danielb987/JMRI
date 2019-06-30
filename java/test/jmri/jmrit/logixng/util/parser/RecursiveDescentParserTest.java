@@ -1,8 +1,8 @@
 package jmri.jmrit.logixng.util.parser;
 
-import jmri.jmrit.logixng.util.parser.ExpressionParser;
-import jmri.jmrit.logixng.util.parser.ExpressionParser.Function;
-import jmri.jmrit.logixng.util.parser.ExpressionParser.OperatorInfo;
+//import jmri.jmrit.logixng.util.parser.RecursiveDescentParser.Function;
+//import jmri.jmrit.logixng.util.parser.RecursiveDescentParser.OperatorInfo;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,23 +14,45 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class ExpressionParserTest {
+public class RecursiveDescentParserTest {
 
     @Test
     public void testCtor() {
-        ExpressionParser t = new ExpressionParser();
+        RecursiveDescentParser t = new RecursiveDescentParser();
         Assert.assertNotNull("not null", t);
     }
     
     
     @Test
     public void testDaniel() throws InvalidSyntaxException {
-        ExpressionParser t = new ExpressionParser();
+        
+        AtomicBoolean exceptionIsThrown = new AtomicBoolean();
+        
+        RecursiveDescentParser t = new RecursiveDescentParser();
         t.parseExpression("");
+        t.parseExpression("134");
+        t.parseExpression("abc");
+        t.parseExpression("\"a little string\"");
+        t.parseExpression("123+2123");
+        t.parseExpression("123*1233");
+        t.parseExpression("12+45*12");
+        t.parseExpression("12*45+34");
+        t.parseExpression("12-23/43");
+        t.parseExpression("12/23-43");
+        
+        exceptionIsThrown.set(false);
+        try {
+            t.parseExpression("12+31*(23-1)+((((9*2+3)-2)/23");
+        } catch (InvalidSyntaxException e) {
+            Assert.assertTrue("exception message matches", "invalid syntax at index 2".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
+        t.parseExpression("12+31*(23-1)+21*((((9*2+3)-2)/23+3)/3+4)");
     }
     
     
-    
+/*    
     @Test
     public void testParseAndCalculate() {
         ExpressionParser<Float> parser = new ExpressionParser<>();
@@ -42,7 +64,7 @@ public class ExpressionParserTest {
         parser.addBinaryOperator("*", multiplyOperator);
         parser.addBinaryOperator("/", divideOperator);
     }
-    
+*/    
     // The minimal setup for log4J
     @Before
     public void setUp() {
@@ -71,6 +93,7 @@ public class ExpressionParserTest {
             }
         };
 */    
+/*    
     private final OperatorInfo<Float> addOperator = new OperatorInfo<Float>() {
             @Override
             public Function<Float> getFunction() {
@@ -118,6 +141,6 @@ public class ExpressionParserTest {
                 return 2;
             }
         };
-    
+*/    
     
 }

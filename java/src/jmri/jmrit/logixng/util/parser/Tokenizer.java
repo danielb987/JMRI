@@ -21,8 +21,12 @@ public class Tokenizer {
         
         AtomicBoolean eatNextChar = new AtomicBoolean(false);
         
+        char ch = ' ';
+        char lastChar;
+        
         for (int i=0; i < expression.length(); i++) {
-            char ch = expression.charAt(i);
+            lastChar = ch;
+            ch = expression.charAt(i);
             char nextChar = ' ';    // An extra space at the end of the _string doesn't matter
             if (i+1 < expression.length()) {
                 nextChar = expression.charAt(i+1);
@@ -30,15 +34,57 @@ public class Tokenizer {
             
             System.out.format("index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
             
-            // Handle escaped characters
-            if ((currentToken._tokenType == TokenType.STRING)
-                    && (ch == '\\')
-                    && ((nextChar == '\\') || (nextChar == '"'))) {
+            
+            
+            // Check for token type STRING
+            if (ch == '\"') {
+                if (Character.isLetterOrDigit(lastChar)) {
+                    throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                }
                 
-                currentToken._string += nextChar;
-                i++;
+                if (currentToken._tokenType == TokenType.SPACE) {
+                    currentToken = new Token();
+                } else if (currentToken._tokenType != TokenType.NONE) {
+                    System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
+                    tokens.add(currentToken);
+                    currentToken = new Token();
+                }
+                currentToken._tokenType = TokenType.STRING;
+                
+                boolean done = false;
+                while (!done) {
+                    i++;
+                    ch = expression.charAt(i);
+                    nextChar = ' ';    // An extra space at the end of the _string doesn't matter
+                    if (i+1 < expression.length()) {
+                        nextChar = expression.charAt(i+1);
+                    }
+                    // Handle escaped characters
+//                    if ((currentToken._tokenType == TokenType.STRING)
+                    if ((ch == '\\') && ((nextChar == '\\') || (nextChar == '"'))) {
+
+                        currentToken._string += nextChar;
+                        i++;
+//                        continue;
+                    } else if (ch != '\"') {
+                        currentToken._string += ch;
+                    }
+                    
+                    done = (ch == '\"');
+                }
+                
+                if (Character.isLetterOrDigit(nextChar)) {
+                    throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                }
+                
+                System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
+                tokens.add(currentToken);
+                currentToken = new Token();
+                
+                // Continue for loop
                 continue;
             }
+            
             
             TokenType nextToken = getTokenType(currentToken, ch, nextChar, eatNextChar);
             System.out.format("index %d: %s, %c%n", i, nextToken.name(), ch);
@@ -62,10 +108,10 @@ public class Tokenizer {
                 case COMMA:
                 case EQUAL:
                 case NOT_EQUAL:
-                case LESS:
                 case LESS_THAN:
-                case GREATER:
+                case LESS_OR_EQUAL:
                 case GREATER_THAN:
+                case GREATER_OR_EQUAL:
                 case ADD:
                 case SUBTRACKT:
                 case MULTIPLY:
@@ -100,6 +146,7 @@ public class Tokenizer {
                     
                 case STRING:
                     if (!currentToken._string.endsWith("\"")) {
+                        System.err.format("String: %s%n", currentToken._string);
                         throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
                     }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
@@ -116,9 +163,9 @@ public class Tokenizer {
                     // Fall through
                     
                 case NONE:
-                    if ((currentToken._tokenType == TokenType.STRING) && !currentToken._string.endsWith("\"")) {
-                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
-                    }
+//                    if ((currentToken._tokenType == TokenType.STRING) && !currentToken._string.endsWith("\"")) {
+//                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+//                    }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         tokens.add(currentToken);
                         currentToken = new Token();
@@ -176,24 +223,24 @@ public class Tokenizer {
         if (ch == '<') {
             if (nextChar == '=') {
                 eatNextChar.set(true);
-                return TokenType.LESS_THAN;
+                return TokenType.LESS_OR_EQUAL;
             } else if (nextChar == '<') {
                 eatNextChar.set(true);
                 return TokenType.SHIFT_LEFT;
             } else {
-                return TokenType.LESS;
+                return TokenType.LESS_THAN;
             }
         }
         
         if (ch == '>') {
             if (nextChar == '=') {
                 eatNextChar.set(true);
-                return TokenType.GREATER_THAN;
+                return TokenType.GREATER_OR_EQUAL;
             } else if (nextChar == '>') {
                 eatNextChar.set(true);
                 return TokenType.SHIFT_RIGHT;
             } else {
-                return TokenType.GREATER;
+                return TokenType.GREATER_THAN;
             }
         }
         

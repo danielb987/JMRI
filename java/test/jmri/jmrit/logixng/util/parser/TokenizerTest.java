@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.util.parser;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +35,9 @@ public class TokenizerTest {
         Assert.assertTrue("Precedence function is correct", !TokenType.BOOLEAN_AND.hasSamePrecedence(TokenType.EQUAL));
         
         // Test precedence
+        Assert.assertTrue("Precedence is correct", TokenType.COMMA.hasLowerPrecedence(TokenType.DOT_DOT));
+        Assert.assertTrue("Precedence is correct", TokenType.DOT_DOT.hasLowerPrecedence(TokenType.BOOLEAN_OR));
+        
         Assert.assertTrue("Precedence is correct", TokenType.BOOLEAN_OR.hasLowerPrecedence(TokenType.BOOLEAN_AND));
         Assert.assertTrue("Precedence is correct", TokenType.BOOLEAN_AND.hasLowerPrecedence(TokenType.BINARY_OR));
         Assert.assertTrue("Precedence is correct", TokenType.BINARY_OR.hasLowerPrecedence(TokenType.BINARY_XOR));
@@ -41,12 +45,12 @@ public class TokenizerTest {
         Assert.assertTrue("Precedence is correct", TokenType.BINARY_AND.hasLowerPrecedence(TokenType.EQUAL));
         
         Assert.assertTrue("Precedence is correct", TokenType.EQUAL.hasSamePrecedence(TokenType.NOT_EQUAL));
-        Assert.assertTrue("Precedence is correct", TokenType.EQUAL.hasLowerPrecedence(TokenType.LESS));
+        Assert.assertTrue("Precedence is correct", TokenType.EQUAL.hasLowerPrecedence(TokenType.LESS_THAN));
         
-        Assert.assertTrue("Precedence is correct", TokenType.LESS.hasSamePrecedence(TokenType.LESS_THAN));
-        Assert.assertTrue("Precedence is correct", TokenType.LESS.hasSamePrecedence(TokenType.GREATER));
-        Assert.assertTrue("Precedence is correct", TokenType.LESS.hasSamePrecedence(TokenType.GREATER_THAN));
-        Assert.assertTrue("Precedence is correct", TokenType.LESS.hasLowerPrecedence(TokenType.SHIFT_LEFT));
+        Assert.assertTrue("Precedence is correct", TokenType.LESS_THAN.hasSamePrecedence(TokenType.LESS_OR_EQUAL));
+        Assert.assertTrue("Precedence is correct", TokenType.LESS_THAN.hasSamePrecedence(TokenType.GREATER_THAN));
+        Assert.assertTrue("Precedence is correct", TokenType.LESS_THAN.hasSamePrecedence(TokenType.GREATER_OR_EQUAL));
+        Assert.assertTrue("Precedence is correct", TokenType.LESS_THAN.hasLowerPrecedence(TokenType.SHIFT_LEFT));
         
         Assert.assertTrue("Precedence is correct", TokenType.SHIFT_LEFT.hasSamePrecedence(TokenType.SHIFT_RIGHT));
         Assert.assertTrue("Precedence is correct", TokenType.SHIFT_LEFT.hasLowerPrecedence(TokenType.ADD));
@@ -68,10 +72,7 @@ public class TokenizerTest {
         Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasSamePrecedence(TokenType.RIGHT_SQUARE_BRACKET));
         Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasSamePrecedence(TokenType.LEFT_CURLY_BRACKET));
         Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasSamePrecedence(TokenType.RIGHT_CURLY_BRACKET));
-        Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasLowerPrecedence(TokenType.COMMA));
-        
-        Assert.assertTrue("Precedence is correct", TokenType.COMMA.hasSamePrecedence(TokenType.DOT_DOT));
-        Assert.assertTrue("Precedence is correct", TokenType.COMMA.hasLowerPrecedence(TokenType.IDENTIFIER));
+        Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasLowerPrecedence(TokenType.IDENTIFIER));
         
         Assert.assertTrue("Precedence is correct", TokenType.IDENTIFIER.hasSamePrecedence(TokenType.NUMBER));
         Assert.assertTrue("Precedence is correct", TokenType.IDENTIFIER.hasSamePrecedence(TokenType.STRING));
@@ -93,6 +94,7 @@ public class TokenizerTest {
     public void testGetTokens() throws InvalidSyntaxException {
         
         List<Token> tokens;
+        AtomicBoolean exceptionIsThrown = new AtomicBoolean();
         
         tokens = Tokenizer.getTokens("");
         Assert.assertTrue("list is empty", tokens.isEmpty());
@@ -125,6 +127,74 @@ public class TokenizerTest {
         
         tokens = Tokenizer.getTokens("321354");
         checkFirstToken(tokens, TokenType.NUMBER, "321354");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("\"A_String\"");
+        checkFirstToken(tokens, TokenType.STRING, "A_String");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("\"A_Str\\\"ing\"");
+        checkFirstToken(tokens, TokenType.STRING, "A_Str\"ing");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("\"A_Str\\\\ing\"");
+        checkFirstToken(tokens, TokenType.STRING, "A_Str\\ing");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("\"A string\"");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("1223 \"A string\"");
+        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("   \"A string\" 1234");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        checkFirstToken(tokens, TokenType.NUMBER, "1234");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("1223*\"A string\"");
+        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.MULTIPLY, "*");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        exceptionIsThrown.set(false);
+        try {
+            Tokenizer.getTokens("\"A string\"1234");
+        } catch (InvalidSyntaxException e) {
+            Assert.assertTrue("exception message matches", "invalid syntax at index 9".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
+        
+        tokens = Tokenizer.getTokens("\"A string\"*232");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        checkFirstToken(tokens, TokenType.MULTIPLY, "*");
+        checkFirstToken(tokens, TokenType.NUMBER, "232");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("1223+\"A string\"*232");
+        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.ADD, "+");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        checkFirstToken(tokens, TokenType.MULTIPLY, "*");
+        checkFirstToken(tokens, TokenType.NUMBER, "232");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("1223 \"A string\"/\" \"");
+        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        checkFirstToken(tokens, TokenType.DIVIDE, "/");
+        checkFirstToken(tokens, TokenType.STRING, " ");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
+        tokens = Tokenizer.getTokens("\"A string\"+\"Another string\"");
+        checkFirstToken(tokens, TokenType.STRING, "A string");
+        checkFirstToken(tokens, TokenType.ADD, "+");
+        checkFirstToken(tokens, TokenType.STRING, "Another string");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("(");

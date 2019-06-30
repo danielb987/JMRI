@@ -7,10 +7,12 @@ public final class Token {
 
     TokenType _tokenType;
     String _string;
+    int _pos;
 
     Token() {
         _tokenType = TokenType.NONE;
         _string = "";
+        _pos = 0;
     }
     
     public TokenType getTokenType() {
@@ -19,6 +21,10 @@ public final class Token {
     
     public String getString() {
         return _string;
+    }
+    
+    public int getPos() {
+        return _pos;
     }
     
 }

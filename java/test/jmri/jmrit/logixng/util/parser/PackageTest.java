@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     ExpressionParserTest.class,
     ParsedExpressionTest.class,
+    RecursiveDescentParserTest.class,
     TokenizerTest.class,
 })
 
