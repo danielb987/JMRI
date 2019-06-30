@@ -42,9 +42,9 @@ public class RecursiveDescentParser {
         boolean result = accept(tokenType);
         if (! result) {
             if (token != null) {
-                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos), token._pos);
+                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos)+". Token "+tokenType.name()+" expected", token._pos);
             } else {
-                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(lastTokenPos), lastTokenPos);
+                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(lastTokenPos)+". Token "+tokenType.name()+" expected", lastTokenPos);
             }
         }
     }
@@ -91,8 +91,7 @@ public class RecursiveDescentParser {
     }
 
     private void condition() throws InvalidSyntaxException {
-//        if (accept(oddsym)) {
-        if (false) {
+        if (accept(TokenType.BOOLEAN_NOT)) {
             expression();
         } else {
             expression();

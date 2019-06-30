@@ -40,11 +40,21 @@ public class RecursiveDescentParserTest {
         t.parseExpression("12-23/43");
         t.parseExpression("12/23-43");
         
+        t.parseExpression("12 < 2");
+        t.parseExpression("12 <= 2");
+        t.parseExpression("12 > 2");
+        t.parseExpression("12 >= 2");
+        t.parseExpression("12 == 2");
+        t.parseExpression("12 != 2");
+        t.parseExpression("!12 < 2");
+//        t.parseExpression("!(12 < 2)");
+        
         exceptionIsThrown.set(false);
         try {
             t.parseExpression("12+31*(23-1)+((((9*2+3)-2)/23");
         } catch (InvalidSyntaxException e) {
-            Assert.assertTrue("exception message matches", "invalid syntax at index 2".equals(e.getMessage()));
+//            System.err.format("Error message: %s%n", e.getMessage());
+            Assert.assertTrue("exception message matches", "invalid syntax at index 2. Token RIGHT_PARENTHESIS expected".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
         Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
