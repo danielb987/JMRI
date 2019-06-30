@@ -69,9 +69,9 @@ If you're attempting to perform this on MS Windows, refer to the MS Windows note
 
 - Update this note by executing the following line in your JMRI repository directory while you _don't_ have this file open in an editor. There are more details in the update-HOWTO.sh comments; arguments when you run it should be last release, this release you're making, the next release; you may need to update what's below:
 ```
-  ./scripts/update-HOWTO.sh 4.17.1 4.17.2 4.17.2
+  ./scripts/update-HOWTO.sh 4.17.1 4.17.2 4.17.3
 ```
-then manually update the end of that line above in this document to be this version being made today, next version to be made later, one after that; i.e. when starting to do *.4, the arguments after you edit it here are *.4 *.5 *.6
+then manually update the end of that line above in this document to be this version being made today, next version to be made later, one after that; i.e. when starting to do *.4, the arguments _after__ you edit it here are *.4 *.5 *.6
 
 - To check the script ran OK, the following should be the release you're doing now: 4.17.1
 
@@ -227,7 +227,7 @@ git push github
 - Commit release note, push and pull back
 
     cd ../website/releasenotes
-    git commit -m"updated 4.17.1 release note" jmri4.17.1.shtml jmri4.17.2.shtml
+    git commit -m"updated 4.17.2 release note" jmri4.17.1.shtml jmri4.17.2.shtml
     git push github
     git pull
     cd ../../JMRI
@@ -284,13 +284,11 @@ FOR THE LAST TEST RELEASE FROM MASTER BEFORE A PRODUCTION RELEASE:
 ```
 The release-4.17.1 branch has been created. 
 
-From now on, please document your changes in the [jmri4.17.1.shtml](https://github.com/JMRI/website/blob/master/releasenotes/jmri4.17.1.shtml) release note file.
+Maintainers, please set the 4.17.2 milestone on pulls from now on, as that will be the next test release from the HEAD of the master branch.
 
-Maintainers, please set the 4.17.1 milestone on pulls from now on, as that will be the next test release from the HEAD of the master branch.
+Jenkins will be creating files shortly at the [CI server](http://builds.jmri.org/jenkins/job/TestReleases/job/4.17.2/)
 
-Jenkins will be creating files shortly at the [CI server](http://builds.jmri.org/jenkins/job/TestReleases/job/4.17.1/)
-
-If you're developing any additional (post-4.17.1) changes that you want in the JMRI 4.16 production release, please start from this branch, i.e. do `git checkout -b release-4.17.1` to start your work.
+If you're developing any additional (post-4.17.2) changes that you want in the JMRI 4.16 production release, please start from this branch, i.e. do `git checkout -b release-4.17.1` to start your work.
 ```
 
 - Pull back to make sure your repository is fully up to date
@@ -366,7 +364,7 @@ If anybody wants to add a change from here on in, they should
 
 If somebody has merged their change into master (or it's branched from master later than the release tag), you have two choices:
 
-- Merge master into the release-4.17.1 branch.  This will bring _everything_ that's been merged in, so remember to update the version markers on those PRs.  Effectively, you've just started the release process later.  Note that the `release.properties` file will have the wrong minor number in it:  You'll have to edit and commit that to get the right number in the release.
+- Merge master into the release-4.17.1 branch.  This will bring _everything_ that's been merged in, so remember to update the version markers on those PRs.  Effectively, you've just started the release process later.  Note that the `release.properties` and `pom.xml` files will have the wrong minor number in them:  You'll have to edit and commit that to get the right number in the release.
 
 - `git cherrypick` just the changes you want. *This is not the recommended approach, as it is error-prone; we've had to withdraw releases in the past due to this.*  Read the documentation on that command carefully and double check your work. If possible, check the contents of the release branch on the GitHub web site to make sure only the changes you wanted were included.
 
@@ -433,9 +431,9 @@ Checksums:
 
 File | SHA256 checksum
 ---|---
-[JMRI.4.17.1+Rf006fc4.dmg](https://github.com/JMRI/JMRI/releases/download/v4.17.1/JMRI.4.17.1+Rf006fc4.dmg) | e4a438800095aded9d8d36d3fa7b766f3e17db366327d435a8f125634b31b4d3
-[JMRI.4.17.1+Rf006fc4.exe](https://github.com/JMRI/JMRI/releases/download/v4.17.1/JMRI.4.17.1+Rf006fc4.exe) | a0212fa68718214074cfd4202bf31d29e479b909eec1210e61eab03869b92990
-[JMRI.4.17.1+Rf006fc4.tgz](https://github.com/JMRI/JMRI/releases/download/v4.17.1/JMRI.4.17.1+Rf006fc4.tgz) | ec280f9c317f6b458e5b21e207a04666b89f9525f41a0e097aa08c817cb777f7
+[JMRI.4.17.1+R4f9f3e1.dmg](https://github.com/JMRI/JMRI/releases/download/v4.17.1/JMRI.4.17.1+R4f9f3e1.dmg) | 8052dc257f5e1ea5d2ebda4722523fd1e8ce8ff3f30c2e4bebf7697421801220
+[JMRI.4.17.1+R4f9f3e1.exe](https://github.com/JMRI/JMRI/releases/download/v4.17.1/JMRI.4.17.1+R4f9f3e1.exe) | c21c6ac56410fc79120f3c63a31e26acd2fb22febf4a9ca09094c900cd7d6b63
+[JMRI.4.17.1+R4f9f3e1.tgz](https://github.com/JMRI/JMRI/releases/download/v4.17.1/JMRI.4.17.1+R4f9f3e1.tgz) | dc987de70150c8a3c1a7ef133d8b1c43a7df45aad0094cff17092815779d579e
 
 
 ```
@@ -749,9 +747,9 @@ Possibilities for automating GitHub release creation:
 Alternatively, if you have shell access to the Jenkins server, you perhaps can upload directly from there, once the initial draft release has been created (this hasn't been tested):
 
 ```
-github-release upload -s {github_secret} -u JMRI -r JMRI -t v4.17.1 -n "JMRI.4.17.1+Rd144052.dmg" -f /var/lib/jenkins/jobs/TestReleases/jobs/4.17.1/workspace/dist/release/JMRI.4.17.1+Rd144052.dmg 
+github-release upload -s {github_secret} -u JMRI -r JMRI -t v4.17.1 -n "JMRI.4.17.2+Rd144052.dmg" -f /var/lib/jenkins/jobs/TestReleases/jobs/4.17.2/workspace/dist/release/JMRI.4.17.1+Rd144052.dmg 
 github-release upload -s {github_secret} -u JMRI -r JMRI -t v4.17.1 -n "JMRI.4.17.1+Rd144052.exe" -f /var/lib/jenkins/jobs/TestReleases/jobs/4.17.1/workspace/dist/release/JMRI.4.17.1+Rd144052.exe 
-github-release upload -s {github_secret} -u JMRI -r JMRI -t v4.17.1 -n "JMRI.4.17.1+Rd144052.tgz" -f /var/lib/jenkins/jobs/TestReleases/jobs/4.17.1/workspace/dist/release/JMRI.4.17.1+Rd144052.tgz 
+github-release upload -s {github_secret} -u JMRI -r JMRI -t v4.17.1 -n "JMRI.4.17.1+Rd144052.tgz" -f /var/lib/jenkins/jobs/TestReleases/jobs/4.17.2/workspace/dist/release/JMRI.4.17.1+Rd144052.tgz 
 ```
 
 (It might be possible to automate this in Ant, see http://stackoverflow.com/questions/24585609/upload-build-artifact-to-github-as-release-in-jenkins )
