@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ActionLightSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    private BeanSelectCreatePanel lightBeanPanel;
+    private BeanSelectCreatePanel<Light> lightBeanPanel;
     private JComboBox<LightState> stateComboBox;
     
     

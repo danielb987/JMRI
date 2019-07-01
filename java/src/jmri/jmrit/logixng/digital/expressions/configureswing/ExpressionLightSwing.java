@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionLightSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    private BeanSelectCreatePanel turnoutBeanPanel;
+    private BeanSelectCreatePanel<Light> lightBeanPanel;
     private JComboBox<Is_IsNot_Enum> is_IsNot_ComboBox;
     private JComboBox<LightState> stateComboBox;
     
@@ -50,7 +50,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         ExpressionLight expression = (ExpressionLight)object;
         
         panel = new JPanel();
-        turnoutBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(LightManager.class), null);
+        lightBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(LightManager.class), null);
         
         is_IsNot_ComboBox = new JComboBox<>();
         for (Is_IsNot_Enum e : Is_IsNot_Enum.values()) {
@@ -64,14 +64,14 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         
         if (expression != null) {
             if (expression.getLight() != null) {
-                turnoutBeanPanel.setDefaultNamedBean(expression.getLight().getBean());
+                lightBeanPanel.setDefaultNamedBean(expression.getLight().getBean());
             }
             is_IsNot_ComboBox.setSelectedItem(expression.get_Is_IsNot());
             stateComboBox.setSelectedItem(expression.getLightState());
         }
         
         panel.add(new JLabel(Bundle.getMessage("BeanNameLight")));
-        panel.add(turnoutBeanPanel);
+        panel.add(lightBeanPanel);
         panel.add(is_IsNot_ComboBox);
         panel.add(stateComboBox);
     }
@@ -92,7 +92,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s%n", systemName);
         ExpressionLight expression = new ExpressionLight(systemName);
         try {
-            Light turnout = (Light)turnoutBeanPanel.getNamedBean();
+            Light turnout = (Light)lightBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -113,7 +113,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionLight expression = new ExpressionLight(systemName, userName);
         try {
-            Light turnout = (Light)turnoutBeanPanel.getNamedBean();
+            Light turnout = (Light)lightBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -133,7 +133,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ExpressionLight expression = (ExpressionLight)object;
         try {
-            Light turnout = (Light)turnoutBeanPanel.getNamedBean();
+            Light turnout = (Light)lightBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -155,12 +155,12 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
      * @return The new output as Light object
      */
     protected Light getLightFromPanel(String reference) {
-        if (turnoutBeanPanel == null) {
+        if (lightBeanPanel == null) {
             return null;
         }
-        turnoutBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
+        lightBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
         try {
-            return (Light) turnoutBeanPanel.getNamedBean();
+            return (Light) lightBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of turnout not found for " + reference);
             return null;
@@ -182,8 +182,8 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     
     @Override
     public void dispose() {
-        if (turnoutBeanPanel != null) {
-            turnoutBeanPanel.dispose();
+        if (lightBeanPanel != null) {
+            lightBeanPanel.dispose();
         }
     }
     

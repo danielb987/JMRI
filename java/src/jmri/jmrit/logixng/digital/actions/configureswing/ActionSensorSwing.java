@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ActionSensorSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    private BeanSelectCreatePanel sensorBeanPanel;
+    private BeanSelectCreatePanel<Sensor> sensorBeanPanel;
     private JComboBox<SensorState> stateComboBox;
     
     

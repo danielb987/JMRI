@@ -65,7 +65,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
                 .getNamedBeanHandle(turnout.getDisplayName(), turnout);
     }
     
-    public NamedBeanHandle getTurnout() {
+    public NamedBeanHandle<Turnout> getTurnout() {
         return _turnoutHandle;
     }
     

@@ -65,7 +65,7 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
                 .getNamedBeanHandle(light.getDisplayName(), light);
     }
     
-    public NamedBeanHandle getSensor() {
+    public NamedBeanHandle<Sensor> getSensor() {
         return _sensorHandle;
     }
     

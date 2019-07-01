@@ -232,6 +232,13 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         throw new UnsupportedOperationException("Not supported yet.");
     }
 */    
+
+    /** {@inheritDoc} */
+    @Override
+    public String getBeanTypeHandled(boolean plural) {
+        return Bundle.getMessage(plural ? "BeanNameDigitalActions" : "BeanNameDigitalAction");
+    }
+    
     static DefaultDigitalActionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe

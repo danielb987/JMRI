@@ -241,6 +241,12 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         return _tsys.get(name);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getBeanTypeHandled(boolean plural) {
+        return Bundle.getMessage(plural ? "BeanNameLogixNGs" : "BeanNameLogixNG");
+    }
+
 //    @Override
 //    public MaleDigitalActionSocket createMaleActionSocket(DigitalAction action) {
 //        return new DefaultMaleActionSocket(action);

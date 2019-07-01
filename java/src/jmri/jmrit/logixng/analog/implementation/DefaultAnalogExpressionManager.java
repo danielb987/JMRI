@@ -208,6 +208,13 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         throw new UnsupportedOperationException("Not supported yet.");
     }
 */    
+
+    /** {@inheritDoc} */
+    @Override
+    public String getBeanTypeHandled(boolean plural) {
+        return Bundle.getMessage(plural ? "BeanNameAnalogExpressions" : "BeanNameAnalogExpression");
+    }
+    
     static DefaultAnalogExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe

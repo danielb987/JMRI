@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    private BeanSelectCreatePanel turnoutBeanPanel;
+    private BeanSelectCreatePanel<Turnout> turnoutBeanPanel;
     private JComboBox<Is_IsNot_Enum> is_IsNot_ComboBox;
     private JComboBox<TurnoutState> stateComboBox;
     

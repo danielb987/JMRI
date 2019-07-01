@@ -889,7 +889,7 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
      * @return false if name has length &lt; 1 after displaying a dialog
      */
     boolean checkLogixNGSysName() {
-        String sName = InstanceManager.getDefault(LogixNG_Manager.class).normalizeSystemName(_systemName.getText());
+        String sName = _systemName.getText();
         if ((sName.length() < 1)) {
             // Entered system name is blank or too short
             JOptionPane.showMessageDialog(addLogixNGFrame,

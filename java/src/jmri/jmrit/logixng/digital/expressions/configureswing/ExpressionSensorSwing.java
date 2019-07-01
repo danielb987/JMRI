@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionSensorSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    private BeanSelectCreatePanel turnoutBeanPanel;
+    private BeanSelectCreatePanel<Sensor> sensorBeanPanel;
     private JComboBox<Is_IsNot_Enum> is_IsNot_ComboBox;
     private JComboBox<SensorState> stateComboBox;
     
@@ -50,7 +50,7 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
         ExpressionSensor expression = (ExpressionSensor)object;
         
         panel = new JPanel();
-        turnoutBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(SensorManager.class), null);
+        sensorBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(SensorManager.class), null);
         
         is_IsNot_ComboBox = new JComboBox<>();
         for (Is_IsNot_Enum e : Is_IsNot_Enum.values()) {
@@ -64,14 +64,14 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
         
         if (expression != null) {
             if (expression.getSensor() != null) {
-                turnoutBeanPanel.setDefaultNamedBean(expression.getSensor().getBean());
+                sensorBeanPanel.setDefaultNamedBean(expression.getSensor().getBean());
             }
             is_IsNot_ComboBox.setSelectedItem(expression.get_Is_IsNot());
             stateComboBox.setSelectedItem(expression.getSensorState());
         }
         
         panel.add(new JLabel(Bundle.getMessage("BeanNameSensor")));
-        panel.add(turnoutBeanPanel);
+        panel.add(sensorBeanPanel);
         panel.add(is_IsNot_ComboBox);
         panel.add(stateComboBox);
     }
@@ -92,7 +92,7 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s%n", systemName);
         ExpressionSensor expression = new ExpressionSensor(systemName);
         try {
-            Sensor turnout = (Sensor)turnoutBeanPanel.getNamedBean();
+            Sensor turnout = (Sensor)sensorBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -113,7 +113,7 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionSensor expression = new ExpressionSensor(systemName, userName);
         try {
-            Sensor turnout = (Sensor)turnoutBeanPanel.getNamedBean();
+            Sensor turnout = (Sensor)sensorBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -133,7 +133,7 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ExpressionSensor expression = (ExpressionSensor)object;
         try {
-            Sensor turnout = (Sensor)turnoutBeanPanel.getNamedBean();
+            Sensor turnout = (Sensor)sensorBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -155,12 +155,12 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
      * @return The new output as Sensor object
      */
     protected Sensor getSensorFromPanel(String reference) {
-        if (turnoutBeanPanel == null) {
+        if (sensorBeanPanel == null) {
             return null;
         }
-        turnoutBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
+        sensorBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
         try {
-            return (Sensor) turnoutBeanPanel.getNamedBean();
+            return (Sensor) sensorBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of turnout not found for " + reference);
             return null;
@@ -182,8 +182,8 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
     
     @Override
     public void dispose() {
-        if (turnoutBeanPanel != null) {
-            turnoutBeanPanel.dispose();
+        if (sensorBeanPanel != null) {
+            sensorBeanPanel.dispose();
         }
     }
     

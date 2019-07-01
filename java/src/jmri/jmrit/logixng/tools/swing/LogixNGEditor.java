@@ -34,6 +34,7 @@ import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.util.JmriJFrame;
+import jmri.swing.NamedBeanComboBox;
 import jmri.util.swing.*;
 import jmri.util.table.ButtonEditor;
 import jmri.util.table.ButtonRenderer;
@@ -66,7 +67,7 @@ public final class LogixNGEditor {
     boolean _suppressReminder = false;
     boolean _suppressIndirectRef = false;
     
-    JmriBeanComboBox _comboNameBox = null;
+    NamedBeanComboBox<LogixNG> _comboNameBox = null;
     
     
     /**

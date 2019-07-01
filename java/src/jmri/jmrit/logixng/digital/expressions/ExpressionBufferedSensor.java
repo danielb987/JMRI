@@ -69,7 +69,7 @@ public class ExpressionBufferedSensor extends AbstractDigitalExpression {
                 .getNamedBeanHandle(sensor.getDisplayName(), sensor);
     }
     
-    public NamedBeanHandle getSensor() {
+    public NamedBeanHandle<Sensor> getSensor() {
         return _sensorHandle;
     }
     

@@ -65,7 +65,7 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
                 .getNamedBeanHandle(light.getDisplayName(), light);
     }
     
-    public NamedBeanHandle getLight() {
+    public NamedBeanHandle<Light> getLight() {
         return _lightHandle;
     }
     
