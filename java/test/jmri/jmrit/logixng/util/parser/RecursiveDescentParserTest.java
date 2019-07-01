@@ -47,7 +47,20 @@ public class RecursiveDescentParserTest {
         t.parseExpression("12 == 2");
         t.parseExpression("12 != 2");
         t.parseExpression("!12 < 2");
-//        t.parseExpression("!(12 < 2)");
+        t.parseExpression("!(12 < 2)");
+        
+        t.parseExpression("2 <= 3");
+        t.parseExpression("2 <= 3 && 3");
+        t.parseExpression("2 <= 3 && 3 > 4");
+        t.parseExpression("4 && 2");
+        t.parseExpression("4 || 2");
+        t.parseExpression("2 <= 3 && 3 > 4 || 2");
+        t.parseExpression("2 <= 3 && 3 > 4 || 2 < 3");
+        t.parseExpression("(2 <= 3) && 3 > 4 || 2 < 3");
+//        t.parseExpression("2 <= (3 && 3) > 4 || 2 < 3");
+        t.parseExpression("2 <= 3 && (3 > 4) || 2 < 3");
+        t.parseExpression("2 <= 3 && (3 > 4) || (2 < 3)");
+        t.parseExpression("(2 <= 3) && (3 > 4) || 2 < 3");
         
         exceptionIsThrown.set(false);
         try {

@@ -1,6 +1,177 @@
 package jmri.jmrit.logixng.util.parser;
 
 /**
+ * Types of tokens.
+ * 
+ * 
+ * condition = "!" expression | expression { ("="|"#"|"<"|"<="|">"|">=") expression } .
+ * 
+ * expression = ["+"|"-"] term {("+"|"-") term} .
+ * 
+ * term = factor {("*"|"/") factor} .
+ * 
+ * factor = identifier | number | string | "(" condition ")" .
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * intervall = expression ".." expression
+ * 
+ * subset_expression_part = expression { ".." expression }
+ * subset_expression = subset_expression_part { "," subset_expression_part }
+ * subset = "[" subset_expression "]"
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * subset = "[" expression { ".." expression } { "," (expression|intervall) } "]"
+ * 
+ * condition = "!" expression | expression ("="|"#"|"<"|"<="|">"|">=") expression .
+ * 
+ * expression = ["+"|"-"] term {("+"|"-") term} .
+ * 
+ * term = factor {("*"|"/") factor} .
+ * 
+ * factor = identifier | number | string | "(" expression ")" .
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * factor = identifier | number | string | "(" expression ")" .
+ * 
+ * parameter_list = a ({"," parameter_list} | ".." 
+ * 
+    COMMA(-2),              // , , used for parameter lists
+    DOT_DOT(-1),            // .. , used for intervalls
+    BOOLEAN_OR(3),  // ||
+    BOOLEAN_AND(4), // &&
+    BINARY_OR(5),   // |
+    BINARY_XOR(6),  // ^
+    BINARY_AND(7),  // &
+    EQUAL(8),       // ==
+    NOT_EQUAL(8),   // !=
+    LESS_THAN(9),       // <
+    LESS_OR_EQUAL(9),   // <=
+    GREATER_THAN(9),    // >
+    GREATER_OR_EQUAL(9),// >=
+    SHIFT_LEFT(10),     // <<
+    SHIFT_RIGHT(10),    // >>
+    ADD(11),            // +
+    SUBTRACKT(11),      // -
+    MULTIPLY(12),       // *
+    DIVIDE(12),         // /
+    MODULO(12),         // %
+    BOOLEAN_NOT(14),    // !
+    BINARY_NOT(14),     // ~
+    LEFT_PARENTHESIS(16),       // (
+    RIGHT_PARENTHESIS(16),      // )
+    LEFT_SQUARE_BRACKET(16),    // [
+    RIGHT_SQUARE_BRACKET(16),   // ]
+    LEFT_CURLY_BRACKET(16),     // {
+    RIGHT_CURLY_BRACKET(16),    // }
+    IDENTIFIER(Integer.MAX_VALUE),
+    NUMBER(Integer.MAX_VALUE),
+    STRING(Integer.MAX_VALUE);
+ * 
+ * 
+ * 
+ * 
+ * -------------------------------------------------------------
+ * 
+ * 
+ * 
+ * 
+ * 
+ * condition = "!" expression | expression ("="|"#"|"<"|"<="|">"|">=") expression .
+ * 
+ * expression = ["+"|"-"] term {("+"|"-") term} .
+ * 
+ * term = factor {("*"|"/") factor} .
+ * 
+ * factor = identifier | number | string | "(" expression ")" .
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * logical_or = 
+ * 
+ * 
+ * 
+ * 
+ * factor = ident | number | string
+ * 
+ * 
+ * 
+ * 
+ *     COMMA(-2),              // , , used for parameter lists
+    DOT_DOT(-1),            // .. , used for intervalls
+    BOOLEAN_OR(3),  // ||
+    BOOLEAN_AND(4), // &&
+    BINARY_OR(5),   // |
+    BINARY_XOR(6),  // ^
+    BINARY_AND(7),  // &
+    EQUAL(8),       // ==
+    NOT_EQUAL(8),   // !=
+    LESS_THAN(9),       // <
+    LESS_OR_EQUAL(9),   // <=
+    GREATER_THAN(9),    // >
+    GREATER_OR_EQUAL(9),// >=
+    SHIFT_LEFT(10),     // <<
+    SHIFT_RIGHT(10),    // >>
+    ADD(11),            // +
+    SUBTRACKT(11),      // -
+    MULTIPLY(12),       // *
+    DIVIDE(12),         // /
+    MODULO(12),         // %
+    BOOLEAN_NOT(14),    // !
+    BINARY_NOT(14),     // ~
+    LEFT_PARENTHESIS(16),       // (
+    RIGHT_PARENTHESIS(16),      // )
+    LEFT_SQUARE_BRACKET(16),    // [
+    RIGHT_SQUARE_BRACKET(16),   // ]
+    LEFT_CURLY_BRACKET(16),     // {
+    RIGHT_CURLY_BRACKET(16),    // }
+    IDENTIFIER(Integer.MAX_VALUE),
+    NUMBER(Integer.MAX_VALUE),
+    STRING(Integer.MAX_VALUE);
+
+ * 
  * 
  */
 public enum TokenType {

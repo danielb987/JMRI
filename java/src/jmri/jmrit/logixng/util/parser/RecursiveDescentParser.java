@@ -58,11 +58,18 @@ public class RecursiveDescentParser {
         } else if (accept(TokenType.STRING)) {
             
         } else if (accept(TokenType.LEFT_PARENTHESIS)) {
-            expression();
+//            expression();
+            condition();
             expect(TokenType.RIGHT_PARENTHESIS);
         } else {
             throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos), token._pos);
         }
+        
+        // Does this factor has an index or a subset? For example: "A string"[2..4,6]
+//        if (accept(TokenType.LEFT_SQUARE_BRACKET)) {
+//            subset_expression();
+//            expect(TokenType.RIGHT_SQUARE_BRACKET);
+//        }
     }
     
     
@@ -107,8 +114,8 @@ public class RecursiveDescentParser {
                 
                 next();
                 expression();
-            } else {
-                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos), token._pos);
+//            } else {
+//                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos), token._pos);
             }
         }
     }

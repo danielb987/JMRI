@@ -262,6 +262,15 @@ public class Tokenizer {
             }
         }
         
+        if (ch == '|') {
+            if (nextChar == '|') {
+                eatNextChar.set(true);
+                return TokenType.BOOLEAN_OR;
+            } else {
+                return TokenType.BINARY_OR;
+            }
+        }
+        
         if (ch == '&') {
             if (nextChar == '&') {
                 eatNextChar.set(true);
