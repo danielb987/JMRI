@@ -84,7 +84,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s%n", systemName);
         ActionTurnout action = new ActionTurnout(systemName);
         try {
-            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            Turnout turnout = turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -104,7 +104,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionTurnout action = new ActionTurnout(systemName, userName);
         try {
-            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            Turnout turnout = turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -123,7 +123,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ActionTurnout action = (ActionTurnout)object;
         try {
-            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            Turnout turnout = turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -149,7 +149,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         }
         turnoutBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
         try {
-            return (Turnout) turnoutBeanPanel.getNamedBean();
+            return turnoutBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of turnout not found for " + reference);
             return null;

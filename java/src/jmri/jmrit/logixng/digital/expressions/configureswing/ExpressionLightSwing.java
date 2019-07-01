@@ -92,7 +92,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s%n", systemName);
         ExpressionLight expression = new ExpressionLight(systemName);
         try {
-            Light turnout = (Light)lightBeanPanel.getNamedBean();
+            Light turnout = lightBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -113,7 +113,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionLight expression = new ExpressionLight(systemName, userName);
         try {
-            Light turnout = (Light)lightBeanPanel.getNamedBean();
+            Light turnout = lightBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -133,7 +133,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ExpressionLight expression = (ExpressionLight)object;
         try {
-            Light turnout = (Light)lightBeanPanel.getNamedBean();
+            Light turnout = lightBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -160,7 +160,7 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
         }
         lightBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
         try {
-            return (Light) lightBeanPanel.getNamedBean();
+            return lightBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of turnout not found for " + reference);
             return null;

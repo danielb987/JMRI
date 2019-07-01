@@ -92,7 +92,7 @@ public class ExpressionBufferedSensorSwing implements SwingConfiguratorInterface
         System.out.format("System name: %s%n", systemName);
         ExpressionBufferedSensor expression = new ExpressionBufferedSensor(systemName);
         try {
-            Sensor turnout = (Sensor)sensorBeanPanel.getNamedBean();
+            Sensor turnout = sensorBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -113,7 +113,7 @@ public class ExpressionBufferedSensorSwing implements SwingConfiguratorInterface
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionBufferedSensor expression = new ExpressionBufferedSensor(systemName, userName);
         try {
-            Sensor turnout = (Sensor)sensorBeanPanel.getNamedBean();
+            Sensor turnout = sensorBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -133,7 +133,7 @@ public class ExpressionBufferedSensorSwing implements SwingConfiguratorInterface
     public void updateObject(@Nonnull Base object) {
         ExpressionBufferedSensor expression = (ExpressionBufferedSensor)object;
         try {
-            Sensor turnout = (Sensor)sensorBeanPanel.getNamedBean();
+            Sensor turnout = sensorBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -160,7 +160,7 @@ public class ExpressionBufferedSensorSwing implements SwingConfiguratorInterface
         }
         sensorBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
         try {
-            return (Sensor) sensorBeanPanel.getNamedBean();
+            return sensorBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of turnout not found for " + reference);
             return null;

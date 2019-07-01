@@ -83,7 +83,7 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s%n", systemName);
         ActionLight action = new ActionLight(systemName);
         try {
-            Light light = (Light)lightBeanPanel.getNamedBean();
+            Light light = lightBeanPanel.getNamedBean();
             if (light != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -103,7 +103,7 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionLight action = new ActionLight(systemName, userName);
         try {
-            Light light = (Light)lightBeanPanel.getNamedBean();
+            Light light = lightBeanPanel.getNamedBean();
             if (light != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -122,7 +122,7 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ActionLight action = (ActionLight)object;
         try {
-            Light light = (Light)lightBeanPanel.getNamedBean();
+            Light light = lightBeanPanel.getNamedBean();
             if (light != null) {
                 NamedBeanHandle<Light> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -148,7 +148,7 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
         }
         lightBeanPanel.setReference(reference); // pass light application description to be put into light Comment
         try {
-            return (Light) lightBeanPanel.getNamedBean();
+            return lightBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of light not found for " + reference);
             return null;

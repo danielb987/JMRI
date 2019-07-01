@@ -83,7 +83,7 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s%n", systemName);
         ActionSensor action = new ActionSensor(systemName);
         try {
-            Sensor sensor = (Sensor)sensorBeanPanel.getNamedBean();
+            Sensor sensor = sensorBeanPanel.getNamedBean();
             if (sensor != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -103,7 +103,7 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
         System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionSensor action = new ActionSensor(systemName, userName);
         try {
-            Sensor sensor = (Sensor)sensorBeanPanel.getNamedBean();
+            Sensor sensor = sensorBeanPanel.getNamedBean();
             if (sensor != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -122,7 +122,7 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ActionSensor action = (ActionSensor)object;
         try {
-            Sensor sensor = (Sensor)sensorBeanPanel.getNamedBean();
+            Sensor sensor = sensorBeanPanel.getNamedBean();
             if (sensor != null) {
                 NamedBeanHandle<Sensor> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -148,7 +148,7 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
         }
         sensorBeanPanel.setReference(reference); // pass sensor application description to be put into sensor Comment
         try {
-            return (Sensor) sensorBeanPanel.getNamedBean();
+            return sensorBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of sensor not found for " + reference);
             return null;

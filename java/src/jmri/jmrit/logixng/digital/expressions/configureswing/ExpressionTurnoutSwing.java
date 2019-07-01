@@ -91,7 +91,7 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     public MaleSocket createNewObject(@Nonnull String systemName) {
         ExpressionTurnout expression = new ExpressionTurnout(systemName);
         try {
-            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            Turnout turnout = turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -111,7 +111,7 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
         ExpressionTurnout expression = new ExpressionTurnout(systemName, userName);
         try {
-            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            Turnout turnout = turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -131,7 +131,7 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     public void updateObject(@Nonnull Base object) {
         ExpressionTurnout expression = (ExpressionTurnout)object;
         try {
-            Turnout turnout = (Turnout)turnoutBeanPanel.getNamedBean();
+            Turnout turnout = turnoutBeanPanel.getNamedBean();
             if (turnout != null) {
                 NamedBeanHandle<Turnout> handle
                         = InstanceManager.getDefault(NamedBeanHandleManager.class)
@@ -158,7 +158,7 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
         }
         turnoutBeanPanel.setReference(reference); // pass turnout application description to be put into turnout Comment
         try {
-            return (Turnout) turnoutBeanPanel.getNamedBean();
+            return turnoutBeanPanel.getNamedBean();
         } catch (jmri.JmriException ex) {
             log.warn("skipping creation of turnout not found for " + reference);
             return null;
