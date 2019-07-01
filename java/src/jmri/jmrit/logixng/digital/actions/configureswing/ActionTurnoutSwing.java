@@ -49,7 +49,7 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         
         panel = new JPanel();
         turnoutBeanPanel = new BeanSelectCreatePanel<>(InstanceManager.getDefault(TurnoutManager.class), null);
-/*        
+        
         stateComboBox = new JComboBox<>();
         for (TurnoutState e : TurnoutState.values()) {
             stateComboBox.addItem(e);
@@ -65,7 +65,6 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
         panel.add(new JLabel(Bundle.getMessage("BeanNameTurnout")));
         panel.add(turnoutBeanPanel);
         panel.add(stateComboBox);
-*/        
     }
     
     /** {@inheritDoc} */
