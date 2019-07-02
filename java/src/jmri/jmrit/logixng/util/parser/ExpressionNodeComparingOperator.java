@@ -5,16 +5,6 @@ package jmri.jmrit.logixng.util.parser;
  */
 public class ExpressionNodeComparingOperator implements ExpressionNode {
 
-    public enum ArithmeticOperator {
-        EQUAL,
-        NOT_EQUAL,
-        LESS_THAN,
-        LESS_OR_EQUAL,
-        GREATER_THAN,
-        GREATER_OR_EQUAL,
-    }
-    
-    private final ArithmeticOperator _oper;
     private final TokenType _tokenType;
     private final ExpressionNode _leftSide;
     private final ExpressionNode _rightSide;
@@ -28,29 +18,14 @@ public class ExpressionNodeComparingOperator implements ExpressionNode {
             throw new IllegalArgumentException("rightSide must not be null");
         }
         
+        // Verify that the token is of the correct type
         switch (_tokenType) {
             case EQUAL:
-                _oper = ArithmeticOperator.EQUAL;
-                break;
-                
             case NOT_EQUAL:
-                _oper = ArithmeticOperator.NOT_EQUAL;
-                break;
-                
             case LESS_THAN:
-                _oper = ArithmeticOperator.LESS_THAN;
-                break;
-                
             case LESS_OR_EQUAL:
-                _oper = ArithmeticOperator.LESS_OR_EQUAL;
-                break;
-                
             case GREATER_THAN:
-                _oper = ArithmeticOperator.GREATER_THAN;
-                break;
-                
             case GREATER_OR_EQUAL:
-                _oper = ArithmeticOperator.GREATER_OR_EQUAL;
                 break;
                 
             default:
