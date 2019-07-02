@@ -63,7 +63,7 @@ public class ExpressionParser<E> {
             
             TokenType lastTokenType = token.getTokenType();
             if ((lastToken != null) && (! token.getTokenType().canFollow(lastTokenType))) {
-                throw new InvalidSyntaxException("invalid syntax", token.getPos());
+//                throw new InvalidSyntaxException("invalid syntax", token.getPos());
             }
             
             ExpressionNode exprNode = null;
@@ -82,7 +82,7 @@ public class ExpressionParser<E> {
                 } else if (lastExpressionNode != null) {
                     exprNode = getExpressionNode(token, lastExpressionNode);
                 } else {
-                    throw new InvalidSyntaxException("invalid syntax", token.getPos());
+//                    throw new InvalidSyntaxException("invalid syntax", token.getPos());
                 }
                 lastToken = token;
                 lastExpressionNode = exprNode;

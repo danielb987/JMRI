@@ -4,6 +4,55 @@ package jmri.jmrit.logixng.util.parser;
  * Types of tokens.
  * 
  * 
+ * 
+ */
+
+/*
+
+Rules:
+
+rule1 = rule2 | rule2 "," rule_1     // a | a , b
+
+rule2 = rule3 | rule3 ".." rule_2    // a | a .. b
+
+rule3 = rule4 | rule4 "||" rule_3      // a | a || b
+rule4 = rule5 | rule5 "&&" rule_4      // a | a && b
+rule5 = rule6 | rule6 "|" rule_5       // a | a | b
+rule6 = rule7 | rule7 "^" rule_6       // a | a ^ b
+rule7 = rule8 | rule8 "&" rule_7       // a | a & b
+rule8 = rule9 | rule9 "==" rule_8 | rule9 "!=" rule_8          // a | a == b | a != b
+rule9 = rule10 | rule10 "<" rule_9 | rule10 "<=" rule_9 | rule10 ">" rule_9 | rule10 ">=" rule_9     // a | a < b | a <= b | a > b | a >= b
+rule10 = rule11 | rule11 "<<" rule_10 | rule11 ">>" rule_10    // a | a << b | a >> b
+rule11 = rule12 | rule12 "+" rule_11 | rule12 "-" rule_11      // a | a + b | a - b
+rule12 = rule14 | rule14 "*" rule_12 | rule14 "/" rule_12 | rule14 "&" rule_12      // a | a * b | a / b | a % b
+
+
+rule14 = rule16 | "!" rule14 | "~" rule14    // a | ! b | ~ b
+
+rule16 = rule20 | "(" rule1 ")"              // a | "(" b ")"
+
+rule20 = identifier | number | string
+
+ * 
+    BOOLEAN_NOT(14),    // !
+    BINARY_NOT(14),     // ~
+    LEFT_PARENTHESIS(16),       // (
+    RIGHT_PARENTHESIS(16),      // )
+    LEFT_SQUARE_BRACKET(16),    // [
+    RIGHT_SQUARE_BRACKET(16),   // ]
+    LEFT_CURLY_BRACKET(16),     // {
+    RIGHT_CURLY_BRACKET(16),    // }
+    IDENTIFIER(Integer.MAX_VALUE),
+    NUMBER(Integer.MAX_VALUE),
+    STRING(Integer.MAX_VALUE);
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * condition = "!" expression | expression { ("="|"#"|"<"|"<="|">"|">=") expression } .
  * 
  * expression = ["+"|"-"] term {("+"|"-") term} .
