@@ -7,29 +7,29 @@ import java.util.List;
  */
 public class RecursiveDescentParser {
 
-    private List<Token> tokens;
-    private int tokenIndex;
-    private Token token;
-    private int lastTokenPos = 0;
+    private List<Token> _tokens;
+    private int _tokenIndex;
+    private Token _token;
+    private int _lastTokenPos = 0;
     
     
     private void next() {
-        tokenIndex++;
-        token = tokens.get(tokenIndex);
+        _tokenIndex++;
+        _token = _tokens.get(_tokenIndex);
     }
     
     
     private boolean accept(TokenType tokenType) throws InvalidSyntaxException {
-        if (token == null) {
+        if (_token == null) {
             return false;
         }
-        if (token._tokenType == tokenType) {
-            tokenIndex++;
-            if (tokenIndex < tokens.size()) {
-                token = tokens.get(tokenIndex);
+        if (_token._tokenType == tokenType) {
+            _tokenIndex++;
+            if (_tokenIndex < _tokens.size()) {
+                _token = _tokens.get(_tokenIndex);
             } else {
-                lastTokenPos = token._pos + token._string.length();
-                token = null;
+                _lastTokenPos = _token._pos + _token._string.length();
+                _token = null;
             }
             return true;
         } else {
@@ -41,16 +41,16 @@ public class RecursiveDescentParser {
     private void expect(TokenType tokenType) throws InvalidSyntaxException {
         boolean result = accept(tokenType);
         if (! result) {
-            if (token != null) {
-                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos)+". Token "+tokenType.name()+" expected", token._pos);
+            if (_token != null) {
+                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(_token._pos)+". Token "+tokenType.name()+" expected", _token._pos);
             } else {
-                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(lastTokenPos)+". Token "+tokenType.name()+" expected", lastTokenPos);
+                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(_lastTokenPos)+". Token "+tokenType.name()+" expected", _lastTokenPos);
             }
         }
     }
     
     
-    private void factor() throws InvalidSyntaxException {
+    private ExpressionNode factor() throws InvalidSyntaxException {
         if (accept(TokenType.IDENTIFIER)) {
             
         } else if (accept(TokenType.NUMBER)) {
@@ -62,7 +62,7 @@ public class RecursiveDescentParser {
             condition();
             expect(TokenType.RIGHT_PARENTHESIS);
         } else {
-            throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(token._pos), token._pos);
+            throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(_token._pos), _token._pos);
         }
         
         // Does this factor has an index or a subset? For example: "A string"[2..4,6]
@@ -75,9 +75,9 @@ public class RecursiveDescentParser {
     
     private void term() throws InvalidSyntaxException {
         factor();
-        while ((token != null)
-                && ((token._tokenType == TokenType.MULTIPLY)
-                        || (token._tokenType == TokenType.DIVIDE))) {
+        while ((_token != null)
+                && ((_token._tokenType == TokenType.MULTIPLY)
+                        || (_token._tokenType == TokenType.DIVIDE))) {
             next();
             factor();
         }
@@ -85,13 +85,13 @@ public class RecursiveDescentParser {
     
     
     private void expression() throws InvalidSyntaxException {
-        if ((token._tokenType == TokenType.ADD) || (token._tokenType == TokenType.SUBTRACKT)) {
+        if ((_token._tokenType == TokenType.ADD) || (_token._tokenType == TokenType.SUBTRACKT)) {
             next();
         }
         term();
-        while ((token != null)
-                && ((token._tokenType == TokenType.ADD)
-                        || (token._tokenType == TokenType.SUBTRACKT))) {
+        while ((_token != null)
+                && ((_token._tokenType == TokenType.ADD)
+                        || (_token._tokenType == TokenType.SUBTRACKT))) {
             next();
             term();
         }
@@ -102,15 +102,15 @@ public class RecursiveDescentParser {
             expression();
         } else {
             expression();
-            if (token == null) {
+            if (_token == null) {
                 return;
             }
-            if ((token._tokenType == TokenType.EQUAL)
-                    || (token._tokenType == TokenType.NOT_EQUAL)
-                    || (token._tokenType == TokenType.LESS_THAN)
-                    || (token._tokenType == TokenType.LESS_OR_EQUAL)
-                    || (token._tokenType == TokenType.GREATER_THAN)
-                    || (token._tokenType == TokenType.GREATER_OR_EQUAL)) {
+            if ((_token._tokenType == TokenType.EQUAL)
+                    || (_token._tokenType == TokenType.NOT_EQUAL)
+                    || (_token._tokenType == TokenType.LESS_THAN)
+                    || (_token._tokenType == TokenType.LESS_OR_EQUAL)
+                    || (_token._tokenType == TokenType.GREATER_THAN)
+                    || (_token._tokenType == TokenType.GREATER_OR_EQUAL)) {
                 
                 next();
                 expression();
@@ -123,14 +123,14 @@ public class RecursiveDescentParser {
     
     
     public ParsedExpression parseExpression(String expression) throws InvalidSyntaxException {
-        tokens = Tokenizer.getTokens(expression);
+        _tokens = Tokenizer.getTokens(expression);
         
-        if (tokens.isEmpty()) {
+        if (_tokens.isEmpty()) {
             return null;
         }
         
-        tokenIndex = 0;
-        token = tokens.get(tokenIndex);
+        _tokenIndex = 0;
+        _token = _tokens.get(_tokenIndex);
         
         condition();
         
