@@ -5,15 +5,6 @@ package jmri.jmrit.logixng.util.parser;
  */
 public class ExpressionNodeArithmeticOperator implements ExpressionNode {
 
-    public enum ArithmeticOperator {
-        ADD,
-        SUBTRACKT,
-        MULTIPLY,
-        DIVIDE,
-        MODULO,
-    }
-    
-    private final ArithmeticOperator _oper;
     private final TokenType _tokenType;
     private final ExpressionNode _leftSide;
     private final ExpressionNode _rightSide;
@@ -27,25 +18,13 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
             throw new IllegalArgumentException("rightSide must not be null");
         }
         
+        // Verify that the token is of the correct type
         switch (_tokenType) {
             case ADD:
-                _oper = ArithmeticOperator.ADD;
-                break;
-                
             case SUBTRACKT:
-                _oper = ArithmeticOperator.SUBTRACKT;
-                break;
-                
             case MULTIPLY:
-                _oper = ArithmeticOperator.MULTIPLY;
-                break;
-                
             case DIVIDE:
-                _oper = ArithmeticOperator.DIVIDE;
-                break;
-                
             case MODULO:
-                _oper = ArithmeticOperator.MODULO;
                 break;
                 
             default:
@@ -91,8 +70,6 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
         String leftSideString = _leftSide != null ? _leftSide.getDefinitionString() : "null";
         String rightSideString = _rightSide != null ? _rightSide.getDefinitionString() : "null";
         return "("+leftSideString+")" + operStr + "("+rightSideString+")";
-//        return "("+leftSideString+")" + operStr + "("+_rightSide.getDefinitionString()+") ";
-//        return "("+_leftSide.getDefinitionString()+")" + operStr + "("+_rightSide.getDefinitionString()+") ";
     }
     
 }
