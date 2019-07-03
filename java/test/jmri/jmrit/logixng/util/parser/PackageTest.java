@@ -8,8 +8,6 @@ import org.junit.runners.Suite;
     ExpressionNodeIdentifierTest.class,
     ExpressionNodeNumberTest.class,
     ExpressionNodeStringTest.class,
-    ExpressionParserTest.class,
-    ParsedExpressionTest.class,
     RecursiveDescentParserTest.class,
     TokenizerTest.class,
 })

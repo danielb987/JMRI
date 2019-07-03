@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.util.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A recursive descent parser
@@ -9,7 +10,12 @@ import java.util.List;
 public class RecursiveDescentParser {
 
     private List<Token> _tokens;
+    private final Map<String, Variable> _variables;
     
+    
+    public RecursiveDescentParser(Map<String, Variable> variables) {
+        _variables = variables;
+    }
     
     private State next(State state) {
         int newTokenIndex = state._tokenIndex+1;
@@ -350,7 +356,7 @@ public class RecursiveDescentParser {
 
             State newState;
             if ((newState = accept(TokenType.IDENTIFIER, state)) != null) {
-                ExpressionNodeIdentifier expressionNodeIdentifier = new ExpressionNodeIdentifier(newState._lastToken);
+                ExpressionNodeIdentifier expressionNodeIdentifier = new ExpressionNodeIdentifier(newState._lastToken, _variables);
                 State newState2;
                 if ((newState2 = accept(TokenType.LEFT_PARENTHESIS, newState)) != null) {
                     ExpressionNodeAndState exprNodeAndState =
@@ -361,7 +367,6 @@ public class RecursiveDescentParser {
                     newState2 = expect(TokenType.RIGHT_PARENTHESIS, exprNodeAndState._state);
                     return new ExpressionNodeAndState(exprNodeAndState._exprNode, newState2);
                 } else {
-                    System.err.format("Rule20: No parenthesis%n");
                     exprNode = expressionNodeIdentifier;
                 }
             } else if ((newState = accept(TokenType.NUMBER, state)) != null) {

@@ -1,14 +1,18 @@
 package jmri.jmrit.logixng.util.parser;
 
+import java.util.Map;
+
 /**
  * A parsed expression
  */
 public class ExpressionNodeIdentifier implements ExpressionNode {
 
     private final Token _token;
+    private final Variable _variable;
     
-    ExpressionNodeIdentifier(Token token) {
+    ExpressionNodeIdentifier(Token token, Map<String, Variable> variables) {
         _token = token;
+        _variable = variables.get(token._string);
     }
     
     public String getIdentifier() {
@@ -17,8 +21,7 @@ public class ExpressionNodeIdentifier implements ExpressionNode {
     
     @Override
     public Object calculate() {
-        Object value = null;
-        return value;
+        return _variable.getValue();
     }
     
     /** {@inheritDoc} */

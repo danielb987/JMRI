@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.util.parser;
 
+import java.util.HashMap;
+import java.util.Map;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,7 +17,11 @@ public class ExpressionNodeIdentifierTest {
 
     @Test
     public void testCtor() {
-        ExpressionNodeIdentifier t = new ExpressionNodeIdentifier(null);
+        Token token = new Token();
+        token._string = "abc";
+        Map<String, Variable> variables = new HashMap<>();
+        variables.put("abc", null);
+        ExpressionNodeIdentifier t = new ExpressionNodeIdentifier(new Token(), variables);
         Assert.assertNotNull("not null", t);
     }
     

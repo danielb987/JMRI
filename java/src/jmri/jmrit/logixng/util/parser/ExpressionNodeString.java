@@ -13,8 +13,7 @@ public class ExpressionNodeString implements ExpressionNode {
     
     @Override
     public Object calculate() {
-        Object value = null;
-        return value;
+        return _token._string;
     }
     
     /** {@inheritDoc} */

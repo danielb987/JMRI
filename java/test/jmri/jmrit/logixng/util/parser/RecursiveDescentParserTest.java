@@ -2,6 +2,8 @@ package jmri.jmrit.logixng.util.parser;
 
 //import jmri.jmrit.logixng.util.parser.RecursiveDescentParser.Function;
 //import jmri.jmrit.logixng.util.parser.RecursiveDescentParser.OperatorInfo;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -18,25 +20,35 @@ public class RecursiveDescentParserTest {
 
     @Test
     public void testCtor() {
-        RecursiveDescentParser t = new RecursiveDescentParser();
+        RecursiveDescentParser t = new RecursiveDescentParser(null);
         Assert.assertNotNull("not null", t);
     }
     
     
     @Test
-    public void testDaniel() throws InvalidSyntaxException {
+    public void testParseAndCalculate() throws InvalidSyntaxException {
         
         AtomicBoolean exceptionIsThrown = new AtomicBoolean();
+        Map<String, Variable> _variables = new HashMap<>();
         
-        RecursiveDescentParser t = new RecursiveDescentParser();
+        _variables.put("abc", new MyVariable("abc", "ABC"));
+        
+        RecursiveDescentParser t = new RecursiveDescentParser(_variables);
         ExpressionNode exprNode = t.parseExpression("");
         Assert.assertTrue("expression node is null", null == exprNode);
         exprNode = t.parseExpression("134");
         Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+        System.err.format("expected: '%s', %s%n", ((Object)134d), ((Object)134d).getClass().getName());
+        Assert.assertTrue("calculate is correct", ((Object)134d).equals(exprNode.calculate()));
         exprNode = t.parseExpression("abc");
         Assert.assertTrue("expression matches", "Identifier:abc".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", "ABC".equals(exprNode.calculate()));
         exprNode = t.parseExpression("\"a little string\"");
         Assert.assertTrue("expression matches", "String:a little string".equals(exprNode.getDefinitionString()));
+        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+        System.err.format("expected: '%s', %s%n", ((Object)134d), ((Object)134d).getClass().getName());
+        Assert.assertTrue("calculate is correct", "a little string".equals(exprNode.calculate()));
         exprNode = t.parseExpression("123*1233");
         Assert.assertTrue("expression matches", "(Number:123)*(Number:1233)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("123+2123");
@@ -122,19 +134,6 @@ public class RecursiveDescentParserTest {
     }
     
     
-/*    
-    @Test
-    public void testParseAndCalculate() {
-        ExpressionParser<Float> parser = new ExpressionParser<>();
-        Assert.assertNotNull("not null", parser);
-        
-//        parser.addUnaryOperator("-", negateOperator);
-        parser.addBinaryOperator("+", addOperator);
-        parser.addBinaryOperator("-", subtractOperator);
-        parser.addBinaryOperator("*", multiplyOperator);
-        parser.addBinaryOperator("/", divideOperator);
-    }
-*/    
     // The minimal setup for log4J
     @Before
     public void setUp() {
@@ -150,67 +149,24 @@ public class RecursiveDescentParserTest {
     }
     
     
-/*    
-    private final OperatorInfo<Float> negateOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 + param2;
-            }
+    private static class MyVariable implements Variable {
+        
+        private final String _name;
+        private final Object _value;
+        
+        private MyVariable(String name, Object value) {
+            _name = name;
+            _value = value;
+        }
 
-            @Override
-            public int getPriority() {
-                return 1;
-            }
-        };
-*/    
-/*    
-    private final OperatorInfo<Float> addOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 + param2;
-            }
+        @Override
+        public String getName() {
+            return _name;
+        }
 
-            @Override
-            public int getPriority() {
-                return 1;
-            }
-        };
-    
-    private final OperatorInfo<Float> subtractOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 - param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 1;
-            }
-        };
-    
-    private final OperatorInfo<Float> multiplyOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 * param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 2;
-            }
-        };
-    
-    private final OperatorInfo<Float> divideOperator = new OperatorInfo<Float>() {
-            @Override
-            public Function<Float> getFunction() {
-                return (Float param1, Float param2) -> param1 / param2;
-            }
-
-            @Override
-            public int getPriority() {
-                return 2;
-            }
-        };
-*/    
-    
+        @Override
+        public Object getValue() {
+            return _value;
+        }
+    }
 }
