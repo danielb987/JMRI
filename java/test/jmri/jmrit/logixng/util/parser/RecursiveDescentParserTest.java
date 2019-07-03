@@ -106,6 +106,19 @@ public class RecursiveDescentParserTest {
 
         exprNode = t.parseExpression("12+31*(23-1)+21*((((9*2+3)-2)/23+3)/3+4)");
         Assert.assertTrue("expression matches", "((Number:12)+((Number:31)*((Number:23)-(Number:1))))+((Number:21)*((((((((Number:9)*(Number:2))+(Number:3))-(Number:2))/(Number:23))+(Number:3))/(Number:3))+(Number:4)))".equals(exprNode.getDefinitionString()));
+        
+        exprNode = t.parseExpression("abc()");
+        Assert.assertTrue("expression matches", "Function:abc()".equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("abc(x)");
+        Assert.assertTrue("expression matches", "Function:abc(Identifier:x)".equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("abc(x,y,z)");
+        Assert.assertTrue("expression matches", "Function:abc(Identifier:x,Identifier:y,Identifier:z)".equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("abc(x*2+5)");
+        Assert.assertTrue("expression matches", "Function:abc(((Identifier:x)*(Number:2))+(Number:5))".equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("abc((x))");
+        Assert.assertTrue("expression matches", "Function:abc(Identifier:x)".equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("abc(x*(2+3),23,\"Abc\",2)");
+        Assert.assertTrue("expression matches", "Function:abc((Identifier:x)*((Number:2)+(Number:3)),Number:23,String:Abc,Number:2)".equals(exprNode.getDefinitionString()));
     }
     
     

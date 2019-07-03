@@ -1,7 +1,7 @@
 package jmri.jmrit.logixng.util.parser;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.LoggerFactory;
 
 /**
  * A recursive descent parser
@@ -42,11 +42,6 @@ public class RecursiveDescentParser {
         State newState = accept(tokenType, state);
         if (newState == null) {
             throw new InvalidSyntaxException("invalid syntax");
-//            if (state._token != null) {
-//                throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(state._token._pos)+". Token "+tokenType.name()+" expected", state._token._pos);
-//            } else {
-//                throw new InvalidSyntaxException("invalid syntax"+Integer.toString(state._lastTokenPos)+". Token "+tokenType.name()+" expected", state._lastTokenPos);
-//            }
         }
         return newState;
     }
@@ -59,7 +54,7 @@ public class RecursiveDescentParser {
             return null;
         }
         
-        ExpressionNodeAndState exprNodeAndState = rule0.parse(new State(0, _tokens.get(0), 0, new Token()));
+        ExpressionNodeAndState exprNodeAndState = firstRule.parse(new State(0, _tokens.get(0), 0, new Token()));
         
         if (exprNodeAndState == null) {
             return null;
@@ -75,11 +70,6 @@ public class RecursiveDescentParser {
                 && (exprNodeAndState._state._tokenIndex < _tokens.size())) {
             
             throw new InvalidSyntaxException("Invalid syntax. The expression is not fully parsed");
-//            throw new InvalidSyntaxException(
-//                    "invalid syntax at index "
-//                            + Integer.toString(exprNodeAndState._state._token._pos)
-//                            + ". The expression is not fully parsed",
-//                    exprNodeAndState._state._token._pos);
         }
         return exprNodeAndState._exprNode;
     }
@@ -120,9 +110,7 @@ public class RecursiveDescentParser {
     }
     
     
-    private final Rule rule0 = new Rule0();
-    private final Rule rule1 = new Rule1();
-    private final Rule rule2 = new Rule2();
+//    private final Rule rule1 = new Rule1();
     private final Rule rule3 = new Rule3();
     private final Rule rule4 = new Rule4();
     private final Rule rule5 = new Rule5();
@@ -136,29 +124,13 @@ public class RecursiveDescentParser {
     private final Rule rule14 = new Rule14();
     private final Rule rule16 = new Rule16();
     private final Rule rule20 = new Rule20();
+    private final Rule21 rule21 = new Rule21();
     
+    private final Rule firstRule = rule3;
     
-    private class Rule0 implements Rule {
-
-        @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
-            return rule1.parse(state);
-        }
-        
-    }
-    
-    
+/*    
+    // "[" a ".." b "]" - intervalls
     private class Rule1 implements Rule {
-
-        @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
-            return rule2.parse(state);
-        }
-        
-    }
-    
-    
-    private class Rule2 implements Rule {
 
         @Override
         public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
@@ -166,7 +138,7 @@ public class RecursiveDescentParser {
         }
         
     }
-    
+*/    
     
     private class Rule3 implements Rule {
 
@@ -356,18 +328,10 @@ public class RecursiveDescentParser {
             State newState = accept(TokenType.LEFT_PARENTHESIS, state);
             
             if (newState != null) {
-                ExpressionNodeAndState exprNodeAndState = rule0.parse(newState);
+                ExpressionNodeAndState exprNodeAndState = firstRule.parse(newState);
                 if (exprNodeAndState._state._token == null) {
                     throw new InvalidSyntaxException("invalid syntax");
                 }
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState, exprNodeAndState);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state, exprNodeAndState);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state._token, exprNodeAndState);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state._token._tokenType, exprNodeAndState);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state._token._tokenType.name(), exprNodeAndState);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state._token._tokenType.name(), exprNodeAndState._state);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state._token._tokenType.name(), exprNodeAndState._state._token);
-                System.err.format("Rule16: %s, %s%n", exprNodeAndState._state._token._tokenType.name(), exprNodeAndState._state._token._string);
                 newState = expect(TokenType.RIGHT_PARENTHESIS, exprNodeAndState._state);
                 return new ExpressionNodeAndState(exprNodeAndState._exprNode, newState);
             } else {
@@ -386,7 +350,20 @@ public class RecursiveDescentParser {
 
             State newState;
             if ((newState = accept(TokenType.IDENTIFIER, state)) != null) {
-                exprNode = new ExpressionNodeIdentifier(newState._lastToken);
+                ExpressionNodeIdentifier expressionNodeIdentifier = new ExpressionNodeIdentifier(newState._lastToken);
+                State newState2;
+                if ((newState2 = accept(TokenType.LEFT_PARENTHESIS, newState)) != null) {
+                    ExpressionNodeAndState exprNodeAndState =
+                            rule21.parse(newState2, expressionNodeIdentifier.getIdentifier());
+                    if (exprNodeAndState._state._token == null) {
+                        throw new InvalidSyntaxException("invalid syntax");
+                    }
+                    newState2 = expect(TokenType.RIGHT_PARENTHESIS, exprNodeAndState._state);
+                    return new ExpressionNodeAndState(exprNodeAndState._exprNode, newState2);
+                } else {
+                    System.err.format("Rule20: No parenthesis%n");
+                    exprNode = expressionNodeIdentifier;
+                }
             } else if ((newState = accept(TokenType.NUMBER, state)) != null) {
                 exprNode = new ExpressionNodeNumber(newState._lastToken);
             } else if ((newState = accept(TokenType.STRING, state)) != null) {
@@ -408,6 +385,31 @@ public class RecursiveDescentParser {
     }
     
     
-    private final static org.slf4j.Logger log = LoggerFactory.getLogger(RecursiveDescentParser.class);
+    // a "," b "," c - parameter lists
+    private class Rule21 {
+
+        public ExpressionNodeAndState parse(State state, String identifier) throws InvalidSyntaxException {
+            
+            List<ExpressionNode> parameterList = new ArrayList<>();
+            
+            State newState = state;
+            State newState2;
+            if ((accept(TokenType.RIGHT_PARENTHESIS, newState)) == null) {
+                ExpressionNodeAndState exprNodeAndState = rule3.parse(state);
+                parameterList.add(exprNodeAndState._exprNode);
+                
+                while ((newState2 = accept(TokenType.COMMA, exprNodeAndState._state)) != null) {
+                    exprNodeAndState = rule3.parse(newState2);
+                    parameterList.add(exprNodeAndState._exprNode);
+                }
+                
+                newState = exprNodeAndState._state;
+            }
+            ExpressionNode exprNode = new ExpressionNodeFunction(identifier, parameterList);
+            return new ExpressionNodeAndState(exprNode, newState);
+        }
+        
+    }
+    
     
 }

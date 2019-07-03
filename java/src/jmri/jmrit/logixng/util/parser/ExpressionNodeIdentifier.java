@@ -11,6 +11,10 @@ public class ExpressionNodeIdentifier implements ExpressionNode {
         _token = token;
     }
     
+    public String getIdentifier() {
+        return _token._string;
+    }
+    
     @Override
     public Object calculate() {
         Object value = null;
