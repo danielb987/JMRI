@@ -127,7 +127,7 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
     
     
     @Override
-    public Object calculate() throws CalculateException {
+    public Object calculate() throws ParserException {
         
         Object left = _leftSide.calculate();
         Object right = _rightSide.calculate();

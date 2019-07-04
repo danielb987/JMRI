@@ -80,7 +80,7 @@ public class RecursiveDescentParserTest {
     
     
     @Test
-    public void testParseAndCalculate() throws InvalidSyntaxException, CalculateException {
+    public void testParseAndCalculate() throws ParserException {
         
         AtomicBoolean exceptionIsThrown = new AtomicBoolean();
         Map<String, Variable> _variables = new HashMap<>();
@@ -171,7 +171,7 @@ public class RecursiveDescentParserTest {
             t.parseExpression("12+31*(23-1)+((((9*2+3)-2)/23");
         } catch (InvalidSyntaxException e) {
             System.err.format("Error message: %s%n", e.getMessage());
-            Assert.assertTrue("exception message matches", "invalid syntax".equals(e.getMessage()));
+            Assert.assertTrue("exception message matches", "Invalid syntax error".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
         Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
@@ -182,21 +182,30 @@ public class RecursiveDescentParserTest {
                 "((IntNumber:12)+((IntNumber:31)*((IntNumber:23)-(IntNumber:1))))+((IntNumber:21)*((((((((IntNumber:9)*(IntNumber:2))+(IntNumber:3))-(IntNumber:2))/(IntNumber:23))+(IntNumber:3))/(IntNumber:3))+(IntNumber:4)))"
                         .equals(exprNode.getDefinitionString()));
         
-        exprNode = t.parseExpression("abc()");
-        Assert.assertTrue("expression matches", "Function:abc()".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("abc(x)");
-        Assert.assertTrue("expression matches", "Function:abc(Identifier:x)".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("abc(x,y,z)");
-        Assert.assertTrue("expression matches", "Function:abc(Identifier:x,Identifier:y,Identifier:z)".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("abc(x*2+5)");
-        Assert.assertTrue("expression matches", "Function:abc(((Identifier:x)*(IntNumber:2))+(IntNumber:5))".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("abc((x))");
-        Assert.assertTrue("expression matches", "Function:abc(Identifier:x)".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("abc(x*(2+3),23,\"Abc\",2)");
-        Assert.assertTrue(
-                "expression matches",
-                "Function:abc((Identifier:x)*((IntNumber:2)+(IntNumber:3)),IntNumber:23,String:Abc,IntNumber:2)"
-                        .equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("random()");
+        Assert.assertTrue("expression matches", "Function:random()".equals(exprNode.getDefinitionString()));
+        Object result = exprNode.calculate();
+        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
+        Assert.assertTrue("calculate is probably correct", (result instanceof Double) && (((Double)result) >= 0.0) && (((Double)result) <= 1.0));
+        exprNode = t.parseExpression("int(23.56)");
+        Assert.assertTrue("expression matches", "Function:int(FloatNumber:23.56)".equals(exprNode.getDefinitionString()));
+        result = exprNode.calculate();
+        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
+        Assert.assertTrue("calculate is correct", ((Integer)23).equals(exprNode.calculate()));
+        exprNode = t.parseExpression("sin(180,\"deg\")");
+        Assert.assertTrue("expression matches", "Function:sin(IntNumber:180,String:deg)".equals(exprNode.getDefinitionString()));
+        result = exprNode.calculate();
+        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
+        Assert.assertEquals("calculate is correct", 0, (Double)exprNode.calculate(), 1e-15);
+        exprNode = t.parseExpression("int(x*2+5)");
+        Assert.assertTrue("expression matches", "Function:int(((Identifier:x)*(IntNumber:2))+(IntNumber:5))".equals(exprNode.getDefinitionString()));
+        exprNode = t.parseExpression("int((x))");
+        Assert.assertTrue("expression matches", "Function:int(Identifier:x)".equals(exprNode.getDefinitionString()));
+//        exprNode = t.parseExpression("abc(x*(2+3),23,\"Abc\",2)");
+//        Assert.assertTrue(
+//                "expression matches",
+//                "Function:abc((Identifier:x)*((IntNumber:2)+(IntNumber:3)),IntNumber:23,String:Abc,IntNumber:2)"
+//                        .equals(exprNode.getDefinitionString()));
     }
     
     

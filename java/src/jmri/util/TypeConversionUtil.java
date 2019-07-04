@@ -166,6 +166,57 @@ public final class TypeConversionUtil {
     }
     
     /**
+     * Convert a value to a long.
+     * <P>
+     * Rules:
+     * null is converted to 0
+     * empty string is converted to 0
+     * empty collection is converted to 0
+     * an instance of the interface Number is converted to the number
+     * a string that can be parsed as a number is converted to that number.
+     * a string that doesn't start with a digit is converted to 0
+     * <P>
+     * For objects that implement the Reportable interface, the value is fetched
+     * from the method toReportString() before doing the conversion.
+     * 
+     * @param value the value to convert
+     * @return the long value
+     */
+    public static long convertToLong(@Nullable Object value) {
+        if (value == null) {
+            log.warn("the object is null and the returned number is therefore 0.0");
+            return 0;
+        }
+        
+        if (value instanceof Reportable) {
+            value = ((Reportable)value).toReportString();
+        }
+        
+        if (value instanceof Number) {
+//            System.err.format("Number: %1.5f%n", ((Number)value).doubleValue());
+            return ((Number)value).longValue();
+        } else if (value instanceof Boolean) {
+            return ((Boolean)value) ? 1 : 0;
+        } else {
+            String str = value.toString();
+            String patternString = "(\\-?\\d+)";
+            Pattern pattern = Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(str);
+            // Only look at the beginning of the string
+            if (matcher.lookingAt()) {
+                String theNumber = matcher.group(1);
+                long number = Long.parseLong(theNumber);
+//                System.err.format("Number: %1.5f%n", number);
+                log.debug("the string {} is converted to the number {}", str, number);
+                return number;
+            } else {
+                log.warn("the string \"{}\" cannot be converted to a number", str);
+                return 0;
+            }
+        }
+    }
+    
+    /**
      * Convert a value to a double.
      * <P>
      * Rules:

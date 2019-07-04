@@ -165,7 +165,7 @@ public class TokenizerTest {
         try {
             Tokenizer.getTokens("\"A string\"1234");
         } catch (InvalidSyntaxException e) {
-            Assert.assertTrue("exception message matches", "invalid syntax at index 9".equals(e.getMessage()));
+            Assert.assertTrue("exception message matches", "Invalid syntax at index 9".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
         Assert.assertTrue("exception is thrown", exceptionIsThrown.get());

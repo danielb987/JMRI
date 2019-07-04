@@ -47,7 +47,7 @@ public class Tokenizer {
             // Check for token type STRING
             if (ch == '\"') {
                 if (Character.isLetterOrDigit(lastChar)) {
-                    throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                    throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                 }
                 
                 if (currentToken._tokenType == TokenType.SPACE) {
@@ -80,7 +80,7 @@ public class Tokenizer {
                 }
                 
                 if (Character.isLetterOrDigit(nextChar)) {
-                    throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                    throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                 }
                 
                 System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
@@ -102,7 +102,7 @@ public class Tokenizer {
             
             switch (nextToken) {
                 case ERROR:
-                    throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                    throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                     
                 case LEFT_PARENTHESIS:
                 case RIGHT_PARENTHESIS:
@@ -137,23 +137,11 @@ public class Tokenizer {
                     }
                     currentToken._tokenType = nextToken;
                     break;
-/*                    
-                case INTEGER_NUMBER:
-                    if ((currentToken._tokenType == TokenType.INTEGER_NUMBER) && !currentToken._string.isEmpty() && !isIntegerNumber(currentToken._string)) {
-                        System.out.format("Not a number: '%s'%n", currentToken._string);
-                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
-                    }
-                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
-                        tokens.add(currentToken);
-                        currentToken = new Token();
-                    }
-                    currentToken._tokenType = nextToken;
-                    break;
-*/                    
+                    
                 case FLOATING_NUMBER:
                     if ((currentToken._tokenType == TokenType.FLOATING_NUMBER) && !currentToken._string.isEmpty() && !isFloatingNumber(currentToken._string)) {
                         System.out.format("Not a number: '%s'%n", currentToken._string);
-                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                        throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                     }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         addToken(currentToken, tokens);
@@ -165,7 +153,7 @@ public class Tokenizer {
                 case STRING:
                     if (!currentToken._string.endsWith("\"")) {
                         System.err.format("String: %s%n", currentToken._string);
-                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                        throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                     }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         addToken(currentToken, tokens);

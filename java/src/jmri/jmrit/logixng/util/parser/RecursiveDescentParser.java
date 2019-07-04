@@ -6,6 +6,8 @@ import java.util.Map;
 
 /**
  * A recursive descent parser
+ * 
+ * @author Daniel Bergqvist 2019
  */
 public class RecursiveDescentParser {
 
@@ -23,7 +25,7 @@ public class RecursiveDescentParser {
     }
     
     
-    private State accept(TokenType tokenType, State state) throws InvalidSyntaxException {
+    private State accept(TokenType tokenType, State state) throws ParserException {
         if (state._token == null) {
             return null;
         }
@@ -44,16 +46,16 @@ public class RecursiveDescentParser {
     }
     
     
-    private State expect(TokenType tokenType, State state) throws InvalidSyntaxException {
+    private State expect(TokenType tokenType, State state) throws ParserException {
         State newState = accept(tokenType, state);
         if (newState == null) {
-            throw new InvalidSyntaxException("invalid syntax");
+            throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntax"));
         }
         return newState;
     }
     
     
-    public ExpressionNode parseExpression(String expression) throws InvalidSyntaxException {
+    public ExpressionNode parseExpression(String expression) throws ParserException {
         _tokens = Tokenizer.getTokens(expression);
         
         if (_tokens.isEmpty()) {
@@ -75,7 +77,7 @@ public class RecursiveDescentParser {
         if ((exprNodeAndState._state != null)
                 && (exprNodeAndState._state._tokenIndex < _tokens.size())) {
             
-            throw new InvalidSyntaxException("Invalid syntax. The expression is not fully parsed");
+            throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxNotFullyParsed"));
         }
         return exprNodeAndState._exprNode;
     }
@@ -111,7 +113,7 @@ public class RecursiveDescentParser {
     
     private interface Rule {
         
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException;
+        public ExpressionNodeAndState parse(State state) throws ParserException;
         
     }
     
@@ -134,23 +136,12 @@ public class RecursiveDescentParser {
     
     private final Rule firstRule = rule3;
     
-/*    
-    // "[" a ".." b "]" - intervalls
-    private class Rule1 implements Rule {
-
-        @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
-            return rule3.parse(state);
-        }
-        
-    }
-*/    
     
     // <rule3> ::= <rule4> | <rule3> || <rule4>
     private class Rule3 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule4.parse(state);
         }
         
@@ -161,7 +152,7 @@ public class RecursiveDescentParser {
     private class Rule4 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule5.parse(state);
         }
         
@@ -172,7 +163,7 @@ public class RecursiveDescentParser {
     private class Rule5 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule6.parse(state);
         }
         
@@ -183,7 +174,7 @@ public class RecursiveDescentParser {
     private class Rule6 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule7.parse(state);
         }
         
@@ -194,7 +185,7 @@ public class RecursiveDescentParser {
     private class Rule7 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule8.parse(state);
         }
         
@@ -205,7 +196,7 @@ public class RecursiveDescentParser {
     private class Rule8 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             ExpressionNodeAndState leftSide = rule9.parse(state);
             if (leftSide == null) {
                 return null;
@@ -233,7 +224,7 @@ public class RecursiveDescentParser {
     private class Rule9 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             ExpressionNodeAndState leftSide = rule10.parse(state);
             if (leftSide == null) {
                 return null;
@@ -263,7 +254,7 @@ public class RecursiveDescentParser {
     private class Rule10 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule11.parse(state);
         }
         
@@ -274,7 +265,7 @@ public class RecursiveDescentParser {
     private class Rule11 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             ExpressionNodeAndState leftSide = rule12.parse(state);
             if (leftSide == null) {
                 return null;
@@ -302,7 +293,7 @@ public class RecursiveDescentParser {
     private class Rule12 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             ExpressionNodeAndState leftSide = rule14.parse(state);
             if (leftSide == null) {
                 return null;
@@ -331,7 +322,7 @@ public class RecursiveDescentParser {
     private class Rule14 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             return rule16.parse(state);
         }
         
@@ -342,14 +333,14 @@ public class RecursiveDescentParser {
     private class Rule16 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             
             State newState = accept(TokenType.LEFT_PARENTHESIS, state);
             
             if (newState != null) {
                 ExpressionNodeAndState exprNodeAndState = firstRule.parse(newState);
                 if (exprNodeAndState._state._token == null) {
-                    throw new InvalidSyntaxException("invalid syntax");
+                    throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntax"));
                 }
                 newState = expect(TokenType.RIGHT_PARENTHESIS, exprNodeAndState._state);
                 return new ExpressionNodeAndState(exprNodeAndState._exprNode, newState);
@@ -365,7 +356,7 @@ public class RecursiveDescentParser {
     private class Rule20 implements Rule {
 
         @Override
-        public ExpressionNodeAndState parse(State state) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state) throws ParserException {
             ExpressionNode exprNode;
 
             State newState;
@@ -376,7 +367,7 @@ public class RecursiveDescentParser {
                     ExpressionNodeAndState exprNodeAndState =
                             rule21.parse(newState2, expressionNodeIdentifier.getIdentifier());
                     if (exprNodeAndState._state._token == null) {
-                        throw new InvalidSyntaxException("invalid syntax");
+                        throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntax"));
                     }
                     newState2 = expect(TokenType.RIGHT_PARENTHESIS, exprNodeAndState._state);
                     return new ExpressionNodeAndState(exprNodeAndState._exprNode, newState2);
@@ -391,15 +382,8 @@ public class RecursiveDescentParser {
                 exprNode = new ExpressionNodeString(newState._lastToken);
             } else {
                 return null;
-    //            throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(_token._pos), _token._pos);
             }
-
-            // Does this factor has an index or a subset? For example: "A string"[2..4,6]
-    //        if (accept(TokenType.LEFT_SQUARE_BRACKET)) {
-    //            subset_expression();
-    //            expect(TokenType.RIGHT_SQUARE_BRACKET);
-    //        }
-
+            
             return new ExpressionNodeAndState(exprNode, newState);
         }
         
@@ -409,7 +393,7 @@ public class RecursiveDescentParser {
     // <rule21> ::= <empty> | <rule3> | <rule21> , <rule3>
     private class Rule21 {
 
-        public ExpressionNodeAndState parse(State state, String identifier) throws InvalidSyntaxException {
+        public ExpressionNodeAndState parse(State state, String identifier) throws ParserException {
             
             List<ExpressionNode> parameterList = new ArrayList<>();
             
