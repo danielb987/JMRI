@@ -2,12 +2,12 @@ package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.ActionLight;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -85,7 +85,7 @@ public class ActionLightXml extends jmri.managers.configurexml.AbstractNamedBean
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalAction h;
+        DigitalActionBean h;
         if (uname == null) {
             h = new ActionLight(sys);
         } else {

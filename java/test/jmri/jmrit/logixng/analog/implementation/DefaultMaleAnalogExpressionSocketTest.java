@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.analog.expressions.GetAnalogIO;
-import jmri.jmrit.logixng.AnalogExpression;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  * Test ExpressionTimer
@@ -18,7 +18,7 @@ public class DefaultMaleAnalogExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogExpression expression = new GetAnalogIO("IQA55:E321");
+        AnalogExpressionBean expression = new GetAnalogIO("IQA55:E321");
         new DefaultMaleAnalogExpressionSocket(expression);
     }
     

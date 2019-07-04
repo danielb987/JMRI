@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.expressions.Or;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  *
@@ -136,7 +136,7 @@ public class OrXml extends jmri.managers.configurexml.AbstractNamedBeanManagerCo
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpression h;
+        DigitalExpressionBean h;
         if (uname == null) {
             h = new Or(sys, expressionSystemNames);
         } else {

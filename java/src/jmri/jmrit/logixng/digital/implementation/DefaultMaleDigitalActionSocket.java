@@ -12,25 +12,25 @@ import javax.annotation.Nonnull;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
- * Every DigitalAction has an DefaultMaleDigitalActionSocket as its parent.
+ * Every DigitalActionBean has an DefaultMaleDigitalActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
 
     private Base _parent = null;
-    private final DigitalAction _action;
+    private final DigitalActionBean _action;
     private boolean _isActive = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
     
     
-    public DefaultMaleDigitalActionSocket(@Nonnull DigitalAction action) {
+    public DefaultMaleDigitalActionSocket(@Nonnull DigitalActionBean action) {
         _action = action;
     }
     

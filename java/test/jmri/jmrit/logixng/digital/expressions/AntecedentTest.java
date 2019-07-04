@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -22,6 +21,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test And
@@ -45,17 +45,17 @@ public class AntecedentTest implements FemaleSocketListener {
     
     @Test
     public void testDescription() {
-        DigitalExpression e1 = new Antecedent("IQA55:E321");
+        DigitalExpressionBean e1 = new Antecedent("IQA55:E321");
         Assert.assertTrue("Antecedent".equals(e1.getShortDescription()));
         Assert.assertTrue("Antecedent: empty".equals(e1.getLongDescription()));
     }
     
-    private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpression> conditionalVariablesList) throws SocketAlreadyConnectedException {
+    private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList) throws SocketAlreadyConnectedException {
         Antecedent ix1 = new Antecedent("IXIC 1");
         
         int count = 0;
         List<ExpressionEntry> expressionEntryList = new ArrayList<>();
-        for (DigitalExpression expression : conditionalVariablesList) {
+        for (DigitalExpressionBean expression : conditionalVariablesList) {
             String socketName = "E"+Integer.toString(count++);
             FemaleDigitalExpressionSocket socket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
@@ -73,7 +73,7 @@ public class AntecedentTest implements FemaleSocketListener {
         }
     }
     
-    private void testCalculate(int expectedResult, String antecedent, List<DigitalExpression> conditionalVariablesList, String errorMessage) throws SocketAlreadyConnectedException {
+    private void testCalculate(int expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList, String errorMessage) throws SocketAlreadyConnectedException {
         
         AtomicBoolean isCompleted = new AtomicBoolean(true);
         Antecedent ix1 = new Antecedent("IXIC 1", null, antecedent);
@@ -110,21 +110,21 @@ public class AntecedentTest implements FemaleSocketListener {
     
     @Test
     public void testValidate() throws SocketAlreadyConnectedException {
-        DigitalExpression[] conditionalVariables_Empty = { };
-        List<DigitalExpression> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
+        DigitalExpressionBean[] conditionalVariables_Empty = { };
+        List<DigitalExpressionBean> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
         
-        DigitalExpression trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True(conditionalNG));
-//        DigitalExpression falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False(conditionalNG));
+        DigitalExpressionBean trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True(conditionalNG));
+//        DigitalExpressionBean falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False(conditionalNG));
         
-        DigitalExpression[] conditionalVariables_True
+        DigitalExpressionBean[] conditionalVariables_True
                 = { trueExpression };
-        List<DigitalExpression> conditionalVariablesList_True = Arrays.asList(conditionalVariables_True);
+        List<DigitalExpressionBean> conditionalVariablesList_True = Arrays.asList(conditionalVariables_True);
         
-        DigitalExpression[] conditionalVariables_TrueTrueTrue
+        DigitalExpressionBean[] conditionalVariables_TrueTrueTrue
                 = { trueExpression
                         , trueExpression
                         , trueExpression };
-        List<DigitalExpression> conditionalVariablesList_TrueTrueTrue = Arrays.asList(conditionalVariables_TrueTrueTrue);
+        List<DigitalExpressionBean> conditionalVariablesList_TrueTrueTrue = Arrays.asList(conditionalVariables_TrueTrueTrue);
         
         // Test empty antecedent string
         testValidate(EXPECT_FAILURE, "", conditionalVariablesList_Empty);
@@ -165,28 +165,28 @@ public class AntecedentTest implements FemaleSocketListener {
     @Test
     @SuppressWarnings("unused") // test building in progress
     public void testCalculate() throws SocketAlreadyConnectedException {
-        DigitalExpression[] conditionalVariables_Empty = { };
-        List<DigitalExpression> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
+        DigitalExpressionBean[] conditionalVariables_Empty = { };
+        List<DigitalExpressionBean> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
         
-        DigitalExpression trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True(conditionalNG));
-        DigitalExpression falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False(conditionalNG));
+        DigitalExpressionBean trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True(conditionalNG));
+        DigitalExpressionBean falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False(conditionalNG));
         
-        DigitalExpression[] conditionalVariables_True
+        DigitalExpressionBean[] conditionalVariables_True
                 = { trueExpression };
-        List<DigitalExpression> conditionalVariablesList_True = Arrays.asList(conditionalVariables_True);
+        List<DigitalExpressionBean> conditionalVariablesList_True = Arrays.asList(conditionalVariables_True);
         
-        DigitalExpression[] conditionalVariables_False
+        DigitalExpressionBean[] conditionalVariables_False
                 = { falseExpression };
-        List<DigitalExpression> conditionalVariablesList_False = Arrays.asList(conditionalVariables_False);
+        List<DigitalExpressionBean> conditionalVariablesList_False = Arrays.asList(conditionalVariables_False);
         
-        DigitalExpression[] conditionalVariables_TrueTrueTrue
+        DigitalExpressionBean[] conditionalVariables_TrueTrueTrue
                 = { trueExpression
                         , trueExpression
                         , trueExpression };
-        List<DigitalExpression> conditionalVariablesList_TrueTrueTrue = Arrays.asList(conditionalVariables_TrueTrueTrue);
+        List<DigitalExpressionBean> conditionalVariablesList_TrueTrueTrue = Arrays.asList(conditionalVariables_TrueTrueTrue);
         
         // Test with two digit variable numbers
-        DigitalExpression[] conditionalVariables_TrueTrueFalseTrueTrueFalseTrueTrueFalseTrueTrueFalse
+        DigitalExpressionBean[] conditionalVariables_TrueTrueFalseTrueTrueFalseTrueTrueFalseTrueTrueFalse
                 = {trueExpression
                         , trueExpression
                         , falseExpression
@@ -199,7 +199,7 @@ public class AntecedentTest implements FemaleSocketListener {
                         , trueExpression
                         , trueExpression
                         , falseExpression };
-        List<DigitalExpression> conditionalVariablesList_TrueTrueFalseTrueTrueFalseTrueTrueFalseTrueTrueFalse =
+        List<DigitalExpressionBean> conditionalVariablesList_TrueTrueFalseTrueTrueFalseTrueTrueFalseTrueTrueFalse =
                 Arrays.asList(conditionalVariables_TrueTrueFalseTrueTrueFalseTrueTrueFalseTrueTrueFalse);
         
         

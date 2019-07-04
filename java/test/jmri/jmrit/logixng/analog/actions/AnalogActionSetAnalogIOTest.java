@@ -1,11 +1,11 @@
 package jmri.jmrit.logixng.analog.actions;
 
-import jmri.jmrit.logixng.AnalogAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
  * Test SetAnalogIO
@@ -21,7 +21,7 @@ public class AnalogActionSetAnalogIOTest {
     
     @Test
     public void testShortDescription() {
-        AnalogAction analogAction = new SetAnalogIO("IQA55:A321");
+        AnalogActionBean analogAction = new SetAnalogIO("IQA55:A321");
         Assert.assertTrue("String matches", "Set analog none".equals(analogAction.getShortDescription()));
     }
     

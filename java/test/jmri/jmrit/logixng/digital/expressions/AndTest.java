@@ -1,11 +1,11 @@
 package jmri.jmrit.logixng.digital.expressions;
 
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test And
@@ -16,13 +16,13 @@ public class AndTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression t = new And("IQA55:E321");
+        DigitalExpressionBean t = new And("IQA55:E321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpression e1 = new And("IQA55:E321");
+        DigitalExpressionBean e1 = new And("IQA55:E321");
         Assert.assertTrue("And".equals(e1.getShortDescription()));
         Assert.assertTrue("And".equals(e1.getLongDescription()));
     }

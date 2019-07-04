@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test Hold
@@ -16,13 +16,13 @@ public class HoldTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression t = new Hold("IQA55:E321");
+        DigitalExpressionBean t = new Hold("IQA55:E321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpression e1 = new Hold("IQA55:E321");
+        DigitalExpressionBean e1 = new Hold("IQA55:E321");
         Assert.assertTrue("Hold".equals(e1.getShortDescription()));
         Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getLongDescription()));
     }

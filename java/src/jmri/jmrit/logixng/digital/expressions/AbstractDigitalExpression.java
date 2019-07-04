@@ -8,14 +8,14 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.MaleSocket;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  *
  */
 public abstract class AbstractDigitalExpression extends AbstractNamedBean
-        implements DigitalExpression {
+        implements DigitalExpressionBean {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;

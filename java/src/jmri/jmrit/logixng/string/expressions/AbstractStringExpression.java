@@ -4,15 +4,15 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.StringExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
  *
  */
 public abstract class AbstractStringExpression extends AbstractNamedBean
-        implements StringExpression {
+        implements StringExpressionBean {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;

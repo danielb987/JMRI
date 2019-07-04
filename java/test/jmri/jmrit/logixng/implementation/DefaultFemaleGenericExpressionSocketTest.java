@@ -4,7 +4,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket.SocketType;
 import jmri.jmrit.logixng.digital.expressions.And;
@@ -16,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test DefaultFemaleGenericExpressionSocket
@@ -48,8 +48,8 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        DigitalExpression expression = new And("IQA55:E321");
-        DigitalExpression otherExpression = new And("IQA55:E322");
+        DigitalExpressionBean expression = new And("IQA55:E321");
+        DigitalExpressionBean otherExpression = new And("IQA55:E322");
         maleSocket = new DefaultMaleDigitalExpressionSocket(expression);
         otherMaleSocket = new DefaultMaleDigitalExpressionSocket(otherExpression);
         femaleGenericSocket = new DefaultFemaleGenericExpressionSocket(SocketType.GENERIC, null, new FemaleSocketListener() {

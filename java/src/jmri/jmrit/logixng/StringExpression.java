@@ -2,7 +2,6 @@ package jmri.jmrit.logixng;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
-import jmri.NamedBean;
 
 /**
  * String expression is used in LogixNG to answer a question that can give
@@ -10,7 +9,7 @@ import jmri.NamedBean;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface StringExpression extends NamedBean, Base {
+public interface StringExpression extends Base {
     
     /**
      * Initialize evaluation.

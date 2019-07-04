@@ -12,8 +12,8 @@ import jmri.util.ThreadingUtil;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.StringAction;
 import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * Provides the functionality for configuring ActionManagers
@@ -26,10 +26,10 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
     public DefaultStringActionManagerXml() {
     }
 
-    private StringAction getAction(StringAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private StringActionBean getAction(StringActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_action");
         f.setAccessible(true);
-        return (StringAction) f.get(action);
+        return (StringActionBean) f.get(action);
     }
     
     /**
@@ -44,7 +44,7 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
         setStoreElementClass(actions);
         StringActionManager tm = (StringActionManager) o;
         if (tm != null) {
-            for (StringAction action : tm.getNamedBeanSet()) {
+            for (StringActionBean action : tm.getNamedBeanSet()) {
                 log.debug("action system name is " + action.getSystemName());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getAction(action));
@@ -93,11 +93,11 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Utility method to load the individual StringAction objects. If there's no
-     * additional info needed for a specific action type, invoke this with the
-     * parent of the set of StringAction elements.
+     * Utility method to load the individual StringActionBean objects. If there's no
+ additional info needed for a specific action type, invoke this with the
+ parent of the set of StringActionBean elements.
      *
-     * @param actions Element containing the StringAction elements to load.
+     * @param actions Element containing the StringActionBean elements to load.
      */
     public void loadActions(Element actions) {
 /*        
@@ -126,7 +126,7 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            StringAction x = tm.createNewAction(sysName, userName);
+            StringActionBean x = tm.createNewAction(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, actionList.get(i));

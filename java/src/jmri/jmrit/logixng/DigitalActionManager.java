@@ -6,10 +6,10 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import jmri.Manager;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
- * Manager for DigitalAction
+ * Manager for DigitalActionBean
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
@@ -23,11 +23,11 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleDigitalActionSocket registerAction(@Nonnull DigitalAction action)
+    public MaleDigitalActionSocket registerAction(@Nonnull DigitalActionBean action)
             throws IllegalArgumentException;
     
     /**
-     * Create a new system name for an DigitalAction.
+     * Create a new system name for an DigitalActionBean.
      *
      * @param conditionalNG the ConditionalNG that this expression belongs to
      * @return a new system name
@@ -44,19 +44,19 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
             MaleDigitalActionSocket maleSocket);
 
     /**
-     * Get a set of classes that implements the DigitalAction interface.
+     * Get a set of classes that implements the DigitalActionBean interface.
      * 
      * @return a set of entries with category and class
      */
     public Map<Category, List<Class<? extends Base>>> getActionClasses();
 
     /*.*
-     * Add an DigitalAction.
+     * Add an DigitalActionBean.
      *
      * @param action the action to add
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-//    public void addAction(DigitalAction action)
+//    public void addAction(DigitalActionBean action)
 //            throws IllegalArgumentException;
 
     /*.*
@@ -66,18 +66,18 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
      * @param name User name or system name to match
      * @return null if no match found
      */
-//    public DigitalAction getAction(String name);
+//    public DigitalActionBean getAction(String name);
 
-//    public DigitalAction getByUserName(String s);
+//    public DigitalActionBean getByUserName(String s);
 
-//    public DigitalAction getBySystemName(String s);
+//    public DigitalActionBean getBySystemName(String s);
 
     /*.*
-     * Delete DigitalAction by removing it from the manager. The DigitalAction must first be
+     * Delete DigitalActionBean by removing it from the manager. The DigitalActionBean must first be
      * deactivated so it stops processing.
      *
-     * @param x the DigitalAction to delete
+     * @param x the DigitalActionBean to delete
      */
-//    void deleteAction(DigitalAction x);
+//    void deleteAction(DigitalActionBean x);
     
 }

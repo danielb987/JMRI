@@ -3,7 +3,6 @@ package jmri.jmrit.logixng.digital.actions;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
@@ -15,6 +14,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test ActionTurnout
@@ -25,7 +25,7 @@ public class ActionAtomicBooleanTest {
 
     @Test
     public void testCtor() {
-        DigitalAction t = new ActionAtomicBoolean("IQA55:A321", null);
+        DigitalActionBean t = new ActionAtomicBoolean("IQA55:A321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -36,7 +36,7 @@ public class ActionAtomicBooleanTest {
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         conditionalNG.setEnabled(true);
-        DigitalAction action = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
+        DigitalActionBean action = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
         MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
         conditionalNG.getChild(0).connect(socket);
         // The action is not yet executed so the atomic boolean should be false

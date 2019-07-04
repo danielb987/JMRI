@@ -20,7 +20,7 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleAnalogExpressionSocket registerExpression(@Nonnull AnalogExpression expression)
+    public MaleAnalogExpressionSocket registerExpression(@Nonnull AnalogExpressionBean expression)
             throws IllegalArgumentException;
     
     /**

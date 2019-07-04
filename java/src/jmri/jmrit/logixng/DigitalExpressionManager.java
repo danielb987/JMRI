@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import jmri.Manager;
 
 /**
- * Manager for DigitalExpression
+ * Manager for DigitalExpressionBean
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
@@ -20,11 +20,11 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleDigitalExpressionSocket registerExpression(@Nonnull DigitalExpression expression)
+    public MaleDigitalExpressionSocket registerExpression(@Nonnull DigitalExpressionBean expression)
             throws IllegalArgumentException;
     
     /**
-     * Create a new system name for an DigitalExpression.
+     * Create a new system name for an DigitalExpressionBean.
      *
      * @param conditionalNG the ConditionalNG that this expression belongs to
      * @return a new system name
@@ -48,12 +48,12 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses();
 
     /*.*
-     * Add an DigitalExpression.
+     * Add an DigitalExpressionBean.
      *
      * @param expression the expression to add
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-//    public void addExpression(DigitalExpression expression)
+//    public void addExpression(DigitalExpressionBean expression)
 //            throws IllegalArgumentException;
 
     /*.*
@@ -63,11 +63,11 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
      * @param name User name or system name to match
      * @return null if no match found
      */
-//    public DigitalExpression getExpression(String name);
+//    public DigitalExpressionBean getExpression(String name);
 
-//    public DigitalExpression getByUserName(String s);
+//    public DigitalExpressionBean getByUserName(String s);
 
-//    public DigitalExpression getBySystemName(String s);
+//    public DigitalExpressionBean getBySystemName(String s);
 
     /**
      * Delete Expression by removing it from the manager. The Expression must
@@ -75,6 +75,6 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
      *
      * @param x the Expression to delete
      */
-//    void deleteExpression(DigitalExpression x);
+//    void deleteExpression(DigitalExpressionBean x);
 
 }

@@ -17,13 +17,13 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.StringExpression;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringExpressionFactory;
+import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -66,7 +66,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
 //        }
     }
 
-    protected MaleStringExpressionSocket createMaleStringExpressionSocket(StringExpression expression) {
+    protected MaleStringExpressionSocket createMaleStringExpressionSocket(StringExpressionBean expression) {
         MaleStringExpressionSocket socket = new DefaultMaleStringExpressionSocket(expression);
         expression.setParent(socket);
         return socket;
@@ -79,7 +79,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
      * @param expression the bean
      */
     @Override
-    public MaleStringExpressionSocket registerExpression(@Nonnull StringExpression expression)
+    public MaleStringExpressionSocket registerExpression(@Nonnull StringExpressionBean expression)
             throws IllegalArgumentException {
         
         if (expression instanceof MaleStringExpressionSocket) {
@@ -133,8 +133,8 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         // \d+ - The LogixNG ID number
         // :
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // AE - StringExpression
-        // \d+ - The StringExpression ID number
+        // AE - StringExpressionBean
+        // \d+ - The StringExpressionBean ID number
         if (systemName.matches("IQA?\\d+:SEA?\\d+")) {
             return NameValidity.VALID;
         } else {

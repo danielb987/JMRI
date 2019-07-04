@@ -4,12 +4,12 @@ import java.lang.reflect.Field;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.DoStringAction;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -19,13 +19,13 @@ public class DoStringActionXml extends jmri.managers.configurexml.AbstractNamedB
     public DoStringActionXml() {
     }
 
-    private FemaleStringExpressionSocket getAnalogExpressionSocket(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private FemaleStringExpressionSocket getAnalogExpressionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_stringExpressionSocket");
         f.setAccessible(true);
         return (FemaleStringExpressionSocket) f.get(action);
     }
 
-    private FemaleStringActionSocket getAnalogActionSocket(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private FemaleStringActionSocket getAnalogActionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_stringActionSocket");
         f.setAccessible(true);
         return (FemaleStringActionSocket) f.get(action);

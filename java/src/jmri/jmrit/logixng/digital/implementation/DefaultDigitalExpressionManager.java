@@ -20,13 +20,13 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionFactory;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.managers.AbstractManager;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Class providing the basic logic of the DigitalExpressionManager interface.
@@ -70,7 +70,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         }
     }
 
-    protected MaleDigitalExpressionSocket createMaleExpressionSocket(DigitalExpression expression) {
+    protected MaleDigitalExpressionSocket createMaleExpressionSocket(DigitalExpressionBean expression) {
         MaleDigitalExpressionSocket socket = new DefaultMaleDigitalExpressionSocket(expression);
         expression.setParent(socket);
         return socket;
@@ -83,7 +83,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
      * @param expression the bean
      */
     @Override
-    public MaleDigitalExpressionSocket registerExpression(@Nonnull DigitalExpression expression)
+    public MaleDigitalExpressionSocket registerExpression(@Nonnull DigitalExpressionBean expression)
             throws IllegalArgumentException {
         
         if (expression instanceof MaleDigitalExpressionSocket) {
@@ -167,7 +167,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         // D - Digital
         // E - Expression
         // Optional: A - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The DigitalExpression ID number
+        // \d+ - The DigitalExpressionBean ID number
         if (systemName.matches("IQA?\\d+:\\d+:DEA?\\d+")) {
             return NameValidity.VALID;
         } else {
@@ -208,7 +208,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 /*
     @Override
-    public void addExpression(DigitalExpression expression) throws IllegalArgumentException {
+    public void addExpression(DigitalExpressionBean expression) throws IllegalArgumentException {
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
@@ -219,22 +219,22 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 
     @Override
-    public DigitalExpression getExpression(String name) {
+    public DigitalExpressionBean getExpression(String name) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public DigitalExpression getByUserName(String s) {
+    public DigitalExpressionBean getByUserName(String s) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public DigitalExpression getBySystemName(String s) {
+    public DigitalExpressionBean getBySystemName(String s) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void deleteExpression(DigitalExpression x) {
+    public void deleteExpression(DigitalExpressionBean x) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 */    

@@ -4,13 +4,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.jmrit.logixng.digital.implementation.DefaultMaleDigitalActionSocket;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -20,11 +20,11 @@ public class DefaultMaleDigitalActionSocketXml extends jmri.managers.configurexm
     public DefaultMaleDigitalActionSocketXml() {
     }
 
-    private DigitalAction getAction(DefaultMaleDigitalActionSocket maleActionSocket)
+    private DigitalActionBean getAction(DefaultMaleDigitalActionSocket maleActionSocket)
             throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = maleActionSocket.getClass().getDeclaredField("_action");
         f.setAccessible(true);
-        return (DigitalAction) f.get(maleActionSocket);
+        return (DigitalActionBean) f.get(maleActionSocket);
     }
 
     private Base.Lock getLock(DefaultMaleDigitalActionSocket maleActionSocket)
@@ -102,7 +102,7 @@ public class DefaultMaleDigitalActionSocketXml extends jmri.managers.configurexm
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalAction h;
+        DigitalActionBean h;
         if (uname == null) {
             h = new Many(sys);
         } else {

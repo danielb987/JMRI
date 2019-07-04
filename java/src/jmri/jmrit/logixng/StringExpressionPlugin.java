@@ -3,13 +3,13 @@ package jmri.jmrit.logixng;
 import java.util.Map;
 
 /**
- * The parent interface for plugin StringExpression classes.
- * A plugin StringExpression class is a class that implements the
- * StringExpression interface and can be loaded from a JAR file.
+ * The parent interface for plugin StringExpressionBean classes.
+ * A plugin StringExpressionBean class is a class that implements the
+ StringExpressionBean interface and can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface StringExpressionPlugin extends StringExpression {
+public interface StringExpressionPlugin extends StringExpressionBean {
 
     /**
      * Initialize the object.

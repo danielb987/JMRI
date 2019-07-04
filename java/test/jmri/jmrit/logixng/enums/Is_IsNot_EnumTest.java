@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.enums;
 
 // import java.awt.GraphicsEnvironment;
 import jmri.jmrit.logixng.swing.*;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -10,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test SwingToolsTest

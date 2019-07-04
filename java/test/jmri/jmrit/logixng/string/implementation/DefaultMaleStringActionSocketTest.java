@@ -5,8 +5,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.StringAction;
 import jmri.jmrit.logixng.string.actions.SetStringIO;
+import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * Test ExpressionTimer
@@ -17,7 +17,7 @@ public class DefaultMaleStringActionSocketTest {
 
     @Test
     public void testCtor() {
-        StringAction action = new SetStringIO("IQA55:A321");
+        StringActionBean action = new SetStringIO("IQA55:A321");
         new DefaultMaleStringActionSocket(action);
     }
     

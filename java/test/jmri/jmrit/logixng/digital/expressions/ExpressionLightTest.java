@@ -6,9 +6,7 @@ import jmri.JmriException;
 import jmri.Light;
 import jmri.LightManager;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
@@ -23,6 +21,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test ExpressionLight
@@ -33,7 +33,7 @@ public class ExpressionLightTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression t = new ExpressionLight("IQA55:E321", null);
+        DigitalExpressionBean t = new ExpressionLight("IQA55:E321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -63,7 +63,7 @@ public class ExpressionLightTest {
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
         conditionalNG.getChild(0).connect(socketIfThen);
         
@@ -74,7 +74,7 @@ public class ExpressionLightTest {
         MaleSocket socketLight = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionLight);
         socketIfThen.getChild(0).connect(socketLight);
         
-        DigitalAction actionAtomicBoolean = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
+        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
         MaleSocket socketAtomicBoolean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionAtomicBoolean);
         socketIfThen.getChild(1).connect(socketAtomicBoolean);
         

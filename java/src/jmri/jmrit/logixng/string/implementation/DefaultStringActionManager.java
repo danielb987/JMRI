@@ -13,7 +13,6 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.StringAction;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleStringActionSocket;
@@ -23,6 +22,7 @@ import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringActionFactory;
+import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -62,7 +62,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
 //        }
     }
 
-    protected MaleStringActionSocket createMaleActionSocket(StringAction action) {
+    protected MaleStringActionSocket createMaleActionSocket(StringActionBean action) {
         MaleStringActionSocket socket = new DefaultMaleStringActionSocket(action);
         action.setParent(socket);
         return socket;
@@ -75,7 +75,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
      * @param action the bean
      */
     @Override
-    public MaleStringActionSocket registerAction(@Nonnull StringAction action)
+    public MaleStringActionSocket registerAction(@Nonnull StringActionBean action)
             throws IllegalArgumentException {
         
         if (action instanceof MaleStringActionSocket) {
@@ -128,8 +128,8 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         // \d+ - The LogixNG ID number
         // :
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // A - StringAction
-        // \d+ - The StringAction ID number
+        // A - StringActionBean
+        // \d+ - The StringActionBean ID number
         if (systemName.matches("IQA?\\d+:SAA?\\d+")) {
             return NameValidity.VALID;
         } else {

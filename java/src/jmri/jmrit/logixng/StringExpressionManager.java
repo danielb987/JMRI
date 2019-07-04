@@ -20,7 +20,7 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
      * @return the male socket for this expression
      * @throws IllegalArgumentException if the expression has an invalid system name
      */
-    public MaleStringExpressionSocket registerExpression(@Nonnull StringExpression expression)
+    public MaleStringExpressionSocket registerExpression(@Nonnull StringExpressionBean expression)
             throws IllegalArgumentException;
     
     /**

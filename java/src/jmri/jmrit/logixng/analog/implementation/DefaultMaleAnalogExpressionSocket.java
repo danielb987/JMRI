@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
-import jmri.jmrit.logixng.AnalogExpression;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
@@ -18,23 +17,24 @@ import jmri.jmrit.logixng.MaleSocket;
 import jmri.util.Log4JUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
- * Every AnalogExpression has an DefaultMaleAnalogExpressionSocket as its parent.
+ * Every AnalogExpressionBean has an DefaultMaleAnalogExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSocket {
 
     private Base _parent = null;
-    private final AnalogExpression _expression;
+    private final AnalogExpressionBean _expression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
     private boolean _enabled = true;
 
 
-    public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpression expression) {
+    public DefaultMaleAnalogExpressionSocket(@Nonnull AnalogExpressionBean expression) {
         _expression = expression;
     }
 

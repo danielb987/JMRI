@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import jmri.Manager;
 
 /**
- * Manager for AnalogAction
+ * Manager for AnalogActionBean
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
@@ -20,11 +20,11 @@ public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleAnalogActionSocket registerAction(@Nonnull AnalogAction action)
+    public MaleAnalogActionSocket registerAction(@Nonnull AnalogActionBean action)
             throws IllegalArgumentException;
     
     /**
-     * Create a new system name for an AnalogAction.
+     * Create a new system name for an AnalogActionBean.
      *
      * @param conditionalNG the ConditionalNG that this analog action belongs to
      * @return a new system name

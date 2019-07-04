@@ -8,8 +8,8 @@ import jmri.jmrit.logixng.analog.implementation.DefaultAnalogExpressionManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.AnalogExpression;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
@@ -23,10 +23,10 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
     public DefaultAnalogExpressionManagerXml() {
     }
 
-    private AnalogExpression getExpression(AnalogExpression expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private AnalogExpressionBean getExpression(AnalogExpressionBean expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = expression.getClass().getDeclaredField("_expression");
         f.setAccessible(true);
-        return (AnalogExpression) f.get(expression);
+        return (AnalogExpressionBean) f.get(expression);
     }
     
     /**
@@ -41,7 +41,7 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
         setStoreElementClass(expressions);
         AnalogExpressionManager tm = (AnalogExpressionManager) o;
         if (tm != null) {
-            for (AnalogExpression expression : tm.getNamedBeanSet()) {
+            for (AnalogExpressionBean expression : tm.getNamedBeanSet()) {
                 log.debug("expression system name is " + expression.getSystemName());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getExpression(expression));
@@ -123,7 +123,7 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            AnalogExpression x = tm.createNewExpression(sysName, userName);
+            AnalogExpressionBean x = tm.createNewExpression(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, expressionList.get(i));

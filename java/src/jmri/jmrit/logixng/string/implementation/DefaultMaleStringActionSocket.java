@@ -13,23 +13,23 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.MaleStringActionSocket;
-import jmri.jmrit.logixng.StringAction;
+import jmri.jmrit.logixng.StringActionBean;
 
 /**
- * Every StringAction has an DefaultMaleStringActionSocket as its parent.
+ * Every StringActionBean has an DefaultMaleStringActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
 
     private Base _parent = null;
-    private final StringAction _action;
+    private final StringActionBean _action;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
     
     
-    public DefaultMaleStringActionSocket(@Nonnull StringAction stringAction) {
+    public DefaultMaleStringActionSocket(@Nonnull StringActionBean stringAction) {
         _action = stringAction;
     }
     

@@ -1,12 +1,12 @@
 package jmri.jmrit.logixng.string.expressions;
 
 import jmri.jmrit.logixng.string.expressions.GetStringIO;
-import jmri.jmrit.logixng.StringExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
  * Test GetStringIO
@@ -22,7 +22,7 @@ public class StringExpressionGetStringIOTest {
     
     @Test
     public void testShortDescription() {
-        StringExpression stringExpression = new GetStringIO("IQA55:E321");
+        StringExpressionBean stringExpression = new GetStringIO("IQA55:E321");
         Assert.assertTrue("String matches", "Read string none".equals(stringExpression.getShortDescription()));
     }
     

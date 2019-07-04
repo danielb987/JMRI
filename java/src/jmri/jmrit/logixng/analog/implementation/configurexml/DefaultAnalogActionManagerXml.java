@@ -12,8 +12,8 @@ import jmri.util.ThreadingUtil;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.AnalogAction;
 import jmri.jmrit.logixng.AnalogActionManager;
+import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
  * Provides the functionality for configuring ActionManagers
@@ -27,10 +27,10 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
     public DefaultAnalogActionManagerXml() {
     }
 
-    private AnalogAction getAction(AnalogAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private AnalogActionBean getAction(AnalogActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_action");
         f.setAccessible(true);
-        return (AnalogAction) f.get(action);
+        return (AnalogActionBean) f.get(action);
     }
     
     /**
@@ -45,7 +45,7 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
         setStoreElementClass(actions);
         AnalogActionManager tm = (AnalogActionManager) o;
         if (tm != null) {
-            for (AnalogAction action : tm.getNamedBeanSet()) {
+            for (AnalogActionBean action : tm.getNamedBeanSet()) {
                 log.debug("action system name is " + action.getSystemName());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getAction(action));
@@ -94,11 +94,11 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Utility method to load the individual AnalogAction objects. If there's no
-     * additional info needed for a specific action type, invoke this with the
-     * parent of the set of AnalogAction elements.
+     * Utility method to load the individual AnalogActionBean objects. If there's no
+ additional info needed for a specific action type, invoke this with the
+ parent of the set of AnalogActionBean elements.
      *
-     * @param actions Element containing the AnalogAction elements to load.
+     * @param actions Element containing the AnalogActionBean elements to load.
      */
     public void loadActions(Element actions) {
 /*        
@@ -127,7 +127,7 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
                         + (userName == null ? "<null>" : userName) + ")");  // NOI18N
             }
 
-            AnalogAction x = tm.createNewAction(sysName, userName);
+            AnalogActionBean x = tm.createNewAction(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, actionList.get(i));

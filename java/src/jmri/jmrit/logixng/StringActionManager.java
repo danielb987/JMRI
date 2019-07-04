@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import jmri.Manager;
 
 /**
- * Manager for StringAction
+ * Manager for StringActionBean
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
@@ -20,11 +20,11 @@ public interface StringActionManager extends Manager<MaleStringActionSocket> {
      * @return the male socket for this action
      * @throws IllegalArgumentException if the action has an invalid system name
      */
-    public MaleStringActionSocket registerAction(@Nonnull StringAction action)
+    public MaleStringActionSocket registerAction(@Nonnull StringActionBean action)
             throws IllegalArgumentException;
     
     /**
-     * Create a new system name for an StringAction.
+     * Create a new system name for an StringActionBean.
      *
      * @param conditionalNG the ConditionalNG that this analog action belongs to
      * @return a new system name

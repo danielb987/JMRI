@@ -14,23 +14,23 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.MaleStringExpressionSocket;
-import jmri.jmrit.logixng.StringExpression;
+import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
- * Every StringExpression has an DefaultMaleStringExpressionSocket as its parent.
+ * Every StringExpressionBean has an DefaultMaleStringExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSocket {
 
     private Base _parent = null;
-    private final StringExpression _expression;
+    private final StringExpressionBean _expression;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
 
 
-    public DefaultMaleStringExpressionSocket(@Nonnull StringExpression stringExpression) {
+    public DefaultMaleStringExpressionSocket(@Nonnull StringExpressionBean stringExpression) {
         _expression = stringExpression;
     }
 

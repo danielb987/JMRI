@@ -9,13 +9,13 @@ import java.util.Map;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.configurexml.JmriConfigureXmlException;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.digital.implementation.DefaultDigitalExpressionManager;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
@@ -30,10 +30,10 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
     public DefaultDigitalExpressionManagerXml() {
     }
 
-    private DigitalExpression getExpression(DigitalExpression expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private DigitalExpressionBean getExpression(DigitalExpressionBean expression) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = expression.getClass().getDeclaredField("_expression");
         f.setAccessible(true);
-        return (DigitalExpression) f.get(expression);
+        return (DigitalExpressionBean) f.get(expression);
     }
     
     /**
@@ -50,7 +50,7 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
         setStoreElementClass(expressions);
         DigitalExpressionManager tm = (DigitalExpressionManager) o;
         if (tm != null) {
-            for (DigitalExpression expression : tm.getNamedBeanSet()) {
+            for (DigitalExpressionBean expression : tm.getNamedBeanSet()) {
                 log.debug("expression system name is " + expression.getSystemName());  // NOI18N
                 try {
                     Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(getExpression(expression));

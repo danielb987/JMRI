@@ -3,13 +3,13 @@ package jmri.jmrit.logixng;
 import java.util.Map;
 
 /**
- * The parent interface for plugin AnalogAction classes.
- * A plugin AnalogAction class is a class that implements the AnalogAction
- * interface and can be loaded from a JAR file.
+ * The parent interface for plugin AnalogActionBean classes.
+ * A plugin AnalogActionBean class is a class that implements the AnalogActionBean
+ interface and can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface AnalogActionPlugin extends AnalogAction {
+public interface AnalogActionPlugin extends AnalogActionBean {
     
     /**
      * Initialize the object.

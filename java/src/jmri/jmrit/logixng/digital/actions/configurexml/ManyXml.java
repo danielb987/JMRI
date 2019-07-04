@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.actions.Many;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -137,7 +137,7 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalAction h;
+        DigitalActionBean h;
         if (uname == null) {
             h = new Many(sys, actionSystemNames);
         } else {

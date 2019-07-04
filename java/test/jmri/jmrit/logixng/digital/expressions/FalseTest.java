@@ -1,12 +1,12 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test And
@@ -17,13 +17,13 @@ public class FalseTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression t = new False("IQA55:1:E321");
+        DigitalExpressionBean t = new False("IQA55:1:E321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpression e1 = new False("IQA55:E321");
+        DigitalExpressionBean e1 = new False("IQA55:E321");
         Assert.assertTrue("Always false".equals(e1.getShortDescription()));
         Assert.assertTrue("Always false".equals(e1.getLongDescription()));
     }
@@ -31,7 +31,7 @@ public class FalseTest {
     @Test
     public void testExpression() {
         AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
-        DigitalExpression t = new False("IQA55:E321");
+        DigitalExpressionBean t = new False("IQA55:E321");
         Assert.assertFalse("Expression is false",t.evaluate(isExpressionCompleted));
     }
     

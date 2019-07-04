@@ -4,13 +4,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test ExpressionTimer
@@ -40,8 +40,8 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        DigitalAction action = new Many("IQA55:A321");
-        DigitalAction otherAction = new Many("IQA55:A322");
+        DigitalActionBean action = new Many("IQA55:A321");
+        DigitalActionBean otherAction = new Many("IQA55:A322");
         maleSocket = new DefaultMaleDigitalActionSocket(action);
         otherMaleSocket = new DefaultMaleDigitalActionSocket(otherAction);
         femaleSocket = new DefaultFemaleDigitalActionSocket(null, new FemaleSocketListener() {

@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.digital.actions.Many;
-import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test ExpressionTimer
@@ -18,7 +18,7 @@ public class DefaultMaleDigitalActionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalAction action = new Many("IQA55:A321");
+        DigitalActionBean action = new Many("IQA55:A321");
         new DefaultMaleDigitalActionSocket(action);
     }
     

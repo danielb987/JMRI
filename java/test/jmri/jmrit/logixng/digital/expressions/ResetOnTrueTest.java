@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import jmri.InstanceManager;
 import jmri.NamedBean;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -11,6 +10,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test ResetOnTrue
@@ -30,7 +30,7 @@ public class ResetOnTrueTest {
         expression = new ExpressionTurnout("IQ50:1:DE322", null);
         MaleDigitalExpressionSocket secondaryExpressionSocket =
                 InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-        DigitalExpression t = new ResetOnTrue("IQA55:1:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
+        DigitalExpressionBean t = new ResetOnTrue("IQA55:1:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
         Assert.assertNotNull("exists",t);
     }
     
@@ -42,7 +42,7 @@ public class ResetOnTrueTest {
         expression = new ExpressionTurnout("IQ50:1:DE322", null);
         MaleDigitalExpressionSocket secondaryExpressionSocket =
                 InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-        DigitalExpression e1 = new ResetOnTrue("IQA55:1:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
+        DigitalExpressionBean e1 = new ResetOnTrue("IQA55:1:DE323", null, primaryExpressionSocket, secondaryExpressionSocket);
         Assert.assertTrue("Reset on true".equals(e1.getShortDescription()));
         Assert.assertTrue("Reset on true".equals(e1.getLongDescription()));
     }

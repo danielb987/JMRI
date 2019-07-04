@@ -1,12 +1,12 @@
 package jmri.jmrit.logixng.analog.expressions;
 
 import jmri.jmrit.logixng.analog.expressions.GetAnalogIO;
-import jmri.jmrit.logixng.AnalogExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  * Test GetAnalogIO
@@ -22,7 +22,7 @@ public class AnalogExpressionGetAnalogIOTest {
     
     @Test
     public void testShortDescription() {
-        AnalogExpression analogExpression = new GetAnalogIO("IQA55:E321");
+        AnalogExpressionBean analogExpression = new GetAnalogIO("IQA55:E321");
         Assert.assertTrue("String matches", "Read analog none".equals(analogExpression.getShortDescription()));
     }
     

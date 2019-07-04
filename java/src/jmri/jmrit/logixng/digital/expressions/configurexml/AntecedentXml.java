@@ -1,13 +1,13 @@
 package jmri.jmrit.logixng.digital.expressions.configurexml;
 
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.expressions.Antecedent;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  *
@@ -116,7 +116,7 @@ public class AntecedentXml extends jmri.managers.configurexml.AbstractNamedBeanM
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpression h;
+        DigitalExpressionBean h;
         if (uname == null) {
             h = new Antecedent(sys);
         } else {

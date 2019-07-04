@@ -3,13 +3,13 @@ package jmri.jmrit.logixng;
 import java.util.Map;
 
 /**
- * The parent interface for plugin AnalogExpression classes.
- * A plugin AnalogExpression class is a class that implements the
- * AnalogExpression interface and can be loaded from a JAR file.
+ * The parent interface for plugin AnalogExpressionBean classes.
+ * A plugin AnalogExpressionBean class is a class that implements the
+ AnalogExpressionBean interface and can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface AnalogExpressionPlugin extends AnalogExpression {
+public interface AnalogExpressionPlugin extends AnalogExpressionBean {
 
     /**
      * Initialize the object.

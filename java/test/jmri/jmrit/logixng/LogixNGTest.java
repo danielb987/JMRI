@@ -27,11 +27,11 @@ public class LogixNGTest {
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG);
-        DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
+        DigitalExpressionBean expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-//        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
+//        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpressionBean 26"));  // NOI18N
         systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG);
-        DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
+        DigitalActionBean action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }
     

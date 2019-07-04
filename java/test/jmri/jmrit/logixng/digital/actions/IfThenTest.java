@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test IfThen
@@ -22,9 +22,9 @@ public class IfThenTest {
     
     @Test
     public void testToString() {
-        DigitalAction a1 = new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean a1 = new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
         Assert.assertTrue("If E then A".equals(a1.getLongDescription()));
-        DigitalAction a2 = new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        DigitalActionBean a2 = new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
         Assert.assertTrue("If E then A".equals(a2.getLongDescription()));
     }
     

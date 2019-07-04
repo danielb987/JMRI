@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import java.util.logging.Level;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.ShutdownComputer;
 import org.jdom2.Attribute;
@@ -10,6 +9,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -91,7 +91,7 @@ public class ShutdownComputerXml extends jmri.managers.configurexml.AbstractName
             log.error("seconds attribute is not an integer", ex);
         }
         
-        DigitalAction h;
+        DigitalActionBean h;
         if (uname == null) {
             h = new ShutdownComputer(sys, seconds);
         } else {

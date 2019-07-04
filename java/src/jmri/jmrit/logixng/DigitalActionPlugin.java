@@ -3,13 +3,13 @@ package jmri.jmrit.logixng;
 import java.util.Map;
 
 /**
- * The parent interface for plugin DigitalAction classes.
- * A plugin DigitalAction class is a class that implements the DigitalAction interface and
+ * The parent interface for plugin DigitalActionBean classes.
+ * A plugin DigitalActionBean class is a class that implements the DigitalActionBean interface and
  can be loaded from a JAR file.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface DigitalActionPlugin extends DigitalAction {
+public interface DigitalActionPlugin extends DigitalActionBean {
     
     /**
      * Initialize the object.

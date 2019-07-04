@@ -5,11 +5,11 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * The base class for LogixNG Actions
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2018
  */
 public abstract class AbstractDigitalAction extends AbstractNamedBean
-        implements DigitalAction {
+        implements DigitalActionBean {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;

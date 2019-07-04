@@ -13,25 +13,25 @@ import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
- * Every DigitalExpression has an DefaultMaleDigitalExpressionSocket as its parent.
+ * Every DigitalExpressionBean has an DefaultMaleDigitalExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpressionSocket {
 
     private Base _parent = null;
-    private final DigitalExpression _expression;
+    private final DigitalExpressionBean _expression;
     private boolean lastEvaluationResult = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
 
 
-    public DefaultMaleDigitalExpressionSocket(@Nonnull DigitalExpression expression) {
+    public DefaultMaleDigitalExpressionSocket(@Nonnull DigitalExpressionBean expression) {
         _expression = expression;
     }
 
@@ -105,7 +105,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
 
     @Override
     public int getState() {
-        return lastEvaluationResult ? DigitalExpression.TRUE : DigitalExpression.FALSE;
+        return lastEvaluationResult ? DigitalExpressionBean.TRUE : DigitalExpressionBean.FALSE;
     }
 
     @Override

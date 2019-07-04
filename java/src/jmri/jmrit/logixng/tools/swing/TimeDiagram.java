@@ -23,8 +23,8 @@ import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.util.JmriJFrame;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalExpression;
-import jmri.jmrit.logixng.DigitalAction;
+import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -119,11 +119,11 @@ public class TimeDiagram extends JmriJFrame {
             // Load the class se.bergqvist.jmri_logixng_plugin.ExpressionXor
             Class cls = cl.loadClass(c);
             
-            if (cls.newInstance() instanceof DigitalExpression) {
+            if (cls.newInstance() instanceof DigitalExpressionBean) {
                 System.out.format("AAA: Class %s is an Expression%n", cls.getName());
-            } else if (cls.isInstance(DigitalExpression.class)) {
+            } else if (cls.isInstance(DigitalExpressionBean.class)) {
                 System.out.format("Class %s is an Expression%n", cls.getName());
-            } else if (cls.isInstance(DigitalAction.class)) {
+            } else if (cls.isInstance(DigitalActionBean.class)) {
                 System.out.format("Class %s is an Action%n", cls.getName());
             } else {
                 System.out.format("Class %s is an unknown class%n", cls.getName());
@@ -167,11 +167,11 @@ public class TimeDiagram extends JmriJFrame {
             LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test in TimeDiagram");  // NOI18N
             System.out.format("logixNG: %s%n", logixNG);
             systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(logixNG);
-            DigitalExpression expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
+            DigitalExpressionBean expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
             InstanceManager.getDefault(DigitalExpressionManager.class).register(expression);
-//            InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpression 26"));  // NOI18N
+//            InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpressionBean 26"));  // NOI18N
             systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(logixNG);
-            DigitalAction action = new ActionTurnout(systemName, "An action for test");  // NOI18N
+            DigitalActionBean action = new ActionTurnout(systemName, "An action for test");  // NOI18N
             InstanceManager.getDefault(DigitalActionManager.class).register(action);
 /*            
             if (f == null || !f.isVisible()) {

@@ -9,7 +9,6 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Category;
 import javax.annotation.Nonnull;
-import jmri.jmrit.logixng.AnalogAction;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
@@ -17,23 +16,24 @@ import jmri.jmrit.logixng.MaleSocket;
 import jmri.util.Log4JUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
- * Every AnalogAction has an DefaultMaleAnalogActionSocket as its parent.
+ * Every AnalogActionBean has an DefaultMaleAnalogActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
 public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
 
     private Base _parent = null;
-    private final AnalogAction _action;
+    private final AnalogActionBean _action;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
     private boolean _enabled = true;
     
     
-    public DefaultMaleAnalogActionSocket(@Nonnull AnalogAction action) {
+    public DefaultMaleAnalogActionSocket(@Nonnull AnalogActionBean action) {
         _action = action;
     }
     
@@ -87,7 +87,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     }
     
     /**
-     * Set the value of the AnalogAction.
+     * Set the value of the AnalogActionBean.
      */
     private void internalSetValue(double value) {
         if (Double.isNaN(value)) {

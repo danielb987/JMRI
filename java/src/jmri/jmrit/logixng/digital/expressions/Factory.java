@@ -6,18 +6,18 @@ import java.util.Map;
 import java.util.Set;
 import jmri.jmrit.logixng.Category;
 import org.openide.util.lookup.ServiceProvider;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionFactory;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
- * The factory for DigitalExpression classes.
+ * The factory for DigitalExpressionBean classes.
  */
 @ServiceProvider(service = DigitalExpressionFactory.class)
 public class Factory implements DigitalExpressionFactory {
 
     @Override
-    public Set<Map.Entry<Category, Class<? extends DigitalExpression>>> getExpressionClasses() {
-        Set<Map.Entry<Category, Class<? extends DigitalExpression>>> expressionClasses = new HashSet<>();
+    public Set<Map.Entry<Category, Class<? extends DigitalExpressionBean>>> getExpressionClasses() {
+        Set<Map.Entry<Category, Class<? extends DigitalExpressionBean>>> expressionClasses = new HashSet<>();
         expressionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, And.class));
         expressionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, Antecedent.class));
         expressionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, ExpressionBufferedSensor.class));

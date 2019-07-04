@@ -1,9 +1,9 @@
 package jmri.jmrit.logixng;
 
 /**
- * A LogixNG male StringExpression socket.
+ * A LogixNG male StringExpressionBean socket.
  */
 public interface MaleStringExpressionSocket
-        extends MaleSocket, StringExpression {
+        extends MaleSocket, StringExpressionBean {
 
 }

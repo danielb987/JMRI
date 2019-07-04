@@ -9,13 +9,13 @@ import java.util.Map;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.configurexml.JmriConfigureXmlException;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.implementation.DefaultDigitalActionManager;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Provides the functionality for configuring ActionManagers
@@ -30,10 +30,10 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
     public DefaultDigitalActionManagerXml() {
     }
 
-    private DigitalAction getAction(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private DigitalActionBean getAction(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_action");
         f.setAccessible(true);
-        return (DigitalAction) f.get(action);
+        return (DigitalActionBean) f.get(action);
     }
     
     /**
@@ -48,7 +48,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
         setStoreElementClass(actions);
         DigitalActionManager tm = (DigitalActionManager) o;
         if (tm != null) {
-            for (DigitalAction action : tm.getNamedBeanSet()) {
+            for (DigitalActionBean action : tm.getNamedBeanSet()) {
                 log.debug("action system name is " + action.getSystemName());  // NOI18N
 //                log.error("action system name is " + action.getSystemName() + ", " + action.getLongDescription());  // NOI18N
                 try {
@@ -98,11 +98,11 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
     }
 
     /**
-     * Utility method to load the individual DigitalAction objects. If there's
-     * no additional info needed for a specific action type, invoke this with
-     * the parent of the set of DigitalAction elements.
+     * Utility method to load the individual DigitalActionBean objects. If there's
+ no additional info needed for a specific action type, invoke this with
+ the parent of the set of DigitalActionBean elements.
      *
-     * @param actions Element containing the DigitalAction elements to load.
+     * @param actions Element containing the DigitalActionBean elements to load.
      */
     public void loadActions(Element actions) {
         
@@ -169,7 +169,7 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
 //            }
         }
 /*
-            DigitalAction x = tm.createNewAction(sysName, userName);
+            DigitalActionBean x = tm.createNewAction(sysName, userName);
             if (x != null) {
                 // load common part
                 loadCommon(x, actionList.get(i));

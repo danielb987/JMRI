@@ -6,9 +6,9 @@ import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Always evaluates to True.

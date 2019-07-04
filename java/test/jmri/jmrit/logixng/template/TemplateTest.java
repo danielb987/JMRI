@@ -24,7 +24,6 @@ import jmri.SignalMastManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.audio.DefaultAudioManager;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -32,6 +31,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test TemplateTest

@@ -1,11 +1,11 @@
 package jmri.jmrit.logixng.digital.expressions;
 
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test Or
@@ -16,13 +16,13 @@ public class OrTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression t = new Or("IQA55:E321");
+        DigitalExpressionBean t = new Or("IQA55:E321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpression e1 = new Or("IQA55:E321");
+        DigitalExpressionBean e1 = new Or("IQA55:E321");
         Assert.assertTrue("Or".equals(e1.getShortDescription()));
         Assert.assertTrue("Or".equals(e1.getLongDescription()));
     }

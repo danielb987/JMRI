@@ -4,9 +4,9 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.StringAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * The base class for LogixNG AnalogActions
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2018
  */
 public abstract class AbstractStringAction extends AbstractNamedBean
-        implements StringAction {
+        implements StringActionBean {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;

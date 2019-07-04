@@ -2,35 +2,20 @@ package jmri.jmrit.logixng;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
-import jmri.NamedBean;
 
 /**
- * DigitalExpression is used in LogixNG to answer a question that can give the
- * answers 'true' or 'false'.
+ * DigitalExpressionBean is used in LogixNG to answer a question that can give the
+ answers 'true' or 'false'.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface DigitalExpression extends NamedBean, Base {
+public interface DigitalExpression extends Base {
     
     public enum TriggerCondition {
         TRUE,
         FALSE,
         CHANGE
     }
-    
-    /**
-     * Constant representing an "false" state. It's returned from the method
-     * getState() if the method evaluate() returned false the last time it was
-     * called.
-     */
-    public static final int FALSE = 0x02;
-
-    /**
-     * Constant representing an "false" state. It's returned from the method
-     * getState() if the method evaluate() returned false the last time it was
-     * called.
-     */
-    public static final int TRUE = 0x04;
     
     /**
      * Initialize evaluation.

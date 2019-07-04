@@ -1,11 +1,11 @@
 package jmri.jmrit.logixng.string.actions;
 
-import jmri.jmrit.logixng.StringAction;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * Test ActionMany
@@ -21,7 +21,7 @@ public class StringActionSetStringIOTest {
     
     @Test
     public void testShortDescription() {
-        StringAction stringAction = new SetStringIO("IQA55:A321");
+        StringActionBean stringAction = new SetStringIO("IQA55:A321");
         Assert.assertTrue("String matches", "Set string none".equals(stringAction.getShortDescription()));
     }
     

@@ -1,10 +1,10 @@
 package jmri.jmrit.logixng;
 
 /**
- * A LogixNG male AnalogAction socket.
+ * A LogixNG male AnalogActionBean socket.
  */
 public interface MaleAnalogActionSocket
-        extends MaleSocket, AnalogAction {
+        extends MaleSocket, AnalogActionBean {
 
     /**
      * {@inheritDoc}

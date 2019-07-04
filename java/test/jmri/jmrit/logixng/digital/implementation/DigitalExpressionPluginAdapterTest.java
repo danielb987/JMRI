@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.jmrit.logixng.digital.expressions.And;
-import jmri.jmrit.logixng.DigitalExpression;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Test ExpressionTimer
@@ -17,7 +17,7 @@ public class DigitalExpressionPluginAdapterTest {
 
     @Test
     public void testCtor() {
-        DigitalExpression expression = new And("IQA55:E321");
+        DigitalExpressionBean expression = new And("IQA55:E321");
         new DigitalExpressionPluginAdapter("SystemName", expression);
     }
     

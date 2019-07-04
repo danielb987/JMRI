@@ -18,7 +18,6 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.AnalogExpression;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -26,6 +25,7 @@ import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.AnalogExpressionFactory;
 import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -68,7 +68,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
 //        }
     }
 
-    protected MaleAnalogExpressionSocket createMaleAnalogExpressionSocket(AnalogExpression expression) {
+    protected MaleAnalogExpressionSocket createMaleAnalogExpressionSocket(AnalogExpressionBean expression) {
         MaleAnalogExpressionSocket socket = new DefaultMaleAnalogExpressionSocket(expression);
         expression.setParent(socket);
         return socket;
@@ -81,7 +81,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
      * @param expression the bean
      */
     @Override
-    public MaleAnalogExpressionSocket registerExpression(@Nonnull AnalogExpression expression)
+    public MaleAnalogExpressionSocket registerExpression(@Nonnull AnalogExpressionBean expression)
             throws IllegalArgumentException {
         
         if (expression instanceof MaleAnalogExpressionSocket) {
@@ -135,8 +135,8 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         // \d+ - The LogixNG ID number
         // :
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // AE - AnalogExpression
-        // \d+ - The AnalogExpression ID number
+        // AE - AnalogExpressionBean
+        // \d+ - The AnalogExpressionBean ID number
         if (systemName.matches("IQA?\\d+:AEA?\\d+")) {
             return NameValidity.VALID;
         } else {

@@ -19,12 +19,12 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionFactory;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.managers.AbstractManager;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Class providing the basic logic of the DigitalActionManager interface.
@@ -65,7 +65,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         }
     }
 
-    protected MaleDigitalActionSocket createMaleActionSocket(DigitalAction action) {
+    protected MaleDigitalActionSocket createMaleActionSocket(DigitalActionBean action) {
         MaleDigitalActionSocket socket = new DefaultMaleDigitalActionSocket(action);
         action.setParent(socket);
         return socket;
@@ -78,7 +78,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
      * @param action the bean
      */
     @Override
-    public MaleDigitalActionSocket registerAction(@Nonnull DigitalAction action)
+    public MaleDigitalActionSocket registerAction(@Nonnull DigitalActionBean action)
             throws IllegalArgumentException {
         
         if (action instanceof MaleDigitalActionSocket) {
@@ -160,8 +160,8 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         // \d+ - The ConditionalNG ID number
         // :
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // A - DigitalAction
-        // \d+ - The DigitalAction ID number
+        // A - DigitalActionBean
+        // \d+ - The DigitalActionBean ID number
         if (systemName.matches("IQA?\\d+:\\d+:DAA?\\d+")) {
             return NameValidity.VALID;
         } else {
@@ -202,7 +202,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
 /*
     @Override
-    public void addAction(DigitalAction action) throws IllegalArgumentException {
+    public void addAction(DigitalActionBean action) throws IllegalArgumentException {
         // Check if system name is valid
         if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
@@ -213,22 +213,22 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
 /*
     @Override
-    public DigitalAction getAction(String name) {
+    public DigitalActionBean getAction(String name) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public DigitalAction getByUserName(String s) {
+    public DigitalActionBean getByUserName(String s) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public DigitalAction getBySystemName(String s) {
+    public DigitalActionBean getBySystemName(String s) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void deleteAction(DigitalAction x) {
+    public void deleteAction(DigitalActionBean x) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 */    

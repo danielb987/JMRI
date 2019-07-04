@@ -1,9 +1,9 @@
 package jmri.jmrit.logixng;
 
 /**
- * A LogixNG male StringAction socket.
+ * A LogixNG male StringActionBean socket.
  */
 public interface MaleStringActionSocket
-        extends MaleSocket, StringAction {
+        extends MaleSocket, StringActionBean {
 
 }

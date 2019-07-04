@@ -18,9 +18,7 @@ import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Warrant;
 import jmri.jmrit.logix.WarrantManager;
 import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.MaleSocket;
@@ -33,6 +31,8 @@ import jmri.jmrit.logixng.digital.expressions.Or;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Imports Logixs to LogixNG
@@ -70,7 +70,7 @@ public class ImportConditional {
         List<ConditionalVariable> conditionalVariables = _conditional.getCopyOfStateVariables();
         List<ConditionalAction> conditionalActions = _conditional.getCopyOfActions();
         
-        DigitalExpression expression;
+        DigitalExpressionBean expression;
         switch (ao) {
             case ALL_AND:
                 expression = new And(_conditionalNG);
@@ -86,7 +86,7 @@ public class ImportConditional {
         }
         buildExpression(expression, conditionalVariables);
         
-        DigitalAction action = new Many(_conditionalNG);
+        DigitalActionBean action = new Many(_conditionalNG);
         buildAction(action, conditionalActions);
         
         MaleSocket expressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
@@ -97,11 +97,11 @@ public class ImportConditional {
     }
     
     
-    private void buildExpression(DigitalExpression expression, List<ConditionalVariable> conditionalVariables) throws SocketAlreadyConnectedException {
+    private void buildExpression(DigitalExpressionBean expression, List<ConditionalVariable> conditionalVariables) throws SocketAlreadyConnectedException {
         for (int i=0; i < conditionalVariables.size(); i++) {
             ConditionalVariable cv = conditionalVariables.get(i);
             NamedBean nb = cv.getNamedBeanData();
-            DigitalExpression newExpression;
+            DigitalExpressionBean newExpression;
             switch (cv.getType().getItemType()) {
                 case SENSOR:
                     Sensor sn = (Sensor)nb;
@@ -159,11 +159,11 @@ public class ImportConditional {
     }
     
     
-    private void buildAction(DigitalAction action, List<ConditionalAction> conditionalActions) throws SocketAlreadyConnectedException {
+    private void buildAction(DigitalActionBean action, List<ConditionalAction> conditionalActions) throws SocketAlreadyConnectedException {
         for (int i=0; i < conditionalActions.size(); i++) {
             ConditionalAction ca = conditionalActions.get(i);
             NamedBean nb = ca.getBean();
-            DigitalAction newAction;
+            DigitalActionBean newAction;
             switch (ca.getType().getItemType()) {
                 case SENSOR:
                     Sensor sn = (Sensor)nb;
@@ -221,92 +221,92 @@ public class ImportConditional {
     }
     
     
-    private DigitalExpression getSensorExpression(ConditionalVariable cv, Sensor sn) {
+    private DigitalExpressionBean getSensorExpression(ConditionalVariable cv, Sensor sn) {
         return null;
     }
     
     
-    private DigitalExpression getTurnoutExpression(ConditionalVariable cv, Turnout tn) {
+    private DigitalExpressionBean getTurnoutExpression(ConditionalVariable cv, Turnout tn) {
         return null;
     }
     
     
-    private DigitalExpression getMemoryExpression(ConditionalVariable cv, Memory my) {
+    private DigitalExpressionBean getMemoryExpression(ConditionalVariable cv, Memory my) {
         return null;
     }
     
     
-    private DigitalExpression getLightExpression(ConditionalVariable cv, Light l) {
+    private DigitalExpressionBean getLightExpression(ConditionalVariable cv, Light l) {
         return null;
     }
     
     
-    private DigitalExpression getSignalHeadExpression(ConditionalVariable cv, SignalHead s) {
+    private DigitalExpressionBean getSignalHeadExpression(ConditionalVariable cv, SignalHead s) {
         return null;
     }
     
     
-    private DigitalExpression getSignalMastExpression(ConditionalVariable cv, SignalMast sm) {
+    private DigitalExpressionBean getSignalMastExpression(ConditionalVariable cv, SignalMast sm) {
         return null;
     }
     
     
-    private DigitalExpression getConditionalExpression(ConditionalVariable cv, Conditional c) {
+    private DigitalExpressionBean getConditionalExpression(ConditionalVariable cv, Conditional c) {
         return null;
     }
     
     
-    private DigitalExpression getWarrantExpression(ConditionalVariable cv, Warrant w) {
+    private DigitalExpressionBean getWarrantExpression(ConditionalVariable cv, Warrant w) {
         return null;
     }
     
     
-    private DigitalExpression getOBlockExpression(ConditionalVariable cv, OBlock b) {
+    private DigitalExpressionBean getOBlockExpression(ConditionalVariable cv, OBlock b) {
         return null;
     }
     
     
-    private DigitalAction getSensorAction(ConditionalAction ca, Sensor sn) {
+    private DigitalActionBean getSensorAction(ConditionalAction ca, Sensor sn) {
         return null;
     }
     
     
-    private DigitalAction getTurnoutAction(ConditionalAction ca, Turnout tn) {
+    private DigitalActionBean getTurnoutAction(ConditionalAction ca, Turnout tn) {
         return null;
     }
     
     
-    private DigitalAction getMemoryAction(ConditionalAction ca, Memory my) {
+    private DigitalActionBean getMemoryAction(ConditionalAction ca, Memory my) {
         return null;
     }
     
     
-    private DigitalAction getLightAction(ConditionalAction ca, Light l) {
+    private DigitalActionBean getLightAction(ConditionalAction ca, Light l) {
         return null;
     }
     
     
-    private DigitalAction getSignalHeadAction(ConditionalAction ca, SignalHead s) {
+    private DigitalActionBean getSignalHeadAction(ConditionalAction ca, SignalHead s) {
         return null;
     }
     
     
-    private DigitalAction getSignalMastAction(ConditionalAction ca, SignalMast sm) {
+    private DigitalActionBean getSignalMastAction(ConditionalAction ca, SignalMast sm) {
         return null;
     }
     
     
-    private DigitalAction getConditionalAction(ConditionalAction ca, Conditional c) {
+    private DigitalActionBean getConditionalAction(ConditionalAction ca, Conditional c) {
         return null;
     }
     
     
-    private DigitalAction getWarrantAction(ConditionalAction ca, Warrant w) {
+    private DigitalActionBean getWarrantAction(ConditionalAction ca, Warrant w) {
         return null;
     }
     
     
-    private DigitalAction getOBlockAction(ConditionalAction ca, OBlock b) {
+    private DigitalActionBean getOBlockAction(ConditionalAction ca, OBlock b) {
         return null;
     }
     

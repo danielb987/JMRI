@@ -4,10 +4,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 
 /**
- * A LogixNG male AnalogExpression socket.
+ * A LogixNG male AnalogExpressionBean socket.
  */
 public interface MaleAnalogExpressionSocket
-        extends MaleSocket, AnalogExpression {
+        extends MaleSocket, AnalogExpressionBean {
 
     /**
      * {@inheritDoc}

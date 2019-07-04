@@ -3,16 +3,16 @@ package jmri.jmrit.logixng.analog.expressions;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
-import jmri.jmrit.logixng.AnalogExpression;
 import jmri.jmrit.logixng.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  *
  */
 public abstract class AbstractAnalogExpression extends AbstractNamedBean
-        implements AnalogExpression {
+        implements AnalogExpressionBean {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;

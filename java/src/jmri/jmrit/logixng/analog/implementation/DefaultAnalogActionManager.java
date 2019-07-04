@@ -13,7 +13,6 @@ import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.AnalogAction;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -25,6 +24,7 @@ import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.AnalogActionFactory;
 import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -64,7 +64,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
 //        }
     }
 
-    protected MaleAnalogActionSocket createMaleActionSocket(AnalogAction action) {
+    protected MaleAnalogActionSocket createMaleActionSocket(AnalogActionBean action) {
         MaleAnalogActionSocket socket = new DefaultMaleAnalogActionSocket(action);
         action.setParent(socket);
         return socket;
@@ -77,7 +77,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
      * @param action the bean
      */
     @Override
-    public MaleAnalogActionSocket registerAction(@Nonnull AnalogAction action)
+    public MaleAnalogActionSocket registerAction(@Nonnull AnalogActionBean action)
             throws IllegalArgumentException {
         
         if (action instanceof MaleAnalogActionSocket) {
@@ -130,8 +130,8 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
         // \d+ - The LogixNG ID number
         // :
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // A - AnalogAction
-        // \d+ - The AnalogAction ID number
+        // A - AnalogActionBean
+        // \d+ - The AnalogActionBean ID number
         if (systemName.matches("IQA?\\d+:AAA?\\d+")) {
             return NameValidity.VALID;
         } else {

@@ -9,7 +9,7 @@ import java.util.Map;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface DigitalExpressionPlugin extends DigitalExpression {
+public interface DigitalExpressionPlugin extends DigitalExpressionBean {
 
     /**
      * Initialize the object.

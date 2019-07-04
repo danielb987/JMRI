@@ -4,13 +4,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
-import jmri.jmrit.logixng.StringExpression;
 import jmri.jmrit.logixng.string.expressions.GetStringIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
  * Test DefaultFemaleStringExpressionSocket
@@ -40,8 +40,8 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringExpression expression = new GetStringIO("IQA55:A321");
-        StringExpression otherExpression = new GetStringIO("IQA55:A322");
+        StringExpressionBean expression = new GetStringIO("IQA55:A321");
+        StringExpressionBean otherExpression = new GetStringIO("IQA55:A322");
         maleSocket = new DefaultMaleStringExpressionSocket(expression);
         otherMaleSocket = new DefaultMaleStringExpressionSocket(otherExpression);
         femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {

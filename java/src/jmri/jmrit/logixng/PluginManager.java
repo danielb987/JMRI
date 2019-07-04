@@ -90,36 +90,36 @@ public class PluginManager {
                     Class cls = cl.loadClass(className);
                     
 //                    System.out.format("%s extends %s%n", cls.getName(), cls.getSuperclass());
-//                    System.out.format("AA: %b%n", cls.isAssignableFrom(DigitalAction.class));
-//                    System.out.format("BB: %b%n", DigitalAction.class.isAssignableFrom(cls));
-//                    System.out.format("EE: %b%n", DigitalExpression.class.isAssignableFrom(cls));
-//                    System.out.format("CCC: %b%n", cls.newInstance() instanceof DigitalAction);
+//                    System.out.format("AA: %b%n", cls.isAssignableFrom(DigitalActionBean.class));
+//                    System.out.format("BB: %b%n", DigitalActionBean.class.isAssignableFrom(cls));
+//                    System.out.format("EE: %b%n", DigitalExpressionBean.class.isAssignableFrom(cls));
+//                    System.out.format("CCC: %b%n", cls.newInstance() instanceof DigitalActionBean);
                     
 //                    for (Class<?> temp : cls.getInterfaces()) {
 //                        System.out.format("%s implements %s%n", cls.getName(), temp.getName());
 //                    }
 
-//                    if (cls.newInstance() instanceof DigitalExpression) {
-//                        System.out.format("AAA: Class %s is an DigitalExpression%n", cls.getName());
-//                    } else if (cls.isInstance(DigitalExpression.class)) {
-//                    if (cls.isInstance(DigitalExpression.class)) {
+//                    if (cls.newInstance() instanceof DigitalExpressionBean) {
+//                        System.out.format("AAA: Class %s is an DigitalExpressionBean%n", cls.getName());
+//                    } else if (cls.isInstance(DigitalExpressionBean.class)) {
+//                    if (cls.isInstance(DigitalExpressionBean.class)) {
 //                    ClassType type = ClassType.OTHER;
                     ClassType type;
                     if (DigitalExpressionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression%n", cls.getName());
                         type = ClassType.EXPRESSION;
-//                    } else if (cls.isInstance(DigitalAction.class)) {
+//                    } else if (cls.isInstance(DigitalActionBean.class)) {
                     } else if (DigitalActionPlugin.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
 //                    } else if (jmri.jmrit.logixng.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
 //                        System.out.format("Class %s is a plugin configurator%n", cls.getName());
 //                        type = ClassType.CONFIGURATOR;
-                    } else if (DigitalExpression.class.isAssignableFrom(cls)) {
+                    } else if (DigitalExpressionBean.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
                         type = ClassType.EXPRESSION_NOT_PLUGIN;
-//                    } else if (cls.isInstance(DigitalAction.class)) {
-                    } else if (DigitalAction.class.isAssignableFrom(cls)) {
+//                    } else if (cls.isInstance(DigitalActionBean.class)) {
+                    } else if (DigitalActionBean.class.isAssignableFrom(cls)) {
                         System.out.format("Class %s is an Action but not a plugin%n", cls.getName());
                         type = ClassType.ACTION_NOT_PLUGIN;
                     } else {

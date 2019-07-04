@@ -4,13 +4,13 @@ import java.lang.reflect.Field;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
-import jmri.jmrit.logixng.DigitalAction;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
@@ -20,13 +20,13 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
     public IfThenXml() {
     }
 
-    private FemaleDigitalExpressionSocket getIfExpressionSocket(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private FemaleDigitalExpressionSocket getIfExpressionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_ifExpressionSocket");
         f.setAccessible(true);
         return (FemaleDigitalExpressionSocket) f.get(action);
     }
 
-    private FemaleDigitalActionSocket getThenActionSocket(DigitalAction action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+    private FemaleDigitalActionSocket getThenActionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
         Field f = action.getClass().getDeclaredField("_thenActionSocket");
         f.setAccessible(true);
         return (FemaleDigitalActionSocket) f.get(action);

@@ -5,11 +5,11 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.AnalogAction;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
  * The base class for LogixNG AnalogActions
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2018
  */
 public abstract class AbstractAnalogAction extends AbstractNamedBean
-        implements AnalogAction {
+        implements AnalogActionBean {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
