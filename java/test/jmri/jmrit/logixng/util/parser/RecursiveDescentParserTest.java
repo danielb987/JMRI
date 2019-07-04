@@ -86,6 +86,7 @@ public class RecursiveDescentParserTest {
         Map<String, Variable> _variables = new HashMap<>();
         
         _variables.put("abc", new MyVariable("abc", "ABC"));
+        _variables.put("x", new MyVariable("x", 12));
         
         RecursiveDescentParser t = new RecursiveDescentParser(_variables);
         ExpressionNode exprNode = t.parseExpression("");
@@ -206,6 +207,58 @@ public class RecursiveDescentParserTest {
 //                "expression matches",
 //                "Function:abc((Identifier:x)*((IntNumber:2)+(IntNumber:3)),IntNumber:23,String:Abc,IntNumber:2)"
 //                        .equals(exprNode.getDefinitionString()));
+        
+        exceptionIsThrown.set(false);
+        try {
+            t.parseExpression("abc(123)");
+        } catch (FunctionNotExistsException e) {
+            System.err.format("Error message: %s%n", e.getMessage());
+            Assert.assertTrue("exception message matches", "The function \"abc\" does not exists".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
+        
+        exceptionIsThrown.set(false);
+        try {
+            t.parseExpression("abcde");
+        } catch (IdentifierNotExistsException e) {
+            System.err.format("Error message: %s%n", e.getMessage());
+            Assert.assertTrue("exception message matches", "The identifier \"abcde\" does not exists".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
+        
+        exceptionIsThrown.set(false);
+        try {
+            t.parseExpression("abc(123)");
+        } catch (FunctionNotExistsException e) {
+            System.err.format("Error message: %s%n", e.getMessage());
+            Assert.assertTrue("exception message matches", "The function \"abc\" does not exists".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
+        
+        exceptionIsThrown.set(false);
+        try {
+            exprNode = t.parseExpression("sin(1,2,3)");
+            exprNode.calculate();
+        } catch (WrongNumberOfParametersException e) {
+            System.err.format("Error message: %s%n", e.getMessage());
+            Assert.assertTrue("exception message matches", "Function \"sin\" has wrong number of parameters".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
+        
+        exceptionIsThrown.set(false);
+        try {
+            exprNode = t.parseExpression("123+\"abc\"");
+            exprNode.calculate();
+        } catch (CalculateException e) {
+            System.err.format("Error message: %s%n", e.getMessage());
+            Assert.assertTrue("exception message matches", "The two operands \"123\" and \"abc\" have different types".equals(e.getMessage()));
+            exceptionIsThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
     }
     
     

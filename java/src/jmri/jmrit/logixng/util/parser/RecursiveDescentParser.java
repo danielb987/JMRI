@@ -361,18 +361,17 @@ public class RecursiveDescentParser {
 
             State newState;
             if ((newState = accept(TokenType.IDENTIFIER, state)) != null) {
-                ExpressionNodeIdentifier expressionNodeIdentifier = new ExpressionNodeIdentifier(newState._lastToken, _variables);
                 State newState2;
                 if ((newState2 = accept(TokenType.LEFT_PARENTHESIS, newState)) != null) {
                     ExpressionNodeAndState exprNodeAndState =
-                            rule21.parse(newState2, expressionNodeIdentifier.getIdentifier());
+                            rule21.parse(newState2, newState._lastToken._string);
                     if (exprNodeAndState._state._token == null) {
                         throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntax"));
                     }
                     newState2 = expect(TokenType.RIGHT_PARENTHESIS, exprNodeAndState._state);
                     return new ExpressionNodeAndState(exprNodeAndState._exprNode, newState2);
                 } else {
-                    exprNode = expressionNodeIdentifier;
+                    exprNode = new ExpressionNodeIdentifier(newState._lastToken, _variables);
                 }
             } else if ((newState = accept(TokenType.INTEGER_NUMBER, state)) != null) {
                 exprNode = new ExpressionNodeIntegerNumber(newState._lastToken);

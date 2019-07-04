@@ -88,6 +88,7 @@ public class MathFunctions implements FunctionFactory {
 
         @Override
         public Object calculate(List<ExpressionNode> parameterList) throws ParserException {
+            System.err.format("Sin: Num parameters: %d%n", parameterList.size());
             if (parameterList.size() == 1) {
                 double param = TypeConversionUtil.convertToDouble(parameterList.get(0).calculate(), false);
                 return Math.sin(param);

@@ -10,9 +10,13 @@ public class ExpressionNodeIdentifier implements ExpressionNode {
     private final Token _token;
     private final Variable _variable;
     
-    ExpressionNodeIdentifier(Token token, Map<String, Variable> variables) {
+    ExpressionNodeIdentifier(Token token, Map<String, Variable> variables) throws IdentifierNotExistsException {
         _token = token;
         _variable = variables.get(token._string);
+        
+        if (_variable == null) {
+            throw new IdentifierNotExistsException(Bundle.getMessage("IdentifierNotExists", token._string), token._string);
+        }
     }
     
     public String getIdentifier() {

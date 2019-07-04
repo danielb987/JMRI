@@ -46,82 +46,87 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
             return ((Number)left).doubleValue() + ((Number)right).doubleValue();
 
         } else {
-            if (!(left instanceof String)) {
-                // convertToString() do more than just call left.toString()
-                left = TypeConversionUtil.convertToString(left, false);
+            if (TypeConversionUtil.isString(left) && TypeConversionUtil.isString(right)) {
+                return ((String)left) + ((String)right);
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotCompatibleOperands", left, right));
             }
-            if (!(right instanceof String)) {
-                // convertToString() do more than just call right.toString()
-                right = TypeConversionUtil.convertToString(right, false);
-            }
-
-            return ((String)left) + ((String)right);
         }
     }
     
     
     private Object subtract(Object left, Object right) throws CalculateException {
-        if (TypeConversionUtil.isIntegerNumber(left)
-                && TypeConversionUtil.isIntegerNumber(right)) {
-            return ((Number)left).longValue() - ((Number)right).longValue();
-
-        } else if (TypeConversionUtil.isFloatingNumber(left)
-                && TypeConversionUtil.isFloatingNumber(right)) {
-            return ((Number)left).doubleValue() - ((Number)right).doubleValue();
-
+        if (TypeConversionUtil.isIntegerNumber(left)) {
+            if (TypeConversionUtil.isIntegerNumber(right)) {
+                return ((Number)left).longValue() - ((Number)right).longValue();
+            } else if (TypeConversionUtil.isFloatingNumber(right)) {
+                return ((Number)left).doubleValue() - ((Number)right).doubleValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", right));
+            }
+        } else if (TypeConversionUtil.isFloatingNumber(left)) {
+            if (TypeConversionUtil.isFloatingNumber(right)) {
+                return ((Number)left).doubleValue() - ((Number)right).doubleValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", right));
+            }
         } else {
-            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left, right));
+            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left));
         }
     }
     
     
     private Object multiply(Object left, Object right) throws CalculateException {
-        if (TypeConversionUtil.isIntegerNumber(left)
-                && TypeConversionUtil.isIntegerNumber(right)) {
-            return ((Number)left).longValue() * ((Number)right).longValue();
-
-        } else if (TypeConversionUtil.isFloatingNumber(left)
-                && TypeConversionUtil.isFloatingNumber(right)) {
-            return ((Number)left).doubleValue() * ((Number)right).doubleValue();
-
+        if (TypeConversionUtil.isIntegerNumber(left)) {
+            if (TypeConversionUtil.isIntegerNumber(right)) {
+                return ((Number)left).longValue() * ((Number)right).longValue();
+            } else if (TypeConversionUtil.isFloatingNumber(right)) {
+                return ((Number)left).doubleValue() * ((Number)right).doubleValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", right));
+            }
+        } else if (TypeConversionUtil.isFloatingNumber(left)) {
+            if (TypeConversionUtil.isFloatingNumber(right)) {
+                return ((Number)left).doubleValue() * ((Number)right).doubleValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", right));
+            }
         } else {
-            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left, right));
+            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left));
         }
     }
     
     
     private Object divide(Object left, Object right) throws CalculateException {
-        if (TypeConversionUtil.isIntegerNumber(left)
-                && TypeConversionUtil.isIntegerNumber(right)) {
-            return ((Number)left).longValue() / ((Number)right).longValue();
-
-        } else if (TypeConversionUtil.isFloatingNumber(left)
-                && TypeConversionUtil.isFloatingNumber(right)) {
-            return ((Number)left).doubleValue() / ((Number)right).doubleValue();
-
+        if (TypeConversionUtil.isIntegerNumber(left)) {
+            if (TypeConversionUtil.isIntegerNumber(right)) {
+                return ((Number)left).longValue() / ((Number)right).longValue();
+            } else if (TypeConversionUtil.isFloatingNumber(right)) {
+                return ((Number)left).doubleValue() / ((Number)right).doubleValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", right));
+            }
+        } else if (TypeConversionUtil.isFloatingNumber(left)) {
+            if (TypeConversionUtil.isFloatingNumber(right)) {
+                return ((Number)left).doubleValue() / ((Number)right).doubleValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", right));
+            }
         } else {
-            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left, right));
+            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left));
         }
     }
     
     
     private Object modulo(Object left, Object right) throws CalculateException {
-        if (TypeConversionUtil.isIntegerNumber(left)
-                && TypeConversionUtil.isIntegerNumber(right)) {
-            
-            // Both operands are integers
-            return ((Number)left).longValue() % ((Number)right).longValue();
-
-        } else if (!TypeConversionUtil.isFloatingNumber(left)
-                || !TypeConversionUtil.isFloatingNumber(right)) {
-            
-            // At least one operand is neither integer or floating point number
-            throw new CalculateException(Bundle.getMessage("ArithmeticNotNumberError", left, right));
-
+        if (TypeConversionUtil.isIntegerNumber(left)) {
+            if (TypeConversionUtil.isIntegerNumber(right)) {
+                return ((Number)left).longValue() % ((Number)right).longValue();
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotIntegerNumberError", right));
+            }
         } else {
-            
-            // At least one operand is a floating point number
-            throw new CalculateException(Bundle.getMessage("ArithmeticModuloFloatingError", left, right));
+            throw new CalculateException(Bundle.getMessage("ArithmeticNotIntegerNumberError", left));
         }
     }
     
