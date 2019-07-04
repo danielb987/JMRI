@@ -31,7 +31,7 @@ public class MathFunctions implements FunctionFactory {
     
     
     
-    public class IntFunction implements Function {
+    public static class IntFunction implements Function {
 
         @Override
         public String getName() {
@@ -48,7 +48,7 @@ public class MathFunctions implements FunctionFactory {
         
     }
     
-    public class LongFunction implements Function {
+    public static class LongFunction implements Function {
 
         @Override
         public String getName() {
@@ -65,7 +65,7 @@ public class MathFunctions implements FunctionFactory {
         
     }
     
-    public class RandomFunction implements Function {
+    public static class RandomFunction implements Function {
 
         @Override
         public String getName() {
@@ -79,7 +79,7 @@ public class MathFunctions implements FunctionFactory {
         
     }
     
-    public class SinFunction implements Function {
+    public static class SinFunction implements Function {
 
         @Override
         public String getName() {
@@ -91,27 +91,39 @@ public class MathFunctions implements FunctionFactory {
             if (parameterList.size() == 1) {
                 double param = TypeConversionUtil.convertToDouble(parameterList.get(0).calculate(), false);
                 return Math.sin(param);
-            } else if (parameterList.size() == 2) {
+            } else if (parameterList.size() >= 2) {
                 double param0 = TypeConversionUtil.convertToDouble(parameterList.get(0).calculate(), false);
                 Object param1 = parameterList.get(1).calculate();
+                double result;
                 if (param1 instanceof String) {
                     switch ((String)param1) {
                         case "rad":
-                            return Math.sin(param0);
+                            result = Math.sin(param0);
+                            break;
                         case "deg":
-                            return Math.sin(Math.toRadians(param0));
+                            result = Math.sin(Math.toRadians(param0));
+                            break;
                         default:
                             throw new CalculateException(Bundle.getMessage("IllegalParameter", 2, param1, getName()));
                     }
                 } else if (param1 instanceof Number) {
                     double p1 = TypeConversionUtil.convertToDouble(param1, false);
                     double angle = param0 * p1 / 2 / Math.PI;
-                    return Math.sin(angle);
+                    result = Math.sin(angle);
                 } else {
                     throw new CalculateException(Bundle.getMessage("IllegalParameter", 2, param1, getName()));
                 }
-//            } else {
                 
+                switch (parameterList.size()) {
+                    case 2:
+                        return result;
+                    case 4:
+                        double min = TypeConversionUtil.convertToDouble(parameterList.get(2).calculate(), false);
+                        double max = TypeConversionUtil.convertToDouble(parameterList.get(3).calculate(), false);
+                        return (result+1) * (max-min)/2 + min;
+                    default:
+                        throw new WrongNumberOfParametersException(Bundle.getMessage("WrongNumberOfParameters1", getName()));
+                }
             }
             throw new WrongNumberOfParametersException(Bundle.getMessage("WrongNumberOfParameters1", getName()));
         }
