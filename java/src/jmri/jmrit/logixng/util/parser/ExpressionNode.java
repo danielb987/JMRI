@@ -5,7 +5,7 @@ package jmri.jmrit.logixng.util.parser;
  */
 public interface ExpressionNode {
 
-    public Object calculate();
+    public Object calculate() throws CalculateException;
     
     /**
      * Get a String that defines this expression node.

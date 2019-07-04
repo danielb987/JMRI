@@ -11,6 +11,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Tokenizer {
     
+    private static void addToken(Token currentToken, List<Token> tokens) {
+        if ((currentToken._tokenType == TokenType.FLOATING_NUMBER) && isIntegerNumber(currentToken._string)) {
+            currentToken._tokenType = TokenType.INTEGER_NUMBER;
+        }
+        
+        tokens.add(currentToken);
+    }
+    
     public static List<Token> getTokens(String expression) throws InvalidSyntaxException {
         
         List<Token> tokens = new ArrayList<>();
@@ -46,7 +54,7 @@ public class Tokenizer {
                     currentToken = new Token();
                 } else if (currentToken._tokenType != TokenType.NONE) {
                     System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
-                    tokens.add(currentToken);
+                    addToken(currentToken, tokens);
                     currentToken = new Token();
                 }
                 currentToken._tokenType = TokenType.STRING;
@@ -60,12 +68,10 @@ public class Tokenizer {
                         nextChar = expression.charAt(i+1);
                     }
                     // Handle escaped characters
-//                    if ((currentToken._tokenType == TokenType.STRING)
                     if ((ch == '\\') && ((nextChar == '\\') || (nextChar == '"'))) {
 
                         currentToken._string += nextChar;
                         i++;
-//                        continue;
                     } else if (ch != '\"') {
                         currentToken._string += ch;
                     }
@@ -78,7 +84,7 @@ public class Tokenizer {
                 }
                 
                 System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
-                tokens.add(currentToken);
+                addToken(currentToken, tokens);
                 currentToken = new Token();
                 
                 // Continue for loop
@@ -126,19 +132,31 @@ public class Tokenizer {
                 case IDENTIFIER:
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
-                        tokens.add(currentToken);
+                        addToken(currentToken, tokens);
                         currentToken = new Token();
                     }
                     currentToken._tokenType = nextToken;
                     break;
-                    
-                case NUMBER:
-                    if ((currentToken._tokenType == TokenType.NUMBER) && !currentToken._string.isEmpty() && !isNumber(currentToken._string)) {
+/*                    
+                case INTEGER_NUMBER:
+                    if ((currentToken._tokenType == TokenType.INTEGER_NUMBER) && !currentToken._string.isEmpty() && !isIntegerNumber(currentToken._string)) {
                         System.out.format("Not a number: '%s'%n", currentToken._string);
                         throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
                     }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         tokens.add(currentToken);
+                        currentToken = new Token();
+                    }
+                    currentToken._tokenType = nextToken;
+                    break;
+*/                    
+                case FLOATING_NUMBER:
+                    if ((currentToken._tokenType == TokenType.FLOATING_NUMBER) && !currentToken._string.isEmpty() && !isFloatingNumber(currentToken._string)) {
+                        System.out.format("Not a number: '%s'%n", currentToken._string);
+                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
+                    }
+                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
+                        addToken(currentToken, tokens);
                         currentToken = new Token();
                     }
                     currentToken._tokenType = nextToken;
@@ -150,24 +168,18 @@ public class Tokenizer {
                         throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
                     }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
-                        tokens.add(currentToken);
+                        addToken(currentToken, tokens);
                         currentToken = new Token();
                     }
                     currentToken._tokenType = nextToken;
                     break;
                     
                 case SPACE:
-//                    if (currentToken._tokenType == TokenType.SPACE) {
-//                        continue;
-//                    }
                     // Fall through
                     
                 case NONE:
-//                    if ((currentToken._tokenType == TokenType.STRING) && !currentToken._string.endsWith("\"")) {
-//                        throw new InvalidSyntaxException("invalid syntax at index "+Integer.toString(i), i);
-//                    }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
-                        tokens.add(currentToken);
+                        addToken(currentToken, tokens);
                         currentToken = new Token();
                     }
                     currentToken._tokenType = nextToken;
@@ -188,7 +200,7 @@ public class Tokenizer {
         }
         
         if (currentToken._tokenType != TokenType.NONE) {
-            tokens.add(currentToken);
+            addToken(currentToken, tokens);
         }
         
         return tokens;
@@ -221,26 +233,28 @@ public class Tokenizer {
         }
         
         if (ch == '<') {
-            if (nextChar == '=') {
-                eatNextChar.set(true);
-                return TokenType.LESS_OR_EQUAL;
-            } else if (nextChar == '<') {
-                eatNextChar.set(true);
-                return TokenType.SHIFT_LEFT;
-            } else {
-                return TokenType.LESS_THAN;
+            switch (nextChar) {
+                case '=':
+                    eatNextChar.set(true);
+                    return TokenType.LESS_OR_EQUAL;
+                case '<':
+                    eatNextChar.set(true);
+                    return TokenType.SHIFT_LEFT;
+                default:
+                    return TokenType.LESS_THAN;
             }
         }
         
         if (ch == '>') {
-            if (nextChar == '=') {
-                eatNextChar.set(true);
-                return TokenType.GREATER_OR_EQUAL;
-            } else if (nextChar == '>') {
-                eatNextChar.set(true);
-                return TokenType.SHIFT_RIGHT;
-            } else {
-                return TokenType.GREATER_THAN;
+            switch (nextChar) {
+                case '=':
+                    eatNextChar.set(true);
+                    return TokenType.GREATER_OR_EQUAL;
+                case '>':
+                    eatNextChar.set(true);
+                    return TokenType.SHIFT_RIGHT;
+                default:
+                    return TokenType.GREATER_THAN;
             }
         }
         
@@ -336,8 +350,8 @@ public class Tokenizer {
             return TokenType.RIGHT_CURLY_BRACKET;
         }
         
-        if ((currentToken._tokenType == TokenType.NUMBER) &&
-                (isNumber(currentToken._string+ch) || isNumber(currentToken._string+ch+nextChar))) {
+        if ((currentToken._tokenType == TokenType.FLOATING_NUMBER) &&
+                (isFloatingNumber(currentToken._string+ch) || isFloatingNumber(currentToken._string+ch+nextChar))) {
             return TokenType.SAME_AS_LAST;
         }
         
@@ -346,16 +360,16 @@ public class Tokenizer {
         }
         
         if (Character.isDigit(ch)) {
-            return TokenType.NUMBER;
+            return TokenType.FLOATING_NUMBER;
         }
         
-        if ((currentToken._tokenType == TokenType.NUMBER) &&
+        if ((currentToken._tokenType == TokenType.FLOATING_NUMBER) &&
                 (Character.isLetterOrDigit(ch))) {
             return TokenType.ERROR;
         }
         
         if (Character.isDigit(ch)) {
-            return TokenType.NUMBER;
+            return TokenType.FLOATING_NUMBER;
         }
         
         if (Character.isLetter(ch)) {
@@ -365,7 +379,11 @@ public class Tokenizer {
         return TokenType.ERROR;
     }
     
-    private static boolean isNumber(String str) {
+    private static boolean isIntegerNumber(String str) {
+        return str.matches("\\d+");
+    }
+    
+    private static boolean isFloatingNumber(String str) {
         return str.matches("\\d+") || str.matches("\\d+\\.\\d+");
     }
     

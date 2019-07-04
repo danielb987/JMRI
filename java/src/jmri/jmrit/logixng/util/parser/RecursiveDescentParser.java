@@ -146,6 +146,7 @@ public class RecursiveDescentParser {
     }
 */    
     
+    // <rule3> ::= <rule4> | <rule3> || <rule4>
     private class Rule3 implements Rule {
 
         @Override
@@ -156,6 +157,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule4> ::= <rule5> | <rule4> && <rule5>
     private class Rule4 implements Rule {
 
         @Override
@@ -166,6 +168,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule5> ::= <rule6> | <rule5> | <rule6>
     private class Rule5 implements Rule {
 
         @Override
@@ -176,6 +179,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule6> ::= <rule7> | <rule6> ^ <rule7>
     private class Rule6 implements Rule {
 
         @Override
@@ -186,6 +190,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule7> ::= <rule8> | <rule7> & <rule8>
     private class Rule7 implements Rule {
 
         @Override
@@ -196,6 +201,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule8> ::= <rule9> | <rule8> == <rule9> | <rule8> != <rule9>
     private class Rule8 implements Rule {
 
         @Override
@@ -223,6 +229,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule9> ::= <rule10> | <rule9> < <rule10> | <rule9> <= <rule10> | <rule9> > <rule10> | <rule9> >= <rule10>
     private class Rule9 implements Rule {
 
         @Override
@@ -252,6 +259,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule10> ::= <rule11> | <rule10> << <rule11> | <rule10> >> <rule11>
     private class Rule10 implements Rule {
 
         @Override
@@ -262,6 +270,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule11> ::= <rule12> | <rule11> + <rule12> | <rule11> - <rule12>
     private class Rule11 implements Rule {
 
         @Override
@@ -289,6 +298,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule12> ::= <rule13> | <rule12> * <rule13> | <rule12> / <rule13> | <rule12> % <rule13>
     private class Rule12 implements Rule {
 
         @Override
@@ -300,7 +310,8 @@ public class RecursiveDescentParser {
             State newState = leftSide._state;
             while ((newState._token != null)
                     && ((newState._token._tokenType == TokenType.MULTIPLY)
-                            || (newState._token._tokenType == TokenType.DIVIDE))) {
+                            || (newState._token._tokenType == TokenType.DIVIDE)
+                            || (newState._token._tokenType == TokenType.MODULO))) {
 
                 TokenType operatorTokenType = newState._token._tokenType;
                 newState = next(newState);
@@ -316,6 +327,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule14> ::= <rule16> | ! <rule14> | ~ <rule14>
     private class Rule14 implements Rule {
 
         @Override
@@ -326,6 +338,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule16> ::= <rule20> ( <rule3> )
     private class Rule16 implements Rule {
 
         @Override
@@ -348,6 +361,7 @@ public class RecursiveDescentParser {
     }
     
     
+    // <rule20> ::= <identifier> | <identifier> ( <rule21> ) | <integer number> | <floating number> | <string>
     private class Rule20 implements Rule {
 
         @Override
@@ -369,8 +383,10 @@ public class RecursiveDescentParser {
                 } else {
                     exprNode = expressionNodeIdentifier;
                 }
-            } else if ((newState = accept(TokenType.NUMBER, state)) != null) {
-                exprNode = new ExpressionNodeNumber(newState._lastToken);
+            } else if ((newState = accept(TokenType.INTEGER_NUMBER, state)) != null) {
+                exprNode = new ExpressionNodeIntegerNumber(newState._lastToken);
+            } else if ((newState = accept(TokenType.FLOATING_NUMBER, state)) != null) {
+                exprNode = new ExpressionNodeFloatingNumber(newState._lastToken);
             } else if ((newState = accept(TokenType.STRING, state)) != null) {
                 exprNode = new ExpressionNodeString(newState._lastToken);
             } else {
@@ -390,7 +406,7 @@ public class RecursiveDescentParser {
     }
     
     
-    // a "," b "," c - parameter lists
+    // <rule21> ::= <empty> | <rule3> | <rule21> , <rule3>
     private class Rule21 {
 
         public ExpressionNodeAndState parse(State state, String identifier) throws InvalidSyntaxException {

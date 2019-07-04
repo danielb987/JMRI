@@ -17,7 +17,79 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2019
  */
 public final class TypeConversionUtil {
-
+    
+    /**
+     * Is this object a Boolean?
+     * @param object the object to check
+     * @return true if the object is a Boolean, false otherwise
+     */
+    public static boolean isBoolean(Object object) {
+        return object instanceof Boolean;
+    }
+    
+    /**
+     * Is this object an integer number?
+     * <P>
+     * The method returns true if the object is any of these classes:
+     * <ul>
+     *   <li>AtomicInteger</li>
+     *   <li>AtomicLong</li>
+     *   <li>BigInteger</li>
+     *   <li>Byte</li>
+     *   <li>Short</li>
+     *   <li>Integer</li>
+     *   <li>Long</li>
+     * </ul>
+     * @param object the object to check
+     * @return true if the object is an object that is an integer, false otherwise
+     */
+    public static boolean isIntegerNumber(Object object) {
+        return (object instanceof java.util.concurrent.atomic.AtomicInteger)
+                || (object instanceof java.util.concurrent.atomic.AtomicLong)
+                || (object instanceof java.math.BigInteger)
+                || (object instanceof Byte)
+                || (object instanceof Short)
+                || (object instanceof Integer)
+                || (object instanceof Long);
+    }
+    
+    /**
+     * Is this object an integer number?
+     * <P>
+     * The method returns true if the object is any of these classes:
+     * <ul>
+     *   <li>AtomicInteger</li>
+     *   <li>AtomicLong</li>
+     *   <li>BigInteger</li>
+     *   <li>Byte</li>
+     *   <li>Short</li>
+     *   <li>Integer</li>
+     *   <li>Long</li>
+     *   <li>BigDecimal</li>
+     *   <li>Float</li>
+     *   <li>Double</li>
+     * </ul>
+     * @param object the object to check
+     * @return true if the object is an object that is either an integer or a
+     * float, false otherwise
+     */
+    public static boolean isFloatingNumber(Object object) {
+        return isIntegerNumber(object)
+                || (object instanceof java.math.BigDecimal)
+                || (object instanceof Float)
+                || (object instanceof Double);
+    }
+    
+    /**
+     * Is this object a String?
+     * @param object the object to check
+     * @return true if the object is a String, false otherwise
+     */
+    public static boolean isString(Object object) {
+        return object instanceof String;
+    }
+    
+    
     /**
      * Convert a value to a boolean.
      * <P>

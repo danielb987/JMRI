@@ -5,6 +5,7 @@ package jmri.jmrit.logixng.util.parser;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.script.ScriptException;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -24,9 +25,62 @@ public class RecursiveDescentParserTest {
         Assert.assertNotNull("not null", t);
     }
     
+    // This test is only to check how Jython handles different types.
+    // This test must be removed later.
+    @Test
+    public void testDaniel() throws ScriptException {
+        
+        jmri.script.JmriScriptEngineManager scriptEngine = jmri.script.JmriScriptEngineManager.getDefault();
+        
+        String myScript = ""
+                + "a = 15\n"
+                + "print a\n"
+                + "print\n"
+                + "print \"add\"\n"
+                + "print 15 + 30\n"
+//                + "print \"15\" + 30\n"
+                + "print \"15\" + \"30\"\n"
+                + "print\n"
+                + "print \"boolean\"\n"
+                + "print False\n"
+                + "print True\n"
+                + "print False + True\n"
+                + "print False + True + True\n"
+                + "print False - True\n"
+                + "print False + True + 10\n"
+                + "print False * 10\n"
+                + "print True * 10\n"
+//                + "print True + \"aa\"\n"
+//                + "print False + True + \"aa\"\n"
+                + "print\n"
+                + "print \"compare\"\n"
+                + "print 4 < 10\n"
+                + "print True < False\n"
+                + "print True < 0\n"
+                + "print \"Hej\" < \"Kalle\"\n"
+                + "print \"Hej\" < \"Kalle\"\n"
+                + "print False < \"Kalle\"\n"
+                + "print True < \"Kalle\"\n"
+                + "print \"Hej\" < 10\n"
+                + "print 10 < \"Hej\"\n"
+                + "print \"0\" < 10\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n"
+                + "\n";
+        
+        scriptEngine.eval(myScript, scriptEngine.getEngineByExtension("py"));
+    }
+    
     
     @Test
-    public void testParseAndCalculate() throws InvalidSyntaxException {
+    public void testParseAndCalculate() throws InvalidSyntaxException, CalculateException {
         
         AtomicBoolean exceptionIsThrown = new AtomicBoolean();
         Map<String, Variable> _variables = new HashMap<>();
@@ -37,74 +91,80 @@ public class RecursiveDescentParserTest {
         ExpressionNode exprNode = t.parseExpression("");
         Assert.assertTrue("expression node is null", null == exprNode);
         exprNode = t.parseExpression("134");
-        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
-        System.err.format("expected: '%s', %s%n", ((Object)134d), ((Object)134d).getClass().getName());
-        Assert.assertTrue("calculate is correct", ((Object)134d).equals(exprNode.calculate()));
+        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Long)134l).equals(exprNode.calculate()));
         exprNode = t.parseExpression("abc");
         Assert.assertTrue("expression matches", "Identifier:abc".equals(exprNode.getDefinitionString()));
         Assert.assertTrue("calculate is correct", "ABC".equals(exprNode.calculate()));
         exprNode = t.parseExpression("\"a little string\"");
         Assert.assertTrue("expression matches", "String:a little string".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
-        System.err.format("expected: '%s', %s%n", ((Object)134d), ((Object)134d).getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("expected: '%s', %s%n", 134d, ((Object)134d).getClass().getName());
         Assert.assertTrue("calculate is correct", "a little string".equals(exprNode.calculate()));
         exprNode = t.parseExpression("123*1233");
-        Assert.assertTrue("expression matches", "(Number:123)*(Number:1233)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:123)*(IntNumber:1233)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Long)151659l).equals(exprNode.calculate()));
         exprNode = t.parseExpression("123+2123");
-        Assert.assertTrue("expression matches", "(Number:123)+(Number:2123)".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("123*1233");
-        Assert.assertTrue("expression matches", "(Number:123)*(Number:1233)".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("12+45*12");
-        Assert.assertTrue("expression matches", "(Number:12)+((Number:45)*(Number:12))".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:123)+(IntNumber:2123)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Long)2246l).equals(exprNode.calculate()));
+        exprNode = t.parseExpression("123*3.2331");
+        Assert.assertTrue("expression matches", "(IntNumber:123)*(FloatNumber:3.2331)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Double)397.6713).equals(exprNode.calculate()));
+        exprNode = t.parseExpression("12+45*12.2");
+        Assert.assertTrue("expression matches", "(IntNumber:12)+((IntNumber:45)*(FloatNumber:12.2))".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Double)561.0).equals(exprNode.calculate()));
         exprNode = t.parseExpression("12*45+34");
-        Assert.assertTrue("expression matches", "((Number:12)*(Number:45))+(Number:34)".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("12-23/43");
-        Assert.assertTrue("expression matches", "(Number:12)-((Number:23)/(Number:43))".equals(exprNode.getDefinitionString()));
-        exprNode = t.parseExpression("12/23-43");
-        Assert.assertTrue("expression matches", "((Number:12)/(Number:23))-(Number:43)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "((IntNumber:12)*(IntNumber:45))+(IntNumber:34)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Long)574l).equals(exprNode.calculate()));
+        exprNode = t.parseExpression("12-57/43");
+        Assert.assertTrue("expression matches", "(IntNumber:12)-((IntNumber:57)/(IntNumber:43))".equals(exprNode.getDefinitionString()));
+//        System.err.format("Result: %s, %s%n", exprNode.calculate().toString(), exprNode.calculate().getClass().getName());
+        Assert.assertTrue("calculate is correct", ((Long)11l).equals(exprNode.calculate()));
+        exprNode = t.parseExpression("12/23.2-43");
+        Assert.assertTrue("expression matches", "((IntNumber:12)/(FloatNumber:23.2))-(IntNumber:43)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("calculate is correct", ((Double)(-42.482758620689655172413793103448)).equals(exprNode.calculate()));
         
         exprNode = t.parseExpression("12 < 2");
-        Assert.assertTrue("expression matches", "(Number:12)<(Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:12)<(IntNumber:2)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("12 <= 2");
-        Assert.assertTrue("expression matches", "(Number:12)<=(Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:12)<=(IntNumber:2)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("12 > 2");
-        Assert.assertTrue("expression matches", "(Number:12)>(Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:12)>(IntNumber:2)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("12 >= 2");
-        Assert.assertTrue("expression matches", "(Number:12)>=(Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:12)>=(IntNumber:2)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("12 == 2");
-        Assert.assertTrue("expression matches", "(Number:12)==(Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:12)==(IntNumber:2)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("12 != 2");
-        Assert.assertTrue("expression matches", "(Number:12)!=(Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:12)!=(IntNumber:2)".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("!12 < 2");
-//        Assert.assertTrue("expression matches", "(Number:12)<(Number:2)".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "(IntNumber:12)<(IntNumber:2)".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("!(12 < 2)");
-//        Assert.assertTrue("expression matches", "(Number:12)<(Number:2)".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "(IntNumber:12)<(IntNumber:2)".equals(exprNode.getDefinitionString()));
         
         exprNode = t.parseExpression("2 <= 3");
-        Assert.assertTrue("expression matches", "(Number:2)<=(Number:3)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "(IntNumber:2)<=(IntNumber:3)".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= 3 && 3");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= 3 && 3 > 4");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("4 && 2");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("4 || 2");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= 3 && 3 > 4 || 2");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= 3 && 3 > 4 || 2 < 3");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("(2 <= 3) && 3 > 4 || 2 < 3");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= (3 && 3) > 4 || 2 < 3");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= 3 && (3 > 4) || 2 < 3");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("2 <= 3 && (3 > 4) || (2 < 3)");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
 //        exprNode = t.parseExpression("(2 <= 3) && (3 > 4) || 2 < 3");
-//        Assert.assertTrue("expression matches", "Number:134".equals(exprNode.getDefinitionString()));
+//        Assert.assertTrue("expression matches", "IntNumber:134".equals(exprNode.getDefinitionString()));
         
         exceptionIsThrown.set(false);
         try {
@@ -117,7 +177,10 @@ public class RecursiveDescentParserTest {
         Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
 
         exprNode = t.parseExpression("12+31*(23-1)+21*((((9*2+3)-2)/23+3)/3+4)");
-        Assert.assertTrue("expression matches", "((Number:12)+((Number:31)*((Number:23)-(Number:1))))+((Number:21)*((((((((Number:9)*(Number:2))+(Number:3))-(Number:2))/(Number:23))+(Number:3))/(Number:3))+(Number:4)))".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue(
+                "expression matches",
+                "((IntNumber:12)+((IntNumber:31)*((IntNumber:23)-(IntNumber:1))))+((IntNumber:21)*((((((((IntNumber:9)*(IntNumber:2))+(IntNumber:3))-(IntNumber:2))/(IntNumber:23))+(IntNumber:3))/(IntNumber:3))+(IntNumber:4)))"
+                        .equals(exprNode.getDefinitionString()));
         
         exprNode = t.parseExpression("abc()");
         Assert.assertTrue("expression matches", "Function:abc()".equals(exprNode.getDefinitionString()));
@@ -126,11 +189,14 @@ public class RecursiveDescentParserTest {
         exprNode = t.parseExpression("abc(x,y,z)");
         Assert.assertTrue("expression matches", "Function:abc(Identifier:x,Identifier:y,Identifier:z)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("abc(x*2+5)");
-        Assert.assertTrue("expression matches", "Function:abc(((Identifier:x)*(Number:2))+(Number:5))".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue("expression matches", "Function:abc(((Identifier:x)*(IntNumber:2))+(IntNumber:5))".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("abc((x))");
         Assert.assertTrue("expression matches", "Function:abc(Identifier:x)".equals(exprNode.getDefinitionString()));
         exprNode = t.parseExpression("abc(x*(2+3),23,\"Abc\",2)");
-        Assert.assertTrue("expression matches", "Function:abc((Identifier:x)*((Number:2)+(Number:3)),Number:23,String:Abc,Number:2)".equals(exprNode.getDefinitionString()));
+        Assert.assertTrue(
+                "expression matches",
+                "Function:abc((Identifier:x)*((IntNumber:2)+(IntNumber:3)),IntNumber:23,String:Abc,IntNumber:2)"
+                        .equals(exprNode.getDefinitionString()));
     }
     
     

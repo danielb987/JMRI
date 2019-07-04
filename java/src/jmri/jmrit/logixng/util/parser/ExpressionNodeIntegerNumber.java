@@ -3,14 +3,14 @@ package jmri.jmrit.logixng.util.parser;
 /**
  * A parsed expression
  */
-public class ExpressionNodeNumber implements ExpressionNode {
+public class ExpressionNodeIntegerNumber implements ExpressionNode {
 
     private final Token _token;
-    private final double _value;
+    private final long _value;
     
-    ExpressionNodeNumber(Token token) {
+    ExpressionNodeIntegerNumber(Token token) {
         _token = token;
-        _value = Double.parseDouble(token._string);
+        _value = Long.parseLong(token._string);
     }
     
     @Override
@@ -21,7 +21,7 @@ public class ExpressionNodeNumber implements ExpressionNode {
     /** {@inheritDoc} */
     @Override
     public String getDefinitionString() {
-        return "Number:"+_token._string;
+        return "IntNumber:"+_token._string;
     }
     
 }

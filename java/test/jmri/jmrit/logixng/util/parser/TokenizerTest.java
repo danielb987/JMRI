@@ -74,7 +74,7 @@ public class TokenizerTest {
         Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasSamePrecedence(TokenType.RIGHT_CURLY_BRACKET));
         Assert.assertTrue("Precedence is correct", TokenType.LEFT_PARENTHESIS.hasLowerPrecedence(TokenType.IDENTIFIER));
         
-        Assert.assertTrue("Precedence is correct", TokenType.IDENTIFIER.hasSamePrecedence(TokenType.NUMBER));
+        Assert.assertTrue("Precedence is correct", TokenType.IDENTIFIER.hasSamePrecedence(TokenType.FLOATING_NUMBER));
         Assert.assertTrue("Precedence is correct", TokenType.IDENTIFIER.hasSamePrecedence(TokenType.STRING));
     }
     
@@ -108,25 +108,25 @@ public class TokenizerTest {
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("321");
-        checkFirstToken(tokens, TokenType.NUMBER, "321");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "321");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("32.221");
-        checkFirstToken(tokens, TokenType.NUMBER, "32.221");
+        checkFirstToken(tokens, TokenType.FLOATING_NUMBER, "32.221");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("321 353");
-        checkFirstToken(tokens, TokenType.NUMBER, "321");
-        checkFirstToken(tokens, TokenType.NUMBER, "353");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "321");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "353");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("321   353");
-        checkFirstToken(tokens, TokenType.NUMBER, "321");
-        checkFirstToken(tokens, TokenType.NUMBER, "353");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "321");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "353");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("321354");
-        checkFirstToken(tokens, TokenType.NUMBER, "321354");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "321354");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("\"A_String\"");
@@ -146,17 +146,17 @@ public class TokenizerTest {
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("1223 \"A string\"");
-        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "1223");
         checkFirstToken(tokens, TokenType.STRING, "A string");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("   \"A string\" 1234");
         checkFirstToken(tokens, TokenType.STRING, "A string");
-        checkFirstToken(tokens, TokenType.NUMBER, "1234");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "1234");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("1223*\"A string\"");
-        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "1223");
         checkFirstToken(tokens, TokenType.MULTIPLY, "*");
         checkFirstToken(tokens, TokenType.STRING, "A string");
         Assert.assertTrue("list is empty", tokens.isEmpty());
@@ -173,19 +173,19 @@ public class TokenizerTest {
         tokens = Tokenizer.getTokens("\"A string\"*232");
         checkFirstToken(tokens, TokenType.STRING, "A string");
         checkFirstToken(tokens, TokenType.MULTIPLY, "*");
-        checkFirstToken(tokens, TokenType.NUMBER, "232");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "232");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("1223+\"A string\"*232");
-        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "1223");
         checkFirstToken(tokens, TokenType.ADD, "+");
         checkFirstToken(tokens, TokenType.STRING, "A string");
         checkFirstToken(tokens, TokenType.MULTIPLY, "*");
-        checkFirstToken(tokens, TokenType.NUMBER, "232");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "232");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
         tokens = Tokenizer.getTokens("1223 \"A string\"/\" \"");
-        checkFirstToken(tokens, TokenType.NUMBER, "1223");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "1223");
         checkFirstToken(tokens, TokenType.STRING, "A string");
         checkFirstToken(tokens, TokenType.DIVIDE, "/");
         checkFirstToken(tokens, TokenType.STRING, " ");
@@ -340,10 +340,10 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "y");
         checkFirstToken(tokens, TokenType.ADD, "+");
-        checkFirstToken(tokens, TokenType.NUMBER, "21.2");
+        checkFirstToken(tokens, TokenType.FLOATING_NUMBER, "21.2");
         checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
         checkFirstToken(tokens, TokenType.SUBTRACKT, "-");
-        checkFirstToken(tokens, TokenType.NUMBER, "2.12");
+        checkFirstToken(tokens, TokenType.FLOATING_NUMBER, "2.12");
         checkFirstToken(tokens, TokenType.DIVIDE, "/");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R12");
         Assert.assertTrue("list is empty", tokens.isEmpty());

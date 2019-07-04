@@ -17,7 +17,7 @@ public class ExpressionNodeNumberTest {
     public void testCtor() {
         Token token = new Token();
         token._string = "13.22";
-        ExpressionNodeNumber t = new ExpressionNodeNumber(token);
+        ExpressionNodeFloatingNumber t = new ExpressionNodeFloatingNumber(token);
         Assert.assertNotNull("not null", t);
     }
     
