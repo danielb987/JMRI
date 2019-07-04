@@ -101,14 +101,14 @@ public class MathFunctions implements FunctionFactory {
                         case "deg":
                             return Math.sin(Math.toRadians(param0));
                         default:
-                            throw new CalculateException(Bundle.getMessage("IllegalParameter", 2, (String)param1, getName()));
+                            throw new CalculateException(Bundle.getMessage("IllegalParameter", 2, param1, getName()));
                     }
                 } else if (param1 instanceof Number) {
                     double p1 = TypeConversionUtil.convertToDouble(param1, false);
                     double angle = param0 * p1 / 2 / Math.PI;
                     return Math.sin(angle);
                 } else {
-                    throw new CalculateException(Bundle.getMessage("IllegalParameter", 2, (String)param1, getName()));
+                    throw new CalculateException(Bundle.getMessage("IllegalParameter", 2, param1, getName()));
                 }
 //            } else {
                 
