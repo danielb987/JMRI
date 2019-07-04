@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
@@ -21,9 +22,13 @@ import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringExpressionFactory;
 import jmri.jmrit.logixng.StringExpressionBean;
+import jmri.jmrit.logixng.analog.implementation.DefaultFemaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
+import jmri.jmrit.logixng.implementation.LogixNGPreferences;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -155,9 +160,17 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     @Override
     public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleStringExpressionSocket(parent, listener, socketName);
+        
+        LogixNGPreferences preferences = InstanceManager.getDefault(LogixNGPreferences.class);
+        if (preferences.getUseGenericFemaleSockets()) {
+            return new DefaultFemaleGenericExpressionSocket(
+                    FemaleGenericExpressionSocket.SocketType.STRING, parent, listener, socketName)
+                    .getStringSocket();
+        } else {
+            return new DefaultFemaleStringExpressionSocket(parent, listener, socketName);
+        }
     }
-
+/*
     @Override
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
             Base parent,
@@ -170,7 +183,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         
         return socket;
     }
-    
+*/    
     @Override
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
         return expressionClassList;

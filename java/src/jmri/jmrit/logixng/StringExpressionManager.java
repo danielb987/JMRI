@@ -33,13 +33,13 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
 
     public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
-
+/*
     public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
             Base parent,
             FemaleSocketListener listener,
             String socketName,
             MaleStringExpressionSocket maleSocket);
-
+*/
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 

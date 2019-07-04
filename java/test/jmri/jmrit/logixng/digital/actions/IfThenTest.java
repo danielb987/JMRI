@@ -16,8 +16,10 @@ public class IfThenTest {
 
     @Test
     public void testCtor() {
-        new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
-        new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        DigitalActionBean t = new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
+        Assert.assertNotNull("exists",t);
+        t = new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        Assert.assertNotNull("exists",t);
     }
     
     @Test

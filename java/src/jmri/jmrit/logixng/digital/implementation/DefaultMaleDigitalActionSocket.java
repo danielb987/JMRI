@@ -264,6 +264,8 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
      */
     @Override
     public void unregisterListeners() {
+        System.err.format("Class: %s%n", this.getClass().getName());
+        System.err.format("Class: %s, Action: %s%n", this.getClass().getName(), _action.getClass().getName());
         _action.unregisterListeners();
     }
     

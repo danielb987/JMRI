@@ -3,6 +3,6 @@ package jmri.jmrit.logixng;
 /**
  *
  */
-public interface FemaleAnalogActionSocket extends FemaleSocket, AnalogActionBean {
+public interface FemaleAnalogActionSocket extends FemaleSocket, AnalogAction {
 
 }

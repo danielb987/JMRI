@@ -33,13 +33,13 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
 
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName);
-
+/*
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             Base parent,
             FemaleSocketListener listener,
             String socketName,
             MaleAnalogExpressionSocket maleSocket);
-
+*/
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 

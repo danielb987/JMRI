@@ -1,16 +1,9 @@
 package jmri.jmrit.logixng.implementation;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import jmri.JmriException;
 import jmri.NamedBean;
-import jmri.beans.Beans;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -23,12 +16,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
  * 
  * @author Daniel Bergqvist 2019
  */
-public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
-    
-    // The reason AbstractFemaleSocket implements NamedBean is that it's
-    // implementation classes implements NamedBean. And since there is a lot
-    // of methods in NamedBean that isn't useful for female sockets, it's
-    // better to let AbstractFemaleSocket implement these.
+public abstract class AbstractFemaleSocket implements FemaleSocket {
     
     private Base _parent;
     protected final FemaleSocketListener _listener;
@@ -127,7 +115,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     
     /** {@inheritDoc} */
     @Override
-    public final void setName(String name) {
+    public void setName(String name) {
         if (!validateName(name)) {
             throw new IllegalArgumentException("the name is not valid: " + name);
         }
@@ -203,11 +191,6 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    @Override
-    public String getDisplayName() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
     // implementing classes will typically have a function/listener to get
     // updates from the layout, which will then call
     //  public void firePropertyChange(String propertyName,
@@ -219,175 +202,5 @@ public abstract class AbstractFemaleSocket implements FemaleSocket, NamedBean{
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     protected final HashMap<PropertyChangeListener, String> register = new HashMap<>();
     protected final HashMap<PropertyChangeListener, String> listenerRefs = new HashMap<>();
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void addPropertyChangeListener(PropertyChangeListener l, String beanRef, String listenerRef) {
-        pcs.addPropertyChangeListener(l);
-        if (beanRef != null) {
-            register.put(l, beanRef);
-        }
-        if (listenerRef != null) {
-            listenerRefs.put(l, listenerRef);
-        }
-    }
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener l, String beanRef, String listenerRef) {
-        pcs.addPropertyChangeListener(propertyName, l);
-        if (beanRef != null) {
-            register.put(l, beanRef);
-        }
-        if (listenerRef != null) {
-            listenerRefs.put(l, listenerRef);
-        }
-    }
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(propertyName, listener);
-    }
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
-        if (listener != null && !Beans.contains(pcs.getPropertyChangeListeners(), listener)) {
-            register.remove(listener);
-            listenerRefs.remove(listener);
-        }
-    }
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(propertyName, listener);
-        if (listener != null && !Beans.contains(pcs.getPropertyChangeListeners(), listener)) {
-            register.remove(listener);
-            listenerRefs.remove(listener);
-        }
-    }
-
-    @Override
-    public synchronized PropertyChangeListener[] getPropertyChangeListenersByReference(String name) {
-        ArrayList<PropertyChangeListener> list = new ArrayList<>();
-        register.entrySet().forEach((entry) -> {
-            PropertyChangeListener l = entry.getKey();
-            if (entry.getValue().equals(name)) {
-                list.add(l);
-            }
-        });
-        return list.toArray(new PropertyChangeListener[list.size()]);
-    }
-
-    /**
-     * Get a meaningful list of places where the bean is in use.
-     *
-     * @return ArrayList of the listeners
-     */
-    @Override
-    public synchronized ArrayList<String> getListenerRefs() {
-        return new ArrayList<>(listenerRefs.values());
-    }
-
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public synchronized void updateListenerRef(PropertyChangeListener l, String newName) {
-        if (listenerRefs.containsKey(l)) {
-            listenerRefs.put(l, newName);
-        }
-    }
-
-    @Override
-    public synchronized String getListenerRef(PropertyChangeListener l) {
-        return listenerRefs.get(l);
-    }
-
-    /**
-     * Get the number of current listeners.
-     *
-     * @return -1 if the information is not available for some reason.
-     */
-    @Override
-    public synchronized int getNumPropertyChangeListeners() {
-        return pcs.getPropertyChangeListeners().length;
-    }
-
-    @Override
-    public synchronized PropertyChangeListener[] getPropertyChangeListeners() {
-        return pcs.getPropertyChangeListeners();
-    }
-
-    @Override
-    public synchronized PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
-        return pcs.getPropertyChangeListeners(propertyName);
-    }
-
-    @Override
-    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-    }
-
-    @Override
-    public void setState(int s) throws JmriException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public int getState() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String describeState(int state) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getComment() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setComment(String comment) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setProperty(String key, Object value) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Object getProperty(String key) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void removeProperty(String key) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Set<String> getPropertyKeys() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public String getBeanType() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public int compareSystemNameSuffix(String suffix1, String suffix2, NamedBean n2) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
 
 }

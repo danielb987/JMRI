@@ -8,24 +8,25 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.InvokeOnGuiThread;
+import jmri.jmrit.logixng.AnalogExpressionBean;
+import jmri.jmrit.logixng.AnalogExpressionFactory;
 import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
+import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
+import jmri.jmrit.logixng.implementation.LogixNGPreferences;
+import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
-import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.managers.AbstractManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.AnalogExpressionFactory;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -157,9 +158,17 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     @Override
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleAnalogExpressionSocket(parent, listener, socketName);
+        
+        LogixNGPreferences preferences = InstanceManager.getDefault(LogixNGPreferences.class);
+        if (preferences.getUseGenericFemaleSockets()) {
+            return new DefaultFemaleGenericExpressionSocket(
+                    FemaleGenericExpressionSocket.SocketType.ANALOG, parent, listener, socketName)
+                    .getAnalogSocket();
+        } else {
+            return new DefaultFemaleAnalogExpressionSocket(parent, listener, socketName);
+        }
     }
-
+/*
     @Override
     public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName,
@@ -170,7 +179,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         
         return socket;
     }
-    
+*/    
     @Override
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
         return expressionClassList;

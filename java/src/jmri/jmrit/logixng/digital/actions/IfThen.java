@@ -93,7 +93,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
                 .createFemaleSocket(this, this, "A");
     }
-    
+/*    
     public IfThen(
             String sys, Type type,
             String ifExpressionSocketName,
@@ -123,7 +123,7 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         _thenActionSocket = InstanceManager.getDefault(DigitalActionManager.class)
                 .createFemaleActionSocket(this, this, thenActionSocketName, thenAction);
     }
-    
+*/    
     private IfThen(IfThen template, String sys) {
         super(sys);
         _template = template;

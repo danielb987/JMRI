@@ -3,6 +3,6 @@ package jmri.jmrit.logixng;
 /**
  *
  */
-public interface FemaleDigitalExpressionSocket extends FemaleSocket, DigitalExpressionBean {
+public interface FemaleDigitalExpressionSocket extends FemaleSocket, DigitalExpression {
 
 }

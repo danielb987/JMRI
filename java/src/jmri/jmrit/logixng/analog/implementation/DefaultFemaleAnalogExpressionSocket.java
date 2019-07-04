@@ -18,7 +18,7 @@ import jmri.jmrit.logixng.implementation.AbstractFemaleSocket;
 /**
  *
  */
-public final class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
+public class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
         implements FemaleAnalogExpressionSocket {
 
     public DefaultFemaleAnalogExpressionSocket(Base parent, FemaleSocketListener listener, String name) {

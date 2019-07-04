@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  */
-public interface FemaleGenericExpressionSocket
+public interface FemaleGenericActionSocket
         extends FemaleSocket {
 
     public enum SocketType {

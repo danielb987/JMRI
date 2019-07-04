@@ -4,6 +4,6 @@ package jmri.jmrit.logixng;
  *
  */
 public interface FemaleStringExpressionSocket
-        extends FemaleSocket, StringExpressionBean {
+        extends FemaleSocket, StringExpression {
 
 }

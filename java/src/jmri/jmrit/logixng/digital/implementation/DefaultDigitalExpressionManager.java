@@ -27,6 +27,10 @@ import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
+import jmri.jmrit.logixng.analog.implementation.DefaultFemaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
+import jmri.jmrit.logixng.implementation.LogixNGPreferences;
 
 /**
  * Class providing the basic logic of the DigitalExpressionManager interface.
@@ -188,9 +192,18 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     @Override
     public FemaleDigitalExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
-        return new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName);
+        
+        LogixNGPreferences preferences = InstanceManager.getDefault(LogixNGPreferences.class);
+//        if (preferences.getUseGenericFemaleSockets() && false) {
+        if (preferences.getUseGenericFemaleSockets()) {
+            return new DefaultFemaleGenericExpressionSocket(
+                    FemaleGenericExpressionSocket.SocketType.DIGITAL, parent, listener, socketName)
+                    .getDigitalSocket();
+        } else {
+            return new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName);
+        }
     }
-
+/*
     @Override
     public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
             Base parent, FemaleSocketListener listener, String socketName,
@@ -201,7 +214,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         
         return socket;
     }
-    
+*/    
     @Override
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
         return expressionClassList;

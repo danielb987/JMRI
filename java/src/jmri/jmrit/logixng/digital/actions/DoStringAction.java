@@ -55,7 +55,7 @@ public class DoStringAction
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
                 .createFemaleSocket(this, this, "A1");
     }
-    
+/*    
     public DoStringAction(
             String sys,
             String expressionSocketName, String actionSocketName,
@@ -79,7 +79,7 @@ public class DoStringAction
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
                 .createFemaleStringActionSocket(this, this, actionSocketName, action);
     }
-    
+*/    
     private DoStringAction(DoStringAction template, String sys) {
         super(sys);
         _template = template;

@@ -38,6 +38,7 @@ public class DefaultFemaleGenericExpressionSocket
 
     private SocketType _socketType;             // The type of the socket the user has selected
     private SocketType _currentSocketType;      // The current type of the socket.
+    private FemaleSocket internalSocket;        //
     private FemaleSocket _currentActiveSocket;  // The socket that is currently in use, if any. Null otherwise.
     private final FemaleAnalogExpressionSocket _analogSocket = new DefaultFemaleAnalogExpressionSocket(this, this, "A");
     private final FemaleDigitalExpressionSocket _digitalSocket = new DefaultFemaleDigitalExpressionSocket(this, this, "D");
@@ -53,6 +54,7 @@ public class DefaultFemaleGenericExpressionSocket
         super(parent, listener, name);
         
         _socketType = socketType;
+        _currentSocketType = socketType;
         
         switch (_socketType) {
             case ANALOG:
@@ -75,24 +77,38 @@ public class DefaultFemaleGenericExpressionSocket
                 throw new RuntimeException("_socketType has invalid value: "+socketType.name());
         }
     }
-/*    
-    public DefaultFemaleGenericExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String name,
-            MaleDigitalExpressionSocket maleSocket) {
-        
-        super(parent, listener, name);
-        
-        try {
-            connect(maleSocket);
-        } catch (SocketAlreadyConnectedException e) {
-            // This should never be able to happen since a newly created
-            // socket is not connected.
-            throw new RuntimeException(e);
+    
+    
+    public FemaleAnalogExpressionSocket getAnalogSocket() {
+        if (internalSocket != null) {
+            throw new RuntimeException("internal socket cannot be set more than once");
         }
+        FemaleAnalogExpressionSocket socket = new AnalogSocket();
+        internalSocket = socket;
+        return socket;
     }
-*/    
+    
+    
+    public FemaleDigitalExpressionSocket getDigitalSocket() {
+        if (internalSocket != null) {
+            throw new RuntimeException("internal socket cannot be set more than once");
+        }
+        FemaleDigitalExpressionSocket socket = new DigitalSocket();
+        internalSocket = socket;
+        return socket;
+    }
+    
+    
+    public FemaleStringExpressionSocket getStringSocket() {
+        if (internalSocket != null) {
+            throw new RuntimeException("internal socket cannot be set more than once");
+        }
+        FemaleStringExpressionSocket socket = new StringSocket();
+        internalSocket = socket;
+        return socket;
+    }
+    
+    
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
@@ -195,7 +211,10 @@ public class DefaultFemaleGenericExpressionSocket
     /** {@inheritDoc} */
     @Override
     public boolean evaluateBoolean(@Nonnull AtomicBoolean isCompleted) {
+        System.err.format("evaluateBoolean: %b%n", isConnected());
         if (isConnected()) {
+            System.err.format("socket type: %s%n", _currentSocketType);
+            System.err.format("socket type: %s%n", _currentSocketType.name());
             if (_currentSocketType == SocketType.DIGITAL) {
                 return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {
@@ -346,6 +365,7 @@ public class DefaultFemaleGenericExpressionSocket
                 throw new SocketAlreadyConnectedException("Socket is already connected");
             } else {
                 _currentActiveSocket.connect(socket);
+                return;
             }
         }
         
@@ -377,6 +397,18 @@ public class DefaultFemaleGenericExpressionSocket
             _currentActiveSocket.disconnect();
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public MaleSocket getConnectedSocket() {
+        return _currentActiveSocket.getConnectedSocket();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConnected() {
+        return (_currentActiveSocket != null) && _currentActiveSocket.isConnected();
+    }
 
     @Override
     public void connected(FemaleSocket socket) {
@@ -390,5 +422,366 @@ public class DefaultFemaleGenericExpressionSocket
         }
         _listener.disconnected(socket);
     }
+    
+    
+    
+    private class AnalogSocket extends DefaultFemaleAnalogExpressionSocket {
+        
+        public AnalogSocket() {
+            super(null, null, DefaultFemaleGenericExpressionSocket.this.getName());
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public boolean isCompatible(MaleSocket socket) {
+            return DefaultFemaleGenericExpressionSocket.this.isCompatible(socket);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void initEvaluation() {
+            DefaultFemaleGenericExpressionSocket.this.initEvaluation();
+        }
 
+        /** {@inheritDoc} */
+        @Override
+        public double evaluate(@Nonnull AtomicBoolean isCompleted) {
+            return DefaultFemaleGenericExpressionSocket.this.evaluateDouble(isCompleted);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void reset() {
+            DefaultFemaleGenericExpressionSocket.this.reset();
+        }
+        
+        @Override
+        public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
+            return DefaultFemaleGenericExpressionSocket.this.getConnectableClasses();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Base getParent() {
+            return DefaultFemaleGenericExpressionSocket.this.getParent();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setParent(Base parent) {
+            DefaultFemaleGenericExpressionSocket.this.setParent(parent);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Lock getLock() {
+            return DefaultFemaleGenericExpressionSocket.this.getLock();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setLock(Lock lock) {
+            DefaultFemaleGenericExpressionSocket.this.setLock(lock);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
+            DefaultFemaleGenericExpressionSocket.this.connect(socket);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void disconnect() {
+            DefaultFemaleGenericExpressionSocket.this.disconnect();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MaleSocket getConnectedSocket() {
+            return DefaultFemaleGenericExpressionSocket.this.getConnectedSocket();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isConnected() {
+            return DefaultFemaleGenericExpressionSocket.this.isConnected();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setName(String name) {
+            DefaultFemaleGenericExpressionSocket.this.setName(name);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String getName() {
+            return DefaultFemaleGenericExpressionSocket.this.getName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void dispose() {
+            DefaultFemaleGenericExpressionSocket.this.dispose();
+        }
+
+        /**
+         * Register listeners if this object needs that.
+         */
+        @Override
+        public void registerListeners() {
+            DefaultFemaleGenericExpressionSocket.this.registerListeners();
+        }
+
+        /**
+         * Register listeners if this object needs that.
+         */
+        @Override
+        public void unregisterListeners() {
+            DefaultFemaleGenericExpressionSocket.this.unregisterListeners();
+        }
+        
+    }
+    
+    
+    private class DigitalSocket extends DefaultFemaleDigitalExpressionSocket {
+        
+        public DigitalSocket() {
+            super(null, null, DefaultFemaleGenericExpressionSocket.this.getName());
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public boolean isCompatible(MaleSocket socket) {
+            return DefaultFemaleGenericExpressionSocket.this.isCompatible(socket);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void initEvaluation() {
+            DefaultFemaleGenericExpressionSocket.this.initEvaluation();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean evaluate(@Nonnull AtomicBoolean isCompleted) {
+            return DefaultFemaleGenericExpressionSocket.this.evaluateBoolean(isCompleted);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void reset() {
+            DefaultFemaleGenericExpressionSocket.this.reset();
+        }
+        
+        @Override
+        public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
+            return DefaultFemaleGenericExpressionSocket.this.getConnectableClasses();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Base getParent() {
+            return DefaultFemaleGenericExpressionSocket.this.getParent();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setParent(Base parent) {
+            DefaultFemaleGenericExpressionSocket.this.setParent(parent);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Lock getLock() {
+            return DefaultFemaleGenericExpressionSocket.this.getLock();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setLock(Lock lock) {
+            DefaultFemaleGenericExpressionSocket.this.setLock(lock);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
+            DefaultFemaleGenericExpressionSocket.this.connect(socket);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void disconnect() {
+            DefaultFemaleGenericExpressionSocket.this.disconnect();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MaleSocket getConnectedSocket() {
+            return DefaultFemaleGenericExpressionSocket.this.getConnectedSocket();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isConnected() {
+            return DefaultFemaleGenericExpressionSocket.this.isConnected();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setName(String name) {
+            DefaultFemaleGenericExpressionSocket.this.setName(name);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String getName() {
+            return DefaultFemaleGenericExpressionSocket.this.getName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void dispose() {
+            DefaultFemaleGenericExpressionSocket.this.dispose();
+        }
+
+        /**
+         * Register listeners if this object needs that.
+         */
+        @Override
+        public void registerListeners() {
+            DefaultFemaleGenericExpressionSocket.this.registerListeners();
+        }
+
+        /**
+         * Register listeners if this object needs that.
+         */
+        @Override
+        public void unregisterListeners() {
+            DefaultFemaleGenericExpressionSocket.this.unregisterListeners();
+        }
+        
+    }
+    
+    
+    private class StringSocket extends DefaultFemaleStringExpressionSocket {
+        
+        public StringSocket() {
+            super(null, null, DefaultFemaleGenericExpressionSocket.this.getName());
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public boolean isCompatible(MaleSocket socket) {
+            return DefaultFemaleGenericExpressionSocket.this.isCompatible(socket);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void initEvaluation() {
+            DefaultFemaleGenericExpressionSocket.this.initEvaluation();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String evaluate(@Nonnull AtomicBoolean isCompleted) {
+            return DefaultFemaleGenericExpressionSocket.this.evaluateString(isCompleted);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void reset() {
+            DefaultFemaleGenericExpressionSocket.this.reset();
+        }
+        
+        @Override
+        public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
+            return DefaultFemaleGenericExpressionSocket.this.getConnectableClasses();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Base getParent() {
+            return DefaultFemaleGenericExpressionSocket.this.getParent();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setParent(Base parent) {
+            DefaultFemaleGenericExpressionSocket.this.setParent(parent);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Lock getLock() {
+            return DefaultFemaleGenericExpressionSocket.this.getLock();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setLock(Lock lock) {
+            DefaultFemaleGenericExpressionSocket.this.setLock(lock);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
+            DefaultFemaleGenericExpressionSocket.this.connect(socket);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void disconnect() {
+            DefaultFemaleGenericExpressionSocket.this.disconnect();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MaleSocket getConnectedSocket() {
+            return DefaultFemaleGenericExpressionSocket.this.getConnectedSocket();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isConnected() {
+            return DefaultFemaleGenericExpressionSocket.this.isConnected();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setName(String name) {
+            DefaultFemaleGenericExpressionSocket.this.setName(name);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String getName() {
+            return DefaultFemaleGenericExpressionSocket.this.getName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void dispose() {
+            DefaultFemaleGenericExpressionSocket.this.dispose();
+        }
+
+        /**
+         * Register listeners if this object needs that.
+         */
+        @Override
+        public void registerListeners() {
+            DefaultFemaleGenericExpressionSocket.this.registerListeners();
+        }
+
+        /**
+         * Register listeners if this object needs that.
+         */
+        @Override
+        public void unregisterListeners() {
+            DefaultFemaleGenericExpressionSocket.this.unregisterListeners();
+        }
+        
+    }
+    
 }

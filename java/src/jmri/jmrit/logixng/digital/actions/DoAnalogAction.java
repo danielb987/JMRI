@@ -55,7 +55,7 @@ public class DoAnalogAction
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, "A1");
     }
-    
+/*    
     public DoAnalogAction(
             String sys,
             String expressionSocketName, String actionSocketName,
@@ -79,7 +79,7 @@ public class DoAnalogAction
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, actionSocketName, action);
     }
-    
+*/    
     private DoAnalogAction(DoAnalogAction template, String sys) {
         super(sys);
         _template = template;

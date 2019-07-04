@@ -64,7 +64,7 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
         _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E2");
     }
-
+/*
     public Hold(
             String sys,
             String holdExpressionSocketName,
@@ -102,7 +102,7 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
                 .createFemaleExpressionSocket(
                         this, this, triggerExpressionSocketName, triggerExpression);
     }
-
+*/
     private Hold(Hold template, String sys) {
         super(sys);
         _template = template;

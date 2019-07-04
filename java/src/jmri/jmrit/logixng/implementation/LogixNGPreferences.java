@@ -14,9 +14,11 @@ import jmri.profile.ProfileUtils;
 public final class LogixNGPreferences extends PreferencesBean {
 
     public static final String START_LOGIXNG_ON_LOAD = "startLogixNGOnStartup";
+    public static final String USE_GENERIC_FEMALE_SOCKETS = "useGenericFemaleSockets";
     public static final String ALLOW_DEBUG_MODE = "allowDebugMode";
     
     private boolean _startLogixNGOnLoad = false;
+    private boolean _useGenericFemaleSockets = true;
     private boolean _allowDebugMode = false;
     
     private final PluginManager _pluginManager;
@@ -32,6 +34,7 @@ public final class LogixNGPreferences extends PreferencesBean {
 
     private void readPreferences(Preferences sharedPreferences) {
         this._startLogixNGOnLoad = sharedPreferences.getBoolean(START_LOGIXNG_ON_LOAD, this._startLogixNGOnLoad);
+        this._useGenericFemaleSockets = sharedPreferences.getBoolean(USE_GENERIC_FEMALE_SOCKETS, this._useGenericFemaleSockets);
         this._allowDebugMode = sharedPreferences.getBoolean(ALLOW_DEBUG_MODE, this._allowDebugMode);
         
         if (1==0) {
@@ -114,6 +117,7 @@ public final class LogixNGPreferences extends PreferencesBean {
     public void save() {
         Preferences sharedPreferences = ProfileUtils.getPreferences(this.getProfile(), this.getClass(), true);
         sharedPreferences.putBoolean(START_LOGIXNG_ON_LOAD, this.getStartLogixNGOnStartup());
+        sharedPreferences.putBoolean(USE_GENERIC_FEMALE_SOCKETS, this.getUseGenericFemaleSockets());
         sharedPreferences.putBoolean(ALLOW_DEBUG_MODE, this.getAllowDebugMode());
 /*        
         sharedPreferences.putInt(PORT, this.getPort());
@@ -151,6 +155,14 @@ public final class LogixNGPreferences extends PreferencesBean {
 
     public boolean getStartLogixNGOnStartup() {
         return _startLogixNGOnLoad;
+    }
+
+    public void setUseGenericFemaleSockets(boolean value) {
+        _useGenericFemaleSockets = value;
+    }
+
+    public boolean getUseGenericFemaleSockets() {
+        return _useGenericFemaleSockets;
     }
 
     public void setAllowDebugMode(boolean value) {
