@@ -16,12 +16,22 @@ import org.junit.Test;
 public class ExpressionNodeIdentifierTest {
 
     @Test
-    public void testCtor() {
+    public void testCtor() throws IdentifierNotExistsException {
         Token token = new Token();
         token._string = "abc";
         Map<String, Variable> variables = new HashMap<>();
-        variables.put("abc", null);
-        ExpressionNodeIdentifier t = new ExpressionNodeIdentifier(new Token(), variables);
+        variables.put("abc", new Variable() {
+            @Override
+            public String getName() {
+                return "abc";
+            }
+
+            @Override
+            public Object getValue() {
+                return "0";
+            }
+        });
+        ExpressionNodeIdentifier t = new ExpressionNodeIdentifier(token, variables);
         Assert.assertNotNull("not null", t);
     }
     
