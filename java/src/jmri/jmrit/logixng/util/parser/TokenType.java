@@ -6,12 +6,12 @@ package jmri.jmrit.logixng.util.parser;
  * Rules:
  * <P>
  * &lt;rule3&gt; ::= &lt;rule4&gt; | &lt;rule3&gt; || &lt;rule4&gt;<BR>
- * &lt;rule4&gt; ::= &lt;rule5&gt; | &lt;rule4&gt; && &lt;rule5&gt;<BR>
+ * &lt;rule4&gt; ::= &lt;rule5&gt; | &lt;rule4&gt; &amp;&amp; &lt;rule5&gt;<BR>
  * &lt;rule5&gt; ::= &lt;rule6&gt; | &lt;rule5&gt; | &lt;rule6&gt;<BR>
  * &lt;rule6&gt; ::= &lt;rule7&gt; | &lt;rule6&gt; ^ &lt;rule7&gt;<BR>
- * &lt;rule7&gt; ::= &lt;rule8&gt; | &lt;rule7&gt; & &lt;rule8&gt;<BR>
+ * &lt;rule7&gt; ::= &lt;rule8&gt; | &lt;rule7&gt; &amp; &lt;rule8&gt;<BR>
  * &lt;rule8&gt; ::= &lt;rule9&gt; | &lt;rule8&gt; == &lt;rule9&gt; | &lt;rule8&gt; != &lt;rule9&gt;<BR>
- * &lt;rule9&gt; ::= &lt;rule10&gt; | &lt;rule9&gt; &lt; &lt;rule10&gt; | &lt;rule9> &lt;= &lt;rule10&gt; | &lt;rule9&gt; &gt; &lt;rule10&gt; | &lt;rule9&gt; &gt;= &lt;rule10&gt;<BR>
+ * &lt;rule9&gt; ::= &lt;rule10&gt; | &lt;rule9&gt; &lt; &lt;rule10&gt; | &lt;rule9&gt; &lt;= &lt;rule10&gt; | &lt;rule9&gt; &gt; &lt;rule10&gt; | &lt;rule9&gt; &gt;= &lt;rule10&gt;<BR>
  * &lt;rule10&gt; ::= &lt;rule11&gt; | &lt;rule10&gt; &lt;&lt; &lt;rule11&gt; | &lt;rule10&gt; &gt;&gt; &lt;rule11&gt;<BR>
  * &lt;rule11&gt; ::= &lt;rule12&gt; | &lt;rule11&gt; + &lt;rule12&gt; | &lt;rule11&gt; - &lt;rule12&gt;<BR>
  * &lt;rule12&gt; ::= &lt;rule13&gt; | &lt;rule12&gt; * &lt;rule13&gt; | &lt;rule12&gt; / &lt;rule13&gt;<BR>
