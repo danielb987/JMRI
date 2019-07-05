@@ -191,16 +191,4 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    // implementing classes will typically have a function/listener to get
-    // updates from the layout, which will then call
-    //  public void firePropertyChange(String propertyName,
-    //             Object oldValue,
-    //      Object newValue)
-    // _once_ if anything has changed state
-    // since we can't do a "super(this)" in the ctor to inherit from PropertyChangeSupport, we'll
-    // reflect to it
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    protected final HashMap<PropertyChangeListener, String> register = new HashMap<>();
-    protected final HashMap<PropertyChangeListener, String> listenerRefs = new HashMap<>();
-
 }
