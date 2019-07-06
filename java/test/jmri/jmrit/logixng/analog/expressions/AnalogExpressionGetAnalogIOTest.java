@@ -1,29 +1,29 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import jmri.InstanceManager;
+import jmri.MemoryManager;
 import jmri.jmrit.logixng.analog.expressions.GetAnalogIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
  * Test GetAnalogIO
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AnalogExpressionGetAnalogIOTest {
+public class AnalogExpressionGetAnalogIOTest extends AbstractAnalogExpressionTestBase {
 
     @Test
-    public void testCtor() {
-        new GetAnalogIO("IQA55:E321");
+    public void testShortDescription() {
+        Assert.assertTrue("String matches", "Get analog none".equals(_expression.getShortDescription()));
     }
     
     @Test
-    public void testShortDescription() {
-        AnalogExpressionBean analogExpression = new GetAnalogIO("IQA55:E321");
-        Assert.assertTrue("String matches", "Read analog none".equals(analogExpression.getShortDescription()));
+    public void testLongDescription() {
+        Assert.assertTrue("String matches", "Get analog none".equals(_expression.getLongDescription()));
     }
     
     // The minimal setup for log4J
@@ -33,6 +33,7 @@ public class AnalogExpressionGetAnalogIOTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        _expression = new GetAnalogIO("IQA55:12:A321", "AnalogIO_Memory");
     }
 
     @After

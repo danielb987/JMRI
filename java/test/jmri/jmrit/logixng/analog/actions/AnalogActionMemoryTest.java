@@ -14,7 +14,7 @@ import jmri.MemoryManager;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
+public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
 
     protected Memory _memory;
     
@@ -25,12 +25,12 @@ public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
     
     @Test
     public void testShortDescription() {
-        Assert.assertTrue("String matches", "Set analog none".equals(_action.getShortDescription()));
+        Assert.assertTrue("String matches", "Set analog IM1".equals(_action.getShortDescription()));
     }
     
     @Test
     public void testLongDescription() {
-        Assert.assertTrue("String matches", "Set analog none".equals(_action.getShortDescription()));
+        Assert.assertTrue("String matches", "Set analog IM1".equals(_action.getLongDescription()));
     }
     
     // The minimal setup for log4J
@@ -42,11 +42,12 @@ public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _action = new SetAnalogIO("IQA55:A321");
+        _action = new AnalogActionMemory("IQA55:12:A321", "AnalogIO_Memory", _memory);
     }
 
     @After
     public void tearDown() {
+        _action.dispose();
         JUnitUtil.tearDown();
     }
     

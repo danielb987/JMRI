@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analog.actions;
+package jmri.jmrit.logixng.analog.expressions;
 
 import jmri.InstanceManager;
 import jmri.Memory;
@@ -14,23 +14,24 @@ import jmri.MemoryManager;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
+public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase {
 
     protected Memory _memory;
     
     @Test
     public void testCtor() {
-        Assert.assertTrue("object exists", _action != null);
+        Assert.assertTrue("object exists", _expression != null);
     }
     
     @Test
     public void testShortDescription() {
-        Assert.assertTrue("String matches", "Set analog none".equals(_action.getShortDescription()));
+        System.err.format("aa: %s%n", _expression.getShortDescription());
+        Assert.assertTrue("String matches", "Get memory IM1".equals(_expression.getShortDescription()));
     }
     
     @Test
     public void testLongDescription() {
-        Assert.assertTrue("String matches", "Set analog none".equals(_action.getShortDescription()));
+        Assert.assertTrue("String matches", "Get memory IM1".equals(_expression.getLongDescription()));
     }
     
     // The minimal setup for log4J
@@ -42,11 +43,12 @@ public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _action = new SetAnalogIO("IQA55:A321");
+        _expression = new AnalogExpressionMemory("IQA55:12:A321", "AnalogIO_Memory", _memory);
     }
 
     @After
     public void tearDown() {
+        _expression.dispose();
         JUnitUtil.tearDown();
     }
     

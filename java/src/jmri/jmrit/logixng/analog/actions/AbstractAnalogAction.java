@@ -21,6 +21,7 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
+    private int _state = AnalogActionBean.UNKNOWN;
 
 
     public AbstractAnalogAction(String sys) throws BadSystemNameException {
@@ -52,12 +53,13 @@ public abstract class AbstractAnalogAction extends AbstractNamedBean
     @Override
     public void setState(int s) throws JmriException {
         log.warn("Unexpected call to setState in AbstractAnalogAction.");  // NOI18N
+        _state = s;
     }
 
     @Override
     public int getState() {
         log.warn("Unexpected call to getState in AbstractAnalogAction.");  // NOI18N
-        return UNKNOWN;
+        return _state;
     }
     
     

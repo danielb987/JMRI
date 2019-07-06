@@ -16,6 +16,7 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
+    private int _state = AnalogExpressionBean.UNKNOWN;
 
 
     public AbstractAnalogExpression(String sys) throws BadSystemNameException {
@@ -47,12 +48,13 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
     @Override
     public void setState(int s) throws JmriException {
         log.warn("Unexpected call to setState in AbstractAnalogExpression.");  // NOI18N
+        _state = s;
     }
 
     @Override
     public int getState() {
         log.warn("Unexpected call to getState in AbstractAnalogExpression.");  // NOI18N
-        return UNKNOWN;
+        return _state;
     }
     
     
