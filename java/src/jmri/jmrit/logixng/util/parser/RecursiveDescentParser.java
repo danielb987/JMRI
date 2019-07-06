@@ -323,7 +323,34 @@ public class RecursiveDescentParser {
 
         @Override
         public ExpressionNodeAndState parse(State state) throws ParserException {
-            return rule16.parse(state);
+            
+            State newState = accept(TokenType.BOOLEAN_NOT, state);
+            
+            if (newState != null) {
+                ExpressionNodeAndState exprNodeAndState = rule14.parse(newState);
+                if (exprNodeAndState._exprNode == null) {
+                    throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntax"));
+                }
+                
+                ExpressionNode exprNode = new ExpressionNodeBooleanOperator(newState._lastToken._tokenType, null, exprNodeAndState._exprNode);
+                return new ExpressionNodeAndState(exprNode, exprNodeAndState._state);
+                
+            } else {
+                newState = accept(TokenType.BINARY_NOT, state);
+
+                if (newState != null) {
+                    ExpressionNodeAndState exprNodeAndState = rule14.parse(newState);
+                    if (exprNodeAndState._state._token == null) {
+                        throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntax"));
+                    }
+                    
+                    ExpressionNode exprNode = new ExpressionNodeArithmeticOperator(newState._lastToken._tokenType, null, exprNodeAndState._exprNode);
+                    return new ExpressionNodeAndState(exprNode, exprNodeAndState._state);
+                    
+                } else {
+                    return rule16.parse(state);
+                }
+            }
         }
         
     }

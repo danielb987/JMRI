@@ -21,18 +21,32 @@ import org.junit.Test;
 public class LogixNGTest {
 
     @Test
-    public void testManagers() {
+    public void testManagers() throws SocketAlreadyConnectedException {
         String systemName;
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
+        InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
+        MaleSocket many = conditionalNG.getChild(0).getConnectedSocket();
+//        System.err.format("aa: %s%n", many.getLongDescription());
+        Assert.assertTrue("description is correct", "Many".equals(many.getLongDescription()));
+        MaleSocket ifThen = many.getChild(1).getConnectedSocket();
+//        System.err.format("aa: %s%n", ifThen.getLongDescription());
+        Assert.assertTrue("description is correct", "If E then A".equals(ifThen.getLongDescription()));
         systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG);
         DigitalExpressionBean expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
-        InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
+        MaleSocket digitalExpressionBean = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
+        ifThen.getChild(0).connect(digitalExpressionBean);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpressionBean 26"));  // NOI18N
         systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG);
         DigitalActionBean action = new ActionTurnout(systemName, "An action for test");  // NOI18N
-        InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
+        MaleSocket digitalActionBean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
+        ifThen.getChild(1).connect(digitalActionBean);
+        
+        logixNG.setParentForAllChildren();
+        
+        Assert.assertTrue("conditionalng is correct", conditionalNG == digitalActionBean.getConditionalNG());
+        Assert.assertTrue("logixlng is correct", logixNG == digitalActionBean.getLogixNG());
     }
     
     @Test

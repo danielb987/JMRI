@@ -72,14 +72,25 @@ public final class DefaultLogixNG extends AbstractNamedBean
         return new DefaultLogixNG(this, sys);
     }
     
+    /** {@inheritDoc} */
     @Override
     public Base getParent() {
         return _parent;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setParent(Base parent) {
         _parent = parent;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setParentForAllChildren() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.setParent(this);
+            c.setParentForAllChildren();
+        }
     }
     
     @Override
@@ -195,14 +206,6 @@ public final class DefaultLogixNG extends AbstractNamedBean
 //        _socketSystemName = systemName;
 //    }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setParentForAllChildren() {
-        for (ConditionalNG c : _conditionalNG_List) {
-            c.setParentForAllChildren();
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void registerListeners() {

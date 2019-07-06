@@ -46,6 +46,15 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     
     /** {@inheritDoc} */
     @Override
+    public void setParentForAllChildren() {
+        if (_socket != null) {
+            _socket.setParent(this);
+            _socket.setParentForAllChildren();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public Lock getLock() {
         return _lock;
     }

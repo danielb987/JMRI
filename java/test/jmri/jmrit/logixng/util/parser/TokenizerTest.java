@@ -221,6 +221,15 @@ public class TokenizerTest {
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R2");
         Assert.assertTrue("list is empty", tokens.isEmpty());
         
+        tokens = Tokenizer.getTokens("!(12 < 2)");
+        checkFirstToken(tokens, TokenType.BOOLEAN_NOT, "!");
+        checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "12");
+        checkFirstToken(tokens, TokenType.LESS_THAN, "<");
+        checkFirstToken(tokens, TokenType.INTEGER_NUMBER, "2");
+        checkFirstToken(tokens, TokenType.RIGHT_PARENTHESIS, ")");
+        Assert.assertTrue("list is empty", tokens.isEmpty());
+        
         tokens = Tokenizer.getTokens("R1(x)");
         checkFirstToken(tokens, TokenType.IDENTIFIER, "R1");
         checkFirstToken(tokens, TokenType.LEFT_PARENTHESIS, "(");

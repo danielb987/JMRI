@@ -69,9 +69,17 @@ public final class DefaultConditionalNG extends AbstractNamedBean
         return _parent;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setParent(Base parent) {
         _parent = parent;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setParentForAllChildren() {
+        _femaleActionSocket.setParent(this);
+        _femaleActionSocket.setParentForAllChildren();
     }
     
     /** {@inheritDoc} */
