@@ -227,7 +227,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     final public void setup() {
-        log.error("LogixNG: setup()");
+        log.debug("LogixNG: setup()");
         for (ConditionalNG c : _conditionalNG_List) {
             c.setup();
         }
