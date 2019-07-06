@@ -99,7 +99,13 @@ public class LogixNGTest {
         logixNG.setParentForAllChildren();
         
         Assert.assertTrue("conditionalng is correct", conditionalNG == digitalActionBean.getConditionalNG());
+        Assert.assertTrue("conditionalng is correct", conditionalNG == conditionalNG.getConditionalNG());
         Assert.assertTrue("logixlng is correct", logixNG == digitalActionBean.getLogixNG());
+        Assert.assertTrue("logixlng is correct", logixNG == logixNG.getLogixNG());
+        
+        Assert.assertTrue("instance manager is correct", Base.InstanceManagerContainer.defaultInstanceManager == digitalActionBean.getInstanceManager());
+        Assert.assertTrue("instance manager is correct", Base.InstanceManagerContainer.defaultInstanceManager == conditionalNG.getInstanceManager());
+        Assert.assertTrue("instance manager is correct", Base.InstanceManagerContainer.defaultInstanceManager == logixNG.getInstanceManager());
     }
     
     @Test

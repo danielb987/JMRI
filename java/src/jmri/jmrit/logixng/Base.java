@@ -126,6 +126,7 @@ public interface Base {
     
     /**
      * Get the ConditionalNG of this item.
+     * @return the ConditionalNG that owns this item
      */
     default public ConditionalNG getConditionalNG() {
         if (this instanceof ConditionalNG) {
@@ -341,7 +342,7 @@ public interface Base {
      */
     static final class InstanceManagerContainer {
         
-        static private LogixNG_InstanceManager defaultInstanceManager =
+        static LogixNG_InstanceManager defaultInstanceManager =
                 new jmri.jmrit.logixng.implementation.DefaultLogixNG_InstanceManager();
     }
     
