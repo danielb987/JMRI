@@ -3,8 +3,7 @@ package jmri.jmrit.logixng;
 import jmri.NamedBean;
 
 /**
- * Analog expression is used in LogixNG to answer a question that can give
- * an analog value as result.
+ * AnalogExpressionBean is a AnalogExpression that also implements NamedBean.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */

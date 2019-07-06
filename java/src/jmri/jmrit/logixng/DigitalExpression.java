@@ -4,8 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 
 /**
- * DigitalExpressionBean is used in LogixNG to answer a question that can give the
- answers 'true' or 'false'.
+ * DigitalExpressionBean is used in LogixNG to answer a question that can give
+ * the answers 'true' or 'false'.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */

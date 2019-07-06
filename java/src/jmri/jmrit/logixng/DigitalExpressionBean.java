@@ -3,8 +3,7 @@ package jmri.jmrit.logixng;
 import jmri.NamedBean;
 
 /**
- * DigitalExpressionBean is used in LogixNG to answer a question that can give the
- answers 'true' or 'false'.
+ * DigitalExpressionBean is a DigitalExpression that also implements NamedBean.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
