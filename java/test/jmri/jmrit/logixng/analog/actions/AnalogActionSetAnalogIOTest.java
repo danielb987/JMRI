@@ -47,6 +47,7 @@ public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
 
     @After
     public void tearDown() {
+        _action.dispose();
         JUnitUtil.tearDown();
     }
     

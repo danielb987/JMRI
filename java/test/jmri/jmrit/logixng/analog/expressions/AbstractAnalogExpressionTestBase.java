@@ -1,20 +1,29 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.AnalogIO;
 import jmri.JmriException;
-import org.junit.Assert;
-import org.junit.Test;
 import jmri.jmrit.logixng.AnalogExpressionBean;
 import jmri.jmrit.logixng.Base;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test AbstractAnalogExpression
  * 
  * @author Daniel Bergqvist 2018
  */
-public class AbstractAnalogExpressionTestBase {
+public abstract class AbstractAnalogExpressionTestBase {
 
     protected AnalogExpressionBean _expression;
+    
+    abstract double expectedEvaluateValue();
+    
+    @Test
+    public void testEvaluate() {
+        AtomicBoolean isCompleted = new AtomicBoolean();
+        Assert.assertTrue("Evaluate matches", expectedEvaluateValue() == _expression.evaluate(isCompleted));
+    }
     
     @Test
     public void testGetBeanType() {

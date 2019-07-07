@@ -44,7 +44,7 @@ public abstract class AbstractDigitalExpression extends AbstractNamedBean
 
     @Override
     public String getBeanType() {
-        return Bundle.getMessage("BeanNameExpression");
+        return Bundle.getMessage("BeanNameDigitalExpression");
     }
 
     @Override

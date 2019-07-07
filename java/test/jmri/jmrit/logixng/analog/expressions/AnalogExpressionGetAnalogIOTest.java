@@ -16,6 +16,11 @@ import org.junit.Test;
  */
 public class AnalogExpressionGetAnalogIOTest extends AbstractAnalogExpressionTestBase {
 
+    @Override
+    double expectedEvaluateValue() {
+        return 0.0;
+    }
+    
     @Test
     public void testShortDescription() {
         Assert.assertTrue("String matches", "Get analog none".equals(_expression.getShortDescription()));
@@ -38,6 +43,7 @@ public class AnalogExpressionGetAnalogIOTest extends AbstractAnalogExpressionTes
 
     @After
     public void tearDown() {
+        _expression.dispose();
         JUnitUtil.tearDown();
     }
     

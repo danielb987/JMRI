@@ -140,8 +140,8 @@ public class LogixNGTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "LogixNG".equals(new DefaultLogixNG("IQA55").getBeanType()));
-        Assert.assertTrue("bean type is correct", "Action".equals(new IfThen("IQA55:A321", IfThen.Type.TRIGGER_ACTION).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Expression".equals(new And("IQA55:E321").getBeanType()));
+        Assert.assertTrue("bean type is correct", "Digital action".equals(new IfThen("IQA55:A321", IfThen.Type.TRIGGER_ACTION).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Digital expression".equals(new And("IQA55:E321").getBeanType()));
     }
     
     // The minimal setup for log4J

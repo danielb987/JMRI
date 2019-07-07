@@ -18,6 +18,11 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
 
     protected Memory _memory;
     
+    @Override
+    double expectedEvaluateValue() {
+        return (double) _memory.getValue();
+    }
+    
     @Test
     public void testCtor() {
         Assert.assertTrue("object exists", _expression != null);
@@ -43,6 +48,8 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
+        Assert.assertNotNull("memory is not null", _memory);
+        _memory.setValue(10.2);
         _expression = new AnalogExpressionMemory("IQA55:12:A321", "AnalogIO_Memory", _memory);
     }
 

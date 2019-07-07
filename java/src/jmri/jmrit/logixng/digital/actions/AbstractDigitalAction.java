@@ -77,7 +77,7 @@ public abstract class AbstractDigitalAction extends AbstractNamedBean
 
     @Override
     public String getBeanType() {
-        return Bundle.getMessage("BeanNameAction");
+        return Bundle.getMessage("BeanNameDigitalAction");
     }
 
     @Override
