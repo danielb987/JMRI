@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.analog.expressions;
 
 import jmri.InstanceManager;
 import jmri.MemoryManager;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.analog.expressions.GetAnalogIO;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -19,6 +20,11 @@ public class AnalogExpressionGetAnalogIOTest extends AbstractAnalogExpressionTes
     @Override
     double expectedEvaluateValue() {
         return 0.0;
+    }
+    
+    @Test
+    public void testCategory() {
+        Assert.assertTrue("Category matches", Category.ITEM == _expression.getCategory());
     }
     
     @Test

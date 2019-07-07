@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.MemoryManager;
+import jmri.jmrit.logixng.Category;
 
 /**
  * Test SetAnalogIO
@@ -21,6 +22,11 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
     @Test
     public void testCtor() {
         Assert.assertTrue("object exists", _action != null);
+    }
+    
+    @Test
+    public void testCategory() {
+        Assert.assertTrue("Category matches", Category.ITEM == _action.getCategory());
     }
     
     @Test

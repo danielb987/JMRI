@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.MemoryManager;
+import jmri.jmrit.logixng.Category;
 
 /**
  * Test SetAnalogIO
@@ -24,8 +25,37 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     }
     
     @Test
+    public void testCategory() {
+        Assert.assertTrue("Category matches", Category.ITEM == _expression.getCategory());
+    }
+    
+    @Test
     public void testCtor() {
         Assert.assertTrue("object exists", _expression != null);
+        
+        AnalogExpressionMemory expression2;
+        Assert.assertNotNull("memory is not null", _memory);
+        _memory.setValue(10.2);
+        
+        expression2 = new AnalogExpressionMemory("IQA55:12:A11");
+        Assert.assertNotNull("object exists", expression2);
+        Assert.assertTrue("Username matches", null == expression2.getUserName());
+        Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
+        
+        expression2 = new AnalogExpressionMemory("IQA55:12:A11", "My memory");
+        Assert.assertNotNull("object exists", expression2);
+        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
+        Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
+        
+        expression2 = new AnalogExpressionMemory("IQA55:12:A11", _memory);
+        Assert.assertNotNull("object exists", expression2);
+        Assert.assertTrue("Username matches", null == expression2.getUserName());
+        Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
+        
+        expression2 = new AnalogExpressionMemory("IQA55:12:A11", "My memory", _memory);
+        Assert.assertNotNull("object exists", expression2);
+        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
+        Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
     }
     
     @Test
@@ -37,6 +67,19 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     @Test
     public void testLongDescription() {
         Assert.assertTrue("String matches", "Get memory IM1".equals(_expression.getLongDescription()));
+    }
+    
+    @Test
+    public void testSetup() {
+        Assert.assertNotNull("memory is not null", _memory);
+        _memory.setValue(10.2);
+        AnalogExpressionMemory expression2 = new AnalogExpressionMemory("IQA55:12:A321");
+        Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
+        expression2.setup();
+        Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
+        expression2.setAnalogIO_SystemName(_memory.getSystemName());
+        expression2.setup();
+        Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
     }
     
     // The minimal setup for log4J

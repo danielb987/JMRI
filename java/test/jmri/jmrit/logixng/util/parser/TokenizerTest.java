@@ -83,7 +83,7 @@ public class TokenizerTest {
             TokenType tokenType, String string) {
         
         Assert.assertTrue("list is not empty", tokens.size() > 0);
-        System.out.format("Type: %s, String: '%s'%n", tokens.get(0).getTokenType(), tokens.get(0).getString());
+//        System.out.format("Type: %s, String: '%s'%n", tokens.get(0).getTokenType(), tokens.get(0).getString());
         Assert.assertTrue("token type matches", tokens.get(0).getTokenType() == tokenType);
         Assert.assertTrue("string matches", string.equals(tokens.get(0).getString()));
         

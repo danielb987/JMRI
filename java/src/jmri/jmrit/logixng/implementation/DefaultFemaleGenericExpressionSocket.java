@@ -211,10 +211,10 @@ public class DefaultFemaleGenericExpressionSocket
     /** {@inheritDoc} */
     @Override
     public boolean evaluateBoolean(@Nonnull AtomicBoolean isCompleted) {
-        System.err.format("evaluateBoolean: %b%n", isConnected());
+//        System.err.format("evaluateBoolean: %b%n", isConnected());
         if (isConnected()) {
-            System.err.format("socket type: %s%n", _currentSocketType);
-            System.err.format("socket type: %s%n", _currentSocketType.name());
+//            System.err.format("socket type: %s%n", _currentSocketType);
+//            System.err.format("socket type: %s%n", _currentSocketType.name());
             if (_currentSocketType == SocketType.DIGITAL) {
                 return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
             } else {

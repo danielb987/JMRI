@@ -24,8 +24,8 @@ public class Tokenizer {
         List<Token> tokens = new ArrayList<>();
         Token currentToken = new Token();
         
-        System.out.format("%n%n%n");
-        System.out.format("getTokens(): %s%n", expression);
+//        System.out.format("%n%n%n");
+//        System.out.format("getTokens(): %s%n", expression);
         
         AtomicBoolean eatNextChar = new AtomicBoolean(false);
         
@@ -40,7 +40,7 @@ public class Tokenizer {
                 nextChar = expression.charAt(i+1);
             }
             
-            System.out.format("index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
+//            System.out.format("index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
             
             
             
@@ -53,7 +53,7 @@ public class Tokenizer {
                 if (currentToken._tokenType == TokenType.SPACE) {
                     currentToken = new Token();
                 } else if (currentToken._tokenType != TokenType.NONE) {
-                    System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
+//                    System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
                     addToken(currentToken, tokens);
                     currentToken = new Token();
                 }
@@ -83,7 +83,7 @@ public class Tokenizer {
                     throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                 }
                 
-                System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
+//                System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
                 addToken(currentToken, tokens);
                 currentToken = new Token();
                 
@@ -93,7 +93,7 @@ public class Tokenizer {
             
             
             TokenType nextToken = getTokenType(currentToken, ch, nextChar, eatNextChar);
-            System.out.format("index %d: %s, %c%n", i, nextToken.name(), ch);
+//            System.out.format("index %d: %s, %c%n", i, nextToken.name(), ch);
             
             if (nextToken == TokenType.SAME_AS_LAST) {
                 currentToken._string += ch;
@@ -131,7 +131,7 @@ public class Tokenizer {
                 case BINARY_NOT:
                 case IDENTIFIER:
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
-                        System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
+//                        System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
                         addToken(currentToken, tokens);
                         currentToken = new Token();
                     }
@@ -140,7 +140,7 @@ public class Tokenizer {
                     
                 case FLOATING_NUMBER:
                     if ((currentToken._tokenType == TokenType.FLOATING_NUMBER) && !currentToken._string.isEmpty() && !isFloatingNumber(currentToken._string)) {
-                        System.out.format("Not a number: '%s'%n", currentToken._string);
+//                        System.out.format("Not a number: '%s'%n", currentToken._string);
                         throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                     }
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
@@ -184,7 +184,7 @@ public class Tokenizer {
             if (eatNextChar.get()) {
                 i++;
             }
-            System.out.format("New string: '%s'%n", currentToken._string);
+//            System.out.format("New string: '%s'%n", currentToken._string);
         }
         
         if (currentToken._tokenType != TokenType.NONE) {

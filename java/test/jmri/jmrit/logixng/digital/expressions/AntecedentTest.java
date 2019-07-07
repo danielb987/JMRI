@@ -95,8 +95,8 @@ public class AntecedentTest implements FemaleSocketListener {
                 break;
                 
             case Antecedent.TRUE:
-                System.err.format("antecedent: %s%n", antecedent);
-                System.err.format("variable: %b%n", conditionalVariablesList.get(0).evaluate(isCompleted));
+//                System.err.format("antecedent: %s%n", antecedent);
+//                System.err.format("variable: %b%n", conditionalVariablesList.get(0).evaluate(isCompleted));
                 Assert.assertTrue("validateAntecedent() returns TRUE for '"+antecedent+"'",
                         ix1.evaluate(isCompleted));
                 break;
