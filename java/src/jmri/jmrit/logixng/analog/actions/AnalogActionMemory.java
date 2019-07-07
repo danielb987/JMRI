@@ -106,7 +106,4 @@ public class AnalogActionMemory extends AbstractAnalogAction {
         }
     }
     
-    
-    private final static Logger log = LoggerFactory.getLogger(AnalogActionMemory.class);
-
 }
