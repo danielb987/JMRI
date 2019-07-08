@@ -21,6 +21,7 @@ public class ShutdownComputer extends AbstractDigitalAction {
 
     private ShutdownComputer _template;
     private int _seconds;
+    private DebugConfig _debugConfig = null;
     
     public ShutdownComputer(ConditionalNG conditionalNG, int seconds)
             throws BadUserNameException {
@@ -160,6 +161,30 @@ public class ShutdownComputer extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setDebugConfig(DebugConfig config) {
+        _debugConfig = config;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig getDebugConfig() {
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new MyDebugConfig();
+    }
+    
+    
+    
+    public class MyDebugConfig implements DebugConfig {
+
     }
     
     

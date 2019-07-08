@@ -5,9 +5,9 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Debugable;
 import jmri.jmrit.logixng.DigitalActionBean;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2018
  */
 public abstract class AbstractDigitalAction extends AbstractBase
-        implements DigitalActionBean {
+        implements DigitalActionBean, Debugable {
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;

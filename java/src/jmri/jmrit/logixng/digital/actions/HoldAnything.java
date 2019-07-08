@@ -27,6 +27,7 @@ public class HoldAnything extends AbstractDigitalAction {
 
     private boolean _enableExecution;
     private final List<MultipleSockets> _multipleSockets = new ArrayList<>();
+    private DebugConfig _debugConfig = null;
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
@@ -193,6 +194,30 @@ public class HoldAnything extends AbstractDigitalAction {
     @Override
     public void disposeMe() {
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setDebugConfig(DebugConfig config) {
+        _debugConfig = config;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig getDebugConfig() {
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new MyDebugConfig();
+    }
+    
+    
+    
+    public class MyDebugConfig implements DebugConfig {
+
+    }
     
     
     
@@ -304,19 +329,19 @@ public class HoldAnything extends AbstractDigitalAction {
             _debugConfig = config;
         }
 
-        /.** {@inheritDoc} *./
+        /*.* {@inheritDoc} *./
         @Override
         public DebugConfig getDebugConfig() {
             return _debugConfig;
         }
 
-        /.** {@inheritDoc} *./
+        /*.* {@inheritDoc} *./
         @Override
         public DebugConfig createDebugConfig() {
             return new ActionDebugConfig();
         }
 
-        /.** {@inheritDoc} *./
+        /*.* {@inheritDoc} *./
         @Override
         public Base getObject() {
             throw new UnsupportedOperationException("Not supported yet.");

@@ -21,6 +21,7 @@ public class ActionAtomicBoolean extends AbstractDigitalAction {
     private ActionAtomicBoolean _template;
     private AtomicBoolean _atomicBoolean;
     private boolean _newValue;
+    private DebugConfig _debugConfig = null;
     
     public ActionAtomicBoolean(ConditionalNG conditionalNG, AtomicBoolean atomicBoolean, boolean newValue)
             throws BadUserNameException {
@@ -163,6 +164,30 @@ public class ActionAtomicBoolean extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setDebugConfig(DebugConfig config) {
+        _debugConfig = config;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig getDebugConfig() {
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new MyDebugConfig();
+    }
+    
+    
+    
+    public class MyDebugConfig implements DebugConfig {
+
     }
     
 }

@@ -31,6 +31,7 @@ public class DoStringAction
     private String _stringActionSocketSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
+    private DebugConfig _debugConfig = null;
     
     public DoStringAction(ConditionalNG conditionalNG) {
         super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
@@ -230,6 +231,30 @@ public class DoStringAction
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setDebugConfig(DebugConfig config) {
+        _debugConfig = config;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig getDebugConfig() {
+        return _debugConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DebugConfig createDebugConfig() {
+        return new MyDebugConfig();
+    }
+    
+    
+    
+    public class MyDebugConfig implements DebugConfig {
+
     }
 
 }

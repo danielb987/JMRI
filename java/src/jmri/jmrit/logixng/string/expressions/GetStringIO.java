@@ -16,7 +16,7 @@ import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
  */
 public class GetStringIO extends AbstractStringExpression {
 
-    private Lock _lock = Lock.NONE;
+//    private Lock _lock = Lock.NONE;
     private GetStringIO _template;
     private String _stringIO_SystemName;
     private StringIO _stringIO;
