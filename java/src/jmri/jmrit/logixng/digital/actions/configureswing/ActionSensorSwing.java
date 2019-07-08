@@ -120,6 +120,9 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
+        if (! (object instanceof ActionSensor)) {
+            throw new IllegalArgumentException("object must be an ActionSensor but is a: "+object.getClass().getName());
+        }
         ActionSensor action = (ActionSensor)object;
         try {
             Sensor sensor = sensorBeanPanel.getNamedBean();

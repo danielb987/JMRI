@@ -120,6 +120,9 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
+        if (! (object instanceof ActionLight)) {
+            throw new IllegalArgumentException("object must be an ActionLight but is a: "+object.getClass().getName());
+        }
         ActionLight action = (ActionLight)object;
         try {
             Light light = lightBeanPanel.getNamedBean();

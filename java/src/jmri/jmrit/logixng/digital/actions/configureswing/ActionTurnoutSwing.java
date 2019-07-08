@@ -120,6 +120,9 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
+        if (! (object instanceof ActionTurnout)) {
+            throw new IllegalArgumentException("object must be an ActionTurnout but is a: "+object.getClass().getName());
+        }
         ActionTurnout action = (ActionTurnout)object;
         try {
             Turnout turnout = turnoutBeanPanel.getNamedBean();
