@@ -147,6 +147,21 @@ public class ShutdownComputer extends AbstractDigitalAction {
         // Do nothing
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+    
     
     private final static Logger log = LoggerFactory.getLogger(ShutdownComputer.class);
 }

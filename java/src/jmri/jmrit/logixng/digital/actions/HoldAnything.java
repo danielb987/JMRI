@@ -14,6 +14,7 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
 /**
  * An action that can hold everything but doesn't do anything.
@@ -178,30 +179,33 @@ public class HoldAnything extends AbstractDigitalAction {
     
     /** {@inheritDoc} */
     @Override
-    public void registerListeners() {
-        // Do nothing. The children should not be able to register
-        // their listeners.
+    public void registerListenersForThisClass() {
+        // Do nothing.
     }
     
     /** {@inheritDoc} */
     @Override
-    public void unregisterListeners() {
-        // Do nothing. The children should not be able to unregister
-        // their listeners.
+    public void unregisterListenersForThisClass() {
+        // Do nothing.
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
     }
     
     
     
     // This class can not be static since it needs to access the outer class.
     
-    private class MultipleSockets implements MaleSocket, FemaleSocketListener {
+    private class MultipleSockets extends AbstractMaleSocket implements FemaleSocketListener {
 
         private final FemaleSocketFactory _femaleSocketFactory;
         private List<String> _systemNames;
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
         private Lock _lock = Lock.NONE;
-        private DebugConfig _debugConfig = null;
-        private boolean _enabled = false;
+//        private DebugConfig _debugConfig = null;
+//        private boolean _enabled = false;
         
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
             _femaleSocketFactory = femaleSocketFactory;
@@ -294,49 +298,56 @@ public class HoldAnything extends AbstractDigitalAction {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        /** {@inheritDoc} */
+        /*.* {@inheritDoc} *./
         @Override
         public void setDebugConfig(DebugConfig config) {
             _debugConfig = config;
         }
 
-        /** {@inheritDoc} */
+        /.** {@inheritDoc} *./
         @Override
         public DebugConfig getDebugConfig() {
             return _debugConfig;
         }
 
-        /** {@inheritDoc} */
+        /.** {@inheritDoc} *./
         @Override
         public DebugConfig createDebugConfig() {
             return new ActionDebugConfig();
         }
 
-        /** {@inheritDoc} */
+        /.** {@inheritDoc} *./
         @Override
         public Base getObject() {
             throw new UnsupportedOperationException("Not supported yet.");
 //            return _action;
         }
+*/
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            // Do nothing
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void registerListenersForThisClass() {
+            // Do nothing
+        }
 
         /** {@inheritDoc} */
         @Override
-        public void dispose() {
+        public void unregisterListenersForThisClass() {
+            // Do nothing
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void disposeMe() {
             for (FemaleSocket femaleSocket : _femaleSockets) {
+                femaleSocket.disconnect();
                 femaleSocket.dispose();
             }
-        }
-        
-        /** {@inheritDoc} */
-        @Override
-        public void setEnabled(boolean enable) {
-            _enabled = enable;
-        }
-        
-        /** {@inheritDoc} */
-        @Override
-        public boolean isEnabled() {
-            return _enabled;
         }
         
         

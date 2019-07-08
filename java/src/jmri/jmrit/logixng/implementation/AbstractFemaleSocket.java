@@ -6,8 +6,10 @@ import java.util.HashMap;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
+import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
@@ -137,21 +139,49 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return _name;
     }
 
+    public void disposeMe() {
+        // Do nothing
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void dispose() {
         if (_socket != null) {
-            _socket.dispose();
+            MaleSocket aSocket = _socket;
+            disconnect();
+            aSocket.dispose();
         }
+        disposeMe();
     }
 
+    /**
+     * Register listeners if this object needs that.
+     * <P>
+     * Important: This method may be called more than once. Methods overriding
+     * this method must ensure that listeners are not registered more than once.
+     */
+    protected void registerListenersForThisClass() {
+        // Do nothing
+    }
+    
+    /**
+     * Unregister listeners if this object needs that.
+     * <P>
+     * Important: This method may be called more than once. Methods overriding
+     * this method must ensure that listeners are not unregistered more than once.
+     */
+    protected void unregisterListenersForThisClass() {
+        // Do nothing
+    }
+    
     /**
      * Register listeners if this object needs that.
      */
     @Override
     public void registerListeners() {
-        if (isConnected()) {
-            getConnectedSocket().registerListeners();
+        registerListenersForThisClass();
+        if (_socket != null) {
+            _socket.registerListeners();
         }
     }
     
@@ -160,8 +190,9 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
      */
     @Override
     public void unregisterListeners() {
-        if (isConnected()) {
-            getConnectedSocket().unregisterListeners();
+        unregisterListenersForThisClass();
+        if (_socket != null) {
+            _socket.unregisterListeners();
         }
     }
     
@@ -199,5 +230,33 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     public String getSystemName() {
         throw new UnsupportedOperationException("Not supported.");
     }
-
+    
+    /** {@inheritDoc} */
+    @Override
+    public final ConditionalNG getConditionalNG() {
+        if (this instanceof ConditionalNG) {
+            return (ConditionalNG) this;
+        } else {
+            Base parent = getParent();
+            while (! (parent instanceof ConditionalNG)) {
+                parent = parent.getParent();
+            }
+            return (ConditionalNG) parent;
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public final LogixNG getLogixNG() {
+        if (this instanceof LogixNG) {
+            return (LogixNG) this;
+        } else {
+            Base parent = getParent();
+            while (! (parent instanceof LogixNG)) {
+                parent = parent.getParent();
+            }
+            return (LogixNG) parent;
+        }
+    }
+    
 }

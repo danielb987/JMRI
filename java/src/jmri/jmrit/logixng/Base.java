@@ -86,16 +86,19 @@ public interface Base {
 
     /**
      * Get the system name.
+     * @return the system name
      */
     public String getSystemName();
     
     /**
      * Get the user name.
+     * @return the user name
      */
     public String getUserName();
     
     /**
      * Get the user name.
+     * @param s the new user name
      */
     public void setUserName(@CheckForNull String s) throws NamedBean.BadUserNameException;
     
@@ -128,32 +131,13 @@ public interface Base {
      * Get the ConditionalNG of this item.
      * @return the ConditionalNG that owns this item
      */
-    default public ConditionalNG getConditionalNG() {
-        if (this instanceof ConditionalNG) {
-            return (ConditionalNG) this;
-        } else {
-            Base parent = getParent();
-            while (! (parent instanceof ConditionalNG)) {
-                parent = parent.getParent();
-            }
-            return (ConditionalNG) parent;
-        }
-    }
+    public ConditionalNG getConditionalNG();
     
     /**
-     * Get the ConditionalNG of this item.
+     * Get the LogixNG of this item.
+     * @return the LogixNG that owns this item
      */
-    default public LogixNG getLogixNG() {
-        if (this instanceof LogixNG) {
-            return (LogixNG) this;
-        } else {
-            Base parent = getParent();
-            while (! (parent instanceof LogixNG)) {
-                parent = parent.getParent();
-            }
-            return (LogixNG) parent;
-        }
-    }
+    public LogixNG getLogixNG();
     
     /**
      * Get the LogixNG_InstanceManager.
@@ -185,6 +169,8 @@ public interface Base {
      * <li>The parent of a male sockets is the same parent as the expression or
      * action that it contains.</li>
      * </ul>
+     * 
+     * @return the parent of this object
      */
     public Base getParent();
     
@@ -202,24 +188,15 @@ public interface Base {
      * <li>The parent of a male sockets is the same parent as the expression or
      * action that it contains.</li>
      * </ul>
-     * @param parent the parent of this object
+     * 
+     * @param parent the new parent of this object
      */
     public void setParent(Base parent);
     
     /**
      * Set the parent for all the children.
      */
-    default public void setParentForAllChildren() {
-        for (int i=0; i < getChildCount(); i++) {
-            FemaleSocket femaleSocket = getChild(i);
-            femaleSocket.setParent(this);
-            if (femaleSocket.isConnected()) {
-                MaleSocket connectedSocket = femaleSocket.getConnectedSocket();
-                connectedSocket.setParent(femaleSocket);
-                connectedSocket.setParentForAllChildren();
-            }
-        }
-    }
+    public void setParentForAllChildren();
     
     /**
      * Get a child of this item
@@ -239,6 +216,7 @@ public interface Base {
     
     /**
      * Get the category.
+     * @return the category
      */
     public Category getCategory();
     
@@ -253,6 +231,7 @@ public interface Base {
     
     /**
      * Get the status of the lock.
+     * @return the current lock
      */
     public Lock getLock();
     
@@ -260,6 +239,8 @@ public interface Base {
      * Set the status of the lock.
      * 
      * Note that the user interface should normally not allow editing a hard lock.
+     * 
+     * @param lock the new lock
      */
     public void setLock(Lock lock);
 
@@ -311,23 +292,15 @@ public interface Base {
      * Important: This method may be called more than once. Methods overriding
      * this method must ensure that listeners are not registered more than once.
      */
-    default public void registerListeners() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).registerListeners();
-        }
-    }
+    public void registerListeners();
     
     /**
-     * Register listeners if this object needs that.
+     * Unregister listeners if this object needs that.
      * <P>
      * Important: This method may be called more than once. Methods overriding
      * this method must ensure that listeners are not unregistered more than once.
      */
-    default public void unregisterListeners() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).unregisterListeners();
-        }
-    }
+    public void unregisterListeners();
     
     
     

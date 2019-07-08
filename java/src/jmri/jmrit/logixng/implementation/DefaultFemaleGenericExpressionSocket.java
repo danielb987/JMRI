@@ -423,6 +423,22 @@ public class DefaultFemaleGenericExpressionSocket
         _listener.disconnected(socket);
     }
     
+    /** {@inheritDoc} */
+    @Override
+    protected void registerListenersForThisClass() {
+        if (_currentActiveSocket != null) {
+            _currentActiveSocket.registerListeners();
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    protected void unregisterListenersForThisClass() {
+        if (_currentActiveSocket != null) {
+            _currentActiveSocket.unregisterListeners();
+        }
+    }
+    
     
     
     private class AnalogSocket extends DefaultFemaleAnalogExpressionSocket {
@@ -522,7 +538,7 @@ public class DefaultFemaleGenericExpressionSocket
 
         /** {@inheritDoc} */
         @Override
-        public void dispose() {
+        public void disposeMe() {
             DefaultFemaleGenericExpressionSocket.this.dispose();
         }
 

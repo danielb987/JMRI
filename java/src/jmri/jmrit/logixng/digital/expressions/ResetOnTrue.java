@@ -196,6 +196,21 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
             throw new RuntimeException("socket is already connected");
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
 
     private final static Logger log = LoggerFactory.getLogger(ResetOnTrue.class);
 }

@@ -14,13 +14,14 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.DigitalActionBean;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
 /**
  * Every DigitalActionBean has an DefaultMaleDigitalActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
+public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implements MaleDigitalActionSocket {
 
     private Base _parent = null;
     private final DigitalActionBean _action;
@@ -247,7 +248,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     }
 
     @Override
-    public void dispose() {
+    public void disposeMe() {
         _action.dispose();
     }
 
@@ -255,7 +256,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
      * Register listeners if this object needs that.
      */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         _action.registerListeners();
     }
     
@@ -263,7 +264,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
      * Register listeners if this object needs that.
      */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         System.err.format("Class: %s%n", this.getClass().getName());
         System.err.format("Class: %s, Action: %s%n", this.getClass().getName(), _action.getClass().getName());
         _action.unregisterListeners();
@@ -364,7 +365,7 @@ public class DefaultMaleDigitalActionSocket implements MaleDigitalActionSocket {
     public boolean isEnabled() {
         return _enabled;
     }
-
+    
 
 
     public static class DigitalActionDebugConfig implements MaleSocket.DebugConfig {

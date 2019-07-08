@@ -18,13 +18,14 @@ import jmri.util.Log4JUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.AnalogExpressionBean;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
 /**
  * Every AnalogExpressionBean has an DefaultMaleAnalogExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSocket {
+public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implements MaleAnalogExpressionSocket {
 
     private Base _parent = null;
     private final AnalogExpressionBean _expression;
@@ -268,7 +269,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
     }
 
     @Override
-    public void dispose() {
+    public void disposeMe() {
         _expression.dispose();
     }
 
@@ -276,7 +277,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
      * Register listeners if this object needs that.
      */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         _expression.registerListeners();
     }
     
@@ -284,7 +285,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
      * Register listeners if this object needs that.
      */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         _expression.unregisterListeners();
     }
     
@@ -391,7 +392,7 @@ public class DefaultMaleAnalogExpressionSocket implements MaleAnalogExpressionSo
         public float _result = 0.0f;
         
     }
-
+    
     private final static Logger log = LoggerFactory.getLogger(DefaultMaleAnalogExpressionSocket.class);
 
 }

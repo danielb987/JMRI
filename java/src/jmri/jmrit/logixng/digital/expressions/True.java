@@ -111,5 +111,20 @@ public class True extends AbstractDigitalExpression {
     public void setup() {
         // Do nothing
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
 
 }

@@ -9,6 +9,8 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Category;
 import javax.annotation.Nonnull;
+import jmri.jmrit.logixng.AnalogActionBean;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
@@ -16,14 +18,13 @@ import jmri.jmrit.logixng.MaleSocket;
 import jmri.util.Log4JUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
  * Every AnalogActionBean has an DefaultMaleAnalogActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
+public class DefaultMaleAnalogActionSocket extends AbstractMaleSocket implements MaleAnalogActionSocket {
 
     private Base _parent = null;
     private final AnalogActionBean _action;
@@ -251,16 +252,11 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         return _action.getPropertyChangeListenersByReference(name);
     }
 
-    @Override
-    public void dispose() {
-        _action.dispose();
-    }
-
     /**
      * Register listeners if this object needs that.
      */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         _action.registerListeners();
     }
     
@@ -268,7 +264,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
      * Register listeners if this object needs that.
      */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         _action.unregisterListeners();
     }
     
@@ -367,6 +363,11 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
     public boolean isEnabled() {
         return _enabled;
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
 
 
     public static class AnalogActionDebugConfig implements MaleSocket.DebugConfig {
@@ -377,7 +378,7 @@ public class DefaultMaleAnalogActionSocket implements MaleAnalogActionSocket {
         public boolean _dontExecute = false;
         
     }
-
+    
     private final static Logger log = LoggerFactory.getLogger(DefaultMaleAnalogActionSocket.class);
 
 }

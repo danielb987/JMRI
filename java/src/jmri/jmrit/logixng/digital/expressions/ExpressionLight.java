@@ -161,7 +161,7 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     
     /** {@inheritDoc} */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         if (! _listenersAreRegistered) {
             _lightHandle.getBean().addPropertyChangeListener("KnownState", this);
             _listenersAreRegistered = true;
@@ -170,7 +170,7 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     
     /** {@inheritDoc} */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         if (_listenersAreRegistered) {
             _lightHandle.getBean().removePropertyChangeListener("KnownState", this);
             _listenersAreRegistered = false;
@@ -181,6 +181,11 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         getConditionalNG().execute();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
     }
     
     

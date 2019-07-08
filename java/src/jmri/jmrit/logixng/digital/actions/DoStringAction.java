@@ -216,5 +216,20 @@ public class DoStringAction
             throw new RuntimeException("socket is already connected");
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
 
 }

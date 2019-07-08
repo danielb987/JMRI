@@ -37,50 +37,95 @@
 		<p>A major design principle for LogixNG is modularity. In order to
 		achieve that, LogixNG has the following structure.</p>
 
-		<h3>jmri.jmrit.logixng</h3>
+		<h3>jmri.jmrit.logixng.&lt;type&gt;</h3>
 
-		<p>The package jmri.jmrit.logixng is the public interface of LogixNG.
-		Every part of JMRI may use everything in this package.</p>
+		<p>&lt;type&gt; can be "analog", "digital", "generic" or "string".</p>
 
-		<h3>jmri.jmrit.logixng.actions</h3>
+		<p>The package jmri.jmrit.logixng.analog has everything that is
+		related to analog actions and analog expressions.</p>
 
-		<p>The package jmri.jmrit.logixng.actions has the actions that are
-		shipped with JMRI. These are registered by a factory class and should
-		not be accessed directly. Each action is to be considered as its own
-		'package' and an action should not use another action directly.</p>
+		<p>The package jmri.jmrit.logixng.digital has everything that is
+		related to digital actions and digital expressions.</p>
+
+		<p>The package jmri.jmrit.logixng.string has everything that is
+		related to string actions and string expressions.</p>
+
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.actions</h3>
+
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.actions has the actions
+		that are shipped with JMRI. These are registered by a factory class and
+		should not be accessed directly. An action class should not use another
+		action class directly.</p>
 		
 		<p>There should not be any assumptions on which actions are included
-		in JMRI. The list of action classes is supplied by the ActionManager.
-		This ensures that action classes can be added later, either to the JMRI
-		source code or at runtime as plugins.</p>
+		in JMRI. The lists of action classes is supplied by the AnalogActionManager,
+		DigitalActionManager and StringActionManager. This ensures that action
+		classes can be added later, either to the JMRI source code or at runtime
+		as plugins.</p>
 
-		<h3>jmri.jmrit.logixng.actions.swing</h3>
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.actions.swing</h3>
 
-		<p>The package jmri.jmrit.logixng.actions.swing has the action
-		configuration classes that uses Swing.</p>
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.actions.swing has the
+		swing classes that are used to configure action classes. Each action
+		class must have its own swing class in this package.</p>
 
-		<h3>jmri.jmrit.logixng.expressions</h3>
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.actions.configurexml</h3>
 
-		<p>The package jmri.jmrit.logixng.expressions has the expressions that
-		are shipped with JMRI. These are registered by a factory class and should
-		not be accessed directly. Each expression is to be considered as its own
-		'package' and an expression should not use another expression directly.</p>
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.actions.configurexml has
+		the xml classes that are used to configure action classes. Each action
+		class must have its own xml class in this package.</p>
+
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.expressions</h3>
+
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.expressions has the
+		expressions that are shipped with JMRI. These are registered by a factory
+		class and should not be accessed directly. An expression class should not
+		use another expression class directly.</p>
 		
 		<p>There should not be any assumptions on which expressions are included
-		in JMRI. The list of expression classes is supplied by the ExpressionManager.
-		This ensures that expression classes can be added later, either to the JMRI
-		source code or at runtime as plugins.</p>
+		in JMRI. The lists of expression classes is supplied by the AnalogExpressionManager,
+		DigitalActionManager and StringActionManager. This ensures that expression
+		classes can be added later, either to the JMRI source code or at runtime as
+		plugins.</p>
 
-		<h3>jmri.jmrit.logixng.expressions.swing</h3>
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.expressions.swing</h3>
 
-		<p>The package jmri.jmrit.logixng.expressions.swing has the expression
-		configuration classes that uses Swing.</p>
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.expressions.swing has the
+		swing classes that are used to configure expression classes. Each expression
+		class must have its own swing class in this package.</p>
 
-		<h3>jmri.jmrit.logixng.engine</h3>
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.expressions.configurexml</h3>
 
-		<p>The package jmri.jmrit.logixng.engine is the brain which makes LogixNG
-		to run. It handles all the internal stuff. No other parts of JMRI nor LogixNG
-		should access this package directly.</p>
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.expressions.configurexml has
+		the xml classes that are used to configure expression classes. Each expression
+		class must have its own xml class in this package.</p>
+
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.implementation</h3>
+
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.implementation has some classes
+		that are used by actions and expressions, for example implementation of managers
+		and implementation of male and female sockets.</p>
+		
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.implementation.configurexml</h3>
+
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.implementation.configurexml
+		has the xml classes that are used to configure implementation classes.</p>
+
+		<h3>jmri.jmrit.logixng.&lt;type&gt;.log</h3>
+
+		<p>The package jmri.jmrit.logixng.&lt;type&gt;.log has classes used for logging
+		of the current state of the actions and expressions.</p>
+
+		<h3>jmri.jmrit.logixng.implementation</h3>
+
+		<p>The package jmri.jmrit.logixng.implementation has implementations of
+		everything that is not actions, expressions or tools. No other parts of JMRI nor
+		LogixNG should access this package directly.</p>
+
+		<h3>jmri.jmrit.logixng.implementation.configurexml</h3>
+
+		<p>The package jmri.jmrit.logixng.implementation.configurexml has the xml classes
+		that are used to configure implementation classes.</p>
 
 		<h3>jmri.jmrit.tools.swing</h3>
 
@@ -92,11 +137,8 @@
 		<p>The ImportLogix tool uses many expressions in the jmri.jmrit.logixng.expressions
 		package and many actions in the jmri.jmrit.logixng.actions package.</p>
 
-		<p>jmri.managers.DefaultInstanceInitializer uses the default managers in the
-		jmri.jmrit.logixng.engine package.</p>
-		
 		<p>The XML schema xml/schema/types/logixng-4.13.4.xsd uses the default managers
-		in the jmri.jmrit.logixng.engine package.</p>
+		in the jmri.jmrit.logixng.implementation package.</p>
 
         <!--#include virtual="/Footer" -->
       </div><!-- closes #mainContent-->

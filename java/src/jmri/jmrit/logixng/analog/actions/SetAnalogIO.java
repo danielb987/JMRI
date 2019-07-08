@@ -110,6 +110,21 @@ public class SetAnalogIO extends AbstractAnalogAction {
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+    
     
     private final static Logger log = LoggerFactory.getLogger(SetAnalogIO.class);
 

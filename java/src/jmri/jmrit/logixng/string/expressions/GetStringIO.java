@@ -16,6 +16,7 @@ import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
  */
 public class GetStringIO extends AbstractStringExpression {
 
+    private Lock _lock = Lock.NONE;
     private GetStringIO _template;
     private String _stringIO_SystemName;
     private StringIO _stringIO;
@@ -124,6 +125,23 @@ public class GetStringIO extends AbstractStringExpression {
             System.out.format("Setup: %s%n", _stringIO_SystemName);     // Temporary until the StringIOManager is implemented
 //            _stringIO = InstanceManager.getDefault(StringIOManager.class).getBeanBySystemName(_stringIO_SystemName);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+        // Do nothing
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+        // Do nothing
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
     }
 
 }

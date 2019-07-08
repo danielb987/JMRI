@@ -5,12 +5,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jmri.JmriException;
 import jmri.NamedBean;
-import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.implementation.AbstractBase;
 
 /**
- * A null turnout.
+ * A null named bean.
  */
-public abstract class AbstractNullNamedBean extends AbstractNamedBean {
+public abstract class AbstractNullNamedBean extends AbstractBase {
     
     /**
      * Create a new NamedBean instance using only a system name.

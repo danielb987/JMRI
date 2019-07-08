@@ -84,7 +84,7 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
 
     /** {@inheritDoc} */
     @Override
-    public void dispose() {
+    public void disposeMe() {
         _pluginExpression.dispose();
     }
 
@@ -92,6 +92,18 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
     @Override
     public void setup() {
         _pluginExpression.setup();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+        _pluginExpression.registerListeners();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+        _pluginExpression.unregisterListeners();
     }
 
 }

@@ -150,4 +150,19 @@ public class ActionAtomicBoolean extends AbstractDigitalAction {
     public void setup() {
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+    
 }

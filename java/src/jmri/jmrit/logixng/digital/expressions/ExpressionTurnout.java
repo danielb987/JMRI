@@ -161,7 +161,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     
     /** {@inheritDoc} */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         if (! _listenersAreRegistered) {
             _turnoutHandle.getBean().addPropertyChangeListener("KnownState", this);
             _listenersAreRegistered = true;
@@ -170,7 +170,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     
     /** {@inheritDoc} */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         if (! _listenersAreRegistered) {
             _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
             _listenersAreRegistered = false;
@@ -181,6 +181,11 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         getConditionalNG().execute();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
     }
     
     

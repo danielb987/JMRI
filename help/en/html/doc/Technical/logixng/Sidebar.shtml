@@ -15,6 +15,7 @@
 			<li><a href="CreateExpressionsAndActions.shtml">Create Expressions, Actions, and so on</a>
 			<li><a href="Sockets.shtml">Sockets</a>
 			<li><a href="Plugins.shtml">Plugins for LogixNG</a>
+			<li><a href="UnitTesting.shtml">Unit testing of LogixNG</a>
 			</ul>
 		</dd>
 

@@ -2,18 +2,18 @@ package jmri.jmrit.logixng.string.actions;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.StringActionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * The base class for LogixNG AnalogActions
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public abstract class AbstractStringAction extends AbstractNamedBean
+public abstract class AbstractStringAction extends AbstractBase
         implements StringActionBean {
 
     private Base _parent = null;
@@ -70,16 +70,6 @@ public abstract class AbstractStringAction extends AbstractNamedBean
         _lock = lock;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public void dispose() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).dispose();
-        }
-        super.dispose();
-    }
-    
 
     private final static Logger log = LoggerFactory.getLogger(AbstractStringAction.class);
 }

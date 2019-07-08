@@ -244,6 +244,31 @@ public class LogixNGTest {
         public void dispose() {
             throw new UnsupportedOperationException("Not supported.");
         }
+
+        @Override
+        public ConditionalNG getConditionalNG() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public LogixNG getLogixNG() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public void setParentForAllChildren() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public void registerListeners() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public void unregisterListeners() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
     
     }
     

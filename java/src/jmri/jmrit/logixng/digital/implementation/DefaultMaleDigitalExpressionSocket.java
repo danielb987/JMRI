@@ -15,13 +15,14 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
 /**
  * Every DigitalExpressionBean has an DefaultMaleDigitalExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpressionSocket {
+public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket implements MaleDigitalExpressionSocket {
 
     private Base _parent = null;
     private final DigitalExpressionBean _expression;
@@ -219,7 +220,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
     }
 
     @Override
-    public void dispose() {
+    public void disposeMe() {
         _expression.dispose();
     }
 
@@ -227,7 +228,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
      * Register listeners if this object needs that.
      */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         _expression.registerListeners();
     }
     
@@ -235,7 +236,7 @@ public class DefaultMaleDigitalExpressionSocket implements MaleDigitalExpression
      * Register listeners if this object needs that.
      */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         _expression.unregisterListeners();
     }
     

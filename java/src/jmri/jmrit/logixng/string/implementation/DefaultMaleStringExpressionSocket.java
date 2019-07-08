@@ -15,13 +15,14 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.MaleStringExpressionSocket;
 import jmri.jmrit.logixng.StringExpressionBean;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
 /**
  * Every StringExpressionBean has an DefaultMaleStringExpressionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSocket {
+public class DefaultMaleStringExpressionSocket extends AbstractMaleSocket implements MaleStringExpressionSocket {
 
     private Base _parent = null;
     private final StringExpressionBean _expression;
@@ -216,7 +217,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
     }
 
     @Override
-    public void dispose() {
+    public void disposeMe() {
         _expression.dispose();
     }
 
@@ -224,7 +225,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
      * Register listeners if this object needs that.
      */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         _expression.registerListeners();
     }
     
@@ -232,7 +233,7 @@ public class DefaultMaleStringExpressionSocket implements MaleStringExpressionSo
      * Register listeners if this object needs that.
      */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         _expression.unregisterListeners();
     }
     

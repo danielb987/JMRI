@@ -3,18 +3,18 @@ package jmri.jmrit.logixng.digital.expressions;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.DigitalExpressionBean;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  *
  */
-public abstract class AbstractDigitalExpression extends AbstractNamedBean
+public abstract class AbstractDigitalExpression extends AbstractBase
         implements DigitalExpressionBean {
 
     private Base _parent = null;
@@ -88,16 +88,6 @@ public abstract class AbstractDigitalExpression extends AbstractNamedBean
             x++;
         }
         throw new RuntimeException("Unable to find a new socket name");
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public void dispose() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).dispose();
-        }
-        super.dispose();
     }
     
     

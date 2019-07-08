@@ -2,7 +2,7 @@ package jmri.jmrit.logixng.analog.expressions;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import jmri.jmrit.logixng.AnalogExpressionBean;
 /**
  *
  */
-public abstract class AbstractAnalogExpression extends AbstractNamedBean
+public abstract class AbstractAnalogExpression extends AbstractBase
         implements AnalogExpressionBean {
 
     private Base _parent = null;
@@ -69,15 +69,10 @@ public abstract class AbstractAnalogExpression extends AbstractNamedBean
     public void setLock(Lock lock) {
         _lock = lock;
     }
-
+    
     /** {@inheritDoc} */
     @Override
-    @OverridingMethodsMustInvokeSuper
-    public void dispose() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).dispose();
-        }
-        super.dispose();
+    public void disposeMe() {
     }
     
 

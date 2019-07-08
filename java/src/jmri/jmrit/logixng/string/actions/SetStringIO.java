@@ -114,6 +114,23 @@ public class SetStringIO extends AbstractStringAction {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+        // Do nothing
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+        // Do nothing
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+
     private final static Logger log = LoggerFactory.getLogger(SetStringIO.class);
 
 }

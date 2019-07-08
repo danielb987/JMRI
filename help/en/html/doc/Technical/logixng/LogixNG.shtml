@@ -53,6 +53,8 @@
           <li><a href="Sockets.shtml">Sockets</a></li>
 
           <li><a href="Plugins.shtml">Plugins for LogixNG</a></li>
+
+          <li><a href="UnitTesting.shtml">Unit testing of LogixNG</a></li>
         </ul>
 
 

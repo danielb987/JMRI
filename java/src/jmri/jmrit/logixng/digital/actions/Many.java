@@ -9,7 +9,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -275,6 +274,23 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
 //            return (MaleDigitalActionSocket) socket.getConnectedSocket();
 //        }
         
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+        // Do nothing
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+        // Do nothing
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
     }
 
     private final static Logger log = LoggerFactory.getLogger(Many.class);

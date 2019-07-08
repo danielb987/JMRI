@@ -224,4 +224,21 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+        // Do nothing
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+        // Do nothing
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+
 }

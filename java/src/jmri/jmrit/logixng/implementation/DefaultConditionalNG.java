@@ -4,26 +4,25 @@ import static jmri.NamedBean.UNKNOWN;
 
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The default implementation of ConditionalNG.
  * 
  * @author Daniel Bergqvist Copyright 2019
  */
-public final class DefaultConditionalNG extends AbstractNamedBean
+public final class DefaultConditionalNG extends AbstractBase
         implements ConditionalNG, FemaleSocketListener {
     
     private DefaultConditionalNG _template;
@@ -73,13 +72,6 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     @Override
     public void setParent(Base parent) {
         _parent = parent;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void setParentForAllChildren() {
-        _femaleActionSocket.setParent(this);
-        _femaleActionSocket.setParentForAllChildren();
     }
     
     /** {@inheritDoc} */
@@ -262,7 +254,7 @@ public final class DefaultConditionalNG extends AbstractNamedBean
 
     /** {@inheritDoc} */
     @Override
-    final public void dispose() {
+    final public void disposeMe() {
         _femaleActionSocket.dispose();
     }
     
@@ -270,8 +262,10 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     @Override
     public void setEnabled(boolean enable) {
         _enabled = enable;
-        if (enable && getLogixNG().isActive()) {
-            registerListeners();
+        if (enable) {
+            if (getLogixNG().isActive()) {
+                registerListeners();
+            }
         } else {
             unregisterListeners();
         }
@@ -281,6 +275,18 @@ public final class DefaultConditionalNG extends AbstractNamedBean
     @Override
     public boolean isEnabled() {
         return _enabled;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+        // Do nothing
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+        // Do nothing
     }
 
 }

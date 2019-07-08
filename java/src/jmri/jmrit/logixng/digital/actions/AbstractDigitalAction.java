@@ -3,20 +3,20 @@ package jmri.jmrit.logixng.digital.actions;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.DigitalActionBean;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * The base class for LogixNG Actions
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public abstract class AbstractDigitalAction extends AbstractNamedBean
+public abstract class AbstractDigitalAction extends AbstractBase
         implements DigitalActionBean {
 
     private Base _parent = null;
@@ -93,12 +93,7 @@ public abstract class AbstractDigitalAction extends AbstractNamedBean
     
     /** {@inheritDoc} */
     @Override
-    @OverridingMethodsMustInvokeSuper
-    public void dispose() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).dispose();
-        }
-        super.dispose();
+    public void disposeMe() {
     }
     
     

@@ -169,6 +169,21 @@ public class ActionLight extends AbstractDigitalAction {
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+    
     
     
     public enum LightState {

@@ -1,17 +1,16 @@
 package jmri.jmrit.logixng.string.expressions;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
+import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.StringExpressionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
  *
  */
-public abstract class AbstractStringExpression extends AbstractNamedBean
+public abstract class AbstractStringExpression extends AbstractBase
         implements StringExpressionBean {
 
     private Base _parent = null;
@@ -65,16 +64,6 @@ public abstract class AbstractStringExpression extends AbstractNamedBean
     @Override
     public void setLock(Lock lock) {
         _lock = lock;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @OverridingMethodsMustInvokeSuper
-    public void dispose() {
-        for (int i=0; i < getChildCount(); i++) {
-            getChild(i).dispose();
-        }
-        super.dispose();
     }
     
 

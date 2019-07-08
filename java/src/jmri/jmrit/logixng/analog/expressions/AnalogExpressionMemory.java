@@ -129,5 +129,20 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
             _memory = InstanceManager.getDefault(MemoryManager.class).getBeanBySystemName(_memorySystemName);
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
 
 }

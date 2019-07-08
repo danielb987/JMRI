@@ -7,28 +7,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.implementation.AbstractNamedBean;
 import jmri.implementation.JmriSimplePropertyListener;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The default implementation of LogixNG.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public final class DefaultLogixNG extends AbstractNamedBean
+public final class DefaultLogixNG extends AbstractBase
         implements LogixNG {
 //        implements LogixNG, FemaleSocketListener {
     
@@ -82,15 +81,6 @@ public final class DefaultLogixNG extends AbstractNamedBean
     @Override
     public void setParent(Base parent) {
         _parent = parent;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void setParentForAllChildren() {
-        for (ConditionalNG c : _conditionalNG_List) {
-            c.setParent(this);
-            c.setParentForAllChildren();
-        }
     }
     
     @Override
@@ -166,14 +156,6 @@ public final class DefaultLogixNG extends AbstractNamedBean
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         throw new UnsupportedOperationException("Not supported.");
-/*        
-        if (index != 0) {
-            throw new IllegalArgumentException(
-                    String.format("index has invalid value: %d", index));
-        }
-        
-        return _femaleActionSocket;
-*/        
     }
 
     @Override
@@ -208,7 +190,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
 
     /** {@inheritDoc} */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         if (_enabled && _userEnabled) {
             for (ConditionalNG c : _conditionalNG_List) {
                 c.registerListeners();
@@ -218,7 +200,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
     
     /** {@inheritDoc} */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         for (ConditionalNG c : _conditionalNG_List) {
             c.unregisterListeners();
         }
@@ -251,8 +233,10 @@ public final class DefaultLogixNG extends AbstractNamedBean
 
     /** {@inheritDoc} */
     @Override
-    final public void dispose() {
-//        _femaleActionSocket.dispose();
+    final public void disposeMe() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.dispose();
+        }
     }
     
     /** {@inheritDoc} */
@@ -442,5 +426,5 @@ public final class DefaultLogixNG extends AbstractNamedBean
             c.execute();
         }
     }
-
+    
 }

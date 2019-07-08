@@ -14,13 +14,14 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.jmrit.logixng.StringActionBean;
+import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
 /**
  * Every StringActionBean has an DefaultMaleStringActionSocket as its parent.
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
+public class DefaultMaleStringActionSocket extends AbstractMaleSocket implements MaleStringActionSocket {
 
     private Base _parent = null;
     private final StringActionBean _action;
@@ -202,7 +203,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
     }
 
     @Override
-    public void dispose() {
+    public void disposeMe() {
         _action.dispose();
     }
 
@@ -210,7 +211,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
      * Register listeners if this object needs that.
      */
     @Override
-    public void registerListeners() {
+    public void registerListenersForThisClass() {
         _action.registerListeners();
     }
     
@@ -218,7 +219,7 @@ public class DefaultMaleStringActionSocket implements MaleStringActionSocket {
      * Register listeners if this object needs that.
      */
     @Override
-    public void unregisterListeners() {
+    public void unregisterListenersForThisClass() {
         _action.unregisterListeners();
     }
     

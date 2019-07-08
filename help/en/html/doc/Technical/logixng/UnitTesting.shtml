@@ -30,25 +30,22 @@
       <div id="mainContent">
         <!-- Page Body -->
 
-        <h1>LogixNG - The Categories enum</h1>
+        <h1>Unit testing of LogixNG</h1>
 
-		<h2>The Categories enum</h2>
+        <h2>Goals for unit testing of LogixNG</h2>
 
-		<p>Every type of expression and action has a predefined category to
-		which the expression or action belongs to. The main usage of
-		categories is to sort expressions by category when the user adds a new
-		expression or action and therefore selects which to add.</p>
+		<p>There are two main goals with the code that is testing LogixNG.</p>
 
 		<ul>
-		<li><strong>ITEM</strong><br>An item on the layout, for example turnout,
-		sensor or signal mast.</li>
-		<li><strong>COMMON</strong><br>Commonly used items. For example the
-		expressions And, Or and Timer, and the actions Many and IfThen.</li>
-		<li><strong>OTHER</strong><br>All other expressions and actions which
-		don't fit in the above categories.</li>
-		<li><strong>EXRAVAGANZA</strong><br>Things seldom used, included mostly
-		for fun, but maybe useful in some cases. These are partly included to
-		demonstrate the possibilities that LogixNG offers.</li>
+
+		<li>The entire code must be tested completely, including every branch. This means that
+		on the coverage report, both "Missed Instructions" and "Missed Branches" should be zero
+		for every class in LogixNG. This goal is impossible to reach entirely, but whenether
+		possible, this goal must be acheived.</li>
+
+		<li>The tests must be as close as possible to "real world" testing. The testing infrastructure
+		must test the code as realisticly as possible.</li>
+
 		</ul>
 
         <!--#include virtual="/Footer" -->

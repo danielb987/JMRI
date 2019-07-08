@@ -32,6 +32,17 @@
 
         <h1>LogixNG - Create Expressions, Actions, and so on</h1>
 
+		<h2>The structure of LogixNG</h2>
+
+		<p>LogixNG is a tree structure, where the root is a LogixNG.
+		The LogixNG can have ConditionalNGs as children.</p>
+
+		<p>A ConditionalNG have a female digital action socket
+		to which an digital action can be connected.</p>
+		
+		Each
+		ConditionalNG can have digital actions
+
 		<h2>The locking mechanism</h2>
 
 		<p>LogixNG has a lock that has three possible values.</p>

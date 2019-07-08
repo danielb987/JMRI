@@ -155,4 +155,19 @@ public class ExpressionBufferedSensor extends AbstractDigitalExpression {
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public void registerListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void unregisterListenersForThisClass() {
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+    }
+    
 }
