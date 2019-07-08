@@ -210,7 +210,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
         return Bundle.getMessage(plural ? "BeanNameAnalogActions" : "BeanNameAnalogAction");
     }
     
-    static DefaultAnalogActionManager _instance = null;
+    static volatile DefaultAnalogActionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultAnalogActionManager instance() {

@@ -224,7 +224,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         return Bundle.getMessage(plural ? "BeanNameAnalogExpressions" : "BeanNameAnalogExpression");
     }
     
-    static DefaultAnalogExpressionManager _instance = null;
+    static volatile DefaultAnalogExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultAnalogExpressionManager instance() {

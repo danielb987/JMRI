@@ -209,7 +209,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         return Bundle.getMessage(plural ? "BeanNameStringActions" : "BeanNameStringAction");
     }
     
-    static DefaultStringActionManager _instance = null;
+    static volatile DefaultStringActionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultStringActionManager instance() {

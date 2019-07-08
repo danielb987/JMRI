@@ -8,6 +8,7 @@ import java.util.HashMap;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.JmriSimplePropertyListener;
+import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public final class DefaultLogixNG extends AbstractBase
+public final class DefaultLogixNG extends AbstractNamedBean
         implements LogixNG {
 //        implements LogixNG, FemaleSocketListener {
     
@@ -184,28 +185,6 @@ public final class DefaultLogixNG extends AbstractBase
         throw new UnsupportedOperationException("Not supported.");
     }
 
-//    public void setSocketSystemName(String systemName) {
-//        _socketSystemName = systemName;
-//    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void registerListenersForThisClass() {
-        if (_enabled && _userEnabled) {
-            for (ConditionalNG c : _conditionalNG_List) {
-                c.registerListeners();
-            }
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void unregisterListenersForThisClass() {
-        for (ConditionalNG c : _conditionalNG_List) {
-            c.unregisterListeners();
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     final public void setup() {
@@ -213,32 +192,8 @@ public final class DefaultLogixNG extends AbstractBase
         for (ConditionalNG c : _conditionalNG_List) {
             c.setup();
         }
-/*        
-        if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
-            try {
-                MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);
-                if (maleSocket != null) {
-                    _femaleActionSocket.connect(maleSocket);
-                    maleSocket.setup();
-                } else {
-                    log.error("digital action is not found: " + _socketSystemName);
-                }
-            } catch (SocketAlreadyConnectedException ex) {
-                // This shouldn't happen and is a runtime error if it does.
-                throw new RuntimeException("socket is already connected");
-            }
-        }
-*/        
     }
 
-    /** {@inheritDoc} */
-    @Override
-    final public void disposeMe() {
-        for (ConditionalNG c : _conditionalNG_List) {
-            c.dispose();
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void setEnabled(boolean enable) {
@@ -254,7 +209,6 @@ public final class DefaultLogixNG extends AbstractBase
     @Override
     public boolean isEnabled() {
         return _enabled && _userEnabled;
-//        return _enabled && _userEnabled && _parent.isEnabled();
     }
     
     /**
@@ -280,7 +234,6 @@ public final class DefaultLogixNG extends AbstractBase
      * Persistant instance variables (saved between runs)
      */
     List<ConditionalNG> _conditionalNG_List = new ArrayList<>();
-//    ArrayList<String> _conditionalNG_List = new ArrayList<>();
     ArrayList<JmriSimplePropertyListener> _listeners = new ArrayList<>();
     
     /**
@@ -424,6 +377,38 @@ public final class DefaultLogixNG extends AbstractBase
     public void calculateConditionalNGs() {
         for (ConditionalNG c : _conditionalNG_List) {
             c.execute();
+        }
+    }
+
+    @Override
+    public ConditionalNG getConditionalNG() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public LogixNG getLogixNG() {
+        return this;
+    }
+
+    @Override
+    public void setParentForAllChildren() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.setParent(this);
+            c.setParentForAllChildren();
+        }
+    }
+
+    @Override
+    public void registerListeners() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.registerListeners();
+        }
+    }
+
+    @Override
+    public void unregisterListeners() {
+        for (ConditionalNG c : _conditionalNG_List) {
+            c.unregisterListeners();
         }
     }
     

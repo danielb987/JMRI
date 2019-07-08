@@ -53,23 +53,13 @@ public abstract class AbstractBase extends AbstractNamedBean implements Base {
     /** {@inheritDoc} */
     @Override
     public final void setParentForAllChildren() {
-        if (this instanceof LogixNG) {
-            LogixNG logixNG = (LogixNG)this;
-            int numConditionals = logixNG.getNumConditionalNGs();
-            for (int i=0; i < numConditionals; i++) {
-                ConditionalNG c = logixNG.getConditionalNG(i);
-                c.setParent(this);
-                c.setParentForAllChildren();
-            }
-        } else {
-            for (int i=0; i < getChildCount(); i++) {
-                FemaleSocket femaleSocket = getChild(i);
-                femaleSocket.setParent(this);
-                if (femaleSocket.isConnected()) {
-                    MaleSocket connectedSocket = femaleSocket.getConnectedSocket();
-                    connectedSocket.setParent(femaleSocket);
-                    connectedSocket.setParentForAllChildren();
-                }
+        for (int i=0; i < getChildCount(); i++) {
+            FemaleSocket femaleSocket = getChild(i);
+            femaleSocket.setParent(this);
+            if (femaleSocket.isConnected()) {
+                MaleSocket connectedSocket = femaleSocket.getConnectedSocket();
+                connectedSocket.setParent(femaleSocket);
+                connectedSocket.setParentForAllChildren();
             }
         }
     }
@@ -93,8 +83,10 @@ public abstract class AbstractBase extends AbstractNamedBean implements Base {
     /** {@inheritDoc} */
     @Override
     public final void registerListeners() {
+        System.out.format("registerListeners: %s%n", this.getClass().getName());
         registerListenersForThisClass();
         for (int i=0; i < getChildCount(); i++) {
+            System.out.format("child: %s%n", getChild(i).getClass().getName());
             getChild(i).registerListeners();
         }
     }
@@ -117,6 +109,7 @@ public abstract class AbstractBase extends AbstractNamedBean implements Base {
     /** {@inheritDoc} */
     @Override
     public final void dispose() {
+        super.dispose();
         for (int i=0; i < getChildCount(); i++) {
             getChild(i).dispose();
         }

@@ -508,7 +508,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    static DefaultLogixNGManager _instance = null;
+    static volatile DefaultLogixNGManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultLogixNGManager instance() {

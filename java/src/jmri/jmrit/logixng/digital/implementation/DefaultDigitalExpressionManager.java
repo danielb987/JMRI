@@ -258,7 +258,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         return Bundle.getMessage(plural ? "BeanNameDigitalExpressions" : "BeanNameDigitalExpression");
     }
     
-    static DefaultDigitalExpressionManager _instance = null;
+    static volatile DefaultDigitalExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultDigitalExpressionManager instance() {

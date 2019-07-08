@@ -228,7 +228,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         return Bundle.getMessage(plural ? "BeanNameStringExpressions" : "BeanNameStringExpression");
     }
     
-    static DefaultStringExpressionManager _instance = null;
+    static volatile DefaultStringExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultStringExpressionManager instance() {
