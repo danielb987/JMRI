@@ -11,6 +11,7 @@ import jmri.NamedBeanHandleManager;
 import jmri.Light;
 import jmri.LightManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.DigitalExpression;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.expressions.ExpressionLight;
@@ -47,6 +48,9 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     }
     
     private void createPanel(Base object) {
+        if ((object != null) && !(object instanceof ExpressionLight)) {
+            throw new IllegalArgumentException("object must be an ExpressionLight but is a: "+object.getClass().getName());
+        }
         ExpressionLight expression = (ExpressionLight)object;
         
         panel = new JPanel();
@@ -131,6 +135,9 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
+        if (! (object instanceof ExpressionLight)) {
+            throw new IllegalArgumentException("object must be an ExpressionLight but is a: "+object.getClass().getName());
+        }
         ExpressionLight expression = (ExpressionLight)object;
         try {
             Light turnout = lightBeanPanel.getNamedBean();

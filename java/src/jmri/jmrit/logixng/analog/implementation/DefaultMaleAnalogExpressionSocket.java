@@ -126,10 +126,7 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
         } catch (Exception e) {
             switch (_errorHandlingType) {
                 case SHOW_DIALOG_BOX:
-                    // We don't show a dialog box yet so log instead.
-                    log.error("expression {} thrown an exception: {}", _expression.toString(), e);
-                    return 0.0;
-                    
+                    // We don't show a dialog box yet so fall thrue.
                 case LOG_ERROR:
                     log.error("expression {} thrown an exception: {}", _expression.toString(), e);
                     return 0.0;

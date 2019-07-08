@@ -47,6 +47,9 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     }
     
     private void createPanel(Base object) {
+        if ((object != null) && !(object instanceof ExpressionTurnout)) {
+            throw new IllegalArgumentException("object must be an ExpressionTurnout but is a: "+object.getClass().getName());
+        }
         ExpressionTurnout expression = (ExpressionTurnout)object;
         
         panel = new JPanel();
@@ -129,6 +132,9 @@ public class ExpressionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
+        if (! (object instanceof ExpressionTurnout)) {
+            throw new IllegalArgumentException("object must be an ExpressionTurnout but is a: "+object.getClass().getName());
+        }
         ExpressionTurnout expression = (ExpressionTurnout)object;
         try {
             Turnout turnout = turnoutBeanPanel.getNamedBean();

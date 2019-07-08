@@ -130,8 +130,9 @@ public class Tokenizer {
                 case BINARY_OR:
                 case BINARY_NOT:
                 case IDENTIFIER:
+                case SPACE:
+                case NONE:
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
-//                        System.out.format("Add: index %d: %s, %s, %c, %c%n", i, currentToken._tokenType.name(), currentToken._string, ch, nextChar);
                         addToken(currentToken, tokens);
                         currentToken = new Token();
                     }
@@ -155,17 +156,6 @@ public class Tokenizer {
                         System.err.format("String: %s%n", currentToken._string);
                         throw new InvalidSyntaxException(Bundle.getMessage("InvalidSyntaxAtIndex", i));
                     }
-                    if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
-                        addToken(currentToken, tokens);
-                        currentToken = new Token();
-                    }
-                    currentToken._tokenType = nextToken;
-                    break;
-                    
-                case SPACE:
-                    // Fall through
-                    
-                case NONE:
                     if ((currentToken._tokenType != TokenType.NONE) && (currentToken._tokenType != TokenType.SPACE)) {
                         addToken(currentToken, tokens);
                         currentToken = new Token();

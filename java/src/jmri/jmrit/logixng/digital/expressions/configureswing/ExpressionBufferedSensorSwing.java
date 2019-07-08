@@ -47,6 +47,9 @@ public class ExpressionBufferedSensorSwing implements SwingConfiguratorInterface
     }
     
     private void createPanel(Base object) {
+        if ((object != null) && !(object instanceof ExpressionBufferedSensor)) {
+            throw new IllegalArgumentException("object must be an ExpressionBufferedSensor but is a: "+object.getClass().getName());
+        }
         ExpressionBufferedSensor expression = (ExpressionBufferedSensor)object;
         
         panel = new JPanel();
@@ -131,6 +134,9 @@ public class ExpressionBufferedSensorSwing implements SwingConfiguratorInterface
     /** {@inheritDoc} */
     @Override
     public void updateObject(@Nonnull Base object) {
+        if (! (object instanceof ExpressionBufferedSensor)) {
+            throw new IllegalArgumentException("object must be an ExpressionBufferedSensor but is a: "+object.getClass().getName());
+        }
         ExpressionBufferedSensor expression = (ExpressionBufferedSensor)object;
         try {
             Sensor turnout = sensorBeanPanel.getNamedBean();

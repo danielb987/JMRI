@@ -120,10 +120,7 @@ public class DefaultMaleAnalogActionSocket extends AbstractMaleSocket implements
         } catch (Exception e) {
             switch (_errorHandlingType) {
                 case SHOW_DIALOG_BOX:
-                    // We don't show a dialog box yet so log instead.
-                    log.error("action {} thrown an exception: {}", _action.toString(), e);
-                    break;
-                    
+                    // We don't show a dialog box yet so fall thrue.
                 case LOG_ERROR:
                     log.error("action {} thrown an exception: {}", _action.toString(), e);
                     break;
