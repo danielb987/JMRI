@@ -161,12 +161,11 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
             throw e;
         }
         
-        // Remove the old _turnoutHandle if it exists
+        // Remove the old _lightHandle if it exists
         _lightHandle = null;
         
         if (_lightSystemName != null) {
             Light t = InstanceManager.getDefault(LightManager.class).getBeanBySystemName(_lightSystemName);
-            _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
             if (t != null) {
                 _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
             } else {

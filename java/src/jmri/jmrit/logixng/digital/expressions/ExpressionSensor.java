@@ -161,12 +161,11 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
             throw e;
         }
         
-        // Remove the old _turnoutHandle if it exists
+        // Remove the old _sensorHandle if it exists
         _sensorHandle = null;
         
-        if ((_sensorHandle == null) && (_lightSystemName != null)) {
+        if (_lightSystemName != null) {
             Sensor t = InstanceManager.getDefault(SensorManager.class).getBeanBySystemName(_lightSystemName);
-            _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
             if (t != null) {
                 _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
             } else {

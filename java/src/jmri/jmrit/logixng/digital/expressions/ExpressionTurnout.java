@@ -166,7 +166,6 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         
         if (_turnoutSystemName != null) {
             Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
-            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
             if (t != null) {
                 _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
             } else {
