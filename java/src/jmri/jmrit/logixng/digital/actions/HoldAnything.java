@@ -324,11 +324,6 @@ public class HoldAnything extends AbstractDigitalAction {
             }
         }
         
-        
-        public class ActionDebugConfig implements MaleSocket.DebugConfig {
-
-        }
-
     }
     
 }
