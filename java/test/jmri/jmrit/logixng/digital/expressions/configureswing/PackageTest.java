@@ -7,7 +7,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     AndSwingTest.class,
     AntecedentSwingTest.class,
-    ExpressionBufferedSensorSwingTest.class,
     ExpressionLightSwingTest.class,
     ExpressionSensorSwingTest.class,
     ExpressionTurnoutSwingTest.class,

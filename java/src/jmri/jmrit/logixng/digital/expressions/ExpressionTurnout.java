@@ -14,6 +14,8 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Evaluates the state of a Turnout.
@@ -153,10 +155,36 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setup must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
+        
+        // Remove the old _turnoutHandle if it exists
+        _turnoutHandle = null;
+        
+        if (_turnoutSystemName != null) {
+            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
+            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            if (t != null) {
+                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            } else {
+                log.error("Turnout {} does not exists", _turnoutSystemName);
+            }
+        }
+/*        
+        _turnoutHandle.setBean(bean);
         if ((_turnoutHandle == null) && (_turnoutSystemName != null)) {
             Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
             _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            if (t != null) {
+                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+            } else {
+                log.error("Light {} does not exists", _lightSystemName);
+            }
         }
+*/        
     }
     
     /** {@inheritDoc} */
@@ -226,5 +254,8 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         }
         
     }
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(ExpressionTurnout.class);
     
 }

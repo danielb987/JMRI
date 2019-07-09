@@ -9,7 +9,6 @@ import org.junit.runners.Suite;
     jmri.jmrit.logixng.digital.expressions.configurexml.PackageTest.class,
     AndTest.class,
     AntecedentTest.class,
-    BufferedSensorTest.class,
     FalseTest.class,
     HoldTest.class,
     OrTest.class,

@@ -14,6 +14,8 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Evaluates the state of a Light.
@@ -153,9 +155,23 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_lightHandle == null) && (_lightSystemName != null)) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setup must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
+        
+        // Remove the old _turnoutHandle if it exists
+        _lightHandle = null;
+        
+        if (_lightSystemName != null) {
             Light t = InstanceManager.getDefault(LightManager.class).getBeanBySystemName(_lightSystemName);
             _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+            if (t != null) {
+                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+            } else {
+                log.error("Light {} does not exists", _lightSystemName);
+            }
         }
     }
     
@@ -226,5 +242,8 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         }
         
     }
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(ExpressionLight.class);
     
 }

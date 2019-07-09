@@ -11,6 +11,8 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.ThreadingUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This action sets the state of a light.
@@ -164,9 +166,16 @@ public class ActionLight extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_lightHandle == null) && (_lightSystemName != null)) {
+        // Remove the old _turnoutHandle if it exists
+        _lightHandle = null;
+        
+        if (_lightSystemName != null) {
             Light t = InstanceManager.getDefault(LightManager.class).getBeanBySystemName(_lightSystemName);
-            _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+            if (t != null) {
+                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+            } else {
+                log.error("Light {} does not exists", _lightSystemName);
+            }
         }
     }
     
@@ -247,5 +256,8 @@ public class ActionLight extends AbstractDigitalAction {
         }
         
     }
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(ActionLight.class);
     
 }

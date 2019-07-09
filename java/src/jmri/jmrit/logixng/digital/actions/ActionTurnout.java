@@ -11,6 +11,8 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.ThreadingUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This action sets the state of a turnout.
@@ -164,9 +166,16 @@ public class ActionTurnout extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_turnoutHandle == null) && (_turnoutSystemName != null)) {
+        // Remove the old _turnoutHandle if it exists
+        _turnoutHandle = null;
+        
+        if (_turnoutSystemName != null) {
             Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
-            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            if (t != null) {
+                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+            } else {
+                log.error("Light {} does not exists", _turnoutSystemName);
+            }
         }
     }
     
@@ -247,5 +256,8 @@ public class ActionTurnout extends AbstractDigitalAction {
         }
         
     }
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(ActionTurnout.class);
     
 }
