@@ -25,7 +25,6 @@ public class ActionTurnout extends AbstractDigitalAction {
     private String _turnoutSystemName;
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
-    private DebugConfig _debugConfig = null;
     
     public ActionTurnout(ConditionalNG conditionalNG)
             throws BadUserNameException {
@@ -194,30 +193,6 @@ public class ActionTurnout extends AbstractDigitalAction {
     public void disposeMe() {
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setDebugConfig(DebugConfig config) {
-        _debugConfig = config;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig getDebugConfig() {
-        return _debugConfig;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig createDebugConfig() {
-        return new MyDebugConfig();
-    }
-    
-    
-    
-    public class MyDebugConfig implements DebugConfig {
-
-    }
-    
     
     
     public enum TurnoutState {

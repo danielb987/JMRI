@@ -26,7 +26,6 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     private Many _template;
     private boolean _enableExecution;
     private final List<ActionEntry> actionEntries = new ArrayList<>();
-    private DebugConfig _debugConfig = null;
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
@@ -293,31 +292,8 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     @Override
     public void disposeMe() {
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDebugConfig(DebugConfig config) {
-        _debugConfig = config;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig getDebugConfig() {
-        return _debugConfig;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig createDebugConfig() {
-        return new MyDebugConfig();
-    }
     
     
-    
-    public class MyDebugConfig implements DebugConfig {
-
-    }
-
     private final static Logger log = LoggerFactory.getLogger(Many.class);
 
 }

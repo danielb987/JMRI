@@ -63,7 +63,6 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     private String _thenActionSocketSystemName;
     private final FemaleDigitalExpressionSocket _ifExpressionSocket;
     private final FemaleDigitalActionSocket _thenActionSocket;
-    private DebugConfig _debugConfig = null;
     
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
@@ -378,30 +377,6 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDebugConfig(DebugConfig config) {
-        _debugConfig = config;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig getDebugConfig() {
-        return _debugConfig;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig createDebugConfig() {
-        return new MyDebugConfig();
-    }
-    
-    
-    
-    public class MyDebugConfig implements DebugConfig {
-
     }
 
     private final static Logger log = LoggerFactory.getLogger(IfThen.class);

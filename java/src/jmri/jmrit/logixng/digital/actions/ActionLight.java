@@ -25,7 +25,6 @@ public class ActionLight extends AbstractDigitalAction {
     private String _lightSystemName;
     private NamedBeanHandle<Light> _lightHandle;
     private LightState _lightState = LightState.ON;
-    private DebugConfig _debugConfig = null;
     
     public ActionLight(ConditionalNG conditionalNG)
             throws BadUserNameException {
@@ -194,30 +193,6 @@ public class ActionLight extends AbstractDigitalAction {
     public void disposeMe() {
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setDebugConfig(DebugConfig config) {
-        _debugConfig = config;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig getDebugConfig() {
-        return _debugConfig;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig createDebugConfig() {
-        return new MyDebugConfig();
-    }
-    
-    
-    
-    public class MyDebugConfig implements DebugConfig {
-
-    }
-    
     
     
     public enum LightState {

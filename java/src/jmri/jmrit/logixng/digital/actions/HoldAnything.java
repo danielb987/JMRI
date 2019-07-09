@@ -27,7 +27,6 @@ public class HoldAnything extends AbstractDigitalAction {
 
     private boolean _enableExecution;
     private final List<MultipleSockets> _multipleSockets = new ArrayList<>();
-    private DebugConfig _debugConfig = null;
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
@@ -195,30 +194,6 @@ public class HoldAnything extends AbstractDigitalAction {
     public void disposeMe() {
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setDebugConfig(DebugConfig config) {
-        _debugConfig = config;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig getDebugConfig() {
-        return _debugConfig;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig createDebugConfig() {
-        return new MyDebugConfig();
-    }
-    
-    
-    
-    public class MyDebugConfig implements DebugConfig {
-
-    }
-    
     
     
     // This class can not be static since it needs to access the outer class.
@@ -229,7 +204,6 @@ public class HoldAnything extends AbstractDigitalAction {
         private List<String> _systemNames;
         private final List<FemaleSocket> _femaleSockets = new ArrayList<>();
         private Lock _lock = Lock.NONE;
-//        private DebugConfig _debugConfig = null;
 //        private boolean _enabled = false;
         
         private MultipleSockets(FemaleSocketFactory femaleSocketFactory) {
@@ -323,31 +297,6 @@ public class HoldAnything extends AbstractDigitalAction {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        /*.* {@inheritDoc} *./
-        @Override
-        public void setDebugConfig(DebugConfig config) {
-            _debugConfig = config;
-        }
-
-        /*.* {@inheritDoc} *./
-        @Override
-        public DebugConfig getDebugConfig() {
-            return _debugConfig;
-        }
-
-        /*.* {@inheritDoc} *./
-        @Override
-        public DebugConfig createDebugConfig() {
-            return new ActionDebugConfig();
-        }
-
-        /*.* {@inheritDoc} *./
-        @Override
-        public Base getObject() {
-            throw new UnsupportedOperationException("Not supported yet.");
-//            return _action;
-        }
-*/
         /** {@inheritDoc} */
         @Override
         public void setup() {

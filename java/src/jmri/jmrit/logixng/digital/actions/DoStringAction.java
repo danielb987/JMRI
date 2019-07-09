@@ -12,8 +12,6 @@ import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.MaleStringActionSocket;
-import jmri.jmrit.logixng.MaleStringExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
@@ -31,7 +29,6 @@ public class DoStringAction
     private String _stringActionSocketSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
-    private DebugConfig _debugConfig = null;
     
     public DoStringAction(ConditionalNG conditionalNG) {
         super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
@@ -231,30 +228,6 @@ public class DoStringAction
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDebugConfig(DebugConfig config) {
-        _debugConfig = config;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig getDebugConfig() {
-        return _debugConfig;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public DebugConfig createDebugConfig() {
-        return new MyDebugConfig();
-    }
-    
-    
-    
-    public class MyDebugConfig implements DebugConfig {
-
     }
 
 }
