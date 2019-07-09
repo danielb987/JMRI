@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class ActionSensor extends AbstractDigitalAction {
 
     private ActionSensor _template;
-    private String _sensorSystemName;
+    private String _sensorName;
     private NamedBeanHandle<Sensor> _sensorHandle;
     private SensorState _sensorState = SensorState.ACTIVE;
     
@@ -158,8 +158,8 @@ public class ActionSensor extends AbstractDigitalAction {
         return Bundle.getMessage("Sensor_Long", sensorName, _sensorState._text);
     }
     
-    public void setSensor_SystemName(String sensorSystemName) {
-        _sensorSystemName = sensorSystemName;
+    public void setSensorName(String sensorSystemName) {
+        _sensorName = sensorSystemName;
     }
     
     /** {@inheritDoc} */
@@ -168,12 +168,12 @@ public class ActionSensor extends AbstractDigitalAction {
         // Remove the old _turnoutHandle if it exists
         _sensorHandle = null;
         
-        if (_sensorSystemName != null) {
-            Sensor t = InstanceManager.getDefault(SensorManager.class).getBeanBySystemName(_sensorSystemName);
+        if (_sensorName != null) {
+            Sensor t = InstanceManager.getDefault(SensorManager.class).getSensor(_sensorName);
             if (t != null) {
-                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_sensorSystemName, t);
+                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_sensorName, t);
             } else {
-                log.error("Light {} does not exists", _sensorSystemName);
+                log.error("Sensor {} does not exists", _sensorName);
             }
         }
     }

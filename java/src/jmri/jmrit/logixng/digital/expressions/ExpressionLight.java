@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionLight extends AbstractDigitalExpression implements PropertyChangeListener {
 
     private ExpressionLight _template;
-    private String _lightSystemName;
+    private String _lightName;
     private NamedBeanHandle<Light> _lightHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private LightState _lightState = LightState.ON;
@@ -148,8 +148,8 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         return Bundle.getMessage("Light_Long", lightName, _is_IsNot.toString(), _lightState._text);
     }
     
-    public void setLight_SystemName(String lightSystemName) {
-        _lightSystemName = lightSystemName;
+    public void setLightName(String lightSystemName) {
+        _lightName = lightSystemName;
     }
     
     /** {@inheritDoc} */
@@ -164,12 +164,12 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         // Remove the old _lightHandle if it exists
         _lightHandle = null;
         
-        if (_lightSystemName != null) {
-            Light t = InstanceManager.getDefault(LightManager.class).getBeanBySystemName(_lightSystemName);
+        if (_lightName != null) {
+            Light t = InstanceManager.getDefault(LightManager.class).getLight(_lightName);
             if (t != null) {
-                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightName, t);
             } else {
-                log.error("Light {} does not exists", _lightSystemName);
+                log.error("Light {} does not exists", _lightName);
             }
         }
     }

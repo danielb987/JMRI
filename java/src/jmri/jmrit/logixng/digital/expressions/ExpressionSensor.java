@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionSensor extends AbstractDigitalExpression implements PropertyChangeListener {
 
     private ExpressionSensor _template;
-    private String _lightSystemName;
+    private String _lightName;
     private NamedBeanHandle<Sensor> _sensorHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private SensorState _lightState = SensorState.ACTIVE;
@@ -148,8 +148,8 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
         return Bundle.getMessage("Sensor_Long", lightName, _is_IsNot.toString(), _lightState._text);
     }
     
-    public void setSensor_SystemName(String lightSystemName) {
-        _lightSystemName = lightSystemName;
+    public void setSensorName(String lightSystemName) {
+        _lightName = lightSystemName;
     }
     
     /** {@inheritDoc} */
@@ -164,12 +164,12 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
         // Remove the old _sensorHandle if it exists
         _sensorHandle = null;
         
-        if (_lightSystemName != null) {
-            Sensor t = InstanceManager.getDefault(SensorManager.class).getBeanBySystemName(_lightSystemName);
+        if (_lightName != null) {
+            Sensor t = InstanceManager.getDefault(SensorManager.class).getSensor(_lightName);
             if (t != null) {
-                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
+                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightName, t);
             } else {
-                log.error("Light {} does not exists", _lightSystemName);
+                log.error("Sensor {} does not exists", _lightName);
             }
         }
     }

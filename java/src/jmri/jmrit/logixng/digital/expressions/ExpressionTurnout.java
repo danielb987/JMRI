@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionTurnout extends AbstractDigitalExpression implements PropertyChangeListener {
 
     private ExpressionTurnout _template;
-    private String _turnoutSystemName;
+    private String _turnoutName;
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
@@ -148,8 +148,8 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
     }
     
-    public void setTurnout_SystemName(String turnoutSystemName) {
-        _turnoutSystemName = turnoutSystemName;
+    public void setTurnoutName(String turnoutName) {
+        _turnoutName = turnoutName;
     }
     
     /** {@inheritDoc} */
@@ -164,12 +164,12 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         // Remove the old _turnoutHandle if it exists
         _turnoutHandle = null;
         
-        if (_turnoutSystemName != null) {
-            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
+        if (_turnoutName != null) {
+            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getTurnout(_turnoutName);
             if (t != null) {
-                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutName, t);
             } else {
-                log.error("Turnout {} does not exists", _turnoutSystemName);
+                log.error("Turnout {} does not exists", _turnoutName);
             }
         }
 /*        

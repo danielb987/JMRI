@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class ActionTurnout extends AbstractDigitalAction {
 
     private ActionTurnout _template;
-    private String _turnoutSystemName;
+    private String _turnoutName;
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
     
@@ -158,8 +158,8 @@ public class ActionTurnout extends AbstractDigitalAction {
         return Bundle.getMessage("Turnout_Long", turnoutName, _turnoutState._text);
     }
     
-    public void setTurnout_SystemName(String turnoutSystemName) {
-        _turnoutSystemName = turnoutSystemName;
+    public void setTurnoutName(String turnoutSystemName) {
+        _turnoutName = turnoutSystemName;
     }
     
     /** {@inheritDoc} */
@@ -168,12 +168,12 @@ public class ActionTurnout extends AbstractDigitalAction {
         // Remove the old _turnoutHandle if it exists
         _turnoutHandle = null;
         
-        if (_turnoutSystemName != null) {
-            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
+        if (_turnoutName != null) {
+            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getTurnout(_turnoutName);
             if (t != null) {
-                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
+                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutName, t);
             } else {
-                log.error("Light {} does not exists", _turnoutSystemName);
+                log.error("Turnout {} does not exists", _turnoutName);
             }
         }
     }
