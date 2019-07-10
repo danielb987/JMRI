@@ -1,8 +1,7 @@
-
 package jmri.jmrit.logixng.util.parser;
 
 /**
- *
+ * The identifier does not exist.
  */
 public class IdentifierNotExistsException extends ParserException {
 
