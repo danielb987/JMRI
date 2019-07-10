@@ -1,13 +1,9 @@
 package jmri.jmrit.logixng.analog.actions;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.AnalogActionBean;
-import jmri.jmrit.logixng.AnalogActionManager;
-import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

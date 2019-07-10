@@ -83,10 +83,8 @@ public abstract class AbstractBase extends AbstractNamedBean implements Base {
     /** {@inheritDoc} */
     @Override
     public final void registerListeners() {
-        System.out.format("registerListeners: %s%n", this.getClass().getName());
         registerListenersForThisClass();
         for (int i=0; i < getChildCount(); i++) {
-            System.out.format("child: %s%n", getChild(i).getClass().getName());
             getChild(i).registerListeners();
         }
     }

@@ -1,12 +1,9 @@
 package jmri.jmrit.logixng.digital.actions;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalActionBean;
-import jmri.jmrit.logixng.DigitalActionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

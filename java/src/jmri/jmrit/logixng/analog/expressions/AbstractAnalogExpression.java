@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.analog.expressions;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.JmriException;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
