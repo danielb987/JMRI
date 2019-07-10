@@ -161,6 +161,11 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
             throw e;
         }
         
+        // Don't setup again if we already has the correct light
+        if ((_lightHandle != null) && (_lightHandle.getName().equals(_lightName))) {
+            return;
+        }
+        
         // Remove the old _lightHandle if it exists
         _lightHandle = null;
         

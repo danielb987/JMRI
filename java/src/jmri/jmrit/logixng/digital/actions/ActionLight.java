@@ -165,6 +165,11 @@ public class ActionLight extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        // Don't setup again if we already has the correct light
+        if ((_lightHandle != null) && (_lightHandle.getName().equals(_lightName))) {
+            return;
+        }
+        
         // Remove the old _turnoutHandle if it exists
         _lightHandle = null;
         

@@ -161,6 +161,11 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
             throw e;
         }
         
+        // Don't setup again if we already has the correct turnout
+        if ((_turnoutHandle != null) && (_turnoutHandle.getName().equals(_turnoutName))) {
+            return;
+        }
+        
         // Remove the old _turnoutHandle if it exists
         _turnoutHandle = null;
         

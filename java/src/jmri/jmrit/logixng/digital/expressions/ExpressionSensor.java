@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ExpressionSensor extends AbstractDigitalExpression implements PropertyChangeListener {
 
     private ExpressionSensor _template;
-    private String _lightName;
+    private String _sensorName;
     private NamedBeanHandle<Sensor> _sensorHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private SensorState _lightState = SensorState.ACTIVE;
@@ -148,8 +148,8 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
         return Bundle.getMessage("Sensor_Long", lightName, _is_IsNot.toString(), _lightState._text);
     }
     
-    public void setSensorName(String lightSystemName) {
-        _lightName = lightSystemName;
+    public void setSensorName(String sensorSystemName) {
+        _sensorName = sensorSystemName;
     }
     
     /** {@inheritDoc} */
@@ -161,15 +161,20 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
             throw e;
         }
         
+        // Don't setup again if we already has the correct sensor
+        if ((_sensorHandle != null) && (_sensorHandle.getName().equals(_sensorName))) {
+            return;
+        }
+        
         // Remove the old _sensorHandle if it exists
         _sensorHandle = null;
         
-        if (_lightName != null) {
-            Sensor t = InstanceManager.getDefault(SensorManager.class).getSensor(_lightName);
+        if (_sensorName != null) {
+            Sensor t = InstanceManager.getDefault(SensorManager.class).getSensor(_sensorName);
             if (t != null) {
-                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightName, t);
+                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_sensorName, t);
             } else {
-                log.error("Sensor {} does not exists", _lightName);
+                log.error("Sensor {} does not exists", _sensorName);
             }
         }
     }

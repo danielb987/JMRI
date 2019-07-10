@@ -165,6 +165,11 @@ public class ActionSensor extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void setup() {
+        // Don't setup again if we already has the correct sensor
+        if ((_sensorHandle != null) && (_sensorHandle.getName().equals(_sensorName))) {
+            return;
+        }
+        
         // Remove the old _turnoutHandle if it exists
         _sensorHandle = null;
         
