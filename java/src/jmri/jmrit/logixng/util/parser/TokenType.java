@@ -1,6 +1,9 @@
 package jmri.jmrit.logixng.util.parser;
 
 /**
+ * 
+ * https://introcs.cs.princeton.edu/java/11precedence/
+ * 
  * Types of tokens.
  * <P>
  * Rules:
