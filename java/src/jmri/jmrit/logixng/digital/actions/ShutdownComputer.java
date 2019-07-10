@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.actions;
 import apps.AppsBase;
 import java.io.IOException;
 import jmri.InstanceManager;
+import jmri.ShutDownManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
@@ -85,6 +86,7 @@ public class ShutdownComputer extends AbstractDigitalAction {
                 Runtime runtime = Runtime.getRuntime();
                 runtime.exec("shutdown.exe -s -t " + time);
 //                Process proc = runtime.exec("shutdown -s -t " + time);
+                InstanceManager.getDefault(ShutDownManager.class).shutdown();
             } else {
                 throw new UnsupportedOperationException("Unknown OS: "+SystemType.getOSName());
             }
