@@ -631,8 +631,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
 //        swingConfiguratorInterface = SwingTools.getSwingConfiguratorForClass(maleSocketClass);
         JPanel panel33;
         if (femaleSocket.isConnected()) {
-            femaleSocket.getConnectedSocket().getObject();
-            swingConfiguratorInterface.getConfigPanel();
             panel33 = swingConfiguratorInterface.getConfigPanel(femaleSocket.getConnectedSocket().getObject());
         } else {
             panel33 = swingConfiguratorInterface.getConfigPanel();
