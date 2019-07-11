@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     jmri.jmrit.logixng.digital.actions.configureswing.PackageTest.class,
     jmri.jmrit.logixng.digital.actions.configurexml.PackageTest.class,
+    ActionAtomicBooleanTest.class,
     DigitalActionPluginSocketTest.class,
     DoAnalogActionTest.class,
     DoStringActionTest.class,

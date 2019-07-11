@@ -25,7 +25,7 @@ public class ActionAtomicBooleanTest {
 
     @Test
     public void testCtor() {
-        DigitalActionBean t = new ActionAtomicBoolean("IQA55:A321", null);
+        DigitalActionBean t = new ActionAtomicBoolean("IQA55:1:DA321", null);
         Assert.assertNotNull("exists",t);
     }
     
