@@ -33,13 +33,13 @@ public class ExpressionTurnoutTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionTurnout("IQA55:E321", null);
+        DigitalExpressionBean t = new ExpressionTurnout("IQA55:1:DE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        ExpressionTurnout expressionTurnout = new ExpressionTurnout("IQA55:E321");
+        ExpressionTurnout expressionTurnout = new ExpressionTurnout("IQA55:1:DE321");
         Assert.assertTrue("Get turnout".equals(expressionTurnout.getShortDescription()));
         Assert.assertTrue("Turnout Not selected is Thrown".equals(expressionTurnout.getLongDescription()));
         Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");

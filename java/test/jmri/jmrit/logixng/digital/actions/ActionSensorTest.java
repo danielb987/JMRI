@@ -26,7 +26,7 @@ public class ActionSensorTest {
 
     @Test
     public void testCtor() {
-        ActionSensor t = new ActionSensor("IQA55:A321", null);
+        ActionSensor t = new ActionSensor("IQA55:10:DA321", null);
         Assert.assertNotNull("exists",t);
     }
     

@@ -15,7 +15,7 @@ public class ManyTest {
 
     @Test
     public void testCtor() {
-        new Many("IQA55:A321");
+        Assert.assertNotNull("exists", new Many("IQA55:10:DA321"));
     }
     
     // The minimal setup for log4J

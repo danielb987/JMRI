@@ -132,7 +132,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // A - AnalogActionBean
         // \d+ - The AnalogActionBean ID number
-        if (systemName.matches("IQA?\\d+:AAA?\\d+")) {
+        if (systemName.matches("IQA?\\d+\\:\\d+\\:AAA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

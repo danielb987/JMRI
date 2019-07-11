@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.string.expressions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.Manager;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringExpressionBean;
+import jmri.jmrit.logixng.StringExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +22,22 @@ public abstract class AbstractStringExpression extends AbstractBase
 
     public AbstractStringExpression(String sys) throws BadSystemNameException {
         super(sys);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        Manager.NameValidity isNameValid = InstanceManager.getDefault(StringExpressionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != Manager.NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     public AbstractStringExpression(String sys, String user) throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        Manager.NameValidity isNameValid = InstanceManager.getDefault(StringExpressionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != Manager.NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     /** {@inheritDoc} */

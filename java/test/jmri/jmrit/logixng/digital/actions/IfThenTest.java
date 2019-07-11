@@ -16,17 +16,17 @@ public class IfThenTest {
 
     @Test
     public void testCtor() {
-        DigitalActionBean t = new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean t = new IfThen("IQA55:10:DA321", null, IfThen.Type.TRIGGER_ACTION);
         Assert.assertNotNull("exists",t);
-        t = new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        t = new IfThen("IQA55:10:DA321", null, IfThen.Type.CONTINOUS_ACTION);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testToString() {
-        DigitalActionBean a1 = new IfThen("IQA55:A321", null, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean a1 = new IfThen("IQA55:10:DA321", null, IfThen.Type.TRIGGER_ACTION);
         Assert.assertTrue("If E then A".equals(a1.getLongDescription()));
-        DigitalActionBean a2 = new IfThen("IQA55:A321", null, IfThen.Type.CONTINOUS_ACTION);
+        DigitalActionBean a2 = new IfThen("IQA55:10:DA321", null, IfThen.Type.CONTINOUS_ACTION);
         Assert.assertTrue("If E then A".equals(a2.getLongDescription()));
     }
     

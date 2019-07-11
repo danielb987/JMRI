@@ -26,7 +26,7 @@ public class ActionTurnoutTest {
 
     @Test
     public void testCtor() {
-        ActionTurnout t = new ActionTurnout("IQA55:A321", null);
+        ActionTurnout t = new ActionTurnout("IQA55:10:DA321", null);
         Assert.assertNotNull("exists",t);
     }
     

@@ -33,13 +33,13 @@ public class ExpressionLightTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionLight("IQA55:E321", null);
+        DigitalExpressionBean t = new ExpressionLight("IQA55:1:DE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        ExpressionLight expressionLight = new ExpressionLight("IQA55:E321");
+        ExpressionLight expressionLight = new ExpressionLight("IQA55:1:DE321");
         Assert.assertTrue("Get light".equals(expressionLight.getShortDescription()));
         Assert.assertTrue("Light Not selected is On".equals(expressionLight.getLongDescription()));
         Light light = InstanceManager.getDefault(LightManager.class).provide("IL1");

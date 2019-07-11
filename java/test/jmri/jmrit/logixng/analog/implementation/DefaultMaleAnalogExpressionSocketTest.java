@@ -18,8 +18,8 @@ public class DefaultMaleAnalogExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogExpressionBean expression = new GetAnalogIO("IQA55:E321");
-        new DefaultMaleAnalogExpressionSocket(expression);
+        AnalogExpressionBean expression = new GetAnalogIO("IQA55:10:AE321");
+        Assert.assertNotNull("object exists", new DefaultMaleAnalogExpressionSocket(expression));
     }
     
     // The minimal setup for log4J

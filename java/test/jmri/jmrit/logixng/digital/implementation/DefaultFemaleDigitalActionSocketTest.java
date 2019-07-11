@@ -40,8 +40,8 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        DigitalActionBean action = new Many("IQA55:A321");
-        DigitalActionBean otherAction = new Many("IQA55:A322");
+        DigitalActionBean action = new Many("IQA55:1:DA321");
+        DigitalActionBean otherAction = new Many("IQA55:1:DA322");
         maleSocket = new DefaultMaleDigitalActionSocket(action);
         otherMaleSocket = new DefaultMaleDigitalActionSocket(otherAction);
         femaleSocket = new DefaultFemaleDigitalActionSocket(null, new FemaleSocketListener() {

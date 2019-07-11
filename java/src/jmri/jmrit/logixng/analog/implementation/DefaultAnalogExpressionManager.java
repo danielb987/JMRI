@@ -138,7 +138,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // AE - AnalogExpressionBean
         // \d+ - The AnalogExpressionBean ID number
-        if (systemName.matches("IQA?\\d+:AEA?\\d+")) {
+        if (systemName.matches("IQA?\\d+\\:\\d+\\:AEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

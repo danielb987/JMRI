@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.Manager;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalActionBean;
+import jmri.jmrit.logixng.DigitalActionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +24,23 @@ public abstract class AbstractDigitalAction extends AbstractBase
     
     public AbstractDigitalAction(String sys) throws BadSystemNameException {
         super(sys);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        Manager.NameValidity isNameValid = InstanceManager.getDefault(DigitalActionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != Manager.NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     public AbstractDigitalAction(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        Manager.NameValidity isNameValid = InstanceManager.getDefault(DigitalActionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != Manager.NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
     
     /** {@inheritDoc} */

@@ -31,7 +31,7 @@ public class ActionTurnoutSwingTest {
         Assert.assertTrue("panel is not null",
             null != new ActionTurnoutSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ActionTurnoutSwing().getConfigPanel(new ActionTurnout("IQ1:DA1")));
+            null != new ActionTurnoutSwing().getConfigPanel(new ActionTurnout("IQ1:10:DA1")));
     }
     
     // The minimal setup for log4J

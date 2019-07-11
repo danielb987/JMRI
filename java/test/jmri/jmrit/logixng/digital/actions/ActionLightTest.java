@@ -26,7 +26,7 @@ public class ActionLightTest {
 
     @Test
     public void testCtor() {
-        ActionLight t = new ActionLight("IQA55:A321", null);
+        ActionLight t = new ActionLight("IQA55:10:DA321", null);
         Assert.assertNotNull("exists",t);
     }
     

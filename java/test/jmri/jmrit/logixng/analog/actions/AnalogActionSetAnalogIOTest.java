@@ -48,7 +48,7 @@ public class AnalogActionSetAnalogIOTest extends AbstractAnalogActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _action = new SetAnalogIO("IQA55:A321");
+        _action = new SetAnalogIO("IQA55:10:AA321");
     }
 
     @After

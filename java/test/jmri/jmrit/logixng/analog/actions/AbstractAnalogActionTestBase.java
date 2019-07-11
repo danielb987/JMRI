@@ -46,7 +46,7 @@ public class AbstractAnalogActionTestBase {
     
     @Test
     public void testParent() {
-        AnalogActionBean a = new AnalogActionMemory("IQA55:12:A321");
+        AnalogActionBean a = new AnalogActionMemory("IQA55:12:AA321");
         _action.setParent(null);
         Assert.assertTrue("Parent matches", null == _action.getParent());
         _action.setParent(a);

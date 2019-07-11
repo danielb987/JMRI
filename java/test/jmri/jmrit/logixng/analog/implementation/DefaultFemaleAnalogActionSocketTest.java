@@ -40,8 +40,8 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        AnalogActionBean action = new SetAnalogIO("IQA55:A321");
-        AnalogActionBean otherAction = new SetAnalogIO("IQA55:A322");
+        AnalogActionBean action = new SetAnalogIO("IQA55:10:AA321");
+        AnalogActionBean otherAction = new SetAnalogIO("IQA55:10:AA322");
         maleSocket = new DefaultMaleAnalogActionSocket(action);
         otherMaleSocket = new DefaultMaleAnalogActionSocket(otherAction);
         femaleSocket = new DefaultFemaleAnalogActionSocket(null, new FemaleSocketListener() {

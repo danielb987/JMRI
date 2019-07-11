@@ -15,7 +15,7 @@ public class ShutdownComputerTest {
 
     @Test
     public void testCtor() {
-        new ShutdownComputer("IQA55:A321", null, 0);
+        Assert.assertNotNull("exists", new ShutdownComputer("IQA55:10:DA321", null, 0));
     }
     
     // The minimal setup for log4J

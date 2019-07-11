@@ -41,7 +41,7 @@ public class ExpressionLightSwingTest {
         Assert.assertTrue("panel is not null",
             null != new ExpressionLightSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ExpressionLightSwing().getConfigPanel(new ExpressionLight("IQ1:DA1")));
+            null != new ExpressionLightSwing().getConfigPanel(new ExpressionLight("IQ1:10:DE1")));
     }
     
     // The minimal setup for log4J

@@ -18,8 +18,8 @@ public class DefaultMaleDigitalActionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalActionBean action = new Many("IQA55:A321");
-        new DefaultMaleDigitalActionSocket(action);
+        DigitalActionBean action = new Many("IQA55:1:DA321");
+        Assert.assertNotNull("exists", new DefaultMaleDigitalActionSocket(action));
     }
     
     // The minimal setup for log4J

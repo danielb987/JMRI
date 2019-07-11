@@ -15,7 +15,7 @@ public class DigitalActionPluginSocketTest {
 
     @Test
     public void testCtor() {
-        new DigitalActionPluginSocket("", null);
+        Assert.assertNotNull("exists", new DigitalActionPluginSocket("IQ1:1:DA1", null));
     }
     
     // The minimal setup for log4J

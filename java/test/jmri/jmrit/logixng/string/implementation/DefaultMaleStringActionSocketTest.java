@@ -17,8 +17,8 @@ public class DefaultMaleStringActionSocketTest {
 
     @Test
     public void testCtor() {
-        StringActionBean action = new SetStringIO("IQA55:A321");
-        new DefaultMaleStringActionSocket(action);
+        StringActionBean action = new SetStringIO("IQA55:1:SA321");
+        Assert.assertNotNull("exists", new DefaultMaleStringActionSocket(action));
     }
     
     // The minimal setup for log4J

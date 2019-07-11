@@ -140,7 +140,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // AE - StringExpressionBean
         // \d+ - The StringExpressionBean ID number
-        if (systemName.matches("IQA?\\d+:SEA?\\d+")) {
+        if (systemName.matches("IQA?\\d+:\\d+:SEA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

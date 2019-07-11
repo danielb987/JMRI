@@ -15,7 +15,7 @@ public class DoStringActionTest {
 
     @Test
     public void testCtor() {
-        new DoStringAction("IQA55:A321");
+        Assert.assertNotNull("exists", new DoStringAction("IQA55:10:DA321"));
     }
     
     // The minimal setup for log4J

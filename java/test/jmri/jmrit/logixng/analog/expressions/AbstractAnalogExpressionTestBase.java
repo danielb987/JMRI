@@ -55,7 +55,7 @@ public abstract class AbstractAnalogExpressionTestBase {
     
     @Test
     public void testParent() {
-        AnalogExpressionBean a = new AnalogExpressionMemory("IQA55:12:A321");
+        AnalogExpressionBean a = new AnalogExpressionMemory("IQA55:12:AE321");
         _expression.setParent(null);
         Assert.assertTrue("Parent matches", null == _expression.getParent());
         _expression.setParent(a);

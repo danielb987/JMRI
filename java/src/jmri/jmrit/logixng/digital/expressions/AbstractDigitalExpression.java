@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.Manager.NameValidity;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.DigitalExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +22,23 @@ public abstract class AbstractDigitalExpression extends AbstractBase
     
     public AbstractDigitalExpression(String sys) throws BadSystemNameException {
         super(sys);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        NameValidity isNameValid = InstanceManager.getDefault(DigitalExpressionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     public AbstractDigitalExpression(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        NameValidity isNameValid = InstanceManager.getDefault(DigitalExpressionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     /** {@inheritDoc} */

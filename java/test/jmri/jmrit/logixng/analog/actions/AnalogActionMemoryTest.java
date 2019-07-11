@@ -48,7 +48,7 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _action = new AnalogActionMemory("IQA55:12:A321", "AnalogIO_Memory", _memory);
+        _action = new AnalogActionMemory("IQA55:12:AA321", "AnalogIO_Memory", _memory);
     }
 
     @After

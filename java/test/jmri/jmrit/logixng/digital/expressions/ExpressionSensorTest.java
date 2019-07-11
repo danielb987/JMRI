@@ -33,13 +33,13 @@ public class ExpressionSensorTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionSensor("IQA55:E321", null);
+        DigitalExpressionBean t = new ExpressionSensor("IQA55:1:DE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        ExpressionSensor expressionSensor = new ExpressionSensor("IQA55:E321");
+        ExpressionSensor expressionSensor = new ExpressionSensor("IQA55:1:DE321");
         Assert.assertTrue("Get sensor".equals(expressionSensor.getShortDescription()));
         Assert.assertTrue("Sensor Not selected is Active".equals(expressionSensor.getLongDescription()));
         Sensor sensor = InstanceManager.getDefault(SensorManager.class).provide("IS1");

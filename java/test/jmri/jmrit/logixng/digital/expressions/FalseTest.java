@@ -17,13 +17,13 @@ public class FalseTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new False("IQA55:1:E321");
+        DigitalExpressionBean t = new False("IQA55:1:DE321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new False("IQA55:E321");
+        DigitalExpressionBean e1 = new False("IQA55:1:DE321");
         Assert.assertTrue("Always false".equals(e1.getShortDescription()));
         Assert.assertTrue("Always false".equals(e1.getLongDescription()));
     }
@@ -31,7 +31,7 @@ public class FalseTest {
     @Test
     public void testExpression() {
         AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
-        DigitalExpressionBean t = new False("IQA55:E321");
+        DigitalExpressionBean t = new False("IQA55:1:DE321");
         Assert.assertFalse("Expression is false",t.evaluate(isExpressionCompleted));
     }
     

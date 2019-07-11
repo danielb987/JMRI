@@ -130,7 +130,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         // Optional: A: - Automatic (if the system name is created by the software and not by the user
         // A - StringActionBean
         // \d+ - The StringActionBean ID number
-        if (systemName.matches("IQA?\\d+:SAA?\\d+")) {
+        if (systemName.matches("IQA?\\d+:\\d+:SAA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;

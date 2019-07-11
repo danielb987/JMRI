@@ -48,8 +48,8 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        DigitalExpressionBean expression = new And("IQA55:E321");
-        DigitalExpressionBean otherExpression = new And("IQA55:E322");
+        DigitalExpressionBean expression = new And("IQA55:1:DE321");
+        DigitalExpressionBean otherExpression = new And("IQA55:1:DE322");
         maleSocket = new DefaultMaleDigitalExpressionSocket(expression);
         otherMaleSocket = new DefaultMaleDigitalExpressionSocket(otherExpression);
         femaleGenericSocket = new DefaultFemaleGenericExpressionSocket(SocketType.GENERIC, null, new FemaleSocketListener() {

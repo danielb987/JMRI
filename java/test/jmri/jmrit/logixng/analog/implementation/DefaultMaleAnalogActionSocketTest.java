@@ -18,8 +18,8 @@ public class DefaultMaleAnalogActionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogActionBean action = new SetAnalogIO("IQA55:A321");
-        new DefaultMaleAnalogActionSocket(action);
+        AnalogActionBean action = new SetAnalogIO("IQA55:10:AA321");
+        Assert.assertNotNull("object exists", new DefaultMaleAnalogActionSocket(action));
     }
     
     // The minimal setup for log4J

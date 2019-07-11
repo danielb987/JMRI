@@ -17,8 +17,8 @@ public class DefaultMaleStringExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        StringExpressionBean expression = new GetStringIO("IQA55:E321");
-        new DefaultMaleStringExpressionSocket(expression);
+        StringExpressionBean expression = new GetStringIO("IQA55:1:SE321");
+        Assert.assertNotNull("exists", new DefaultMaleStringExpressionSocket(expression));
     }
     
     // The minimal setup for log4J

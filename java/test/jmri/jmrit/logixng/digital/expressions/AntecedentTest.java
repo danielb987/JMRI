@@ -39,19 +39,19 @@ public class AntecedentTest implements FemaleSocketListener {
     
     @Test
     public void testCtor() {
-        Antecedent t = new Antecedent("IQA55:E321", null, "R1");
+        Antecedent t = new Antecedent("IQA55:1:DE321", null, "R1");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new Antecedent("IQA55:E321");
+        DigitalExpressionBean e1 = new Antecedent("IQA55:1:DE321");
         Assert.assertTrue("Antecedent".equals(e1.getShortDescription()));
         Assert.assertTrue("Antecedent: empty".equals(e1.getLongDescription()));
     }
     
     private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList) throws SocketAlreadyConnectedException {
-        Antecedent ix1 = new Antecedent("IXIC 1");
+        Antecedent ix1 = new Antecedent("IQA55:1:DE321", "IXIC 1");
         
         int count = 0;
         List<ExpressionEntry> expressionEntryList = new ArrayList<>();
@@ -76,7 +76,7 @@ public class AntecedentTest implements FemaleSocketListener {
     private void testCalculate(int expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList, String errorMessage) throws SocketAlreadyConnectedException {
         
         AtomicBoolean isCompleted = new AtomicBoolean(true);
-        Antecedent ix1 = new Antecedent("IXIC 1", null, antecedent);
+        Antecedent ix1 = new Antecedent("IQA55:1:DE321", "IXIC 1", antecedent);
         
 //        for (int i=0; i < ix1.getChildCount(); i++) {
 //            ix1.getChild(i).disconnect();

@@ -44,7 +44,7 @@ public class AnalogExpressionGetAnalogIOTest extends AbstractAnalogExpressionTes
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _expression = new GetAnalogIO("IQA55:12:A321", "AnalogIO_Memory");
+        _expression = new GetAnalogIO("IQA55:12:AE321", "AnalogIO_Memory");
     }
 
     @After

@@ -31,7 +31,7 @@ public class DoStringActionSwingTest {
         Assert.assertTrue("panel is not null",
             null != new DoStringActionSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new DoStringActionSwing().getConfigPanel(new DoStringAction("IQ1:DA1")));
+            null != new DoStringActionSwing().getConfigPanel(new DoStringAction("IQ1:10:DA1")));
     }
     
     // The minimal setup for log4J

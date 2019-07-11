@@ -1,11 +1,14 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.Manager;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.AnalogExpressionBean;
+import jmri.jmrit.logixng.AnalogExpressionManager;
 
 /**
  *
@@ -20,11 +23,23 @@ public abstract class AbstractAnalogExpression extends AbstractBase
 
     public AbstractAnalogExpression(String sys) throws BadSystemNameException {
         super(sys);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        Manager.NameValidity isNameValid = InstanceManager.getDefault(AnalogExpressionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != Manager.NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     public AbstractAnalogExpression(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        
+        // Do this test here to ensure all the tests are using correct system names
+        Manager.NameValidity isNameValid = InstanceManager.getDefault(AnalogExpressionManager.class).validSystemNameFormat(mSystemName);
+        if (isNameValid != Manager.NameValidity.VALID) {
+            throw new IllegalArgumentException("system name is not valid");
+        }
     }
 
     /** {@inheritDoc} */

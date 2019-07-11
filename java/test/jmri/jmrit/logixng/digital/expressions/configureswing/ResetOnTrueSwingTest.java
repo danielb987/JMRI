@@ -43,7 +43,7 @@ public class ResetOnTrueSwingTest {
         Assert.assertTrue("panel is not null",
             null != new ResetOnTrueSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ResetOnTrueSwing().getConfigPanel(new ResetOnTrue("IQ1:DA1", null)));
+            null != new ResetOnTrueSwing().getConfigPanel(new ResetOnTrue("IQ1:1:DE1", null)));
     }
     
     // The minimal setup for log4J

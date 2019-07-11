@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.digital.implementation;
 
-import jmri.jmrit.logixng.digital.implementation.DefaultMaleDigitalExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -18,8 +17,8 @@ public class DefaultMaleDigitalExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean expression = new And("IQA55:E321");
-        new DefaultMaleDigitalExpressionSocket(expression);
+        DigitalExpressionBean expression = new And("IQA55:1:DE321");
+        Assert.assertNotNull("exists", new DefaultMaleDigitalExpressionSocket(expression));
     }
     
     // The minimal setup for log4J

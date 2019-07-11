@@ -41,7 +41,7 @@ public class TimerSwingTest {
         Assert.assertTrue("panel is not null",
             null != new TimerSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new TimerSwing().getConfigPanel(new Timer("IQ1:DA1", null)));
+            null != new TimerSwing().getConfigPanel(new Timer("IQ1:1:DE1", null)));
     }
     
     // The minimal setup for log4J

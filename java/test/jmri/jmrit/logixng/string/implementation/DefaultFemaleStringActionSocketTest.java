@@ -40,8 +40,8 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringActionBean action = new SetStringIO("IQA55:A321");
-        StringActionBean otherAction = new SetStringIO("IQA55:A322");
+        StringActionBean action = new SetStringIO("IQA55:1:SA321");
+        StringActionBean otherAction = new SetStringIO("IQA55:1:SA322");
         maleSocket = new DefaultMaleStringActionSocket(action);
         otherMaleSocket = new DefaultMaleStringActionSocket(otherAction);
         femaleSocket = new DefaultFemaleStringActionSocket(null, new FemaleSocketListener() {

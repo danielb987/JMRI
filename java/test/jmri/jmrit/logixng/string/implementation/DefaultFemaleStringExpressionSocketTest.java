@@ -40,8 +40,8 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringExpressionBean expression = new GetStringIO("IQA55:A321");
-        StringExpressionBean otherExpression = new GetStringIO("IQA55:A322");
+        StringExpressionBean expression = new GetStringIO("IQA55:1:SE321");
+        StringExpressionBean otherExpression = new GetStringIO("IQA55:1:SE322");
         maleSocket = new DefaultMaleStringExpressionSocket(expression);
         otherMaleSocket = new DefaultMaleStringExpressionSocket(otherExpression);
         femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {

@@ -15,7 +15,7 @@ public class DoAnalogActionTest {
 
     @Test
     public void testCtor() {
-        new DoAnalogAction("IQA55:A321");
+        Assert.assertNotNull("exists", new DoAnalogAction("IQA55:10:DA321"));
     }
     
     // The minimal setup for log4J

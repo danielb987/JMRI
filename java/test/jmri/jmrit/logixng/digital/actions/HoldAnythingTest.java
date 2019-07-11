@@ -15,7 +15,7 @@ public class HoldAnythingTest {
 
     @Test
     public void testCtor() {
-        new HoldAnything("IQA55:A321");
+        Assert.assertNotNull("exists", new HoldAnything("IQA55:10:DA321"));
     }
     
     // The minimal setup for log4J
