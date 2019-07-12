@@ -5,7 +5,7 @@ package jmri.jmrit.logixng;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface MaleSocket extends Base, Debugable {
+public interface MaleSocket extends Debugable {
 
     public enum ErrorHandlingType {
         
