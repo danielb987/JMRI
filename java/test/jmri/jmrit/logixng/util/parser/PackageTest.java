@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    ExpressionNodeBooleanOperatorTest.class,
     ExpressionNodeIdentifierTest.class,
     ExpressionNodeNumberTest.class,
     ExpressionNodeStringTest.class,
