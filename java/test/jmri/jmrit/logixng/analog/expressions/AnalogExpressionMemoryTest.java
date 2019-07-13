@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.Memory;
 import jmri.util.JUnitUtil;
@@ -18,16 +19,6 @@ import jmri.jmrit.logixng.Category;
 public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase {
 
     protected Memory _memory;
-    
-    @Override
-    double expectedEvaluateValue() {
-        return (double) _memory.getValue();
-    }
-    
-    @Test
-    public void testCategory() {
-        Assert.assertTrue("Category matches", Category.ITEM == _expression.getCategory());
-    }
     
     @Test
     public void testCtor() {
@@ -56,11 +47,45 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
+        
+        // Test template
+        expression2 = (AnalogExpressionMemory)_expression.getNewObjectBasedOnTemplate("IQA55:12:AE12");
+        Assert.assertNotNull("object exists", expression2);
+//        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
+//        Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
+    }
+    
+    @Test
+    public void testEvaluate() {
+        AtomicBoolean isCompleted = new AtomicBoolean();
+        _memory.setValue(0.0d);
+        _expression.initEvaluation();
+        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
+        _expression.initEvaluation();
+        _memory.setValue(10.0d);
+        Assert.assertTrue("Evaluate matches", 10.0d == _expression.evaluate(isCompleted));
+        _expression.initEvaluation();
+        ((AnalogExpressionMemory)_expression).setMemory(null);
+        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
+        _expression.reset();
+    }
+    
+    @Test
+    public void testMemory() {
+        ((AnalogExpressionMemory)_expression).setMemory(null);
+        Assert.assertTrue("Memory matches", null == ((AnalogExpressionMemory)_expression).getMemory());
+        ((AnalogExpressionMemory)_expression).setMemory(_memory);
+        Assert.assertTrue("Memory matches", _memory == ((AnalogExpressionMemory)_expression).getMemory());
+    }
+    
+    @Test
+    public void testCategory() {
+        Assert.assertTrue("Category matches", Category.ITEM == _expression.getCategory());
     }
     
     @Test
     public void testShortDescription() {
-        System.err.format("aa: %s%n", _expression.getShortDescription());
+//        System.err.format("aa: %s%n", _expression.getShortDescription());
         Assert.assertTrue("String matches", "Get memory IM1".equals(_expression.getShortDescription()));
     }
     

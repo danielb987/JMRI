@@ -17,14 +17,6 @@ public abstract class AbstractAnalogExpressionTestBase {
 
     protected AnalogExpressionBean _expression;
     
-    abstract double expectedEvaluateValue();
-    
-    @Test
-    public void testEvaluate() {
-        AtomicBoolean isCompleted = new AtomicBoolean();
-        Assert.assertTrue("Evaluate matches", expectedEvaluateValue() == _expression.evaluate(isCompleted));
-    }
-    
     @Test
     public void testGetBeanType() {
         Assert.assertTrue("String matches", "Analog expression".equals(_expression.getBeanType()));

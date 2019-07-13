@@ -49,7 +49,7 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
     private AnalogExpressionMemory(AnalogExpressionMemory template, String sys) {
         super(sys);
         _template = template;
-        if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
+        _memory = _template._memory;
     }
     
     /** {@inheritDoc} */
@@ -68,6 +68,14 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
     @Override
     public boolean isExternal() {
         return true;
+    }
+    
+    public void setMemory(Memory memory) {
+        _memory = memory;
+    }
+    
+    public Memory getMemory() {
+        return _memory;
     }
     
     /** {@inheritDoc} */
@@ -133,11 +141,13 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
     /** {@inheritDoc} */
     @Override
     public void registerListenersForThisClass() {
+        throw new UnsupportedOperationException("not implemented yet");
     }
     
     /** {@inheritDoc} */
     @Override
     public void unregisterListenersForThisClass() {
+        throw new UnsupportedOperationException("not implemented yet");
     }
     
     /** {@inheritDoc} */

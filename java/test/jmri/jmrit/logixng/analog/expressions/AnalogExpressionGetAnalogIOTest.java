@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.MemoryManager;
 import jmri.jmrit.logixng.Category;
@@ -17,9 +18,10 @@ import org.junit.Test;
  */
 public class AnalogExpressionGetAnalogIOTest extends AbstractAnalogExpressionTestBase {
 
-    @Override
-    double expectedEvaluateValue() {
-        return 0.0;
+    @Test
+    public void testEvaluate() {
+        AtomicBoolean isCompleted = new AtomicBoolean();
+        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
     }
     
     @Test
