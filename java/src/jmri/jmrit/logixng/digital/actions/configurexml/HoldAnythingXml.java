@@ -9,6 +9,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalActionBean;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  *
@@ -43,7 +44,20 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
         if (p.getUserName() != null) {
             element.addContent(new Element("userName").addContent(p.getUserName()));
         }
-
+/*
+        Element e = new Element("actions");
+        for (int i=0; i < p.getChildCount(); i++) {
+            Element e2 = new Element("socket");
+            e2.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
+            MaleSocket socket = p.getChild(i).getConnectedSocket();
+            if (socket != null) {
+                e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
+            }
+            e.addContent(e2);
+        }
+        element.addContent(e);
+*/        
+/*
         for (int i=0; i < p.getChildCount(); i++) {
 //            try {
 //                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
@@ -57,7 +71,7 @@ public class HoldAnythingXml extends jmri.managers.configurexml.AbstractNamedBea
 //                log.error("Error storing action: {}", e, e);
 //            }
         }
-        
+*/        
         storeCommon(p, element);
 
 //        element.addContent(addTurnoutElement(p.getLow(), "low"));

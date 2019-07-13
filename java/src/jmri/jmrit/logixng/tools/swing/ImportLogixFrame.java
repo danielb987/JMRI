@@ -78,15 +78,15 @@ public final class ImportLogixFrame extends JmriJFrame {
         
         add(new JTitledSeparator(Bundle.getMessage("Import_IncludeSystemLogixs")));
         JCheckBox includeSystemLogixs = new JCheckBox(Bundle.getMessage("Import_IncludeSystemLogixs"));
-        includeSystemLogixs.addItemListener((ItemEvent e) -> {
-            if (includeSystemLogixs.isSelected()) {
+//        includeSystemLogixs.addItemListener((ItemEvent e) -> {
+//            if (includeSystemLogixs.isSelected()) {
 //                _systemName.setEnabled(false);
 //                _sysNameLabel.setEnabled(false);
-            } else {
+//            } else {
 //                _systemName.setEnabled(true);
 //                _sysNameLabel.setEnabled(true);
-            }
-        });
+//            }
+//        });
         add(includeSystemLogixs);
         
         contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));    // vertical space.
