@@ -113,6 +113,19 @@ public class GetAnalogIOTest extends AbstractAnalogExpressionTestBase {
         Assert.assertTrue("String matches", "Get analog IV1".equals(_expression.getLongDescription()));
     }
     
+    @Test
+    public void testChild() {
+        Assert.assertTrue("Num children is zero", 0 == _expression.getChildCount());
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        try {
+            _expression.getChild(0);
+        } catch (UnsupportedOperationException ex) {
+            hasThrown.set(true);
+            Assert.assertTrue("Error message is correct", "Not supported.".equals(ex.getMessage()));
+        }
+        Assert.assertTrue("Exception is thrown", hasThrown.get());
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {
