@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.enums;
 
 // import java.awt.GraphicsEnvironment;
+import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.jmrit.logixng.swing.*;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.util.JUnitUtil;

@@ -47,7 +47,7 @@ import jmri.jmrit.logixng.digital.expressions.ResetOnTrue;
 import jmri.jmrit.logixng.digital.expressions.Timer;
 import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
 import jmri.jmrit.logixng.digital.expressions.True;
-import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;

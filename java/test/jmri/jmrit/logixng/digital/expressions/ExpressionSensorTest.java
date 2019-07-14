@@ -14,7 +14,7 @@ import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.digital.actions.IfThen;
-import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.util.JUnitUtil;
 import org.junit.After;

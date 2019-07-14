@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.enums;
+package jmri.jmrit.logixng;
 
 /**
  * An enum with the values "is" and "is not"
@@ -7,8 +7,8 @@ package jmri.jmrit.logixng.enums;
  */
 public enum Is_IsNot_Enum {
 
-    IS(Bundle.getMessage("Is")),
-    IS_NOT(Bundle.getMessage("IsNot"));
+    IS(Bundle.getMessage("IsIsNotEnum_Is")),
+    IS_NOT(Bundle.getMessage("IsIsNotEnum_IsNot"));
 
     private final String _text;
 

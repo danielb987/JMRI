@@ -15,7 +15,7 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.digital.expressions.ExpressionSensor;
 import jmri.jmrit.logixng.digital.expressions.ExpressionSensor.SensorState;
-import jmri.jmrit.logixng.enums.Is_IsNot_Enum;
+import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.util.swing.BeanSelectCreatePanel;
 import org.slf4j.Logger;

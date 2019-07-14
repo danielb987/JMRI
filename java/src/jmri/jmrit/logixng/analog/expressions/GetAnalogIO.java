@@ -68,6 +68,14 @@ public class GetAnalogIO extends AbstractAnalogExpression {
         return true;
     }
     
+    public void setAnalogIO(AnalogIO analogIO) {
+        _analogIO = analogIO;
+    }
+    
+    public AnalogIO getAnalogIO() {
+        return _analogIO;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void initEvaluation() {
