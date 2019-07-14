@@ -265,7 +265,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             logixNG.setParentForAllChildren();
         }
     }
-    
+/*    
     @SuppressFBWarnings(value = {"DM_EXIT", "DMI_HARDCODED_ABSOLUTE_FILENAME"},
             justification = "This is a test method that must be removed before merging this PR")
     public void testLogixNGs() {
@@ -482,7 +482,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             }
         }
     }
-    
+*/    
     /** {@inheritDoc} */
     @Override
     public void setupAllLogixNGs() {
