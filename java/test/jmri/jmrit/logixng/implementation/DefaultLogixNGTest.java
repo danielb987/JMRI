@@ -16,7 +16,7 @@ public class DefaultLogixNGTest {
 
     @Test
     public void testCtor() {
-        new DefaultLogixNG("IQA55");
+        Assert.assertNotNull("exists", new DefaultLogixNG("IQA55"));
     }
     
     // The minimal setup for log4J

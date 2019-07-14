@@ -16,7 +16,7 @@ public class DefaultLogixNG_InstanceManagerTest {
 
     @Test
     public void testCtor() {
-        new DefaultLogixNG_InstanceManager();
+        Assert.assertNotNull("exists", new DefaultLogixNG_InstanceManager());
     }
     
     // The minimal setup for log4J

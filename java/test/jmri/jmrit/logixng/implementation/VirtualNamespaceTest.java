@@ -15,7 +15,7 @@ public class VirtualNamespaceTest {
 
     @Test
     public void testCtor() {
-        new VirtualNamespace();
+        Assert.assertNotNull("exists", new VirtualNamespace());
     }
     
     // The minimal setup for log4J

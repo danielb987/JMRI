@@ -15,7 +15,7 @@ public class JMRI_NativeNamespaceTest {
 
     @Test
     public void testCtor() {
-        new JMRI_NativeNamespace();
+        Assert.assertNotNull("exists", new JMRI_NativeNamespace());
     }
     
     // The minimal setup for log4J
