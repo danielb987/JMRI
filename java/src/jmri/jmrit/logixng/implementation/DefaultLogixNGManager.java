@@ -63,7 +63,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         implements LogixNG_Manager {
 
     // FOR TESTING ONLY. REMOVE LATER.
-    private boolean hasRunOnce = false;
+//    private boolean hasRunOnce = false;
     
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
