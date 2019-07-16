@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/xml/XSLT/panelfile-2-9-6.xsl" type="text/xsl"?>
+<layout-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/layout-2-9-6.xsd">
+  <jmriversion>
+    <major>4</major>
+    <minor>17</minor>
+    <test>2</test>
+    <modifier>ish</modifier>
+  </jmriversion>
+  <sensors class="jmri.jmrix.internal.configurexml.InternalSensorManagerXml">
+    <defaultInitialState>unknown</defaultInitialState>
+    <sensor inverted="false">
+      <systemName>ISCLOCKRUNNING</systemName>
+    </sensor>
+    <sensor inverted="false">
+      <systemName>IS1_Daniel</systemName>
+    </sensor>
+    <sensor inverted="false">
+      <systemName>IS2_Daniel</systemName>
+    </sensor>
+  </sensors>
+  <turnouts class="jmri.jmrix.internal.configurexml.InternalTurnoutManagerXml">
+    <operations automate="false">
+      <operation name="NoFeedback" class="jmri.configurexml.turnoutoperations.NoFeedbackTurnoutOperationXml" interval="300" maxtries="2" />
+    </operations>
+    <defaultclosedspeed>Normal</defaultclosedspeed>
+    <defaultthrownspeed>Restricted</defaultthrownspeed>
+    <turnout feedback="DIRECT" inverted="false" automate="Off">
+      <systemName>IT1_Daniel</systemName>
+    </turnout>
+    <turnout feedback="DIRECT" inverted="false" automate="Off">
+      <systemName>IT2_Daniel</systemName>
+    </turnout>
+    <turnout feedback="DIRECT" inverted="false" automate="Off">
+      <systemName>IT3_Daniel</systemName>
+    </turnout>
+    <turnout feedback="DIRECT" inverted="false" automate="Off">
+      <systemName>IT4_Daniel</systemName>
+    </turnout>
+    <turnout feedback="DIRECT" inverted="false" automate="Off">
+      <systemName>IT5_Daniel</systemName>
+    </turnout>
+  </turnouts>
+  <lights class="jmri.jmrix.internal.configurexml.InternalLightManagerXml">
+    <light minIntensity="0.0" maxIntensity="1.0" transitionTime="0.0">
+      <systemName>IL1_Daniel</systemName>
+    </light>
+    <light minIntensity="0.0" maxIntensity="1.0" transitionTime="0.0">
+      <systemName>IL2_Daniel</systemName>
+    </light>
+  </lights>
+  <memories class="jmri.managers.configurexml.DefaultMemoryManagerXml">
+    <memory value="6:29 fm">
+      <systemName>IMCURRENTTIME</systemName>
+    </memory>
+    <memory value="1.0">
+      <systemName>IMRATEFACTOR</systemName>
+    </memory>
+  </memories>
+  <signalmasts class="jmri.managers.configurexml.DefaultSignalMastManagerXml" />
+  <oblocks class="jmri.jmrit.logix.configurexml.OBlockManagerXml" />
+  <warrants class="jmri.jmrit.logix.configurexml.WarrantManagerXml" />
+  <signalmastlogics class="jmri.managers.configurexml.DefaultSignalMastLogicManagerXml">
+    <logicDelay>500</logicDelay>
+  </signalmastlogics>
+  <logixngs class="jmri.jmrit.logixng.implementation.configurexml.DefaultLogixNGManagerXml">
+    <logixng enabled="no">
+      <systemName>IQA0001</systemName>
+      <userName>A logixNG</userName>
+      <conditionalng enabled="yes">
+        <systemName>IQA0001:1</systemName>
+        <socket>
+          <socketName />
+          <systemName>IQA0001:1:DAA0001</systemName>
+        </socket>
+      </conditionalng>
+    </logixng>
+  </logixngs>
+  <logixngDigitalActions class="jmri.jmrit.logixng.digital.implementation.configurexml.DefaultDigitalActionManagerXml">
+    <many class="jmri.jmrit.logixng.digital.actions.configurexml.ManyXml">
+      <systemName>IQA0001:1:DAA0001</systemName>
+      <actions>
+        <socket>
+          <socketName>A1</socketName>
+          <systemName>IQA0001:1:DAA0002</systemName>
+        </socket>
+        <socket>
+          <socketName>A2</socketName>
+          <systemName>IQA0001:1:DAA0003</systemName>
+        </socket>
+        <socket>
+          <socketName>A3</socketName>
+        </socket>
+      </actions>
+    </many>
+    <hold-anything class="jmri.jmrit.logixng.digital.actions.configurexml.HoldAnythingXml">
+      <systemName>IQA0001:1:DAA0002</systemName>
+    </hold-anything>
+    <if-then class="jmri.jmrit.logixng.digital.actions.configurexml.IfThenXml" type="TRIGGER_ACTION">
+      <systemName>IQA0001:1:DAA0003</systemName>
+      <ifSystemName>IQA0001:1:DEA0001</ifSystemName>
+      <thenSystemName>IQA0001:1:DAA0004</thenSystemName>
+    </if-then>
+    <many class="jmri.jmrit.logixng.digital.actions.configurexml.ManyXml">
+      <systemName>IQA0001:1:DAA0004</systemName>
+      <actions>
+        <socket>
+          <socketName>A1</socketName>
+          <systemName>IQA0001:1:DAA0005</systemName>
+        </socket>
+        <socket>
+          <socketName>A2</socketName>
+          <systemName>IQA0001:1:DAA0006</systemName>
+        </socket>
+        <socket>
+          <socketName>A3</socketName>
+          <systemName>IQA0001:1:DAA0007</systemName>
+        </socket>
+        <socket>
+          <socketName>A4</socketName>
+          <systemName>IQA0001:1:DAA0008</systemName>
+        </socket>
+        <socket>
+          <socketName>A5</socketName>
+          <systemName>IQA0001:1:DAA0009</systemName>
+        </socket>
+        <socket>
+          <socketName>A6</socketName>
+          <systemName>IQA0001:1:DAA0010</systemName>
+        </socket>
+        <socket>
+          <socketName>A7</socketName>
+        </socket>
+      </actions>
+    </many>
+    <do-analog-action class="jmri.jmrit.logixng.digital.actions.configurexml.DoAnalogActionXml">
+      <systemName>IQA0001:1:DAA0005</systemName>
+    </do-analog-action>
+    <do-string-action class="jmri.jmrit.logixng.digital.actions.configurexml.DoStringActionXml">
+      <systemName>IQA0001:1:DAA0006</systemName>
+    </do-string-action>
+    <shutdown-computer class="jmri.jmrit.logixng.digital.actions.configurexml.ShutdownComputerXml" seconds="0">
+      <systemName>IQA0001:1:DAA0007</systemName>
+    </shutdown-computer>
+    <action-light class="jmri.jmrit.logixng.digital.actions.configurexml.ActionLightXml">
+      <systemName>IQA0001:1:DAA0008</systemName>
+      <light>IL2_Daniel</light>
+      <lightState>ON</lightState>
+    </action-light>
+    <action-sensor class="jmri.jmrit.logixng.digital.actions.configurexml.ActionSensorXml">
+      <systemName>IQA0001:1:DAA0009</systemName>
+      <sensor>IS2_Daniel</sensor>
+      <sensorState>ACTIVE</sensorState>
+    </action-sensor>
+    <action-turnout class="jmri.jmrit.logixng.digital.actions.configurexml.ActionTurnoutXml">
+      <systemName>IQA0001:1:DAA0010</systemName>
+      <turnout>IT2_Daniel</turnout>
+      <turnoutState>THROWN</turnoutState>
+    </action-turnout>
+  </logixngDigitalActions>
+  <logixngDigitalExpressions class="jmri.jmrit.logixng.digital.implementation.configurexml.DefaultDigitalExpressionManagerXml">
+    <or class="jmri.jmrit.logixng.digital.expressions.configurexml.OrXml">
+      <systemName>IQA0001:1:DEA0001</systemName>
+      <expressions>
+        <socket>
+          <socketName>E1</socketName>
+          <systemName>IQA0001:1:DEA0002</systemName>
+        </socket>
+        <socket>
+          <socketName>E2</socketName>
+          <systemName>IQA0001:1:DEA0006</systemName>
+        </socket>
+        <socket>
+          <socketName>E3</socketName>
+          <systemName>IQA0001:1:DEA0007</systemName>
+        </socket>
+        <socket>
+          <socketName>E4</socketName>
+          <systemName>IQA0001:1:DEA0008</systemName>
+        </socket>
+        <socket>
+          <socketName>E5</socketName>
+          <systemName>IQA0001:1:DEA0009</systemName>
+        </socket>
+        <socket>
+          <socketName>E6</socketName>
+          <systemName>IQA0001:1:DEA0010</systemName>
+        </socket>
+        <socket>
+          <socketName>E7</socketName>
+          <systemName>IQA0001:1:DEA0011</systemName>
+        </socket>
+        <socket>
+          <socketName>E8</socketName>
+          <systemName>IQA0001:1:DEA0012</systemName>
+        </socket>
+        <socket>
+          <socketName>E9</socketName>
+          <systemName>IQA0001:1:DEA0013</systemName>
+        </socket>
+        <socket>
+          <socketName>E10</socketName>
+          <systemName>IQA0001:1:DEA0014</systemName>
+        </socket>
+        <socket>
+          <socketName>E11</socketName>
+          <systemName>IQA0001:1:DEA0015</systemName>
+        </socket>
+        <socket>
+          <socketName>E12</socketName>
+        </socket>
+      </expressions>
+    </or>
+    <and class="jmri.jmrit.logixng.digital.expressions.configurexml.AndXml">
+      <systemName>IQA0001:1:DEA0002</systemName>
+      <expressions>
+        <socket>
+          <socketName>E1</socketName>
+          <systemName>IQA0001:1:DEA0003</systemName>
+        </socket>
+        <socket>
+          <socketName>E2</socketName>
+          <systemName>IQA0001:1:DEA0004</systemName>
+        </socket>
+        <socket>
+          <socketName>E3</socketName>
+          <systemName>IQA0001:1:DEA0005</systemName>
+        </socket>
+        <socket>
+          <socketName>E4</socketName>
+        </socket>
+      </expressions>
+    </and>
+    <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
+      <systemName>IQA0001:1:DEA0003</systemName>
+      <turnout>IT3_Daniel</turnout>
+      <is_isNot>IS</is_isNot>
+      <turnoutState>THROWN</turnoutState>
+    </expression-turnout>
+    <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
+      <systemName>IQA0001:1:DEA0004</systemName>
+      <turnout>IT4_Daniel</turnout>
+      <is_isNot>IS</is_isNot>
+      <turnoutState>CLOSED</turnoutState>
+    </expression-turnout>
+    <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
+      <systemName>IQA0001:1:DEA0005</systemName>
+      <turnout>IT5_Daniel</turnout>
+      <is_isNot>IS_NOT</is_isNot>
+      <turnoutState>OTHER</turnoutState>
+    </expression-turnout>
+    <antecedent class="jmri.jmrit.logixng.digital.expressions.configurexml.AntecedentXml">
+      <systemName>IQA0001:1:DEA0006</systemName>
+      <expressions />
+    </antecedent>
+    <false class="jmri.jmrit.logixng.digital.expressions.configurexml.FalseXml">
+      <systemName>IQA0001:1:DEA0007</systemName>
+    </false>
+    <hold class="jmri.jmrit.logixng.digital.expressions.configurexml.HoldXml">
+      <systemName>IQA0001:1:DEA0008</systemName>
+      <expressions />
+    </hold>
+    <reset-on-true class="jmri.jmrit.logixng.digital.expressions.configurexml.ResetOnTrueXml">
+      <systemName>IQA0001:1:DEA0009</systemName>
+      <expressions />
+    </reset-on-true>
+    <timer class="jmri.jmrit.logixng.digital.expressions.configurexml.TimerXml">
+      <systemName>IQA0001:1:DEA0010</systemName>
+    </timer>
+    <trigger-once class="jmri.jmrit.logixng.digital.expressions.configurexml.TriggerOnceXml">
+      <systemName>IQA0001:1:DEA0011</systemName>
+      <expressions />
+    </trigger-once>
+    <true class="jmri.jmrit.logixng.digital.expressions.configurexml.TrueXml">
+      <systemName>IQA0001:1:DEA0012</systemName>
+    </true>
+    <expression-light class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionLightXml">
+      <systemName>IQA0001:1:DEA0013</systemName>
+      <light>IL1_Daniel</light>
+      <is_isNot>IS</is_isNot>
+      <lightState>ON</lightState>
+    </expression-light>
+    <expression-sensor class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionSensorXml">
+      <systemName>IQA0001:1:DEA0014</systemName>
+      <sensor>IS1_Daniel</sensor>
+      <is_isNot>IS</is_isNot>
+      <sensorState>ACTIVE</sensorState>
+    </expression-sensor>
+    <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
+      <systemName>IQA0001:1:DEA0015</systemName>
+      <turnout>IT1_Daniel</turnout>
+      <is_isNot>IS</is_isNot>
+      <turnoutState>THROWN</turnoutState>
+    </expression-turnout>
+  </logixngDigitalExpressions>
+  <logixngAnalogExpressions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogExpressionManagerXml" />
+  <logixngAnalogActions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXml" />
+  <logixngStringExpressions class="jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringExpressionManagerXml" />
+  <logixngStringActions class="jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringActionManagerXml" />
+  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Tue Jul 16 06:29:14 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
+  <filehistory>
+    <operation>
+      <type>Store</type>
+      <date>Tue Jul 16 06:29:15 CEST 2019</date>
+      <filename />
+    </operation>
+  </filehistory>
+  <!--Written by JMRI version 4.17.2ish+daniel+20190716T0429Z on Tue Jul 16 06:29:15 CEST 2019-->
+</layout-config>

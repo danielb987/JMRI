@@ -6,7 +6,7 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 /**
- * Tests for the TimeTableStartup Class
+ * Tests for the LogixNG_Startup Class
  * @author Dave Sand Copyright (C) 2018
  */
 public class TimeTableStartupTest {

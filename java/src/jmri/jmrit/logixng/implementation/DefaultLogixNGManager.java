@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.implementation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.awt.GraphicsEnvironment;
+import java.beans.PropertyVetoException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         implements LogixNG_Manager {
 
     // FOR TESTING ONLY. REMOVE LATER.
-//    private boolean hasRunOnce = false;
+    private boolean hasRunOnce = false;
     
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
@@ -118,17 +119,23 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     public LogixNG createLogixNG(String systemName, String userName)
             throws IllegalArgumentException {
         
+        System.err.format("createLogixNG: %s, %s%n", systemName, userName);
+        
         // Check that Logix does not already exist
         LogixNG x;
         if (userName != null && !userName.equals("")) {
             x = getByUserName(userName);
             if (x != null) {
-                throw new IllegalArgumentException("UserName " + userName + " already exists");
+                // return existing if there is one
+                return x;
+//                throw new IllegalArgumentException("UserName " + userName + " already exists");
             }
         }
         x = getBySystemName(systemName);
         if (x != null) {
-            return null;
+            // return existing if there is one
+            return x;
+//            return null;
         }
         // Check if system name is valid
         if (this.validSystemNameFormat(systemName) != NameValidity.VALID) {
@@ -265,10 +272,10 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             logixNG.setParentForAllChildren();
         }
     }
-/*    
+    
     @SuppressFBWarnings(value = {"DM_EXIT", "DMI_HARDCODED_ABSOLUTE_FILENAME"},
             justification = "This is a test method that must be removed before merging this PR")
-    public void testLogixNGs() {
+    public void testLogixNGs() throws PropertyVetoException {
         
         // FOR TESTING ONLY. REMOVE LATER.
         if (1==0) {
@@ -290,6 +297,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         int test = 1;
         if (test == 1) {
             int store = 1;
+            int load = 1;
             try {
                 if (store == 1) {
                     Light light1 = InstanceManager.getDefault(LightManager.class).provide("IL1_Daniel");
@@ -463,15 +471,53 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                             log.error("Failed to store panel");
                             System.exit(-1);
                         }
-                    } else {
+                    }
+                    
+                    if (load == 1) {
+                        
+                        for (LogixNG logixNG : InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet()) {
+                            InstanceManager.getDefault(LogixNG_Manager.class).deleteLogixNG(logixNG);
+                        }
+                        java.util.SortedSet<jmri.jmrit.logixng.MaleAnalogActionSocket> set1 = InstanceManager.getDefault(jmri.jmrit.logixng.AnalogActionManager.class).getNamedBeanSet();
+                        List<MaleSocket> l = new ArrayList<>(set1);
+                        for (MaleSocket x1 : l) {
+                            InstanceManager.getDefault(jmri.jmrit.logixng.AnalogActionManager.class).deleteBean((jmri.jmrit.logixng.MaleAnalogActionSocket)x1, "DoDelete");
+                        }
+                        java.util.SortedSet<jmri.jmrit.logixng.MaleAnalogExpressionSocket> set2 = InstanceManager.getDefault(jmri.jmrit.logixng.AnalogExpressionManager.class).getNamedBeanSet();
+                        l = new ArrayList<>(set2);
+                        for (MaleSocket x2 : l) {
+                            InstanceManager.getDefault(jmri.jmrit.logixng.AnalogExpressionManager.class).deleteBean((jmri.jmrit.logixng.MaleAnalogExpressionSocket)x2, "DoDelete");
+                        }
+                        java.util.SortedSet<jmri.jmrit.logixng.MaleDigitalActionSocket> set3 = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNamedBeanSet();
+                        l = new ArrayList<>(set3);
+                        for (MaleSocket x3 : l) {
+                            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).deleteBean((jmri.jmrit.logixng.MaleDigitalActionSocket)x3, "DoDelete");
+                        }
+                        java.util.SortedSet<jmri.jmrit.logixng.MaleDigitalExpressionSocket> set4 = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getNamedBeanSet();
+                        l = new ArrayList<>(set4);
+                        for (MaleSocket x4 : l) {
+                            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).deleteBean((jmri.jmrit.logixng.MaleDigitalExpressionSocket)x4, "DoDelete");
+                        }
+                        java.util.SortedSet<jmri.jmrit.logixng.MaleStringActionSocket> set5 = InstanceManager.getDefault(jmri.jmrit.logixng.StringActionManager.class).getNamedBeanSet();
+                        l = new ArrayList<>(set5);
+                        for (MaleSocket x5 : l) {
+                            InstanceManager.getDefault(jmri.jmrit.logixng.StringActionManager.class).deleteBean((jmri.jmrit.logixng.MaleStringActionSocket)x5, "DoDelete");
+                        }
+                        java.util.SortedSet<jmri.jmrit.logixng.MaleStringExpressionSocket> set6 = InstanceManager.getDefault(jmri.jmrit.logixng.StringExpressionManager.class).getNamedBeanSet();
+                        l = new ArrayList<>(set6);
+                        for (MaleSocket x6 : l) {
+                            InstanceManager.getDefault(jmri.jmrit.logixng.StringExpressionManager.class).deleteBean((jmri.jmrit.logixng.MaleStringExpressionSocket)x6, "DoDelete");
+                        }
+                        
                         boolean results = cm.load(file);
                         log.debug(results ? "load was successful" : "store failed");
                         if (results) {
                             resolveAllTrees();
                             setupAllLogixNGs();
                         } else {
-                            log.error("Failed to load panel");
-                            System.exit(-1);
+                            throw new RuntimeException("Failed to load panel");
+//                            log.error("Failed to load panel");
+//                            System.exit(-1);
                         }
                     }
                 }
@@ -482,7 +528,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             }
         }
     }
-*/    
+    
     /** {@inheritDoc} */
     @Override
     public void setupAllLogixNGs() {

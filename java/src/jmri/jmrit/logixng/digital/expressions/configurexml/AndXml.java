@@ -46,10 +46,13 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
 
         Element e = new Element("expressions");
         for (int i=0; i < p.getChildCount(); i++) {
+            Element e2 = new Element("socket");
+            e2.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
             MaleSocket socket = p.getChild(i).getConnectedSocket();
             if (socket != null) {
-                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
+                e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
             }
+            e.addContent(e2);
         }
         element.addContent(e);
 /*        
