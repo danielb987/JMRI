@@ -3,7 +3,9 @@ package jmri.jmrit.logixng.digital.expressions;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
+import jmri.Light;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.Sensor;
@@ -62,9 +64,13 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
         _sensorHandle = handle;
     }
     
-    public void setSensor(Sensor light) {
-        _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
-                .getNamedBeanHandle(light.getDisplayName(), light);
+    public void setSensor(@CheckForNull Sensor sensor) {
+        if (sensor != null) {
+            _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                    .getNamedBeanHandle(sensor.getDisplayName(), sensor);
+        } else {
+            _sensorHandle = null;
+        }
     }
     
     public NamedBeanHandle<Sensor> getSensor() {

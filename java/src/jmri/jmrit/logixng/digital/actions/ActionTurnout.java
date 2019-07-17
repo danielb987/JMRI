@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
@@ -59,9 +60,13 @@ public class ActionTurnout extends AbstractDigitalAction {
         _turnoutHandle = handle;
     }
     
-    public void setTurnout(Turnout turnout) {
-        _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
-                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+    public void setTurnout(@CheckForNull Turnout turnout) {
+        if (turnout != null) {
+            _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                    .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+        } else {
+            _turnoutHandle = null;
+        }
     }
     
     public NamedBeanHandle<Turnout> getTurnout() {

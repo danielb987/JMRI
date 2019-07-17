@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.expressions;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
@@ -62,9 +63,13 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         _turnoutHandle = handle;
     }
     
-    public void setTurnout(Turnout turnout) {
-        _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
-                .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+    public void setTurnout(@CheckForNull Turnout turnout) {
+        if (turnout != null) {
+            _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                    .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+        } else {
+            _turnoutHandle = null;
+        }
     }
     
     public NamedBeanHandle<Turnout> getTurnout() {

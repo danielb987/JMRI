@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
@@ -59,9 +60,13 @@ public class ActionSensor extends AbstractDigitalAction {
         _sensorHandle = handle;
     }
     
-    public void setSensor(Sensor sensor) {
-        _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
-                .getNamedBeanHandle(sensor.getDisplayName(), sensor);
+    public void setSensor(@CheckForNull Sensor sensor) {
+        if (sensor != null) {
+            _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                    .getNamedBeanHandle(sensor.getDisplayName(), sensor);
+        } else {
+            _sensorHandle = null;
+        }
     }
     
     public NamedBeanHandle<Sensor> getSensor() {

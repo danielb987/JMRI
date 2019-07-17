@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.expressions;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
@@ -62,9 +63,13 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         _lightHandle = handle;
     }
     
-    public void setLight(Light light) {
-        _lightHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
-                .getNamedBeanHandle(light.getDisplayName(), light);
+    public void setLight(@CheckForNull Light light) {
+        if (light != null) {
+            _lightHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                    .getNamedBeanHandle(light.getDisplayName(), light);
+        } else {
+            _lightHandle = null;
+        }
     }
     
     public NamedBeanHandle<Light> getLight() {

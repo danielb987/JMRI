@@ -8,7 +8,6 @@ import jmri.jmrit.logixng.digital.actions.ActionSensor;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  *
