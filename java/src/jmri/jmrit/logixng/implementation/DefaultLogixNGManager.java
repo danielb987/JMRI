@@ -119,8 +119,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     public LogixNG createLogixNG(String systemName, String userName)
             throws IllegalArgumentException {
         
-//        System.err.format("createLogixNG: %s, %s%n", systemName, userName);
-        
         // Check that Logix does not already exist
         LogixNG x;
         if (userName != null && !userName.equals("")) {
@@ -128,20 +126,16 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             if (x != null) {
                 // return existing if there is one
                 return x;
-//                throw new IllegalArgumentException("UserName " + userName + " already exists");
             }
         }
         x = getBySystemName(systemName);
         if (x != null) {
             // return existing if there is one
             return x;
-//            return null;
         }
         // Check if system name is valid
         if (this.validSystemNameFormat(systemName) != NameValidity.VALID) {
             throw new IllegalArgumentException("SystemName " + systemName + " is not in the correct format");
-//            log.warn("SystemName " + systemName + " is not in the correct format");
-//            return null;
         }
         // LogixNG does not exist, create a new LogixNG
         x = new DefaultLogixNG(systemName, userName);

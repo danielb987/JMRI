@@ -108,7 +108,6 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
 
         Element turnoutState = shared.getChild("turnoutState");
         if (turnoutState != null) {
-            ExpressionTurnout.TurnoutState a;
             h.setTurnoutState(ExpressionTurnout.TurnoutState.valueOf(turnoutState.getTextTrim()));
         }
 

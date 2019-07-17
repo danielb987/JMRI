@@ -93,9 +93,9 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Utility method to load the individual StringActionBean objects. If there's no
- additional info needed for a specific action type, invoke this with the
- parent of the set of StringActionBean elements.
+     * Utility method to load the individual StringActionBean objects. If
+     * there's no additional info needed for a specific action type, invoke
+     * this with the parent of the set of StringActionBean elements.
      *
      * @param actions Element containing the StringActionBean elements to load.
      */
