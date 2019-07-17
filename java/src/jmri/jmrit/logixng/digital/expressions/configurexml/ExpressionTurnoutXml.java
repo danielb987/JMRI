@@ -2,12 +2,14 @@ package jmri.jmrit.logixng.digital.expressions.configurexml;
 
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
+import jmri.TurnoutManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalExpressionBean;
+import jmri.jmrit.logixng.Is_IsNot_Enum;
 
 /**
  *
@@ -85,7 +87,7 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpressionBean h;
+        ExpressionTurnout h;
         if (uname == null) {
             h = new ExpressionTurnout(sys);
         } else {
@@ -93,6 +95,22 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
         }
 
         loadCommon(h, shared);
+
+        Element turnoutName = shared.getChild("turnout");
+        if (turnoutName != null) {
+            h.setTurnout(InstanceManager.getDefault(TurnoutManager.class).getTurnout(turnoutName.getTextTrim()));
+        }
+
+        Element is_IsNot = shared.getChild("is_isNot");
+        if (is_IsNot != null) {
+            h.set_Is_IsNot(Is_IsNot_Enum.valueOf(is_IsNot.getTextTrim()));
+        }
+
+        Element turnoutState = shared.getChild("turnoutState");
+        if (turnoutState != null) {
+            ExpressionTurnout.TurnoutState a;
+            h.setTurnoutState(ExpressionTurnout.TurnoutState.valueOf(turnoutState.getTextTrim()));
+        }
 
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;

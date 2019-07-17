@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
+import jmri.SensorManager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.ActionSensor;
 import org.jdom2.Element;
@@ -85,7 +86,7 @@ public class ActionSensorXml extends jmri.managers.configurexml.AbstractNamedBea
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalActionBean h;
+        ActionSensor h;
         if (uname == null) {
             h = new ActionSensor(sys);
         } else {
@@ -93,6 +94,11 @@ public class ActionSensorXml extends jmri.managers.configurexml.AbstractNamedBea
         }
 
         loadCommon(h, shared);
+
+        Element sensorName = shared.getChild("sensor");
+        if (sensorName != null) {
+            h.setSensor(InstanceManager.getDefault(SensorManager.class).getSensor(sensorName.getTextTrim()));
+        }
 
         // this.checkedNamedBeanReference()
         // <T extends NamedBean> T checkedNamedBeanReference(String name, @Nonnull T type, @Nonnull Manager<T> m) {

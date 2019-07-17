@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import jmri.InstanceManager;
+import jmri.LightManager;
 import jmri.NamedBeanHandle;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.ActionLight;
@@ -85,7 +86,7 @@ public class ActionLightXml extends jmri.managers.configurexml.AbstractNamedBean
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalActionBean h;
+        ActionLight h;
         if (uname == null) {
             h = new ActionLight(sys);
         } else {
@@ -93,6 +94,11 @@ public class ActionLightXml extends jmri.managers.configurexml.AbstractNamedBean
         }
 
         loadCommon(h, shared);
+
+        Element lightName = shared.getChild("light");
+        if (lightName != null) {
+            h.setLight(InstanceManager.getDefault(LightManager.class).getLight(lightName.getTextTrim()));
+        }
 
         // this.checkedNamedBeanReference()
         // <T extends NamedBean> T checkedNamedBeanReference(String name, @Nonnull T type, @Nonnull Manager<T> m) {

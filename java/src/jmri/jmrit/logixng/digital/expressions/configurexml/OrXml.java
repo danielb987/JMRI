@@ -50,13 +50,19 @@ public class OrXml extends jmri.managers.configurexml.AbstractNamedBeanManagerCo
 
         Element e = new Element("expressions");
         for (int i=0; i < p.getChildCount(); i++) {
-            Element socketElement = new Element("socket");
-            socketElement.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
+            Element e2 = new Element("socket");
+            e2.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
             MaleSocket socket = p.getChild(i).getConnectedSocket();
+            String socketSystemName;
             if (socket != null) {
-                socketElement.addContent(new Element("systemName").addContent(socket.getSystemName()));
+                socketSystemName = socket.getSystemName();
+            } else {
+                socketSystemName = p.getExpressionSystemName(i);
             }
-            e.addContent(socketElement);
+            if (socketSystemName != null) {
+                e2.addContent(new Element("systemName").addContent(socketSystemName));
+            }
+            e.addContent(e2);
         }
         element.addContent(e);
 /*        

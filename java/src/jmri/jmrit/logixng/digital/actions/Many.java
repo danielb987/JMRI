@@ -25,7 +25,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
 
     private Many _template;
     private boolean _enableExecution;
-    private final List<ActionEntry> actionEntries = new ArrayList<>();
+    private final List<ActionEntry> _actionEntries = new ArrayList<>();
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
@@ -64,7 +64,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     }
     
     private void init() {
-        actionEntries
+        _actionEntries
                 .add(new ActionEntry(InstanceManager.getDefault(DigitalActionManager.class)
                         .createFemaleSocket(this, this, getNewSocketName())));
     }
@@ -87,7 +87,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         
         // This action supports EnableExecution if all the children supports it.
         boolean support = true;
-        for (ActionEntry actionEntry : actionEntries) {
+        for (ActionEntry actionEntry : _actionEntries) {
             if (actionEntry._socket.isConnected()) {
                 support &= actionEntry._socket.supportsEnableExecution();
             }
@@ -133,7 +133,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     @Override
     public boolean executeStart() {
         boolean state = false;
-        for (ActionEntry actionEntry : actionEntries) {
+        for (ActionEntry actionEntry : _actionEntries) {
             actionEntry._status = actionEntry._socket.executeStart();
             state |= actionEntry._status;
         }
@@ -144,7 +144,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     @Override
     public boolean executeRestart() {
         boolean state = false;
-        for (ActionEntry actionEntry : actionEntries) {
+        for (ActionEntry actionEntry : _actionEntries) {
             actionEntry._status = actionEntry._socket.executeRestart();
             state |= actionEntry._status;
         }
@@ -155,7 +155,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     @Override
     public boolean executeContinue() {
         boolean state = false;
-        for (ActionEntry actionEntry : actionEntries) {
+        for (ActionEntry actionEntry : _actionEntries) {
             if (actionEntry._status) {
                 actionEntry._status = actionEntry._socket.executeContinue();
                 state |= actionEntry._status;
@@ -167,7 +167,7 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     /** {@inheritDoc} */
     @Override
     public void abort() {
-        for (ActionEntry actionEntry : actionEntries) {
+        for (ActionEntry actionEntry : _actionEntries) {
             actionEntry._socket.abort();
             actionEntry._status = false;
         }
@@ -175,25 +175,25 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        return actionEntries.get(index)._socket;
+        return _actionEntries.get(index)._socket;
     }
 
     @Override
     public int getChildCount() {
-        return actionEntries.size();
+        return _actionEntries.size();
     }
     
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
-        for (ActionEntry actionEntry : actionEntries) {
+        for (ActionEntry actionEntry : _actionEntries) {
             hasFreeSocket = !actionEntry._socket.isConnected();
             if (hasFreeSocket) {
                 break;
             }
         }
         if (!hasFreeSocket) {
-            actionEntries.add(
+            _actionEntries.add(
                     new ActionEntry(
                             InstanceManager.getDefault(DigitalActionManager.class)
                                     .createFemaleSocket(this, this, getNewSocketName())));
@@ -216,30 +216,30 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     }
 
     private void setActionSystemNames(List<Map.Entry<String, String>> systemNames) {
-        if (!actionEntries.isEmpty()) {
+        if (!_actionEntries.isEmpty()) {
             throw new RuntimeException("action system names cannot be set more than once");
         }
         
         for (Map.Entry<String, String> entry : systemNames) {
 //            System.out.format("Many: systemName: %s%n", entry);
-            System.err.format("AAA Many: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
+//            System.err.format("AAA Many: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalActionSocket socket =
                     InstanceManager.getDefault(DigitalActionManager.class)
                             .createFemaleSocket(this, this, entry.getKey());
             
-            actionEntries.add(new ActionEntry(socket, entry.getValue()));
+            _actionEntries.add(new ActionEntry(socket, entry.getValue()));
         }
     }
 
     public String getActionSystemName(int index) {
-        return actionEntries.get(index)._socketSystemName;
+        return _actionEntries.get(index)._socketSystemName;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setup() {
         System.err.format("AAAA setup()%n");
-        for (ActionEntry ae : actionEntries) {
+        for (ActionEntry ae : _actionEntries) {
             if (ae._socketSystemName != null) {
                 System.err.format("AA SocketName: %s, SystemName: %s%n", ae._socket.getName(), ae._socketSystemName);
                 try {

@@ -1,5 +1,9 @@
 package jmri.jmrit.logixng.digital.expressions.configurexml;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.MaleSocket;
@@ -49,8 +53,14 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
             Element e2 = new Element("socket");
             e2.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
             MaleSocket socket = p.getChild(i).getConnectedSocket();
+            String socketSystemName;
             if (socket != null) {
-                e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
+                socketSystemName = socket.getSystemName();
+            } else {
+                socketSystemName = p.getExpressionSystemName(i);
+            }
+            if (socketSystemName != null) {
+                e2.addContent(new Element("systemName").addContent(socketSystemName));
             }
             e.addContent(e2);
         }
@@ -116,14 +126,27 @@ public class AndXml extends jmri.managers.configurexml.AbstractNamedBeanManagerC
         NamedBeanHandle<Turnout> low = loadTurnout(l.get(0));
         NamedBeanHandle<Turnout> high = loadTurnout(l.get(1));
 */        
+        List<Map.Entry<String, String>> expressionSystemNames = new ArrayList<>();
+        
+        Element actionElement = shared.getChild("expressions");
+        for (Element socketElement : actionElement.getChildren()) {
+            String socketName = socketElement.getChild("socketName").getTextTrim();
+            Element systemNameElement = socketElement.getChild("systemName");
+            String systemName = null;
+            if (systemNameElement != null) {
+                systemName = systemNameElement.getTextTrim();
+            }
+            expressionSystemNames.add(new AbstractMap.SimpleEntry<>(socketName, systemName));
+        }
+        
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         DigitalExpressionBean h;
         if (uname == null) {
-            h = new And(sys);
+            h = new And(sys, expressionSystemNames);
         } else {
-            h = new And(sys, uname);
+            h = new And(sys, uname, expressionSystemNames);
         }
 
         loadCommon(h, shared);

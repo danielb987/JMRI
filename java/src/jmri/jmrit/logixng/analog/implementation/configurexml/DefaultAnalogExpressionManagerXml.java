@@ -167,15 +167,15 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
      * type.
      */
     protected void replaceExpressionManager() {
-        if (InstanceManager.getDefault(jmri.LogixManager.class).getClass().getName()
+        if (InstanceManager.getDefault(AnalogExpressionManager.class).getClass().getName()
                 .equals(DefaultAnalogExpressionManager.class.getName())) {
             return;
         }
         // if old manager exists, remove it from configuration process
-        if (InstanceManager.getNullableDefault(jmri.LogixManager.class) != null) {
+        if (InstanceManager.getNullableDefault(AnalogExpressionManager.class) != null) {
             ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
             if (cmOD != null) {
-                cmOD.deregister(InstanceManager.getDefault(jmri.LogixManager.class));
+                cmOD.deregister(InstanceManager.getDefault(AnalogExpressionManager.class));
             }
 
         }
@@ -186,13 +186,13 @@ public class DefaultAnalogExpressionManagerXml extends jmri.managers.configurexm
         // register new one for configuration
         ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
         if (cmOD != null) {
-            cmOD.registerConfig(pManager, jmri.Manager.LOGIXS);
+            cmOD.registerConfig(pManager, jmri.Manager.ANALOG_EXPRESSIONS);
         }
     }
 
     @Override
     public int loadOrder() {
-        return InstanceManager.getDefault(jmri.jmrit.logixng.AnalogExpressionManager.class).getXMLOrder();
+        return InstanceManager.getDefault(AnalogExpressionManager.class).getXMLOrder();
     }
 
     private final static Logger log = LoggerFactory.getLogger(DefaultAnalogExpressionManagerXml.class);

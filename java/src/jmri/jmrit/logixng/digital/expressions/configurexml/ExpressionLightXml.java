@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.digital.expressions.configurexml;
 
 import jmri.InstanceManager;
+import jmri.LightManager;
 import jmri.NamedBeanHandle;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.digital.expressions.ExpressionLight;
@@ -85,7 +86,7 @@ public class ExpressionLightXml extends jmri.managers.configurexml.AbstractNamed
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpressionBean h;
+        ExpressionLight h;
         if (uname == null) {
             h = new ExpressionLight(sys);
         } else {
@@ -93,6 +94,11 @@ public class ExpressionLightXml extends jmri.managers.configurexml.AbstractNamed
         }
 
         loadCommon(h, shared);
+
+        Element lightName = shared.getChild("light");
+        if (lightName != null) {
+            h.setLight(InstanceManager.getDefault(LightManager.class).getLight(lightName.getTextTrim()));
+        }
 
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;

@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
+import jmri.TurnoutManager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import org.jdom2.Element;
@@ -85,7 +86,7 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
         // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalActionBean h;
+        ActionTurnout h;
         if (uname == null) {
             h = new ActionTurnout(sys);
         } else {
@@ -93,6 +94,11 @@ public class ActionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBe
         }
 
         loadCommon(h, shared);
+
+        Element turnoutName = shared.getChild("turnout");
+        if (turnoutName != null) {
+            h.setTurnout(InstanceManager.getDefault(TurnoutManager.class).getTurnout(turnoutName.getTextTrim()));
+        }
 
         // this.checkedNamedBeanReference()
         // <T extends NamedBean> T checkedNamedBeanReference(String name, @Nonnull T type, @Nonnull Manager<T> m) {

@@ -119,7 +119,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     public LogixNG createLogixNG(String systemName, String userName)
             throws IllegalArgumentException {
         
-        System.err.format("createLogixNG: %s, %s%n", systemName, userName);
+//        System.err.format("createLogixNG: %s, %s%n", systemName, userName);
         
         // Check that Logix does not already exist
         LogixNG x;
