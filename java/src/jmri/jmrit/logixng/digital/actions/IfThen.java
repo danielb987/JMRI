@@ -328,8 +328,16 @@ public class IfThen extends AbstractDigitalAction implements FemaleSocketListene
         _ifExpressionSocketSystemName = systemName;
     }
 
+    public String getIfExpressionSocketSystemName() {
+        return _ifExpressionSocketSystemName;
+    }
+
     public void setThenActionSocketSystemName(String systemName) {
         _thenActionSocketSystemName = systemName;
+    }
+
+    public String getThenExpressionSocketSystemName() {
+        return _thenActionSocketSystemName;
     }
 
     /** {@inheritDoc} */

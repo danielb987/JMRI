@@ -232,6 +232,10 @@ public final class DefaultConditionalNG extends AbstractBase
         _socketSystemName = systemName;
     }
 
+    public String getSocketSystemName() {
+        return _socketSystemName;
+    }
+
     /** {@inheritDoc} */
     @Override
     final public void setup() {

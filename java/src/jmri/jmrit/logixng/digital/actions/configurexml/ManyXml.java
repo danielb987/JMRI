@@ -54,8 +54,14 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
             Element e2 = new Element("socket");
             e2.addContent(new Element("socketName").addContent(p.getChild(i).getName()));
             MaleSocket socket = p.getChild(i).getConnectedSocket();
+            String socketSystemName;
             if (socket != null) {
-                e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
+                socketSystemName = socket.getSystemName();
+            } else {
+                socketSystemName = p.getActionSystemName(i);
+            }
+            if (socketSystemName != null) {
+                e2.addContent(new Element("systemName").addContent(socketSystemName));
             }
             e.addContent(e2);
         }

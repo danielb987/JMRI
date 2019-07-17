@@ -56,8 +56,14 @@ public class DefaultConditionalNGXml extends jmri.managers.configurexml.Abstract
         Element e2 = new Element("socket");
         e2.addContent(new Element("socketName").addContent(conditionalNG.getChild(0).getName()));
         MaleSocket socket = conditionalNG.getChild(0).getConnectedSocket();
+        String socketSystemName;
         if (socket != null) {
-            e2.addContent(new Element("systemName").addContent(socket.getSystemName()));
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = ((DefaultConditionalNG)conditionalNG).getSocketSystemName();
+        }
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
         }
         elem.addContent(e2);
 

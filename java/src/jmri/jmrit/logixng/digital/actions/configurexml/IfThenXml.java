@@ -11,6 +11,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalActionBean;
+import jmri.jmrit.logixng.MaleSocket;
 
 /**
  *
@@ -52,14 +53,43 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         element.setAttribute("type", p.getType().name());
         
         try {
-            FemaleDigitalExpressionSocket ifExpressionSocket = getIfExpressionSocket(p);
-            if (ifExpressionSocket.isConnected()) {
-                element.addContent(new Element("ifSystemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));
+            Element e2 = new Element("ifSocket");
+            e2.addContent(new Element("socketName").addContent(p.getChild(0).getName()));
+            MaleSocket socket = getIfExpressionSocket(p).getConnectedSocket();
+            String socketSystemName;
+            if (socket != null) {
+                socketSystemName = socket.getSystemName();
+            } else {
+                socketSystemName = p.getIfExpressionSocketSystemName();
             }
-            FemaleDigitalActionSocket _thenActionSocket = getThenActionSocket(p);
-            if (_thenActionSocket.isConnected()) {
-                element.addContent(new Element("thenSystemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
+            if (socketSystemName != null) {
+                e2.addContent(new Element("systemName").addContent(socketSystemName));
             }
+            element.addContent(e2);
+            
+            e2 = new Element("thenSocket");
+            e2.addContent(new Element("socketName").addContent(p.getChild(1).getName()));
+            socket = getThenActionSocket(p).getConnectedSocket();
+            if (socket != null) {
+                socketSystemName = socket.getSystemName();
+            } else {
+                socketSystemName = p.getThenExpressionSocketSystemName();
+            }
+            if (socketSystemName != null) {
+                e2.addContent(new Element("systemName").addContent(socketSystemName));
+            }
+            element.addContent(e2);
+            
+            
+            
+//            FemaleDigitalExpressionSocket ifExpressionSocket = getIfExpressionSocket(p);
+//            if (ifExpressionSocket.isConnected()) {
+//                element.addContent(new Element("ifSystemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));
+//            }
+//            FemaleDigitalActionSocket _thenActionSocket = getThenActionSocket(p);
+//            if (_thenActionSocket.isConnected()) {
+//                element.addContent(new Element("thenSystemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
+//            }
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
             log.error("Error storing action: {}", e, e);
         }
@@ -120,14 +150,25 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         }
 
         loadCommon(h, shared);
-
-        Element ifSystemNameElement = shared.getChild("ifSystemName");
-        if (ifSystemNameElement != null) {
-            h.setIfExpressionSocketSystemName(ifSystemNameElement.getTextTrim());
+        
+        Element socketName = shared.getChild("ifSocket").getChild("socketName");
+        if (socketName != null) {
+            h.getChild(0).setName(socketName.getTextTrim());
         }
-        Element thenSystemNameElement = shared.getChild("thenSystemName");
-        if (thenSystemNameElement != null) {
-            h.setThenActionSocketSystemName(thenSystemNameElement.getTextTrim());
+        Element socketSystemName = shared.getChild("ifSocket").getChild("systemName");
+        if (socketSystemName != null) {
+            log.warn("If socket system name: {}", socketSystemName.getTextTrim());
+            h.setIfExpressionSocketSystemName(socketSystemName.getTextTrim());
+        }
+        
+        socketName = shared.getChild("thenSocket").getChild("socketName");
+        if (socketName != null) {
+            h.getChild(1).setName(socketName.getTextTrim());
+        }
+        socketSystemName = shared.getChild("thenSocket").getChild("systemName");
+        if (socketSystemName != null) {
+            log.warn("Then socket system name: {}", socketSystemName.getTextTrim());
+            h.setThenActionSocketSystemName(socketSystemName.getTextTrim());
         }
         
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);

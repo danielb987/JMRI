@@ -231,6 +231,10 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         }
     }
 
+    public String getActionSystemName(int index) {
+        return actionEntries.get(index)._socketSystemName;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {
