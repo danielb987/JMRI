@@ -1,12 +1,11 @@
 package jmri.jmrit.logixng.analog.implementation;
 
-import jmri.jmrit.logixng.analog.implementation.DefaultMaleAnalogActionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
+import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
 import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
@@ -18,7 +17,7 @@ public class DefaultMaleAnalogActionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogActionBean action = new SetAnalogIO("IQA55:10:AA321");
+        AnalogActionBean action = new AnalogActionMemory("IQA55:10:AA321");
         Assert.assertNotNull("object exists", new DefaultMaleAnalogActionSocket(action));
     }
     

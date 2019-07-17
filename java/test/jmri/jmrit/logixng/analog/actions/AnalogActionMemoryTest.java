@@ -31,12 +31,12 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
     
     @Test
     public void testShortDescription() {
-        Assert.assertTrue("String matches", "Set analog IM1".equals(_action.getShortDescription()));
+        Assert.assertTrue("String matches", "Set memory IM1".equals(_action.getShortDescription()));
     }
     
     @Test
     public void testLongDescription() {
-        Assert.assertTrue("String matches", "Set analog IM1".equals(_action.getLongDescription()));
+        Assert.assertTrue("String matches", "Set memory IM1".equals(_action.getLongDescription()));
     }
     
     // The minimal setup for log4J

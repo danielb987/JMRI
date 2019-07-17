@@ -1,12 +1,11 @@
 package jmri.jmrit.logixng.analog.implementation;
 
-import jmri.jmrit.logixng.analog.implementation.DefaultMaleAnalogExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.analog.expressions.GetAnalogIO;
+import jmri.jmrit.logixng.analog.expressions.AnalogExpressionMemory;
 import jmri.jmrit.logixng.AnalogExpressionBean;
 
 /**
@@ -18,7 +17,7 @@ public class DefaultMaleAnalogExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogExpressionBean expression = new GetAnalogIO("IQA55:10:AE321");
+        AnalogExpressionBean expression = new AnalogExpressionMemory("IQA55:10:AE321");
         Assert.assertNotNull("object exists", new DefaultMaleAnalogExpressionSocket(expression));
     }
     

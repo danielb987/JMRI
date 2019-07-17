@@ -82,9 +82,9 @@ public class AnalogActionMemory extends AbstractAnalogAction {
     @Override
     public String getShortDescription() {
         if (_memory != null) {
-            return Bundle.getMessage("AnalogActionSetAnalogIO", _memory.getDisplayName());
+            return Bundle.getMessage("AnalogActionSetMemory", _memory.getDisplayName());
         } else {
-            return Bundle.getMessage("AnalogActionSetAnalogIO", "none");
+            return Bundle.getMessage("AnalogActionSetMemory", "none");
         }
     }
 
