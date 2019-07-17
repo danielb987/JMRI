@@ -10,9 +10,7 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
-import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * An Expression that keeps its status even if its child expression doesn't.

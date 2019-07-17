@@ -2,12 +2,10 @@ package jmri.jmrit.logixng.string.expressions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
-import jmri.InstanceManager;
 import jmri.StringIO;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.analog.actions.SetAnalogIO;
 
 /**
  * Reads an AnalogIO.
