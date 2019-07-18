@@ -7,6 +7,7 @@ import jmri.jmrit.logixng.implementation.AbstractBase;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.StringActionBean;
 import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.StringExpressionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ public abstract class AbstractStringAction extends AbstractBase
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
+    private int _state = StringExpressionBean.UNKNOWN;
 
 
     public AbstractStringAction(String sys) throws BadSystemNameException {
@@ -63,12 +65,13 @@ public abstract class AbstractStringAction extends AbstractBase
     @Override
     public void setState(int s) throws JmriException {
         log.warn("Unexpected call to setState in AbstractStringAction.");  // NOI18N
+        _state = s;
     }
 
     @Override
     public int getState() {
         log.warn("Unexpected call to getState in AbstractStringAction.");  // NOI18N
-        return UNKNOWN;
+        return _state;
     }
     
     

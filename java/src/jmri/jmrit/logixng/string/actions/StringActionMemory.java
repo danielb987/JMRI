@@ -1,8 +1,7 @@
-package jmri.jmrit.logixng.analog.actions;
+package jmri.jmrit.logixng.string.actions;
 
+import jmri.jmrit.logixng.analog.actions.*;
 import javax.annotation.CheckForNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import jmri.Memory;
 import jmri.MemoryManager;
 import jmri.InstanceManager;
@@ -17,22 +16,22 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogActionMemory extends AbstractAnalogAction {
+public class StringActionMemory extends AbstractStringAction {
 
-    private AnalogActionMemory _template;
+    private StringActionMemory _template;
     private String _memorySystemName;
     private NamedBeanHandle<Memory> _memoryHandle;
 //    private Memory _memory;
     
-    public AnalogActionMemory(String sys) {
+    public StringActionMemory(String sys) {
         super(sys);
     }
     
-    public AnalogActionMemory(String sys, String user) {
+    public StringActionMemory(String sys, String user) {
         super(sys, user);
     }
     
-    private AnalogActionMemory(AnalogActionMemory template, String sys) {
+    private StringActionMemory(StringActionMemory template, String sys) {
         super(sys);
         _template = template;
         _memoryHandle = _template._memoryHandle;
@@ -41,7 +40,7 @@ public class AnalogActionMemory extends AbstractAnalogAction {
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
-        return new AnalogActionMemory(this, sys);
+        return new StringActionMemory(this, sys);
     }
     
     public void setMemory(NamedBeanHandle<Memory> handle) {
@@ -63,7 +62,7 @@ public class AnalogActionMemory extends AbstractAnalogAction {
     
     /** {@inheritDoc} */
     @Override
-    public void setValue(double value) {
+    public void setValue(String value) {
         if (_memoryHandle != null) {
             _memoryHandle.getBean().setValue(value);
         }
@@ -97,9 +96,9 @@ public class AnalogActionMemory extends AbstractAnalogAction {
     @Override
     public String getShortDescription() {
         if (_memoryHandle != null) {
-            return Bundle.getMessage("AnalogActionMemory", _memoryHandle.getBean().getDisplayName());
+            return Bundle.getMessage("StringActionMemory", _memoryHandle.getBean().getDisplayName());
         } else {
-            return Bundle.getMessage("AnalogActionMemory", "none");
+            return Bundle.getMessage("StringActionMemory", "none");
         }
     }
 

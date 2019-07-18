@@ -40,8 +40,8 @@ public abstract class AbstractBaseTestBase {
     public void testConstants() {
         Assert.assertTrue("String matches", "ChildCount".equals(Base.PROPERTY_CHILD_COUNT));
         Assert.assertTrue("String matches", "SocketConnected".equals(Base.PROPERTY_SOCKET_CONNECTED));
-        Assert.assertTrue("integer matches", 0x02 == Base.SOCKET_CONNECTED);
-        Assert.assertTrue("integer matches", 0x04 == Base.SOCKET_DISCONNECTED);
+        Assert.assertEquals("integer matches", 0x02, Base.SOCKET_CONNECTED);
+        Assert.assertEquals("integer matches", 0x04, Base.SOCKET_DISCONNECTED);
     }
     
     @Test

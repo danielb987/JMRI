@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.analog.expressions;
+package jmri.jmrit.logixng.string.expressions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -19,27 +19,27 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogExpressionMemory extends AbstractAnalogExpression implements PropertyChangeListener {
+public class StringExpressionMemory extends AbstractStringExpression implements PropertyChangeListener {
 
-    private AnalogExpressionMemory _template;
+    private StringExpressionMemory _template;
     private String _memorySystemName;
 //    private Memory _memory;
     private NamedBeanHandle<Memory> _memoryHandle;
     private boolean _listenersAreRegistered = false;
     
-    public AnalogExpressionMemory(String sys) throws BadUserNameException,
+    public StringExpressionMemory(String sys) throws BadUserNameException,
             BadSystemNameException {
         
         super(sys);
     }
 
-    public AnalogExpressionMemory(String sys, String user)
+    public StringExpressionMemory(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         
         super(sys, user);
     }
 
-    private AnalogExpressionMemory(AnalogExpressionMemory template, String sys) {
+    private StringExpressionMemory(StringExpressionMemory template, String sys) {
         super(sys);
         _template = template;
         _memoryHandle = _template._memoryHandle;
@@ -48,7 +48,7 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression implements 
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {
-        return new AnalogExpressionMemory(this, sys);
+        return new StringExpressionMemory(this, sys);
     }
     
     /** {@inheritDoc} */
@@ -88,11 +88,11 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression implements 
     
     /** {@inheritDoc} */
     @Override
-    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
         if (_memoryHandle != null) {
-            return jmri.util.TypeConversionUtil.convertToDouble(_memoryHandle.getBean().getValue(), false);
+            return jmri.util.TypeConversionUtil.convertToString(_memoryHandle.getBean().getValue(), false);
         } else {
-            return 0.0;
+            return "";
         }
     }
     
@@ -116,9 +116,9 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression implements 
     @Override
     public String getShortDescription() {
         if (_memoryHandle != null) {
-            return Bundle.getMessage("AnalogExpressionMemory", _memoryHandle.getBean().getDisplayName());
+            return Bundle.getMessage("StringExpressionMemory", _memoryHandle.getBean().getDisplayName());
         } else {
-            return Bundle.getMessage("AnalogExpressionMemory", "none");
+            return Bundle.getMessage("StringExpressionMemory", "none");
         }
     }
 

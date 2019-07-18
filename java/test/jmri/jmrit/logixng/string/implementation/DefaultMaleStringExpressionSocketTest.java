@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.string.expressions.GetStringIO;
+import jmri.jmrit.logixng.string.expressions.StringExpressionMemory;
 import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
@@ -17,7 +17,7 @@ public class DefaultMaleStringExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        StringExpressionBean expression = new GetStringIO("IQA55:1:SE321");
+        StringExpressionBean expression = new StringExpressionMemory("IQA55:1:SE321");
         Assert.assertNotNull("exists", new DefaultMaleStringExpressionSocket(expression));
     }
     

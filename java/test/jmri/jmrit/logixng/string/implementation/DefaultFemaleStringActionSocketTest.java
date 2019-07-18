@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
-import jmri.jmrit.logixng.string.actions.SetStringIO;
+import jmri.jmrit.logixng.string.actions.StringActionMemory;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -40,8 +40,8 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringActionBean action = new SetStringIO("IQA55:1:SA321");
-        StringActionBean otherAction = new SetStringIO("IQA55:1:SA322");
+        StringActionBean action = new StringActionMemory("IQA55:1:SA321");
+        StringActionBean otherAction = new StringActionMemory("IQA55:1:SA322");
         maleSocket = new DefaultMaleStringActionSocket(action);
         otherMaleSocket = new DefaultMaleStringActionSocket(otherAction);
         femaleSocket = new DefaultFemaleStringActionSocket(null, new FemaleSocketListener() {

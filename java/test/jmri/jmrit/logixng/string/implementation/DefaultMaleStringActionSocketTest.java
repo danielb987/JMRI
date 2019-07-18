@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.string.actions.SetStringIO;
+import jmri.jmrit.logixng.string.actions.StringActionMemory;
 import jmri.jmrit.logixng.StringActionBean;
 
 /**
@@ -17,7 +17,7 @@ public class DefaultMaleStringActionSocketTest {
 
     @Test
     public void testCtor() {
-        StringActionBean action = new SetStringIO("IQA55:1:SA321");
+        StringActionBean action = new StringActionMemory("IQA55:1:SA321");
         Assert.assertNotNull("exists", new DefaultMaleStringActionSocket(action));
     }
     
