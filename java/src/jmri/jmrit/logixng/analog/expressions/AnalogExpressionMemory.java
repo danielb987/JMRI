@@ -1,10 +1,15 @@
 package jmri.jmrit.logixng.analog.expressions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jmri.InstanceManager;
 import jmri.Memory;
 import jmri.MemoryManager;
+import jmri.NamedBeanHandle;
+import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -14,11 +19,13 @@ import jmri.jmrit.logixng.FemaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogExpressionMemory extends AbstractAnalogExpression {
+public class AnalogExpressionMemory extends AbstractAnalogExpression implements PropertyChangeListener {
 
     private AnalogExpressionMemory _template;
     private String _memorySystemName;
-    private Memory _memory;
+//    private Memory _memory;
+    private NamedBeanHandle<Memory> _memoryHandle;
+    private boolean _listenersAreRegistered = false;
     
     public AnalogExpressionMemory(String sys) throws BadUserNameException,
             BadSystemNameException {
@@ -32,24 +39,10 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
         super(sys, user);
     }
 
-    public AnalogExpressionMemory(String sys, Memory memory)
-            throws BadUserNameException, BadSystemNameException {
-        
-        super(sys);
-        _memory = memory;
-    }
-    
-    public AnalogExpressionMemory(String sys, String user, Memory memory)
-            throws BadUserNameException, BadSystemNameException {
-        
-        super(sys, user);
-        _memory = memory;
-    }
-    
     private AnalogExpressionMemory(AnalogExpressionMemory template, String sys) {
         super(sys);
         _template = template;
-        _memory = _template._memory;
+        _memoryHandle = _template._memoryHandle;
     }
     
     /** {@inheritDoc} */
@@ -70,12 +63,21 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
         return true;
     }
     
-    public void setMemory(Memory memory) {
-        _memory = memory;
+    public void setMemory(NamedBeanHandle<Memory> handle) {
+        _memoryHandle = handle;
     }
     
-    public Memory getMemory() {
-        return _memory;
+    public void setMemory(@CheckForNull Memory memory) {
+        if (memory != null) {
+            _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
+                    .getNamedBeanHandle(memory.getDisplayName(), memory);
+        } else {
+            _memoryHandle = null;
+        }
+    }
+    
+    public NamedBeanHandle<Memory> getMemory() {
+        return _memoryHandle;
     }
     
     /** {@inheritDoc} */
@@ -87,8 +89,8 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
     /** {@inheritDoc} */
     @Override
     public double evaluate(@Nonnull AtomicBoolean isCompleted) {
-        if (_memory != null) {
-            return jmri.util.TypeConversionUtil.convertToDouble(_memory.getValue(), false);
+        if (_memoryHandle != null) {
+            return jmri.util.TypeConversionUtil.convertToDouble(_memoryHandle.getBean().getValue(), false);
         } else {
             return 0.0;
         }
@@ -113,8 +115,8 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
 
     @Override
     public String getShortDescription() {
-        if (_memory != null) {
-            return Bundle.getMessage("AnalogExpressionMemory", _memory.getDisplayName());
+        if (_memoryHandle != null) {
+            return Bundle.getMessage("AnalogExpressionMemory", _memoryHandle.getBean().getDisplayName());
         } else {
             return Bundle.getMessage("AnalogExpressionMemory", "none");
         }
@@ -132,22 +134,34 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression {
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_memory == null) && (_memorySystemName != null)) {
-            System.out.format("Setup: %s%n", _memorySystemName);     // Temporary until the AnalogIOManager is implemented
-            _memory = InstanceManager.getDefault(MemoryManager.class).getBeanBySystemName(_memorySystemName);
+        if ((_memoryHandle == null) && (_memorySystemName != null)) {
+            System.out.format("Setup: %s%n", _memorySystemName);
+            setMemory(InstanceManager.getDefault(MemoryManager.class).getBeanBySystemName(_memorySystemName));
         }
     }
     
     /** {@inheritDoc} */
     @Override
     public void registerListenersForThisClass() {
-        throw new UnsupportedOperationException("not implemented yet");
+        if ((! _listenersAreRegistered) && (_memoryHandle != null)) {
+            _memoryHandle.getBean().addPropertyChangeListener("value", this);
+            _listenersAreRegistered = true;
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public void unregisterListenersForThisClass() {
-        throw new UnsupportedOperationException("not implemented yet");
+        if (! _listenersAreRegistered) {
+            _memoryHandle.getBean().removePropertyChangeListener("value", this);
+            _listenersAreRegistered = false;
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        getConditionalNG().execute();
     }
     
     /** {@inheritDoc} */

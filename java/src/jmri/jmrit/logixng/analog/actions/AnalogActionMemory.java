@@ -52,6 +52,7 @@ public class AnalogActionMemory extends AbstractAnalogAction {
         return new AnalogActionMemory(this, sys);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setValue(double value) {
         if (_memory != null) {
@@ -59,26 +60,31 @@ public class AnalogActionMemory extends AbstractAnalogAction {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getChildCount() {
         return 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Category getCategory() {
         return Category.ITEM;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getShortDescription() {
         if (_memory != null) {
@@ -88,11 +94,13 @@ public class AnalogActionMemory extends AbstractAnalogAction {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLongDescription() {
         return getShortDescription();
     }
 
+    /** {@inheritDoc} */
     public void setMemorySystemName(String analogIO_SystemName) {
         _memory_SystemName = analogIO_SystemName;
     }

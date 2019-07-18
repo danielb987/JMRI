@@ -3,13 +3,26 @@ package jmri.jmrit.logixng.analog.expressions;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.Memory;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.AnalogActionManager;
+import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.MaleSocket;
+import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
+import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import jmri.MemoryManager;
+import jmri.jmrit.logixng.AnalogExpressionBean;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.DigitalActionBean;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.digital.actions.DoAnalogAction;
 
 /**
  * Test SetAnalogIO
@@ -22,7 +35,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     
     @Test
     public void testCtor() {
-        Assert.assertTrue("object exists", _expression != null);
+        Assert.assertTrue("object exists", _base != null);
         
         AnalogExpressionMemory expression2;
         Assert.assertNotNull("memory is not null", _memory);
@@ -38,25 +51,28 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         
-        expression2 = new AnalogExpressionMemory("IQA55:12:AE11", _memory);
+        expression2 = new AnalogExpressionMemory("IQA55:12:AE11");
+        expression2.setMemory(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         
-        expression2 = new AnalogExpressionMemory("IQA55:12:AE11", "My memory", _memory);
+        expression2 = new AnalogExpressionMemory("IQA55:12:AE11", "My memory");
+        expression2.setMemory(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         
         // Test template
-        expression2 = (AnalogExpressionMemory)_expression.getNewObjectBasedOnTemplate("IQA55:12:AE12");
+        expression2 = (AnalogExpressionMemory)_base.getNewObjectBasedOnTemplate("IQA55:12:AE12");
         Assert.assertNotNull("object exists", expression2);
 //        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
 //        Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
     }
     
     @Test
-    public void testEvaluate() {
+    public void testEvaluate() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
+        AnalogExpressionBean _expression = (AnalogExpressionBean)_base;
         AtomicBoolean isCompleted = new AtomicBoolean();
         _memory.setValue(0.0d);
         _expression.initEvaluation();
@@ -65,33 +81,81 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         _memory.setValue(10.0d);
         Assert.assertTrue("Evaluate matches", 10.0d == _expression.evaluate(isCompleted));
         _expression.initEvaluation();
-        ((AnalogExpressionMemory)_expression).setMemory(null);
+        ((AnalogExpressionMemory)_base).setMemory((Memory)null);
         Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
         _expression.reset();
     }
     
     @Test
+    public void testEvaluateAndAction() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
+        
+        AnalogExpressionBean _expression = (AnalogExpressionBean)_base;
+//        _expression.setMemory(_memory);
+        
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
+        ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
+        
+        logixNG.addConditionalNG(conditionalNG);
+        logixNG.activateLogixNG();
+        
+        DigitalActionBean actionDoAnalog = new DoAnalogAction(conditionalNG);
+        MaleSocket socketDoAnalog = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionDoAnalog);
+        conditionalNG.getChild(0).connect(socketDoAnalog);
+        
+//        ExpressionTurnout expressionTurnout = new ExpressionTurnout(conditionalNG);
+//        expressionTurnout.setTurnout(turnout);
+//        expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IS);
+//        expressionTurnout.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
+        MaleSocket socketExpression = InstanceManager.getDefault(AnalogExpressionManager.class).registerExpression(_expression);
+        socketDoAnalog.getChild(0).connect(socketExpression);
+        
+        Memory _memoryOut = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
+        _memoryOut.setValue(0.0);
+        AnalogActionMemory actionMemory = new AnalogActionMemory("IQA55:12:AA1", _memoryOut);
+        MaleSocket socketAction = InstanceManager.getDefault(AnalogActionManager.class).registerAction(actionMemory);
+        socketDoAnalog.getChild(1).connect(socketAction);
+        
+        // The action is not yet executed so the double should be 0.0
+        Assert.assertTrue("memory is 0.0", 0.0 == (Double)_memoryOut.getValue());
+        // Set the value of the memory. This should not execute the conditional.
+        _memory.setValue(1.0);
+        // The conditionalNG is not yet enabled so it shouldn't be executed.
+        // So the memory should be 0.0
+        Assert.assertTrue("memory is 0.0", 0.0 == (Double)_memoryOut.getValue());
+        // Set the value of the memory. This should not execute the conditional.
+        _memory.setValue(2.0);
+        // Enable the conditionalNG and all its children.
+        conditionalNG.setEnabled(true);
+        // The action is not yet executed so the memory should be 0.0
+        Assert.assertTrue("memory is 0.0", 0.0 == (Double)_memoryOut.getValue());
+        // Set the value of the memory. This should not execute the conditional.
+        _memory.setValue(3.0);
+        // The action should now be executed so the memory should be 3.0
+        Assert.assertTrue("memory is 3.0", 3.0 == (Double)_memoryOut.getValue());
+    }
+    
+    @Test
     public void testMemory() {
-        ((AnalogExpressionMemory)_expression).setMemory(null);
-        Assert.assertTrue("Memory matches", null == ((AnalogExpressionMemory)_expression).getMemory());
-        ((AnalogExpressionMemory)_expression).setMemory(_memory);
-        Assert.assertTrue("Memory matches", _memory == ((AnalogExpressionMemory)_expression).getMemory());
+        ((AnalogExpressionMemory)_base).setMemory((Memory)null);
+        Assert.assertTrue("Memory matches", null == ((AnalogExpressionMemory)_base).getMemory());
+        ((AnalogExpressionMemory)_base).setMemory(_memory);
+        Assert.assertTrue("Memory matches", _memory == ((AnalogExpressionMemory)_base).getMemory().getBean());
     }
     
     @Test
     public void testCategory() {
-        Assert.assertTrue("Category matches", Category.ITEM == _expression.getCategory());
+        Assert.assertTrue("Category matches", Category.ITEM == _base.getCategory());
     }
     
     @Test
     public void testShortDescription() {
-//        System.err.format("aa: %s%n", _expression.getShortDescription());
-        Assert.assertTrue("String matches", "Get memory IM1".equals(_expression.getShortDescription()));
+//        System.err.format("aa: %s%n", _base.getShortDescription());
+        Assert.assertTrue("String matches", "Get memory IM1".equals(_base.getShortDescription()));
     }
     
     @Test
     public void testLongDescription() {
-        Assert.assertTrue("String matches", "Get memory IM1".equals(_expression.getLongDescription()));
+        Assert.assertTrue("String matches", "Get memory IM1".equals(_base.getLongDescription()));
     }
     
     @Test
@@ -109,10 +173,10 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     
     @Test
     public void testChild() {
-        Assert.assertTrue("Num children is zero", 0 == _expression.getChildCount());
+        Assert.assertTrue("Num children is zero", 0 == _base.getChildCount());
         AtomicBoolean hasThrown = new AtomicBoolean(false);
         try {
-            _expression.getChild(0);
+            _base.getChild(0);
         } catch (UnsupportedOperationException ex) {
             hasThrown.set(true);
             Assert.assertTrue("Error message is correct", "Not supported.".equals(ex.getMessage()));
@@ -131,12 +195,13 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        _expression = new AnalogExpressionMemory("IQA55:12:AE321", "AnalogIO_Memory", _memory);
+        _base = new AnalogExpressionMemory("IQA55:12:AE321", "AnalogIO_Memory");
+        ((AnalogExpressionMemory)_base).setMemory(_memory);
     }
 
     @After
     public void tearDown() {
-        _expression.dispose();
+        _base.dispose();
         JUnitUtil.tearDown();
     }
     

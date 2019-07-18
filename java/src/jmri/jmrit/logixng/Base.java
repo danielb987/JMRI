@@ -17,19 +17,19 @@ public interface Base {
         /**
          * The item is not locked.
          */
-        NONE,
+        NONE("BaseLockNone"),
         
         /**
          * The item is locked by the user and can be unlocked by the user.
          */
-        USER_LOCK,
+        USER_LOCK("BaseLockUser"),
         
         /**
          * The item is locked by a hard lock that cannot be unlocked by the
          * user. But it can be removed by editing the xml file. This lock is
          * used for items that normally shouldn't be changed.
          */
-        HARD_LOCK,
+        HARD_LOCK("BaseLockHard"),
         
         /**
          * The item is based on a template and therefore cannot be changed.
@@ -37,8 +37,14 @@ public interface Base {
          * xml file, but instead all changes must be done by editing the
          * template.
          */
-        TEMPLATE_LOCK;
+        TEMPLATE_LOCK("BaseLockTemplate");
         
+        
+        private final String _bundleKey;
+        
+        private Lock(String bundleKey) {
+            _bundleKey = bundleKey;
+        }
         
         public final boolean isChangeableByUser() {
             switch (this) {
@@ -53,6 +59,11 @@ public interface Base {
                 default:
                     throw new RuntimeException("lock has unknown value: "+this.name());
             }
+        }
+        
+        @Override
+        public String toString() {
+            return Bundle.getMessage(_bundleKey);
         }
     }
     
