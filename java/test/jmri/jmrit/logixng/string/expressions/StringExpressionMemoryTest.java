@@ -109,7 +109,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         Memory _memoryOut = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         _memoryOut.setValue("");
         StringActionMemory actionMemory = new StringActionMemory("IQA55:12:SA1");
-        ((StringActionMemory)actionMemory).setMemory(_memoryOut);
+        actionMemory.setMemory(_memoryOut);
         MaleSocket socketAction = InstanceManager.getDefault(StringActionManager.class).registerAction(actionMemory);
         socketDoString.getChild(1).connect(socketAction);
         

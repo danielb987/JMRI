@@ -109,7 +109,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         Memory _memoryOut = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         _memoryOut.setValue(0.0);
         AnalogActionMemory actionMemory = new AnalogActionMemory("IQA55:12:AA1");
-        ((AnalogActionMemory)actionMemory).setMemory(_memoryOut);
+        actionMemory.setMemory(_memoryOut);
         MaleSocket socketAction = InstanceManager.getDefault(AnalogActionManager.class).registerAction(actionMemory);
         socketDoAnalog.getChild(1).connect(socketAction);
         
