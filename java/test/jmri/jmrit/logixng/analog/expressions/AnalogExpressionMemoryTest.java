@@ -72,7 +72,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     
     @Test
     public void testEvaluate() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
-        AnalogExpressionBean _expression = (AnalogExpressionBean)_base;
+        AnalogExpressionMemory _expression = (AnalogExpressionMemory)_base;
         AtomicBoolean isCompleted = new AtomicBoolean();
         _memory.setValue(0.0d);
         _expression.initEvaluation();
@@ -81,7 +81,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         _memory.setValue(10.0d);
         Assert.assertTrue("Evaluate matches", 10.0d == _expression.evaluate(isCompleted));
         _expression.initEvaluation();
-        ((AnalogExpressionMemory)_base).setMemory((Memory)null);
+        _expression.setMemory((Memory)null);
         Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
         _expression.reset();
     }
@@ -89,8 +89,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     @Test
     public void testEvaluateAndAction() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
         
-        AnalogExpressionBean _expression = (AnalogExpressionBean)_base;
-//        _expression.setMemory(_memory);
+        AnalogExpressionMemory _expression = (AnalogExpressionMemory)_base;
         
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
@@ -128,10 +127,31 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         conditionalNG.setEnabled(true);
         // The action is not yet executed so the memory should be 0.0
         Assert.assertTrue("memory is 0.0", 0.0 == (Double)_memoryOut.getValue());
-        // Set the value of the memory. This should not execute the conditional.
+        // Set the value of the memory. This should execute the conditional.
         _memory.setValue(3.0);
         // The action should now be executed so the memory should be 3.0
         Assert.assertTrue("memory is 3.0", 3.0 == (Double)_memoryOut.getValue());
+        // Disable the conditionalNG and all its children.
+        conditionalNG.setEnabled(false);
+        // The action is not yet executed so the memory should be 0.0
+        Assert.assertTrue("memory is 0.0", 3.0 == (Double)_memoryOut.getValue());
+        // Set the value of the memory. This should not execute the conditional.
+        _memory.setValue(4.0);
+        // The action should not be executed so the memory should still be 3.0
+        Assert.assertTrue("memory is 3.0", 3.0 == (Double)_memoryOut.getValue());
+        // Unregister listeners. This should do nothing since the listeners are
+        // already unregistered.
+        _expression.unregisterListeners();
+        // The action is not yet executed so the memory should be 0.0
+        Assert.assertTrue("memory is 0.0", 3.0 == (Double)_memoryOut.getValue());
+        // Set the value of the memory. This should not execute the conditional.
+        _memory.setValue(5.0);
+        // The action should not be executed so the memory should still be 3.0
+        Assert.assertTrue("memory is 3.0", 3.0 == (Double)_memoryOut.getValue());
+        
+        // Test register listeners when there is no memory.
+        _expression.setMemory((Memory)null);
+        _expression.registerListeners();
     }
     
     @Test
@@ -145,6 +165,11 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     @Test
     public void testCategory() {
         Assert.assertTrue("Category matches", Category.ITEM == _base.getCategory());
+    }
+    
+    @Test
+    public void testIsExternal() {
+        Assert.assertTrue("is external", _base.isExternal());
     }
     
     @Test

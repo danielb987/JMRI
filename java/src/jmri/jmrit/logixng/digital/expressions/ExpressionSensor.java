@@ -197,7 +197,7 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     /** {@inheritDoc} */
     @Override
     public void unregisterListenersForThisClass() {
-        if (! _listenersAreRegistered) {
+        if (_listenersAreRegistered) {
             _sensorHandle.getBean().removePropertyChangeListener("KnownState", this);
             _listenersAreRegistered = false;
         }

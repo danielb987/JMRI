@@ -100,7 +100,6 @@ public class AnalogActionMemory extends AbstractAnalogAction {
         return getShortDescription();
     }
 
-    /** {@inheritDoc} */
     public void setMemorySystemName(String analogIO_SystemName) {
         _memory_SystemName = analogIO_SystemName;
     }

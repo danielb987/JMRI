@@ -208,7 +208,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     /** {@inheritDoc} */
     @Override
     public void unregisterListenersForThisClass() {
-        if (! _listenersAreRegistered) {
+        if (_listenersAreRegistered) {
             _turnoutHandle.getBean().removePropertyChangeListener("KnownState", this);
             _listenersAreRegistered = false;
         }

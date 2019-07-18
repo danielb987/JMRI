@@ -152,7 +152,7 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression implements 
     /** {@inheritDoc} */
     @Override
     public void unregisterListenersForThisClass() {
-        if (! _listenersAreRegistered) {
+        if (_listenersAreRegistered) {
             _memoryHandle.getBean().removePropertyChangeListener("value", this);
             _listenersAreRegistered = false;
         }

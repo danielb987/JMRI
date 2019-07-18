@@ -111,6 +111,7 @@ public abstract class AbstractBase extends AbstractNamedBean implements Base {
         for (int i=0; i < getChildCount(); i++) {
             getChild(i).dispose();
         }
+        unregisterListeners();
         disposeMe();
     }
     
