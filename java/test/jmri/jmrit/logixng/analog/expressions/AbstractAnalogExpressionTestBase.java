@@ -32,17 +32,5 @@ public abstract class AbstractAnalogExpressionTestBase extends AbstractBaseTestB
         Assert.assertTrue("State matches", AnalogIO.INCONSISTENT == _expression.getState());
         jmri.util.JUnitAppender.assertWarnMessage("Unexpected call to getState in AbstractAnalogExpression.");
     }
-/*    
-    @Test
-    public void testParent() {
-        AnalogExpressionBean _expression = (AnalogExpressionBean)_base;
-        AnalogExpressionBean a = new AnalogExpressionMemory("IQA55:12:AE321");
-        _expression.setParent(null);
-        Assert.assertTrue("Parent matches", null == _expression.getParent());
-        _expression.setParent(a);
-        Assert.assertTrue("Parent matches", a == _expression.getParent());
-        _expression.setParent(null);
-        Assert.assertTrue("Parent matches", null == _expression.getParent());
-    }
-*/    
+    
 }

@@ -21,22 +21,22 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
     
     @Test
     public void testCtor() {
-        Assert.assertTrue("object exists", _action != null);
+        Assert.assertTrue("object exists", _base != null);
     }
     
     @Test
     public void testCategory() {
-        Assert.assertTrue("Category matches", Category.ITEM == _action.getCategory());
+        Assert.assertTrue("Category matches", Category.ITEM == _base.getCategory());
     }
     
     @Test
     public void testShortDescription() {
-        Assert.assertTrue("String matches", "Set memory IM1".equals(_action.getShortDescription()));
+        Assert.assertTrue("String matches", "Set memory IM1".equals(_base.getShortDescription()));
     }
     
     @Test
     public void testLongDescription() {
-        Assert.assertTrue("String matches", "Set memory IM1".equals(_action.getLongDescription()));
+        Assert.assertTrue("String matches", "Set memory IM1".equals(_base.getLongDescription()));
     }
     
     // The minimal setup for log4J
@@ -48,12 +48,12 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _action = new AnalogActionMemory("IQA55:12:AA321", "AnalogIO_Memory", _memory);
+        _base = new AnalogActionMemory("IQA55:12:AA321", "AnalogIO_Memory", _memory);
     }
 
     @After
     public void tearDown() {
-        _action.dispose();
+        _base.dispose();
         JUnitUtil.tearDown();
     }
     
