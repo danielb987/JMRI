@@ -13,7 +13,6 @@ import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.analog.expressions.AnalogExpressionMemory;
 
 /**
  * Test SetAnalogIO
@@ -61,6 +60,24 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
 //        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         System.out.format("AAAAA: %s%n", action2.getLongDescription());
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
+        
+        boolean thrown = false;
+        try {
+            // Illegal system name
+            new AnalogActionMemory("IQA55:12:XY11");
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        thrown = false;
+        try {
+            // Illegal system name
+            new AnalogActionMemory("IQA55:12:XY11", "A name");
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
     }
     
     @Test
@@ -128,6 +145,12 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         // Test running setup() again when it's already setup
         action2.setup();
+        // Test setup() with another memory
+        Memory memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
+        action2.setMemoryName(memory2.getSystemName());
+        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
+        action2.setup();
+        Assert.assertTrue("String matches", "Set memory IM2".equals(action2.getLongDescription()));
     }
     
     @Test
