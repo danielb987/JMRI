@@ -70,6 +70,24 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         Assert.assertNull("Username is null", expression2.getUserName());
 //        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
+        
+        boolean thrown = false;
+        try {
+            // Illegal system name
+            new StringExpressionMemory("IQA55:12:XY11");
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        thrown = false;
+        try {
+            // Illegal system name
+            new StringExpressionMemory("IQA55:12:XY11", "A name");
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
     }
     
     @Test
@@ -206,6 +224,12 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         // Test running setup() again when it's already setup
         expression2.setup();
+        // Test setup() with another memory
+        Memory memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
+        expression2.setMemoryName(memory2.getSystemName());
+        Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
+        expression2.setup();
+        Assert.assertTrue("String matches", "Get memory IM2".equals(expression2.getLongDescription()));
     }
     
     @Test

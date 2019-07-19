@@ -131,6 +131,8 @@ public class StringExpressionMemory extends AbstractStringExpression implements 
 
     public void setMemoryName(String memoryName) {
         _memoryName = memoryName;
+        // setup() must be run in order to use the new memory
+        _memoryHandle = null;
     }
     
     /** {@inheritDoc} */

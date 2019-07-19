@@ -57,9 +57,25 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         action2 = (StringActionMemory)_base.getNewObjectBasedOnTemplate("IQA55:12:SA12");
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username is null", action2.getUserName());
-//        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
-        System.out.format("AAAAA: %s%n", action2.getLongDescription());
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
+        
+        boolean thrown = false;
+        try {
+            // Illegal system name
+            new StringActionMemory("IQA55:12:XY11");
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        thrown = false;
+        try {
+            // Illegal system name
+            new StringActionMemory("IQA55:12:XY11", "A name");
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
     }
     
     @Test
@@ -126,6 +142,12 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         // Test running setup() again when it's already setup
         action2.setup();
+        // Test setup() with another memory
+        Memory memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
+        action2.setMemoryName(memory2.getSystemName());
+        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
+        action2.setup();
+        Assert.assertTrue("String matches", "Set memory IM2".equals(action2.getLongDescription()));
     }
     
     @Test
