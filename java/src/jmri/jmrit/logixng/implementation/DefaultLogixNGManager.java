@@ -108,30 +108,35 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        if (systemName.toUpperCase().matches("IQA?\\d+")) {
+        if (systemName.matches("IQA?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
         }
     }
 
+    /**
+     * Method to create a new LogixNG if the LogixNG does not exist.
+     * <p>
+     * Returns null if
+     * a Logix with the same systemName or userName already exists, or if there
+     * is trouble creating a new LogixNG.
+     */
     @Override
     public LogixNG createLogixNG(String systemName, String userName)
             throws IllegalArgumentException {
         
-        // Check that Logix does not already exist
+        // Check that LogixNG does not already exist
         LogixNG x;
         if (userName != null && !userName.equals("")) {
             x = getByUserName(userName);
             if (x != null) {
-                // return existing if there is one
-                return x;
+                return null;
             }
         }
         x = getBySystemName(systemName);
         if (x != null) {
-            // return existing if there is one
-            return x;
+            return null;
         }
         // Check if system name is valid
         if (this.validSystemNameFormat(systemName) != NameValidity.VALID) {
