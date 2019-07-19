@@ -30,7 +30,8 @@ public class SocketTest {
             }
         };
         
-        new DefaultFemaleDigitalActionSocket(null, listener, "A1");
+        DefaultFemaleDigitalActionSocket b = new DefaultFemaleDigitalActionSocket(null, listener, "A1");
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

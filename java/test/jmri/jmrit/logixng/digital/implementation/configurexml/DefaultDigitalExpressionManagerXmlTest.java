@@ -14,7 +14,8 @@ public class DefaultDigitalExpressionManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultDigitalExpressionManagerXml();
+        DefaultDigitalExpressionManagerXml b = new DefaultDigitalExpressionManagerXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

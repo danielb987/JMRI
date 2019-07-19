@@ -26,7 +26,8 @@ public class ImportLogixTest {
         
         Logix logix = InstanceManager.getDefault(LogixManager.class).createNewLogix("A new logix for test");  // NOI18N
         
-        new ImportLogix(logix);
+        ImportLogix b = new ImportLogix(logix);
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

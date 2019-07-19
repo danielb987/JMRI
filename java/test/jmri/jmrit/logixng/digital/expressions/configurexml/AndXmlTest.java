@@ -15,7 +15,8 @@ public class AndXmlTest {
 
     @Test
     public void testCtor() {
-        new AndXml();
+        AndXml b = new AndXml();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

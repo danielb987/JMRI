@@ -11,6 +11,7 @@ import jmri.Logix;
 import jmri.LogixManager;
 import jmri.Memory;
 import jmri.MemoryManager;
+import jmri.NamedBean;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.Reporter;
@@ -23,15 +24,11 @@ import jmri.SignalMast;
 import jmri.SignalMastManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
-import jmri.jmrit.audio.DefaultAudioManager;
-import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test TemplateTest
@@ -43,16 +40,26 @@ public class TemplateTest {
     @Test
     public void testNullNamedBeansCtor() {
         
-        new NullAudio("AB1");
-        new NullIdTag("AB1");
-        new NullLight("AB1");
-        new NullLogix("AB1");
-        new NullMemory("AB1");
-        new NullReporter("AB1");
-        new NullSensor("AB1");
-        new NullSignalHead("AB1");
-        new NullSignalMast("AB1");
-        new NullTurnout("AB1");
+        NamedBean b = new NullAudio("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullIdTag("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullLight("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullLogix("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullMemory("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullReporter("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullSensor("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullSignalHead("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullSignalMast("AB1");
+        Assert.assertNotNull("exists", b);
+        b = new NullTurnout("AB1");
+        Assert.assertNotNull("exists", b);
     }
     
     @Test

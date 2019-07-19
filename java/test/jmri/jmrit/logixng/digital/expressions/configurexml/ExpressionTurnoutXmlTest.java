@@ -15,7 +15,8 @@ public class ExpressionTurnoutXmlTest {
 
     @Test
     public void testCtor() {
-        new ExpressionTurnoutXml();
+        ExpressionTurnoutXml b = new ExpressionTurnoutXml();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

@@ -14,7 +14,8 @@ public class DefaultMaleDigitalActionSocketXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultMaleDigitalActionSocketXml();
+        DefaultMaleDigitalActionSocketXml b = new DefaultMaleDigitalActionSocketXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

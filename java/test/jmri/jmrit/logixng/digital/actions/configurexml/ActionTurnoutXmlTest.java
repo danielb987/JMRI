@@ -15,7 +15,8 @@ public class ActionTurnoutXmlTest {
 
     @Test
     public void testCtor() {
-        new ActionTurnoutXml();
+        ActionTurnoutXml b = new ActionTurnoutXml();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

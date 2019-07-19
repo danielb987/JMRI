@@ -15,7 +15,8 @@ public class DefaultFemaleDigitalActionSocketFactoryTest {
 
     @Test
     public void testCtor() {
-        new DefaultFemaleDigitalActionSocketFactory();
+        DefaultFemaleDigitalActionSocketFactory b = new DefaultFemaleDigitalActionSocketFactory();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

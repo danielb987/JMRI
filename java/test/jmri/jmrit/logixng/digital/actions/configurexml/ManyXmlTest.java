@@ -15,7 +15,8 @@ public class ManyXmlTest {
 
     @Test
     public void testCtor() {
-        new ManyXml();
+        ManyXml b = new ManyXml();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

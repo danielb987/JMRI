@@ -15,7 +15,8 @@ public class IfThenXmlTest {
 
     @Test
     public void testCtor() {
-        new IfThenXml();
+        IfThenXml b = new IfThenXml();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

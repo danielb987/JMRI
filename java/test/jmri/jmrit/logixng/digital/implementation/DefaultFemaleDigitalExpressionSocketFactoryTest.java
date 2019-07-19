@@ -15,7 +15,8 @@ public class DefaultFemaleDigitalExpressionSocketFactoryTest {
 
     @Test
     public void testCtor() {
-        new DefaultFemaleDigitalExpressionSocketFactory();
+        DefaultFemaleDigitalExpressionSocketFactory b = new DefaultFemaleDigitalExpressionSocketFactory();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J

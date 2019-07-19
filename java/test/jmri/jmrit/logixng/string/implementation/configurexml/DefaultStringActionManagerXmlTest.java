@@ -15,7 +15,8 @@ public class DefaultStringActionManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultStringActionManagerXml();
+        DefaultStringActionManagerXml b = new DefaultStringActionManagerXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

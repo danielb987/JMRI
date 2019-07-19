@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.implementation.configurexml;
 
-import jmri.jmrit.logixng.implementation.configurexml.DefaultLogixNGManagerXml;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,7 +14,8 @@ public class DefaultLogixNGManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultLogixNGManagerXml();
+        DefaultLogixNGManagerXml b = new DefaultLogixNGManagerXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

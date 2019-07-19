@@ -19,7 +19,8 @@ public class ImportLogixFrameTest {
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        new ImportLogixFrame();
+        ImportLogixFrame b = new ImportLogixFrame();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

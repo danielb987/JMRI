@@ -19,7 +19,8 @@ public class TimeDiagramTest {
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        new TimeDiagram();
+        TimeDiagram b = new TimeDiagram();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

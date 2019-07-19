@@ -14,7 +14,8 @@ public class DefaultDigitalActionManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultDigitalActionManagerXml();
+        DefaultDigitalActionManagerXml b = new DefaultDigitalActionManagerXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

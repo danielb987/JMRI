@@ -14,7 +14,8 @@ public class DefaultAnalogActionManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultAnalogActionManagerXml();
+        DefaultAnalogActionManagerXml b = new DefaultAnalogActionManagerXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

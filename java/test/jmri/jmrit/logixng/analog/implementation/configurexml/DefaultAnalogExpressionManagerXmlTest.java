@@ -14,7 +14,8 @@ public class DefaultAnalogExpressionManagerXmlTest {
 
     @Test
     public void testCTor() {
-        new DefaultAnalogExpressionManagerXml();
+        DefaultAnalogExpressionManagerXml b = new DefaultAnalogExpressionManagerXml();
+        Assert.assertNotNull("exists", b);
     }
 
     // The minimal setup for log4J

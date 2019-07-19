@@ -15,7 +15,8 @@ public class HoldAnythingXmlTest {
 
     @Test
     public void testCtor() {
-        new HoldAnythingXml();
+        HoldAnythingXml b = new HoldAnythingXml();
+        Assert.assertNotNull("exists", b);
     }
     
     // The minimal setup for log4J
