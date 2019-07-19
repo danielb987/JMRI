@@ -1,6 +1,9 @@
 package jmri.jmrit.logixng.string.implementation;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.InstanceManager;
+import jmri.Memory;
+import jmri.MemoryManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
@@ -10,7 +13,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.StringExpressionBean;
 
 /**
  * Test DefaultFemaleStringExpressionSocket
@@ -19,6 +21,10 @@ import jmri.jmrit.logixng.StringExpressionBean;
  */
 public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBase {
 
+    private String _memorySystemName;
+    private Memory _memory;
+    private StringExpressionMemory _expression;
+    
     @Test
     public void testGetName() {
         Assert.assertTrue("String matches", "E1".equals(femaleSocket.getName()));
@@ -28,6 +34,14 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
     public void testGetDescription() {
         Assert.assertTrue("String matches", "?s".equals(femaleSocket.getShortDescription()));
         Assert.assertTrue("String matches", "?s E1".equals(femaleSocket.getLongDescription()));
+    }
+    
+    @Override
+    protected boolean hasSocketBeenSetup() {
+        if (_expression.getMemory() == null) {
+            return false;
+        }
+        return _memory == _expression.getMemory().getBean();
     }
     
     // The minimal setup for log4J
@@ -40,9 +54,12 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringExpressionBean expression = new StringExpressionMemory("IQA55:1:SE321");
-        StringExpressionBean otherExpression = new StringExpressionMemory("IQA55:1:SE322");
-        maleSocket = new DefaultMaleStringExpressionSocket(expression);
+        _memorySystemName = "IM1";
+        _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
+        _expression = new StringExpressionMemory("IQA55:1:SE321");
+        _expression.setMemoryName(_memorySystemName);
+        StringExpressionMemory otherExpression = new StringExpressionMemory("IQA55:1:SE322");
+        maleSocket = new DefaultMaleStringExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleStringExpressionSocket(otherExpression);
         femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {
             @Override

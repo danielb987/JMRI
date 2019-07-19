@@ -1,6 +1,9 @@
 package jmri.jmrit.logixng.string.implementation;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.InstanceManager;
+import jmri.Memory;
+import jmri.MemoryManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
@@ -10,7 +13,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.StringActionBean;
 
 /**
  * Test ExpressionTimer
@@ -19,6 +21,10 @@ import jmri.jmrit.logixng.StringActionBean;
  */
 public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
 
+    private String _memorySystemName;
+    private Memory _memory;
+    private StringActionMemory _action;
+    
     @Test
     public void testGetName() {
         Assert.assertTrue("String matches", "A1".equals(femaleSocket.getName()));
@@ -28,6 +34,14 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
     public void testGetDescription() {
         Assert.assertTrue("String matches", "!s".equals(femaleSocket.getShortDescription()));
         Assert.assertTrue("String matches", "!s A1".equals(femaleSocket.getLongDescription()));
+    }
+    
+    @Override
+    protected boolean hasSocketBeenSetup() {
+        if (_action.getMemory() == null) {
+            return false;
+        }
+        return _memory == _action.getMemory().getBean();
     }
     
     // The minimal setup for log4J
@@ -40,9 +54,12 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        StringActionBean action = new StringActionMemory("IQA55:1:SA321");
-        StringActionBean otherAction = new StringActionMemory("IQA55:1:SA322");
-        maleSocket = new DefaultMaleStringActionSocket(action);
+        _memorySystemName = "IM1";
+        _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
+        _action = new StringActionMemory("IQA55:1:SA321");
+        _action.setMemoryName(_memorySystemName);
+        StringActionMemory otherAction = new StringActionMemory("IQA55:1:SA322");
+        maleSocket = new DefaultMaleStringActionSocket(_action);
         otherMaleSocket = new DefaultMaleStringActionSocket(otherAction);
         femaleSocket = new DefaultFemaleStringActionSocket(null, new FemaleSocketListener() {
             @Override

@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.NamedBean;
 import jmri.util.junit.annotations.ToDo;
 import org.junit.After;
 import org.junit.Assert;
@@ -12,7 +13,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class FemaleSocketTestBase {
+public abstract class FemaleSocketTestBase {
 
     protected AtomicBoolean flag;
     protected AtomicBoolean errorFlag;
@@ -20,14 +21,20 @@ public class FemaleSocketTestBase {
     protected MaleSocket otherMaleSocket;
     protected FemaleSocket femaleSocket;
     
+    abstract protected boolean hasSocketBeenSetup();
+    
     @Test
-    @ToDo("Implement proper testing of FemaleSocket.setup()")
-    public void testSetup() {
-        // Do proper testing later
-        if (femaleSocket.isConnected()) {
-            femaleSocket.disconnect();
-        }
+    public void testSetup() throws SocketAlreadyConnectedException {
+        Assert.assertFalse("not connected", femaleSocket.isConnected());
+
+        // Check that we can call setup() even if the socket is not connected.
         femaleSocket.setup();
+        
+        femaleSocket.connect(maleSocket);
+        Assert.assertTrue("is connected", femaleSocket.isConnected());
+        Assert.assertFalse("not setup", hasSocketBeenSetup());
+        femaleSocket.setup();
+        Assert.assertTrue("is setup", hasSocketBeenSetup());
     }
     
     @Test

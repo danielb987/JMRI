@@ -201,7 +201,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
-        expression2.setMemorySystemName(_memory.getSystemName());
+        expression2.setMemoryName(_memory.getSystemName());
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         // Test running setup() again when it's already setup

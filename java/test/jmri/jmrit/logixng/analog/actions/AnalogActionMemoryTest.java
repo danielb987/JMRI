@@ -123,7 +123,7 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         action2.setup();
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
-        action2.setMemorySystemName(_memory.getSystemName());
+        action2.setMemoryName(_memory.getSystemName());
         action2.setup();
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         // Test running setup() again when it's already setup

@@ -1,8 +1,6 @@
 package jmri.jmrit.logixng.analog.actions;
 
 import javax.annotation.CheckForNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import jmri.Memory;
 import jmri.MemoryManager;
 import jmri.InstanceManager;
@@ -11,6 +9,8 @@ import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets a Memory.
@@ -20,7 +20,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 public class AnalogActionMemory extends AbstractAnalogAction {
 
     private AnalogActionMemory _template;
-    private String _memorySystemName;
+    private String _memoryName;
     private NamedBeanHandle<Memory> _memoryHandle;
 //    private Memory _memory;
     
@@ -109,16 +109,28 @@ public class AnalogActionMemory extends AbstractAnalogAction {
         return getShortDescription();
     }
 
-    public void setMemorySystemName(String analogIO_SystemName) {
-        _memorySystemName = analogIO_SystemName;
+    public void setMemoryName(String memoryName) {
+        _memoryName = memoryName;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_memoryHandle == null) && (_memorySystemName != null)) {
-            System.out.format("Setup: %s%n", _memorySystemName);
-            setMemory(InstanceManager.getDefault(MemoryManager.class).getBeanBySystemName(_memorySystemName));
+        // Don't setup again if we already has the correct memory
+        if ((_memoryHandle != null) && (_memoryHandle.getName().equals(_memoryName))) {
+            return;
+        }
+        
+        // Remove the old _memoryHandle if it exists
+        _memoryHandle = null;
+        
+        if (_memoryName != null) {
+            Memory m = InstanceManager.getDefault(MemoryManager.class).getMemory(_memoryName);
+            if (m != null) {
+                _memoryHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_memoryName, m);
+            } else {
+                log.error("Memory {} does not exists", _memoryName);
+            }
         }
     }
     
@@ -136,5 +148,8 @@ public class AnalogActionMemory extends AbstractAnalogAction {
     @Override
     public void disposeMe() {
     }
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(AnalogActionMemory.class);
     
 }

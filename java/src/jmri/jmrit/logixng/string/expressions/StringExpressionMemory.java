@@ -13,6 +13,8 @@ import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reads a Memory.
@@ -22,7 +24,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 public class StringExpressionMemory extends AbstractStringExpression implements PropertyChangeListener {
 
     private StringExpressionMemory _template;
-    private String _memorySystemName;
+    private String _memoryName;
 //    private Memory _memory;
     private NamedBeanHandle<Memory> _memoryHandle;
     private boolean _listenersAreRegistered = false;
@@ -127,16 +129,28 @@ public class StringExpressionMemory extends AbstractStringExpression implements 
         return getShortDescription();
     }
 
-    public void setMemorySystemName(String memorySystemName) {
-        _memorySystemName = memorySystemName;
+    public void setMemoryName(String memoryName) {
+        _memoryName = memoryName;
     }
     
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if ((_memoryHandle == null) && (_memorySystemName != null)) {
-            System.out.format("Setup: %s%n", _memorySystemName);
-            setMemory(InstanceManager.getDefault(MemoryManager.class).getBeanBySystemName(_memorySystemName));
+        // Don't setup again if we already has the correct memory
+        if ((_memoryHandle != null) && (_memoryHandle.getName().equals(_memoryName))) {
+            return;
+        }
+        
+        // Remove the old _memoryHandle if it exists
+        _memoryHandle = null;
+        
+        if (_memoryName != null) {
+            Memory m = InstanceManager.getDefault(MemoryManager.class).getMemory(_memoryName);
+            if (m != null) {
+                _memoryHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_memoryName, m);
+            } else {
+                log.error("Memory {} does not exists", _memoryName);
+            }
         }
     }
     
@@ -168,5 +182,8 @@ public class StringExpressionMemory extends AbstractStringExpression implements 
     @Override
     public void disposeMe() {
     }
-
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(StringExpressionMemory.class);
+    
 }

@@ -1,6 +1,9 @@
 package jmri.jmrit.logixng.analog.implementation;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.InstanceManager;
+import jmri.Memory;
+import jmri.MemoryManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
@@ -19,6 +22,10 @@ import jmri.jmrit.logixng.AnalogActionBean;
  */
 public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
 
+    private String _memorySystemName;
+    private Memory _memory;
+    private AnalogActionMemory _action;
+    
     @Test
     public void testGetName() {
         Assert.assertTrue("String matches", "A1".equals(femaleSocket.getName()));
@@ -28,6 +35,14 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
     public void testGetDescription() {
         Assert.assertTrue("String matches", "!~".equals(femaleSocket.getShortDescription()));
         Assert.assertTrue("String matches", "!~ A1".equals(femaleSocket.getLongDescription()));
+    }
+    
+    @Override
+    protected boolean hasSocketBeenSetup() {
+        if (_action.getMemory() == null) {
+            return false;
+        }
+        return _memory == _action.getMemory().getBean();
     }
     
     // The minimal setup for log4J
@@ -40,9 +55,12 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        AnalogActionBean action = new AnalogActionMemory("IQA55:10:AA321");
+        _memorySystemName = "IM1";
+        _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
+        _action = new AnalogActionMemory("IQA55:10:AA321");
+        _action.setMemoryName(_memorySystemName);
         AnalogActionBean otherAction = new AnalogActionMemory("IQA55:10:AA322");
-        maleSocket = new DefaultMaleAnalogActionSocket(action);
+        maleSocket = new DefaultMaleAnalogActionSocket(_action);
         otherMaleSocket = new DefaultMaleAnalogActionSocket(otherAction);
         femaleSocket = new DefaultFemaleAnalogActionSocket(null, new FemaleSocketListener() {
             @Override
