@@ -656,8 +656,10 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
         c.gridy = 0;
         c.anchor = java.awt.GridBagConstraints.EAST;
         p.add(_sysNameLabel, c);
+        _sysNameLabel.setLabelFor(_systemName);
         c.gridy = 1;
         p.add(_userNameLabel, c);
+        _userNameLabel.setLabelFor(_addUserName);
         c.gridx = 1;
         c.gridy = 0;
         c.anchor = java.awt.GridBagConstraints.WEST;

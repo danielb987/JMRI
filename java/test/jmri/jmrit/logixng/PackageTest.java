@@ -33,4 +33,6 @@ import org.junit.runners.Suite;
  * @author Daniel Bergqvist 2018
  */
 public class PackageTest {
+    jmri.jmrit.beantable.SignalGroupTableActionTest a;
+    jmri.jmrit.beantable.LogixNGTableActionTest b;
 }
