@@ -82,10 +82,12 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     @Override
     public void testAddThroughDialog() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assume.assumeTrue(a.includeAddButton());
         a.actionPerformed(null);
         JFrame f = JFrameOperator.waitJFrame(getTableFrameName(), true, true);
 
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName("IQ1");
+        Assert.assertNull("LogixNG does not exist", logixNG);
+        
         // find the "Add... " button and press it.
 	jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(f),Bundle.getMessage("ButtonAdd"));
         new org.netbeans.jemmy.QueueTool().waitEmpty();
@@ -99,38 +101,30 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonCreate"));
         JUnitUtil.dispose(f1);
         JUnitUtil.dispose(f);
+        
+        logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName("IQ1");
+        Assert.assertNotNull("LogixNG has been created", logixNG);
     }
 
     @Test
     @Override
     public void testEditButton() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assume.assumeTrue(a.includeAddButton());
-        a.actionPerformed(null);
-        JFrame f = JFrameOperator.waitJFrame(getTableFrameName(), true, true);
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
+        
+        logixNGTable.setEditorMode(LogixNGTableAction.EditMode.TREEEDIT);
 
-        // find the "Add... " button and press it.
-	jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(f),Bundle.getMessage("ButtonAdd"));
-        JFrame f1 = JFrameOperator.waitJFrame(getAddFrameName(), true, true);
-        JFrameOperator jf = new JFrameOperator(f1);
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBySystemName("IQ101");
+        Assert.assertNotNull("LogixNG does not exist", logixNG);
+        
+        logixNGTable.editPressed("IQ101");  // NOI18N
 
-        //Enter IQ1 in the text field labeled "System Name:"
-        JLabelOperator jlo = new JLabelOperator(jf, Bundle.getMessage("BeanNameLogixNG") + " " + Bundle.getMessage("ColumnSystemName") + ":");
-//        JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("LabelSystemName"));
-        ((JTextField)jlo.getLabelFor()).setText("IQ1");
-	//and press create
-	jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonCreate"));
-
-        new org.netbeans.jemmy.QueueTool().waitEmpty();
-/*        
-	// find the "Edit" button and press it.  This may be in the table body.
-	jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(f),Bundle.getMessage("ButtonEdit"));
-        JFrame f2 = JFrameOperator.waitJFrame(getAddFrameName(), true, true);
-	jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(f2),Bundle.getMessage("ButtonCancel"));
-        JUnitUtil.dispose(f2);
-	JUnitUtil.dispose(f1);
-        JUnitUtil.dispose(f);
-*/
+        String title = String.format("Edit LogixNG %s - %s", logixNG.getSystemName(), logixNG.getUserName());
+        JFrame frame = JFrameOperator.waitJFrame(title, true, true);  // NOI18N
+//        JFrame frame = JFrameOperator.waitJFrame(Bundle.getMessage("EditTitle"), true, true);  // NOI18N
+        Assert.assertNotNull(frame);
+	jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(frame),Bundle.getMessage("ButtonDone"));
+        JUnitUtil.dispose(frame);
     }
 
     @Test

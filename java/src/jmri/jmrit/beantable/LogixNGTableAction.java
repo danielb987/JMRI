@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -12,12 +11,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,9 +37,6 @@ import javax.swing.table.TableColumn;
 import jmri.InstanceManager;
 import jmri.Manager;
 import jmri.UserPreferencesManager;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.tools.swing.ConditionalNGEditor;
-import jmri.jmrit.sensorgroup.SensorGroupFrame;
 import jmri.util.FileUtil;
 import jmri.util.JmriJFrame;
 import org.slf4j.Logger;
@@ -1032,15 +1023,6 @@ public class LogixNGTableAction extends AbstractTableAction<LogixNG> {
     void editPressed(String sName) {
         _curLogixNG = _logixNG_Manager.getBySystemName(sName);
         if (!checkFlags(sName)) {
-            return;
-        }
-
-        if (sName.equals(SensorGroupFrame.logixSysName)) {
-            // Sensor group message
-            JOptionPane.showMessageDialog(null,
-                    Bundle.getMessage("LogixNGWarn8", SensorGroupFrame.logixUserName, SensorGroupFrame.logixSysName),
-                    Bundle.getMessage("WarningTitle"), // NOI18N
-                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
