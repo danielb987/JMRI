@@ -24,7 +24,7 @@ public class DefaultLogixNGManagerTest {
     @Test
     public void testManager() {
         LogixNG_Manager manager = InstanceManager.getDefault(LogixNG_Manager.class);
-        jmri.managers.DefaultLogixManager a;
+        
         Assert.assertEquals("getXMLOrder() is correct", Manager.LOGIXNGS, manager.getXMLOrder());
         Assert.assertEquals("getBeanTypeHandled() is correct", Bundle.getMessage("BeanNameLogixNG"), manager.getBeanTypeHandled());
         Assert.assertEquals("getSystemPrefix() is correct", "I", manager.getSystemPrefix());
