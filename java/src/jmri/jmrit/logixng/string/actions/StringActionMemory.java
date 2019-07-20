@@ -97,9 +97,9 @@ public class StringActionMemory extends AbstractStringAction {
     @Override
     public String getShortDescription() {
         if (_memoryHandle != null) {
-            return Bundle.getMessage("StringActionMemory", _memoryHandle.getBean().getDisplayName());
+            return Bundle.getMessage("StringActionMemory1", _memoryHandle.getBean().getDisplayName());
         } else {
-            return Bundle.getMessage("StringActionMemory", "none");
+            return Bundle.getMessage("StringActionMemory1", "none");
         }
     }
 

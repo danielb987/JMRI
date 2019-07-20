@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.analog.actions;
 
+import java.util.Locale;
 import jmri.AnalogIO;
 import jmri.JmriException;
 import jmri.jmrit.logixng.AbstractBaseTestBase;
@@ -14,6 +15,14 @@ import org.junit.Test;
  */
 public class AbstractAnalogActionTestBase extends AbstractBaseTestBase {
 
+    @Test
+    public void testBundle() {
+        Assert.assertEquals("strings are equal", "Set memory", Bundle.getMessage("AnalogActionMemory0"));
+        Assert.assertEquals("strings are equal", "Set memory IM1", Bundle.getMessage("AnalogActionMemory1", "IM1"));
+        Assert.assertEquals("strings are equal", "Set memory", Bundle.getMessage(Locale.CANADA, "AnalogActionMemory0"));
+        Assert.assertEquals("strings are equal", "Set memory IM1", Bundle.getMessage(Locale.CANADA, "AnalogActionMemory1", "IM1"));
+    }
+    
     @Test
     public void testGetBeanType() {
         Assert.assertTrue("String matches", "Analog action".equals(((AnalogActionBean)_base).getBeanType()));

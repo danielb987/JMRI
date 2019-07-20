@@ -118,9 +118,9 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression implements 
     @Override
     public String getShortDescription() {
         if (_memoryHandle != null) {
-            return Bundle.getMessage("AnalogExpressionMemory", _memoryHandle.getBean().getDisplayName());
+            return Bundle.getMessage("AnalogExpressionMemory1", _memoryHandle.getBean().getDisplayName());
         } else {
-            return Bundle.getMessage("AnalogExpressionMemory", "none");
+            return Bundle.getMessage("AnalogExpressionMemory1", "none");
         }
     }
 

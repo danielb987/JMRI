@@ -97,9 +97,9 @@ public class AnalogActionMemory extends AbstractAnalogAction {
     @Override
     public String getShortDescription() {
         if (_memoryHandle != null) {
-            return Bundle.getMessage("AnalogActionMemory", _memoryHandle.getBean().getDisplayName());
+            return Bundle.getMessage("AnalogActionMemory1", _memoryHandle.getBean().getDisplayName());
         } else {
-            return Bundle.getMessage("AnalogActionMemory", "none");
+            return Bundle.getMessage("AnalogActionMemory1", "none");
         }
     }
 

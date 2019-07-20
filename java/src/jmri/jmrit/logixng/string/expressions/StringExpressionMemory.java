@@ -118,9 +118,9 @@ public class StringExpressionMemory extends AbstractStringExpression implements 
     @Override
     public String getShortDescription() {
         if (_memoryHandle != null) {
-            return Bundle.getMessage("StringExpressionMemory", _memoryHandle.getBean().getDisplayName());
+            return Bundle.getMessage("StringExpressionMemory1", _memoryHandle.getBean().getDisplayName());
         } else {
-            return Bundle.getMessage("StringExpressionMemory", "none");
+            return Bundle.getMessage("StringExpressionMemory1", "none");
         }
     }
 
