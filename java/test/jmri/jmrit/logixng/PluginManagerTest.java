@@ -41,6 +41,20 @@ public class PluginManagerTest {
         Assert.assertTrue("exception thrown", flag.get());
     }
     
+    @Test
+    public void testClassDefinition() {
+        PluginManager.ClassDefinition cd = new PluginManager.ClassDefinition(true, PluginManager.ClassType.ACTION, "My string");
+        Assert.assertTrue("is enabled", cd.getEnabled());
+        Assert.assertEquals("equals", PluginManager.ClassType.ACTION, cd.getType());
+        Assert.assertEquals("equals", "My string", cd.getName());
+        cd = new PluginManager.ClassDefinition(false, PluginManager.ClassType.EXPRESSION, "My integer");
+        Assert.assertFalse("is not enabled", cd.getEnabled());
+        Assert.assertEquals("equals", PluginManager.ClassType.EXPRESSION, cd.getType());
+        Assert.assertEquals("equals", "My integer", cd.getName());
+        cd.setEnabled(true);
+        Assert.assertTrue("is enabled", cd.getEnabled());
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {
