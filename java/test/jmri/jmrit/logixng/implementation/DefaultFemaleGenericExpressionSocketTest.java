@@ -9,14 +9,12 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket.SocketType;
-import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.jmrit.logixng.digital.implementation.DefaultMaleDigitalExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.DigitalExpressionBean;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 
 /**
@@ -30,6 +28,22 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
     private Turnout _turnout;
     private ExpressionTurnout _expression;
     private FemaleGenericExpressionSocket femaleGenericSocket;
+    
+    @Test
+    public void testSocketType() {
+        Assert.assertEquals("strings are equal",
+                Bundle.getMessage("SocketTypeDigital"),
+                FemaleGenericExpressionSocket.SocketType.DIGITAL.toString());
+        Assert.assertEquals("strings are equal",
+                Bundle.getMessage("SocketTypeAnalog"),
+                FemaleGenericExpressionSocket.SocketType.ANALOG.toString());
+        Assert.assertEquals("strings are equal",
+                Bundle.getMessage("SocketTypeString"),
+                FemaleGenericExpressionSocket.SocketType.STRING.toString());
+        Assert.assertEquals("strings are equal",
+                Bundle.getMessage("SocketTypeGeneric"),
+                FemaleGenericExpressionSocket.SocketType.GENERIC.toString());
+    }
     
     @Test
     public void testGetName() {
