@@ -38,8 +38,13 @@ public final class LogixNGPreferences extends PreferencesBean {
         this._allowDebugMode = sharedPreferences.getBoolean(ALLOW_DEBUG_MODE, this._allowDebugMode);
         
         if (1==0) {
-            String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_LogixNGPlugins\\dist\\JMRI_LogixNGPlugins.jar";
-            _pluginManager.addJarFile(jarFileName);
+            try {
+                String jarFileName = "F:\\Projekt\\Java\\GitHub\\JMRI_LogixNGPlugins\\dist\\JMRI_LogixNGPlugins.jar";
+                _pluginManager.addJarFile(jarFileName);
+            } catch (Exception e) {
+                // This needs to be handled in a better way.
+                e.printStackTrace();
+            }
         }
         
 /*        

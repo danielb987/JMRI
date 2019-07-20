@@ -25,6 +25,7 @@ import org.junit.runners.Suite;
     LogixNGCategoryTest.class,
     LogixNGTest.class,
     LogixNG_InstanceManagerTest.class,
+    PluginManagerTest.class,
 })
 
 /**
