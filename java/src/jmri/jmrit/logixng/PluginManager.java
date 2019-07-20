@@ -63,15 +63,17 @@ public class PluginManager {
         private final List<String> classNameList = new ArrayList<>();
         private final List<ClassDefinition> classList = new ArrayList<>();
         
-        public JarFile(String name) {
+        public JarFile(String name)
+                throws FileNotFoundException, IOException, ClassNotFoundException,
+                InstantiationException, IllegalAccessException {
             _filename = name;
             
-            try {
+//            try {
                 loadJarFile();
-            } catch (Exception e) {
+//            } catch (Exception e) {
                 // This needs to be handled in a better way.
-                e.printStackTrace();
-            }
+//                e.printStackTrace();
+//            }
         }
         
         private void loadClassesInJarFile() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -191,7 +193,10 @@ public class PluginManager {
      * @param filename the filename of the jar file
      * @return the JarFile object
      */
-    public JarFile addJarFile(String filename) {
+    public JarFile addJarFile(String filename)
+                throws FileNotFoundException, IOException, ClassNotFoundException,
+                InstantiationException, IllegalAccessException {
+        
         JarFile jarFile = new JarFile(filename);
         jarFileList.add(jarFile);
         return jarFile;
