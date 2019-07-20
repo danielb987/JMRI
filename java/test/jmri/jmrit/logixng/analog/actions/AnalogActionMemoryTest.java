@@ -151,6 +151,11 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         action2.setup();
         Assert.assertTrue("String matches", "Set memory IM2".equals(action2.getLongDescription()));
+        // Test none existing memory
+        action2.setMemoryName("IM999");
+        action2.setup();
+        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
+        jmri.util.JUnitAppender.assertErrorMessage("Memory IM999 does not exists");
     }
     
     @Test

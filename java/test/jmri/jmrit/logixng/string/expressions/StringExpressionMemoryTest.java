@@ -230,6 +230,11 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory IM2".equals(expression2.getLongDescription()));
+        // Test none existing memory
+        expression2.setMemoryName("IM999");
+        expression2.setup();
+        Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
+        jmri.util.JUnitAppender.assertErrorMessage("Memory IM999 does not exists");
     }
     
     @Test
