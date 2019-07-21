@@ -445,6 +445,16 @@ public class DefaultFemaleGenericExpressionSocket
             _currentActiveSocket.unregisterListeners();
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+        if ((_currentActiveSocket != null) && (_currentActiveSocket.isConnected())) {
+            MaleSocket aSocket = _currentActiveSocket.getConnectedSocket();
+            disconnect();
+            aSocket.dispose();
+        }
+    }
     
     
     
@@ -665,7 +675,7 @@ public class DefaultFemaleGenericExpressionSocket
 
         /** {@inheritDoc} */
         @Override
-        public void dispose() {
+        public void disposeMe() {
             DefaultFemaleGenericExpressionSocket.this.dispose();
         }
 
@@ -785,7 +795,7 @@ public class DefaultFemaleGenericExpressionSocket
 
         /** {@inheritDoc} */
         @Override
-        public void dispose() {
+        public void disposeMe() {
             DefaultFemaleGenericExpressionSocket.this.dispose();
         }
 

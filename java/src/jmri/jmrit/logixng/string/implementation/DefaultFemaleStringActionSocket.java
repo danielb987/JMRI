@@ -96,4 +96,10 @@ public final class DefaultFemaleStringActionSocket
         return InstanceManager.getDefault(StringActionManager.class).getActionClasses();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+        // Do nothing
+    }
+
 }

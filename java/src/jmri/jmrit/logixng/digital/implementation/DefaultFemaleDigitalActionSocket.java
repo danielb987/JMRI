@@ -115,4 +115,10 @@ public final class DefaultFemaleDigitalActionSocket
         return InstanceManager.getDefault(DigitalActionManager.class).getActionClasses();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+        // Do nothing
+    }
+
 }

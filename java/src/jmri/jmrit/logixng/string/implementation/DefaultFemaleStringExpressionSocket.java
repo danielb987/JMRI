@@ -112,4 +112,10 @@ public class DefaultFemaleStringExpressionSocket extends AbstractFemaleSocket
         return InstanceManager.getDefault(StringExpressionManager.class).getExpressionClasses();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+        // Do nothing
+    }
+
 }

@@ -1,20 +1,12 @@
 package jmri.jmrit.logixng.analog.implementation;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import jmri.InstanceManager;
-import jmri.JmriException;
-import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
-import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -56,16 +48,19 @@ public final class DefaultFemaleAnalogActionSocket
         throw new UnsupportedOperationException();
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean isCompatible(MaleSocket socket) {
         return socket instanceof MaleAnalogActionSocket;
     }
     
+    /** {@inheritDoc} */
     @Override
     public Map<Category, List<Class<? extends Base>>> getConnectableClasses() {
         return InstanceManager.getDefault(AnalogActionManager.class).getActionClasses();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setValue(double value) {
         if (isConnected()) {
@@ -73,11 +68,13 @@ public final class DefaultFemaleAnalogActionSocket
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getShortDescription() {
         return Bundle.getMessage("DefaultFemaleAnalogActionSocket_Short");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLongDescription() {
         return Bundle.getMessage("DefaultFemaleAnalogActionSocket_Long", getName());
@@ -96,4 +93,10 @@ public final class DefaultFemaleAnalogActionSocket
                 .getNewSystemName(getConditionalNG());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+        // Do nothing
+    }
+    
 }

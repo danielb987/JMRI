@@ -111,4 +111,10 @@ public class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSocket
         return InstanceManager.getDefault(DigitalExpressionManager.class).getExpressionClasses();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void disposeMe() {
+        // Do nothing
+    }
+
 }

@@ -19,5 +19,4 @@ import org.junit.runners.Suite;
  * @author Daniel Bergqvist 2018
  */
 public class PackageTest {
-
 }

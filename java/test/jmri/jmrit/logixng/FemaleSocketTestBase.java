@@ -190,12 +190,16 @@ public abstract class FemaleSocketTestBase {
     @Test
     public void testDisposeWithoutChild() {
         femaleSocket.dispose();
+        Assert.assertFalse("socket not connected", femaleSocket.isConnected());
     }
     
     @Test
     public void testDisposeWithChild() throws SocketAlreadyConnectedException {
+        Assert.assertFalse("socket not connected", femaleSocket.isConnected());
         femaleSocket.connect(maleSocket);
+        Assert.assertTrue("socket is connected", femaleSocket.isConnected());
         femaleSocket.dispose();
+        Assert.assertFalse("socket not connected", femaleSocket.isConnected());
     }
     
     @Test

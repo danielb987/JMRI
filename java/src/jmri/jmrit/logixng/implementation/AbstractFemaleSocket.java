@@ -136,13 +136,11 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return _name;
     }
 
-    public void disposeMe() {
-        // Do nothing
-    }
+    abstract public void disposeMe();
     
     /** {@inheritDoc} */
     @Override
-    public void dispose() {
+    public final void dispose() {
         if (_socket != null) {
             MaleSocket aSocket = _socket;
             disconnect();
