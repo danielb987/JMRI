@@ -174,7 +174,7 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Do nothing
     }
 
     /** {@inheritDoc} */
