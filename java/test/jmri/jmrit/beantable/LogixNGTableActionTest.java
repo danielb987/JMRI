@@ -79,6 +79,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
+//    @Ignore
     @Override
     public void testAddThroughDialog() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -99,6 +100,13 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         ((JTextField)jlo.getLabelFor()).setText("IQ1");
         //and press create
         jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonCreate"));
+        
+        // Click button "Done" on the EditLogixNG frame
+        String title = String.format("Edit LogixNG %s", "IQ1");
+        JFrame frame = JFrameOperator.waitJFrame(title, true, true);  // NOI18N
+        JFrameOperator jf2 = new JFrameOperator(frame);
+        jmri.util.swing.JemmyUtil.pressButton(jf2,Bundle.getMessage("ButtonDone"));
+        
         JUnitUtil.dispose(f1);
         JUnitUtil.dispose(f);
         
@@ -107,6 +115,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
+//    @Ignore
     @Override
     public void testEditButton() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -121,13 +130,40 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
 
         String title = String.format("Edit LogixNG %s - %s", logixNG.getSystemName(), logixNG.getUserName());
         JFrame frame = JFrameOperator.waitJFrame(title, true, true);  // NOI18N
-//        JFrame frame = JFrameOperator.waitJFrame(Bundle.getMessage("EditTitle"), true, true);  // NOI18N
+//        JFrame frame2 = JFrameOperator.waitJFrame(Bundle.getMessage("EditTitle"), true, true);  // NOI18N
+        
+        
+        
+        
+        
+        // Click button "New ConditionalNG" on the EditLogixNG frame
+        JFrameOperator jf = new JFrameOperator(frame);
+        jmri.util.swing.JemmyUtil.pressButton(jf,"New ConditionalNG");
+        
+        
+        
+//        JFrame frameEditConditionalNG = JFrameOperator.waitJFrame("Edit LogixNG IQ101:1", true, true);  // NOI18N
+//        JFrameOperator jf = new JFrameOperator(frame);
+//        jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonCreate"));
+        
+        // Close window
+        JFrameOperator editConditionalNGFrameOperator = new JFrameOperator("Edit LogixNG IQ101:1");
+        new JMenuBarOperator(editConditionalNGFrameOperator).pushMenu("File|Close Window", "|");
+        
+//        JFrame frame3 = JFrameOperator.waitJFrame("Kalle", true, true);  // NOI18N
+        
+        // Click button "Done" on the EditLogixNG frame
+//        jf = new JFrameOperator(frame);
+//        jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonDone"));
+        
+        
         Assert.assertNotNull(frame);
 	jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(frame),Bundle.getMessage("ButtonDone"));
         JUnitUtil.dispose(frame);
     }
 
     @Test
+//    @Ignore
     public void testLogixNGBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -140,6 +176,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
+//    @Ignore
     public void testTreeEditor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         InstanceManager.getDefault(jmri.UserPreferencesManager.class).
@@ -157,6 +194,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
+//    @Ignore
     public void testAddLogixNGAutoName() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -184,6 +222,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
+//    @Ignore
     public void testAddLogixNG() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -211,6 +250,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
+//    @Ignore
     public void testDeleteLogixNG() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -235,6 +275,11 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
 
         JUnitUtil.dispose(logixNGFrame);
     }
+    
+//    @Test
+//    public void testLogixNGEditor() {
+//        
+//    }
 
     Thread createModalDialogOperatorThread(String dialogTitle, String buttonText) {
         Thread t = new Thread(() -> {
