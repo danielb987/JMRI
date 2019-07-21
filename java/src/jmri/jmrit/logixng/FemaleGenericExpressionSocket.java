@@ -31,6 +31,12 @@ public interface FemaleGenericExpressionSocket
     }
     
     /**
+     * Get the current active socket.
+     * @return the currently active socket or null if no socket is active
+     */
+    public FemaleSocket getCurrentActiveSocket();
+    
+    /**
      * Set the type of the socket.
      * 
      * @param socketType the type of socket.

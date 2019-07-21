@@ -231,29 +231,21 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     /** {@inheritDoc} */
     @Override
     public final ConditionalNG getConditionalNG() {
-        if (this instanceof ConditionalNG) {
-            return (ConditionalNG) this;
-        } else {
-            Base parent = getParent();
-            while (! (parent instanceof ConditionalNG)) {
-                parent = parent.getParent();
-            }
-            return (ConditionalNG) parent;
+        Base parent = getParent();
+        while ((parent != null) && !(parent instanceof ConditionalNG)) {
+            parent = parent.getParent();
         }
+        return (ConditionalNG) parent;
     }
     
     /** {@inheritDoc} */
     @Override
     public final LogixNG getLogixNG() {
-        if (this instanceof LogixNG) {
-            return (LogixNG) this;
-        } else {
-            Base parent = getParent();
-            while (! (parent instanceof LogixNG)) {
-                parent = parent.getParent();
-            }
-            return (LogixNG) parent;
+        Base parent = getParent();
+        while ((parent != null) && !(parent instanceof LogixNG)) {
+            parent = parent.getParent();
         }
+        return (LogixNG) parent;
     }
     
 }

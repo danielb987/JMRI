@@ -9,6 +9,7 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket.SocketType;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.implementation.DefaultMaleDigitalExpressionSocket;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -28,6 +29,20 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
     private Turnout _turnout;
     private ExpressionTurnout _expression;
     private FemaleGenericExpressionSocket femaleGenericSocket;
+    
+    @Test
+    @Override
+    public void testSetParentForAllChildren() throws SocketAlreadyConnectedException {
+        // This female socket has child female sockets, which requires special treatment
+        Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
+        femaleSocket.setParentForAllChildren();
+        Assert.assertNull("malesocket.getParent() is null", maleSocket.getParent());
+        femaleSocket.connect(maleSocket);
+        femaleSocket.setParentForAllChildren();
+        Assert.assertEquals("malesocket.getParent() is femaleSocket",
+                femaleGenericSocket.getCurrentActiveSocket(),
+                maleSocket.getParent());
+    }
     
     @Test
     public void testSocketType() {

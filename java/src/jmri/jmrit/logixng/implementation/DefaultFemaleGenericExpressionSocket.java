@@ -79,6 +79,13 @@ public class DefaultFemaleGenericExpressionSocket
     }
     
     
+    /** {@inheritDoc} */
+    @Override
+    public FemaleSocket getCurrentActiveSocket() {
+        return _currentActiveSocket;
+    }
+    
+    
     public FemaleAnalogExpressionSocket getAnalogSocket() {
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
