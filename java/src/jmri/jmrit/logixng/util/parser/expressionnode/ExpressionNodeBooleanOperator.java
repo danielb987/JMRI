@@ -1,6 +1,8 @@
 package jmri.jmrit.logixng.util.parser.expressionnode;
 
+import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.parser.TokenType;
+import jmri.util.TypeConversionUtil;
 
 /**
  * A parsed expression
@@ -33,9 +35,38 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
     }
     
     @Override
-    public Object calculate() {
-        Object value = null;
-        return value;
+    public Object calculate() throws ParserException {
+        
+        Object rightValue = _rightSide.calculate();
+        if (!(rightValue instanceof Boolean)) {
+            rightValue = TypeConversionUtil.convertToBoolean(rightValue, false);
+        }
+        boolean right = (Boolean)rightValue;
+        
+        if (_tokenType == TokenType.BOOLEAN_NOT) {
+            return ! right;
+        }
+        
+        if (_leftSide == null) {
+            throw new IllegalArgumentException("leftSide must not be null for operators AND and OR");
+        }
+        
+        Object leftValue = _leftSide.calculate();
+        if (!(leftValue instanceof Boolean)) {
+            leftValue = TypeConversionUtil.convertToBoolean(leftValue, false);
+        }
+        boolean left = (Boolean)leftValue;
+        
+        switch (_tokenType) {
+            case BOOLEAN_OR:
+                return left || right;
+                
+            case BOOLEAN_AND:
+                return left && right;
+                
+            default:
+                throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+        }
     }
     
     /** {@inheritDoc} */

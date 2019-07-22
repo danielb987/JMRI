@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.util.parser.expressionnode;
 
-import jmri.jmrit.logixng.util.parser.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
