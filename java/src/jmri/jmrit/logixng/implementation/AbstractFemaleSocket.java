@@ -21,14 +21,15 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     protected final FemaleSocketListener _listener;
     private MaleSocket _socket = null;
     private String _name = null;
-    private Lock _lock = Lock.NONE;
     
     
     public AbstractFemaleSocket(Base parent, FemaleSocketListener listener, String name) {
-        _listener = listener;
-//        _name = name;
+        if (!validateName(name)) {
+            throw new IllegalArgumentException("the name is not valid: " + name);
+        }
         _parent = parent;
-        setName(name);
+        _listener = listener;
+        _name = name;
     }
     
     /** {@inheritDoc} */
