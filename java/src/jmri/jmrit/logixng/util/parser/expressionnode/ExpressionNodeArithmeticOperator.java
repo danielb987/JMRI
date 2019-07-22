@@ -1,5 +1,8 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
 
+import jmri.jmrit.logixng.util.parser.CalculateException;
+import jmri.jmrit.logixng.util.parser.ParserException;
+import jmri.jmrit.logixng.util.parser.TokenType;
 import jmri.util.TypeConversionUtil;
 
 /**
@@ -12,7 +15,7 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
     private final ExpressionNode _rightSide;
     
     
-    ExpressionNodeArithmeticOperator(TokenType tokenType, ExpressionNode leftSide, ExpressionNode rightSide) {
+    public ExpressionNodeArithmeticOperator(TokenType tokenType, ExpressionNode leftSide, ExpressionNode rightSide) {
         _tokenType = tokenType;
         _leftSide = leftSide;
         _rightSide = rightSide;

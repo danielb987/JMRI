@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.util.parser;
 
 //import jmri.jmrit.logixng.util.parser.RecursiveDescentParser.Function;
 //import jmri.jmrit.logixng.util.parser.RecursiveDescentParser.OperatorInfo;
+import jmri.jmrit.logixng.util.parser.expressionnode.ExpressionNode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;

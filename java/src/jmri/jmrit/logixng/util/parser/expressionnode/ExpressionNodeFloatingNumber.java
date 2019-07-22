@@ -1,4 +1,6 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
+
+import jmri.jmrit.logixng.util.parser.Token;
 
 /**
  * A parsed expression
@@ -8,9 +10,9 @@ public class ExpressionNodeFloatingNumber implements ExpressionNode {
     private final Token _token;
     private final double _value;
     
-    ExpressionNodeFloatingNumber(Token token) {
+    public ExpressionNodeFloatingNumber(Token token) {
         _token = token;
-        _value = Double.parseDouble(token._string);
+        _value = Double.parseDouble(token.getString());
     }
     
     @Override
@@ -21,7 +23,7 @@ public class ExpressionNodeFloatingNumber implements ExpressionNode {
     /** {@inheritDoc} */
     @Override
     public String getDefinitionString() {
-        return "FloatNumber:"+_token._string;
+        return "FloatNumber:"+_token.getString();
     }
     
 }

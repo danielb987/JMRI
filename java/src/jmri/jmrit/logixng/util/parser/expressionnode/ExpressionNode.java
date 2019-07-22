@@ -1,4 +1,6 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
+
+import jmri.jmrit.logixng.util.parser.ParserException;
 
 /**
  * A parsed expression

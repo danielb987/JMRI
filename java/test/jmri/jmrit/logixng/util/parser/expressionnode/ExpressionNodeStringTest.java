@@ -1,4 +1,4 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
 
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -11,13 +11,11 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class ExpressionNodeNumberTest {
+public class ExpressionNodeStringTest {
 
     @Test
     public void testCtor() {
-        Token token = new Token();
-        token._string = "13.22";
-        ExpressionNodeFloatingNumber t = new ExpressionNodeFloatingNumber(token);
+        ExpressionNodeString t = new ExpressionNodeString(null);
         Assert.assertNotNull("not null", t);
     }
     

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import jmri.jmrit.logixng.util.parser.CalculateException;
-import jmri.jmrit.logixng.util.parser.ExpressionNode;
+import jmri.jmrit.logixng.util.parser.expressionnode.ExpressionNode;
 import jmri.jmrit.logixng.util.parser.Function;
 import jmri.jmrit.logixng.util.parser.FunctionFactory;
 import jmri.jmrit.logixng.util.parser.ParserException;

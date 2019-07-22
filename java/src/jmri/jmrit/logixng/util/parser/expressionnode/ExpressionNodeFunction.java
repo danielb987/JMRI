@@ -1,9 +1,13 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import jmri.jmrit.logixng.util.parser.Function;
+import jmri.jmrit.logixng.util.parser.FunctionFactory;
+import jmri.jmrit.logixng.util.parser.FunctionNotExistsException;
+import jmri.jmrit.logixng.util.parser.ParserException;
 
 /**
  * A parsed expression
@@ -32,7 +36,7 @@ public class ExpressionNodeFunction implements ExpressionNode {
     }
     
     
-    ExpressionNodeFunction(String identifier, List<ExpressionNode> parameterList) throws FunctionNotExistsException {
+    public ExpressionNodeFunction(String identifier, List<ExpressionNode> parameterList) throws FunctionNotExistsException {
         _identifier = identifier;
         _function = functions.get(identifier);
         _parameterList = parameterList;

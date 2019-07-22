@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.util.parser;
 
+import jmri.jmrit.logixng.util.parser.expressionnode.ExpressionNode;
 import java.util.List;
 
 /**

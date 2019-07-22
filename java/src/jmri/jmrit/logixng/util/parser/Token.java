@@ -9,10 +9,16 @@ public final class Token {
     String _string;
     int _pos;
 
-    Token() {
+    public Token() {
         _tokenType = TokenType.NONE;
         _string = "";
         _pos = 0;
+    }
+    
+    public Token(TokenType tokenType, String string, int pos) {
+        _tokenType = tokenType;
+        _string = string;
+        _pos = pos;
     }
     
     public TokenType getTokenType() {

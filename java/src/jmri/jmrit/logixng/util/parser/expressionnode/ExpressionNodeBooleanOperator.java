@@ -1,4 +1,6 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
+
+import jmri.jmrit.logixng.util.parser.TokenType;
 
 /**
  * A parsed expression
@@ -9,7 +11,7 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
     private final ExpressionNode _leftSide;
     private final ExpressionNode _rightSide;
     
-    ExpressionNodeBooleanOperator(TokenType tokenType, ExpressionNode leftSide, ExpressionNode rightSide) {
+    public ExpressionNodeBooleanOperator(TokenType tokenType, ExpressionNode leftSide, ExpressionNode rightSide) {
         _tokenType = tokenType;
         _leftSide = leftSide;
         _rightSide = rightSide;

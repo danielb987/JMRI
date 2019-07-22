@@ -1,7 +1,11 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
 
 import java.util.HashMap;
 import java.util.Map;
+import jmri.jmrit.logixng.util.parser.IdentifierNotExistsException;
+import jmri.jmrit.logixng.util.parser.Token;
+import jmri.jmrit.logixng.util.parser.TokenType;
+import jmri.jmrit.logixng.util.parser.Variable;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -17,8 +21,7 @@ public class ExpressionNodeIdentifierTest {
 
     @Test
     public void testCtor() throws IdentifierNotExistsException {
-        Token token = new Token();
-        token._string = "abc";
+        Token token = new Token(TokenType.NONE, "abc", 0);
         Map<String, Variable> variables = new HashMap<>();
         variables.put("abc", new Variable() {
             @Override

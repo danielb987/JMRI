@@ -1,5 +1,7 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.expressionnode;
 
+import jmri.jmrit.logixng.util.parser.Token;
+import jmri.jmrit.logixng.util.parser.TokenType;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -11,15 +13,13 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class ExpressionNodeBooleanOperatorTest {
+public class ExpressionNodeNumberTest {
 
     @Test
     public void testCtor() {
-        Token token = new Token();
-        token._string = "1";
-        ExpressionNodeFloatingNumber expressionNumber = new ExpressionNodeFloatingNumber(token);
-        ExpressionNodeBooleanOperator t = new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_NOT, null, expressionNumber);
-        Assert.assertNotNull("exists", t);
+        Token token = new Token(TokenType.NONE, "13.22", 0);
+        ExpressionNodeFloatingNumber t = new ExpressionNodeFloatingNumber(token);
+        Assert.assertNotNull("not null", t);
     }
     
     // The minimal setup for log4J
