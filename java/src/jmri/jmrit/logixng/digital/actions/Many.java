@@ -31,6 +31,7 @@ public class Many extends AbstractDigitalAction
     
     /**
      * Create a new instance of ActionMany and generate a new system name.
+     * @param conditionalNG the conditionalNG that gives the base name to this digital action
      */
     public Many(ConditionalNG conditionalNG) {
         super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
