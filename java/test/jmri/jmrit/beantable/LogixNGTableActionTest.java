@@ -79,10 +79,10 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     @Override
     public void testAddThroughDialog() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
         a.actionPerformed(null);
         JFrame f = JFrameOperator.waitJFrame(getTableFrameName(), true, true);
 
@@ -106,6 +106,16 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
         JFrame frame = JFrameOperator.waitJFrame(title, true, true);  // NOI18N
         JFrameOperator jf2 = new JFrameOperator(frame);
         jmri.util.swing.JemmyUtil.pressButton(jf2,Bundle.getMessage("ButtonDone"));
+        JUnitUtil.dispose(frame);
+        
+        // Test that we can open the LogixNGEdtior window twice
+        logixNGTable.editPressed("IQ101");  // NOI18N
+        // Click button "Done" on the EditLogixNG frame
+        title = String.format("Edit LogixNG %s - %s", "IQ101", "LogixNG 101");
+        frame = JFrameOperator.waitJFrame(title, true, true);  // NOI18N
+        jf2 = new JFrameOperator(frame);
+        jmri.util.swing.JemmyUtil.pressButton(jf2,Bundle.getMessage("ButtonDone"));
+        JUnitUtil.dispose(frame);
         
         JUnitUtil.dispose(f1);
         JUnitUtil.dispose(f);
@@ -115,7 +125,6 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     @Override
     public void testEditButton() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -163,7 +172,6 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     public void testLogixNGBrowser() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -176,7 +184,6 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     public void testTreeEditor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         InstanceManager.getDefault(jmri.UserPreferencesManager.class).
@@ -194,7 +201,6 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     public void testAddLogixNGAutoName() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -222,7 +228,6 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     public void testAddLogixNG() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;
@@ -250,7 +255,6 @@ public class LogixNGTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-//    @Ignore
     public void testDeleteLogixNG() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixNGTableAction logixNGTable = (LogixNGTableAction) a;

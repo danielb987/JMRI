@@ -91,7 +91,7 @@ public final class LogixNGEditor {
     JLabel status = new JLabel(" ");
 
     // ------------ ConditionalNG Variables ------------
-    ConditionalNGTableModel conditionalTableModel = null;
+    ConditionalNGTableModel conditionalNGTableModel = null;
     ConditionalNG _curConditionalNG = null;
     int _conditionalRowNumber = 0;
     boolean _inReorderMode = false;
@@ -121,8 +121,8 @@ public final class LogixNGEditor {
     void makeEditLogixNGWindow() {
         editUserName.setText(_curLogixNG.getUserName());
         // clear conditional table if needed
-        if (conditionalTableModel != null) {
-            conditionalTableModel.fireTableStructureChanged();
+        if (conditionalNGTableModel != null) {
+            conditionalNGTableModel.fireTableStructureChanged();
         }
         _inEditMode = true;
         if (_editLogixNGFrame == null) {
@@ -168,8 +168,8 @@ public final class LogixNGEditor {
             pTitle.add(new JLabel(Bundle.getMessage("ConditionalNGTableTitle")));  // NOI18N
             contentPane.add(pTitle);
             // initialize table of conditionals
-            conditionalTableModel = new ConditionalNGTableModel();
-            JTable conditionalTable = new JTable(conditionalTableModel);
+            conditionalNGTableModel = new ConditionalNGTableModel();
+            JTable conditionalTable = new JTable(conditionalNGTableModel);
             conditionalTable.setRowSelectionAllowed(false);
             TableColumnModel conditionalColumnModel = conditionalTable
                     .getColumnModel();
@@ -307,7 +307,7 @@ public final class LogixNGEditor {
         _nextInOrder = 0;
         _inReorderMode = true;
         status.setText(Bundle.getMessage("ReorderMessage"));  // NOI18N
-        conditionalTableModel.fireTableDataChanged();
+        conditionalNGTableModel.fireTableDataChanged();
     }
 
     /**
@@ -323,7 +323,7 @@ public final class LogixNGEditor {
             _inReorderMode = false;
         }
         //status.setText("");
-        conditionalTableModel.fireTableDataChanged();
+        conditionalNGTableModel.fireTableDataChanged();
     }
 
     /**
@@ -349,7 +349,7 @@ public final class LogixNGEditor {
                 }
             }
             // force the table to update
-            conditionalTableModel.fireTableDataChanged();
+            conditionalNGTableModel.fireTableDataChanged();
         }
     }
 
@@ -457,7 +457,7 @@ public final class LogixNGEditor {
         }
         // add to LogixNG at the end of the calculate order
         _curLogixNG.addConditionalNG(_curConditionalNG);
-        conditionalTableModel.fireTableRowsInserted(_numConditionalNGs, _numConditionalNGs);
+        conditionalNGTableModel.fireTableRowsInserted(_numConditionalNGs, _numConditionalNGs);
         _conditionalRowNumber = _numConditionalNGs;
         _numConditionalNGs++;
         _showReminder = true;
