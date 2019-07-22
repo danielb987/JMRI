@@ -90,7 +90,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
         }
-        FemaleAnalogExpressionSocket socket = new AnalogSocket();
+        FemaleAnalogExpressionSocket socket = new AnalogSocket(getName());
         internalSocket = socket;
         return socket;
     }
@@ -100,7 +100,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
         }
-        FemaleDigitalExpressionSocket socket = new DigitalSocket();
+        FemaleDigitalExpressionSocket socket = new DigitalSocket(getName());
         internalSocket = socket;
         return socket;
     }
@@ -110,7 +110,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
         }
-        FemaleStringExpressionSocket socket = new StringSocket();
+        FemaleStringExpressionSocket socket = new StringSocket(getName());
         internalSocket = socket;
         return socket;
     }
@@ -452,8 +452,8 @@ public class DefaultFemaleGenericExpressionSocket
     
     private class AnalogSocket extends DefaultFemaleAnalogExpressionSocket {
         
-        public AnalogSocket() {
-            super(null, null, DefaultFemaleGenericExpressionSocket.this.getName());
+        public AnalogSocket(String name) {
+            super(null, null, name);
         }
         
         /** {@inheritDoc} */
@@ -566,8 +566,8 @@ public class DefaultFemaleGenericExpressionSocket
     
     private class DigitalSocket extends DefaultFemaleDigitalExpressionSocket {
         
-        public DigitalSocket() {
-            super(null, null, DefaultFemaleGenericExpressionSocket.this.getName());
+        public DigitalSocket(String name) {
+            super(null, null, name);
         }
         
         /** {@inheritDoc} */
@@ -680,8 +680,8 @@ public class DefaultFemaleGenericExpressionSocket
     
     private class StringSocket extends DefaultFemaleStringExpressionSocket {
         
-        public StringSocket() {
-            super(null, null, DefaultFemaleGenericExpressionSocket.this.getName());
+        public StringSocket(String name) {
+            super(null, null, name);
         }
         
         /** {@inheritDoc} */
