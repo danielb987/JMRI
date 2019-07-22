@@ -134,7 +134,12 @@ public class Many extends AbstractDigitalAction
     @Override
     public void evaluateOnly() {
         for (ActionEntry actionEntry : _actionEntries) {
-            ((DigitalActionWithEnableExecution)actionEntry._socket).evaluateOnly();
+            if (actionEntry._socket instanceof DigitalActionWithEnableExecution) {
+                ((DigitalActionWithEnableExecution)actionEntry._socket).evaluateOnly();
+            } else {
+                throw new UnsupportedOperationException(
+                        "evaluateOnly() is only supported if all the children supports evaluateOnly()");
+            }
         }
     }
     

@@ -97,7 +97,8 @@ public final class DefaultConditionalNG extends AbstractBase
     /** {@inheritDoc} */
     @Override
     public void setEnableExecution(boolean b) {
-        if (supportsEnableExecution()) {
+        if (supportsEnableExecution()
+                && (_femaleActionSocket instanceof DigitalActionWithEnableExecution)) {
             ((DigitalActionWithEnableExecution)_femaleActionSocket).setEnableExecution(b);
         } else {
             log.error("This conditionalNG does not supports the method setEnableExecution()");
@@ -108,7 +109,8 @@ public final class DefaultConditionalNG extends AbstractBase
     /** {@inheritDoc} */
     @Override
     public boolean isExecutionEnabled() {
-        if (supportsEnableExecution()) {
+        if (supportsEnableExecution()
+                && (_femaleActionSocket instanceof DigitalActionWithEnableExecution)) {
             return ((DigitalActionWithEnableExecution)_femaleActionSocket).isExecutionEnabled();
         } else {
             log.error("This conditionalNG does not supports the method isExecutionEnabled()");
