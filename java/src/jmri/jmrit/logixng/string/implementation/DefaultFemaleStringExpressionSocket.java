@@ -57,17 +57,9 @@ public class DefaultFemaleStringExpressionSocket extends AbstractFemaleSocket
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
+    public String evaluate() {
         if (isConnected()) {
-            ((MaleStringExpressionSocket)getConnectedSocket()).initEvaluation();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
-        if (isConnected()) {
-            return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
+            return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate();
         } else {
             return "";
         }

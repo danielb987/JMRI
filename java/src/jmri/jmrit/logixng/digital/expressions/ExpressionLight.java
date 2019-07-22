@@ -106,13 +106,7 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        // Do nothing
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         LightState currentLightState = LightState.get(_lightHandle.getBean().getCommandedState());
         if (_is_IsNot == Is_IsNot_Enum.IS) {
             return currentLightState == _lightState;

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This Expression has two expressions, the primary expression and the secondary
- expression. When the primary expression becomes True after have been False,
+ * expression. When the primary expression becomes True after have been False,
  * the secondary expression is reset.
  * 
  * The result of the evaluation of this expression is True if both the
@@ -106,19 +106,13 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
-        boolean result = _primaryExpressionSocket.evaluate(isCompleted);
+    public boolean evaluate() {
+        boolean result = _primaryExpressionSocket.evaluate();
         if (!_lastMainResult && result) {
             _secondaryExpressionSocket.reset();
         }
         _lastMainResult = result;
-        result |= _secondaryExpressionSocket.evaluate(isCompleted);
+        result |= _secondaryExpressionSocket.evaluate();
         return result;
     }
 

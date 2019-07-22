@@ -107,13 +107,7 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        // Do nothing
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         SensorState currentSensorState = SensorState.get(_sensorHandle.getBean().getCommandedState());
         if (_is_IsNot == Is_IsNot_Enum.IS) {
             return currentSensorState == _lightState;

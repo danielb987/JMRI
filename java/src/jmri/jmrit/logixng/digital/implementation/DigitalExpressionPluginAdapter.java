@@ -46,14 +46,8 @@ public class DigitalExpressionPluginAdapter extends AbstractDigitalExpression {
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        _pluginExpression.initEvaluation();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
-        return _pluginExpression.evaluate(isCompleted);
+    public boolean evaluate() {
+        return _pluginExpression.evaluate();
     }
     
     /** {@inheritDoc} */

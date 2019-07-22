@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.digital.implementation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -56,18 +55,10 @@ public class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSocket
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        if (isConnected()) {
-            ((MaleDigitalExpressionSocket)getConnectedSocket()).initEvaluation();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         if (isConnected()) {
             return ((MaleDigitalExpressionSocket)getConnectedSocket())
-                    .evaluate(isCompleted);
+                    .evaluate();
         } else {
             return false;
         }

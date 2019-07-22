@@ -209,23 +209,15 @@ public class DefaultFemaleGenericExpressionSocket
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        if (isConnected()) {
-            ((MaleDigitalExpressionSocket)getConnectedSocket()).initEvaluation();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluateBoolean(@Nonnull AtomicBoolean isCompleted) {
+    public boolean evaluateBoolean() {
 //        System.err.format("evaluateBoolean: %b%n", isConnected());
         if (isConnected()) {
 //            System.err.format("socket type: %s%n", _currentSocketType);
 //            System.err.format("socket type: %s%n", _currentSocketType.name());
             if (_currentSocketType == SocketType.DIGITAL) {
-                return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
+                return ((MaleDigitalExpressionSocket)getConnectedSocket()).evaluate();
             } else {
-                return TypeConversionUtil.convertToBoolean(evaluateBoolean(isCompleted), _do_i18n);
+                return TypeConversionUtil.convertToBoolean(evaluateBoolean(), _do_i18n);
             }
         } else {
             return false;
@@ -233,12 +225,12 @@ public class DefaultFemaleGenericExpressionSocket
     }
 
     @Override
-    public double evaluateDouble(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluateDouble() {
         if (isConnected()) {
             if (_currentSocketType == SocketType.ANALOG) {
-                return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
+                return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate();
             } else {
-                return TypeConversionUtil.convertToDouble(evaluateDouble(isCompleted), _do_i18n);
+                return TypeConversionUtil.convertToDouble(evaluateDouble(), _do_i18n);
             }
         } else {
             return 0.0f;
@@ -246,12 +238,12 @@ public class DefaultFemaleGenericExpressionSocket
     }
 
     @Override
-    public String evaluateString(@Nonnull AtomicBoolean isCompleted) {
+    public String evaluateString() {
         if (isConnected()) {
             if (_currentSocketType == SocketType.STRING) {
-                return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
+                return ((MaleStringExpressionSocket)getConnectedSocket()).evaluate();
             } else {
-                return TypeConversionUtil.convertToString(evaluateString(isCompleted), _do_i18n);
+                return TypeConversionUtil.convertToString(evaluateString(), _do_i18n);
             }
         } else {
             return "";
@@ -260,20 +252,20 @@ public class DefaultFemaleGenericExpressionSocket
 
     @Override
     @CheckForNull
-    public Object evaluateGeneric(@Nonnull AtomicBoolean isCompleted) {
+    public Object evaluateGeneric() {
         if (isConnected()) {
             switch (_currentSocketType) {
                 case DIGITAL:
                     return ((MaleDigitalExpressionSocket)getConnectedSocket())
-                            .evaluate(isCompleted);
+                            .evaluate();
                     
                 case ANALOG:
                     return ((MaleAnalogExpressionSocket)getConnectedSocket())
-                            .evaluate(isCompleted);
+                            .evaluate();
                     
                 case STRING:
                     return ((MaleStringExpressionSocket)getConnectedSocket())
-                            .evaluate(isCompleted);
+                            .evaluate();
                     
                 default:
                     throw new RuntimeException("_currentSocketType has invalid value: "+_currentSocketType.name());
@@ -472,14 +464,8 @@ public class DefaultFemaleGenericExpressionSocket
         
         /** {@inheritDoc} */
         @Override
-        public void initEvaluation() {
-            DefaultFemaleGenericExpressionSocket.this.initEvaluation();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public double evaluate(@Nonnull AtomicBoolean isCompleted) {
-            return DefaultFemaleGenericExpressionSocket.this.evaluateDouble(isCompleted);
+        public double evaluate() {
+            return DefaultFemaleGenericExpressionSocket.this.evaluateDouble();
         }
 
         /** {@inheritDoc} */
@@ -592,14 +578,8 @@ public class DefaultFemaleGenericExpressionSocket
         
         /** {@inheritDoc} */
         @Override
-        public void initEvaluation() {
-            DefaultFemaleGenericExpressionSocket.this.initEvaluation();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean evaluate(@Nonnull AtomicBoolean isCompleted) {
-            return DefaultFemaleGenericExpressionSocket.this.evaluateBoolean(isCompleted);
+        public boolean evaluate() {
+            return DefaultFemaleGenericExpressionSocket.this.evaluateBoolean();
         }
 
         /** {@inheritDoc} */
@@ -712,14 +692,8 @@ public class DefaultFemaleGenericExpressionSocket
         
         /** {@inheritDoc} */
         @Override
-        public void initEvaluation() {
-            DefaultFemaleGenericExpressionSocket.this.initEvaluation();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String evaluate(@Nonnull AtomicBoolean isCompleted) {
-            return DefaultFemaleGenericExpressionSocket.this.evaluateString(isCompleted);
+        public String evaluate() {
+            return DefaultFemaleGenericExpressionSocket.this.evaluateString();
         }
 
         /** {@inheritDoc} */

@@ -10,6 +10,7 @@ import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.DigitalActionWithEnableExecution;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
@@ -97,7 +98,7 @@ public final class DefaultConditionalNG extends AbstractBase
     @Override
     public void setEnableExecution(boolean b) {
         if (supportsEnableExecution()) {
-            _femaleActionSocket.setEnableExecution(b);
+            ((DigitalActionWithEnableExecution)_femaleActionSocket).setEnableExecution(b);
         } else {
             log.error("This conditionalNG does not supports the method setEnableExecution()");
             throw new UnsupportedOperationException("This digital action does not supports the method setEnableExecution()");
@@ -108,7 +109,7 @@ public final class DefaultConditionalNG extends AbstractBase
     @Override
     public boolean isExecutionEnabled() {
         if (supportsEnableExecution()) {
-            return _femaleActionSocket.isExecutionEnabled();
+            return ((DigitalActionWithEnableExecution)_femaleActionSocket).isExecutionEnabled();
         } else {
             log.error("This conditionalNG does not supports the method isExecutionEnabled()");
             throw new UnsupportedOperationException("This digital action does not supports the method isExecutionEnabled()");
@@ -119,7 +120,7 @@ public final class DefaultConditionalNG extends AbstractBase
     @Override
     public void execute() {
         if (isEnabled()) {
-            _femaleActionSocket.executeStart();
+            _femaleActionSocket.execute();
         }
     }
 

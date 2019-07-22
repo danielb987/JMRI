@@ -25,7 +25,6 @@ public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implement
 
     private Base _parent = null;
     private final DigitalActionBean _action;
-    private boolean _isActive = false;
     private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
@@ -77,63 +76,16 @@ public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implement
     
     /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
+    public void execute() {
         if (! _enabled) {
-            return false;
+            return;
         }
         
-        if (_isActive) {
-            throw new RuntimeException("executeStart() must not be called on an active action");
-        }
         if ((_debugConfig != null)
                 && ((DigitalActionDebugConfig)_debugConfig)._dontExecute) {
-            return false;
+            return;
         }
-        _isActive = _action.executeStart();
-        return _isActive;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        if (!_isActive) {
-            return false;
-        }
-        if ((_debugConfig != null)
-                && ((DigitalActionDebugConfig)_debugConfig)._dontExecute) {
-            _isActive = false;
-            _action.abort();
-            return false;
-        }
-        _isActive = _action.executeContinue();
-        return _isActive;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeRestart() {
-        if ((_debugConfig != null)
-                && ((DigitalActionDebugConfig)_debugConfig)._dontExecute) {
-            if (_isActive) {
-                _isActive = false;
-                _action.abort();
-                return false;
-            }
-            return false;
-        }
-        if (_isActive) {
-            _isActive = _action.executeRestart();
-        } else {
-            _isActive = _action.executeStart();
-        }
-        return _isActive;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        _action.abort();
-        _isActive = false;
+        _action.execute();
     }
 
     @Override

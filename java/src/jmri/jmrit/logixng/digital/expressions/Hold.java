@@ -130,17 +130,11 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         if (_isActive) {
-            _isActive = _holdExpressionSocket.evaluate(isCompleted);
+            _isActive = _holdExpressionSocket.evaluate();
         } else {
-            _isActive = _holdExpressionSocket.evaluate(isCompleted) && _triggerExpressionSocket.evaluate(isCompleted);
+            _isActive = _holdExpressionSocket.evaluate() && _triggerExpressionSocket.evaluate();
         }
         return _isActive;
     }

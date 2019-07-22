@@ -89,18 +89,10 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        for (ExpressionEntry e : _expressionEntries) {
-            e._socket.initEvaluation();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         boolean result = true;
         for (ExpressionEntry e : _expressionEntries) {
-            if (! e._socket.evaluate(isCompleted)) {
+            if (! e._socket.evaluate()) {
                 result = false;
             }
         }

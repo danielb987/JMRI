@@ -95,7 +95,7 @@ public class ActionSensor extends AbstractDigitalAction {
     
     /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
+    public void execute() {
         final Sensor t = _sensorHandle.getBean();
 //        final int newState = _sensorState.getID();
         ThreadingUtil.runOnLayout(() -> {
@@ -110,31 +110,6 @@ public class ActionSensor extends AbstractDigitalAction {
                 t.setCommandedState(_sensorState.getID());
             }
         });
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        // The executeStart() metod never return True from this action and
-        // therefore executeContinue() should never be called.
-        throw new RuntimeException("Sensor don't support executeContinue()");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeRestart() {
-        // The executeStart() metod never return True from this action and
-        // therefore executeRestart() should never be called.
-        throw new RuntimeException("Sensor don't support executeRestart()");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        // The executeStart() metod never return True from this action and
-        // therefore abort() should never be called.
-        throw new RuntimeException("Sensor don't support abort()");
     }
 
     @Override

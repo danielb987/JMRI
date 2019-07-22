@@ -78,13 +78,7 @@ public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket imple
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        _expression.initEvaluation();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         if (! _enabled) {
             return false;
         }
@@ -94,7 +88,7 @@ public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket imple
             lastEvaluationResult = ((DigitalExpressionDebugConfig)_debugConfig)._result;
             return lastEvaluationResult;
         }
-        lastEvaluationResult = _expression.evaluate(isCompleted);
+        lastEvaluationResult = _expression.evaluate();
         return lastEvaluationResult;
     }
 

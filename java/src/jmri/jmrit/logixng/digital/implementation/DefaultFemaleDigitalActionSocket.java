@@ -54,36 +54,9 @@ public final class DefaultFemaleDigitalActionSocket
     }
     
     @Override
-    public boolean executeStart() {
+    public void execute() {
         if (isConnected()) {
-            return ((MaleDigitalActionSocket)getConnectedSocket()).executeStart();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean executeContinue() {
-        if (isConnected()) {
-            return ((MaleDigitalActionSocket)getConnectedSocket()).executeContinue();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean executeRestart() {
-        if (isConnected()) {
-            return ((MaleDigitalActionSocket)getConnectedSocket()).executeRestart();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void abort() {
-        if (isConnected()) {
-            ((MaleDigitalActionSocket)getConnectedSocket()).abort();
+            ((MaleDigitalActionSocket)getConnectedSocket()).execute();
         }
     }
 

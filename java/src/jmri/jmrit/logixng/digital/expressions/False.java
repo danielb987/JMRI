@@ -69,13 +69,7 @@ public class False extends AbstractDigitalExpression {
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        // Do nothing
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         return false;
     }
     

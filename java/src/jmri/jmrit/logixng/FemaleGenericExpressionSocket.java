@@ -55,13 +55,6 @@ public interface FemaleGenericExpressionSocket
     public SocketType getSocketType();
     
     /**
-     * Initialize evaluation.
-     * Must be called before evaluation if isCompleted was false after the last
-     * call to evaluateGeneric().
-     */
-    public void initEvaluation();
-    
-    /**
      * Evaluate this expression.
      * <P>
      * The return value of the evaluation is converted to a boolean if necessary.
@@ -70,38 +63,29 @@ public interface FemaleGenericExpressionSocket
      * more than once. For example, the Count expression is not completed until
      * its child expression has been true and false a number of times.
      * 
-     * @param isCompleted true if the evaluation is completed. The caller must
-     * ensure its initiated to true. If the evaluation is not completed, the
-     * expression sets this to false.
      * @return the result of the evaluation
      */
-    public boolean evaluateBoolean(@Nonnull AtomicBoolean isCompleted);
+    public boolean evaluateBoolean();
     
     /**
      * Evaluate this expression.
      * <P>
      * The return value of the evaluation is converted to a double if necessary.
      * 
-     * @param isCompleted true if the evaluation is completed. The caller must
-     * ensure its initiated to true. If the evaluation is not completed, the
-     * expression sets this to false.
      * @return the result of the evaluation. The male socket that holds this
      * expression throws an exception if this value is a Double.NaN or an
      * infinite number.
      */
-    public double evaluateDouble(@Nonnull AtomicBoolean isCompleted);
+    public double evaluateDouble();
     
     /**
      * Evaluate this expression.
      * <P>
      * The return value of the evaluation is converted to a String if necessary.
      * 
-     * @param isCompleted true if the evaluation is completed. The caller must
-     * ensure its initiated to true. If the evaluation is not completed, the
-     * expression sets this to false.
      * @return the result of the evaluation
      */
-    public String evaluateString(@Nonnull AtomicBoolean isCompleted);
+    public String evaluateString();
     
     /**
      * Evaluate this expression.
@@ -113,14 +97,11 @@ public interface FemaleGenericExpressionSocket
      * more than once. For example, the Count expression is not completed until
      * its child expression has been true and false a number of times.
      * 
-     * @param isCompleted true if the evaluation is completed. The caller must
-     * ensure its initiated to true. If the evaluation is not completed, the
-     * expression sets this to false.
      * @return the result of the evaluation. This is of the same class as
      * parentValue.
      */
     @CheckForNull
-    public Object evaluateGeneric(@Nonnull AtomicBoolean isCompleted);
+    public Object evaluateGeneric();
     
     /**
      * Reset the evaluation.

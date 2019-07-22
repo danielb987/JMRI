@@ -48,23 +48,8 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
     }
 
     @Override
-    public boolean executeStart() {
-        return _actionPlugin.executeStart();
-    }
-
-    @Override
-    public boolean executeContinue() {
-        return _actionPlugin.executeContinue();
-    }
-
-    @Override
-    public boolean executeRestart() {
-        return _actionPlugin.executeRestart();
-    }
-
-    @Override
-    public void abort() {
-        _actionPlugin.abort();
+    public void execute() {
+        _actionPlugin.execute();
     }
 
     @Override

@@ -1,8 +1,5 @@
 package jmri.jmrit.logixng;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
-
 /**
  * Analog expression is used in LogixNG to answer a question that can give
  * an analog value as result.
@@ -12,29 +9,16 @@ import javax.annotation.Nonnull;
 public interface AnalogExpression extends Base {
     
     /**
-     * Initialize evaluation.
-     * Must be called before evaluation if isCompleted was false after the last
-     * call to evaluate().
-     */
-    public void initEvaluation();
-    
-    /**
      * Evaluate this expression.
      * 
-     * @param isCompleted true if the evaluation is completed. The caller must
-     * ensure its initiated to true. If the evaluation is not completed, the
-     * expression sets this to false.
      * @return the result of the evaluation. The male socket that holds this
      * expression throws an exception if this value is a Double.NaN or an
      * infinite number.
      */
-    public double evaluate(@Nonnull AtomicBoolean isCompleted);
+    public double evaluate();
     
     /**
      * Reset the evaluation.
-     * This method is called when the closest ancestor Action is activated. An
-     * example is a timer who is used to delay the execution of an action's
-     * child action.
      * 
      * A parent expression must to call reset() on its child when the parent
      * is reset().

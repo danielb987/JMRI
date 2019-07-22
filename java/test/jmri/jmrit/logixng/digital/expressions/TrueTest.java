@@ -30,9 +30,8 @@ public class TrueTest {
     
     @Test
     public void testExpression() {
-        AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
         DigitalExpressionBean t = new True("IQA55:1:DE321");
-        Assert.assertTrue("Expression is true",t.evaluate(isExpressionCompleted));
+        Assert.assertTrue("Expression is true",t.evaluate());
     }
     
     // The minimal setup for log4J

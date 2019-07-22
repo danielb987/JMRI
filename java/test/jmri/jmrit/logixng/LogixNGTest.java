@@ -47,33 +47,6 @@ public class LogixNGTest {
     }
     
     @Test
-    public void testDigitalAction() {
-        AtomicBoolean exceptionIsThrown = new AtomicBoolean();
-        DigitalAction a = new MyDigitalAction();
-        
-        try {
-            a.setEnableExecution(true);
-        } catch (UnsupportedOperationException e) {
-//            System.err.format("Error message: %s%n", e.getMessage());
-            Assert.assertTrue("exception message matches", "This digital action does not supports the method setEnableExecution()".equals(e.getMessage()));
-            exceptionIsThrown.set(true);
-        }
-        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
-        jmri.util.JUnitAppender.assertErrorMessageStartsWith("This digital action does not supports the method setEnableExecution()");
-        
-        exceptionIsThrown.set(false);
-        try {
-            a.isExecutionEnabled();
-        } catch (UnsupportedOperationException e) {
-//            System.err.format("Error message: %s%n", e.getMessage());
-            Assert.assertTrue("exception message matches", "This digital action does not supports the method isExecutionEnabled()".equals(e.getMessage()));
-            exceptionIsThrown.set(true);
-        }
-        Assert.assertTrue("exception is thrown", exceptionIsThrown.get());
-        jmri.util.JUnitAppender.assertErrorMessageStartsWith("This digital action does not supports the method isExecutionEnabled()");
-    }
-    
-    @Test
     public void testManagers() throws SocketAlreadyConnectedException {
         String systemName;
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
@@ -270,30 +243,6 @@ public class LogixNGTest {
             throw new UnsupportedOperationException("Not supported.");
         }
     
-    }
-    
-    private class MyDigitalAction extends MyBase implements DigitalAction {
-
-        @Override
-        public boolean executeStart() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public boolean executeContinue() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public boolean executeRestart() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void abort() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-        
     }
     
 }

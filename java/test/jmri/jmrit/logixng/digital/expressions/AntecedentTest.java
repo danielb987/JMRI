@@ -75,7 +75,6 @@ public class AntecedentTest implements FemaleSocketListener {
     
     private void testCalculate(int expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList, String errorMessage) throws SocketAlreadyConnectedException {
         
-        AtomicBoolean isCompleted = new AtomicBoolean(true);
         Antecedent ix1 = new Antecedent("IQA55:1:DE321", "IXIC 1", antecedent);
         
 //        for (int i=0; i < ix1.getChildCount(); i++) {
@@ -91,14 +90,14 @@ public class AntecedentTest implements FemaleSocketListener {
         switch (expectedResult) {
             case Antecedent.FALSE:
                 Assert.assertFalse("validateAntecedent() returns FALSE for '"+antecedent+"'",
-                        ix1.evaluate(isCompleted));
+                        ix1.evaluate());
                 break;
                 
             case Antecedent.TRUE:
 //                System.err.format("antecedent: %s%n", antecedent);
 //                System.err.format("variable: %b%n", conditionalVariablesList.get(0).evaluate(isCompleted));
                 Assert.assertTrue("validateAntecedent() returns TRUE for '"+antecedent+"'",
-                        ix1.evaluate(isCompleted));
+                        ix1.evaluate());
                 break;
                 
             default:

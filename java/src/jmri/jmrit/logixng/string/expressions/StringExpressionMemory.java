@@ -84,13 +84,7 @@ public class StringExpressionMemory extends AbstractStringExpression implements 
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        // Do nothing
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public String evaluate() {
         if (_memoryHandle != null) {
             return jmri.util.TypeConversionUtil.convertToString(_memoryHandle.getBean().getValue(), false);
         } else {

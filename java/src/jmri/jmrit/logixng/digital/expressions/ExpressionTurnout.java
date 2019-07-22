@@ -106,13 +106,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        // Do nothing
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         TurnoutState currentTurnoutState = TurnoutState.get(_turnoutHandle.getBean().getCommandedState());
         if (_is_IsNot == Is_IsNot_Enum.IS) {
             return currentTurnoutState == _turnoutState;

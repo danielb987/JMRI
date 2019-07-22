@@ -24,7 +24,6 @@ public class DoStringAction
         implements FemaleSocketListener {
 
     private DoStringAction _template;
-    private final AtomicBoolean _isExpressionCompleted = new AtomicBoolean(true);
     private String _stringExpressionSocketSocketSystemName;
     private String _stringActionSocketSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
@@ -107,46 +106,12 @@ public class DoStringAction
     
     /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
-        _isExpressionCompleted.set(true);
-        
-        String result = _stringExpressionSocket.evaluate(_isExpressionCompleted);
+    public void execute() {
+        String result = _stringExpressionSocket.evaluate();
         
         _stringActionSocket.setValue(result);
-
-        return !_isExpressionCompleted.get();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        _isExpressionCompleted.set(true);
-        
-        String result = _stringExpressionSocket.evaluate(_isExpressionCompleted);
-        
-        _stringActionSocket.setValue(result);
-
-        return !_isExpressionCompleted.get();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeRestart() {
-        _isExpressionCompleted.set(true);
-        
-        String result = _stringExpressionSocket.evaluate(_isExpressionCompleted);
-        
-        _stringActionSocket.setValue(result);
-
-        return !_isExpressionCompleted.get();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        // Do nothing
-    }
-    
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         switch (index) {

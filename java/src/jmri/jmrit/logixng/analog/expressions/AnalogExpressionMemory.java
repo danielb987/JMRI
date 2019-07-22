@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class AnalogExpressionMemory extends AbstractAnalogExpression implements PropertyChangeListener {
+public class AnalogExpressionMemory extends AbstractAnalogExpression
+        implements PropertyChangeListener {
 
     private AnalogExpressionMemory _template;
     private String _memoryName;
@@ -84,13 +85,7 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression implements 
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        // Do nothing
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluate() {
         if (_memoryHandle != null) {
             return jmri.util.TypeConversionUtil.convertToDouble(_memoryHandle.getBean().getValue(), false);
         } else {

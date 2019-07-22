@@ -24,7 +24,6 @@ public class DoAnalogAction
         implements FemaleSocketListener {
 
     private DoAnalogAction _template;
-    private final AtomicBoolean _isExpressionCompleted = new AtomicBoolean(true);
     private String _analogExpressionSocketSystemName;
     private String _analogActionSocketSystemName;
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
@@ -107,46 +106,12 @@ public class DoAnalogAction
     
     /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
-        _isExpressionCompleted.set(true);
-        
-        double result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
+    public void execute() {
+        double result = _analogExpressionSocket.evaluate();
         
         _analogActionSocket.setValue(result);
-
-        return !_isExpressionCompleted.get();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        _isExpressionCompleted.set(true);
-        
-        double result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
-        
-        _analogActionSocket.setValue(result);
-
-        return !_isExpressionCompleted.get();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeRestart() {
-        _isExpressionCompleted.set(true);
-        
-        double result = _analogExpressionSocket.evaluate(_isExpressionCompleted);
-        
-        _analogActionSocket.setValue(result);
-
-        return !_isExpressionCompleted.get();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        _isExpressionCompleted.set(true);
-    }
-    
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         switch (index) {

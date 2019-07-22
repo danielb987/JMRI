@@ -30,9 +30,8 @@ public class FalseTest {
     
     @Test
     public void testExpression() {
-        AtomicBoolean isExpressionCompleted = new AtomicBoolean(true);
         DigitalExpressionBean t = new False("IQA55:1:DE321");
-        Assert.assertFalse("Expression is false",t.evaluate(isExpressionCompleted));
+        Assert.assertFalse("Expression is false",t.evaluate());
     }
     
     // The minimal setup for log4J

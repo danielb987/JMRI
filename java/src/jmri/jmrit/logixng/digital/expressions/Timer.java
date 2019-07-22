@@ -51,13 +51,7 @@ public class Timer extends AbstractDigitalExpression {
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean evaluate(AtomicBoolean isCompleted) {
+    public boolean evaluate() {
         // Has timer completed?
         
         return true;    // Mockup code for now.

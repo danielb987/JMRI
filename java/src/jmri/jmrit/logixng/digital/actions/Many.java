@@ -10,6 +10,7 @@ import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.DigitalActionWithEnableExecution;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -21,7 +22,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class Many extends AbstractDigitalAction implements FemaleSocketListener {
+public class Many extends AbstractDigitalAction
+        implements FemaleSocketListener, DigitalActionWithEnableExecution {
 
     private Many _template;
     private boolean _enableExecution;
@@ -129,47 +131,18 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
         return false;
     }
     
-    /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
-        boolean state = false;
+    public void evaluateOnly() {
         for (ActionEntry actionEntry : _actionEntries) {
-            actionEntry._status = actionEntry._socket.executeStart();
-            state |= actionEntry._status;
+            ((DigitalActionWithEnableExecution)actionEntry._socket).evaluateOnly();
         }
-        return state;
     }
-
+    
     /** {@inheritDoc} */
     @Override
-    public boolean executeRestart() {
-        boolean state = false;
+    public void execute() {
         for (ActionEntry actionEntry : _actionEntries) {
-            actionEntry._status = actionEntry._socket.executeRestart();
-            state |= actionEntry._status;
-        }
-        return state;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        boolean state = false;
-        for (ActionEntry actionEntry : _actionEntries) {
-            if (actionEntry._status) {
-                actionEntry._status = actionEntry._socket.executeContinue();
-                state |= actionEntry._status;
-            }
-        }
-        return state;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        for (ActionEntry actionEntry : _actionEntries) {
-            actionEntry._socket.abort();
-            actionEntry._status = false;
+            actionEntry._socket.execute();
         }
     }
 
@@ -263,7 +236,6 @@ public class Many extends AbstractDigitalAction implements FemaleSocketListener 
     private static class ActionEntry {
         private String _socketSystemName;
         private final FemaleDigitalActionSocket _socket;
-        private boolean _status;
         
         private ActionEntry(FemaleDigitalActionSocket socket, String socketSystemName) {
             _socketSystemName = socketSystemName;

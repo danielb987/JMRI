@@ -57,17 +57,9 @@ public class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
+    public double evaluate() {
         if (isConnected()) {
-            ((MaleAnalogExpressionSocket)getConnectedSocket()).initEvaluation();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
-        if (isConnected()) {
-            return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate(isCompleted);
+            return ((MaleAnalogExpressionSocket)getConnectedSocket()).evaluate();
         } else {
             return 0.0;
         }

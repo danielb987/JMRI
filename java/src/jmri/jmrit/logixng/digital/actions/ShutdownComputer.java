@@ -75,7 +75,7 @@ public class ShutdownComputer extends AbstractDigitalAction {
     
     /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
+    public void execute() {
         String time = (_seconds == 0) ? "now" : Integer.toString(_seconds);
         try {
             if (SystemType.isLinux() || SystemType.isUnix() || SystemType.isMacOSX()) {
@@ -92,35 +92,10 @@ public class ShutdownComputer extends AbstractDigitalAction {
             }
         } catch (SecurityException | IOException e) {
             log.error("Shutdown failed", e);  // NOI18N
-            return false;
         }
         
         // Quit program
         AppsBase.handleQuit();
-        
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        // We should normally never be here.
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeRestart() {
-        // We should normally never be here.
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        // The executeStart() metod never return True from this action and
-        // therefore abort() should never be called.
-        throw new RuntimeException("ShutDown doesn't support abort()");
     }
 
     @Override

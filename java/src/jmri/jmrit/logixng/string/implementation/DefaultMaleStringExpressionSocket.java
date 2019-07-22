@@ -77,13 +77,7 @@ public class DefaultMaleStringExpressionSocket extends AbstractMaleSocket implem
     
     /** {@inheritDoc} */
     @Override
-    public void initEvaluation() {
-        _expression.initEvaluation();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public String evaluate() {
         if (! _enabled) {
             return "";
         }
@@ -92,7 +86,7 @@ public class DefaultMaleStringExpressionSocket extends AbstractMaleSocket implem
                 && ((StringExpressionDebugConfig)_debugConfig)._forceResult) {
             return ((StringExpressionDebugConfig)_debugConfig)._result;
         }
-        return _expression.evaluate(isCompleted);
+        return _expression.evaluate();
     }
     
     /** {@inheritDoc} */

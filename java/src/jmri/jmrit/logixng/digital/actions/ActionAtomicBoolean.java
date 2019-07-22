@@ -93,33 +93,8 @@ public class ActionAtomicBoolean extends AbstractDigitalAction {
     
     /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
+    public void execute() {
         _atomicBoolean.set(_newValue);
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        // The executeStart() metod never return True from this action and
-        // therefore executeContinue() should never be called.
-        throw new RuntimeException("ActionAtomicBoolean don't support executeContinue()");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeRestart() {
-        // The executeStart() metod never return True from this action and
-        // therefore executeRestart() should never be called.
-        throw new RuntimeException("ActionAtomicBoolean don't support executeRestart()");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
-        // The executeStart() metod never return True from this action and
-        // therefore abort() should never be called.
-        throw new RuntimeException("ActionAtomicBoolean don't support abort()");
     }
 
     @Override

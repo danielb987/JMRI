@@ -93,16 +93,12 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
     @Test
     public void testEvaluate() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
         StringExpressionMemory _expression = (StringExpressionMemory)_base;
-        AtomicBoolean isCompleted = new AtomicBoolean();
         _memory.setValue("");
-        _expression.initEvaluation();
-        Assert.assertEquals("Evaluate matches", "", _expression.evaluate(isCompleted));
-        _expression.initEvaluation();
+        Assert.assertEquals("Evaluate matches", "", _expression.evaluate());
         _memory.setValue("Other");
-        Assert.assertEquals("Evaluate matches", "Other", _expression.evaluate(isCompleted));
-        _expression.initEvaluation();
+        Assert.assertEquals("Evaluate matches", "Other", _expression.evaluate());
         _expression.setMemory((Memory)null);
-        Assert.assertEquals("Evaluate matches", "", _expression.evaluate(isCompleted));
+        Assert.assertEquals("Evaluate matches", "", _expression.evaluate());
         _expression.reset();
     }
     

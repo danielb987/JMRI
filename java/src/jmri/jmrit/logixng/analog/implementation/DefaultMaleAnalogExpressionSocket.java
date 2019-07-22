@@ -88,14 +88,8 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
         return false;
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public void initEvaluation() {
-        _expression.initEvaluation();
-    }
-    
-    private double internalEvaluate(@Nonnull AtomicBoolean isCompleted) {
-        double result = _expression.evaluate(isCompleted);
+    private double internalEvaluate() {
+        double result = _expression.evaluate();
         
         if (Double.isNaN(result)) {
             throw new IllegalArgumentException("The result is NaN");
@@ -111,7 +105,7 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
 
     /** {@inheritDoc} */
     @Override
-    public double evaluate(@Nonnull AtomicBoolean isCompleted) {
+    public double evaluate() {
         if (! _enabled) {
             return 0.0;
         }
@@ -122,7 +116,7 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
         }
         
         try {
-            return internalEvaluate(isCompleted);
+            return internalEvaluate();
         } catch (Exception e) {
             switch (_errorHandlingType) {
                 case SHOW_DIALOG_BOX:

@@ -93,16 +93,12 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     @Test
     public void testEvaluate() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
         AnalogExpressionMemory _expression = (AnalogExpressionMemory)_base;
-        AtomicBoolean isCompleted = new AtomicBoolean();
         _memory.setValue(0.0d);
-        _expression.initEvaluation();
-        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
-        _expression.initEvaluation();
+        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate());
         _memory.setValue(10.0d);
-        Assert.assertTrue("Evaluate matches", 10.0d == _expression.evaluate(isCompleted));
-        _expression.initEvaluation();
+        Assert.assertTrue("Evaluate matches", 10.0d == _expression.evaluate());
         _expression.setMemory((Memory)null);
-        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate(isCompleted));
+        Assert.assertTrue("Evaluate matches", 0.0d == _expression.evaluate());
         _expression.reset();
     }
     

@@ -13,6 +13,7 @@ import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.DigitalActionWithEnableExecution;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
 
@@ -23,7 +24,8 @@ import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class HoldAnything extends AbstractDigitalAction {
+public class HoldAnything extends AbstractDigitalAction
+        implements DigitalActionWithEnableExecution {
 
     private boolean _enableExecution;
     private final List<MultipleSockets> _multipleSockets = new ArrayList<>();
@@ -95,27 +97,14 @@ public class HoldAnything extends AbstractDigitalAction {
         return false;
     }
     
-    /** {@inheritDoc} */
     @Override
-    public boolean executeStart() {
-        return false;
+    public void evaluateOnly() {
+        // Do nothing
     }
-
+    
     /** {@inheritDoc} */
     @Override
-    public boolean executeRestart() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean executeContinue() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void abort() {
+    public void execute() {
         // Do nothing
     }
 
