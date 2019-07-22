@@ -273,7 +273,6 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
      * @return error message string if not well formed
      */
     public String validateAntecedent(String ant, List<ExpressionEntry> expressionEntryList) {
-        AtomicBoolean isCompleted = new AtomicBoolean(true);
         char[] ch = ant.toCharArray();
         int n = 0;
         for (int j = 0; j < ch.length; j++) {
