@@ -25,7 +25,6 @@ public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implement
 
     private Base _parent = null;
     private final DigitalActionBean _action;
-    private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
     
@@ -53,13 +52,13 @@ public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implement
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {
-        return _lock;
+        return _action.getLock();
     }
     
     /** {@inheritDoc} */
     @Override
     public void setLock(Lock lock) {
-        _lock = lock;
+        _action.setLock(lock);
     }
     
     /** {@inheritDoc} */
@@ -72,6 +71,12 @@ public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implement
     @Override
     public boolean isExternal() {
         return false;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean supportsEnableExecution() {
+        return _action.supportsEnableExecution();
     }
     
     /** {@inheritDoc} */

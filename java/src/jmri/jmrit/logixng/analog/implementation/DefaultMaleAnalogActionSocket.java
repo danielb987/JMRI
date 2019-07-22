@@ -28,7 +28,6 @@ public class DefaultMaleAnalogActionSocket extends AbstractMaleSocket implements
 
     private Base _parent = null;
     private final AnalogActionBean _action;
-    private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
     private boolean _enabled = true;
@@ -57,13 +56,13 @@ public class DefaultMaleAnalogActionSocket extends AbstractMaleSocket implements
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {
-        return _lock;
+        return _action.getLock();
     }
     
     /** {@inheritDoc} */
     @Override
     public void setLock(Lock lock) {
-        _lock = lock;
+        _action.setLock(lock);
     }
     
     public ErrorHandlingType getErrorHandlingType() {

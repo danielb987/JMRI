@@ -11,7 +11,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DigitalActionPluginSocketTest {
+public class DigitalActionPluginSocketTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -25,6 +25,7 @@ public class DigitalActionPluginSocketTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        _base = new DigitalActionPluginSocket("IQ1:1:DA1", null);
     }
 
     @After

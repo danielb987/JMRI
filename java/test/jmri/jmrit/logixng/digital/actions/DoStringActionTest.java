@@ -11,7 +11,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class DoStringActionTest {
+public class DoStringActionTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -30,6 +30,7 @@ public class DoStringActionTest {
         JUnitUtil.initDigitalActionManager();
         JUnitUtil.initStringExpressionManager();
         JUnitUtil.initStringActionManager();
+        _base = new DoStringAction("IQA55:10:DA321");
     }
 
     @After

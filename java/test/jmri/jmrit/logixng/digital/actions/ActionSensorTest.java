@@ -22,7 +22,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionSensorTest {
+public class ActionSensorTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -79,6 +79,7 @@ public class ActionSensorTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalSensorManager();
+        _base = new ActionSensor("IQA55:10:DA321", null);
     }
 
     @After

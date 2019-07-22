@@ -6,7 +6,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.NamedBean;
@@ -29,7 +28,6 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
 
     private Base _parent = null;
     private final AnalogExpressionBean _expression;
-    private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private ErrorHandlingType _errorHandlingType = ErrorHandlingType.LOG_ERROR;
     private boolean _enabled = true;
@@ -58,15 +56,15 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {
-        return _lock;
+        return _expression.getLock();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public void setLock(Lock lock) {
-        _lock = lock;
+        _expression.setLock(lock);
     }
-
+    
     public ErrorHandlingType getErrorHandlingType() {
         return _errorHandlingType;
     }

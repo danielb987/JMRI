@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.implementation;
 
-import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;

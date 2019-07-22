@@ -27,7 +27,6 @@ public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket imple
     private Base _parent = null;
     private final DigitalExpressionBean _expression;
     private boolean lastEvaluationResult = false;
-    private Lock _lock = Lock.NONE;
     private DebugConfig _debugConfig = null;
     private boolean _enabled = true;
 
@@ -55,15 +54,15 @@ public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket imple
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {
-        return _lock;
+        return _expression.getLock();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public void setLock(Lock lock) {
-        _lock = lock;
+        _expression.setLock(lock);
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {

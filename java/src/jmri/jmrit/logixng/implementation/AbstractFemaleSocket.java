@@ -55,13 +55,21 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     /** {@inheritDoc} */
     @Override
     public Lock getLock() {
-        return _lock;
+        if (_socket != null) {
+            return _socket.getLock();
+        } else {
+            throw new UnsupportedOperationException("Socket is not connected");
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public void setLock(Lock lock) {
-        _lock = lock;
+        if (_socket != null) {
+            _socket.setLock(lock);
+        } else {
+            throw new UnsupportedOperationException("Socket is not connected");
+        }
     }
     
     /** {@inheritDoc} */

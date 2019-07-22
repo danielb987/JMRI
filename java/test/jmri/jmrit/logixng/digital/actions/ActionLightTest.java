@@ -22,7 +22,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionLightTest {
+public class ActionLightTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -79,6 +79,7 @@ public class ActionLightTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalLightManager();
+        _base = new ActionLight("IQA55:10:DA321", null);
     }
 
     @After

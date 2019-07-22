@@ -21,7 +21,7 @@ import jmri.jmrit.logixng.DigitalActionBean;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ActionAtomicBooleanTest {
+public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -54,6 +54,7 @@ public class ActionAtomicBooleanTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        _base = new ActionAtomicBoolean("IQA55:1:DA321", null);
     }
 
     @After

@@ -11,7 +11,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class DoAnalogActionTest {
+public class DoAnalogActionTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -30,6 +30,7 @@ public class DoAnalogActionTest {
         JUnitUtil.initDigitalActionManager();
         JUnitUtil.initAnalogExpressionManager();
         JUnitUtil.initAnalogActionManager();
+        _base = new DoAnalogAction("IQA55:10:DA321");
     }
 
     @After

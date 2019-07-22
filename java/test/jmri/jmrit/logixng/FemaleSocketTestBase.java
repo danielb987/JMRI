@@ -176,7 +176,7 @@ public abstract class FemaleSocketTestBase {
         Assert.assertTrue("exception is thrown", setName_verifyException("A12{3", "the name is not valid: A12{3"));
         Assert.assertTrue("exception is thrown", setName_verifyException("A12}3", "the name is not valid: A12}3"));
     }
-    
+/*    
     @Test
     public void testLock() {
         femaleSocket.setLock(Base.Lock.NONE);
@@ -186,7 +186,7 @@ public abstract class FemaleSocketTestBase {
         femaleSocket.setLock(Base.Lock.HARD_LOCK);
         Assert.assertEquals("lock matches", Base.Lock.HARD_LOCK, femaleSocket.getLock());
     }
-    
+*/    
     @Test
     public void testDisposeWithoutChild() {
         femaleSocket.dispose();

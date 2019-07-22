@@ -11,7 +11,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class ShutdownComputerTest {
+public class ShutdownComputerTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
@@ -25,6 +25,7 @@ public class ShutdownComputerTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        _base = new ShutdownComputer("IQA55:10:DA321", null, 0);
     }
 
     @After
