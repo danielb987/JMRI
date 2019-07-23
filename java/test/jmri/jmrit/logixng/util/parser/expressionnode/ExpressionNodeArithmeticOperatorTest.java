@@ -21,7 +21,6 @@ public class ExpressionNodeArithmeticOperatorTest {
     public void testCtor() throws ParserException {
         
         ExpressionNode exprTrue = new ExpressionNodeTrue();
-        ExpressionNode exprFalse = new ExpressionNodeFalse();
         
         Token token = new Token(TokenType.NONE, "1", 0);
         ExpressionNodeFloatingNumber expressionNumber = new ExpressionNodeFloatingNumber(token);
