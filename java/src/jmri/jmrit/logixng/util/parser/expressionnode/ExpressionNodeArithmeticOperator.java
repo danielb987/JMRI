@@ -28,9 +28,14 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
         switch (_tokenType) {
             case ADD:
             case SUBTRACKT:
+                break;
+                
             case MULTIPLY:
             case DIVIDE:
             case MODULO:
+                if (_leftSide == null) {
+                    throw new IllegalArgumentException("leftSide must not be null for operators *, / and %");
+                }
                 break;
                 
             default:

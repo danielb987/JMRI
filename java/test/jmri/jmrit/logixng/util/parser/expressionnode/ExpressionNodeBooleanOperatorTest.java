@@ -48,23 +48,25 @@ public class ExpressionNodeBooleanOperatorTest {
         
         // AND requires two operands
         try {
-            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_AND, null, exprTrue).calculate();
+            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_AND, null, exprTrue);
         } catch (IllegalArgumentException e) {
             hasThrown.set(true);
         }
         Assert.assertTrue("exception is thrown", hasThrown.get());
         
         // OR requires two operands
+        hasThrown.set(false);
         try {
-            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_AND, null, exprTrue).calculate();
+            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, null, exprTrue);
         } catch (IllegalArgumentException e) {
             hasThrown.set(true);
         }
         Assert.assertTrue("exception is thrown", hasThrown.get());
         
         // NOT requires only one operands
+        hasThrown.set(false);
         try {
-            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_AND, exprFalse, exprTrue).calculate();
+            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_NOT, exprFalse, exprTrue);
         } catch (IllegalArgumentException e) {
             hasThrown.set(true);
         }
@@ -147,7 +149,7 @@ public class ExpressionNodeBooleanOperatorTest {
                         .getDefinitionString());
         Assert.assertEquals("getDefinitionString() gives the correct value",
                 "(false)||(false)",
-                new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprFalse1)
+                new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprFalse2)
                         .getDefinitionString());
         Assert.assertEquals("getDefinitionString() gives the correct value",
                 "(false)||(true)",

@@ -26,7 +26,15 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
         switch (_tokenType) {
             case BOOLEAN_OR:
             case BOOLEAN_AND:
+                if (_leftSide == null) {
+                    throw new IllegalArgumentException("leftSide must not be null for operators AND and OR");
+                }
+                break;
+                
             case BOOLEAN_NOT:
+                if (_leftSide != null) {
+                    throw new IllegalArgumentException("leftSide must be null for operator NOT");
+                }
                 break;
                 
             default:
@@ -45,10 +53,6 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
         
         if (_tokenType == TokenType.BOOLEAN_NOT) {
             return ! right;
-        }
-        
-        if (_leftSide == null) {
-            throw new IllegalArgumentException("leftSide must not be null for operators AND and OR");
         }
         
         Object leftValue = _leftSide.calculate();
