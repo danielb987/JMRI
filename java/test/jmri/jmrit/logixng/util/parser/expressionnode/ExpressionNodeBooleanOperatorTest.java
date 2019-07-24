@@ -71,6 +71,15 @@ public class ExpressionNodeBooleanOperatorTest {
             hasThrown.set(true);
         }
         Assert.assertTrue("exception is thrown", hasThrown.get());
+        
+        // BINARY_AND is an unsupported operator
+        hasThrown.set(false);
+        try {
+            new ExpressionNodeBooleanOperator(TokenType.BINARY_AND, exprFalse, exprTrue);
+        } catch (IllegalArgumentException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
     }
     
     @Test
@@ -78,8 +87,10 @@ public class ExpressionNodeBooleanOperatorTest {
         
         ExpressionNode exprTrue1 = new ExpressionNodeTrue();
         ExpressionNode exprTrue2 = new ExpressionNodeTrue();
+        ExpressionNode exprTrue3 = new ExpressionNodeIntegerNumber(new Token(TokenType.NONE, "1", 0));
         ExpressionNode exprFalse1 = new ExpressionNodeFalse();
         ExpressionNode exprFalse2 = new ExpressionNodeFalse();
+        ExpressionNode exprFalse3 = new ExpressionNodeIntegerNumber(new Token(TokenType.NONE, "0", 0));
         
         Assert.assertFalse("calculate() gives the correct value",
                 (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_NOT, null, exprTrue1).calculate());
@@ -103,6 +114,16 @@ public class ExpressionNodeBooleanOperatorTest {
                 (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprFalse1).calculate());
         Assert.assertTrue("calculate() gives the correct value",
                 (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprTrue1).calculate());
+        
+        // Test non boolean operands
+        Assert.assertTrue("calculate() gives the correct value",
+                (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprTrue3, exprTrue2).calculate());
+        Assert.assertTrue("calculate() gives the correct value",
+                (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprTrue3, exprFalse3).calculate());
+        Assert.assertFalse("calculate() gives the correct value",
+                (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprFalse3).calculate());
+        Assert.assertTrue("calculate() gives the correct value",
+                (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse3, exprTrue3).calculate());
     }
     
     @Test

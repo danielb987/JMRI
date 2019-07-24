@@ -38,7 +38,7 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
                 break;
                 
             default:
-                throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+                throw new IllegalArgumentException("Unsupported boolean operator: "+_tokenType.name());
         }
     }
     
@@ -69,7 +69,7 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
                 return left && right;
                 
             default:
-                throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+                throw new RuntimeException("Unknown boolean operator: "+_tokenType.name());
         }
     }
     
