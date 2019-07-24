@@ -30,12 +30,7 @@ public class LogixNG_StartupAction extends JmriAbstractAction {
         try {
             ((DefaultLogixNGManager)InstanceManager.getDefault(LogixNG_Manager.class)).testLogixNGs();
         } catch (PropertyVetoException ex) {
-            if (1==1)
-                log.warn("exception thrown");
-            else
-                log.error("exception thrown");
-//            log.error("exception thrown", ex);
-//            Logger.getLogger(LogixNG_StartupAction.class.getName()).log(Level.SEVERE, "exception thrown", ex);
+            Logger.getLogger(LogixNG_StartupAction.class.getName()).log(Level.SEVERE, "exception thrown", ex);
         }
         /*
             if (jmri.InstanceManager.getNullableDefault(TimeTableFrame.class) != null) {
@@ -53,5 +48,4 @@ public class LogixNG_StartupAction extends JmriAbstractAction {
         throw new IllegalArgumentException("Should not be invoked");  // NOI18N
     }
     
-    private final static org.slf4j.Logger log = LoggerFactory.getLogger(LogixNG_StartupAction.class);
 }

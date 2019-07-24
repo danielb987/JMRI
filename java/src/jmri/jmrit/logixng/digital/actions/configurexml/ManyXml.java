@@ -154,7 +154,7 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
 
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
         
-        log.warn("Register action: " + h.getSystemName() + ", " + h.getLongDescription());
+//        log.warn("Register action: " + h.getSystemName() + ", " + h.getLongDescription());
         return true;
     }
 /*

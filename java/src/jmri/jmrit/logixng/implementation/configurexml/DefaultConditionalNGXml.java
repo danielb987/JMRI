@@ -141,7 +141,7 @@ public class DefaultConditionalNGXml extends jmri.managers.configurexml.Abstract
         }
         Element socketSystemName = conditionalNG_Element.getChild("socket").getChild("systemName");
         if (socketSystemName != null) {
-            log.warn("Socket system name: {}", socketSystemName.getTextTrim());
+//            log.warn("Socket system name: {}", socketSystemName.getTextTrim());
             conditionalNG.setSocketSystemName(socketSystemName.getTextTrim());
         }
         

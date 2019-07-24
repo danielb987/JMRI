@@ -157,7 +157,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         }
         Element socketSystemName = shared.getChild("ifSocket").getChild("systemName");
         if (socketSystemName != null) {
-            log.warn("If socket system name: {}", socketSystemName.getTextTrim());
+//            log.warn("If socket system name: {}", socketSystemName.getTextTrim());
             h.setIfExpressionSocketSystemName(socketSystemName.getTextTrim());
         }
         
@@ -167,7 +167,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         }
         socketSystemName = shared.getChild("thenSocket").getChild("systemName");
         if (socketSystemName != null) {
-            log.warn("Then socket system name: {}", socketSystemName.getTextTrim());
+//            log.warn("Then socket system name: {}", socketSystemName.getTextTrim());
             h.setThenActionSocketSystemName(socketSystemName.getTextTrim());
         }
         

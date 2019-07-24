@@ -242,7 +242,7 @@ public final class DefaultConditionalNG extends AbstractBase
     /** {@inheritDoc} */
     @Override
     final public void setup() {
-        log.debug("setup(): Socket system name: {}", _socketSystemName);
+//        log.debug("setup(): Socket system name: {}", _socketSystemName);
         if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
             try {
                 MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);

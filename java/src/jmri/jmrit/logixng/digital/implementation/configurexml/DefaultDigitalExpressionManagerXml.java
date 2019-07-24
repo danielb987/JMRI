@@ -118,7 +118,7 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
 //                throw new RuntimeException("Daniel");
             
             String className = expressionList.get(i).getAttribute("class").getValue();
-            log.warn("className: " + className);
+//            log.warn("className: " + className);
             
             Class<?> clazz = xmlClasses.get(className);
             

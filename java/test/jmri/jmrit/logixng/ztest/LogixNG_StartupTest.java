@@ -36,11 +36,7 @@ public class LogixNG_StartupTest {
         // Test that actionPerformed() throws PropertyVetoException
         InstanceManager.setDefault(LogixNG_Manager.class, new MyLogixNG_Manager());
         new LogixNG_StartupAction().actionPerformed(null);
-        if (1==1)
-            jmri.util.JUnitAppender.assertWarnMessage("exception thrown");
-        else
-            jmri.util.JUnitAppender.assertErrorMessage("exception thrown");
-//        jmri.util.JUnitAppender.assertErrorMessageStartsWith("exception thrown");
+        jmri.util.JUnitAppender.assertErrorMessage("exception thrown");
     }
 
     @Test

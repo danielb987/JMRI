@@ -207,7 +207,6 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         }
         
         for (Map.Entry<String, String> entry : systemNames) {
-//            System.err.format("AAA Antecedent: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalExpressionSocket socket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
                             .createFemaleSocket(this, this, entry.getKey());

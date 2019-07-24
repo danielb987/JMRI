@@ -200,8 +200,6 @@ public class Many extends AbstractDigitalAction
         }
         
         for (Map.Entry<String, String> entry : systemNames) {
-//            System.out.format("Many: systemName: %s%n", entry);
-//            System.err.format("AAA Many: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalActionSocket socket =
                     InstanceManager.getDefault(DigitalActionManager.class)
                             .createFemaleSocket(this, this, entry.getKey());
@@ -217,10 +215,8 @@ public class Many extends AbstractDigitalAction
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        System.err.format("AAAA setup()%n");
         for (ActionEntry ae : _actionEntries) {
             if (ae._socketSystemName != null) {
-                System.err.format("AA SocketName: %s, SystemName: %s%n", ae._socket.getName(), ae._socketSystemName);
                 try {
                     MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName);
                     if (maleSocket != null) {

@@ -133,8 +133,6 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         }
         
         for (Map.Entry<String, String> entry : systemNames) {
-//            System.out.format("Many: systemName: %s%n", entry);
-//            System.err.format("AAA And: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalExpressionSocket socket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
                             .createFemaleSocket(this, this, entry.getKey());

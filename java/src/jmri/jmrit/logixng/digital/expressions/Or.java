@@ -133,8 +133,6 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
         }
         
         for (Map.Entry<String, String> entry : systemNames) {
-//            System.out.format("Many: systemName: %s%n", entry);
-//            System.err.format("AAA Or: socketName: %s, systemName: %s%n", entry.getKey(), entry.getValue());
             FemaleDigitalExpressionSocket socket =
                     InstanceManager.getDefault(DigitalExpressionManager.class)
                             .createFemaleSocket(this, this, entry.getKey());
