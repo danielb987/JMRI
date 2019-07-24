@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.util.parser.expressionnode;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.jmrit.logixng.util.parser.CalculateException;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.parser.Token;
 import jmri.jmrit.logixng.util.parser.TokenType;
@@ -66,21 +67,20 @@ public class ExpressionNodeArithmeticOperatorTest {
     }
     
     @Test
-    public void testCalculate() throws ParserException {
+    public void testCalculate() throws ParserException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         
         ExpressionNode expr12_34 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "12.34", 0));
         ExpressionNode expr25_46 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "25.46", 0));
-        ExpressionNode expr12 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "12", 0));
-        ExpressionNode expr23 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "23", 0));
+        ExpressionNode expr12 = new ExpressionNodeIntegerNumber(new Token(TokenType.NONE, "12", 0));
+        ExpressionNode expr235 = new ExpressionNodeIntegerNumber(new Token(TokenType.NONE, "235", 0));
         
         Assert.assertEquals("calculate() gives the correct value",
                 37.8,
                 (double)new ExpressionNodeArithmeticOperator(TokenType.ADD, expr12_34, expr25_46).calculate(),
                 0.00000001);
         Assert.assertEquals("calculate() gives the correct value",
-                35,
-                (double)new ExpressionNodeArithmeticOperator(TokenType.ADD, expr12, expr23).calculate(),
-                0.00000001);
+                247,
+                (long)new ExpressionNodeArithmeticOperator(TokenType.ADD, expr12, expr235).calculate());
         Assert.assertEquals("calculate() gives the correct value",
                 24.34,
                 (double)new ExpressionNodeArithmeticOperator(TokenType.ADD, expr12, expr12_34).calculate(),
@@ -91,9 +91,8 @@ public class ExpressionNodeArithmeticOperatorTest {
                 (double)new ExpressionNodeArithmeticOperator(TokenType.SUBTRACKT, expr12_34, expr25_46).calculate(),
                 0.00000001);
         Assert.assertEquals("calculate() gives the correct value",
-                -11,
-                (double)new ExpressionNodeArithmeticOperator(TokenType.SUBTRACKT, expr12, expr23).calculate(),
-                0.00000001);
+                -223,
+                (long)new ExpressionNodeArithmeticOperator(TokenType.SUBTRACKT, expr12, expr235).calculate());
         Assert.assertEquals("calculate() gives the correct value",
                 -0.34,
                 (double)new ExpressionNodeArithmeticOperator(TokenType.SUBTRACKT, expr12, expr12_34).calculate(),
@@ -104,9 +103,8 @@ public class ExpressionNodeArithmeticOperatorTest {
                 (double)new ExpressionNodeArithmeticOperator(TokenType.MULTIPLY, expr12_34, expr25_46).calculate(),
                 0.00000001);
         Assert.assertEquals("calculate() gives the correct value",
-                276,
-                (double)new ExpressionNodeArithmeticOperator(TokenType.MULTIPLY, expr12, expr23).calculate(),
-                0.00000001);
+                2820,
+                (long)new ExpressionNodeArithmeticOperator(TokenType.MULTIPLY, expr12, expr235).calculate());
         Assert.assertEquals("calculate() gives the correct value",
                 148.08,
                 (double)new ExpressionNodeArithmeticOperator(TokenType.MULTIPLY, expr12, expr12_34).calculate(),
@@ -117,17 +115,51 @@ public class ExpressionNodeArithmeticOperatorTest {
                 (double)new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr12_34, expr25_46).calculate(),
                 0.00000001);
         Assert.assertEquals("calculate() gives the correct value",
-                0.5217391304347826,
-                (double)new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr12, expr23).calculate(),
-                0.00000001);
+                19,
+                (long)new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr235, expr12).calculate());
         Assert.assertEquals("calculate() gives the correct value",
                 0.9724473257698542,
                 (double)new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr12, expr12_34).calculate(),
                 0.00000001);
+        
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        
+        // MODULO requires two integer operands
+        hasThrown.set(false);
+        try {
+            new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr12_34, expr25_46).calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
+        
+        Assert.assertEquals("calculate() gives the correct value",
+                7,
+                (long)new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr235, expr12).calculate());
+        
+        // MODULO requires two integer operands
+        hasThrown.set(false);
+        try {
+            new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr12, expr12_34).calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
+        
+        // Test unsupported token type
+        hasThrown.set(false);
+        try {
+            ExpressionNode en = new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr12, expr12_34);
+            jmri.util.ReflectionUtilScaffold.setField(en, "_tokenType", TokenType.COMMA);
+            en.calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
     }
     
     @Test
-    public void testGetDefinitionString() throws ParserException {
+    public void testGetDefinitionString() throws ParserException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         
         ExpressionNode expr12_34 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "12.34", 0));
         ExpressionNode expr25_46 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "25.46", 0));
@@ -210,6 +242,36 @@ public class ExpressionNodeArithmeticOperatorTest {
                 "(FloatNumber:12)/(FloatNumber:12.34)",
                 new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr12, expr12_34)
                         .getDefinitionString());
+        
+        Assert.assertEquals("getDefinitionString() gives the correct value",
+                "(FloatNumber:12.34)%(FloatNumber:25.46)",
+                new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr12_34, expr25_46)
+                        .getDefinitionString());
+        Assert.assertEquals("getDefinitionString() gives the correct value",
+                "(FloatNumber:12.34)%(FloatNumber:12)",
+                new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr12_34, expr12)
+                        .getDefinitionString());
+        Assert.assertEquals("getDefinitionString() gives the correct value",
+                "(FloatNumber:12)%(FloatNumber:23)",
+                new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr12, expr23)
+                        .getDefinitionString());
+        Assert.assertEquals("getDefinitionString() gives the correct value",
+                "(FloatNumber:12)%(FloatNumber:12.34)",
+                new ExpressionNodeArithmeticOperator(TokenType.MODULO, expr12, expr12_34)
+                        .getDefinitionString());
+        
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        
+        // Test unsupported token type
+        hasThrown.set(false);
+        try {
+            ExpressionNode en = new ExpressionNodeArithmeticOperator(TokenType.DIVIDE, expr12, expr12_34);
+            jmri.util.ReflectionUtilScaffold.setField(en, "_tokenType", TokenType.COMMA);
+            en.calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
     }
     
     // The minimal setup for log4J

@@ -29,7 +29,7 @@ public class RecursiveDescentParserTest {
     
     // This test is only to check how Jython handles different types.
     // This test must be removed later.
-    @Ignore("Test used only to check how jython handles things.")
+//    @Ignore("Test used only to check how jython handles things.")
     @Test
     public void testDaniel() throws ScriptException {
         

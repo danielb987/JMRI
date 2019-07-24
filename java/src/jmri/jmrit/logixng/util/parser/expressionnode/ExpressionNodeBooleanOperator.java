@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.util.parser.expressionnode;
 
+import jmri.jmrit.logixng.util.parser.CalculateException;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.parser.TokenType;
 import jmri.util.TypeConversionUtil;
@@ -47,7 +48,12 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
         
         Object rightValue = _rightSide.calculate();
         if (!(rightValue instanceof Boolean)) {
-            rightValue = TypeConversionUtil.convertToBoolean(rightValue, false);
+            if (TypeConversionUtil.isIntegerNumber(rightValue)) {
+                // Convert to true or false
+                rightValue = ((Number)rightValue).longValue() != 0;
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotBooleanOrIntegerNumberError", rightValue));
+            }
         }
         boolean right = (Boolean)rightValue;
         
@@ -57,7 +63,12 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
         
         Object leftValue = _leftSide.calculate();
         if (!(leftValue instanceof Boolean)) {
-            leftValue = TypeConversionUtil.convertToBoolean(leftValue, false);
+            if (TypeConversionUtil.isIntegerNumber(leftValue)) {
+                // Convert to true or false
+                leftValue = ((Number)leftValue).longValue() != 0;
+            } else {
+                throw new CalculateException(Bundle.getMessage("ArithmeticNotBooleanOrIntegerNumberError", leftValue));
+            }
         }
         boolean left = (Boolean)leftValue;
         
@@ -69,7 +80,7 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
                 return left && right;
                 
             default:
-                throw new RuntimeException("Unknown boolean operator: "+_tokenType.name());
+                throw new CalculateException("Unknown boolean operator: "+_tokenType.name());
         }
     }
     
@@ -91,7 +102,7 @@ public class ExpressionNodeBooleanOperator implements ExpressionNode {
                 break;
                 
             default:
-                throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+                throw new UnsupportedOperationException("Unknown arithmetic operator: "+_tokenType.name());
         }
         if (_leftSide != null) {
             return "("+_leftSide.getDefinitionString()+")" + operStr + "("+_rightSide.getDefinitionString()+")";

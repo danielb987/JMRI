@@ -39,7 +39,7 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
                 break;
                 
             default:
-                throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+                throw new IllegalArgumentException("Unknown arithmetic operator: "+_tokenType.name());
         }
     }
     
@@ -177,7 +177,7 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
                     return modulo(left, right);
 
                 default:
-                    throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+                    throw new CalculateException("Unknown arithmetic operator: "+_tokenType.name());
             }
         }
         
@@ -210,7 +210,7 @@ public class ExpressionNodeArithmeticOperator implements ExpressionNode {
                 break;
                 
             default:
-                throw new RuntimeException("Unknown arithmetic operator: "+_tokenType.name());
+                throw new UnsupportedOperationException("Unknown arithmetic operator: "+_tokenType.name());
         }
         
         String leftSideString = _leftSide != null ? _leftSide.getDefinitionString() : "null";

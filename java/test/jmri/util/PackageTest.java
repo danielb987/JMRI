@@ -23,6 +23,7 @@ import org.junit.runners.Suite;
         TypeConversionUtilTest.class,
         JUnitSwingUtilTest.class,
         SwingTestCaseTest.class,
+        ReflectionUtilScaffoldTest.class,
         
         jmri.util.docbook.PackageTest.class,
         jmri.util.exceptionhandler.PackageTest.class,

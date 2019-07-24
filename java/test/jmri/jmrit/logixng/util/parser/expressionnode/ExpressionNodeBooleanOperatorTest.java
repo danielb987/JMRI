@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.util.parser.expressionnode;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.jmrit.logixng.util.parser.CalculateException;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.parser.Token;
 import jmri.jmrit.logixng.util.parser.TokenType;
@@ -83,7 +84,7 @@ public class ExpressionNodeBooleanOperatorTest {
     }
     
     @Test
-    public void testCalculate() throws ParserException {
+    public void testCalculate() throws ParserException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         
         ExpressionNode exprTrue1 = new ExpressionNodeTrue();
         ExpressionNode exprTrue2 = new ExpressionNodeTrue();
@@ -91,6 +92,8 @@ public class ExpressionNodeBooleanOperatorTest {
         ExpressionNode exprFalse1 = new ExpressionNodeFalse();
         ExpressionNode exprFalse2 = new ExpressionNodeFalse();
         ExpressionNode exprFalse3 = new ExpressionNodeIntegerNumber(new Token(TokenType.NONE, "0", 0));
+        ExpressionNode expr12_34 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "12.34", 0));
+        ExpressionNode expr25_46 = new ExpressionNodeFloatingNumber(new Token(TokenType.NONE, "25.46", 0));
         
         Assert.assertFalse("calculate() gives the correct value",
                 (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_NOT, null, exprTrue1).calculate());
@@ -124,10 +127,41 @@ public class ExpressionNodeBooleanOperatorTest {
                 (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprFalse3).calculate());
         Assert.assertTrue("calculate() gives the correct value",
                 (Boolean)new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse3, exprTrue3).calculate());
+        
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        
+        // ExpressionNodeBooleanOperator requires two operands that can be booleans
+        hasThrown.set(false);
+        try {
+            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, expr25_46).calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
+        
+        // ExpressionNodeBooleanOperator requires two operands that can be booleans
+        hasThrown.set(false);
+        try {
+            new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, expr12_34, exprFalse1).calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
+        
+        // Test unsupported token type
+        hasThrown.set(false);
+        try {
+            ExpressionNode en = new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprTrue1, exprTrue2);
+            jmri.util.ReflectionUtilScaffold.setField(en, "_tokenType", TokenType.COMMA);
+            en.calculate();
+        } catch (CalculateException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
     }
     
     @Test
-    public void testGetDefinitionString() throws ParserException {
+    public void testGetDefinitionString() throws ParserException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         
         ExpressionNode exprTrue1 = new ExpressionNodeTrue();
         ExpressionNode exprTrue2 = new ExpressionNodeTrue();
@@ -176,6 +210,19 @@ public class ExpressionNodeBooleanOperatorTest {
                 "(false)||(true)",
                 new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprFalse1, exprTrue1)
                         .getDefinitionString());
+        
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        
+        // Test unsupported token type
+        hasThrown.set(false);
+        try {
+            ExpressionNode en = new ExpressionNodeBooleanOperator(TokenType.BOOLEAN_OR, exprTrue1, exprTrue2);
+            jmri.util.ReflectionUtilScaffold.setField(en, "_tokenType", TokenType.COMMA);
+            en.getDefinitionString();
+        } catch (UnsupportedOperationException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
     }
     
     // The minimal setup for log4J
