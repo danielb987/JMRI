@@ -70,6 +70,11 @@ public abstract class AbstractBaseTestBase {
         Assert.assertNull("Parent matches", _base.getParent());
     }
     
+    @Test
+    public void testDispose() {
+        _base.dispose();
+    }
+    
     
     private class MyBase extends AbstractBase {
 

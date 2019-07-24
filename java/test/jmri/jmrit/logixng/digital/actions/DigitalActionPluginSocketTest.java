@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.util.Map;
+import jmri.jmrit.logixng.DigitalActionPlugin;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,7 +17,7 @@ public class DigitalActionPluginSocketTest extends AbstractDigitalActionTestBase
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("exists", new DigitalActionPluginSocket("IQ1:1:DA1", null));
+        Assert.assertNotNull("exists", new DigitalActionPluginSocket("IQ1:1:DA1", new MyDigitalActionPlugin("IQ1:1:DA2")));
     }
     
     // The minimal setup for log4J
@@ -25,12 +27,32 @@ public class DigitalActionPluginSocketTest extends AbstractDigitalActionTestBase
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new DigitalActionPluginSocket("IQ1:1:DA1", null);
+        _base = new DigitalActionPluginSocket("IQ1:1:DA1", new MyDigitalActionPlugin("IQ1:1:DA2"));
     }
 
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyDigitalActionPlugin extends ActionTurnout implements DigitalActionPlugin {
+
+        public MyDigitalActionPlugin(String sys) throws BadUserNameException {
+            super(sys);
+        }
+
+        @Override
+        public void init(Map<String, String> config) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public Map<String, String> getConfig() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
     }
     
 }

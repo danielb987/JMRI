@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.util.Objects;
+import javax.annotation.Nonnull;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -13,19 +15,22 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
     private DigitalActionPluginSocket _template;
     private final DigitalActionPlugin _actionPlugin;
     
-    public DigitalActionPluginSocket(String sys, DigitalActionPlugin actionPlugin) {
+    public DigitalActionPluginSocket(@Nonnull String sys, @Nonnull DigitalActionPlugin actionPlugin) {
         super(sys);
+        Objects.requireNonNull(actionPlugin, "parameter actionPlugin must not be null");
         _actionPlugin = actionPlugin;
     }
     
     public DigitalActionPluginSocket(
-            String sys, String user, DigitalActionPlugin actionPlugin) {
+            @Nonnull String sys, @Nonnull String user, @Nonnull DigitalActionPlugin actionPlugin) {
         super(sys, user);
+        Objects.requireNonNull(actionPlugin, "parameter actionPlugin must not be null");
         _actionPlugin = actionPlugin;
     }
     
-    private DigitalActionPluginSocket(DigitalActionPluginSocket template, String sys) {
+    private DigitalActionPluginSocket(@Nonnull DigitalActionPluginSocket template, @Nonnull String sys) {
         super(sys);
+        Objects.requireNonNull(template, "parameter template must not be null");
         _actionPlugin = null;
         _template = template;
         if (_template == null) throw new NullPointerException();    // Temporary solution to make variable used.
@@ -33,7 +38,7 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
     
     /** {@inheritDoc} */
     @Override
-    public Base getNewObjectBasedOnTemplate(String sys) {
+    public Base getNewObjectBasedOnTemplate(@Nonnull String sys) {
         return new DigitalActionPluginSocket(this, sys);
     }
     
@@ -54,12 +59,12 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _actionPlugin.getChild(index);
     }
 
     @Override
     public int getChildCount() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _actionPlugin.getChildCount();
     }
     
     @Override
@@ -82,16 +87,19 @@ public class DigitalActionPluginSocket extends AbstractDigitalAction {
     /** {@inheritDoc} */
     @Override
     public void registerListenersForThisClass() {
+        _actionPlugin.registerListeners();
     }
     
     /** {@inheritDoc} */
     @Override
     public void unregisterListenersForThisClass() {
+        _actionPlugin.unregisterListeners();
     }
     
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {
+        _actionPlugin.dispose();
     }
 
 }
