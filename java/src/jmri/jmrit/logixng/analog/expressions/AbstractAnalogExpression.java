@@ -84,11 +84,6 @@ public abstract class AbstractAnalogExpression extends AbstractBase
         _lock = lock;
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public void disposeMe() {
-    }
-    
 
     private final static Logger log = LoggerFactory.getLogger(AbstractAnalogExpression.class);
 }

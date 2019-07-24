@@ -102,11 +102,6 @@ public abstract class AbstractDigitalAction extends AbstractBase
         return UNKNOWN;
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public void disposeMe() {
-    }
-    
     
     private final static Logger log = LoggerFactory.getLogger(AbstractDigitalAction.class);
 }

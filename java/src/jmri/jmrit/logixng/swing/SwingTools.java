@@ -43,9 +43,9 @@ public final class SwingTools {
             log.trace("adapter class name is {}", result);
             return result;
         } else {
-            // no last dot found!
+            // No last dot found! This should not be possible in Java.
             log.error("No package name found, which is not yet handled!");
-            return null;
+            throw new RuntimeException("No package name found, which is not yet handled!");
         }
     }
 
