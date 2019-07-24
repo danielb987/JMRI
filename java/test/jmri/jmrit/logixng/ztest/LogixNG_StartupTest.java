@@ -37,6 +37,14 @@ public class LogixNG_StartupTest {
         InstanceManager.setDefault(LogixNG_Manager.class, new MyLogixNG_Manager());
         new LogixNG_StartupAction().actionPerformed(null);
         jmri.util.JUnitAppender.assertErrorMessage("exception thrown");
+        
+        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        try {
+            new LogixNG_StartupAction().makePanel();
+        } catch (IllegalArgumentException ex) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("Exception is thrown", hasThrown.get());
     }
 
     @Test

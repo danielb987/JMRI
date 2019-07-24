@@ -85,8 +85,9 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         Assert.assertEquals("Memory has correct value", "", _memory.getValue());
         _action.setValue("Test");
         Assert.assertEquals("Memory has correct value", "Test", _memory.getValue());
+        _action.setMemory((Memory)null);
         _action.setValue("Other test");
-        Assert.assertEquals("Memory has correct value", "Other test", _memory.getValue());
+        Assert.assertEquals("Memory has correct value", "Test", _memory.getValue());
     }
     
     @Test
