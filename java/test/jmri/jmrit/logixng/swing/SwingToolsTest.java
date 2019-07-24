@@ -41,7 +41,13 @@ public class SwingToolsTest {
                         .equals(SwingTools.getSwingConfiguratorForClass(actionClass).getClass().getName()));
         
         // The class SwingToolsTest does not have a swing configurator
-        SwingConfiguratorInterface iface = SwingTools.getSwingConfiguratorForClass(this.getClass());
+        SwingConfiguratorInterface iface = SwingTools.getSwingConfiguratorForObject(this);
+        Assert.assertNull("interface is null", iface);
+        jmri.util.JUnitAppender.assertErrorMessage("Cannot load SwingConfiguratorInterface adapter for jmri.jmrit.logixng.swing.SwingToolsTest");
+        jmri.util.JUnitAppender.assertErrorMessage("Cannot load SwingConfiguratorInterface for jmri.jmrit.logixng.swing.SwingToolsTest");
+        
+        // The class SwingToolsTest does not have a swing configurator
+        iface = SwingTools.getSwingConfiguratorForClass(this.getClass());
         Assert.assertNull("interface is null", iface);
         jmri.util.JUnitAppender.assertErrorMessage("Cannot load SwingConfiguratorInterface adapter for jmri.jmrit.logixng.swing.SwingToolsTest");
         jmri.util.JUnitAppender.assertErrorMessage("Cannot load SwingConfiguratorInterface for jmri.jmrit.logixng.swing.SwingToolsTest");
