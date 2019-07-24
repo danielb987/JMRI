@@ -45,9 +45,9 @@ public class SwingToolsTest {
         
         
         // The class SwingToolsTest does not have a swing configurator
-//        SwingConfiguratorInterface iface = SwingTools.getSwingConfiguratorForClass(this.getClass());
-//        Assert.assertNull("interface is null", iface);
-//        jmri.util.JUnitAppender.assertErrorMessage("Cannot load SwingConfiguratorInterface adapter for jmri.jmrit.logixng.swing.SwingToolsTest");
+        SwingConfiguratorInterface iface = SwingTools.getSwingConfiguratorForClass(this.getClass());
+        Assert.assertNull("interface is null", iface);
+        jmri.util.JUnitAppender.assertErrorMessage("Cannot load SwingConfiguratorInterface adapter for jmri.jmrit.logixng.swing.SwingToolsTest");
     }
     
     // The minimal setup for log4J
