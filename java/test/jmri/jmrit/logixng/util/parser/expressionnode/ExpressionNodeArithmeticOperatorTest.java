@@ -18,12 +18,6 @@ import org.junit.Test;
 public class ExpressionNodeArithmeticOperatorTest {
 
     @Test
-    public void testEnum() {
-        jmri.jmrit.logixng.TestEnumScaffold testEnumScaffold = new jmri.jmrit.logixng.TestEnumScaffold();
-        testEnumScaffold.test();
-    }
-    
-    @Test
     public void testCtor() throws ParserException {
         
         ExpressionNode exprTrue = new ExpressionNodeTrue();
