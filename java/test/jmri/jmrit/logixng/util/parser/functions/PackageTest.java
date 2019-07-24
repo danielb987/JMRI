@@ -1,14 +1,11 @@
-package jmri.jmrit.logixng.util.parser;
+package jmri.jmrit.logixng.util.parser.functions;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    jmri.jmrit.logixng.util.parser.expressionnode.PackageTest.class,
-    jmri.jmrit.logixng.util.parser.functions.PackageTest.class,
-    RecursiveDescentParserTest.class,
-    TokenizerTest.class,
+    MathFunctionsTest.class,
 })
 
 /**
