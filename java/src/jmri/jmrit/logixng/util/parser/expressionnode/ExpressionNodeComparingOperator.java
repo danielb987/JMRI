@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.util.parser.expressionnode;
 
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.parser.TokenType;
-import jmri.util.TypeConversionUtil;
 
 /**
  * A parsed expression

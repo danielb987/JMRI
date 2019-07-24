@@ -208,7 +208,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
     }
     
     @Test
-    public void testSetup() {
+    public void testSetup() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
         StringExpressionMemory expression2 = new StringExpressionMemory("IQA55:12:SE321");
@@ -218,19 +218,31 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         expression2.setMemoryName(_memory.getSystemName());
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
+        
         // Test running setup() again when it's already setup
         expression2.setup();
+        
         // Test setup() with another memory
         Memory memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         expression2.setMemoryName(memory2.getSystemName());
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory IM2".equals(expression2.getLongDescription()));
+        
         // Test none existing memory
         expression2.setMemoryName("IM999");
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         jmri.util.JUnitAppender.assertErrorMessage("Memory IM999 does not exists");
+        
+        // Test that action has a memory, but the wrong memory
+        expression2.setMemoryName(_memory.getSystemName());
+        expression2.setup();
+        Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
+        // We need to use reflection since setMemoryName will clear _memoryHandle
+        jmri.util.ReflectionUtilScaffold.setField(expression2, "_memoryName", memory2.getSystemName());
+        expression2.setup();
+        Assert.assertTrue("String matches", "Get memory IM2".equals(expression2.getLongDescription()));
     }
     
     @Test
