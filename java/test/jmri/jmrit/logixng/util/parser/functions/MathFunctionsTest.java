@@ -3,15 +3,13 @@ package jmri.jmrit.logixng.util.parser.functions;
 import java.util.ArrayList;
 import java.util.Collections;
 import jmri.jmrit.logixng.util.parser.expressionnode.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.util.parser.CalculateException;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.parser.Token;
 import jmri.jmrit.logixng.util.parser.TokenType;
-import jmri.jmrit.logixng.util.parser.Variable;
 import jmri.jmrit.logixng.util.parser.WrongNumberOfParametersException;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -43,6 +41,22 @@ public class MathFunctionsTest {
         List<ExpressionNode> list = new ArrayList<>();
         Collections.addAll(list, exprNodes);
         return list;
+    }
+    
+    @Test
+    public void testBundle() {
+        Assert.assertEquals("strings are equal",
+                "Test", Bundle.getMessage("TestBundle"));
+        Assert.assertEquals("strings are equal",
+                "Function \"sin\" has wrong number of parameters",
+                Bundle.getMessage("WrongNumberOfParameters1", "sin"));
+        Assert.assertEquals("strings are equal",
+                "Test", Bundle.getMessage(Locale.CANADA, "TestBundle"));
+        Assert.assertEquals("strings are equal",
+                "Function \"sin\" has wrong number of parameters",
+                Bundle.getMessage(Locale.CANADA, "WrongNumberOfParameters1", "sin"));
+        // Test Bundle.retry(Locale, String)
+        Assert.assertEquals("strings matches","Item",Bundle.getMessage("CategoryItem"));
     }
     
     @Test
