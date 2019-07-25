@@ -76,7 +76,7 @@ public class MathFunctionsTest {
         }
         Assert.assertTrue("exception is thrown", hasThrown.get());
         
-        Assert.assertEquals("numbers are equal", (Integer)12, intFunction.calculate(getParameterList(expr12_34)));
+        Assert.assertEquals("numbers are equal", (Object)12, intFunction.calculate(getParameterList(expr12_34)));
         
         // Test unsupported token type
         hasThrown.set(false);
@@ -104,7 +104,7 @@ public class MathFunctionsTest {
         }
         Assert.assertTrue("exception is thrown", hasThrown.get());
         
-        Assert.assertEquals("numbers are equal", (Long)12l, longFunction.calculate(getParameterList(expr12_34)));
+        Assert.assertEquals("numbers are equal", (Object)12l, longFunction.calculate(getParameterList(expr12_34)));
         
         // Test unsupported token type
         hasThrown.set(false);
