@@ -136,6 +136,15 @@ public class MathFunctionsTest {
         
         // Test sin(x,"deg", 12, 23)
         Assert.assertEquals("numbers are equal", (Double)14.350836848733938, (Double)sinFunction.calculate(getParameterList(expr12_34, expr_str_DEG, expr12, expr23)), 0.0000001d);
+        
+        // Test sin()
+        hasThrown.set(false);
+        try {
+            sinFunction.calculate(getParameterList());
+        } catch (WrongNumberOfParametersException e) {
+            hasThrown.set(true);
+        }
+        Assert.assertTrue("exception is thrown", hasThrown.get());
     }
     
     // The minimal setup for log4J

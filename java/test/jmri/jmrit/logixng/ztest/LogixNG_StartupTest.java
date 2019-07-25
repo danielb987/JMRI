@@ -26,7 +26,6 @@ public class LogixNG_StartupTest {
         Assert.assertNotNull("exists", new LogixNG_Startup());
     }
 
-//    @Ignore("For testing only. This method should be removed before merging into master.")
     @Test
     public void testAction() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
