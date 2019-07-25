@@ -1,7 +1,6 @@
 package jmri.jmrit.logixng.ztest;
 
 import java.awt.GraphicsEnvironment;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -124,7 +123,6 @@ public class LogixNG_StartupTest {
         @Override
         public void testLogixNGs() throws PropertyVetoException {
             throw new PropertyVetoException("exception", null);
-//            throw new PropertyVetoException("exception", new PropertyChangeEvent("The object", "property", "old value", "new value"));
         }
         
     }

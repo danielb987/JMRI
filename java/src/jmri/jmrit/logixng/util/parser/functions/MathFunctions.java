@@ -88,7 +88,6 @@ public class MathFunctions implements FunctionFactory {
 
         @Override
         public Object calculate(List<ExpressionNode> parameterList) throws ParserException {
-            System.err.format("Sin: Num parameters: %d%n", parameterList.size());
             if (parameterList.size() == 1) {
                 double param = TypeConversionUtil.convertToDouble(parameterList.get(0).calculate(), false);
                 return Math.sin(param);
@@ -121,7 +120,7 @@ public class MathFunctions implements FunctionFactory {
                     case 4:
                         double min = TypeConversionUtil.convertToDouble(parameterList.get(2).calculate(), false);
                         double max = TypeConversionUtil.convertToDouble(parameterList.get(3).calculate(), false);
-                        return (result+1) * (max-min)/2 + min;
+                        return result * (max-min) + min;
                     default:
                         throw new WrongNumberOfParametersException(Bundle.getMessage("WrongNumberOfParameters1", getName()));
                 }
