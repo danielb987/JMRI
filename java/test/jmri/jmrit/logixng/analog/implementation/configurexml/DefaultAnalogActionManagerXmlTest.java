@@ -1,10 +1,12 @@
 package jmri.jmrit.logixng.analog.implementation.configurexml;
 
+import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
 import jmri.jmrit.logixng.analog.actions.configurexml.AnalogActionMemoryXml;
+import jmri.jmrit.logixng.analog.implementation.DefaultAnalogActionManager;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.jdom2.Element;
@@ -88,6 +90,40 @@ public class DefaultAnalogActionManagerXmlTest {
         JUnitAppender.assertErrorMessage("Cannot load configuration adapter for jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXmlTest$MyAnalogAction");
         JUnitAppender.assertErrorMessage("Cannot store configuration for jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXmlTest$MyAnalogAction");
     }
+    
+    @Test
+    public void testReplaceActionManager() {
+        
+        // if old manager exists, remove it from configuration process
+        if (InstanceManager.getNullableDefault(jmri.jmrit.logixng.AnalogActionManager.class) != null) {
+            ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
+            if (cmOD != null) {
+                cmOD.deregister(InstanceManager.getDefault(jmri.jmrit.logixng.AnalogActionManager.class));
+            }
+
+        }
+
+        // register new one with InstanceManager
+        MyManager pManager = new MyManager();
+        InstanceManager.store(pManager, AnalogActionManager.class);
+        // register new one for configuration
+        ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
+        if (cmOD != null) {
+            cmOD.registerConfig(pManager, jmri.Manager.ANALOG_ACTIONS);
+        }
+        
+        Assert.assertTrue("manager is a MyManager",
+                InstanceManager.getDefault(AnalogActionManager.class)
+                        instanceof MyManager);
+        
+        // Test replacing the manager
+        DefaultAnalogActionManagerXml b = new DefaultAnalogActionManagerXml();
+        b.replaceActionManager();
+        
+        Assert.assertFalse("manager is not a MyManager",
+                InstanceManager.getDefault(AnalogActionManager.class)
+                        instanceof MyManager);
+    }
 
     // The minimal setup for log4J
     @Before
@@ -126,6 +162,11 @@ public class DefaultAnalogActionManagerXmlTest {
         public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
+    }
+    
+    
+    class MyManager extends DefaultAnalogActionManager {
+        
     }
     
 }
