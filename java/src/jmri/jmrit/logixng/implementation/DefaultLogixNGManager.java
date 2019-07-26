@@ -542,11 +542,9 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socketSecondMany.getChild(index++).connect(socket);
                     
                     analogExpressionMemory = new AnalogExpressionMemory(getSystemNamePrefix()+"AE:00002", "My expression");
-                    analogExpressionMemory.setMemory(memory1);
                     socketAnalogExpressionMemory = InstanceManager.getDefault(AnalogExpressionManager.class).registerExpression(analogExpressionMemory);
 
                     analogActionMemory = new AnalogActionMemory(getSystemNamePrefix()+"AA:00002", "My action");
-                    analogActionMemory.setMemory(memory2);
                     socketAnalogActionMemory = InstanceManager.getDefault(AnalogActionManager.class).registerAction(analogActionMemory);
 
                     doAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:00102");
@@ -570,11 +568,9 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socketSecondMany.getChild(index++).connect(socket);
 
                     stringExpressionMemory = new StringExpressionMemory(getSystemNamePrefix()+"SE:00002", "My expression");
-                    stringExpressionMemory.setMemory(memory3);
                     socketStringExpressionMemory = InstanceManager.getDefault(StringExpressionManager.class).registerExpression(stringExpressionMemory);
 
                     stringActionMemory = new StringActionMemory(getSystemNamePrefix()+"SA:00002", "My action");
-                    stringActionMemory.setMemory(memory4);
                     socketStringActionMemory = InstanceManager.getDefault(StringActionManager.class).registerAction(stringActionMemory);
 
                     doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00104");
