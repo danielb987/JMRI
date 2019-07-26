@@ -19,7 +19,7 @@ public class NullAudio extends AbstractAudio {
     }
 
     @Override
-    protected void cleanup() {
+    public void cleanup() {     // This method is public to allow the test class to access it
         throw new UnsupportedOperationException("Not supported.");
     }
 

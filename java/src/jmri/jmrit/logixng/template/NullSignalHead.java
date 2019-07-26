@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.template;
 
-import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import jmri.SignalHead;
 import jmri.jmrit.logixng.Base;
@@ -12,8 +11,6 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class NullSignalHead extends AbstractNullNamedBean implements SignalHead {
 
-    static final ResourceBundle rbm = ResourceBundle.getBundle("jmri.implementation.ImplementationBundle");
-    
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
 
@@ -41,7 +38,7 @@ public class NullSignalHead extends AbstractNullNamedBean implements SignalHead 
     
     @Override
     public String getBeanType() {
-        return rbm.getString("BeanNameSignalHead");
+        return Bundle.getMessage("BeanNameSignalHead");
     }
 
     @Override

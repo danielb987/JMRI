@@ -1,10 +1,12 @@
 package jmri.jmrit.logixng.template;
 
 // import java.awt.GraphicsEnvironment;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.Audio;
 import jmri.AudioManager;
 import jmri.IdTag;
 import jmri.IdTagManager;
+import jmri.JmriException;
 import jmri.Light;
 import jmri.LightManager;
 import jmri.Logix;
@@ -24,6 +26,8 @@ import jmri.SignalMast;
 import jmri.SignalMastManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
+import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -106,6 +110,150 @@ public class TemplateTest {
         Assert.assertTrue("Objects are the same", t.equals(tim.get(TurnoutManager.class, NullTurnout.class, "IT1")));
     }
     
+    private boolean hasThrownException(Run r) {
+        AtomicBoolean b = new AtomicBoolean(false);
+        try {
+            r.run();
+        } catch (JmriException | UnsupportedOperationException e) {
+            b.set(true);
+        }
+        return b.get();
+    }
+    
+    private boolean hasThrownException(RunWithReturn r) {
+        AtomicBoolean b = new AtomicBoolean(false);
+        try {
+            r.run();
+        } catch (JmriException | UnsupportedOperationException e) {
+            b.set(true);
+        }
+        return b.get();
+    }
+    
+    @Test
+    public void testNullAudio() {
+        NullAudio b = new NullAudio("AB1");
+        Assert.assertEquals("return value is correct", 0, b.getState());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.cleanup(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.stateChanged(0); }));
+    }
+    
+    @Test
+    public void testNullIdTag() {
+        NullIdTag b = new NullIdTag("AB1");
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { return b.getState(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.load(null); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setWhereLastSeen(null); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.store(false); }));
+    }
+    
+    @Test
+    public void testNullLogix() {
+        NullLogix b = new NullLogix("AB1");
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { return b.getState(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+        
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.activateLogix(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.addConditional("", null); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.addConditional("", 0); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.calculateConditionals(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.deActivateLogix(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.deleteConditional(""); }));
+        Assert.assertEquals("Strings matches", "Logix", b.getBeanType());
+        Assert.assertEquals("Same enum", Category.ITEM, b.getCategory());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getChild(0); }));
+        Assert.assertEquals("Values matches", 0, b.getChildCount());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getConditional(""); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getConditionalByNumberOrder(0); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getEnabled(); }));
+        Assert.assertEquals("Same enum", Base.Lock.NONE, b.getLock());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getLongDescription(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getNewObjectBasedOnTemplate(""); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getNumConditionals(); }));
+        Assert.assertEquals("Same value", null, b.getParent());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getShortDescription(); }));
+        Assert.assertFalse("is not external", b.isExternal());
+        b.registerListenersForThisClass();
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setEnabled(false); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setGuiNames(); }));
+        b.setLock(Base.Lock.NONE);
+        b.setParent(null);
+        b.setup();
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.swapConditional(0,1); }));
+        b.unregisterListenersForThisClass();
+        
+        b.disposeMe();
+    }
+    
+    @Test
+    public void testNullMemory() {
+        NullMemory b = new NullMemory("AB1");
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { return b.getState(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+    }
+    
+    @Test
+    public void testNullReporter() {
+        NullReporter b = new NullReporter("AB1");
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { return b.getState(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+    }
+    
+    @Test
+    public void testNullSensor() {
+        NullSensor b = new NullSensor("AB1");
+        Assert.assertEquals("return value is correct", NamedBean.UNKNOWN, b.getState());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.requestUpdateFromLayout(); }));
+    }
+    
+    @Test
+    public void testNullSignalHead() {
+        NullSignalHead b = new NullSignalHead("AB1");
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { return b.getState(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getAppearance(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getAppearanceName(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getAppearanceName(0); }));
+        Assert.assertEquals("Strings matches", "Signal Head", b.getBeanType());
+        Assert.assertEquals("Same enum", Category.ITEM, b.getCategory());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getChild(0); }));
+        Assert.assertEquals("Values matches", 0, b.getChildCount());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getHeld(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getLit(); }));
+        Assert.assertEquals("Same enum", Base.Lock.NONE, b.getLock());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getLongDescription(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getNewObjectBasedOnTemplate(""); }));
+        Assert.assertEquals("Same value", null, b.getParent());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getShortDescription(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getValidStateNames(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.getValidStates(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.isAtStop(); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.isCleared(); }));
+        Assert.assertFalse("is not external", b.isExternal());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.isShowingRestricting(); }));
+        b.registerListenersForThisClass();
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setAppearance(0); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setHeld(false); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setLit(false); }));
+        b.setLock(Base.Lock.NONE);
+        b.setParent(null);
+        b.setup();
+        b.unregisterListenersForThisClass();
+        
+        b.disposeMe();
+    }
+    
+    @Test
+    public void testNullTurnout() {
+        NullTurnout b = new NullTurnout("AB1");
+        Assert.assertEquals("return value is correct", NamedBean.UNKNOWN, b.getState());
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.setState(NamedBean.UNKNOWN); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.forwardCommandChangeToLayout(0); }));
+        Assert.assertTrue("Exception thrown", hasThrownException(() -> { b.turnoutPushbuttonLockout(false); }));
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {
@@ -130,6 +278,16 @@ public class TemplateTest {
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private interface Run {
+        public void run() throws JmriException;
+    }
+    
+    private interface RunWithReturn {
+        public Object run() throws JmriException;
     }
     
 }

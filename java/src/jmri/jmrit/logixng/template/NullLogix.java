@@ -13,7 +13,7 @@ import jmri.jmrit.logixng.FemaleSocket;
  */
 public class NullLogix extends AbstractNullNamedBean implements Logix {
 
-    static final ResourceBundle rbm = ResourceBundle.getBundle("jmri.implementation.ImplementationBundle");
+//    static final ResourceBundle rbm = ResourceBundle.getBundle("jmri.implementation.ImplementationBundle");
     
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
@@ -42,7 +42,8 @@ public class NullLogix extends AbstractNullNamedBean implements Logix {
     
     @Override
     public String getBeanType() {
-        return rbm.getString("BeanNameLogix");
+        return Bundle.getMessage("BeanNameLogix");
+//        return rbm.getString("BeanNameLogix");
     }
 
     @Override
