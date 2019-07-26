@@ -112,17 +112,20 @@ public class DefaultAnalogActionManagerXmlTest {
     }
     
     
-    // This class is loaded by reflection
-    private class PrivateConstructorXml extends AnalogActionMemoryXml {
+    // This class is loaded by reflection. The class cannot be private since
+    // Spotbugs will in that case flag it as "is never used locally"
+    class PrivateConstructorXml extends AnalogActionMemoryXml {
         private PrivateConstructorXml() {
         }
     }
     
-    // This class is loaded by reflection
-    private class ThrowExceptionXml extends AnalogActionMemoryXml {
+    // This class is loaded by reflection. The class cannot be private since
+    // Spotbugs will in that case flag it as "is never used locally"
+    class ThrowExceptionXml extends AnalogActionMemoryXml {
         @Override
         public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
     }
+    
 }
