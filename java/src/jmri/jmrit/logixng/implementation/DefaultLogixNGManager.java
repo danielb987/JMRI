@@ -354,57 +354,93 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     int index = 0;
                     
-                    And expressionAnd = new And(getSystemNamePrefix()+"DE:00002");
+                    Or expressionOr2 = new Or(getSystemNamePrefix()+"DE:00002", "My Or expression");
+                    MaleSocket socketOr2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionOr2);
+                    socketOr.getChild(index++).connect(socketOr2);
+                    
+                    And expressionAnd = new And(getSystemNamePrefix()+"DE:00003");
                     MaleSocket socketAnd = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAnd);
                     socketOr.getChild(index++).connect(socketAnd);
                     
-                    ExpressionTurnout expressionTurnout3 = new ExpressionTurnout(getSystemNamePrefix()+"DE:00003");
+                    And expressionAnd2 = new And(getSystemNamePrefix()+"DE:00004", "My And expression");
+                    MaleSocket socketAnd2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAnd2);
+                    socketOr.getChild(index++).connect(socketAnd2);
+                    
+                    ExpressionTurnout expressionTurnout3 = new ExpressionTurnout(getSystemNamePrefix()+"DE:00005");
                     expressionTurnout3.setTurnout(turnout3);
                     expressionTurnout3.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
                     MaleSocket socketTurnout3 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout3);
                     expressionAnd.getChild(0).connect(socketTurnout3);
                     
-                    ExpressionTurnout expressionTurnout4 = new ExpressionTurnout(getSystemNamePrefix()+"DE:00004");
+                    ExpressionTurnout expressionTurnout4 = new ExpressionTurnout(getSystemNamePrefix()+"DE:00006", "My new turnout");
                     expressionTurnout4.setTurnout(turnout4);
                     expressionTurnout4.setTurnoutState(ExpressionTurnout.TurnoutState.CLOSED);
                     expressionTurnout4.set_Is_IsNot(Is_IsNot_Enum.IS);
                     MaleSocket socketTurnout4 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout4);
                     expressionAnd.getChild(1).connect(socketTurnout4);
                     
-                    ExpressionTurnout expressionTurnout5 = new ExpressionTurnout(getSystemNamePrefix()+"DE:00005");
+                    ExpressionTurnout expressionTurnout5 = new ExpressionTurnout(getSystemNamePrefix()+"DE:00007");
                     expressionTurnout5.setTurnout(turnout5);
                     expressionTurnout5.setTurnoutState(ExpressionTurnout.TurnoutState.OTHER);
                     expressionTurnout5.set_Is_IsNot(Is_IsNot_Enum.IS_NOT);
                     MaleSocket socketTurnout5 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout5);
                     expressionAnd.getChild(2).connect(socketTurnout5);
                     
-                    Antecedent expressionAntecedent = new Antecedent(getSystemNamePrefix()+"DE:00006", null, "R1");
+                    Antecedent expressionAntecedent = new Antecedent(getSystemNamePrefix()+"DE:00008", null, "R1");
                     MaleSocket socketAntecedent = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAntecedent);
                     socketOr.getChild(index++).connect(socketAntecedent);
                     
-                    False expressionFalse = new False(getSystemNamePrefix()+"DE:00007");
+                    Antecedent expressionAntecedent2 = new Antecedent(getSystemNamePrefix()+"DE:00009", "My Antecedent expression", "R1");
+                    MaleSocket socketAntecedent2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAntecedent2);
+                    socketOr.getChild(index++).connect(socketAntecedent2);
+                    
+                    False expressionFalse = new False(getSystemNamePrefix()+"DE:00010");
                     MaleSocket socketFalse = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionFalse);
                     socketOr.getChild(index++).connect(socketFalse);
                     
-                    Hold expressionHold = new Hold(getSystemNamePrefix()+"DE:00008");
+                    False expressionFalse2 = new False(getSystemNamePrefix()+"DE:00011", "My False expression");
+                    MaleSocket socketFalse2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionFalse2);
+                    socketOr.getChild(index++).connect(socketFalse2);
+                    
+                    Hold expressionHold = new Hold(getSystemNamePrefix()+"DE:00012");
                     MaleSocket socketHold = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionHold);
                     socketOr.getChild(index++).connect(socketHold);
                     
-                    ResetOnTrue expressionResetOnTrue = new ResetOnTrue(getSystemNamePrefix()+"DE:00009", null);
+                    Hold expressionHold2 = new Hold(getSystemNamePrefix()+"DE:00013", "My Hold expression");
+                    MaleSocket socketHold2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionHold2);
+                    socketOr.getChild(index++).connect(socketHold2);
+                    
+                    ResetOnTrue expressionResetOnTrue = new ResetOnTrue(getSystemNamePrefix()+"DE:00016", null);
                     MaleSocket socketResetOnTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue);
                     socketOr.getChild(index++).connect(socketResetOnTrue);
                     
-                    Timer expressionTimer = new Timer(getSystemNamePrefix()+"DE:000010", null);
+                    ResetOnTrue expressionResetOnTrue2 = new ResetOnTrue(getSystemNamePrefix()+"DE:00017", "My ResetOnTrue expression");
+                    MaleSocket socketResetOnTrue2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue2);
+                    socketOr.getChild(index++).connect(socketResetOnTrue2);
+                    
+                    Timer expressionTimer = new Timer(getSystemNamePrefix()+"DE:000020", null);
                     MaleSocket socketTimer = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTimer);
                     socketOr.getChild(index++).connect(socketTimer);
                     
-                    TriggerOnce expressionTriggerOnce = new TriggerOnce(getSystemNamePrefix()+"DE:000011", null);
+                    Timer expressionTimer2 = new Timer(getSystemNamePrefix()+"DE:000021", "My Timer expression");
+                    MaleSocket socketTimer2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTimer2);
+                    socketOr.getChild(index++).connect(socketTimer2);
+                    
+                    TriggerOnce expressionTriggerOnce = new TriggerOnce(getSystemNamePrefix()+"DE:000022", null);
                     MaleSocket socketTriggerOnce = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTriggerOnce);
                     socketOr.getChild(index++).connect(socketTriggerOnce);
                     
-                    True expressionTrue = new True(getSystemNamePrefix()+"DE:000012");
+                    TriggerOnce expressionTriggerOnce2 = new TriggerOnce(getSystemNamePrefix()+"DE:000023", "My TriggerOnce expression");
+                    MaleSocket socketTriggerOnce2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTriggerOnce2);
+                    socketOr.getChild(index++).connect(socketTriggerOnce2);
+                    
+                    True expressionTrue = new True(getSystemNamePrefix()+"DE:000025");
                     MaleSocket socketTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue);
                     socketOr.getChild(index++).connect(socketTrue);
+                    
+                    True expressionTrue2 = new True(getSystemNamePrefix()+"DE:000026", "My True expression");
+                    MaleSocket socketTrue2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue2);
+                    socketOr.getChild(index++).connect(socketTrue2);
                     
                     ExpressionLight expressionLight = new ExpressionLight(getSystemNamePrefix()+"DE:000013");
                     expressionLight.setLight(light1);
@@ -413,7 +449,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketLight = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionLight);
                     socketOr.getChild(index++).connect(socketLight);
                     
-                    ExpressionLight expressionLight2 = new ExpressionLight(getSystemNamePrefix()+"DE:000014");
+                    ExpressionLight expressionLight2 = new ExpressionLight(getSystemNamePrefix()+"DE:000014", "My light");
                     expressionLight2.setLight((Light)null);
                     expressionLight2.set_Is_IsNot(Is_IsNot_Enum.IS);
                     expressionLight2.setLightState(ExpressionLight.LightState.ON);
@@ -427,7 +463,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketSensor = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionSensor);
                     socketOr.getChild(index++).connect(socketSensor);
                     
-                    ExpressionSensor expressionSensor2 = new ExpressionSensor(getSystemNamePrefix()+"DE:000016");
+                    ExpressionSensor expressionSensor2 = new ExpressionSensor(getSystemNamePrefix()+"DE:000016", "My sensor");
                     expressionSensor2.setSensor((Sensor)null);
                     expressionSensor2.set_Is_IsNot(Is_IsNot_Enum.IS);
                     expressionSensor2.setSensorState(ExpressionSensor.SensorState.ACTIVE);
@@ -441,7 +477,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketTurnout = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout);
                     socketOr.getChild(index++).connect(socketTurnout);
                     
-                    ExpressionTurnout expressionTurnout2 = new ExpressionTurnout(getSystemNamePrefix()+"DE:000018");
+                    ExpressionTurnout expressionTurnout2 = new ExpressionTurnout(getSystemNamePrefix()+"DE:000018", "My turnout");
                     expressionTurnout2.setTurnout((Turnout)null);
                     expressionTurnout2.set_Is_IsNot(Is_IsNot_Enum.IS);
                     expressionTurnout2.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);

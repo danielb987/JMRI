@@ -29,42 +29,12 @@ public class TrueXml extends jmri.managers.configurexml.AbstractNamedBeanManager
         Element element = new Element("true");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        if (p.getUserName() != null) {
-            element.addContent(new Element("userName").addContent(p.getUserName()));
-        }
 
-/*        
-        if (p.isUserEnabled()) {
-            element.addContent(new Element("enabled").addContent("yes"));
-        } else {
-            element.addContent(new Element("enabled").addContent("no"));
-        }
-*/
         storeCommon(p, element);
 
         return element;
     }
-/*
-    Element addTrueElement(NamedBeanHandle<True> to, String which) {
-        Element el = new Element("truename");
-        el.setAttribute("defines", which);
-        el.addContent(to.getName());
-        return el;
-    }
-
-    Element addTrueElement(True to) {
-        String user = to.getUserName();
-        String sys = to.getSystemName();
-
-        Element el = new Element("true");
-        el.setAttribute("systemName", sys);
-        if (user != null) {
-            el.setAttribute("userName", user);
-        }
-
-        return el;
-    }
-*/
+    
     @Override
     public boolean load(Element shared, Element perNode) {
         String sys = getSystemName(shared);

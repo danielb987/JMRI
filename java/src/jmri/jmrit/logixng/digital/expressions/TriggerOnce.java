@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An Expression that returns True only once while its child expression returns
- True.
+ * True.
  * 
  * The first time the child expression returns True, this expression returns
  * True. After that, this expression returns False until the child expression

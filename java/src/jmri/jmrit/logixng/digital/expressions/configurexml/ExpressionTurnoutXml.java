@@ -33,9 +33,8 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
         Element element = new Element("expression-turnout");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        if (p.getUserName() != null) {
-            element.addContent(new Element("userName").addContent(p.getUserName()));
-        }
+        
+        storeCommon(p, element);
 
         NamedBeanHandle turnout = p.getTurnout();
         if (turnout != null) {
@@ -43,49 +42,12 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
         }
         element.addContent(new Element("is_isNot").addContent(p.get_Is_IsNot().name()));
         element.addContent(new Element("turnoutState").addContent(p.getTurnoutState().name()));
-/*        
-        if (p.isUserEnabled()) {
-            element.addContent(new Element("enabled").addContent("yes"));
-        } else {
-            element.addContent(new Element("enabled").addContent("no"));
-        }
-*/
-        storeCommon(p, element);
 
         return element;
     }
-/*
-    Element addTurnoutElement(NamedBeanHandle<Turnout> to, String which) {
-        Element el = new Element("turnoutname");
-        el.setAttribute("defines", which);
-        el.addContent(to.getName());
-        return el;
-    }
-
-    Element addTurnoutElement(Turnout to) {
-        String user = to.getUserName();
-        String sys = to.getSystemName();
-
-        Element el = new Element("turnout");
-        el.setAttribute("systemName", sys);
-        if (user != null) {
-            el.setAttribute("userName", user);
-        }
-
-        return el;
-    }
-*/
+    
     @Override
     public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
-//        List<Element> l = shared.getChildren("turnoutname");
-/*        
-        if (l.size() == 0) {
-            l = shared.getChildren("turnout");  // older form
-        }
-        NamedBeanHandle<Turnout> low = loadTurnout(l.get(0));
-        NamedBeanHandle<Turnout> high = loadTurnout(l.get(1));
-*/        
-        // put it together
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionTurnout h;
