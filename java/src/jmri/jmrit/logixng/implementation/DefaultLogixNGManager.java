@@ -505,6 +505,20 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doAnalogAction);
                     socketSecondMany.getChild(index++).connect(socket);
                     
+                    analogExpressionMemory = new AnalogExpressionMemory(getSystemNamePrefix()+"AE:00002", "My expression");
+                    analogExpressionMemory.setMemory(memory1);
+                    socketAnalogExpressionMemory = InstanceManager.getDefault(AnalogExpressionManager.class).registerExpression(analogExpressionMemory);
+
+                    analogActionMemory = new AnalogActionMemory(getSystemNamePrefix()+"AA:00002", "My action");
+                    analogActionMemory.setMemory(memory2);
+                    socketAnalogActionMemory = InstanceManager.getDefault(AnalogActionManager.class).registerAction(analogActionMemory);
+
+                    doAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:00102");
+                    doAnalogAction.setAnalogExpressionSocketSystemName(socketAnalogExpressionMemory.getSystemName());
+                    doAnalogAction.setAnalogActionSocketSystemName(socketAnalogActionMemory.getSystemName());
+                    socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doAnalogAction);
+                    socketSecondMany.getChild(index++).connect(socket);
+                    
                     StringExpressionMemory stringExpressionMemory = new StringExpressionMemory(getSystemNamePrefix()+"SE:00001");
                     stringExpressionMemory.setMemory(memory3);
                     MaleSocket socketStringExpressionMemory = InstanceManager.getDefault(StringExpressionManager.class).registerExpression(stringExpressionMemory);
@@ -513,7 +527,21 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     stringActionMemory.setMemory(memory4);
                     MaleSocket socketStringActionMemory = InstanceManager.getDefault(StringActionManager.class).registerAction(stringActionMemory);
 
-                    DoStringAction doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00102");
+                    DoStringAction doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00103");
+                    doStringAction.setStringExpressionSocketSystemName(socketStringExpressionMemory.getSystemName());
+                    doStringAction.setStringActionSocketSystemName(socketStringActionMemory.getSystemName());
+                    socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doStringAction);
+                    socketSecondMany.getChild(index++).connect(socket);
+
+                    stringExpressionMemory = new StringExpressionMemory(getSystemNamePrefix()+"SE:00002", "My expression");
+                    stringExpressionMemory.setMemory(memory3);
+                    socketStringExpressionMemory = InstanceManager.getDefault(StringExpressionManager.class).registerExpression(stringExpressionMemory);
+
+                    stringActionMemory = new StringActionMemory(getSystemNamePrefix()+"SA:00002", "My action");
+                    stringActionMemory.setMemory(memory4);
+                    socketStringActionMemory = InstanceManager.getDefault(StringActionManager.class).registerAction(stringActionMemory);
+
+                    doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00104");
                     doStringAction.setStringExpressionSocketSystemName(socketStringExpressionMemory.getSystemName());
                     doStringAction.setStringActionSocketSystemName(socketStringActionMemory.getSystemName());
                     socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doStringAction);

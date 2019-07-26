@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.analog.actions.configurexml;
 import jmri.InstanceManager;
 import jmri.MemoryManager;
 import jmri.NamedBeanHandle;
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
 import org.jdom2.Element;
@@ -30,59 +31,19 @@ public class AnalogActionMemoryXml extends jmri.managers.configurexml.AbstractNa
         Element element = new Element("analog-action-memory");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        if (p.getUserName() != null) {
-            element.addContent(new Element("userName").addContent(p.getUserName()));
-        }
+        
+        storeCommon(p, element);
 
         NamedBeanHandle memory = p.getMemory();
         if (memory != null) {
             element.addContent(new Element("memory").addContent(memory.getName()));
         }
-//        element.addContent(new Element("is_isNot").addContent(p.get_Is_IsNot().name()));
-//        element.addContent(new Element("lightState").addContent(p.getLightState().name()));
-/*        
-        if (p.isUserEnabled()) {
-            element.addContent(new Element("enabled").addContent("yes"));
-        } else {
-            element.addContent(new Element("enabled").addContent("no"));
-        }
-*/
-        storeCommon(p, element);
 
         return element;
     }
-/*
-    Element addLightElement(NamedBeanHandle<Light> to, String which) {
-        Element el = new Element("lightname");
-        el.setAttribute("defines", which);
-        el.addContent(to.getName());
-        return el;
-    }
-
-    Element addLightElement(Light to) {
-        String user = to.getUserName();
-        String sys = to.getSystemName();
-
-        Element el = new Element("light");
-        el.setAttribute("systemName", sys);
-        if (user != null) {
-            el.setAttribute("userName", user);
-        }
-
-        return el;
-    }
-*/
+    
     @Override
-    public boolean load(Element shared, Element perNode) {
-//        List<Element> l = shared.getChildren("lightname");
-/*        
-        if (l.size() == 0) {
-            l = shared.getChildren("light");  // older form
-        }
-        NamedBeanHandle<Light> low = loadLight(l.get(0));
-        NamedBeanHandle<Light> high = loadLight(l.get(1));
-*/        
-        // put it together
+    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         AnalogActionMemory h;
