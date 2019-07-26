@@ -36,6 +36,19 @@ public class TemplateInstanceManager implements LogixNG_InstanceManager {
         return (N) InstanceManager.getDefault(type).getNamedBean(name);
     }
 
+    public static boolean implementsInterface(Class _class, Class _interface) {
+        for (Class clazz : _class.getInterfaces()) {
+            if (clazz.equals(_interface)) {
+                return true;
+            } else {
+                if (implementsInterface(clazz, _interface)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")  // Needed due to limitations of Java templates
@@ -46,7 +59,7 @@ public class TemplateInstanceManager implements LogixNG_InstanceManager {
         // Step 2: Try get()
         // Step 3: Try to create it ourself
         
-        if (type.isInstance(ProvidingManager.class)) {
+        if (implementsInterface(type, ProvidingManager.class)) {
             try {
                 return ((ProvidingManager<N>)InstanceManager.getDefault(type))
                         .provide(name);

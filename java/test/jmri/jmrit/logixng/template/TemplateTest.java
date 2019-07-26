@@ -7,6 +7,7 @@ import jmri.Audio;
 import jmri.AudioManager;
 import jmri.IdTag;
 import jmri.IdTagManager;
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Light;
 import jmri.LightManager;
@@ -15,6 +16,7 @@ import jmri.LogixManager;
 import jmri.Memory;
 import jmri.MemoryManager;
 import jmri.NamedBean;
+import jmri.ProvidingManager;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.Reporter;
@@ -29,6 +31,7 @@ import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.LogixNG_InstanceManager;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -47,6 +50,18 @@ public class TemplateTest {
         Assert.assertEquals("bundle is correct", "Test Bundle bb aa cc", Bundle.getMessage("TestBundle", "aa", "bb", "cc"));
         Assert.assertEquals("bundle is correct", "Generic", Bundle.getMessage(Locale.US, "SocketTypeGeneric"));
         Assert.assertEquals("bundle is correct", "Test Bundle bb aa cc", Bundle.getMessage(Locale.US, "TestBundle", "aa", "bb", "cc"));
+    }
+    
+    @Test
+    public void testInstanceManager() {
+        InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
+        
+        InstanceManager.setDefault(LogixNG_InstanceManager.class, new TemplateInstanceManager());
+        LogixNG_InstanceManager manager = InstanceManager.getDefault(LogixNG_InstanceManager.class);
+        Turnout turnout1 = manager.provide(TurnoutManager.class, Turnout.class, "IT1");
+        System.out.format("Turnout: %s%n", turnout1);
+        Turnout turnout2 = manager.provide(TurnoutManager.class, Turnout.class, "IT2");
+        System.out.format("Turnout: %s%n", turnout2);
     }
     
     @Test
@@ -92,7 +107,8 @@ public class TemplateTest {
         Reporter r = tim.provide(ReporterManager.class, NullReporter.class, "IR1");
         Sensor s = tim.provide(SensorManager.class, NullSensor.class, "IS1");
         SignalHead sh = tim.provide(SignalHeadManager.class, NullSignalHead.class, "IH1");
-        SignalMast sm = tim.provide(SignalMastManager.class, NullSignalMast.class, "IF1");
+        SignalMast sm = tim.provide(SignalMastManager.class, NullSignalMast.class, "IF$shsm:AAR-1946:CPL(IH1)");
+//        SignalMast sm = tim.provide(SignalMastManager.class, NullSignalMast.class, "IF1");
         Turnout t = tim.provide(TurnoutManager.class, NullTurnout.class, "IT1");
         Assert.assertNotNull("Not null", a);
         Assert.assertNotNull("Not null", i);
@@ -114,7 +130,7 @@ public class TemplateTest {
         Assert.assertTrue("Objects are the same", r.equals(tim.get(ReporterManager.class, NullReporter.class, "IR1")));
         Assert.assertTrue("Objects are the same", s.equals(tim.get(SensorManager.class, NullSensor.class, "IS1")));
         Assert.assertTrue("Objects are the same", sh.equals(tim.get(SignalHeadManager.class, NullSignalHead.class, "IH1")));
-        Assert.assertTrue("Objects are the same", sm.equals(tim.get(SignalMastManager.class, NullSignalMast.class, "IF1")));
+        Assert.assertTrue("Objects are the same", sm.equals(tim.get(SignalMastManager.class, NullSignalMast.class, "IF$shsm:AAR-1946:CPL(IH1)")));
         Assert.assertTrue("Objects are the same", t.equals(tim.get(TurnoutManager.class, NullTurnout.class, "IT1")));
     }
     
