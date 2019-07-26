@@ -24,11 +24,9 @@
                 http://docbook.org/ns/docbook http://jmri.org/xml/schema/docbook/docbook.xsd
             "
         >
-<!--
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionHoldAnything-4.17.2.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionIfThen-4.17.2.xsd"/>
-  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/digital-actions/actionMany-4.17.2.xsd"/>
--->
+
+  <xs:include schemaLocation="http://jmri.org/xml/schema/logixng/analog-actions/action-memory-4.17.2.xsd"/>
+
     <xs:complexType name="LogixNG_AnalogActionManagerType">
       <xs:annotation>
         <xs:documentation>
@@ -42,11 +40,9 @@
         
         <!-- Permit any of these tags in any order in any number -->
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-<!--
-            <xs:element name="actionHoldAnything"  type="LogixNG_ActionHoldAnythingType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="actionIfThen"        type="LogixNG_ActionIfThenType" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="actionMany"          type="LogixNG_ActionManyType" minOccurs="0" maxOccurs="unbounded" />
--->
+
+            <xs:element name="analog-action-memory"  type="LogixNG_AnalogAction_MemoryType" minOccurs="0" maxOccurs="unbounded" />
+
           </xs:choice>
       </xs:sequence>
       <xs:attribute name="class" type="classType" use="required"/>

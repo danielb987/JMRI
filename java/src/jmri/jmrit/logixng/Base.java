@@ -339,7 +339,7 @@ public interface Base {
      */
     static final class InstanceManagerContainer {
         
-        static LogixNG_InstanceManager defaultInstanceManager =
+        private static LogixNG_InstanceManager defaultInstanceManager =
                 new jmri.jmrit.logixng.implementation.DefaultLogixNG_InstanceManager();
     }
     

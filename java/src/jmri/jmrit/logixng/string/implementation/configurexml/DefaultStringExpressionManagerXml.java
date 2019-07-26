@@ -1,16 +1,22 @@
 package jmri.jmrit.logixng.string.implementation.configurexml;
 
+import java.lang.reflect.Constructor;
 import jmri.jmrit.logixng.string.implementation.configurexml.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.string.implementation.DefaultStringExpressionManager;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.StringExpressionBean;
+import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 
 /**
  * Provides the functionality for configuring ExpressionManagers
@@ -20,6 +26,8 @@ import jmri.jmrit.logixng.StringExpressionBean;
  */
 public class DefaultStringExpressionManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
+    private final Map<String, Class<?>> xmlClasses = new HashMap<>();
+    
     public DefaultStringExpressionManagerXml() {
     }
 
@@ -97,68 +105,49 @@ public class DefaultStringExpressionManagerXml extends jmri.managers.configurexm
      * @param expressions Element containing the Logix elements to load.
      */
     public void loadExpressions(Element expressions) {
-/*        
-        List<Element> expressionList = expressions.getChildren("expression");  // NOI18N
+        
+        List<Element> expressionList = expressions.getChildren();  // NOI18N
         if (log.isDebugEnabled()) {
-            log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
+            log.debug("Found " + expressionList.size() + " actions");  // NOI18N
         }
-        StringExpressionManager tm = InstanceManager.getDefault(jmri.StringExpressionManager.class);
 
         for (int i = 0; i < expressionList.size(); i++) {
-
-            String sysName = getSystemName(expressionList.get(i));
-            if (sysName == null) {
-                log.warn("unexpected null in systemName " + expressionList.get(i));  // NOI18N
-                break;
+            
+            String className = expressionList.get(i).getAttribute("class").getValue();
+//            log.error("className: " + className);
+            
+            Class<?> clazz = xmlClasses.get(className);
+            
+            if (clazz == null) {
+                try {
+                    clazz = Class.forName(className);
+                    xmlClasses.put(className, clazz);
+                } catch (ClassNotFoundException ex) {
+                    log.error("cannot load class " + className, ex);
+                }
             }
-
-            String userName = getUserName(expressionList.get(i));
-
-            String yesno = "";
-            if (expressionList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = expressionList.get(i).getAttribute("enabled").getValue();  // NOI18N
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("create expression: (" + sysName + ")("  // NOI18N
-                        + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-            }
-
-            StringExpressionBean x = tm.createNewExpression(sysName, userName);
-            if (x != null) {
-                // load common part
-                loadCommon(x, expressionList.get(i));
-
-                // set enabled/disabled if attribute was present
-                if ((yesno != null) && (!yesno.equals(""))) {
-                    if (yesno.equals("yes")) {  // NOI18N
-                        x.setEnabled(true);
-                    } else if (yesno.equals("no")) {  // NOI18N
-                        x.setEnabled(false);
+            
+            if (clazz != null) {
+                Constructor<?> c = null;
+                try {
+                    c = clazz.getConstructor();
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    log.error("cannot create constructor", ex);
+                }
+                
+                if (c != null) {
+                    try {
+                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        
+                        o.load(expressionList.get(i), null);
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        log.error("cannot create object", ex);
+                    } catch (JmriConfigureXmlException ex) {
+                        log.error("cannot load action", ex);
                     }
                 }
-/*                
-                // load conditionals, if there are any
-                List<Element> logixConditionalList = expressionList.get(i).getChildren("logixConditional");  // NOI18N
-                if (logixConditionalList.size() > 0) {
-                    // add conditionals
-                    for (int n = 0; n < logixConditionalList.size(); n++) {
-                        if (logixConditionalList.get(n).getAttribute("systemName") == null) {  // NOI18N
-                            log.warn("unexpected null in systemName " + logixConditionalList.get(n)  // NOI18N
-                                    + " " + logixConditionalList.get(n).getAttributes());
-                            break;
-                        }
-                        String cSysName = logixConditionalList.get(n)
-                                .getAttribute("systemName").getValue();  // NOI18N
-                        int cOrder = Integer.parseInt(logixConditionalList.get(n)
-                                .getAttribute("order").getValue());  // NOI18N
-                        // add conditional to logix
-                        x.addConditional(cSysName, cOrder);
-                    }
-                }
-*./                
             }
         }
-*/
     }
 
     /**

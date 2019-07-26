@@ -1,11 +1,16 @@
 package jmri.jmrit.logixng.analog.implementation.configurexml;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.analog.implementation.DefaultAnalogActionManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -14,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogActionBean;
+import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 
 /**
  * Provides the functionality for configuring ActionManagers
@@ -24,6 +30,8 @@ import jmri.jmrit.logixng.AnalogActionBean;
  */
 public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
+    private final Map<String, Class<?>> xmlClasses = new HashMap<>();
+    
     public DefaultAnalogActionManagerXml() {
     }
 
@@ -94,75 +102,56 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
     }
 
     /**
-     * Utility method to load the individual AnalogActionBean objects. If there's no
- additional info needed for a specific action type, invoke this with the
- parent of the set of AnalogActionBean elements.
+     * Utility method to load the individual AnalogActionBean objects. If
+     * there's no additional info needed for a specific action type, invoke
+     * this with the parent of the set of AnalogActionBean elements.
      *
      * @param actions Element containing the AnalogActionBean elements to load.
      */
     public void loadActions(Element actions) {
-/*        
-        List<Element> actionList = actions.getChildren("action");  // NOI18N
+        
+        List<Element> actionList = actions.getChildren();  // NOI18N
         if (log.isDebugEnabled()) {
             log.debug("Found " + actionList.size() + " actions");  // NOI18N
         }
-        AnalogActionManager tm = InstanceManager.getDefault(jmri.AnalogActionManager.class);
 
         for (int i = 0; i < actionList.size(); i++) {
-
-            String sysName = getSystemName(actionList.get(i));
-            if (sysName == null) {
-                log.warn("unexpected null in systemName " + actionList.get(i));  // NOI18N
-                break;
+            
+            String className = actionList.get(i).getAttribute("class").getValue();
+//            log.error("className: " + className);
+            
+            Class<?> clazz = xmlClasses.get(className);
+            
+            if (clazz == null) {
+                try {
+                    clazz = Class.forName(className);
+                    xmlClasses.put(className, clazz);
+                } catch (ClassNotFoundException ex) {
+                    log.error("cannot load class " + className, ex);
+                }
             }
-
-            String userName = getUserName(actionList.get(i));
-
-            String yesno = "";
-            if (actionList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = actionList.get(i).getAttribute("enabled").getValue();  // NOI18N
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("create action: (" + sysName + ")("  // NOI18N
-                        + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-            }
-
-            AnalogActionBean x = tm.createNewAction(sysName, userName);
-            if (x != null) {
-                // load common part
-                loadCommon(x, actionList.get(i));
-
-                // set enabled/disabled if attribute was present
-                if ((yesno != null) && (!yesno.equals(""))) {
-                    if (yesno.equals("yes")) {  // NOI18N
-                        x.setEnabled(true);
-                    } else if (yesno.equals("no")) {  // NOI18N
-                        x.setEnabled(false);
+            
+            if (clazz != null) {
+                Constructor<?> c = null;
+                try {
+                    c = clazz.getConstructor();
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    log.error("cannot create constructor", ex);
+                }
+                
+                if (c != null) {
+                    try {
+                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        
+                        o.load(actionList.get(i), null);
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        log.error("cannot create object", ex);
+                    } catch (JmriConfigureXmlException ex) {
+                        log.error("cannot load action", ex);
                     }
                 }
-/*                
-                // load conditionals, if there are any
-                List<Element> actionConditionalList = actionList.get(i).getChildren("actionConditional");  // NOI18N
-                if (actionConditionalList.size() > 0) {
-                    // add conditionals
-                    for (int n = 0; n < actionConditionalList.size(); n++) {
-                        if (actionConditionalList.get(n).getAttribute("systemName") == null) {  // NOI18N
-                            log.warn("unexpected null in systemName " + actionConditionalList.get(n)  // NOI18N
-                                    + " " + actionConditionalList.get(n).getAttributes());
-                            break;
-                        }
-                        String cSysName = actionConditionalList.get(n)
-                                .getAttribute("systemName").getValue();  // NOI18N
-                        int cOrder = Integer.parseInt(actionConditionalList.get(n)
-                                .getAttribute("order").getValue());  // NOI18N
-                        // add conditional to action
-                        x.addConditional(cSysName, cOrder);
-                    }
-                }
-*./                
             }
         }
-*/
     }
 
     /**

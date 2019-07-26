@@ -98,20 +98,18 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
     }
 
     /**
-     * Utility method to load the individual DigitalActionBean objects. If there's
- no additional info needed for a specific action type, invoke this with
- the parent of the set of DigitalActionBean elements.
+     * Utility method to load the individual DigitalActionBean objects. If
+     * there's no additional info needed for a specific action type, invoke
+     * this with the parent of the set of DigitalActionBean elements.
      *
      * @param actions Element containing the DigitalActionBean elements to load.
      */
     public void loadActions(Element actions) {
         
-//        List<Element> actionList = actions.getChildren("logixngDigitalActions");  // NOI18N
         List<Element> actionList = actions.getChildren();  // NOI18N
         if (log.isDebugEnabled()) {
             log.debug("Found " + actionList.size() + " actions");  // NOI18N
         }
-//        DigitalActionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class);
 
         for (int i = 0; i < actionList.size(); i++) {
             
@@ -150,61 +148,6 @@ public class DefaultDigitalActionManagerXml extends jmri.managers.configurexml.A
                 }
             }
         }
-/*
-            String sysName = getSystemName(actionList.get(i));
-            if (sysName == null) {
-                log.warn("unexpected null in systemName " + actionList.get(i));  // NOI18N
-                break;
-            }
-
-            String userName = getUserName(actionList.get(i));
-
-            String yesno = "";
-            if (actionList.get(i).getAttribute("enabled") != null) {  // NOI18N
-                yesno = actionList.get(i).getAttribute("enabled").getValue();  // NOI18N
-            }
-//            if (log.isDebugEnabled()) {
-                log.error("create action: (" + sysName + ")("  // NOI18N
-                        + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-//            }
-        }
-/*
-            DigitalActionBean x = tm.createNewAction(sysName, userName);
-            if (x != null) {
-                // load common part
-                loadCommon(x, actionList.get(i));
-
-                // set enabled/disabled if attribute was present
-                if ((yesno != null) && (!yesno.equals(""))) {
-                    if (yesno.equals("yes")) {  // NOI18N
-                        x.setEnabled(true);
-                    } else if (yesno.equals("no")) {  // NOI18N
-                        x.setEnabled(false);
-                    }
-                }
-/*                
-                // load conditionals, if there are any
-                List<Element> actionConditionalList = actionList.get(i).getChildren("actionConditional");  // NOI18N
-                if (actionConditionalList.size() > 0) {
-                    // add conditionals
-                    for (int n = 0; n < actionConditionalList.size(); n++) {
-                        if (actionConditionalList.get(n).getAttribute("systemName") == null) {  // NOI18N
-                            log.warn("unexpected null in systemName " + actionConditionalList.get(n)  // NOI18N
-                                    + " " + actionConditionalList.get(n).getAttributes());
-                            break;
-                        }
-                        String cSysName = actionConditionalList.get(n)
-                                .getAttribute("systemName").getValue();  // NOI18N
-                        int cOrder = Integer.parseInt(actionConditionalList.get(n)
-                                .getAttribute("order").getValue());  // NOI18N
-                        // add conditional to action
-                        x.addConditional(cSysName, cOrder);
-                    }
-                }
-*./                
-            }
-        }
-*/
     }
 
     /**

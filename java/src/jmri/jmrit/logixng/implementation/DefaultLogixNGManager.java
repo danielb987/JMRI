@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.awt.GraphicsEnvironment;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,21 +13,34 @@ import jmri.InvokeOnGuiThread;
 import jmri.JmriException;
 import jmri.Light;
 import jmri.LightManager;
+import jmri.Memory;
+import jmri.MemoryManager;
 import jmri.Sensor;
 import jmri.SensorManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
+import jmri.jmrit.logixng.AnalogExpressionManager;
+import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketFactory;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrit.logixng.MaleAnalogActionSocket;
+import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleStringActionSocket;
+import jmri.jmrit.logixng.MaleStringExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.StringExpressionManager;
+import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
+import jmri.jmrit.logixng.analog.expressions.AnalogExpressionMemory;
 import jmri.jmrit.logixng.digital.actions.ActionLight;
 import jmri.jmrit.logixng.digital.actions.ActionSensor;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
@@ -48,8 +62,12 @@ import jmri.jmrit.logixng.digital.expressions.ResetOnTrue;
 import jmri.jmrit.logixng.digital.expressions.Timer;
 import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
 import jmri.jmrit.logixng.digital.expressions.True;
+import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
+import jmri.jmrit.logixng.string.actions.StringActionMemory;
+import jmri.jmrit.logixng.string.expressions.StringExpressionMemory;
 import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.managers.AbstractManager;
+import jmri.util.FileUtil;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
@@ -395,19 +413,40 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketLight = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionLight);
                     socketOr.getChild(index++).connect(socketLight);
                     
-                    ExpressionSensor expressionSensor = new ExpressionSensor(getSystemNamePrefix()+"DE:000014");
+                    ExpressionLight expressionLight2 = new ExpressionLight(getSystemNamePrefix()+"DE:000014");
+                    expressionLight2.setLight((Light)null);
+                    expressionLight2.set_Is_IsNot(Is_IsNot_Enum.IS);
+                    expressionLight2.setLightState(ExpressionLight.LightState.ON);
+                    MaleSocket socketLight2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionLight2);
+                    socketOr.getChild(index++).connect(socketLight2);
+                    
+                    ExpressionSensor expressionSensor = new ExpressionSensor(getSystemNamePrefix()+"DE:000015");
                     expressionSensor.setSensor(sensor1);
                     expressionSensor.set_Is_IsNot(Is_IsNot_Enum.IS);
                     expressionSensor.setSensorState(ExpressionSensor.SensorState.ACTIVE);
                     MaleSocket socketSensor = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionSensor);
                     socketOr.getChild(index++).connect(socketSensor);
                     
-                    ExpressionTurnout expressionTurnout = new ExpressionTurnout(getSystemNamePrefix()+"DE:000015");
+                    ExpressionSensor expressionSensor2 = new ExpressionSensor(getSystemNamePrefix()+"DE:000016");
+                    expressionSensor2.setSensor((Sensor)null);
+                    expressionSensor2.set_Is_IsNot(Is_IsNot_Enum.IS);
+                    expressionSensor2.setSensorState(ExpressionSensor.SensorState.ACTIVE);
+                    MaleSocket socketSensor2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionSensor2);
+                    socketOr.getChild(index++).connect(socketSensor2);
+                    
+                    ExpressionTurnout expressionTurnout = new ExpressionTurnout(getSystemNamePrefix()+"DE:000017");
                     expressionTurnout.setTurnout(turnout1);
                     expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IS);
                     expressionTurnout.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
                     MaleSocket socketTurnout = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout);
                     socketOr.getChild(index++).connect(socketTurnout);
+                    
+                    ExpressionTurnout expressionTurnout2 = new ExpressionTurnout(getSystemNamePrefix()+"DE:000018");
+                    expressionTurnout2.setTurnout((Turnout)null);
+                    expressionTurnout2.set_Is_IsNot(Is_IsNot_Enum.IS);
+                    expressionTurnout2.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
+                    MaleSocket socketTurnout2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout2);
+                    socketOr.getChild(index++).connect(socketTurnout2);
                     
                     
                     
@@ -432,20 +471,53 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     ActionLight actionLight = new ActionLight(getSystemNamePrefix()+"DA:00014");
                     actionLight.setLight(light2);
                     actionLight.setLightState(ActionLight.LightState.ON);
-                    MaleSocket socketLight2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
+                    socketLight2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
                     socketSecondMany.getChild(index++).connect(socketLight2);
                     
                     ActionSensor actionSensor = new ActionSensor(getSystemNamePrefix()+"DA:00015");
                     actionSensor.setSensor(sensor2);
                     actionSensor.setSensorState(ActionSensor.SensorState.ACTIVE);
-                    MaleSocket socketSensor2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
+                    socketSensor2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
                     socketSecondMany.getChild(index++).connect(socketSensor2);
                     
                     ActionTurnout actionTurnout = new ActionTurnout(getSystemNamePrefix()+"DA:00016");
                     actionTurnout.setTurnout(turnout2);
                     actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.THROWN);
-                    MaleSocket socketTurnout2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
+                    socketTurnout2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
                     socketSecondMany.getChild(index++).connect(socketTurnout2);
+                    
+                    Memory memory1 = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
+                    Memory memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
+                    Memory memory3 = InstanceManager.getDefault(MemoryManager.class).provide("IM3");
+                    Memory memory4 = InstanceManager.getDefault(MemoryManager.class).provide("IM4");
+                    
+                    AnalogExpressionMemory analogExpressionMemory = new AnalogExpressionMemory(getSystemNamePrefix()+"AE:00001");
+                    analogExpressionMemory.setMemory(memory1);
+                    MaleSocket socketAnalogExpressionMemory = InstanceManager.getDefault(AnalogExpressionManager.class).registerExpression(analogExpressionMemory);
+
+                    AnalogActionMemory analogActionMemory = new AnalogActionMemory(getSystemNamePrefix()+"AA:00001");
+                    analogActionMemory.setMemory(memory2);
+                    MaleSocket socketAnalogActionMemory = InstanceManager.getDefault(AnalogActionManager.class).registerAction(analogActionMemory);
+
+                    DoAnalogAction doAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:00101");
+                    doAnalogAction.setAnalogExpressionSocketSystemName(socketAnalogExpressionMemory.getSystemName());
+                    doAnalogAction.setAnalogActionSocketSystemName(socketAnalogActionMemory.getSystemName());
+                    MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doAnalogAction);
+                    socketSecondMany.getChild(index++).connect(socket);
+                    
+                    StringExpressionMemory stringExpressionMemory = new StringExpressionMemory(getSystemNamePrefix()+"SE:00001");
+                    stringExpressionMemory.setMemory(memory3);
+                    MaleSocket socketStringExpressionMemory = InstanceManager.getDefault(StringExpressionManager.class).registerExpression(stringExpressionMemory);
+
+                    StringActionMemory stringActionMemory = new StringActionMemory(getSystemNamePrefix()+"SA:00001");
+                    stringActionMemory.setMemory(memory4);
+                    MaleSocket socketStringActionMemory = InstanceManager.getDefault(StringActionManager.class).registerAction(stringActionMemory);
+
+                    DoStringAction doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00102");
+                    doStringAction.setStringExpressionSocketSystemName(socketStringExpressionMemory.getSystemName());
+                    doStringAction.setStringActionSocketSystemName(socketStringActionMemory.getSystemName());
+                    socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doStringAction);
+                    socketSecondMany.getChild(index++).connect(socket);
 
                     logixNG.setEnabled(true);
                     conditionalNG.setEnabled(true);
@@ -458,7 +530,10 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                 if (cm == null) {
                     log.error("Failed to make backup due to unable to get default configure manager");
                 } else {
-                    java.io.File file = new java.io.File("F:\\temp\\DanielTestarLogixNG.xml");
+                    FileUtil.createDirectory(FileUtil.getUserFilesPath() + "temp");
+                    File file = new File(FileUtil.getUserFilesPath() + "temp/" + "LogixNG.xml");
+                    System.out.format("Temporary file: %s%n", file.getAbsoluteFile());
+//                    java.io.File file = new java.io.File("F:\\temp\\DanielTestarLogixNG.xml");
 //                    cm.makeBackup(file);
                     // and finally store
                     
@@ -476,35 +551,35 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                         for (LogixNG logixNG : InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet()) {
                             InstanceManager.getDefault(LogixNG_Manager.class).deleteLogixNG(logixNG);
                         }
-                        java.util.SortedSet<jmri.jmrit.logixng.MaleAnalogActionSocket> set1 = InstanceManager.getDefault(jmri.jmrit.logixng.AnalogActionManager.class).getNamedBeanSet();
+                        java.util.SortedSet<MaleAnalogActionSocket> set1 = InstanceManager.getDefault(AnalogActionManager.class).getNamedBeanSet();
                         List<MaleSocket> l = new ArrayList<>(set1);
                         for (MaleSocket x1 : l) {
-                            InstanceManager.getDefault(jmri.jmrit.logixng.AnalogActionManager.class).deleteBean((jmri.jmrit.logixng.MaleAnalogActionSocket)x1, "DoDelete");
+                            InstanceManager.getDefault(AnalogActionManager.class).deleteBean((MaleAnalogActionSocket)x1, "DoDelete");
                         }
-                        java.util.SortedSet<jmri.jmrit.logixng.MaleAnalogExpressionSocket> set2 = InstanceManager.getDefault(jmri.jmrit.logixng.AnalogExpressionManager.class).getNamedBeanSet();
+                        java.util.SortedSet<MaleAnalogExpressionSocket> set2 = InstanceManager.getDefault(AnalogExpressionManager.class).getNamedBeanSet();
                         l = new ArrayList<>(set2);
                         for (MaleSocket x2 : l) {
-                            InstanceManager.getDefault(jmri.jmrit.logixng.AnalogExpressionManager.class).deleteBean((jmri.jmrit.logixng.MaleAnalogExpressionSocket)x2, "DoDelete");
+                            InstanceManager.getDefault(AnalogExpressionManager.class).deleteBean((MaleAnalogExpressionSocket)x2, "DoDelete");
                         }
-                        java.util.SortedSet<jmri.jmrit.logixng.MaleDigitalActionSocket> set3 = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).getNamedBeanSet();
+                        java.util.SortedSet<MaleDigitalActionSocket> set3 = InstanceManager.getDefault(DigitalActionManager.class).getNamedBeanSet();
                         l = new ArrayList<>(set3);
                         for (MaleSocket x3 : l) {
-                            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalActionManager.class).deleteBean((jmri.jmrit.logixng.MaleDigitalActionSocket)x3, "DoDelete");
+                            InstanceManager.getDefault(DigitalActionManager.class).deleteBean((MaleDigitalActionSocket)x3, "DoDelete");
                         }
-                        java.util.SortedSet<jmri.jmrit.logixng.MaleDigitalExpressionSocket> set4 = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).getNamedBeanSet();
+                        java.util.SortedSet<MaleDigitalExpressionSocket> set4 = InstanceManager.getDefault(DigitalExpressionManager.class).getNamedBeanSet();
                         l = new ArrayList<>(set4);
                         for (MaleSocket x4 : l) {
-                            InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class).deleteBean((jmri.jmrit.logixng.MaleDigitalExpressionSocket)x4, "DoDelete");
+                            InstanceManager.getDefault(DigitalExpressionManager.class).deleteBean((MaleDigitalExpressionSocket)x4, "DoDelete");
                         }
-                        java.util.SortedSet<jmri.jmrit.logixng.MaleStringActionSocket> set5 = InstanceManager.getDefault(jmri.jmrit.logixng.StringActionManager.class).getNamedBeanSet();
+                        java.util.SortedSet<MaleStringActionSocket> set5 = InstanceManager.getDefault(StringActionManager.class).getNamedBeanSet();
                         l = new ArrayList<>(set5);
                         for (MaleSocket x5 : l) {
-                            InstanceManager.getDefault(jmri.jmrit.logixng.StringActionManager.class).deleteBean((jmri.jmrit.logixng.MaleStringActionSocket)x5, "DoDelete");
+                            InstanceManager.getDefault(StringActionManager.class).deleteBean((MaleStringActionSocket)x5, "DoDelete");
                         }
-                        java.util.SortedSet<jmri.jmrit.logixng.MaleStringExpressionSocket> set6 = InstanceManager.getDefault(jmri.jmrit.logixng.StringExpressionManager.class).getNamedBeanSet();
+                        java.util.SortedSet<MaleStringExpressionSocket> set6 = InstanceManager.getDefault(StringExpressionManager.class).getNamedBeanSet();
                         l = new ArrayList<>(set6);
                         for (MaleSocket x6 : l) {
-                            InstanceManager.getDefault(jmri.jmrit.logixng.StringExpressionManager.class).deleteBean((jmri.jmrit.logixng.MaleStringExpressionSocket)x6, "DoDelete");
+                            InstanceManager.getDefault(StringExpressionManager.class).deleteBean((MaleStringExpressionSocket)x6, "DoDelete");
                         }
                         
                         boolean results = cm.load(file);

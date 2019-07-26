@@ -82,11 +82,11 @@ public class DoStringActionXml extends jmri.managers.configurexml.AbstractNamedB
 
         Element ifSystemNameElement = shared.getChild("ifSystemName");
         if (ifSystemNameElement != null) {
-            h.setAnalogActionSocketSystemName(ifSystemNameElement.getTextTrim());
+            h.setStringActionSocketSystemName(ifSystemNameElement.getTextTrim());
         }
         Element thenSystemNameElement = shared.getChild("thenSystemName");
         if (thenSystemNameElement != null) {
-            h.setAnalogExpressionSocketSystemName(thenSystemNameElement.getTextTrim());
+            h.setStringExpressionSocketSystemName(thenSystemNameElement.getTextTrim());
         }
         
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);

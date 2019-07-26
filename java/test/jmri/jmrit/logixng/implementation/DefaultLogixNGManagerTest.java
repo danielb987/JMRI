@@ -50,7 +50,7 @@ public class DefaultLogixNGManagerTest {
         Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.INVALID, manager.validSystemNameFormat("iQ1"));
         Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.INVALID, manager.validSystemNameFormat("Iq1"));
         Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.INVALID, manager.validSystemNameFormat("iq1"));
-        Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.VALID, manager.validSystemNameFormat("IQA1"));
+        Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.VALID, manager.validSystemNameFormat("IQ:1"));
         Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.INVALID, manager.validSystemNameFormat("IQ1A"));
         Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.INVALID, manager.validSystemNameFormat("IQA"));
         Assert.assertEquals("validSystemNameFormat()", Manager.NameValidity.INVALID, manager.validSystemNameFormat("IQ1 "));

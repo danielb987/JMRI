@@ -50,11 +50,23 @@
     </light>
   </lights>
   <memories class="jmri.managers.configurexml.DefaultMemoryManagerXml">
-    <memory value="12:02 fm">
+    <memory value="9:20 fm">
       <systemName>IMCURRENTTIME</systemName>
     </memory>
     <memory value="1.0">
       <systemName>IMRATEFACTOR</systemName>
+    </memory>
+    <memory>
+      <systemName>IM1</systemName>
+    </memory>
+    <memory>
+      <systemName>IM2</systemName>
+    </memory>
+    <memory>
+      <systemName>IM3</systemName>
+    </memory>
+    <memory>
+      <systemName>IM4</systemName>
     </memory>
   </memories>
   <signalmasts class="jmri.managers.configurexml.DefaultSignalMastManagerXml" />
@@ -136,6 +148,14 @@
         </socket>
         <socket>
           <socketName>A7</socketName>
+          <systemName>IQDA:00101</systemName>
+        </socket>
+        <socket>
+          <socketName>A8</socketName>
+          <systemName>IQDA:00102</systemName>
+        </socket>
+        <socket>
+          <socketName>A9</socketName>
         </socket>
       </actions>
     </many>
@@ -163,6 +183,12 @@
       <turnout>IT2_Daniel</turnout>
       <turnoutState>THROWN</turnoutState>
     </action-turnout>
+    <do-analog-action class="jmri.jmrit.logixng.digital.actions.configurexml.DoAnalogActionXml">
+      <systemName>IQDA:00101</systemName>
+    </do-analog-action>
+    <do-string-action class="jmri.jmrit.logixng.digital.actions.configurexml.DoStringActionXml">
+      <systemName>IQDA:00102</systemName>
+    </do-string-action>
   </logixngDigitalActions>
   <logixngDigitalExpressions class="jmri.jmrit.logixng.digital.implementation.configurexml.DefaultDigitalExpressionManagerXml">
     <or class="jmri.jmrit.logixng.digital.expressions.configurexml.OrXml">
@@ -214,6 +240,18 @@
         </socket>
         <socket>
           <socketName>E12</socketName>
+          <systemName>IQDE:000016</systemName>
+        </socket>
+        <socket>
+          <socketName>E13</socketName>
+          <systemName>IQDE:000017</systemName>
+        </socket>
+        <socket>
+          <socketName>E14</socketName>
+          <systemName>IQDE:000018</systemName>
+        </socket>
+        <socket>
+          <socketName>E15</socketName>
         </socket>
       </expressions>
     </or>
@@ -290,30 +328,65 @@
       <is_isNot>IS</is_isNot>
       <lightState>ON</lightState>
     </expression-light>
-    <expression-sensor class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionSensorXml">
+    <expression-light class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionLightXml">
       <systemName>IQDE:000014</systemName>
+      <is_isNot>IS</is_isNot>
+      <lightState>ON</lightState>
+    </expression-light>
+    <expression-sensor class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionSensorXml">
+      <systemName>IQDE:000015</systemName>
       <sensor>IS1_Daniel</sensor>
       <is_isNot>IS</is_isNot>
       <sensorState>ACTIVE</sensorState>
     </expression-sensor>
+    <expression-sensor class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionSensorXml">
+      <systemName>IQDE:000016</systemName>
+      <is_isNot>IS</is_isNot>
+      <sensorState>ACTIVE</sensorState>
+    </expression-sensor>
     <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
-      <systemName>IQDE:000015</systemName>
+      <systemName>IQDE:000017</systemName>
       <turnout>IT1_Daniel</turnout>
       <is_isNot>IS</is_isNot>
       <turnoutState>THROWN</turnoutState>
     </expression-turnout>
+    <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
+      <systemName>IQDE:000018</systemName>
+      <is_isNot>IS</is_isNot>
+      <turnoutState>THROWN</turnoutState>
+    </expression-turnout>
   </logixngDigitalExpressions>
-  <logixngAnalogExpressions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogExpressionManagerXml" />
-  <logixngAnalogActions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXml" />
-  <logixngStringExpressions class="jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringExpressionManagerXml" />
-  <logixngStringActions class="jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringActionManagerXml" />
-  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Fri Jul 26 00:02:03 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
+  <logixngAnalogExpressions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogExpressionManagerXml">
+    <analog-expression-memory class="jmri.jmrit.logixng.analog.expressions.configurexml.AnalogExpressionMemoryXml">
+      <systemName>IQAE:00001</systemName>
+      <memory>IM1</memory>
+    </analog-expression-memory>
+  </logixngAnalogExpressions>
+  <logixngAnalogActions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXml">
+    <analog-action-memory class="jmri.jmrit.logixng.analog.actions.configurexml.AnalogActionMemoryXml">
+      <systemName>IQAA:00001</systemName>
+      <memory>IM2</memory>
+    </analog-action-memory>
+  </logixngAnalogActions>
+  <logixngStringExpressions class="jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringExpressionManagerXml">
+    <string-expression-memory class="jmri.jmrit.logixng.string.expressions.configurexml.StringExpressionMemoryXml">
+      <systemName>IQSE:00001</systemName>
+      <memory>IM3</memory>
+    </string-expression-memory>
+  </logixngStringExpressions>
+  <logixngStringActions class="jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringActionManagerXml">
+    <string-action-memory class="jmri.jmrit.logixng.string.actions.configurexml.StringActionMemoryXml">
+      <systemName>IQSA:00001</systemName>
+      <memory>IM4</memory>
+    </string-action-memory>
+  </logixngStringActions>
+  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Fri Jul 26 09:20:40 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
   <filehistory>
     <operation>
       <type>Store</type>
-      <date>Fri Jul 26 00:02:03 CEST 2019</date>
+      <date>Fri Jul 26 09:20:40 CEST 2019</date>
       <filename />
     </operation>
   </filehistory>
-  <!--Written by JMRI version 4.17.3ish+daniel+20190725T2201Z on Fri Jul 26 00:02:03 CEST 2019-->
+  <!--Written by JMRI version 4.17.3ish+daniel+20190726T0718Z on Fri Jul 26 09:20:40 CEST 2019-->
 </layout-config>

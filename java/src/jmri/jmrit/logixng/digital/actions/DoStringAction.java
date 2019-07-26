@@ -152,11 +152,11 @@ public class DoStringAction
         return Bundle.getMessage("DoStringAction_Long", _stringExpressionSocket.getName(), _stringActionSocket.getName());
     }
 
-    public void setAnalogActionSocketSystemName(String systemName) {
+    public void setStringActionSocketSystemName(String systemName) {
         _stringActionSocketSocketSystemName = systemName;
     }
 
-    public void setAnalogExpressionSocketSystemName(String systemName) {
+    public void setStringExpressionSocketSystemName(String systemName) {
         _stringExpressionSocketSocketSystemName = systemName;
     }
 
