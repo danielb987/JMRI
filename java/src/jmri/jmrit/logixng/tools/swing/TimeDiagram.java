@@ -136,9 +136,9 @@ public class TimeDiagram extends JmriJFrame {
         Class cls = cl.loadClass("se.bergqvist.jmri_logixng_plugin.ExpressionXor");
         
         // Print the location from where this class was loaded
-        ProtectionDomain pDomain = cls.getProtectionDomain();
-        CodeSource cSource = pDomain.getCodeSource();
-        URL urlfrom = cSource.getLocation();
+//        ProtectionDomain pDomain = cls.getProtectionDomain();
+//        CodeSource cSource = pDomain.getCodeSource();
+//        URL urlfrom = cSource.getLocation();
 //        System.out.format("Class from: %s%n", urlfrom.getFile());
         
         cls.newInstance();
