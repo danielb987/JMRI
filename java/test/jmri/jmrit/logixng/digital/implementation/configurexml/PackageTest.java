@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.digital.implementation.configurexml;
 
-import jmri.jmrit.logixng.implementation.configurexml.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -8,7 +7,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     DefaultDigitalActionManagerXmlTest.class,
     DefaultDigitalExpressionManagerXmlTest.class,
-    DefaultMaleDigitalActionSocketXmlTest.class,
 })
 
 /**
