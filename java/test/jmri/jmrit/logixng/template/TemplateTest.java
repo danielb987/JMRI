@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.template;
 
 // import java.awt.GraphicsEnvironment;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.Audio;
 import jmri.AudioManager;
@@ -41,6 +42,13 @@ import org.junit.Test;
  */
 public class TemplateTest {
 
+    @Test
+    public void testBundleClass() {
+        Assert.assertEquals("bundle is correct", "Test Bundle bb aa cc", Bundle.getMessage("TestBundle", "aa", "bb", "cc"));
+        Assert.assertEquals("bundle is correct", "Generic", Bundle.getMessage(Locale.US, "SocketTypeGeneric"));
+        Assert.assertEquals("bundle is correct", "Test Bundle bb aa cc", Bundle.getMessage(Locale.US, "TestBundle", "aa", "bb", "cc"));
+    }
+    
     @Test
     public void testNullNamedBeansCtor() {
         
