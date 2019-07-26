@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.expressions.configurexml;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.TurnoutManager;
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import org.jdom2.Element;
@@ -75,7 +76,7 @@ public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNam
     }
 */
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
 //        List<Element> l = shared.getChildren("turnoutname");
 /*        
         if (l.size() == 0) {

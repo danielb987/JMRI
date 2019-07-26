@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.string.actions.configurexml;
 import jmri.InstanceManager;
 import jmri.MemoryManager;
 import jmri.NamedBeanHandle;
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.string.actions.StringActionMemory;
 import org.jdom2.Element;
@@ -62,7 +63,7 @@ public class StringActionMemoryXml extends jmri.managers.configurexml.AbstractNa
     }
 */
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
 //        List<Element> l = shared.getChildren("lightname");
 /*        
         if (l.size() == 0) {

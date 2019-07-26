@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.analog.expressions.configurexml;
 import jmri.InstanceManager;
 import jmri.MemoryManager;
 import jmri.NamedBeanHandle;
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.analog.expressions.AnalogExpressionMemory;
 import org.jdom2.Element;
@@ -42,7 +43,7 @@ public class AnalogExpressionMemoryXml extends jmri.managers.configurexml.Abstra
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         AnalogExpressionMemory h;
