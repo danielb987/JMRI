@@ -59,9 +59,9 @@ public class TemplateTest {
         InstanceManager.setDefault(LogixNG_InstanceManager.class, new TemplateInstanceManager());
         LogixNG_InstanceManager manager = InstanceManager.getDefault(LogixNG_InstanceManager.class);
         Turnout turnout1 = manager.provide(TurnoutManager.class, Turnout.class, "IT1");
-        System.out.format("Turnout: %s%n", turnout1);
+        Assert.assertEquals("Names matches", "IT1", turnout1.getSystemName());
         Turnout turnout2 = manager.provide(TurnoutManager.class, Turnout.class, "IT2");
-        System.out.format("Turnout: %s%n", turnout2);
+        Assert.assertEquals("Names matches", "IT2", turnout2.getSystemName());
     }
     
     @Test
