@@ -97,7 +97,7 @@ public class TimeDiagram extends JmriJFrame {
                     String className = jarEntry.getName().replaceAll("/", "\\.");
                     String myClass = className.substring(0, className.lastIndexOf('.'));
                     classList.add(myClass);
-                    System.out.format("AAAAAA: %s - %s%n", className, myClass);
+//                    System.out.format("AAAAAA: %s - %s%n", className, myClass);
                 }
             }
         }
@@ -118,7 +118,7 @@ public class TimeDiagram extends JmriJFrame {
         for (String c : classList) {
             // Load the class se.bergqvist.jmri_logixng_plugin.ExpressionXor
             Class cls = cl.loadClass(c);
-            
+/*            
             if (cls.newInstance() instanceof DigitalExpressionBean) {
                 System.out.format("AAA: Class %s is an Expression%n", cls.getName());
             } else if (cls.isInstance(DigitalExpressionBean.class)) {
@@ -128,7 +128,7 @@ public class TimeDiagram extends JmriJFrame {
             } else {
                 System.out.format("Class %s is an unknown class%n", cls.getName());
             }
-
+*/
             cls.newInstance();
         }
         
@@ -139,7 +139,7 @@ public class TimeDiagram extends JmriJFrame {
         ProtectionDomain pDomain = cls.getProtectionDomain();
         CodeSource cSource = pDomain.getCodeSource();
         URL urlfrom = cSource.getLocation();
-        System.out.format("Class from: %s%n", urlfrom.getFile());
+//        System.out.format("Class from: %s%n", urlfrom.getFile());
         
         cls.newInstance();
         

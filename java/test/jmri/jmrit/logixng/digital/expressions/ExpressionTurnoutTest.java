@@ -33,13 +33,13 @@ public class ExpressionTurnoutTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionTurnout("IQA55:1:DE321", null);
+        DigitalExpressionBean t = new ExpressionTurnout("IQDE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        ExpressionTurnout expressionTurnout = new ExpressionTurnout("IQA55:1:DE321");
+        ExpressionTurnout expressionTurnout = new ExpressionTurnout("IQDE321");
         Assert.assertTrue("Get turnout".equals(expressionTurnout.getShortDescription()));
         Assert.assertTrue("Turnout Not selected is Thrown".equals(expressionTurnout.getLongDescription()));
         Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
@@ -63,18 +63,18 @@ public class ExpressionTurnoutTest {
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalActionBean actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean actionIfThen = new IfThen(IfThen.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
         conditionalNG.getChild(0).connect(socketIfThen);
         
-        ExpressionTurnout expressionTurnout = new ExpressionTurnout(conditionalNG);
+        ExpressionTurnout expressionTurnout = new ExpressionTurnout();
         expressionTurnout.setTurnout(turnout);
         expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IS);
         expressionTurnout.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
         MaleSocket socketTurnout = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout);
         socketIfThen.getChild(0).connect(socketTurnout);
         
-        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
+        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(atomicBoolean, true);
         MaleSocket socketAtomicBoolean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionAtomicBoolean);
         socketIfThen.getChild(1).connect(socketAtomicBoolean);
         

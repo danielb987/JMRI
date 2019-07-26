@@ -21,7 +21,7 @@ public class SwingToolsTest {
     public void testSwingTools() {
 //        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        DigitalActionBean action = new ActionTurnout("IQ1:1:DA1");
+        DigitalActionBean action = new ActionTurnout("IQDA1");
         Class actionClass = ActionTurnout.class;
         
         Assert.assertTrue("Class name is correct",

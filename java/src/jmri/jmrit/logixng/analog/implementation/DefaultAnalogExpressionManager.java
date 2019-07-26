@@ -15,7 +15,6 @@ import jmri.jmrit.logixng.AnalogExpressionFactory;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
@@ -129,16 +128,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        // I - Internal
-        // Q - LogixNG
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The LogixNG ID number
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // AE - AnalogExpressionBean
-        // \d+ - The AnalogExpressionBean ID number
-        if (systemName.matches("IQA?\\d+\\:\\d+\\:AEA?\\d+")) {
+        if (systemName.matches(getSystemNamePrefix()+"AE:?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -146,10 +136,10 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     }
 
     @Override
-    public String getNewSystemName(ConditionalNG conditionalNG) {
+    public String getNewSystemName() {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
-        b.append(":AEA");
+        StringBuilder b = new StringBuilder(getSystemNamePrefix());
+        b.append("AE:");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();

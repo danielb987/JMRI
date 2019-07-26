@@ -25,11 +25,9 @@ public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
     
     /**
      * Create a new system name for an AnalogActionBean.
-     *
-     * @param conditionalNG the ConditionalNG that this analog action belongs to
      * @return a new system name
      */
-    public String getNewSystemName(ConditionalNG conditionalNG);
+    public String getNewSystemName();
 
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
             Base parent, FemaleSocketListener listener, String socketName);

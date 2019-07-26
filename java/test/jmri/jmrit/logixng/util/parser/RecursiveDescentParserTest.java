@@ -175,27 +175,27 @@ public class RecursiveDescentParserTest {
         
         exprNode = t.parseExpression("12 < 2");
         Assert.assertTrue("expression matches", "(IntNumber:12)<(IntNumber:2)".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
         Assert.assertTrue("calculate is correct", ((Boolean)false).equals(exprNode.calculate()));
         exprNode = t.parseExpression("12 <= 2");
         Assert.assertTrue("expression matches", "(IntNumber:12)<=(IntNumber:2)".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
         Assert.assertTrue("calculate is correct", ((Boolean)false).equals(exprNode.calculate()));
         exprNode = t.parseExpression("12 > 2");
         Assert.assertTrue("expression matches", "(IntNumber:12)>(IntNumber:2)".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
         Assert.assertTrue("calculate is correct", ((Boolean)true).equals(exprNode.calculate()));
         exprNode = t.parseExpression("12 >= 2");
         Assert.assertTrue("expression matches", "(IntNumber:12)>=(IntNumber:2)".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
         Assert.assertTrue("calculate is correct", ((Boolean)true).equals(exprNode.calculate()));
         exprNode = t.parseExpression("12 == 2");
         Assert.assertTrue("expression matches", "(IntNumber:12)==(IntNumber:2)".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
         Assert.assertTrue("calculate is correct", ((Boolean)false).equals(exprNode.calculate()));
         exprNode = t.parseExpression("12 != 2");
         Assert.assertTrue("expression matches", "(IntNumber:12)!=(IntNumber:2)".equals(exprNode.getDefinitionString()));
-        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
+//        System.err.format("calculate: '%s', %s%n", exprNode.calculate(), exprNode.calculate().getClass().getName());
         Assert.assertTrue("calculate is correct", ((Boolean)true).equals(exprNode.calculate()));
 /*        
         exprNode = t.parseExpression("not 12 < 2");
@@ -238,7 +238,7 @@ public class RecursiveDescentParserTest {
         try {
             t.parseExpression("12+31*(23-1)+((((9*2+3)-2)/23");
         } catch (InvalidSyntaxException e) {
-            System.err.format("Error message: %s%n", e.getMessage());
+//            System.err.format("Error message: %s%n", e.getMessage());
             Assert.assertTrue("exception message matches", "Invalid syntax error".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
@@ -253,17 +253,17 @@ public class RecursiveDescentParserTest {
         exprNode = t.parseExpression("random()");
         Assert.assertTrue("expression matches", "Function:random()".equals(exprNode.getDefinitionString()));
         Object result = exprNode.calculate();
-        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
+//        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
         Assert.assertTrue("calculate is probably correct", (result instanceof Double) && (((Double)result) >= 0.0) && (((Double)result) <= 1.0));
         exprNode = t.parseExpression("int(23.56)");
         Assert.assertTrue("expression matches", "Function:int(FloatNumber:23.56)".equals(exprNode.getDefinitionString()));
         result = exprNode.calculate();
-        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
+//        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
         Assert.assertTrue("calculate is correct", ((Integer)23).equals(exprNode.calculate()));
         exprNode = t.parseExpression("sin(180,\"deg\")");
         Assert.assertTrue("expression matches", "Function:sin(IntNumber:180,String:deg)".equals(exprNode.getDefinitionString()));
         result = exprNode.calculate();
-        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
+//        System.err.format("Result: %s, %s%n", result, result.getClass().getName());
         Assert.assertEquals("calculate is correct", 0, (Double)exprNode.calculate(), 1e-15);
         exprNode = t.parseExpression("int(x*2+5)");
         Assert.assertTrue("expression matches", "Function:int(((Identifier:x)*(IntNumber:2))+(IntNumber:5))".equals(exprNode.getDefinitionString()));
@@ -279,7 +279,7 @@ public class RecursiveDescentParserTest {
         try {
             t.parseExpression("abc(123)");
         } catch (FunctionNotExistsException e) {
-            System.err.format("Error message: %s%n", e.getMessage());
+//            System.err.format("Error message: %s%n", e.getMessage());
             Assert.assertTrue("exception message matches", "The function \"abc\" does not exists".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
@@ -289,7 +289,7 @@ public class RecursiveDescentParserTest {
         try {
             t.parseExpression("abcde");
         } catch (IdentifierNotExistsException e) {
-            System.err.format("Error message: %s%n", e.getMessage());
+//            System.err.format("Error message: %s%n", e.getMessage());
             Assert.assertTrue("exception message matches", "The identifier \"abcde\" does not exists".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
@@ -299,7 +299,7 @@ public class RecursiveDescentParserTest {
         try {
             t.parseExpression("abc(123)");
         } catch (FunctionNotExistsException e) {
-            System.err.format("Error message: %s%n", e.getMessage());
+//            System.err.format("Error message: %s%n", e.getMessage());
             Assert.assertTrue("exception message matches", "The function \"abc\" does not exists".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
@@ -310,7 +310,7 @@ public class RecursiveDescentParserTest {
             exprNode = t.parseExpression("sin(1,2,3)");
             exprNode.calculate();
         } catch (WrongNumberOfParametersException e) {
-            System.err.format("Error message: %s%n", e.getMessage());
+//            System.err.format("Error message: %s%n", e.getMessage());
             Assert.assertTrue("exception message matches", "Function \"sin\" has wrong number of parameters".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }
@@ -321,7 +321,7 @@ public class RecursiveDescentParserTest {
             exprNode = t.parseExpression("123+\"abc\"");
             exprNode.calculate();
         } catch (CalculateException e) {
-            System.err.format("Error message: %s%n", e.getMessage());
+//            System.err.format("Error message: %s%n", e.getMessage());
             Assert.assertTrue("exception message matches", "The two operands \"123\" and \"abc\" have different types".equals(e.getMessage()));
             exceptionIsThrown.set(true);
         }

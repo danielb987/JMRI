@@ -32,9 +32,9 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
     private LightState _lightState = LightState.ON;
     private boolean _listenersAreRegistered = false;
 
-    public ExpressionLight(ConditionalNG conditionalNG)
+    public ExpressionLight()
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
     }
 
     public ExpressionLight(String sys)

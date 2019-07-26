@@ -27,9 +27,9 @@ public class ActionSensor extends AbstractDigitalAction {
     private NamedBeanHandle<Sensor> _sensorHandle;
     private SensorState _sensorState = SensorState.ACTIVE;
     
-    public ActionSensor(ConditionalNG conditionalNG)
+    public ActionSensor()
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
     }
 
     public ActionSensor(String sys)

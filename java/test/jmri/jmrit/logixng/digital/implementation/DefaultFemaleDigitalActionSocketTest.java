@@ -56,9 +56,9 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
         errorFlag = new AtomicBoolean();
         _turnoutSystemName = "IT1";
         _turnout = InstanceManager.getDefault(TurnoutManager.class).provide(_turnoutSystemName);
-        _action = new ActionTurnout("IQA55:1:DA321");
+        _action = new ActionTurnout("IQDA321");
         _action.setTurnoutName(_turnoutSystemName);
-        ActionTurnout otherAction = new ActionTurnout("IQA55:1:DA322");
+        ActionTurnout otherAction = new ActionTurnout("IQDA322");
         maleSocket = new DefaultMaleDigitalActionSocket(_action);
         otherMaleSocket = new DefaultMaleDigitalActionSocket(otherAction);
         femaleSocket = new DefaultFemaleDigitalActionSocket(null, new FemaleSocketListener() {

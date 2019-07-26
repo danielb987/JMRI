@@ -23,9 +23,9 @@ public class ShutdownComputer extends AbstractDigitalAction {
     private ShutdownComputer _template;
     private int _seconds;
     
-    public ShutdownComputer(ConditionalNG conditionalNG, int seconds)
+    public ShutdownComputer(int seconds)
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
 //        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
 

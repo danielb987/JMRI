@@ -31,9 +31,9 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _childExpression;
     private boolean _childLastState = false;
     
-    public TriggerOnce(ConditionalNG conditionalNG) {
+    public TriggerOnce() {
         
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
         
         _childExpression = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E1");

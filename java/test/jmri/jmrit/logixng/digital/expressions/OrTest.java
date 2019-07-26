@@ -16,13 +16,13 @@ public class OrTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new Or("IQA55:1:DE321");
+        DigitalExpressionBean t = new Or("IQDE321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new Or("IQA55:1:DE321");
+        DigitalExpressionBean e1 = new Or("IQDE321");
         Assert.assertTrue("Or".equals(e1.getShortDescription()));
         Assert.assertTrue("Or".equals(e1.getLongDescription()));
     }

@@ -16,9 +16,7 @@ import jmri.util.ThreadingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.DigitalExpressionFactory;
 import jmri.jmrit.logixng.DigitalExpressionManager;
@@ -28,7 +26,6 @@ import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.DigitalExpressionBean;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
-import jmri.jmrit.logixng.analog.implementation.DefaultFemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.implementation.LogixNGPreferences;
 
@@ -100,28 +97,9 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
             throw new IllegalArgumentException("System name is invalid: "+expression.getSystemName());
         }
         
-        String[] systemNameParts = expression.getSystemName().split("\\:");
-        
-        // Get the system name of the LogixNG that this expression belongs to.
-        // That is, get the part of the system name before the colon.
-        String conditionalNGSystemName = systemNameParts[0] + ":" + systemNameParts[1];
-        String expressionSystemName = systemNameParts[2];
-        
-        ConditionalNG conditionalNG;
-        if (expression.getParent() != null) {
-            conditionalNG = expression.getConditionalNG();
-            
-            if (!conditionalNGSystemName.equals(conditionalNG.getSystemName())) {
-                // The system name of the expression doesn't start with the system
-                // name of the LogixNG that it belongs to.
-                throw new IllegalArgumentException(
-                        "the expression doesn't belong to the logixNG it thinks it belongs to");
-            }
-        }
-        
         // Remove the letters in the beginning to get only the number of the
         // system name.
-        String expressionNumberStr = expressionSystemName.replaceAll("DEA?", "");
+        String expressionNumberStr = expression.getSystemName().replaceAll(getSystemNamePrefix()+"DE:?", "");
         int expressionNumber = Integer.parseInt(expressionNumberStr);
         if (lastAutoExpressionRef < expressionNumber) {
             lastAutoExpressionRef = expressionNumber;
@@ -161,18 +139,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        // I - Internal
-        // Q - LogixNG
-        // Optional: A - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The LogixNG ID number
-        // :
-        // \d+ - The ConditionalNG ID number
-        // :
-        // D - Digital
-        // E - Expression
-        // Optional: A - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The DigitalExpressionBean ID number
-        if (systemName.matches("IQA?\\d+:\\d+:DEA?\\d+")) {
+        if (systemName.matches(getSystemNamePrefix()+"DE:?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -180,10 +147,10 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     }
 
     @Override
-    public String getNewSystemName(ConditionalNG conditionalNG) {
+    public String getNewSystemName() {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
-        b.append(":DEA");
+        StringBuilder b = new StringBuilder(getSystemNamePrefix());
+        b.append("DE:");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();

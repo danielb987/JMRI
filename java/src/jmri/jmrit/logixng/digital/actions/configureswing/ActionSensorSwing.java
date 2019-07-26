@@ -80,7 +80,6 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         ActionSensor action = new ActionSensor(systemName);
         try {
             Sensor sensor = sensorBeanPanel.getNamedBean();
@@ -100,7 +99,6 @@ public class ActionSensorSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionSensor action = new ActionSensor(systemName, userName);
         try {
             Sensor sensor = sensorBeanPanel.getNamedBean();

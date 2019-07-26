@@ -33,13 +33,13 @@ public class ExpressionSensorTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionSensor("IQA55:1:DE321", null);
+        DigitalExpressionBean t = new ExpressionSensor("IQDE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        ExpressionSensor expressionSensor = new ExpressionSensor("IQA55:1:DE321");
+        ExpressionSensor expressionSensor = new ExpressionSensor("IQDE321");
         Assert.assertTrue("Get sensor".equals(expressionSensor.getShortDescription()));
         Assert.assertTrue("Sensor Not selected is Active".equals(expressionSensor.getLongDescription()));
         Sensor sensor = InstanceManager.getDefault(SensorManager.class).provide("IS1");
@@ -63,18 +63,18 @@ public class ExpressionSensorTest {
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalActionBean actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean actionIfThen = new IfThen(IfThen.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
         conditionalNG.getChild(0).connect(socketIfThen);
         
-        ExpressionSensor expressionSensor = new ExpressionSensor(conditionalNG);
+        ExpressionSensor expressionSensor = new ExpressionSensor();
         expressionSensor.setSensor(sensor);
         expressionSensor.set_Is_IsNot(Is_IsNot_Enum.IS);
         expressionSensor.setSensorState(ExpressionSensor.SensorState.ACTIVE);
         MaleSocket socketSensor = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionSensor);
         socketIfThen.getChild(0).connect(socketSensor);
         
-        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
+        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(atomicBoolean, true);
         MaleSocket socketAtomicBoolean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionAtomicBoolean);
         socketIfThen.getChild(1).connect(socketAtomicBoolean);
         

@@ -80,7 +80,6 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         ActionLight action = new ActionLight(systemName);
         try {
             Light light = lightBeanPanel.getNamedBean();
@@ -100,7 +99,6 @@ public class ActionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionLight action = new ActionLight(systemName, userName);
         try {
             Light light = lightBeanPanel.getNamedBean();

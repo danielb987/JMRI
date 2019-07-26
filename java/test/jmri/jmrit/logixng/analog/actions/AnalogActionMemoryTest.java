@@ -31,30 +31,30 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
         
-        action2 = new AnalogActionMemory("IQA55:12:AA11");
+        action2 = new AnalogActionMemory("IQAA11");
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         
-        action2 = new AnalogActionMemory("IQA55:12:AA11", "My memory");
+        action2 = new AnalogActionMemory("IQAA11", "My memory");
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         
-        action2 = new AnalogActionMemory("IQA55:12:AA11");
+        action2 = new AnalogActionMemory("IQAA11");
         action2.setMemory(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         
-        action2 = new AnalogActionMemory("IQA55:12:AA11", "My memory");
+        action2 = new AnalogActionMemory("IQAA11", "My memory");
         action2.setMemory(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         
         // Test template
-        action2 = (AnalogActionMemory)_base.getNewObjectBasedOnTemplate("IQA55:12:AA12");
+        action2 = (AnalogActionMemory)_base.getNewObjectBasedOnTemplate("IQAA12");
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username is null", action2.getUserName());
 //        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
@@ -134,7 +134,7 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
     public void testSetup() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        AnalogActionMemory action2 = new AnalogActionMemory("IQA55:12:AA321");
+        AnalogActionMemory action2 = new AnalogActionMemory("IQAA321");
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         action2.setup();
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
@@ -190,7 +190,7 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _base = new AnalogActionMemory("IQA55:12:AA321", "AnalogIO_Memory");
+        _base = new AnalogActionMemory("IQAA321", "AnalogIO_Memory");
         ((AnalogActionMemory)_base).setMemory(_memory);
     }
 

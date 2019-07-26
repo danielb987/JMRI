@@ -57,9 +57,9 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _action = new AnalogActionMemory("IQA55:10:AA321");
+        _action = new AnalogActionMemory("IQAA321");
         _action.setMemoryName(_memorySystemName);
-        AnalogActionBean otherAction = new AnalogActionMemory("IQA55:10:AA322");
+        AnalogActionBean otherAction = new AnalogActionMemory("IQAA322");
         maleSocket = new DefaultMaleAnalogActionSocket(_action);
         otherMaleSocket = new DefaultMaleAnalogActionSocket(otherAction);
         femaleSocket = new DefaultFemaleAnalogActionSocket(null, new FemaleSocketListener() {

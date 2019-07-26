@@ -42,30 +42,30 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
         
-        expression2 = new AnalogExpressionMemory("IQA55:12:AE11");
+        expression2 = new AnalogExpressionMemory("IQAE11");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         
-        expression2 = new AnalogExpressionMemory("IQA55:12:AE11", "My memory");
+        expression2 = new AnalogExpressionMemory("IQAE11", "My memory");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         
-        expression2 = new AnalogExpressionMemory("IQA55:12:AE11");
+        expression2 = new AnalogExpressionMemory("IQAE11");
         expression2.setMemory(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         
-        expression2 = new AnalogExpressionMemory("IQA55:12:AE11", "My memory");
+        expression2 = new AnalogExpressionMemory("IQAE11", "My memory");
         expression2.setMemory(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         
         // Test template
-        expression2 = (AnalogExpressionMemory)_base.getNewObjectBasedOnTemplate("IQA55:12:AE12");
+        expression2 = (AnalogExpressionMemory)_base.getNewObjectBasedOnTemplate("IQAE12");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username is null", expression2.getUserName());
 //        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
@@ -113,7 +113,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalActionBean actionDoAnalog = new DoAnalogAction(conditionalNG);
+        DigitalActionBean actionDoAnalog = new DoAnalogAction();
         MaleSocket socketDoAnalog = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionDoAnalog);
         conditionalNG.getChild(0).connect(socketDoAnalog);
         
@@ -122,7 +122,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         
         Memory _memoryOut = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         _memoryOut.setValue(0.0);
-        AnalogActionMemory actionMemory = new AnalogActionMemory("IQA55:12:AA1");
+        AnalogActionMemory actionMemory = new AnalogActionMemory("IQAA1");
         actionMemory.setMemory(_memoryOut);
         MaleSocket socketAction = InstanceManager.getDefault(AnalogActionManager.class).registerAction(actionMemory);
         socketDoAnalog.getChild(1).connect(socketAction);
@@ -211,7 +211,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
     public void testSetup() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        AnalogExpressionMemory expression2 = new AnalogExpressionMemory("IQA55:12:AE321");
+        AnalogExpressionMemory expression2 = new AnalogExpressionMemory("IQAE321");
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
@@ -269,7 +269,7 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        _base = new AnalogExpressionMemory("IQA55:12:AE321", "AnalogIO_Memory");
+        _base = new AnalogExpressionMemory("IQAE321", "AnalogIO_Memory");
         ((AnalogExpressionMemory)_base).setMemory(_memory);
     }
 

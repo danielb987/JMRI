@@ -17,20 +17,20 @@ public class TimerTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new Timer("IQA55:1:DE321", null);
+        DigitalExpressionBean t = new Timer("IQDE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new Timer("IQA55:1:DE321", null);
+        DigitalExpressionBean e1 = new Timer("IQDE321", null);
         Assert.assertTrue("Timer".equals(e1.getShortDescription()));
         Assert.assertTrue("Timer".equals(e1.getLongDescription()));
     }
     
     @Test
     public void testGetCategory() {
-        Assert.assertTrue(Category.COMMON.equals(new Timer("IQA55:1:DE321", null).getCategory()));
+        Assert.assertTrue(Category.COMMON.equals(new Timer("IQDE321", null).getCategory()));
     }
     
     // The minimal setup for log4J

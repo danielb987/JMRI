@@ -33,13 +33,13 @@ public class ExpressionLightTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionLight("IQA55:1:DE321", null);
+        DigitalExpressionBean t = new ExpressionLight("IQDE321", null);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        ExpressionLight expressionLight = new ExpressionLight("IQA55:1:DE321");
+        ExpressionLight expressionLight = new ExpressionLight("IQDE321");
         Assert.assertTrue("Get light".equals(expressionLight.getShortDescription()));
         Assert.assertTrue("Light Not selected is On".equals(expressionLight.getLongDescription()));
         Light light = InstanceManager.getDefault(LightManager.class).provide("IL1");
@@ -63,18 +63,18 @@ public class ExpressionLightTest {
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalActionBean actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean actionIfThen = new IfThen(IfThen.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
         conditionalNG.getChild(0).connect(socketIfThen);
         
-        ExpressionLight expressionLight = new ExpressionLight(conditionalNG);
+        ExpressionLight expressionLight = new ExpressionLight();
         expressionLight.setLight(light);
         expressionLight.set_Is_IsNot(Is_IsNot_Enum.IS);
         expressionLight.setLightState(ExpressionLight.LightState.ON);
         MaleSocket socketLight = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionLight);
         socketIfThen.getChild(0).connect(socketLight);
         
-        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
+        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(atomicBoolean, true);
         MaleSocket socketAtomicBoolean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionAtomicBoolean);
         socketIfThen.getChild(1).connect(socketAtomicBoolean);
         

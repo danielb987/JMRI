@@ -17,8 +17,8 @@ public class DigitalExpressionPluginAdapterTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean expression = new And("IQA55:1:DE321");
-        Assert.assertNotNull("exists", new DigitalExpressionPluginAdapter("IQA55:1:DE1", expression));
+        DigitalExpressionBean expression = new And("IQDE321");
+        Assert.assertNotNull("exists", new DigitalExpressionPluginAdapter("IQDE1", expression));
     }
     
     // The minimal setup for log4J

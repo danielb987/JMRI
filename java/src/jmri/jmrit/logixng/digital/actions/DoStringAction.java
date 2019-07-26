@@ -29,8 +29,8 @@ public class DoStringAction
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
     
-    public DoStringAction(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+    public DoStringAction() {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
         _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
                 .createFemaleSocket(this, this, "E1");
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)

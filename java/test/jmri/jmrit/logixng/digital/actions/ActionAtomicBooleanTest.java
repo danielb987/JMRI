@@ -25,7 +25,7 @@ public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        DigitalActionBean t = new ActionAtomicBoolean("IQA55:1:DA321", null);
+        DigitalActionBean t = new ActionAtomicBoolean("IQDA321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -36,7 +36,7 @@ public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         conditionalNG.setEnabled(true);
-        DigitalActionBean action = new ActionAtomicBoolean(conditionalNG, atomicBoolean, true);
+        DigitalActionBean action = new ActionAtomicBoolean(atomicBoolean, true);
         MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
         conditionalNG.getChild(0).connect(socket);
         // The action is not yet executed so the atomic boolean should be false
@@ -54,7 +54,7 @@ public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new ActionAtomicBoolean("IQA55:1:DA321", null);
+        _base = new ActionAtomicBoolean("IQDA321", null);
     }
 
     @After

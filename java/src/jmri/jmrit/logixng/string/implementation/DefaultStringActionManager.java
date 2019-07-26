@@ -19,8 +19,6 @@ import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.managers.AbstractManager;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringActionFactory;
 import jmri.jmrit.logixng.StringActionBean;
 
@@ -121,16 +119,7 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        // I - Internal
-        // Q - LogixNG
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The LogixNG ID number
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // A - StringActionBean
-        // \d+ - The StringActionBean ID number
-        if (systemName.matches("IQA?\\d+:\\d+:SAA?\\d+")) {
+        if (systemName.matches(getSystemNamePrefix()+"SA:?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -138,10 +127,10 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     }
 
     @Override
-    public String getNewSystemName(ConditionalNG conditionalNG) {
+    public String getNewSystemName() {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
-        b.append(":SAA");
+        StringBuilder b = new StringBuilder(getSystemNamePrefix());
+        b.append("SA:");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();

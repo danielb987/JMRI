@@ -85,14 +85,14 @@ public final class DefaultFemaleDigitalActionSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getConditionalNG().getSystemName() + ":DA10";
+        return getConditionalNG().getSystemName() + "IQDA10";
     }
 
     /** {@inheritDoc} */
     @Override
     public String getNewSystemName() {
         return InstanceManager.getDefault(DigitalActionManager.class)
-                .getNewSystemName(getConditionalNG());
+                .getNewSystemName();
     }
 
     @Override

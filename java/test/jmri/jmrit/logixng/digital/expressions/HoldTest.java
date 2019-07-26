@@ -16,13 +16,13 @@ public class HoldTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new Hold("IQA55:1:DE321");
+        DigitalExpressionBean t = new Hold("IQDE321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new Hold("IQA55:1:DE321");
+        DigitalExpressionBean e1 = new Hold("IQDE321");
         Assert.assertTrue("Hold".equals(e1.getShortDescription()));
         Assert.assertTrue("Hold while E1. Trigger on E2".equals(e1.getLongDescription()));
     }

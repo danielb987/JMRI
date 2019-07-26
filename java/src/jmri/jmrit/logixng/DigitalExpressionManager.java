@@ -25,11 +25,9 @@ public interface DigitalExpressionManager extends Manager<MaleDigitalExpressionS
     
     /**
      * Create a new system name for an DigitalExpressionBean.
-     *
-     * @param conditionalNG the ConditionalNG that this expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(ConditionalNG conditionalNG);
+    public String getNewSystemName();
 
     public FemaleDigitalExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);

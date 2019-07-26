@@ -93,7 +93,6 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         ExpressionLight expression = new ExpressionLight(systemName);
         try {
             Light turnout = lightBeanPanel.getNamedBean();
@@ -114,7 +113,6 @@ public class ExpressionLightSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionLight expression = new ExpressionLight(systemName, userName);
         try {
             Light turnout = lightBeanPanel.getNamedBean();

@@ -2,11 +2,8 @@ package jmri.jmrit.logixng;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.Nonnull;
 import jmri.Manager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Manager for DigitalActionBean
@@ -28,11 +25,9 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
     
     /**
      * Create a new system name for an DigitalActionBean.
-     *
-     * @param conditionalNG the ConditionalNG that this expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(ConditionalNG conditionalNG);
+    public String getNewSystemName();
 
     public FemaleDigitalActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);

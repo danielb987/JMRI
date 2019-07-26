@@ -17,7 +17,7 @@ public class DefaultMaleStringActionSocketTest {
 
     @Test
     public void testCtor() {
-        StringActionBean action = new StringActionMemory("IQA55:1:SA321");
+        StringActionBean action = new StringActionMemory("IQSA321");
         Assert.assertNotNull("exists", new DefaultMaleStringActionSocket(action));
     }
     

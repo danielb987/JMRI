@@ -31,30 +31,30 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
         
-        action2 = new StringActionMemory("IQA55:12:SA11");
+        action2 = new StringActionMemory("IQSA11");
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         
-        action2 = new StringActionMemory("IQA55:12:SA11", "My memory");
+        action2 = new StringActionMemory("IQSA11", "My memory");
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         
-        action2 = new StringActionMemory("IQA55:12:SA11");
+        action2 = new StringActionMemory("IQSA11");
         action2.setMemory(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         
-        action2 = new StringActionMemory("IQA55:12:SA11", "My memory");
+        action2 = new StringActionMemory("IQSA11", "My memory");
         action2.setMemory(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
         
         // Test template
-        action2 = (StringActionMemory)_base.getNewObjectBasedOnTemplate("IQA55:12:SA12");
+        action2 = (StringActionMemory)_base.getNewObjectBasedOnTemplate("IQSA12");
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username is null", action2.getUserName());
         Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
@@ -133,7 +133,7 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
     public void testSetup() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        StringActionMemory action2 = new StringActionMemory("IQA55:12:SA321");
+        StringActionMemory action2 = new StringActionMemory("IQSA321");
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
         action2.setup();
         Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
@@ -189,7 +189,7 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initMemoryManager();
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
-        _base = new StringActionMemory("IQA55:12:SA321", "StringIO_Memory");
+        _base = new StringActionMemory("IQSA321", "StringIO_Memory");
         ((StringActionMemory)_base).setMemory(_memory);
     }
 

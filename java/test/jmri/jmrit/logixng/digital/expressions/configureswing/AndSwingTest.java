@@ -41,7 +41,7 @@ public class AndSwingTest {
         Assert.assertTrue("panel is not null",
             null != new AndSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new AndSwing().getConfigPanel(new And("IQ1:10:DE1")));
+            null != new AndSwing().getConfigPanel(new And("IQDE1")));
     }
     
     // The minimal setup for log4J

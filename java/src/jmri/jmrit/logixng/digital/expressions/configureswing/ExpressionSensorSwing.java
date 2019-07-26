@@ -92,7 +92,6 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         ExpressionSensor expression = new ExpressionSensor(systemName);
         try {
             Sensor turnout = sensorBeanPanel.getNamedBean();
@@ -113,7 +112,6 @@ public class ExpressionSensorSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ExpressionSensor expression = new ExpressionSensor(systemName, userName);
         try {
             Sensor turnout = sensorBeanPanel.getNamedBean();

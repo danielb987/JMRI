@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.LogixNGPluginFactory;
@@ -91,28 +90,9 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
             throw new IllegalArgumentException(String.format("System name is invalid: %s", action.getSystemName()));
         }
         
-        String[] systemNameParts = action.getSystemName().split("\\:");
-        
-        // Get the system name of the LogixNG that this expression belongs to.
-        // That is, get the part of the system name before the colon.
-        String conditionalNGSystemName = systemNameParts[0] + ":" + systemNameParts[1];
-        String actionSystemName = systemNameParts[2];
-        
-        ConditionalNG conditionalNG;
-        if (action.getParent() != null) {
-            conditionalNG = action.getConditionalNG();
-            
-            if (!conditionalNGSystemName.equals(conditionalNG.getSystemName())) {
-                // The system name of the action doesn't start with the system
-                // name of the LogixNG that it belongs to.
-                throw new IllegalArgumentException(
-                        "the expression doesn't belong to the logixNG it thinks it belongs to");
-            }
-        }
-        
         // Remove the letters in the beginning to get only the number of the
         // system name.
-        String actionNumberStr = actionSystemName.replaceAll("DAA?", "");
+        String actionNumberStr = action.getSystemName().replaceAll(getSystemNamePrefix()+"DA:?", "");
         int actionNumber = Integer.parseInt(actionNumberStr);
         if (lastAutoActionRef < actionNumber) {
             lastAutoActionRef = actionNumber;
@@ -152,17 +132,7 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        // I - Internal
-        // Q - LogixNG
-        // Optional: A - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The LogixNG ID number
-        // :
-        // \d+ - The ConditionalNG ID number
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // A - DigitalActionBean
-        // \d+ - The DigitalActionBean ID number
-        if (systemName.matches("IQA?\\d+:\\d+:DAA?\\d+")) {
+        if (systemName.matches(getSystemNamePrefix()+"DA:?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -170,10 +140,10 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     }
 
     @Override
-    public String getNewSystemName(ConditionalNG conditionalNG) {
+    public String getNewSystemName() {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
-        b.append(":DAA");
+        StringBuilder b = new StringBuilder(getSystemNamePrefix());
+        b.append("DA:");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();

@@ -33,8 +33,8 @@ public class HoldAnything extends AbstractDigitalAction
     /**
      * Create a new instance of ActionMany and generate a new system name.
      */
-    public HoldAnything(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+    public HoldAnything() {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
         init();
     }
 

@@ -21,12 +21,9 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.managers.AbstractManager;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
-import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.StringExpressionFactory;
 import jmri.jmrit.logixng.StringExpressionBean;
-import jmri.jmrit.logixng.analog.implementation.DefaultFemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.implementation.LogixNGPreferences;
 
@@ -131,16 +128,7 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        // I - Internal
-        // Q - LogixNG
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The LogixNG ID number
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // AE - StringExpressionBean
-        // \d+ - The StringExpressionBean ID number
-        if (systemName.matches("IQA?\\d+:\\d+:SEA?\\d+")) {
+        if (systemName.matches(getSystemNamePrefix()+"SE:?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -148,10 +136,10 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     }
 
     @Override
-    public String getNewSystemName(ConditionalNG conditionalNG) {
+    public String getNewSystemName() {
         int nextAutoLogixNGRef = lastAutoExpressionRef + 1;
-        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
-        b.append(":SEA");
+        StringBuilder b = new StringBuilder(getSystemNamePrefix());
+        b.append("SE:");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();

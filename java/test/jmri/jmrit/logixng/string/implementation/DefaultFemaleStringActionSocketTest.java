@@ -56,9 +56,9 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _action = new StringActionMemory("IQA55:1:SA321");
+        _action = new StringActionMemory("IQSA321");
         _action.setMemoryName(_memorySystemName);
-        StringActionMemory otherAction = new StringActionMemory("IQA55:1:SA322");
+        StringActionMemory otherAction = new StringActionMemory("IQSA322");
         maleSocket = new DefaultMaleStringActionSocket(_action);
         otherMaleSocket = new DefaultMaleStringActionSocket(otherAction);
         femaleSocket = new DefaultFemaleStringActionSocket(null, new FemaleSocketListener() {

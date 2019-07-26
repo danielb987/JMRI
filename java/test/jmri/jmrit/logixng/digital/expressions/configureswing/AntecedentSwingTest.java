@@ -41,7 +41,7 @@ public class AntecedentSwingTest {
         Assert.assertTrue("panel is not null",
             null != new AntecedentSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new AntecedentSwing().getConfigPanel(new Antecedent("IQ1:10:DE1")));
+            null != new AntecedentSwing().getConfigPanel(new Antecedent("IQDE1", null, "R1")));
     }
     
     // The minimal setup for log4J

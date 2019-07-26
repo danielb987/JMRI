@@ -33,9 +33,9 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     private SensorState _lightState = SensorState.ACTIVE;
     private boolean _listenersAreRegistered = false;
 
-    public ExpressionSensor(ConditionalNG conditionalNG)
+    public ExpressionSensor()
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
     }
 
     public ExpressionSensor(String sys)

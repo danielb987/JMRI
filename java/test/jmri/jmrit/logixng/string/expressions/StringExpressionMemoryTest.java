@@ -42,30 +42,30 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
         
-        expression2 = new StringExpressionMemory("IQA55:12:SE11");
+        expression2 = new StringExpressionMemory("IQSE11");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         
-        expression2 = new StringExpressionMemory("IQA55:12:SE11", "My memory");
+        expression2 = new StringExpressionMemory("IQSE11", "My memory");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         
-        expression2 = new StringExpressionMemory("IQA55:12:SE11");
+        expression2 = new StringExpressionMemory("IQSE11");
         expression2.setMemory(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         
-        expression2 = new StringExpressionMemory("IQA55:12:SE11", "My memory");
+        expression2 = new StringExpressionMemory("IQSE11", "My memory");
         expression2.setMemory(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
         Assert.assertTrue("String matches", "Get memory IM1".equals(expression2.getLongDescription()));
         
         // Test template
-        expression2 = (StringExpressionMemory)_base.getNewObjectBasedOnTemplate("IQA55:12:SE12");
+        expression2 = (StringExpressionMemory)_base.getNewObjectBasedOnTemplate("IQSE12");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username is null", expression2.getUserName());
 //        Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
@@ -113,7 +113,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalActionBean actionDoString = new DoStringAction(conditionalNG);
+        DigitalActionBean actionDoString = new DoStringAction();
         MaleSocket socketDoString = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionDoString);
         conditionalNG.getChild(0).connect(socketDoString);
         
@@ -122,7 +122,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         
         Memory _memoryOut = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         _memoryOut.setValue("");
-        StringActionMemory actionMemory = new StringActionMemory("IQA55:12:SA1");
+        StringActionMemory actionMemory = new StringActionMemory("IQSA1");
         actionMemory.setMemory(_memoryOut);
         MaleSocket socketAction = InstanceManager.getDefault(StringActionManager.class).registerAction(actionMemory);
         socketDoString.getChild(1).connect(socketAction);
@@ -211,7 +211,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
     public void testSetup() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        StringExpressionMemory expression2 = new StringExpressionMemory("IQA55:12:SE321");
+        StringExpressionMemory expression2 = new StringExpressionMemory("IQSE321");
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
         expression2.setup();
         Assert.assertTrue("String matches", "Get memory none".equals(expression2.getLongDescription()));
@@ -269,7 +269,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         _memory = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
         Assert.assertNotNull("memory is not null", _memory);
         _memory.setValue(10.2);
-        _base = new StringExpressionMemory("IQA55:12:SE321", "StringIO_Memory");
+        _base = new StringExpressionMemory("IQSE321", "StringIO_Memory");
         ((StringExpressionMemory)_base).setMemory(_memory);
     }
 

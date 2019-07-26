@@ -77,11 +77,11 @@ public class RecursiveDescentParser {
             return null;
         }
         
-        if (exprNodeAndState._exprNode != null) {
-            System.err.format("Expression: \"%s\"%n", exprNodeAndState._exprNode.getDefinitionString());
-        } else {
-            System.err.format("Expression: null%n");
-        }
+//        if (exprNodeAndState._exprNode != null) {
+//            System.err.format("Expression: \"%s\"%n", exprNodeAndState._exprNode.getDefinitionString());
+//        } else {
+//            System.err.format("Expression: null%n");
+//        }
         
         if ((exprNodeAndState._state != null)
                 && (exprNodeAndState._state._tokenIndex < _tokens.size())) {

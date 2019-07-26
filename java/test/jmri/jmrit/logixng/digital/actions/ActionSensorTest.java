@@ -26,7 +26,7 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        ActionSensor t = new ActionSensor("IQA55:10:DA321", null);
+        ActionSensor t = new ActionSensor("IQDA321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -38,7 +38,7 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         conditionalNG.setEnabled(true);
-        ActionSensor actionSensor = new ActionSensor(conditionalNG);
+        ActionSensor actionSensor = new ActionSensor();
         actionSensor.setSensor(sensor);
         actionSensor.setSensorState(ActionSensor.SensorState.ACTIVE);
         MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
@@ -79,7 +79,7 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalSensorManager();
-        _base = new ActionSensor("IQA55:10:DA321", null);
+        _base = new ActionSensor("IQDA321", null);
     }
 
     @After

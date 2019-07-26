@@ -17,7 +17,7 @@ public class DefaultMaleAnalogExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogExpressionBean expression = new AnalogExpressionMemory("IQA55:10:AE321");
+        AnalogExpressionBean expression = new AnalogExpressionMemory("IQAE321");
         Assert.assertNotNull("object exists", new DefaultMaleAnalogExpressionSocket(expression));
     }
     

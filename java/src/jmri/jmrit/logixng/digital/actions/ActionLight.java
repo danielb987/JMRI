@@ -27,9 +27,9 @@ public class ActionLight extends AbstractDigitalAction {
     private NamedBeanHandle<Light> _lightHandle;
     private LightState _lightState = LightState.ON;
     
-    public ActionLight(ConditionalNG conditionalNG)
+    public ActionLight()
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
     }
 
     public ActionLight(String sys)

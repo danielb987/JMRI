@@ -31,7 +31,7 @@ public class ManySwingTest {
         Assert.assertTrue("panel is not null",
             null != new ManySwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ManySwing().getConfigPanel(new Many("IQ1:10:DA1")));
+            null != new ManySwing().getConfigPanel(new Many("IQDA1")));
     }
     
     // The minimal setup for log4J

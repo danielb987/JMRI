@@ -26,7 +26,7 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        ActionTurnout t = new ActionTurnout("IQA55:10:DA321", null);
+        ActionTurnout t = new ActionTurnout("IQDA321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -38,7 +38,7 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         conditionalNG.setEnabled(true);
-        ActionTurnout actionTurnout = new ActionTurnout(conditionalNG);
+        ActionTurnout actionTurnout = new ActionTurnout();
         actionTurnout.setTurnout(turnout);
         actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.THROWN);
         MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
@@ -79,7 +79,7 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new ActionTurnout("IQA55:10:DA321", null);
+        _base = new ActionTurnout("IQDA321", null);
     }
 
     @After

@@ -41,7 +41,7 @@ public class ExpressionSensorSwingTest {
         Assert.assertTrue("panel is not null",
             null != new ExpressionSensorSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new ExpressionSensorSwing().getConfigPanel(new ExpressionSensor("IQ1:1:DE1")));
+            null != new ExpressionSensorSwing().getConfigPanel(new ExpressionSensor("IQDE1")));
     }
     
     // The minimal setup for log4J

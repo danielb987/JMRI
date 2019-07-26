@@ -128,7 +128,6 @@ public class LogHeader {
                     // We are finished in this method.
                     return;
                 default:
-                    System.out.format("Line: '%s'%n", line);
                     throw new InvalidFormatException(String.format(
                             "String '%s' is unknown or misplaced in log", line));
             }

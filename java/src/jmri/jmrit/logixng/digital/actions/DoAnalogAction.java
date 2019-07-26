@@ -29,8 +29,8 @@ public class DoAnalogAction
     private final FemaleAnalogExpressionSocket _analogExpressionSocket;
     private final FemaleAnalogActionSocket _analogActionSocket;
     
-    public DoAnalogAction(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+    public DoAnalogAction() {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
                 .createFemaleAnalogExpressionSocket(this, this, "E1");
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)

@@ -63,7 +63,8 @@ public class ImportConditional {
         boolean triggerOnChange = _conditional.getTriggerOnChange();
         IfThen.Type type = triggerOnChange ? IfThen.Type.TRIGGER_ACTION : IfThen.Type.CONTINOUS_ACTION;
         
-        IfThen ifThen = new IfThen(_conditionalNG, type);
+        // This will fail, but fix it later.
+        IfThen ifThen = new IfThen("", null, type);
         
         Conditional.AntecedentOperator ao = _conditional.getLogicType();
         String antecedentExpression = _conditional.getAntecedentExpression();
@@ -73,20 +74,21 @@ public class ImportConditional {
         DigitalExpressionBean expression;
         switch (ao) {
             case ALL_AND:
-                expression = new And(_conditionalNG);
+                expression = new And();
                 break;
             case ALL_OR:
-                expression = new Or(_conditionalNG);
+                expression = new Or();
                 break;
             case MIXED:
-                expression = new Antecedent(_conditionalNG, antecedentExpression);
+                // This will fail, but fix it later.
+                expression = new Antecedent("", null, antecedentExpression);
                 break;
             default:
                 return;
         }
         buildExpression(expression, conditionalVariables);
         
-        DigitalActionBean action = new Many(_conditionalNG);
+        DigitalActionBean action = new Many();
         buildAction(action, conditionalActions);
         
         MaleSocket expressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);

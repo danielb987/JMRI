@@ -17,20 +17,20 @@ public class FalseTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new False("IQA55:1:DE321");
+        DigitalExpressionBean t = new False("IQDE321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new False("IQA55:1:DE321");
+        DigitalExpressionBean e1 = new False("IQDE321");
         Assert.assertTrue("Always false".equals(e1.getShortDescription()));
         Assert.assertTrue("Always false".equals(e1.getLongDescription()));
     }
     
     @Test
     public void testExpression() {
-        DigitalExpressionBean t = new False("IQA55:1:DE321");
+        DigitalExpressionBean t = new False("IQDE321");
         Assert.assertFalse("Expression is false",t.evaluate());
     }
     

@@ -17,8 +17,8 @@ public class Timer extends AbstractDigitalExpression {
 
     private Timer _template;
     
-    public Timer(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    public Timer() {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
     }
 
     public Timer(String sys, String user) {

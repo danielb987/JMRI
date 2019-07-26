@@ -39,19 +39,19 @@ public class AntecedentTest implements FemaleSocketListener {
     
     @Test
     public void testCtor() {
-        Antecedent t = new Antecedent("IQA55:1:DE321", null, "R1");
+        Antecedent t = new Antecedent("IQDE321", null, "R1");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new Antecedent("IQA55:1:DE321");
-        Assert.assertTrue("Antecedent".equals(e1.getShortDescription()));
-        Assert.assertTrue("Antecedent: empty".equals(e1.getLongDescription()));
+        DigitalExpressionBean e1 = new Antecedent("IQDE321", null, "");
+        Assert.assertEquals("strings matches", "Antecedent", e1.getShortDescription());
+        Assert.assertEquals("strings matches", "Antecedent: empty", e1.getLongDescription());
     }
     
     private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList) throws SocketAlreadyConnectedException {
-        Antecedent ix1 = new Antecedent("IQA55:1:DE321", "IXIC 1");
+        Antecedent ix1 = new Antecedent("IQDE321", "IXIC 1", "R1");
         
         int count = 0;
         List<ExpressionEntry> expressionEntryList = new ArrayList<>();
@@ -75,7 +75,7 @@ public class AntecedentTest implements FemaleSocketListener {
     
     private void testCalculate(int expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList, String errorMessage) throws SocketAlreadyConnectedException {
         
-        Antecedent ix1 = new Antecedent("IQA55:1:DE321", "IXIC 1", antecedent);
+        Antecedent ix1 = new Antecedent("IQDE321", "IXIC 1", antecedent);
         
 //        for (int i=0; i < ix1.getChildCount(); i++) {
 //            ix1.getChild(i).disconnect();
@@ -114,7 +114,7 @@ public class AntecedentTest implements FemaleSocketListener {
         DigitalExpressionBean[] conditionalVariables_Empty = { };
         List<DigitalExpressionBean> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
         
-        DigitalExpressionBean trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True(conditionalNG));
+        DigitalExpressionBean trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True());
 //        DigitalExpressionBean falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False(conditionalNG));
         
         DigitalExpressionBean[] conditionalVariables_True
@@ -169,8 +169,8 @@ public class AntecedentTest implements FemaleSocketListener {
         DigitalExpressionBean[] conditionalVariables_Empty = { };
         List<DigitalExpressionBean> conditionalVariablesList_Empty = Arrays.asList(conditionalVariables_Empty);
         
-        DigitalExpressionBean trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True(conditionalNG));
-        DigitalExpressionBean falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False(conditionalNG));
+        DigitalExpressionBean trueExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new True());
+        DigitalExpressionBean falseExpression = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(new False());
         
         DigitalExpressionBean[] conditionalVariables_True
                 = { trueExpression };

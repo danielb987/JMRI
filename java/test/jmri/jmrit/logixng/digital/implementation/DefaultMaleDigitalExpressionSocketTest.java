@@ -17,7 +17,7 @@ public class DefaultMaleDigitalExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean expression = new And("IQA55:1:DE321");
+        DigitalExpressionBean expression = new And("IQDE321");
         Assert.assertNotNull("exists", new DefaultMaleDigitalExpressionSocket(expression));
     }
     

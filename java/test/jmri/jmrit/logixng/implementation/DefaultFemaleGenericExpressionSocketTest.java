@@ -91,9 +91,9 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
         errorFlag = new AtomicBoolean();
         _turnoutSystemName = "IT1";
         _turnout = InstanceManager.getDefault(TurnoutManager.class).provide(_turnoutSystemName);
-        _expression = new ExpressionTurnout("IQA55:1:DE321");
+        _expression = new ExpressionTurnout("IQDE321");
         _expression.setTurnoutName(_turnoutSystemName);
-        ExpressionTurnout otherExpression = new ExpressionTurnout("IQA55:1:DE322");
+        ExpressionTurnout otherExpression = new ExpressionTurnout("IQDE322");
         maleSocket = new DefaultMaleDigitalExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleDigitalExpressionSocket(otherExpression);
         femaleGenericSocket = new DefaultFemaleGenericExpressionSocket(SocketType.GENERIC, null, new FemaleSocketListener() {

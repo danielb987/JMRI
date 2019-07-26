@@ -15,7 +15,7 @@ public class DoAnalogActionTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("exists", new DoAnalogAction("IQA55:10:DA321"));
+        Assert.assertNotNull("exists", new DoAnalogAction("IQDA321"));
     }
     
     // The minimal setup for log4J
@@ -30,7 +30,7 @@ public class DoAnalogActionTest extends AbstractDigitalActionTestBase {
         JUnitUtil.initDigitalActionManager();
         JUnitUtil.initAnalogExpressionManager();
         JUnitUtil.initAnalogActionManager();
-        _base = new DoAnalogAction("IQA55:10:DA321");
+        _base = new DoAnalogAction("IQDA321");
     }
 
     @After

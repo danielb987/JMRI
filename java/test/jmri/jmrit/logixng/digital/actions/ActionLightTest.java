@@ -26,7 +26,7 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        ActionLight t = new ActionLight("IQA55:10:DA321", null);
+        ActionLight t = new ActionLight("IQDA321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -38,7 +38,7 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
         ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         conditionalNG.setEnabled(true);
-        ActionLight actionLight = new ActionLight(conditionalNG);
+        ActionLight actionLight = new ActionLight();
         actionLight.setLight(light);
         actionLight.setLightState(ActionLight.LightState.ON);
         MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
@@ -79,7 +79,7 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalLightManager();
-        _base = new ActionLight("IQA55:10:DA321", null);
+        _base = new ActionLight("IQDA321", null);
     }
 
     @After

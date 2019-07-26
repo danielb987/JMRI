@@ -16,13 +16,13 @@ public class AndTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new And("IQA55:1:DE321");
+        DigitalExpressionBean t = new And("IQDE321");
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testDescription() {
-        DigitalExpressionBean e1 = new And("IQA55:1:DE321");
+        DigitalExpressionBean e1 = new And("IQDE321");
         Assert.assertTrue("And".equals(e1.getShortDescription()));
         Assert.assertTrue("And".equals(e1.getLongDescription()));
     }

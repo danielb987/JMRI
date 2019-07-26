@@ -46,16 +46,14 @@ public class AntecedentSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
-        Antecedent expression = new Antecedent(systemName);
+        Antecedent expression = new Antecedent(systemName, null, "");
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
 
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
-        Antecedent expression = new Antecedent(systemName);
+        Antecedent expression = new Antecedent(systemName, userName, "");
         return InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
     }
     

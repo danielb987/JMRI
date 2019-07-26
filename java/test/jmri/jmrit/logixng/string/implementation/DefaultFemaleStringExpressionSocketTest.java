@@ -56,9 +56,9 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _expression = new StringExpressionMemory("IQA55:1:SE321");
+        _expression = new StringExpressionMemory("IQSE321");
         _expression.setMemoryName(_memorySystemName);
-        StringExpressionMemory otherExpression = new StringExpressionMemory("IQA55:1:SE322");
+        StringExpressionMemory otherExpression = new StringExpressionMemory("IQSE322");
         maleSocket = new DefaultMaleStringExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleStringExpressionSocket(otherExpression);
         femaleSocket = new DefaultFemaleStringExpressionSocket(null, new FemaleSocketListener() {

@@ -25,11 +25,9 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
     
     /**
      * Create a new system name for an Expression.
-     *
-     * @param conditionalNG the ConditionalNG that this analog expression belongs to
      * @return a new system name
      */
-    public String getNewSystemName(ConditionalNG conditionalNG);
+    public String getNewSystemName();
 
     public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);

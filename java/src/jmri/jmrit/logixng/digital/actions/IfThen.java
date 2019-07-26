@@ -64,8 +64,8 @@ public class IfThen extends AbstractDigitalAction
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public IfThen(ConditionalNG conditionalNG, Type type) {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+    public IfThen(Type type) {
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
         _type = type;
         _ifExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E");

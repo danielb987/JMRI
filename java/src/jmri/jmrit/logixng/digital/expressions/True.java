@@ -1,14 +1,11 @@
 package jmri.jmrit.logixng.digital.expressions;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Always evaluates to True.
@@ -22,8 +19,8 @@ public class True extends AbstractDigitalExpression {
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public True(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    public True() {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
     }
     
     public True(String sys) throws BadSystemNameException {

@@ -30,8 +30,8 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public And(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    public And() {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
         init();
     }
     

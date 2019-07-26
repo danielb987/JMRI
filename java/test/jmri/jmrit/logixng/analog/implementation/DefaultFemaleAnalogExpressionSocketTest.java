@@ -57,9 +57,9 @@ public class DefaultFemaleAnalogExpressionSocketTest extends FemaleSocketTestBas
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _expression = new AnalogExpressionMemory("IQA55:10:AE321");
+        _expression = new AnalogExpressionMemory("IQAE321");
         _expression.setMemoryName(_memorySystemName);
-        AnalogExpressionBean otherExpression = new AnalogExpressionMemory("IQA55:10:AE322");
+        AnalogExpressionBean otherExpression = new AnalogExpressionMemory("IQAE322");
         maleSocket = new DefaultMaleAnalogExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleAnalogExpressionSocket(otherExpression);
         femaleSocket = new DefaultFemaleAnalogExpressionSocket(null, new FemaleSocketListener() {

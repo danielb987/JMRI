@@ -80,7 +80,6 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        System.out.format("System name: %s%n", systemName);
         ActionTurnout action = new ActionTurnout(systemName);
         try {
             Turnout turnout = turnoutBeanPanel.getNamedBean();
@@ -100,7 +99,6 @@ public class ActionTurnoutSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        System.out.format("System name: %s, user name: %s%n", systemName, userName);
         ActionTurnout action = new ActionTurnout(systemName, userName);
         try {
             Turnout turnout = turnoutBeanPanel.getNamedBean();

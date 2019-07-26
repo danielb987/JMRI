@@ -41,7 +41,7 @@ public class HoldSwingTest {
         Assert.assertTrue("panel is not null",
             null != new HoldSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new HoldSwing().getConfigPanel(new Hold("IQ1:1:DE1")));
+            null != new HoldSwing().getConfigPanel(new Hold("IQDE1")));
     }
     
     // The minimal setup for log4J

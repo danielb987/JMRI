@@ -30,8 +30,8 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
     /**
      * Create a new instance of ExpressionIfThen and generate a new system name.
      */
-    public Or(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    public Or() {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
         init();
     }
     

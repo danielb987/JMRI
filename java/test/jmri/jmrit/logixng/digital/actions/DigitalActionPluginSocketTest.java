@@ -17,7 +17,7 @@ public class DigitalActionPluginSocketTest extends AbstractDigitalActionTestBase
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("exists", new DigitalActionPluginSocket("IQ1:1:DA1", new MyDigitalActionPlugin("IQ1:1:DA2")));
+        Assert.assertNotNull("exists", new DigitalActionPluginSocket("IQDA1", new MyDigitalActionPlugin("IQDA2")));
     }
     
     // The minimal setup for log4J
@@ -27,7 +27,7 @@ public class DigitalActionPluginSocketTest extends AbstractDigitalActionTestBase
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new DigitalActionPluginSocket("IQ1:1:DA1", new MyDigitalActionPlugin("IQ1:1:DA2"));
+        _base = new DigitalActionPluginSocket("IQDA1", new MyDigitalActionPlugin("IQDA2"));
     }
 
     @After

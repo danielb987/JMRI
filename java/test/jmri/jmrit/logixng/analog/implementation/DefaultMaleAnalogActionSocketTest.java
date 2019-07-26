@@ -17,7 +17,7 @@ public class DefaultMaleAnalogActionSocketTest {
 
     @Test
     public void testCtor() {
-        AnalogActionBean action = new AnalogActionMemory("IQA55:10:AA321");
+        AnalogActionBean action = new AnalogActionMemory("IQAA321");
         Assert.assertNotNull("object exists", new DefaultMaleAnalogActionSocket(action));
     }
     

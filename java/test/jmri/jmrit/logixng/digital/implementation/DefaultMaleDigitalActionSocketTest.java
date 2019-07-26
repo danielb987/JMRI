@@ -18,7 +18,7 @@ public class DefaultMaleDigitalActionSocketTest {
 
     @Test
     public void testCtor() {
-        DigitalActionBean action = new Many("IQA55:1:DA321");
+        DigitalActionBean action = new Many("IQDA321");
         Assert.assertNotNull("exists", new DefaultMaleDigitalActionSocket(action));
     }
     

@@ -21,8 +21,8 @@ public class False extends AbstractDigitalExpression {
     /**
      * Create a new instance of ActionIfThen and generate a new system name.
      */
-    public False(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+    public False() {
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
     }
     
     public False(String sys) throws BadSystemNameException {

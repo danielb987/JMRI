@@ -19,9 +19,9 @@ public class ActionAtomicBoolean extends AbstractDigitalAction {
     private AtomicBoolean _atomicBoolean;
     private boolean _newValue;
     
-    public ActionAtomicBoolean(ConditionalNG conditionalNG, AtomicBoolean atomicBoolean, boolean newValue)
+    public ActionAtomicBoolean(AtomicBoolean atomicBoolean, boolean newValue)
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
         _atomicBoolean = atomicBoolean;
         _newValue = newValue;
     }

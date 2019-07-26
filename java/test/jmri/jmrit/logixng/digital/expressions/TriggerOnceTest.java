@@ -24,10 +24,10 @@ public class TriggerOnceTest {
             throws NamedBean.BadUserNameException,
                     NamedBean.BadSystemNameException,
                     SocketAlreadyConnectedException {
-        ExpressionTurnout expression = new ExpressionTurnout("IQA55:1:DEA321", null);
+        ExpressionTurnout expression = new ExpressionTurnout("IQDE:321", null);
         MaleDigitalExpressionSocket expressionSocket =
                 InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-        DigitalExpressionBean t = new TriggerOnce("IQA55:1:DE321", null, expressionSocket);
+        DigitalExpressionBean t = new TriggerOnce("IQDE321", null, expressionSocket);
         Assert.assertNotNull("exists",t);
     }
     
@@ -36,10 +36,10 @@ public class TriggerOnceTest {
             throws NamedBean.BadUserNameException,
                     NamedBean.BadSystemNameException,
                     SocketAlreadyConnectedException {
-        ExpressionTurnout expression = new ExpressionTurnout("IQA55:1:DEA321", null);
+        ExpressionTurnout expression = new ExpressionTurnout("IQDE:321", null);
         MaleDigitalExpressionSocket expressionSocket =
                 InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
-        DigitalExpressionBean e1 = new TriggerOnce("IQA55:1:DE321", null, expressionSocket);
+        DigitalExpressionBean e1 = new TriggerOnce("IQDE321", null, expressionSocket);
         Assert.assertTrue("Trigger once".equals(e1.getShortDescription()));
         Assert.assertTrue("Trigger once".equals(e1.getLongDescription()));
     }

@@ -32,9 +32,9 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
     private TurnoutState _turnoutState = TurnoutState.THROWN;
     private boolean _listenersAreRegistered = false;
 
-    public ExpressionTurnout(ConditionalNG conditionalNG)
+    public ExpressionTurnout()
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
     }
 
     public ExpressionTurnout(String sys)

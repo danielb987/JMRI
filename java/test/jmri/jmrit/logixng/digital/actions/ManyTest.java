@@ -23,13 +23,13 @@ public class ManyTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("exists", new Many("IQA55:10:DA321"));
+        Assert.assertNotNull("exists", new Many("IQDA321"));
     }
     
     @Test
     @Override
     public void testSupportsEnableExecution() throws SocketAlreadyConnectedException {
-        DigitalAction da = new Many("IQA55:10:DA321");
+        DigitalAction da = new Many("IQDA321");
         
         // By default, doesn't support enable execution
         Assert.assertFalse("supportsEnableExecution() returns correct value",
@@ -47,7 +47,7 @@ public class ManyTest extends AbstractDigitalActionTestBase {
         
         // Doesn't support enable execution if any of the children doesn't
         // support it.
-        DigitalActionBean da2 = new Many("IQA55:10:DA322");
+        DigitalActionBean da2 = new Many("IQDA322");
         MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class)
                 .registerAction(da2);
         da.getChild(0).connect(socket);
@@ -71,7 +71,7 @@ public class ManyTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new Many("IQA55:10:DA321");
+        _base = new Many("IQDA321");
     }
 
     @After

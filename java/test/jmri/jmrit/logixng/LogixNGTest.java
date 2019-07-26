@@ -59,12 +59,12 @@ public class LogixNGTest {
         MaleSocket ifThen = many.getChild(1).getConnectedSocket();
 //        System.err.format("aa: %s%n", ifThen.getLongDescription());
         Assert.assertTrue("description is correct", "If E then A".equals(ifThen.getLongDescription()));
-        systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG);
+        systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName();
         DigitalExpressionBean expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         MaleSocket digitalExpressionBean = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
         ifThen.getChild(0).connect(digitalExpressionBean);
 //        InstanceManager.getDefault(jmri.DigitalExpressionManager.class).addExpression(new ExpressionTurnout(systemName, "LogixNG 102, DigitalExpressionBean 26"));  // NOI18N
-        systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG);
+        systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName();
         DigitalActionBean action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleSocket digitalActionBean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
         ifThen.getChild(1).connect(digitalActionBean);
@@ -88,7 +88,7 @@ public class LogixNGTest {
         DefaultConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
         logixNG.addConditionalNG(conditionalNG);
         
-        String systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG);
+        String systemName = InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName();
         DigitalActionBean action = new ActionTurnout(systemName, "An action for test");  // NOI18N
         MaleSocket digitalActionBean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
         
@@ -113,8 +113,8 @@ public class LogixNGTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "LogixNG".equals(new DefaultLogixNG("IQA55").getBeanType()));
-        Assert.assertTrue("bean type is correct", "Digital action".equals(new IfThen("IQA55:1:DA321", IfThen.Type.TRIGGER_ACTION).getBeanType()));
-        Assert.assertTrue("bean type is correct", "Digital expression".equals(new And("IQA55:1:DE321").getBeanType()));
+        Assert.assertTrue("bean type is correct", "Digital action".equals(new IfThen("IQDA321", IfThen.Type.TRIGGER_ACTION).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Digital expression".equals(new And("IQDE321").getBeanType()));
     }
     
     // The minimal setup for log4J

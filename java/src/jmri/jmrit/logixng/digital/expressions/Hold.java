@@ -31,10 +31,10 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     private final FemaleDigitalExpressionSocket _triggerExpressionSocket;
     private boolean _isActive = false;
     
-    public Hold(ConditionalNG conditionalNG)
+    public Hold()
             throws BadUserNameException, BadSystemNameException, SocketAlreadyConnectedException {
         
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
         
         _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E1");

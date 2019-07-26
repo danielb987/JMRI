@@ -17,7 +17,7 @@ public class DefaultMaleStringExpressionSocketTest {
 
     @Test
     public void testCtor() {
-        StringExpressionBean expression = new StringExpressionMemory("IQA55:1:SE321");
+        StringExpressionBean expression = new StringExpressionMemory("IQSE321");
         Assert.assertNotNull("exists", new DefaultMaleStringExpressionSocket(expression));
     }
     

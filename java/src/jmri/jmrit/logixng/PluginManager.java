@@ -108,24 +108,24 @@ public class PluginManager {
 //                    ClassType type = ClassType.OTHER;
                     ClassType type;
                     if (DigitalExpressionPlugin.class.isAssignableFrom(cls)) {
-                        System.out.format("Class %s is an Expression%n", cls.getName());
+//                        System.out.format("Class %s is an Expression%n", cls.getName());
                         type = ClassType.EXPRESSION;
 //                    } else if (cls.isInstance(DigitalActionBean.class)) {
                     } else if (DigitalActionPlugin.class.isAssignableFrom(cls)) {
-                        System.out.format("Class %s is an Action%n", cls.getName());
+//                        System.out.format("Class %s is an Action%n", cls.getName());
                         type = ClassType.ACTION;
 //                    } else if (jmri.jmrit.logixng.swing.PluginConfiguratorInterface.class.isAssignableFrom(cls)) {
 //                        System.out.format("Class %s is a plugin configurator%n", cls.getName());
 //                        type = ClassType.CONFIGURATOR;
                     } else if (DigitalExpressionBean.class.isAssignableFrom(cls)) {
-                        System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
+//                        System.out.format("Class %s is an Expression but not a plugin%n", cls.getName());
                         type = ClassType.EXPRESSION_NOT_PLUGIN;
 //                    } else if (cls.isInstance(DigitalActionBean.class)) {
                     } else if (DigitalActionBean.class.isAssignableFrom(cls)) {
-                        System.out.format("Class %s is an Action but not a plugin%n", cls.getName());
+//                        System.out.format("Class %s is an Action but not a plugin%n", cls.getName());
                         type = ClassType.ACTION_NOT_PLUGIN;
                     } else {
-                        System.out.format("Class %s is an unknown class%n", cls.getName());
+//                        System.out.format("Class %s is an unknown class%n", cls.getName());
                         type = ClassType.OTHER;
                     }
                     

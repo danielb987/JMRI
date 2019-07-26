@@ -38,9 +38,9 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     private final FemaleDigitalExpressionSocket _secondaryExpressionSocket;
     private boolean _lastMainResult = false;
     
-    public ResetOnTrue(ConditionalNG conditionalNG) {
+    public ResetOnTrue() {
         
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName());
         
         _primaryExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E1");

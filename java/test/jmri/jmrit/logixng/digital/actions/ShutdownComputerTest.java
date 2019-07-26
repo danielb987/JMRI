@@ -15,7 +15,7 @@ public class ShutdownComputerTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("exists", new ShutdownComputer("IQA55:10:DA321", null, 0));
+        Assert.assertNotNull("exists", new ShutdownComputer("IQDA321", null, 0));
     }
     
     // The minimal setup for log4J
@@ -25,7 +25,7 @@ public class ShutdownComputerTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new ShutdownComputer("IQA55:10:DA321", null, 0);
+        _base = new ShutdownComputer("IQDA321", null, 0);
     }
 
     @After

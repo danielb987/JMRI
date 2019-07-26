@@ -321,7 +321,7 @@ public class DefaultFemaleGenericExpressionSocket
     @Override
     public String getNewSystemName() {
         return InstanceManager.getDefault(DigitalExpressionManager.class)
-                .getNewSystemName(getConditionalNG());
+                .getNewSystemName();
     }
 
     private void addClassesToMap(

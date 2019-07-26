@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
-import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -20,10 +19,7 @@ import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.managers.AbstractManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNGPluginFactory;
 import jmri.jmrit.logixng.AnalogActionFactory;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.AnalogActionBean;
 
 /**
@@ -123,16 +119,7 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
      */
     @Override
     public NameValidity validSystemNameFormat(String systemName) {
-        // I - Internal
-        // Q - LogixNG
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // \d+ - The LogixNG ID number
-        // :
-        // Optional: A: - Automatic (if the system name is created by the software and not by the user
-        // A - AnalogActionBean
-        // \d+ - The AnalogActionBean ID number
-        if (systemName.matches("IQA?\\d+\\:\\d+\\:AAA?\\d+")) {
+        if (systemName.matches(getSystemNamePrefix()+"AA:?\\d+")) {
             return NameValidity.VALID;
         } else {
             return NameValidity.INVALID;
@@ -140,10 +127,10 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
     }
 
     @Override
-    public String getNewSystemName(ConditionalNG conditionalNG) {
+    public String getNewSystemName() {
         int nextAutoLogixNGRef = ++lastAutoActionRef;
-        StringBuilder b = new StringBuilder(conditionalNG.getSystemName());
-        b.append(":AAA");
+        StringBuilder b = new StringBuilder(getSystemNamePrefix());
+        b.append("AA:");
         String nextNumber = paddedNumber.format(nextAutoLogixNGRef);
         b.append(nextNumber);
         return b.toString();

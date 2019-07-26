@@ -29,7 +29,7 @@ public class ExpressionNodeFunction implements ExpressionNode {
                 if (functions.containsKey(function.getName())) {
                     throw new RuntimeException("Function " + function.getName() + " is already registered. Class: " + function.getClass().getName());
                 }
-                System.err.format("Add function %s, %s%n", function.getName(), function.getClass().getName());
+//                System.err.format("Add function %s, %s%n", function.getName(), function.getClass().getName());
                 functions.put(function.getName(), function);
             });
         }
@@ -45,7 +45,7 @@ public class ExpressionNodeFunction implements ExpressionNode {
             throw new FunctionNotExistsException(Bundle.getMessage("FunctionNotExists", identifier), identifier);
         }
         
-        System.err.format("Function %s, %s%n", _function.getName(), _function.getClass().getName());
+//        System.err.format("Function %s, %s%n", _function.getName(), _function.getClass().getName());
     }
     
     @Override

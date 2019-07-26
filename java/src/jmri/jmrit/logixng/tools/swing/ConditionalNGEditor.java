@@ -409,7 +409,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
                 autoSystemName();
             }
         });
-        System.out.format("Component: %s%n", c.getClass().getName());
 //        addLogixNGFrame.setLocationRelativeTo(component);
         selectItemTypeFrame.setLocationRelativeTo(null);
         selectItemTypeFrame.pack();
@@ -596,7 +595,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
             p.add(_autoSystemName, c);
         }
         
-        System.out.format("isConnected: %b%n", femaleSocket.isConnected());
         if (femaleSocket.isConnected()) {
             _systemName.setText(femaleSocket.getConnectedSocket().getSystemName());
             _systemName.setEnabled(false);
@@ -681,7 +679,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
                 autoSystemName();
             }
         });
-        System.out.format("Component: %s%n", c.getClass().getName());
 //        addLogixNGFrame.setLocationRelativeTo(component);
         frame.setLocationRelativeTo(null);
         frame.pack();
@@ -858,7 +855,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
             panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
             panel.setOpaque(false);
             
-//            System.out.format("Daniel AAAA: %s, %s, %s%n", socket.getClass().getCanonicalName(), socket.getClass().getName(), socket.getClass().getSimpleName());
             JLabel socketLabel = new JLabel(socket.getShortDescription());
             Font font = socketLabel.getFont();
             socketLabel.setFont(font.deriveFont((float)(font.getSize2D()*1.7)));
@@ -1011,7 +1007,6 @@ public final class ConditionalNGEditor extends JmriJFrame {
                                     Rectangle rect = _tree.getPathBounds(path);
                                     if ((e.getY() >= rect.y) && (e.getY() <= rect.y + rect.height)) {
                                         FemaleSocket femaleSocket = (FemaleSocket) path.getLastPathComponent();
-                                        System.out.format("femaleSocket is a %s. %s%n", femaleSocket.getClass().getName(), femaleSocket.getLongDescription());
                                         _tree.getLocationOnScreen();
                                         _tree.getX();
                                         showPopup(e.getX(), e.getY(), femaleSocket, path);

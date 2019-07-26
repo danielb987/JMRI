@@ -37,43 +37,13 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     private final List<ExpressionEntry> _expressionEntries = new ArrayList<>();
     
     /**
-     * Create a new instance of Antecedent and generate a new system name.
+     * Create a new instance of Antecedent with system name and user name.
      */
-    public Antecedent(ConditionalNG conditionalNG) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
-        init();
-    }
-    
-    /**
-     * Create a new instance of Antecedent and generate a new system name.
-     */
-    public Antecedent(ConditionalNG conditionalNG, String antecedent) {
-        super(InstanceManager.getDefault(DigitalExpressionManager.class).getNewSystemName(conditionalNG));
-        _antecedent = antecedent;
-        init();
-    }
-    
-    public Antecedent(String sys) throws BadSystemNameException {
-        super(sys);
-        init();
-    }
-
-    public Antecedent(String sys, String user)
-            throws BadUserNameException, BadSystemNameException {
-        super(sys, user);
-        init();
-    }
-    
-    public Antecedent(String sys, String user, String antecedent)
-            throws BadUserNameException, BadSystemNameException {
+    public Antecedent(String sys, String user, String antecedent) {
         super(sys, user);
         _antecedent = antecedent;
+        init();
     }
-
-//    public Antecedent(String sys, List<String> childrenSystemNames) throws BadSystemNameException {
-//        super(sys);
-//        _childrenSystemNames = childrenSystemNames;
-//    }
 
     public Antecedent(String sys, String user, String antecedent, List<Map.Entry<String, String>> expressionSystemNames)
             throws BadUserNameException, BadSystemNameException {

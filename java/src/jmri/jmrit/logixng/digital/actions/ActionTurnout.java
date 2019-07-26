@@ -27,9 +27,9 @@ public class ActionTurnout extends AbstractDigitalAction {
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
     
-    public ActionTurnout(ConditionalNG conditionalNG)
+    public ActionTurnout()
             throws BadUserNameException {
-        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName(conditionalNG));
+        super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
     }
 
     public ActionTurnout(String sys)
