@@ -16,7 +16,6 @@ import jmri.LogixManager;
 import jmri.Memory;
 import jmri.MemoryManager;
 import jmri.NamedBean;
-import jmri.ProvidingManager;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.Reporter;
@@ -283,6 +282,7 @@ public class TemplateTest {
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        JUnitUtil.resetInstanceManager();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initInternalLightManager();
