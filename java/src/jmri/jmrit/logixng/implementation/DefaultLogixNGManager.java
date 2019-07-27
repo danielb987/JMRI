@@ -491,7 +491,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     index = 0;
                     
-                    HoldAnything actionHoldAnything = new HoldAnything(getSystemNamePrefix()+"DA:00011");
+                    HoldAnything actionHoldAnything = new HoldAnything(getSystemNamePrefix()+"DA:00011", "My hold anything");
                     MaleSocket socketHoldAnything = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionHoldAnything);
                     socketSecondMany.getChild(index++).connect(socketHoldAnything);
                     
@@ -503,7 +503,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketMany2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionMany);
                     socketSecondMany.getChild(index++).connect(socketMany2);
                     
-                    Many actionShutdownComputer = new Many(getSystemNamePrefix()+"DA:10013", "My shutdown computer");
+                    ShutdownComputer actionShutdownComputer = new ShutdownComputer(getSystemNamePrefix()+"DA:10013", "My shutdown computer", 10);
                     MaleSocket socketShutdownComputer = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionShutdownComputer);
                     socketSecondMany.getChild(index++).connect(socketShutdownComputer);
                     

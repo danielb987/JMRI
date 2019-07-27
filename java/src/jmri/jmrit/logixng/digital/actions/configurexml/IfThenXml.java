@@ -91,11 +91,8 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
     @Override
     public boolean load(Element shared, Element perNode) {
         
-        IfThen.Type type = IfThen.Type.TRIGGER_ACTION;
         Attribute typeAttribute = shared.getAttribute("type");
-        if (typeAttribute != null) {
-            type = IfThen.Type.valueOf(typeAttribute.getValue());
-        }
+        IfThen.Type type = IfThen.Type.valueOf(typeAttribute.getValue());
         
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
@@ -109,18 +106,14 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         loadCommon(h, shared);
         
         Element socketName = shared.getChild("ifSocket").getChild("socketName");
-        if (socketName != null) {
-            h.getChild(0).setName(socketName.getTextTrim());
-        }
+        h.getChild(0).setName(socketName.getTextTrim());
         Element socketSystemName = shared.getChild("ifSocket").getChild("systemName");
         if (socketSystemName != null) {
             h.setIfExpressionSocketSystemName(socketSystemName.getTextTrim());
         }
         
         socketName = shared.getChild("thenSocket").getChild("socketName");
-        if (socketName != null) {
-            h.getChild(1).setName(socketName.getTextTrim());
-        }
+        h.getChild(1).setName(socketName.getTextTrim());
         socketSystemName = shared.getChild("thenSocket").getChild("systemName");
         if (socketSystemName != null) {
             h.setThenActionSocketSystemName(socketSystemName.getTextTrim());

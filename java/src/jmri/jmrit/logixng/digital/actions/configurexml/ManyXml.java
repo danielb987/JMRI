@@ -68,65 +68,13 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
             e.addContent(e2);
         }
         element.addContent(e);
-/*        
-        for (int i=0; i < p.getChildCount(); i++) {
-            try {
-//                    log.debug("action system name is " + entry.getSystemName());  // NOI18N
-                Element e = new Element("item");
-                e.addContent(new Element("index").addContent(Integer.toString(i)));
-                
-//                FemaleSocket socket = p.getChild(i);
-                MaleSocket socket = p.getChild(i).getConnectedSocket();
-                if (socket != null) {
-//                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket.getConnectedSocket());
-                    Element e2 = jmri.configurexml.ConfigXmlManager.elementFromObject(socket);
-                    if (e2 != null) {
-                        e.addContent(e2);
-                    }
-                }
-                
-                element.addContent(e);
-            } catch (Exception e) {
-                log.error("Error storing action: {}", e, e);
-            }
-        }
-*/        
-//        element.addContent(addTurnoutElement(p.getLow(), "low"));
-//        element.addContent(addTurnoutElement(p.getHigh(), "high"));
 
         return element;
     }
-/*
-    Element addTurnoutElement(NamedBeanHandle<Turnout> to, String which) {
-        Element el = new Element("turnoutname");
-        el.setAttribute("defines", which);
-        el.addContent(to.getName());
-        return el;
-    }
-
-    Element addTurnoutElement(Turnout to) {
-        String user = to.getUserName();
-        String sys = to.getSystemName();
-
-        Element el = new Element("turnout");
-        el.setAttribute("systemName", sys);
-        if (user != null) {
-            el.setAttribute("userName", user);
-        }
-
-        return el;
-    }
-*/
+    
     @Override
     public boolean load(Element shared, Element perNode) {
-//        List<Element> l = shared.getChildren("turnoutname");
-/*        
-        if (l.size() == 0) {
-            l = shared.getChildren("turnout");  // older form
-        }
-        NamedBeanHandle<Turnout> low = loadTurnout(l.get(0));
-        NamedBeanHandle<Turnout> high = loadTurnout(l.get(1));
-*/        
+        
         List<Map.Entry<String, String>> actionSystemNames = new ArrayList<>();
         
         Element actionElement = shared.getChild("actions");
