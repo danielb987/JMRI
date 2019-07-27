@@ -4,6 +4,36 @@ import jmri.Manager;
 import jmri.NamedBean;
 
 /**
+ * Detta behöver göras om.
+ * 
+ * En action turnout har en turnout system name och om action är en template
+ * är detta system name virtuellt.
+ * 
+ * En action som implementerar denna template hämtar templatens system name,
+ * översätter den till den verkliga system name och använder den.
+ * 
+ * 
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
  * Instance manager for LogixNG, which allows LogixNG to use templates.
  */
 public interface LogixNG_InstanceManager {
