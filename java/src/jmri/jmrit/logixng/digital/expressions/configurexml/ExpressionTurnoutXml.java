@@ -9,11 +9,13 @@ import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalExpressionBean;
 import jmri.jmrit.logixng.Is_IsNot_Enum;
 
 /**
+ * Handle XML configuration for ActionLightXml objects.
  *
+ * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
+ * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class ExpressionTurnoutXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 

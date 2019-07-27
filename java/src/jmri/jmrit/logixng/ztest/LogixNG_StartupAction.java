@@ -8,7 +8,6 @@ import jmri.InstanceManager;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
 import jmri.util.swing.JmriAbstractAction;
-import org.slf4j.LoggerFactory;
 
 /**
  * Swing action to create and register a TimeTableFrame

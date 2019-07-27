@@ -62,7 +62,6 @@ import jmri.jmrit.logixng.digital.expressions.ResetOnTrue;
 import jmri.jmrit.logixng.digital.expressions.Timer;
 import jmri.jmrit.logixng.digital.expressions.TriggerOnce;
 import jmri.jmrit.logixng.digital.expressions.True;
-import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.jmrit.logixng.string.actions.StringActionMemory;
 import jmri.jmrit.logixng.string.expressions.StringExpressionMemory;
 import jmri.jmrit.logixng.Is_IsNot_Enum;
@@ -492,19 +491,41 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     index = 0;
                     
-                    DoAnalogAction expressionDoAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:00011");
-                    MaleSocket socketDoAnalogAction = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionDoAnalogAction);
+                    HoldAnything actionHoldAnything = new HoldAnything(getSystemNamePrefix()+"DA:00011");
+                    MaleSocket socketHoldAnything = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionHoldAnything);
+                    socketSecondMany.getChild(index++).connect(socketHoldAnything);
+                    
+                    IfThen actionIfThen2 = new IfThen(getSystemNamePrefix()+"DA:10011", "My if then", IfThen.Type.TRIGGER_ACTION);
+                    MaleSocket socketIfThen2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen2);
+                    socketSecondMany.getChild(index++).connect(socketIfThen2);
+                    
+                    Many actionMany = new Many(getSystemNamePrefix()+"DA:10012", "My many");
+                    MaleSocket socketMany2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionMany);
+                    socketSecondMany.getChild(index++).connect(socketMany2);
+                    
+                    Many actionShutdownComputer = new Many(getSystemNamePrefix()+"DA:10013", "My shutdown computer");
+                    MaleSocket socketShutdownComputer = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionShutdownComputer);
+                    socketSecondMany.getChild(index++).connect(socketShutdownComputer);
+                    
+                    DoAnalogAction actionDoAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:10014");
+                    MaleSocket socketDoAnalogAction = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionDoAnalogAction);
                     socketSecondMany.getChild(index++).connect(socketDoAnalogAction);
                     
-                    DoStringAction expressionDoStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00012");
-                    MaleSocket socketDoStringAction = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionDoStringAction);
+                    DoStringAction actionDoStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00012");
+                    MaleSocket socketDoStringAction = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionDoStringAction);
                     socketSecondMany.getChild(index++).connect(socketDoStringAction);
                     
                     ShutdownComputer expressionShutdownComputer = new ShutdownComputer(getSystemNamePrefix()+"DA:00013", 10);
-                    MaleSocket socketShutdownComputer = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionShutdownComputer);
-                    socketSecondMany.getChild(index++).connect(socketShutdownComputer);
+                    MaleSocket socketShutdownComputer2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(expressionShutdownComputer);
+                    socketSecondMany.getChild(index++).connect(socketShutdownComputer2);
                     
                     ActionLight actionLight = new ActionLight(getSystemNamePrefix()+"DA:00014");
+                    actionLight.setLight(light2);
+                    actionLight.setLightState(ActionLight.LightState.ON);
+                    socketLight2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
+                    socketSecondMany.getChild(index++).connect(socketLight2);
+                    
+                    actionLight = new ActionLight(getSystemNamePrefix()+"DA:10015", "My light action");
                     actionLight.setLight(light2);
                     actionLight.setLightState(ActionLight.LightState.ON);
                     socketLight2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
@@ -516,7 +537,19 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socketSensor2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
                     socketSecondMany.getChild(index++).connect(socketSensor2);
                     
+                    actionSensor = new ActionSensor(getSystemNamePrefix()+"DA:10016", "My sensor action");
+                    actionSensor.setSensor(sensor2);
+                    actionSensor.setSensorState(ActionSensor.SensorState.ACTIVE);
+                    socketSensor2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
+                    socketSecondMany.getChild(index++).connect(socketSensor2);
+                    
                     ActionTurnout actionTurnout = new ActionTurnout(getSystemNamePrefix()+"DA:00016");
+                    actionTurnout.setTurnout(turnout2);
+                    actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.THROWN);
+                    socketTurnout2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
+                    socketSecondMany.getChild(index++).connect(socketTurnout2);
+                    
+                    actionTurnout = new ActionTurnout(getSystemNamePrefix()+"DA:00017", "My turnout action");
                     actionTurnout.setTurnout(turnout2);
                     actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.THROWN);
                     socketTurnout2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
@@ -535,7 +568,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     analogActionMemory.setMemory(memory2);
                     MaleSocket socketAnalogActionMemory = InstanceManager.getDefault(AnalogActionManager.class).registerAction(analogActionMemory);
 
-                    DoAnalogAction doAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:00101");
+                    DoAnalogAction doAnalogAction = new DoAnalogAction(getSystemNamePrefix()+"DA:00101", "My do analog action");
                     doAnalogAction.setAnalogExpressionSocketSystemName(socketAnalogExpressionMemory.getSystemName());
                     doAnalogAction.setAnalogActionSocketSystemName(socketAnalogActionMemory.getSystemName());
                     MaleSocket socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doAnalogAction);
@@ -561,7 +594,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     stringActionMemory.setMemory(memory4);
                     MaleSocket socketStringActionMemory = InstanceManager.getDefault(StringActionManager.class).registerAction(stringActionMemory);
 
-                    DoStringAction doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00103");
+                    DoStringAction doStringAction = new DoStringAction(getSystemNamePrefix()+"DA:00103", "My do string action");
                     doStringAction.setStringExpressionSocketSystemName(socketStringExpressionMemory.getSystemName());
                     doStringAction.setStringActionSocketSystemName(socketStringActionMemory.getSystemName());
                     socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doStringAction);

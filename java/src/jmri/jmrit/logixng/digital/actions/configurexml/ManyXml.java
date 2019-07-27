@@ -15,7 +15,10 @@ import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
+ * Handle XML configuration for ActionLightXml objects.
  *
+ * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
+ * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
@@ -45,9 +48,8 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
         Element element = new Element("many");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        if (p.getUserName() != null) {
-            element.addContent(new Element("userName").addContent(p.getUserName()));
-        }
+        
+        storeCommon(p, element);
 
         Element e = new Element("actions");
         for (int i=0; i < p.getChildCount(); i++) {
@@ -89,8 +91,6 @@ public class ManyXml extends jmri.managers.configurexml.AbstractNamedBeanManager
             }
         }
 */        
-        storeCommon(p, element);
-
 //        element.addContent(addTurnoutElement(p.getLow(), "low"));
 //        element.addContent(addTurnoutElement(p.getHigh(), "high"));
 

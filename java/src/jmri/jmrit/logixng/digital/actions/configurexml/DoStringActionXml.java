@@ -12,7 +12,10 @@ import org.slf4j.LoggerFactory;
 import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
+ * Handle XML configuration for ActionLightXml objects.
  *
+ * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
+ * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class DoStringActionXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
@@ -44,9 +47,8 @@ public class DoStringActionXml extends jmri.managers.configurexml.AbstractNamedB
         Element element = new Element("do-string-action");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        if (p.getUserName() != null) {
-            element.addContent(new Element("userName").addContent(p.getUserName()));
-        }
+        
+        storeCommon(p, element);
 
         try {
             FemaleStringExpressionSocket ifExpressionSocket = getAnalogExpressionSocket(p);
@@ -60,8 +62,6 @@ public class DoStringActionXml extends jmri.managers.configurexml.AbstractNamedB
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
             log.error("Error storing action: {}", e, e);
         }
-
-        storeCommon(p, element);
 
         return element;
     }

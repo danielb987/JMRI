@@ -14,7 +14,10 @@ import jmri.jmrit.logixng.DigitalActionBean;
 import jmri.jmrit.logixng.MaleSocket;
 
 /**
+ * Handle XML configuration for ActionLightXml objects.
  *
+ * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
+ * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
@@ -46,9 +49,8 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         Element element = new Element("if-then");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
-        if (p.getUserName() != null) {
-            element.addContent(new Element("userName").addContent(p.getUserName()));
-        }
+        
+        storeCommon(p, element);
 
         element.setAttribute("type", p.getType().name());
         
@@ -79,60 +81,15 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
                 e2.addContent(new Element("systemName").addContent(socketSystemName));
             }
             element.addContent(e2);
-            
-            
-            
-//            FemaleDigitalExpressionSocket ifExpressionSocket = getIfExpressionSocket(p);
-//            if (ifExpressionSocket.isConnected()) {
-//                element.addContent(new Element("ifSystemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));
-//            }
-//            FemaleDigitalActionSocket _thenActionSocket = getThenActionSocket(p);
-//            if (_thenActionSocket.isConnected()) {
-//                element.addContent(new Element("thenSystemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
-//            }
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
             log.error("Error storing action: {}", e, e);
         }
 
-        storeCommon(p, element);
-
-//        element.addContent(addTurnoutElement(p.getLow(), "low"));
-//        element.addContent(addTurnoutElement(p.getHigh(), "high"));
-
         return element;
     }
-/*
-    Element addTurnoutElement(NamedBeanHandle<Turnout> to, String which) {
-        Element el = new Element("turnoutname");
-        el.setAttribute("defines", which);
-        el.addContent(to.getName());
-        return el;
-    }
-
-    Element addTurnoutElement(Turnout to) {
-        String user = to.getUserName();
-        String sys = to.getSystemName();
-
-        Element el = new Element("turnout");
-        el.setAttribute("systemName", sys);
-        if (user != null) {
-            el.setAttribute("userName", user);
-        }
-
-        return el;
-    }
-*/
+    
     @Override
     public boolean load(Element shared, Element perNode) {
-//        List<Element> l = shared.getChildren("turnoutname");
-/*        
-        if (l.size() == 0) {
-            l = shared.getChildren("turnout");  // older form
-        }
-        NamedBeanHandle<Turnout> low = loadTurnout(l.get(0));
-        NamedBeanHandle<Turnout> high = loadTurnout(l.get(1));
-*/        
-        // put it together
         
         IfThen.Type type = IfThen.Type.TRIGGER_ACTION;
         Attribute typeAttribute = shared.getAttribute("type");
@@ -157,7 +114,6 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         }
         Element socketSystemName = shared.getChild("ifSocket").getChild("systemName");
         if (socketSystemName != null) {
-//            log.warn("If socket system name: {}", socketSystemName.getTextTrim());
             h.setIfExpressionSocketSystemName(socketSystemName.getTextTrim());
         }
         
@@ -167,49 +123,13 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         }
         socketSystemName = shared.getChild("thenSocket").getChild("systemName");
         if (socketSystemName != null) {
-//            log.warn("Then socket system name: {}", socketSystemName.getTextTrim());
             h.setThenActionSocketSystemName(socketSystemName.getTextTrim());
         }
         
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
         return true;
     }
-/*
-    /.**
-     * Process stored signal head output (turnout).
-     * <p>
-     * Needs to handle two types of element: turnoutname is new form; turnout is
-     * old form.
-     *
-     * @param o xml object defining a turnout on an SE8C signal head
-     * @return named bean for the turnout
-     *./
-    NamedBeanHandle<Turnout> loadTurnout(Object o) {
-        Element e = (Element) o;
-
-        if (e.getName().equals("turnout")) {
-            String name = e.getAttribute("systemName").getValue();
-            Turnout t;
-            if (e.getAttribute("userName") != null
-                    && !e.getAttribute("userName").getValue().equals("")) {
-                name = e.getAttribute("userName").getValue();
-                t = InstanceManager.turnoutManagerInstance().getTurnout(name);
-            } else {
-                t = InstanceManager.turnoutManagerInstance().getBySystemName(name);
-            }
-            return jmri.InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(name, t);
-        } else {
-            String name = e.getText();
-            try {
-                Turnout t = InstanceManager.turnoutManagerInstance().provideTurnout(name);
-                return jmri.InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(name, t);
-            } catch (IllegalArgumentException ex) {
-                log.warn("Failed to provide Turnout \"{}\" in loadTurnout", name);
-                return null;
-            }
-        }
-    }
-*/
+    
     @Override
     public void load(Element element, Object o) {
         log.error("Invalid method called");
