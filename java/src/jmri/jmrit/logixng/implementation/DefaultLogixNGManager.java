@@ -611,10 +611,13 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     doStringAction.setStringActionSocketSystemName(socketStringActionMemory.getSystemName());
                     socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doStringAction);
                     socketSecondMany.getChild(index++).connect(socket);
-
+                    
+                    resolveAllTrees();
+                    setupAllLogixNGs();
+                    
                     logixNG.setEnabled(true);
                     conditionalNG.setEnabled(true);
-    
+                    
 //                    logixNG.activateLogixNG();
                 }
                 
