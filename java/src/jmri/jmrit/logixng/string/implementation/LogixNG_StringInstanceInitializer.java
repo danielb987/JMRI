@@ -3,9 +3,11 @@ package jmri.jmrit.logixng.string.implementation;
 import java.util.Arrays;
 import java.util.Set;
 import jmri.InstanceInitializer;
+import jmri.InstanceManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.StringExpressionManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -39,12 +41,15 @@ public class LogixNG_StringInstanceInitializer extends AbstractInstanceInitializ
         // the manager also needs to be added to the method getInitalizes()
         // below.
         
+        InternalSystemConnectionMemo memo =
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class);
+        
         if (type == StringActionManager.class) {
-            return new DefaultStringActionManager();
+            return new DefaultStringActionManager(memo);
         }
 
         if (type == StringExpressionManager.class) {
-            return new DefaultStringExpressionManager();
+            return new DefaultStringExpressionManager(memo);
         }
 
         return super.getDefault(type);

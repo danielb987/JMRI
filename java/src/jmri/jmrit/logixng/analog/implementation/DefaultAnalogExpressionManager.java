@@ -21,6 +21,7 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.implementation.LogixNGPreferences;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.managers.AbstractManager;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -43,8 +44,8 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
-    public DefaultAnalogExpressionManager() {
-        super();
+    public DefaultAnalogExpressionManager(InternalSystemConnectionMemo memo) {
+        super(memo);
         
         for (Category category : Category.values()) {
             expressionClassList.put(category, new ArrayList<>());
@@ -108,11 +109,6 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     @Override
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameAnalogExpression");
-    }
-
-    @Override
-    public String getSystemPrefix() {
-        return "I";
     }
 
     @Override
@@ -225,7 +221,8 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
         }
         
         if (_instance == null) {
-            _instance = new DefaultAnalogExpressionManager();
+            _instance = new DefaultAnalogExpressionManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
         return (_instance);
     }

@@ -3,8 +3,10 @@ package jmri.jmrit.logixng.implementation;
 import java.util.Arrays;
 import java.util.Set;
 import jmri.InstanceInitializer;
+import jmri.InstanceManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -39,7 +41,8 @@ public class LogixNG_InstanceInitializer extends AbstractInstanceInitializer {
         // below.
 
         if (type == LogixNG_Manager.class) {
-            return new DefaultLogixNGManager();
+            return new DefaultLogixNGManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
 
         if (type == LogixNGPreferences.class) {

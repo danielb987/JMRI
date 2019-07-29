@@ -24,6 +24,7 @@ import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.DigitalActionBean;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 /**
  * Class providing the basic logic of the DigitalActionManager interface.
@@ -39,8 +40,8 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
-    public DefaultDigitalActionManager() {
-        super();
+    public DefaultDigitalActionManager(InternalSystemConnectionMemo memo) {
+        super(memo);
         
         InstanceManager.getDefault(LogixNG_Manager.class)
                 .registerFemaleSocketFactory(new DefaultFemaleDigitalActionSocketFactory());
@@ -112,11 +113,6 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     @Override
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameAction");
-    }
-
-    @Override
-    public String getSystemPrefix() {
-        return "I";
     }
 
     @Override
@@ -220,7 +216,8 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
         }
         
         if (_instance == null) {
-            _instance = new DefaultDigitalActionManager();
+            _instance = new DefaultDigitalActionManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
         return (_instance);
     }

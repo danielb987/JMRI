@@ -3,9 +3,11 @@ package jmri.jmrit.logixng.digital.implementation;
 import java.util.Arrays;
 import java.util.Set;
 import jmri.InstanceInitializer;
+import jmri.InstanceManager;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.DigitalActionManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -39,12 +41,15 @@ public class LogixNG_DigitalInstanceInitializer extends AbstractInstanceInitiali
         // the manager also needs to be added to the method getInitalizes()
         // below.
         
+        InternalSystemConnectionMemo memo =
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class);
+        
         if (type == DigitalActionManager.class) {
-            return new DefaultDigitalActionManager();
+            return new DefaultDigitalActionManager(memo);
         }
 
         if (type == DigitalExpressionManager.class) {
-            return new DefaultDigitalExpressionManager();
+            return new DefaultDigitalExpressionManager(memo);
         }
 
         return super.getDefault(type);

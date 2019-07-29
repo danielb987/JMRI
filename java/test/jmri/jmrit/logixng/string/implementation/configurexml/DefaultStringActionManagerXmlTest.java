@@ -10,6 +10,7 @@ import jmri.jmrit.logixng.string.implementation.DefaultStringActionManager;
 import jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringActionManagerXml;
 import jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringActionManagerXmlTest;
 import jmri.jmrit.logixng.string.implementation.configurexml.DefaultStringActionManagerXml;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.jdom2.Element;
@@ -204,7 +205,9 @@ public class DefaultStringActionManagerXmlTest {
     
     
     class MyManager extends DefaultStringActionManager {
-        
+        MyManager() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
     }
     
 }
