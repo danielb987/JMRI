@@ -7,6 +7,7 @@ import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.string.expressions.StringExpressionMemory;
 import jmri.jmrit.logixng.string.expressions.configurexml.StringExpressionMemoryXml;
 import jmri.jmrit.logixng.string.implementation.DefaultStringExpressionManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.jdom2.Element;
@@ -201,7 +202,9 @@ public class DefaultStringExpressionManagerXmlTest {
     
     
     class MyManager extends DefaultStringExpressionManager {
-        
+        MyManager() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
     }
     
 }

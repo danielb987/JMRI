@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitUtil;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -118,6 +119,10 @@ public class LogixNG_StartupTest {
     
     
     private class MyLogixNG_Manager extends DefaultLogixNGManager {
+        
+        MyLogixNG_Manager() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
         
         @Override
         public void testLogixNGs() throws PropertyVetoException {

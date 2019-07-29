@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.util.Log4JUtil;
 import jmri.util.ThreadingUtil;
@@ -21,6 +22,7 @@ import jmri.jmrit.logixng.MaleStringActionSocket;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.StringActionFactory;
 import jmri.jmrit.logixng.StringActionBean;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
@@ -38,8 +40,8 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
-    public DefaultStringActionManager() {
-        super();
+    public DefaultStringActionManager(InternalSystemConnectionMemo memo) {
+        super(memo);
         
         for (Category category : Category.values()) {
             actionClassList.put(category, new ArrayList<>());
@@ -99,11 +101,6 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
     @Override
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameStringAction");
-    }
-
-    @Override
-    public String getSystemPrefix() {
-        return "I";
     }
 
     @Override
@@ -209,7 +206,8 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         }
         
         if (_instance == null) {
-            _instance = new DefaultStringActionManager();
+            _instance = new DefaultStringActionManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
         return (_instance);
     }

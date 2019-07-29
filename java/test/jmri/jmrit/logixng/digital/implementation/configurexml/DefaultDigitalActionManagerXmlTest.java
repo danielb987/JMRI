@@ -7,6 +7,7 @@ import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.actions.configurexml.ActionTurnoutXml;
 import jmri.jmrit.logixng.digital.implementation.DefaultDigitalActionManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.jdom2.Element;
@@ -201,7 +202,9 @@ public class DefaultDigitalActionManagerXmlTest {
     
     
     class MyManager extends DefaultDigitalActionManager {
-        
+        MyManager() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
     }
     
 }

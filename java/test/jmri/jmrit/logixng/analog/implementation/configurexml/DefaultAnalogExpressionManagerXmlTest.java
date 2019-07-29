@@ -7,6 +7,7 @@ import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.analog.expressions.AnalogExpressionMemory;
 import jmri.jmrit.logixng.analog.expressions.configurexml.AnalogExpressionMemoryXml;
 import jmri.jmrit.logixng.analog.implementation.DefaultAnalogExpressionManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.jdom2.Element;
@@ -201,7 +202,9 @@ public class DefaultAnalogExpressionManagerXmlTest {
     
     
     class MyManager extends DefaultAnalogExpressionManager {
-        
+        MyManager() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
     }
     
 }

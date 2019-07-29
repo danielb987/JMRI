@@ -65,6 +65,7 @@ import jmri.jmrit.logixng.digital.expressions.True;
 import jmri.jmrit.logixng.string.actions.StringActionMemory;
 import jmri.jmrit.logixng.string.expressions.StringExpressionMemory;
 import jmri.jmrit.logixng.Is_IsNot_Enum;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.managers.AbstractManager;
 import jmri.util.FileUtil;
 import jmri.util.Log4JUtil;
@@ -89,8 +90,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     List<FemaleSocketFactory> _femaleSocketFactories = new ArrayList<>();
     
     
-    public DefaultLogixNGManager() {
-        super();
+    public DefaultLogixNGManager(InternalSystemConnectionMemo memo) {
+        super(memo);
         
         // The LogixNGPreferences class may load plugins so we must ensure
         // it's loaded here.
@@ -105,11 +106,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     @Override
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameLogixNG");
-    }
-
-    @Override
-    public String getSystemPrefix() {
-        return "I";
     }
 
     @Override
@@ -727,7 +723,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         }
         
         if (_instance == null) {
-            _instance = new DefaultLogixNGManager();
+            _instance = new DefaultLogixNGManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
         return (_instance);
     }

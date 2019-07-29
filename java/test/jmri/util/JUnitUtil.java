@@ -847,49 +847,56 @@ public class JUnitUtil {
     }
 
     public static void initLogixNGManager() {
-        LogixNG_Manager m = new DefaultLogixNGManager();
+        LogixNG_Manager m = new DefaultLogixNGManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.LOGIXNGS);
         }
     }
 
     public static void initAnalogExpressionManager() {
-        AnalogExpressionManager m = new DefaultAnalogExpressionManager();
+        AnalogExpressionManager m = new DefaultAnalogExpressionManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOG_EXPRESSIONS);
         }
     }
 
     public static void initAnalogActionManager() {
-        AnalogActionManager m = new DefaultAnalogActionManager();
+        AnalogActionManager m = new DefaultAnalogActionManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.ANALOG_ACTIONS);
         }
     }
 
     public static void initDigitalExpressionManager() {
-        DigitalExpressionManager m = new DefaultDigitalExpressionManager();
+        DigitalExpressionManager m = new DefaultDigitalExpressionManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.DIGITAL_EXPRESSIONS);
         }
     }
 
     public static void initDigitalActionManager() {
-        DigitalActionManager m = new DefaultDigitalActionManager();
+        DigitalActionManager m = new DefaultDigitalActionManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.DIGITAL_ACTIONS);
         }
     }
 
     public static void initStringExpressionManager() {
-        StringExpressionManager m = new DefaultStringExpressionManager();
+        StringExpressionManager m = new DefaultStringExpressionManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRING_EXPRESSIONS);
         }
     }
 
     public static void initStringActionManager() {
-        StringActionManager m = new DefaultStringActionManager();
+        StringActionManager m = new DefaultStringActionManager(
+                InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
             InstanceManager.getDefault(ConfigureManager.class).registerConfig(m, jmri.Manager.STRING_ACTIONS);
         }

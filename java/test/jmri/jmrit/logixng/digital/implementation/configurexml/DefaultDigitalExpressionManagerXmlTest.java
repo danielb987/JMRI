@@ -7,6 +7,7 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml;
 import jmri.jmrit.logixng.digital.implementation.DefaultDigitalExpressionManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.jdom2.Element;
@@ -201,7 +202,9 @@ public class DefaultDigitalExpressionManagerXmlTest {
     
     
     class MyManager extends DefaultDigitalExpressionManager {
-        
+        MyManager() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
     }
     
 }

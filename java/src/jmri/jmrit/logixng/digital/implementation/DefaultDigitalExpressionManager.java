@@ -28,6 +28,7 @@ import jmri.jmrit.logixng.DigitalExpressionBean;
 import jmri.jmrit.logixng.FemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.implementation.LogixNGPreferences;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 /**
  * Class providing the basic logic of the DigitalExpressionManager interface.
@@ -43,8 +44,8 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
-    public DefaultDigitalExpressionManager() {
-        super();
+    public DefaultDigitalExpressionManager(InternalSystemConnectionMemo memo) {
+        super(memo);
         
         InstanceManager.getDefault(LogixNG_Manager.class)
                 .registerFemaleSocketFactory(new DefaultFemaleDigitalExpressionSocketFactory());
@@ -119,11 +120,6 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
     @Override
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameExpression");
-    }
-
-    @Override
-    public String getSystemPrefix() {
-        return "I";
     }
 
     @Override
@@ -236,7 +232,8 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
         }
         
         if (_instance == null) {
-            _instance = new DefaultDigitalExpressionManager();
+            _instance = new DefaultDigitalExpressionManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
         return (_instance);
     }

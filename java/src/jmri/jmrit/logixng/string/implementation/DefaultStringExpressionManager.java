@@ -26,6 +26,7 @@ import jmri.jmrit.logixng.StringExpressionFactory;
 import jmri.jmrit.logixng.StringExpressionBean;
 import jmri.jmrit.logixng.implementation.DefaultFemaleGenericExpressionSocket;
 import jmri.jmrit.logixng.implementation.LogixNGPreferences;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
@@ -43,8 +44,8 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 
     
-    public DefaultStringExpressionManager() {
-        super();
+    public DefaultStringExpressionManager(InternalSystemConnectionMemo memo) {
+        super(memo);
         
         for (Category category : Category.values()) {
             expressionClassList.put(category, new ArrayList<>());
@@ -108,11 +109,6 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
     @Override
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameStringExpression");
-    }
-
-    @Override
-    public String getSystemPrefix() {
-        return "I";
     }
 
     @Override
@@ -227,7 +223,8 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
         }
         
         if (_instance == null) {
-            _instance = new DefaultStringExpressionManager();
+            _instance = new DefaultStringExpressionManager(
+                    InstanceManager.getDefault(InternalSystemConnectionMemo.class));
         }
         return (_instance);
     }
