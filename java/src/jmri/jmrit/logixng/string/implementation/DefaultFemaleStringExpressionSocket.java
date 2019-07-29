@@ -2,8 +2,6 @@ package jmri.jmrit.logixng.string.implementation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;

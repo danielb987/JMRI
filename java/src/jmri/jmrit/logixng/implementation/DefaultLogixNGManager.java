@@ -617,8 +617,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     logixNG.setEnabled(true);
                     conditionalNG.setEnabled(true);
-                    
-//                    logixNG.activateLogixNG();
                 }
                 
                 // Store panels

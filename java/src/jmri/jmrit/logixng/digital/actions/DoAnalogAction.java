@@ -1,18 +1,19 @@
 package jmri.jmrit.logixng.digital.actions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes an analog action with the result of an analog expression.
@@ -156,15 +157,42 @@ public class DoAnalogAction
     @Override
     public void setup() {
         try {
-            if ((!_analogActionSocket.isConnected()) && (_analogActionSocketSystemName != null)) {
-                _analogActionSocket.connect(
-                        InstanceManager.getDefault(AnalogActionManager.class)
-                                .getBeanBySystemName(_analogActionSocketSystemName));
+            if (!_analogExpressionSocket.isConnected()
+                    || (_analogExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_analogExpressionSocketSystemName))) {
+                
+                _analogExpressionSocket.disconnect();
+                
+                if (_analogExpressionSocketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(AnalogExpressionManager.class)
+                                    .getBeanBySystemName(_analogExpressionSocketSystemName);
+                    if (maleSocket != null) {
+                        _analogExpressionSocket.connect(maleSocket);
+    //                    maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + _analogExpressionSocketSystemName);
+                    }
+                }
             }
-            if ((!_analogExpressionSocket.isConnected()) && (_analogExpressionSocketSystemName != null)) {
-                _analogExpressionSocket.connect(
-                        InstanceManager.getDefault(AnalogExpressionManager.class)
-                                .getBeanBySystemName(_analogExpressionSocketSystemName));
+            
+            if (!_analogActionSocket.isConnected()
+                    || (_analogActionSocket.getConnectedSocket().getSystemName()
+                            .equals(_analogActionSocketSystemName))) {
+                
+                _analogActionSocket.disconnect();
+                
+                if (_analogActionSocketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(AnalogActionManager.class)
+                                    .getBeanBySystemName(_analogActionSocketSystemName);
+                    if (maleSocket != null) {
+                        _analogActionSocket.connect(maleSocket);
+    //                    maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + _analogActionSocketSystemName);
+                    }
+                }
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
@@ -186,5 +214,7 @@ public class DoAnalogAction
     @Override
     public void disposeMe() {
     }
-
+    
+    private final static Logger log = LoggerFactory.getLogger(DoAnalogAction.class);
+    
 }

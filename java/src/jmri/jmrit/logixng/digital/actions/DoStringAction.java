@@ -1,18 +1,19 @@
 package jmri.jmrit.logixng.digital.actions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.StringActionManager;
-import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleStringActionSocket;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.StringActionManager;
+import jmri.jmrit.logixng.StringExpressionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes an string action with the result of an string expression.
@@ -24,8 +25,8 @@ public class DoStringAction
         implements FemaleSocketListener {
 
     private DoStringAction _template;
-    private String _stringExpressionSocket_SocketSystemName;
-    private String _stringActionSocket_SocketSystemName;
+    private String _stringExpressionSocketSystemName;
+    private String _stringActionSocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
     
@@ -133,11 +134,11 @@ public class DoStringAction
     }
 
     public String getStringActionSocketSystemName() {
-        return _stringActionSocket_SocketSystemName;
+        return _stringActionSocketSystemName;
     }
 
     public void setStringActionSocketSystemName(String systemName) {
-        _stringActionSocket_SocketSystemName = systemName;
+        _stringActionSocketSystemName = systemName;
     }
 
     public FemaleStringExpressionSocket getStringExpressionSocket() {
@@ -145,26 +146,53 @@ public class DoStringAction
     }
 
     public String getStringExpressionSocketSystemName() {
-        return _stringExpressionSocket_SocketSystemName;
+        return _stringExpressionSocketSystemName;
     }
 
     public void setStringExpressionSocketSystemName(String systemName) {
-        _stringExpressionSocket_SocketSystemName = systemName;
+        _stringExpressionSocketSystemName = systemName;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setup() {
         try {
-            if ((!_stringActionSocket.isConnected()) && (_stringActionSocket_SocketSystemName != null)) {
-                _stringActionSocket.connect(
-                        InstanceManager.getDefault(StringActionManager.class)
-                                .getBeanBySystemName(_stringActionSocket_SocketSystemName));
+            if (!_stringExpressionSocket.isConnected()
+                    || (_stringExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_stringExpressionSocketSystemName))) {
+                
+                _stringExpressionSocket.disconnect();
+                
+                if (_stringExpressionSocketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(StringExpressionManager.class)
+                                    .getBeanBySystemName(_stringExpressionSocketSystemName);
+                    if (maleSocket != null) {
+                        _stringExpressionSocket.connect(maleSocket);
+    //                    maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + _stringExpressionSocketSystemName);
+                    }
+                }
             }
-            if ((!_stringExpressionSocket.isConnected()) && (_stringExpressionSocket_SocketSystemName != null)) {
-                _stringExpressionSocket.connect(
-                        InstanceManager.getDefault(StringExpressionManager.class)
-                                .getBeanBySystemName(_stringExpressionSocket_SocketSystemName));
+            
+            if (!_stringActionSocket.isConnected()
+                    || (_stringActionSocket.getConnectedSocket().getSystemName()
+                            .equals(_stringActionSocketSystemName))) {
+                
+                _stringActionSocket.disconnect();
+                
+                if (_stringActionSocketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(StringActionManager.class)
+                                    .getBeanBySystemName(_stringActionSocketSystemName);
+                    if (maleSocket != null) {
+                        _stringActionSocket.connect(maleSocket);
+    //                    maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + _stringActionSocketSystemName);
+                    }
+                }
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
@@ -186,5 +214,7 @@ public class DoStringAction
     @Override
     public void disposeMe() {
     }
-
+    
+    private final static Logger log = LoggerFactory.getLogger(DoStringAction.class);
+    
 }

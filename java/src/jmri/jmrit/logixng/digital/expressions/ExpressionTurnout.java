@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
@@ -11,7 +10,6 @@ import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.Is_IsNot_Enum;
@@ -176,18 +174,6 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
                 log.error("Turnout {} does not exists", _turnoutName);
             }
         }
-/*        
-        _turnoutHandle.setBean(bean);
-        if ((_turnoutHandle == null) && (_turnoutSystemName != null)) {
-            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getBeanBySystemName(_turnoutSystemName);
-            _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutSystemName, t);
-            if (t != null) {
-                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightSystemName, t);
-            } else {
-                log.error("Light {} does not exists", _lightSystemName);
-            }
-        }
-*/        
     }
     
     /** {@inheritDoc} */

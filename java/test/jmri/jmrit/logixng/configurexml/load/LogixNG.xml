@@ -50,7 +50,7 @@
     </light>
   </lights>
   <memories class="jmri.managers.configurexml.DefaultMemoryManagerXml">
-    <memory value="3:15 fm">
+    <memory value="4:37 fm">
       <systemName>IMCURRENTTIME</systemName>
     </memory>
     <memory value="1.0">
@@ -569,13 +569,13 @@
       <userName>My action</userName>
     </string-action-memory>
   </logixngStringActions>
-  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Mon Jul 29 03:15:09 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
+  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Mon Jul 29 04:37:59 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
   <filehistory>
     <operation>
       <type>Store</type>
-      <date>Mon Jul 29 03:15:09 CEST 2019</date>
+      <date>Mon Jul 29 04:38:00 CEST 2019</date>
       <filename />
     </operation>
   </filehistory>
-  <!--Written by JMRI version 4.17.3ish+daniel+20190729T0114Z on Mon Jul 29 03:15:09 CEST 2019-->
+  <!--Written by JMRI version 4.17.3ish+daniel+20190729T0237Z on Mon Jul 29 04:38:00 CEST 2019-->
 </layout-config>
