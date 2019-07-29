@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng;
 
+import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.NamedBean;
 import jmri.util.junit.annotations.ToDo;
@@ -393,6 +394,16 @@ public abstract class FemaleSocketTestBase {
 
         @Override
         public void unregisterListeners() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public void printTree(PrintWriter writer, String indent) {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public void printTree(PrintWriter writer, String indent, String currentIndent) {
             throw new UnsupportedOperationException("Not supported.");
         }
         
