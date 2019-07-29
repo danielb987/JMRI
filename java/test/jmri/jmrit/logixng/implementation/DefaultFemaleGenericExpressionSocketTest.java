@@ -15,6 +15,7 @@ import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 
@@ -77,6 +78,26 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
             return false;
         }
         return _turnout == _expression.getTurnout().getBean();
+    }
+    
+    // DefaultFemaleGenericExpressionSocket is a virtual female socket that
+    // is not used directly, but has inner private classes that implements the
+    // female sockets. See the classes AnalogSocket, DigitalSocket and StringSocket.
+    @Ignore("DefaultFemaleGenericExpressionSocket does not tell the listeners")
+    @Test
+    @Override
+    public void testConnect() {
+        // Do nothing
+    }
+    
+    // DefaultFemaleGenericExpressionSocket is a virtual female socket that
+    // is not used directly, but has inner private classes that implements the
+    // female sockets. See the classes AnalogSocket, DigitalSocket and StringSocket.
+    @Ignore("DefaultFemaleGenericExpressionSocket does not tell the listeners")
+    @Test
+    @Override
+    public void testDisconnect() throws SocketAlreadyConnectedException {
+        // Do nothing
     }
     
     // The minimal setup for log4J
