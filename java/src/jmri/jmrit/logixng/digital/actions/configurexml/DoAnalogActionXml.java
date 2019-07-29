@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng.digital.actions.configurexml;
 
-import java.lang.reflect.Field;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
@@ -9,7 +8,6 @@ import jmri.jmrit.logixng.digital.actions.DoAnalogAction;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Handle XML configuration for ActionLightXml objects.
@@ -20,18 +18,6 @@ import jmri.jmrit.logixng.DigitalActionBean;
 public class DoAnalogActionXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
     public DoAnalogActionXml() {
-    }
-
-    private FemaleAnalogExpressionSocket getAnalogExpressionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_analogExpressionSocket");
-        f.setAccessible(true);
-        return (FemaleAnalogExpressionSocket) f.get(action);
-    }
-
-    private FemaleAnalogActionSocket getAnalogActionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_analogActionSocket");
-        f.setAccessible(true);
-        return (FemaleAnalogActionSocket) f.get(action);
     }
 
     /**
@@ -50,17 +36,26 @@ public class DoAnalogActionXml extends jmri.managers.configurexml.AbstractNamedB
         
         storeCommon(p, element);
 
-        try {
-            FemaleAnalogExpressionSocket ifExpressionSocket = getAnalogExpressionSocket(p);
-            if (ifExpressionSocket.isConnected()) {
-                element.addContent(new Element("expressionSystemName").addContent(ifExpressionSocket.getConnectedSocket().getSystemName()));
-            }
-            FemaleAnalogActionSocket _thenActionSocket = getAnalogActionSocket(p);
-            if (_thenActionSocket.isConnected()) {
-                element.addContent(new Element("actionSystemName").addContent(_thenActionSocket.getConnectedSocket().getSystemName()));
-            }
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
-            log.error("Error storing action: {}", e, e);
+        String systemName;
+        
+        FemaleAnalogExpressionSocket expressionSocket = p.getAnalogExpressionSocket();
+        if (expressionSocket.isConnected()) {
+            systemName = expressionSocket.getConnectedSocket().getSystemName();
+        } else {
+            systemName = p.getAnalogExpressionSocketSystemName();
+        }
+        if (systemName != null) {
+            element.addContent(new Element("expressionSystemName").addContent(systemName));
+        }
+
+        FemaleAnalogActionSocket _thenActionSocket = p.getAnalogActionSocket();
+        if (_thenActionSocket.isConnected()) {
+            systemName = _thenActionSocket.getConnectedSocket().getSystemName();
+        } else {
+            systemName = p.getAnalogActionSocketSystemName();
+        }
+        if (systemName != null) {
+            element.addContent(new Element("actionSystemName").addContent(systemName));
         }
 
         return element;
@@ -80,13 +75,13 @@ public class DoAnalogActionXml extends jmri.managers.configurexml.AbstractNamedB
 
         loadCommon(h, shared);
 
-        Element ifSystemNameElement = shared.getChild("ifSystemName");
-        if (ifSystemNameElement != null) {
-            h.setAnalogActionSocketSystemName(ifSystemNameElement.getTextTrim());
+        Element expressionSystemNameElement = shared.getChild("expressionSystemName");
+        if (expressionSystemNameElement != null) {
+            h.setAnalogExpressionSocketSystemName(expressionSystemNameElement.getTextTrim());
         }
-        Element thenSystemNameElement = shared.getChild("thenSystemName");
-        if (thenSystemNameElement != null) {
-            h.setAnalogExpressionSocketSystemName(thenSystemNameElement.getTextTrim());
+        Element actionSystemNameElement = shared.getChild("actionSystemName");
+        if (actionSystemNameElement != null) {
+            h.setAnalogActionSocketSystemName(actionSystemNameElement.getTextTrim());
         }
         
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);

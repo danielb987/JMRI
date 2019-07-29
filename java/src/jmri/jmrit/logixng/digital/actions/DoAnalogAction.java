@@ -52,31 +52,7 @@ public class DoAnalogAction
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, "A1");
     }
-/*    
-    public DoAnalogAction(
-            String sys,
-            String expressionSocketName, String actionSocketName,
-            MaleAnalogExpressionSocket expression, MaleAnalogActionSocket action) {
-        
-        super(sys);
-        _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, this, expressionSocketName, expression);
-        _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
-                .createFemaleAnalogActionSocket(this, this, actionSocketName, action);
-    }
     
-    public DoAnalogAction(
-            String sys, String user,
-            String expressionSocketName, String actionSocketName, 
-            MaleAnalogExpressionSocket expression, MaleAnalogActionSocket action) {
-        
-        super(sys, user);
-        _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, this, expressionSocketName, expression);
-        _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
-                .createFemaleAnalogActionSocket(this, this, actionSocketName, action);
-    }
-*/    
     private DoAnalogAction(DoAnalogAction template, String sys) {
         super(sys);
         _template = template;
@@ -152,8 +128,24 @@ public class DoAnalogAction
         return Bundle.getMessage("DoAnalogAction_Long", _analogExpressionSocket.getName(), _analogActionSocket.getName());
     }
 
+    public FemaleAnalogActionSocket getAnalogActionSocket() {
+        return _analogActionSocket;
+    }
+
+    public String getAnalogActionSocketSystemName() {
+        return _analogActionSocketSystemName;
+    }
+
     public void setAnalogActionSocketSystemName(String systemName) {
         _analogActionSocketSystemName = systemName;
+    }
+
+    public FemaleAnalogExpressionSocket getAnalogExpressionSocket() {
+        return _analogExpressionSocket;
+    }
+
+    public String getAnalogExpressionSocketSystemName() {
+        return _analogExpressionSocketSystemName;
     }
 
     public void setAnalogExpressionSocketSystemName(String systemName) {

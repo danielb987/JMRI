@@ -24,8 +24,8 @@ public class DoStringAction
         implements FemaleSocketListener {
 
     private DoStringAction _template;
-    private String _stringExpressionSocketSocketSystemName;
-    private String _stringActionSocketSocketSystemName;
+    private String _stringExpressionSocket_SocketSystemName;
+    private String _stringActionSocket_SocketSystemName;
     private final FemaleStringExpressionSocket _stringExpressionSocket;
     private final FemaleStringActionSocket _stringActionSocket;
     
@@ -52,31 +52,7 @@ public class DoStringAction
         _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
                 .createFemaleSocket(this, this, "A1");
     }
-/*    
-    public DoStringAction(
-            String sys,
-            String expressionSocketName, String actionSocketName,
-            MaleStringExpressionSocket expression, MaleStringActionSocket action) {
-        
-        super(sys);
-        _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
-                .createFemaleStringExpressionSocket(this, this, expressionSocketName, expression);
-        _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
-                .createFemaleStringActionSocket(this, this, actionSocketName, action);
-    }
     
-    public DoStringAction(
-            String sys, String user,
-            String expressionSocketName, String actionSocketName, 
-            MaleStringExpressionSocket expression, MaleStringActionSocket action) {
-        
-        super(sys, user);
-        _stringExpressionSocket = InstanceManager.getDefault(StringExpressionManager.class)
-                .createFemaleStringExpressionSocket(this, this, expressionSocketName, expression);
-        _stringActionSocket = InstanceManager.getDefault(StringActionManager.class)
-                .createFemaleStringActionSocket(this, this, actionSocketName, action);
-    }
-*/    
     private DoStringAction(DoStringAction template, String sys) {
         super(sys);
         _template = template;
@@ -152,27 +128,43 @@ public class DoStringAction
         return Bundle.getMessage("DoStringAction_Long", _stringExpressionSocket.getName(), _stringActionSocket.getName());
     }
 
+    public FemaleStringActionSocket getStringActionSocket() {
+        return _stringActionSocket;
+    }
+
+    public String getStringActionSocketSystemName() {
+        return _stringActionSocket_SocketSystemName;
+    }
+
     public void setStringActionSocketSystemName(String systemName) {
-        _stringActionSocketSocketSystemName = systemName;
+        _stringActionSocket_SocketSystemName = systemName;
+    }
+
+    public FemaleStringExpressionSocket getStringExpressionSocket() {
+        return _stringExpressionSocket;
+    }
+
+    public String getStringExpressionSocketSystemName() {
+        return _stringExpressionSocket_SocketSystemName;
     }
 
     public void setStringExpressionSocketSystemName(String systemName) {
-        _stringExpressionSocketSocketSystemName = systemName;
+        _stringExpressionSocket_SocketSystemName = systemName;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setup() {
         try {
-            if ((!_stringActionSocket.isConnected()) && (_stringActionSocketSocketSystemName != null)) {
+            if ((!_stringActionSocket.isConnected()) && (_stringActionSocket_SocketSystemName != null)) {
                 _stringActionSocket.connect(
                         InstanceManager.getDefault(StringActionManager.class)
-                                .getBeanBySystemName(_stringActionSocketSocketSystemName));
+                                .getBeanBySystemName(_stringActionSocket_SocketSystemName));
             }
-            if ((!_stringExpressionSocket.isConnected()) && (_stringExpressionSocketSocketSystemName != null)) {
+            if ((!_stringExpressionSocket.isConnected()) && (_stringExpressionSocket_SocketSystemName != null)) {
                 _stringExpressionSocket.connect(
                         InstanceManager.getDefault(StringExpressionManager.class)
-                                .getBeanBySystemName(_stringExpressionSocketSocketSystemName));
+                                .getBeanBySystemName(_stringExpressionSocket_SocketSystemName));
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
