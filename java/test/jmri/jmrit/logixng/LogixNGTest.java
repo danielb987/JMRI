@@ -1,9 +1,9 @@
 package jmri.jmrit.logixng;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
-import jmri.NamedBean;
 import jmri.jmrit.logixng.implementation.DefaultLogixNG;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.jmrit.logixng.digital.actions.IfThen;
@@ -22,6 +22,37 @@ import org.junit.Test;
  * @author Daniel Bergqvist 2018
  */
 public class LogixNGTest {
+    
+    @Test
+    public void testPrintTree() {
+        final String newLine = System.lineSeparator();
+        StringBuilder expectedResult = new StringBuilder();
+        expectedResult
+                .append("LogixNG: A new logix for test").append(newLine)
+                .append("...ConditionalNG").append(newLine)
+                .append("......! ").append(newLine)
+                .append(".........Many").append(newLine)
+                .append("............! A1").append(newLine)
+                .append("...............Hold anything").append(newLine)
+                .append("..................? A1").append(newLine)
+                .append("..................! A1").append(newLine)
+                .append("..................! A1").append(newLine)
+                .append("............! A2").append(newLine)
+                .append("...............If E then A").append(newLine)
+                .append("..................? E").append(newLine)
+                .append("..................! A").append(newLine)
+                .append("............! A3").append(newLine);
+        
+        StringWriter writer = new StringWriter();
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
+        ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
+        logixNG.addConditionalNG(conditionalNG);
+        InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
+        logixNG.printTree(new PrintWriter(writer), "...");
+        String resultStr = writer.toString();
+        
+        Assert.assertEquals("Strings matches", expectedResult.toString(), resultStr);
+    }
     
     @Test
     public void testBaseLock() {

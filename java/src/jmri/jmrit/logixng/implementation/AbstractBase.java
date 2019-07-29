@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.implementation;
 
+import java.io.PrintWriter;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.ConditionalNG;
@@ -95,6 +96,47 @@ public abstract class AbstractBase extends AbstractNamedBean implements Base {
         unregisterListenersForThisClass();
         for (int i=0; i < getChildCount(); i++) {
             getChild(i).unregisterListeners();
+        }
+    }
+    
+    /**
+     * Print the tree to a stream.
+     * This method is the implementation of printTree(PrintStream, String)
+     * 
+     * @param writer the stream to print the tree to
+     * @param currentIndent the current indentation
+     */
+    protected void printTreeRow(PrintWriter writer, String currentIndent) {
+        writer.append(currentIndent);
+        writer.append(getLongDescription());
+        writer.println();
+    }
+    
+    /**
+     * Print the tree to a stream.
+     * 
+     * @param writer the stream to print the tree to
+     * @param indent the indentation of each level
+     */
+    @Override
+    public void printTree(PrintWriter writer, String indent) {
+        printTree(writer, indent, "");
+    }
+    
+    /**
+     * Print the tree to a stream.
+     * This method is the implementation of printTree(PrintStream, String)
+     * 
+     * @param writer the stream to print the tree to
+     * @param indent the indentation of each level
+     * @param currentIndent the current indentation
+     */
+    @Override
+    public void printTree(PrintWriter writer, String indent, String currentIndent) {
+        printTreeRow(writer, currentIndent);
+        
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).printTree(writer, indent, currentIndent+indent);
         }
     }
     

@@ -2,10 +2,10 @@ package jmri.jmrit.logixng.implementation;
 
 import static jmri.NamedBean.UNKNOWN;
 
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.JmriSimplePropertyListener;
 import jmri.implementation.AbstractNamedBean;
@@ -13,13 +13,8 @@ import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
-import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,12 +141,12 @@ public final class DefaultLogixNG extends AbstractNamedBean
 */
     @Override
     public String getShortDescription() {
-        throw new UnsupportedOperationException("Not supported.");
+        return "LogixNG";
     }
 
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported.");
+        return "LogixNG: "+getDisplayName();
     }
 
     @Override
@@ -409,6 +404,35 @@ public final class DefaultLogixNG extends AbstractNamedBean
     public void unregisterListeners() {
         for (ConditionalNG c : _conditionalNG_List) {
             c.unregisterListeners();
+        }
+    }
+    
+    /**
+     * Print the tree to a stream.
+     * This method is the implementation of printTree(PrintStream, String)
+     * 
+     * @param writer the stream to print the tree to
+     * @param currentIndent the current indentation
+     */
+    protected void printTreeRow(PrintWriter writer, String currentIndent) {
+        writer.append(currentIndent);
+        writer.append(getLongDescription());
+        writer.println();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void printTree(PrintWriter writer, String indent) {
+        printTree(writer, indent, "");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void printTree(PrintWriter writer, String indent, String currentIndent) {
+        printTreeRow(writer, currentIndent);
+
+        for (int i=0; i < this.getNumConditionalNGs(); i++) {
+            getConditionalNG(i).printTree(writer, indent, currentIndent+indent);
         }
     }
     

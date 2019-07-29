@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.implementation;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -256,17 +257,32 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return (LogixNG) parent;
     }
     
+    /**
+     * Print the tree to a stream.
+     * This method is the implementation of printTree(PrintStream, String)
+     * 
+     * @param writer the stream to print the tree to
+     * @param currentIndent the current indentation
+     */
+    protected void printTreeRow(PrintWriter writer, String currentIndent) {
+        writer.append(currentIndent);
+        writer.append(getLongDescription());
+        writer.println();
+    }
+    
     /** {@inheritDoc} */
     @Override
-    public void printTree(PrintStream stream, String indent, String currentIndent) {
-        stream.append(currentIndent);
-        stream.append(getLongDescription());
-        stream.println();
-//        stream.append(this.getClass().getName());
-//        stream.println();
+    public void printTree(PrintWriter writer, String indent) {
+        printTree(writer, indent, "");
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void printTree(PrintWriter writer, String indent, String currentIndent) {
+        printTreeRow(writer, currentIndent);
 
         if (_socket != null) {
-            _socket.printTree(stream, indent, currentIndent+indent);
+            _socket.printTree(writer, indent, currentIndent+indent);
         }
     }
     
