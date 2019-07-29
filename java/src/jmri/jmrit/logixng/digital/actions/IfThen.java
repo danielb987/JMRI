@@ -3,7 +3,6 @@ package jmri.jmrit.logixng.digital.actions;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalExpressionManager;
@@ -281,20 +280,28 @@ public class IfThen extends AbstractDigitalAction
         return Bundle.getMessage("IfThen_Long", _ifExpressionSocket.getName(), _thenActionSocket.getName());
     }
 
-    public void setIfExpressionSocketSystemName(String systemName) {
-        _ifExpressionSocketSystemName = systemName;
+    public FemaleDigitalExpressionSocket getIfExpressionSocket() {
+        return _ifExpressionSocket;
     }
 
     public String getIfExpressionSocketSystemName() {
         return _ifExpressionSocketSystemName;
     }
 
-    public void setThenActionSocketSystemName(String systemName) {
-        _thenActionSocketSystemName = systemName;
+    public void setIfExpressionSocketSystemName(String systemName) {
+        _ifExpressionSocketSystemName = systemName;
+    }
+
+    public FemaleDigitalActionSocket getThenActionSocket() {
+        return _thenActionSocket;
     }
 
     public String getThenExpressionSocketSystemName() {
         return _thenActionSocketSystemName;
+    }
+
+    public void setThenActionSocketSystemName(String systemName) {
+        _thenActionSocketSystemName = systemName;
     }
 
     /** {@inheritDoc} */

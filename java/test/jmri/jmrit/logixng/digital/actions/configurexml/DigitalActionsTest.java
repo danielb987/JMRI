@@ -4,6 +4,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.junit.After;
 import org.junit.Assert;
@@ -67,6 +68,21 @@ public class DigitalActionsTest {
         JUnitAppender.assertMessage("Invalid method called");
     }
     
+    @Test
+    public void testShutdownComputerXml() {
+        Element element = new Element("shutdown-computer");
+        element.setAttribute("class", this.getClass().getName());
+        element.addContent(new Element("systemName").addContent("IQDA1"));
+        
+        // Test invalid type. This value should be a number but test it with
+        // some letters.
+        element.setAttribute("seconds", "abc");
+        
+        ShutdownComputerXml shutdownComputerXml = new ShutdownComputerXml();
+        shutdownComputerXml.load(element, null);
+        JUnitAppender.assertErrorMessage("seconds attribute is not an integer");
+    }
+    
     // The minimal setup for log4J
     @Before
     public void setUp() {
@@ -74,6 +90,13 @@ public class DigitalActionsTest {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initLogixNGManager();
+        JUnitUtil.initAnalogActionManager();
+        JUnitUtil.initAnalogExpressionManager();
+        JUnitUtil.initDigitalActionManager();
+        JUnitUtil.initDigitalExpressionManager();
+        JUnitUtil.initStringActionManager();
+        JUnitUtil.initStringExpressionManager();
     }
 
     @After

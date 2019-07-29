@@ -1,16 +1,12 @@
 package jmri.jmrit.logixng.digital.actions.configurexml;
 
-import java.lang.reflect.Field;
 import jmri.InstanceManager;
-import jmri.jmrit.logixng.FemaleDigitalActionSocket;
-import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalActionBean;
 import jmri.jmrit.logixng.MaleSocket;
 
 /**
@@ -22,18 +18,6 @@ import jmri.jmrit.logixng.MaleSocket;
 public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
     public IfThenXml() {
-    }
-
-    private FemaleDigitalExpressionSocket getIfExpressionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_ifExpressionSocket");
-        f.setAccessible(true);
-        return (FemaleDigitalExpressionSocket) f.get(action);
-    }
-
-    private FemaleDigitalActionSocket getThenActionSocket(DigitalActionBean action) throws IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
-        Field f = action.getClass().getDeclaredField("_thenActionSocket");
-        f.setAccessible(true);
-        return (FemaleDigitalActionSocket) f.get(action);
     }
 
     /**
@@ -54,36 +38,32 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
 
         element.setAttribute("type", p.getType().name());
         
-        try {
-            Element e2 = new Element("ifSocket");
-            e2.addContent(new Element("socketName").addContent(p.getChild(0).getName()));
-            MaleSocket socket = getIfExpressionSocket(p).getConnectedSocket();
-            String socketSystemName;
-            if (socket != null) {
-                socketSystemName = socket.getSystemName();
-            } else {
-                socketSystemName = p.getIfExpressionSocketSystemName();
-            }
-            if (socketSystemName != null) {
-                e2.addContent(new Element("systemName").addContent(socketSystemName));
-            }
-            element.addContent(e2);
-            
-            e2 = new Element("thenSocket");
-            e2.addContent(new Element("socketName").addContent(p.getChild(1).getName()));
-            socket = getThenActionSocket(p).getConnectedSocket();
-            if (socket != null) {
-                socketSystemName = socket.getSystemName();
-            } else {
-                socketSystemName = p.getThenExpressionSocketSystemName();
-            }
-            if (socketSystemName != null) {
-                e2.addContent(new Element("systemName").addContent(socketSystemName));
-            }
-            element.addContent(e2);
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
-            log.error("Error storing action: {}", e, e);
+        Element e2 = new Element("ifSocket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(0).getName()));
+        MaleSocket socket = p.getIfExpressionSocket().getConnectedSocket();
+        String socketSystemName;
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getIfExpressionSocketSystemName();
         }
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
+
+        e2 = new Element("thenSocket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(1).getName()));
+        socket = p.getThenActionSocket().getConnectedSocket();
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getThenExpressionSocketSystemName();
+        }
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
 
         return element;
     }
