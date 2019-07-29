@@ -10,7 +10,10 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Expression that keeps its status even if its child expression doesn't.
@@ -200,15 +203,47 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     @Override
     public void setup() {
         try {
-            if ((!_holdExpressionSocket.isConnected()) && (_holdExpressionSocketSystemName != null)) {
-                _holdExpressionSocket.connect(
-                        InstanceManager.getDefault(DigitalActionManager.class)
-                                .getBeanBySystemName(_holdExpressionSocketSystemName));
+            if ( !_holdExpressionSocket.isConnected()
+                    || !_holdExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_holdExpressionSocketSystemName)) {
+                
+                String socketSystemName = _holdExpressionSocketSystemName;
+                _holdExpressionSocket.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    if (maleSocket != null) {
+                        _holdExpressionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + socketSystemName);
+                    }
+                }
+            } else {
+                _holdExpressionSocket.getConnectedSocket().setup();
             }
-            if ((!_triggerExpressionSocket.isConnected()) && (_triggerExpressionSocketSystemName != null)) {
-                _triggerExpressionSocket.connect(
-                        InstanceManager.getDefault(DigitalExpressionManager.class)
-                                .getBeanBySystemName(_triggerExpressionSocketSystemName));
+            
+            if ( !_triggerExpressionSocket.isConnected()
+                    || !_triggerExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_triggerExpressionSocketSystemName)) {
+                
+                String socketSystemName = _triggerExpressionSocketSystemName;
+                _triggerExpressionSocket.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalActionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    _triggerExpressionSocket.disconnect();
+                    if (maleSocket != null) {
+                        _triggerExpressionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital action " + socketSystemName);
+                    }
+                }
+            } else {
+                _triggerExpressionSocket.getConnectedSocket().setup();
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
@@ -232,5 +267,7 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     @Override
     public void disposeMe() {
     }
+
+    private final static Logger log = LoggerFactory.getLogger(Hold.class);
 
 }

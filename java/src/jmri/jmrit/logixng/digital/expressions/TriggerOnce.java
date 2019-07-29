@@ -1,16 +1,16 @@
 package jmri.jmrit.logixng.digital.expressions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,10 +146,25 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     @Override
     public void setup() {
         try {
-            if ((!_childExpression.isConnected()) && (_childExpressionSystemName != null)) {
-                _childExpression.connect(
-                        InstanceManager.getDefault(DigitalExpressionManager.class)
-                                .getBeanBySystemName(_childExpressionSystemName));
+            if ( !_childExpression.isConnected()
+                    || !_childExpression.getConnectedSocket().getSystemName()
+                            .equals(_childExpressionSystemName)) {
+                
+                String socketSystemName = _childExpressionSystemName;
+                _childExpression.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    if (maleSocket != null) {
+                        _childExpression.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + socketSystemName);
+                    }
+                }
+            } else {
+                _childExpression.getConnectedSocket().setup();
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
@@ -173,4 +188,5 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     }
 
     private final static Logger log = LoggerFactory.getLogger(TriggerOnce.class);
+
 }

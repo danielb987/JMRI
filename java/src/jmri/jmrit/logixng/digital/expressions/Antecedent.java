@@ -221,19 +221,30 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     @Override
     public void setup() {
         for (ExpressionEntry ee : _expressionEntries) {
-            if (ee._socketSystemName != null) {
-                try {
-                    MaleSocket maleSocket = InstanceManager.getDefault(DigitalExpressionManager.class).getBeanBySystemName(ee._socketSystemName);
-                    if (maleSocket != null) {
-                        ee._socket.connect(maleSocket);
-                        maleSocket.setup();
-                    } else {
-                        log.error("cannot load digital expression " + ee._socketSystemName);
+            try {
+                if ( !ee._socket.isConnected()
+                        || !ee._socket.getConnectedSocket().getSystemName()
+                                .equals(ee._socketSystemName)) {
+
+                    String socketSystemName = ee._socketSystemName;
+                    ee._socket.disconnect();
+                    if (socketSystemName != null) {
+                        MaleSocket maleSocket =
+                                InstanceManager.getDefault(DigitalExpressionManager.class)
+                                        .getBeanBySystemName(socketSystemName);
+                        if (maleSocket != null) {
+                            ee._socket.connect(maleSocket);
+                            maleSocket.setup();
+                        } else {
+                            log.error("cannot load digital action " + socketSystemName);
+                        }
                     }
-                } catch (SocketAlreadyConnectedException ex) {
-                    // This shouldn't happen and is a runtime error if it does.
-                    throw new RuntimeException("socket is already connected");
+                } else {
+                    ee._socket.getConnectedSocket().setup();
                 }
+            } catch (SocketAlreadyConnectedException ex) {
+                // This shouldn't happen and is a runtime error if it does.
+                throw new RuntimeException("socket is already connected");
             }
         }
     }
