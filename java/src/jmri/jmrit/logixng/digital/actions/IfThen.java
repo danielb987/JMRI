@@ -250,12 +250,25 @@ public class IfThen extends AbstractDigitalAction
 
     @Override
     public void connected(FemaleSocket socket) {
-        // This class doesn't care.
+//        System.out.format("AAA: %s, %s, %s, %s%n", socket, socket.getClass().getName(), _ifExpressionSocket, _ifExpressionSocket.getClass().getName());
+        if (socket == _ifExpressionSocket) {
+            _ifExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else if (socket == _thenActionSocket) {
+            _thenActionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _ifExpressionSocket) {
+            _ifExpressionSocketSystemName = null;
+        } else if (socket == _thenActionSocket) {
+            _thenActionSocketSystemName = null;
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
@@ -288,27 +301,47 @@ public class IfThen extends AbstractDigitalAction
     @Override
     public void setup() {
         try {
-            if ((!_ifExpressionSocket.isConnected()) && (_ifExpressionSocketSystemName != null)) {
-                MaleSocket maleSocket =
-                        InstanceManager.getDefault(DigitalExpressionManager.class)
-                                .getBeanBySystemName(_ifExpressionSocketSystemName);
-                if (maleSocket != null) {
-                    _ifExpressionSocket.connect(maleSocket);
-                    maleSocket.setup();
-                } else {
-                    log.error("cannot load digital expression " + _ifExpressionSocketSystemName);
+            if ( !_ifExpressionSocket.isConnected()
+                    || !_ifExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_ifExpressionSocketSystemName)) {
+                
+                String socketSystemName = _ifExpressionSocketSystemName;
+                _ifExpressionSocket.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    if (maleSocket != null) {
+                        _ifExpressionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + socketSystemName);
+                    }
                 }
+            } else {
+                _ifExpressionSocket.getConnectedSocket().setup();
             }
-            if ((!_thenActionSocket.isConnected()) && (_thenActionSocketSystemName != null)) {
-                MaleSocket maleSocket =
-                        InstanceManager.getDefault(DigitalActionManager.class)
-                                .getBeanBySystemName(_thenActionSocketSystemName);
-                if (maleSocket != null) {
-                    _thenActionSocket.connect(maleSocket);
-                    maleSocket.setup();
-                } else {
-                    log.error("cannot load digital action " + _thenActionSocketSystemName);
+            
+            if ( !_thenActionSocket.isConnected()
+                    || !_thenActionSocket.getConnectedSocket().getSystemName()
+                            .equals(_thenActionSocketSystemName)) {
+                
+                String socketSystemName = _thenActionSocketSystemName;
+                _thenActionSocket.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalActionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    _thenActionSocket.disconnect();
+                    if (maleSocket != null) {
+                        _thenActionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital action " + socketSystemName);
+                    }
                 }
+            } else {
+                _thenActionSocket.getConnectedSocket().setup();
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.

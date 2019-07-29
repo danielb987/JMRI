@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalExpressionManager;
@@ -39,15 +40,20 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /**
      * Create a new instance of Antecedent with system name and user name.
      */
-    public Antecedent(String sys, String user, String antecedent) {
+    public Antecedent(@Nonnull String sys, @Nullable String user,
+            @Nonnull String antecedent) {
         super(sys, user);
+        Objects.requireNonNull(antecedent, "antecedent must not be null");
         _antecedent = antecedent;
         init();
     }
 
-    public Antecedent(String sys, String user, String antecedent, List<Map.Entry<String, String>> expressionSystemNames)
+    public Antecedent(@Nonnull String sys, @Nullable String user,
+            @Nonnull String antecedent,
+            List<Map.Entry<String, String>> expressionSystemNames)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
+        Objects.requireNonNull(antecedent, "antecedent must not be null");
         _antecedent = antecedent;
         setExpressionSystemNames(expressionSystemNames);
     }

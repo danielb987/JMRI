@@ -34,6 +34,8 @@ public interface MaleSocket extends Debugable {
     /**
      * Get the object that this male socket holds.
      * This method is used when the object is going to be configured.
+     * 
+     * @return the object this male socket holds
      */
     public Base getObject();
 

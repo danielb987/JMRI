@@ -40,6 +40,7 @@ public class DefaultFemaleGenericExpressionSocket
     private SocketType _currentSocketType;      // The current type of the socket.
     private FemaleSocket internalSocket;        //
     private FemaleSocket _currentActiveSocket;  // The socket that is currently in use, if any. Null otherwise.
+    private final FemaleSocketListener _socketListener;
     private final FemaleAnalogExpressionSocket _analogSocket = new DefaultFemaleAnalogExpressionSocket(this, this, "A");
     private final FemaleDigitalExpressionSocket _digitalSocket = new DefaultFemaleDigitalExpressionSocket(this, this, "D");
     private final FemaleStringExpressionSocket _stringSocket = new DefaultFemaleStringExpressionSocket(this, this, "S");
@@ -51,10 +52,11 @@ public class DefaultFemaleGenericExpressionSocket
             FemaleSocketListener listener,
             String name) {
         
-        super(parent, listener, name);
+        super(parent, null, name);
         
         _socketType = socketType;
         _currentSocketType = socketType;
+        _socketListener = listener;
         
         switch (_socketType) {
             case ANALOG:
@@ -90,7 +92,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
         }
-        FemaleAnalogExpressionSocket socket = new AnalogSocket(getName());
+        FemaleAnalogExpressionSocket socket = new AnalogSocket(_socketListener, getName());
         internalSocket = socket;
         return socket;
     }
@@ -100,7 +102,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
         }
-        FemaleDigitalExpressionSocket socket = new DigitalSocket(getName());
+        FemaleDigitalExpressionSocket socket = new DigitalSocket(_socketListener, getName());
         internalSocket = socket;
         return socket;
     }
@@ -110,7 +112,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (internalSocket != null) {
             throw new RuntimeException("internal socket cannot be set more than once");
         }
-        FemaleStringExpressionSocket socket = new StringSocket(getName());
+        FemaleStringExpressionSocket socket = new StringSocket(_socketListener, getName());
         internalSocket = socket;
         return socket;
     }
@@ -411,7 +413,8 @@ public class DefaultFemaleGenericExpressionSocket
 
     @Override
     public void connected(FemaleSocket socket) {
-        _listener.connected(socket);
+        // Do nothing
+//        _listener.connected(socket);
     }
 
     @Override
@@ -419,7 +422,7 @@ public class DefaultFemaleGenericExpressionSocket
         if (_currentSocketType == SocketType.GENERIC) {
             _currentActiveSocket = null;
         }
-        _listener.disconnected(socket);
+//        _listener.disconnected(socket);
     }
     
     /** {@inheritDoc} */
@@ -452,8 +455,8 @@ public class DefaultFemaleGenericExpressionSocket
     
     private class AnalogSocket extends DefaultFemaleAnalogExpressionSocket {
         
-        public AnalogSocket(String name) {
-            super(null, null, name);
+        public AnalogSocket(FemaleSocketListener listener, String name) {
+            super(null, listener, name);
         }
         
         /** {@inheritDoc} */
@@ -507,12 +510,14 @@ public class DefaultFemaleGenericExpressionSocket
         @Override
         public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
             DefaultFemaleGenericExpressionSocket.this.connect(socket);
+            _listener.connected(this);
         }
 
         /** {@inheritDoc} */
         @Override
         public void disconnect() {
             DefaultFemaleGenericExpressionSocket.this.disconnect();
+            _listener.disconnected(this);
         }
 
         /** {@inheritDoc} */
@@ -566,8 +571,8 @@ public class DefaultFemaleGenericExpressionSocket
     
     private class DigitalSocket extends DefaultFemaleDigitalExpressionSocket {
         
-        public DigitalSocket(String name) {
-            super(null, null, name);
+        public DigitalSocket(FemaleSocketListener listener, String name) {
+            super(null, _socketListener, name);
         }
         
         /** {@inheritDoc} */
@@ -621,12 +626,14 @@ public class DefaultFemaleGenericExpressionSocket
         @Override
         public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
             DefaultFemaleGenericExpressionSocket.this.connect(socket);
+            _listener.connected(this);
         }
 
         /** {@inheritDoc} */
         @Override
         public void disconnect() {
             DefaultFemaleGenericExpressionSocket.this.disconnect();
+            _listener.disconnected(this);
         }
 
         /** {@inheritDoc} */
@@ -680,8 +687,8 @@ public class DefaultFemaleGenericExpressionSocket
     
     private class StringSocket extends DefaultFemaleStringExpressionSocket {
         
-        public StringSocket(String name) {
-            super(null, null, name);
+        public StringSocket(FemaleSocketListener listener, String name) {
+            super(null, listener, name);
         }
         
         /** {@inheritDoc} */
@@ -735,12 +742,14 @@ public class DefaultFemaleGenericExpressionSocket
         @Override
         public void connect(MaleSocket socket) throws SocketAlreadyConnectedException {
             DefaultFemaleGenericExpressionSocket.this.connect(socket);
+            _listener.connected(this);
         }
 
         /** {@inheritDoc} */
         @Override
         public void disconnect() {
             DefaultFemaleGenericExpressionSocket.this.disconnect();
+            _listener.disconnected(this);
         }
 
         /** {@inheritDoc} */

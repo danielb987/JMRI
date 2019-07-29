@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng;
 
+import java.io.PrintStream;
 import javax.annotation.CheckForNull;
 import jmri.NamedBean;
 
@@ -326,6 +327,33 @@ public interface Base {
      */
     public void unregisterListeners();
     
+    /**
+     * Print the tree to a stream.
+     * 
+     * @param stream the stream to print the tree to
+     * @param indent the indentation of each level
+     */
+    default public void printTree(PrintStream stream, String indent) {
+        printTree(stream, indent, "");
+    }
+    
+    /**
+     * Print the tree to a stream.
+     * This method is the implementation of printTree(PrintStream, String)
+     * 
+     * @param stream the stream to print the tree to
+     * @param indent the indentation of each level
+     * @param currentIndent the current indentation
+     */
+    default public void printTree(PrintStream stream, String indent, String currentIndent) {
+        stream.append(currentIndent);
+        stream.append(getLongDescription());
+        stream.println();
+
+        for (int i=0; i < getChildCount(); i++) {
+            getChild(i).printTree(stream, indent, currentIndent+indent);
+        }
+    }
     
     
     public interface RunnableWithBase {

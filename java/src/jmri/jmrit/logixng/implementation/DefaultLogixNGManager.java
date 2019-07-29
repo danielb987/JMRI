@@ -216,7 +216,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     InstanceManager.getDefault(DigitalActionManager.class)
                             .registerAction(new IfThen(getSystemNamePrefix()+"DA:00003", IfThen.Type.TRIGGER_ACTION));
             femaleSocket.connect(actionIfThenSocket);
-
+            
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
             /* FOR TESTING ONLY */
@@ -614,6 +614,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     resolveAllTrees();
                     setupAllLogixNGs();
+                    
+//                    conditionalNG.printTree(System.out, "  ");
                     
                     logixNG.setEnabled(true);
                     conditionalNG.setEnabled(true);

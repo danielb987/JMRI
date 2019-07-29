@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.implementation;
 
+import java.io.PrintStream;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
@@ -253,6 +254,20 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
             parent = parent.getParent();
         }
         return (LogixNG) parent;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void printTree(PrintStream stream, String indent, String currentIndent) {
+        stream.append(currentIndent);
+        stream.append(getLongDescription());
+        stream.println();
+//        stream.append(this.getClass().getName());
+//        stream.println();
+
+        if (_socket != null) {
+            _socket.printTree(stream, indent, currentIndent+indent);
+        }
     }
     
 }

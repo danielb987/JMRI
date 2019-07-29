@@ -81,9 +81,9 @@ public class AntecedentXml extends jmri.managers.configurexml.AbstractNamedBeanM
         String uname = getUserName(shared);
         DigitalExpressionBean h;
         if (uname == null) {
-            h = new Antecedent(sys, null, null, expressionSystemNames);
+            h = new Antecedent(sys, null, "", expressionSystemNames);
         } else {
-            h = new Antecedent(sys, uname, null, expressionSystemNames);
+            h = new Antecedent(sys, uname, "", expressionSystemNames);
         }
 
         loadCommon(h, shared);

@@ -166,8 +166,9 @@ public class Many extends AbstractDigitalAction
         boolean hasFreeSocket = false;
         for (ActionEntry actionEntry : _actionEntries) {
             hasFreeSocket = !actionEntry._socket.isConnected();
-            if (hasFreeSocket) {
-                break;
+            if (socket == actionEntry._socket) {
+                actionEntry._socketSystemName =
+                        socket.getConnectedSocket().getSystemName();
             }
         }
         if (!hasFreeSocket) {
@@ -180,7 +181,12 @@ public class Many extends AbstractDigitalAction
 
     @Override
     public void disconnected(FemaleSocket socket) {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        for (ActionEntry actionEntry : _actionEntries) {
+            if (socket == actionEntry._socket) {
+                actionEntry._socketSystemName = null;
+                break;
+            }
+        }
     }
     
     @Override
@@ -215,19 +221,30 @@ public class Many extends AbstractDigitalAction
     @Override
     public void setup() {
         for (ActionEntry ae : _actionEntries) {
-            if (ae._socketSystemName != null) {
-                try {
-                    MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(ae._socketSystemName);
-                    if (maleSocket != null) {
-                        ae._socket.connect(maleSocket);
-                        maleSocket.setup();
-                    } else {
-                        log.error("cannot load digital action " + ae._socketSystemName);
+            try {
+                if ( !ae._socket.isConnected()
+                        || !ae._socket.getConnectedSocket().getSystemName()
+                                .equals(ae._socketSystemName)) {
+
+                    String socketSystemName = ae._socketSystemName;
+                    ae._socket.disconnect();
+                    if (socketSystemName != null) {
+                        MaleSocket maleSocket =
+                                InstanceManager.getDefault(DigitalActionManager.class)
+                                        .getBeanBySystemName(socketSystemName);
+                        if (maleSocket != null) {
+                            ae._socket.connect(maleSocket);
+                            maleSocket.setup();
+                        } else {
+                            log.error("cannot load digital action " + socketSystemName);
+                        }
                     }
-                } catch (SocketAlreadyConnectedException ex) {
-                    // This shouldn't happen and is a runtime error if it does.
-                    throw new RuntimeException("socket is already connected");
+                } else {
+                    ae._socket.getConnectedSocket().setup();
                 }
+            } catch (SocketAlreadyConnectedException ex) {
+                // This shouldn't happen and is a runtime error if it does.
+                throw new RuntimeException("socket is already connected");
             }
         }
     }

@@ -111,12 +111,24 @@ public class DoAnalogAction
 
     @Override
     public void connected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _analogExpressionSocket) {
+            _analogExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else if (socket == _analogActionSocket) {
+            _analogActionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _analogExpressionSocket) {
+            _analogExpressionSocketSystemName = null;
+        } else if (socket == _analogActionSocket) {
+            _analogActionSocketSystemName = null;
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
@@ -158,41 +170,49 @@ public class DoAnalogAction
     public void setup() {
         try {
             if (!_analogExpressionSocket.isConnected()
-                    || (_analogExpressionSocket.getConnectedSocket().getSystemName()
-                            .equals(_analogExpressionSocketSystemName))) {
+                    || !_analogExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_analogExpressionSocketSystemName)) {
+                
+                String socketSystemName = _analogExpressionSocketSystemName;
                 
                 _analogExpressionSocket.disconnect();
                 
-                if (_analogExpressionSocketSystemName != null) {
+                if (socketSystemName != null) {
                     MaleSocket maleSocket =
                             InstanceManager.getDefault(AnalogExpressionManager.class)
-                                    .getBeanBySystemName(_analogExpressionSocketSystemName);
+                                    .getBeanBySystemName(socketSystemName);
                     if (maleSocket != null) {
                         _analogExpressionSocket.connect(maleSocket);
-    //                    maleSocket.setup();
+                        maleSocket.setup();
                     } else {
-                        log.error("cannot load digital expression " + _analogExpressionSocketSystemName);
+                        log.error("cannot load digital expression " + socketSystemName);
                     }
                 }
+            } else {
+                _analogExpressionSocket.getConnectedSocket().setup();
             }
             
             if (!_analogActionSocket.isConnected()
-                    || (_analogActionSocket.getConnectedSocket().getSystemName()
-                            .equals(_analogActionSocketSystemName))) {
+                    || !_analogActionSocket.getConnectedSocket().getSystemName()
+                            .equals(_analogActionSocketSystemName)) {
+                
+                String socketSystemName = _analogActionSocketSystemName;
                 
                 _analogActionSocket.disconnect();
                 
-                if (_analogActionSocketSystemName != null) {
+                if (socketSystemName != null) {
                     MaleSocket maleSocket =
                             InstanceManager.getDefault(AnalogActionManager.class)
-                                    .getBeanBySystemName(_analogActionSocketSystemName);
+                                    .getBeanBySystemName(socketSystemName);
                     if (maleSocket != null) {
                         _analogActionSocket.connect(maleSocket);
-    //                    maleSocket.setup();
+                        maleSocket.setup();
                     } else {
-                        log.error("cannot load digital expression " + _analogActionSocketSystemName);
+                        log.error("cannot load digital action " + socketSystemName);
                     }
                 }
+            } else {
+                _analogActionSocket.getConnectedSocket().setup();
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.

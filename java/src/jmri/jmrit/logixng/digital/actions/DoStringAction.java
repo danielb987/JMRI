@@ -111,12 +111,24 @@ public class DoStringAction
 
     @Override
     public void connected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _stringExpressionSocket) {
+            _stringExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else if (socket == _stringActionSocket) {
+            _stringActionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _stringExpressionSocket) {
+            _stringExpressionSocketSystemName = null;
+        } else if (socket == _stringActionSocket) {
+            _stringActionSocketSystemName = null;
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
@@ -158,41 +170,49 @@ public class DoStringAction
     public void setup() {
         try {
             if (!_stringExpressionSocket.isConnected()
-                    || (_stringExpressionSocket.getConnectedSocket().getSystemName()
-                            .equals(_stringExpressionSocketSystemName))) {
+                    || !_stringExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_stringExpressionSocketSystemName)) {
+                
+                String socketSystemName = _stringExpressionSocketSystemName;
                 
                 _stringExpressionSocket.disconnect();
                 
-                if (_stringExpressionSocketSystemName != null) {
+                if (socketSystemName != null) {
                     MaleSocket maleSocket =
                             InstanceManager.getDefault(StringExpressionManager.class)
-                                    .getBeanBySystemName(_stringExpressionSocketSystemName);
+                                    .getBeanBySystemName(socketSystemName);
                     if (maleSocket != null) {
                         _stringExpressionSocket.connect(maleSocket);
-    //                    maleSocket.setup();
+                        maleSocket.setup();
                     } else {
-                        log.error("cannot load digital expression " + _stringExpressionSocketSystemName);
+                        log.error("cannot load digital expression " + socketSystemName);
                     }
                 }
+            } else {
+                _stringExpressionSocket.getConnectedSocket().setup();
             }
             
             if (!_stringActionSocket.isConnected()
-                    || (_stringActionSocket.getConnectedSocket().getSystemName()
-                            .equals(_stringActionSocketSystemName))) {
+                    || !_stringActionSocket.getConnectedSocket().getSystemName()
+                            .equals(_stringActionSocketSystemName)) {
+                
+                String socketSystemName = _stringActionSocketSystemName;
                 
                 _stringActionSocket.disconnect();
                 
-                if (_stringActionSocketSystemName != null) {
+                if (socketSystemName != null) {
                     MaleSocket maleSocket =
                             InstanceManager.getDefault(StringActionManager.class)
-                                    .getBeanBySystemName(_stringActionSocketSystemName);
+                                    .getBeanBySystemName(socketSystemName);
                     if (maleSocket != null) {
                         _stringActionSocket.connect(maleSocket);
-    //                    maleSocket.setup();
+                        maleSocket.setup();
                     } else {
-                        log.error("cannot load digital expression " + _stringActionSocketSystemName);
+                        log.error("cannot load digital action " + socketSystemName);
                     }
                 }
+            } else {
+                _stringActionSocket.getConnectedSocket().setup();
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.

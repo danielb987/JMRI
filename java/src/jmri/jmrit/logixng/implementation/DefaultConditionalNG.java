@@ -178,12 +178,12 @@ public final class DefaultConditionalNG extends AbstractBase
 
     @Override
     public void connected(FemaleSocket socket) {
-        // Do nothing
+        _socketSystemName = socket.getConnectedSocket().getSystemName();
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        // Do nothing
+        _socketSystemName = null;
     }
 
     @Override
@@ -193,7 +193,7 @@ public final class DefaultConditionalNG extends AbstractBase
 
     @Override
     public String getLongDescription() {
-        throw new UnsupportedOperationException("Not supported.");
+        return "ConditionalNG";
     }
 
     @Override
@@ -242,20 +242,28 @@ public final class DefaultConditionalNG extends AbstractBase
     /** {@inheritDoc} */
     @Override
     final public void setup() {
-//        log.debug("setup(): Socket system name: {}", _socketSystemName);
-        if ((! _femaleActionSocket.isConnected()) && (_socketSystemName != null)) {
-            try {
-                MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);
-                if (maleSocket != null) {
-                    _femaleActionSocket.connect(maleSocket);
-                    maleSocket.setup();
-                } else {
-                    log.error("digital action is not found: " + _socketSystemName);
+        if (!_femaleActionSocket.isConnected()
+                || !_femaleActionSocket.getConnectedSocket().getSystemName()
+                        .equals(_socketSystemName)) {
+        
+            _femaleActionSocket.disconnect();
+
+            if (_socketSystemName != null) {
+                try {
+                    MaleSocket maleSocket = InstanceManager.getDefault(DigitalActionManager.class).getBeanBySystemName(_socketSystemName);
+                    if (maleSocket != null) {
+                        _femaleActionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("digital action is not found: " + _socketSystemName);
+                    }
+                } catch (SocketAlreadyConnectedException ex) {
+                    // This shouldn't happen and is a runtime error if it does.
+                    throw new RuntimeException("socket is already connected");
                 }
-            } catch (SocketAlreadyConnectedException ex) {
-                // This shouldn't happen and is a runtime error if it does.
-                throw new RuntimeException("socket is already connected");
             }
+        } else {
+            _femaleActionSocket.setup();
         }
     }
 
