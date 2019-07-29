@@ -21,9 +21,7 @@ import org.junit.Test;
  */
 public class DefaultFemaleDigitalExpressionSocketTest extends FemaleSocketTestBase {
 
-    private String _turnoutSystemName;
-    private Turnout _turnout;
-    private ExpressionTurnout _expression;
+    private MyExpressionTurnout _expression;
     
     @Test
     public void testGetName() {
@@ -38,10 +36,7 @@ public class DefaultFemaleDigitalExpressionSocketTest extends FemaleSocketTestBa
     
     @Override
     protected boolean hasSocketBeenSetup() {
-        if (_expression.getTurnout() == null) {
-            return false;
-        }
-        return _turnout == _expression.getTurnout().getBean();
+        return _expression._hasBeenSetup;
     }
     
     // The minimal setup for log4J
@@ -54,10 +49,7 @@ public class DefaultFemaleDigitalExpressionSocketTest extends FemaleSocketTestBa
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        _turnoutSystemName = "IT1";
-        _turnout = InstanceManager.getDefault(TurnoutManager.class).provide(_turnoutSystemName);
-        _expression = new ExpressionTurnout("IQDE321");
-        _expression.setTurnoutName(_turnoutSystemName);
+        _expression = new MyExpressionTurnout("IQDE321");
         ExpressionTurnout otherExpression = new ExpressionTurnout("IQDE322");
         maleSocket = new DefaultMaleDigitalExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleDigitalExpressionSocket(otherExpression);
@@ -77,6 +69,23 @@ public class DefaultFemaleDigitalExpressionSocketTest extends FemaleSocketTestBa
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyExpressionTurnout extends ExpressionTurnout {
+        
+        private boolean _hasBeenSetup = false;
+        
+        public MyExpressionTurnout(String systemName) {
+            super(systemName);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            _hasBeenSetup = true;
+        }
     }
     
 }

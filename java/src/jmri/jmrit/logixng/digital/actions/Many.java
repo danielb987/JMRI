@@ -164,10 +164,10 @@ public class Many extends AbstractDigitalAction
     @Override
     public void connected(FemaleSocket socket) {
         boolean hasFreeSocket = false;
-        for (ActionEntry actionEntry : _actionEntries) {
-            hasFreeSocket = !actionEntry._socket.isConnected();
-            if (socket == actionEntry._socket) {
-                actionEntry._socketSystemName =
+        for (ActionEntry entry : _actionEntries) {
+            hasFreeSocket = !entry._socket.isConnected();
+            if (socket == entry._socket) {
+                entry._socketSystemName =
                         socket.getConnectedSocket().getSystemName();
             }
         }
@@ -181,9 +181,9 @@ public class Many extends AbstractDigitalAction
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        for (ActionEntry actionEntry : _actionEntries) {
-            if (socket == actionEntry._socket) {
-                actionEntry._socketSystemName = null;
+        for (ActionEntry entry : _actionEntries) {
+            if (socket == entry._socket) {
+                entry._socketSystemName = null;
                 break;
             }
         }

@@ -150,8 +150,9 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
         boolean hasFreeSocket = false;
         for (ExpressionEntry entry : _expressionEntries) {
             hasFreeSocket = !entry._socket.isConnected();
-            if (hasFreeSocket) {
-                break;
+            if (socket == entry._socket) {
+                entry._socketSystemName =
+                        socket.getConnectedSocket().getSystemName();
             }
         }
         if (!hasFreeSocket) {
@@ -164,7 +165,12 @@ public class And extends AbstractDigitalExpression implements FemaleSocketListen
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        // Do nothing
+        for (ExpressionEntry entry : _expressionEntries) {
+            if (socket == entry._socket) {
+                entry._socketSystemName = null;
+                break;
+            }
+        }
     }
 
     /** {@inheritDoc} */

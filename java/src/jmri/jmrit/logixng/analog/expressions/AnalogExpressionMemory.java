@@ -2,9 +2,9 @@ package jmri.jmrit.logixng.analog.expressions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import jmri.InstanceManager;
 import jmri.Memory;
 import jmri.MemoryManager;
@@ -22,11 +22,9 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright 2018
  */
 public class AnalogExpressionMemory extends AbstractAnalogExpression
-        implements PropertyChangeListener {
+        implements PropertyChangeListener, VetoableChangeListener {
 
     private AnalogExpressionMemory _template;
-    private String _memoryName;
-//    private Memory _memory;
     private NamedBeanHandle<Memory> _memoryHandle;
     private boolean _listenersAreRegistered = false;
     
@@ -54,6 +52,23 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression
         return new AnalogExpressionMemory(this, sys);
     }
     
+    @Override
+    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+        if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Memory) {
+                if (evt.getOldValue().equals(getMemory())) {
+                    throw new PropertyVetoException(getDisplayName(), evt);
+                }
+            }
+        } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Memory) {
+                if (evt.getOldValue().equals(getMemory())) {
+                    setMemory((Memory)null);
+                }
+            }
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -66,11 +81,31 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression
         return true;
     }
     
+    public void setMemory(String memoryName) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setMemory must not be called when listeners are registered");
+            log.error("setMemory must not be called when listeners are registered", e);
+            throw e;
+        }
+        Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
+        _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+    }
+    
     public void setMemory(NamedBeanHandle<Memory> handle) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setMemory must not be called when listeners are registered");
+            log.error("setMemory must not be called when listeners are registered", e);
+            throw e;
+        }
         _memoryHandle = handle;
     }
     
     public void setMemory(@CheckForNull Memory memory) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setMemory must not be called when listeners are registered");
+            log.error("setMemory must not be called when listeners are registered", e);
+            throw e;
+        }
         if (memory != null) {
             _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                     .getNamedBeanHandle(memory.getDisplayName(), memory);
@@ -124,31 +159,10 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression
         return getShortDescription();
     }
 
-    public void setMemoryName(String memoryName) {
-        _memoryName = memoryName;
-        // setup() must be run in order to use the new memory
-        _memoryHandle = null;
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        // Don't setup again if we already has the correct memory
-        if ((_memoryHandle != null) && (_memoryHandle.getName().equals(_memoryName))) {
-            return;
-        }
-        
-        // Remove the old _memoryHandle if it exists
-        _memoryHandle = null;
-        
-        if (_memoryName != null) {
-            Memory m = InstanceManager.getDefault(MemoryManager.class).getMemory(_memoryName);
-            if (m != null) {
-                _memoryHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_memoryName, m);
-            } else {
-                log.error("Memory {} does not exists", _memoryName);
-            }
-        }
+        // Do nothing
     }
     
     /** {@inheritDoc} */

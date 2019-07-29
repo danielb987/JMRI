@@ -304,6 +304,8 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             }
         }
         
+        ExpressionLight expressionLightAAA = null;
+        
         // FOR TESTING ONLY. REMOVE LATER.
         int test = 1;
         if (test == 1) {
@@ -608,10 +610,12 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socket = InstanceManager.getDefault(DigitalActionManager.class).registerAction(doStringAction);
                     socketSecondMany.getChild(index++).connect(socket);
                     
+//                    java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.OutputStreamWriter(System.out));
+//                    logixNG.printTree(writer, "   ");
+//                    writer.flush();
+                    
                     resolveAllTrees();
                     setupAllLogixNGs();
-                    
-//                    conditionalNG.printTree(System.out, "  ");
                     
                     logixNG.setEnabled(true);
                     conditionalNG.setEnabled(true);

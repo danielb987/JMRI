@@ -23,7 +23,7 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
 
     private String _memorySystemName;
     private Memory _memory;
-    private StringActionMemory _action;
+    private MyStringActionMemory _action;
     
     @Test
     public void testGetName() {
@@ -38,10 +38,7 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
     
     @Override
     protected boolean hasSocketBeenSetup() {
-        if (_action.getMemory() == null) {
-            return false;
-        }
-        return _memory == _action.getMemory().getBean();
+        return _action._hasBeenSetup;
     }
     
     // The minimal setup for log4J
@@ -56,8 +53,8 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _action = new StringActionMemory("IQSA321");
-        _action.setMemoryName(_memorySystemName);
+        _action = new MyStringActionMemory("IQSA321");
+        _action.setMemory(_memory);
         StringActionMemory otherAction = new StringActionMemory("IQSA322");
         maleSocket = new DefaultMaleStringActionSocket(_action);
         otherMaleSocket = new DefaultMaleStringActionSocket(otherAction);
@@ -77,6 +74,23 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyStringActionMemory extends StringActionMemory {
+        
+        private boolean _hasBeenSetup = false;
+        
+        public MyStringActionMemory(String systemName) {
+            super(systemName);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            _hasBeenSetup = true;
+        }
     }
     
 }

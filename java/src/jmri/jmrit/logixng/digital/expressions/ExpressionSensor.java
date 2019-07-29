@@ -2,6 +2,8 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
@@ -21,13 +23,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionSensor extends AbstractDigitalExpression implements PropertyChangeListener {
+public class ExpressionSensor extends AbstractDigitalExpression
+        implements PropertyChangeListener, VetoableChangeListener {
 
     private ExpressionSensor _template;
-    private String _sensorName;
     private NamedBeanHandle<Sensor> _sensorHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
-    private SensorState _lightState = SensorState.ACTIVE;
+    private SensorState _sensorState = SensorState.ACTIVE;
     private boolean _listenersAreRegistered = false;
 
     public ExpressionSensor()
@@ -57,11 +59,31 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
         return new ExpressionSensor(this, sys);
     }
     
+    public void setSensor(String sensorName) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setSensor must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
+        Sensor sensor = InstanceManager.getDefault(SensorManager.class).getSensor(sensorName);
+        _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(sensorName, sensor);
+    }
+    
     public void setSensor(NamedBeanHandle<Sensor> handle) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setSensor must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
         _sensorHandle = handle;
     }
     
     public void setSensor(@CheckForNull Sensor sensor) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setSensor must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
         if (sensor != null) {
             _sensorHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                     .getNamedBeanHandle(sensor.getDisplayName(), sensor);
@@ -83,13 +105,30 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     }
     
     public void setSensorState(SensorState state) {
-        _lightState = state;
+        _sensorState = state;
     }
     
     public SensorState getSensorState() {
-        return _lightState;
+        return _sensorState;
     }
 
+    @Override
+    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+        if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Sensor) {
+                if (evt.getOldValue().equals(getSensor())) {
+                    throw new PropertyVetoException(getDisplayName(), evt);
+                }
+            }
+        } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Sensor) {
+                if (evt.getOldValue().equals(getSensor())) {
+                    setSensor((Sensor)null);
+                }
+            }
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -107,9 +146,9 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
     public boolean evaluate() {
         SensorState currentSensorState = SensorState.get(_sensorHandle.getBean().getCommandedState());
         if (_is_IsNot == Is_IsNot_Enum.IS) {
-            return currentSensorState == _lightState;
+            return currentSensorState == _sensorState;
         } else {
-            return currentSensorState != _lightState;
+            return currentSensorState != _sensorState;
         }
     }
 
@@ -136,44 +175,19 @@ public class ExpressionSensor extends AbstractDigitalExpression implements Prope
 
     @Override
     public String getLongDescription() {
-        String lightName;
+        String sensorName;
         if (_sensorHandle != null) {
-            lightName = _sensorHandle.getBean().getDisplayName();
+            sensorName = _sensorHandle.getBean().getDisplayName();
         } else {
-            lightName = Bundle.getMessage("BeanNotSelected");
+            sensorName = Bundle.getMessage("BeanNotSelected");
         }
-        return Bundle.getMessage("Sensor_Long", lightName, _is_IsNot.toString(), _lightState._text);
-    }
-    
-    public void setSensorName(String sensorSystemName) {
-        _sensorName = sensorSystemName;
+        return Bundle.getMessage("Sensor_Long", sensorName, _is_IsNot.toString(), _sensorState._text);
     }
     
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if (_listenersAreRegistered) {
-            RuntimeException e = new RuntimeException("setup must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
-            throw e;
-        }
-        
-        // Don't setup again if we already has the correct sensor
-        if ((_sensorHandle != null) && (_sensorHandle.getName().equals(_sensorName))) {
-            return;
-        }
-        
-        // Remove the old _sensorHandle if it exists
-        _sensorHandle = null;
-        
-        if (_sensorName != null) {
-            Sensor t = InstanceManager.getDefault(SensorManager.class).getSensor(_sensorName);
-            if (t != null) {
-                _sensorHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_sensorName, t);
-            } else {
-                log.error("Sensor {} does not exists", _sensorName);
-            }
-        }
+        // Do nothing
     }
     
     /** {@inheritDoc} */

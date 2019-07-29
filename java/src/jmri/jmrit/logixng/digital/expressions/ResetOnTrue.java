@@ -155,12 +155,24 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
 
     @Override
     public void connected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _primaryExpressionSocket) {
+            _primaryExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else if (socket == _secondaryExpressionSocket) {
+            _secondaryExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _primaryExpressionSocket) {
+            _primaryExpressionSocketSystemName = null;
+        } else if (socket == _secondaryExpressionSocket) {
+            _secondaryExpressionSocketSystemName = null;
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     public void setPrimaryExpressionSocketSystemName(String systemName) {

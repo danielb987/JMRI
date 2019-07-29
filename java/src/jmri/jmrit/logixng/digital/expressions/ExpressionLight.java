@@ -2,6 +2,8 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
@@ -21,10 +23,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionLight extends AbstractDigitalExpression implements PropertyChangeListener {
+public class ExpressionLight extends AbstractDigitalExpression
+        implements PropertyChangeListener, VetoableChangeListener {
 
     private ExpressionLight _template;
-    private String _lightName;
     private NamedBeanHandle<Light> _lightHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private LightState _lightState = LightState.ON;
@@ -57,11 +59,31 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         return new ExpressionLight(this, sys);
     }
     
+    public void setLight(String lightName) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setLight must not be called when listeners are registered");
+            log.error("setLight must not be called when listeners are registered", e);
+            throw e;
+        }
+        Light light = InstanceManager.getDefault(LightManager.class).getLight(lightName);
+        _lightHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(lightName, light);
+    }
+    
     public void setLight(NamedBeanHandle<Light> handle) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setLight must not be called when listeners are registered");
+            log.error("setLight must not be called when listeners are registered", e);
+            throw e;
+        }
         _lightHandle = handle;
     }
     
     public void setLight(@CheckForNull Light light) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setLight must not be called when listeners are registered");
+            log.error("setLight must not be called when listeners are registered", e);
+            throw e;
+        }
         if (light != null) {
             _lightHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                     .getNamedBeanHandle(light.getDisplayName(), light);
@@ -90,6 +112,23 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         return _lightState;
     }
 
+    @Override
+    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+        if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Light) {
+                if (evt.getOldValue().equals(getLight())) {
+                    throw new PropertyVetoException(getDisplayName(), evt);
+                }
+            }
+        } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Light) {
+                if (evt.getOldValue().equals(getLight())) {
+                    setLight((Light)null);
+                }
+            }
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -145,35 +184,10 @@ public class ExpressionLight extends AbstractDigitalExpression implements Proper
         return Bundle.getMessage("Light_Long", lightName, _is_IsNot.toString(), _lightState._text);
     }
     
-    public void setLightName(String lightSystemName) {
-        _lightName = lightSystemName;
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if (_listenersAreRegistered) {
-            RuntimeException e = new RuntimeException("setup must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
-            throw e;
-        }
-        
-        // Don't setup again if we already has the correct light
-        if ((_lightHandle != null) && (_lightHandle.getName().equals(_lightName))) {
-            return;
-        }
-        
-        // Remove the old _lightHandle if it exists
-        _lightHandle = null;
-        
-        if (_lightName != null) {
-            Light t = InstanceManager.getDefault(LightManager.class).getLight(_lightName);
-            if (t != null) {
-                _lightHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_lightName, t);
-            } else {
-                log.error("Light {} does not exists", _lightName);
-            }
-        }
+        // Do nothing
     }
     
     /** {@inheritDoc} */

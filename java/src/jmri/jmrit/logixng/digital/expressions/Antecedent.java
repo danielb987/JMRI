@@ -200,8 +200,9 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         boolean hasFreeSocket = false;
         for (ExpressionEntry entry : _expressionEntries) {
             hasFreeSocket = !entry._socket.isConnected();
-            if (hasFreeSocket) {
-                break;
+            if (socket == entry._socket) {
+                entry._socketSystemName =
+                        socket.getConnectedSocket().getSystemName();
             }
         }
         if (!hasFreeSocket) {
@@ -214,7 +215,12 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
 
     @Override
     public void disconnected(FemaleSocket socket) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (ExpressionEntry entry : _expressionEntries) {
+            if (socket == entry._socket) {
+                entry._socketSystemName = null;
+                break;
+            }
+        }
     }
 
     /** {@inheritDoc} */

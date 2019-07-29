@@ -171,12 +171,24 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
     
     @Override
     public void connected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _holdExpressionSocket) {
+            _holdExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else if (socket == _triggerExpressionSocket) {
+            _triggerExpressionSocketSystemName = socket.getConnectedSocket().getSystemName();
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
     
     @Override
     public void disconnected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _holdExpressionSocket) {
+            _holdExpressionSocketSystemName = null;
+        } else if (socket == _triggerExpressionSocket) {
+            _triggerExpressionSocketSystemName = null;
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
     
     @Override

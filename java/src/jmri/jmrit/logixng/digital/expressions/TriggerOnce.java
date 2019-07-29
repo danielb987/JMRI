@@ -120,12 +120,20 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
     
     @Override
     public void connected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _childExpression) {
+            _childExpressionSystemName = socket.getConnectedSocket().getSystemName();
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
     
     @Override
     public void disconnected(FemaleSocket socket) {
-        // This class doesn't care.
+        if (socket == _childExpression) {
+            _childExpressionSystemName = null;
+        } else {
+            throw new IllegalArgumentException("unkown socket");
+        }
     }
 
     @Override

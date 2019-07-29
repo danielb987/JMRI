@@ -24,7 +24,7 @@ public class DefaultFemaleAnalogExpressionSocketTest extends FemaleSocketTestBas
 
     private String _memorySystemName;
     private Memory _memory;
-    private AnalogExpressionMemory _expression;
+    private MyAnalogExpressionMemory _expression;
     
     @Test
     public void testGetName() {
@@ -39,10 +39,7 @@ public class DefaultFemaleAnalogExpressionSocketTest extends FemaleSocketTestBas
     
     @Override
     protected boolean hasSocketBeenSetup() {
-        if (_expression.getMemory() == null) {
-            return false;
-        }
-        return _memory == _expression.getMemory().getBean();
+        return _expression._hasBeenSetup;
     }
     
     // The minimal setup for log4J
@@ -57,8 +54,8 @@ public class DefaultFemaleAnalogExpressionSocketTest extends FemaleSocketTestBas
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _expression = new AnalogExpressionMemory("IQAE321");
-        _expression.setMemoryName(_memorySystemName);
+        _expression = new MyAnalogExpressionMemory("IQAE321");
+        _expression.setMemory(_memory);
         AnalogExpressionBean otherExpression = new AnalogExpressionMemory("IQAE322");
         maleSocket = new DefaultMaleAnalogExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleAnalogExpressionSocket(otherExpression);
@@ -78,6 +75,23 @@ public class DefaultFemaleAnalogExpressionSocketTest extends FemaleSocketTestBas
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyAnalogExpressionMemory extends AnalogExpressionMemory {
+        
+        private boolean _hasBeenSetup = false;
+        
+        public MyAnalogExpressionMemory(String systemName) {
+            super(systemName);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            _hasBeenSetup = true;
+        }
     }
     
 }

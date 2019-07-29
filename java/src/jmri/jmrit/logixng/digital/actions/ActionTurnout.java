@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
@@ -8,7 +10,6 @@ import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.ThreadingUtil;
@@ -20,10 +21,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ActionTurnout extends AbstractDigitalAction {
+public class ActionTurnout extends AbstractDigitalAction implements VetoableChangeListener {
 
     private ActionTurnout _template;
-    private String _turnoutName;
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
     
@@ -35,13 +35,11 @@ public class ActionTurnout extends AbstractDigitalAction {
     public ActionTurnout(String sys)
             throws BadUserNameException {
         super(sys);
-//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
 
     public ActionTurnout(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
     
     private ActionTurnout(ActionTurnout template, String sys) {
@@ -56,16 +54,34 @@ public class ActionTurnout extends AbstractDigitalAction {
         return new ActionTurnout(this, sys);
     }
     
+    public void setTurnoutName(String turnoutName) {
+        Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).getTurnout(turnoutName);
+        if (turnout != null) {
+            _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(turnoutName, turnout);
+            InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
+        } else {
+            _turnoutHandle = null;
+            InstanceManager.turnoutManagerInstance().removeVetoableChangeListener(this);
+        }
+    }
+    
     public void setTurnout(NamedBeanHandle<Turnout> handle) {
         _turnoutHandle = handle;
+        if (_turnoutHandle != null) {
+            InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
+        } else {
+            InstanceManager.turnoutManagerInstance().removeVetoableChangeListener(this);
+        }
     }
     
     public void setTurnout(@CheckForNull Turnout turnout) {
         if (turnout != null) {
             _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                     .getNamedBeanHandle(turnout.getDisplayName(), turnout);
+            InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
         } else {
             _turnoutHandle = null;
+            InstanceManager.turnoutManagerInstance().removeVetoableChangeListener(this);
         }
     }
     
@@ -79,6 +95,23 @@ public class ActionTurnout extends AbstractDigitalAction {
     
     public TurnoutState getTurnoutState() {
         return _turnoutState;
+    }
+    
+    @Override
+    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+        if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Turnout) {
+                if (evt.getOldValue().equals(getTurnout())) {
+                    throw new PropertyVetoException(getDisplayName(), evt);
+                }
+            }
+        } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Turnout) {
+                if (evt.getOldValue().equals(getTurnout())) {
+                    setTurnout((Turnout)null);
+                }
+            }
+        }
     }
     
     /** {@inheritDoc} */
@@ -138,29 +171,10 @@ public class ActionTurnout extends AbstractDigitalAction {
         return Bundle.getMessage("Turnout_Long", turnoutName, _turnoutState._text);
     }
     
-    public void setTurnoutName(String turnoutSystemName) {
-        _turnoutName = turnoutSystemName;
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        // Don't setup again if we already has the correct turnout
-        if ((_turnoutHandle != null) && (_turnoutHandle.getName().equals(_turnoutName))) {
-            return;
-        }
-        
-        // Remove the old _turnoutHandle if it exists
-        _turnoutHandle = null;
-        
-        if (_turnoutName != null) {
-            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getTurnout(_turnoutName);
-            if (t != null) {
-                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutName, t);
-            } else {
-                log.error("Turnout {} does not exists", _turnoutName);
-            }
-        }
+        // Do nothing
     }
     
     /** {@inheritDoc} */

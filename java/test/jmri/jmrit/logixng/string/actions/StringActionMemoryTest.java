@@ -130,44 +130,6 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
     }
     
     @Test
-    public void testSetup() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Assert.assertNotNull("memory is not null", _memory);
-        _memory.setValue(10.2);
-        StringActionMemory action2 = new StringActionMemory("IQSA321");
-        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
-        action2.setup();
-        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
-        action2.setMemoryName(_memory.getSystemName());
-        action2.setup();
-        Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
-        
-        // Test running setup() again when it's already setup
-        action2.setup();
-        
-        // Test setup() with another memory
-        Memory memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
-        action2.setMemoryName(memory2.getSystemName());
-        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
-        action2.setup();
-        Assert.assertTrue("String matches", "Set memory IM2".equals(action2.getLongDescription()));
-        
-        // Test none existing memory
-        action2.setMemoryName("IM999");
-        action2.setup();
-        Assert.assertTrue("String matches", "Set memory none".equals(action2.getLongDescription()));
-        jmri.util.JUnitAppender.assertErrorMessage("Memory IM999 does not exists");
-        
-        // Test that action has a memory, but the wrong memory
-        action2.setMemoryName(_memory.getSystemName());
-        action2.setup();
-        Assert.assertTrue("String matches", "Set memory IM1".equals(action2.getLongDescription()));
-        // We need to use reflection since setMemoryName will clear _memoryHandle
-        jmri.util.ReflectionUtilScaffold.setField(action2, "_memoryName", memory2.getSystemName());
-        action2.setup();
-        Assert.assertTrue("String matches", "Set memory IM2".equals(action2.getLongDescription()));
-    }
-    
-    @Test
     public void testChild() {
         Assert.assertTrue("Num children is zero", 0 == _base.getChildCount());
         AtomicBoolean hasThrown = new AtomicBoolean(false);

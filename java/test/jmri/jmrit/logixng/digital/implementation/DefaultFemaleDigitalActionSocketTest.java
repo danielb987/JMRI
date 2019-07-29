@@ -21,9 +21,7 @@ import org.junit.Test;
  */
 public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
 
-    private String _turnoutSystemName;
-    private Turnout _turnout;
-    private ActionTurnout _action;
+    private MyActionTurnout _action;
     
     @Test
     public void testGetName() {
@@ -38,10 +36,7 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
     
     @Override
     protected boolean hasSocketBeenSetup() {
-        if (_action.getTurnout() == null) {
-            return false;
-        }
-        return _turnout == _action.getTurnout().getBean();
+        return _action._hasBeenSetup;
     }
     
     // The minimal setup for log4J
@@ -54,11 +49,8 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        _turnoutSystemName = "IT1";
-        _turnout = InstanceManager.getDefault(TurnoutManager.class).provide(_turnoutSystemName);
-        _action = new ActionTurnout("IQDA321");
-        _action.setTurnoutName(_turnoutSystemName);
-        ActionTurnout otherAction = new ActionTurnout("IQDA322");
+        _action = new MyActionTurnout("IQDA321");
+        ActionTurnout otherAction = new MyActionTurnout("IQDA322");
         maleSocket = new DefaultMaleDigitalActionSocket(_action);
         otherMaleSocket = new DefaultMaleDigitalActionSocket(otherAction);
         femaleSocket = new DefaultFemaleDigitalActionSocket(null, new FemaleSocketListener() {
@@ -77,6 +69,23 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyActionTurnout extends ActionTurnout {
+        
+        private boolean _hasBeenSetup = false;
+        
+        public MyActionTurnout(String systemName) {
+            super(systemName);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            _hasBeenSetup = true;
+        }
     }
     
 }

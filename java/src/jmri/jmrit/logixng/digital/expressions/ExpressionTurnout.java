@@ -2,6 +2,8 @@ package jmri.jmrit.logixng.digital.expressions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
@@ -21,10 +23,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public class ExpressionTurnout extends AbstractDigitalExpression implements PropertyChangeListener {
+public class ExpressionTurnout extends AbstractDigitalExpression
+        implements PropertyChangeListener, VetoableChangeListener {
 
     private ExpressionTurnout _template;
-    private String _turnoutName;
     private NamedBeanHandle<Turnout> _turnoutHandle;
     private Is_IsNot_Enum _is_IsNot = Is_IsNot_Enum.IS;
     private TurnoutState _turnoutState = TurnoutState.THROWN;
@@ -57,11 +59,31 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         return new ExpressionTurnout(this, sys);
     }
     
+    public void setTurnout(String turnoutName) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setTurnout must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
+        Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).getTurnout(turnoutName);
+        _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(turnoutName, turnout);
+    }
+    
     public void setTurnout(NamedBeanHandle<Turnout> handle) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setTurnout must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
         _turnoutHandle = handle;
     }
     
     public void setTurnout(@CheckForNull Turnout turnout) {
+        if (_listenersAreRegistered) {
+            RuntimeException e = new RuntimeException("setTurnout must not be called when listeners are registered");
+            log.error("setup must not be called when listeners are registered", e);
+            throw e;
+        }
         if (turnout != null) {
             _turnoutHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                     .getNamedBeanHandle(turnout.getDisplayName(), turnout);
@@ -90,6 +112,23 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         return _turnoutState;
     }
 
+    @Override
+    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+        if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Turnout) {
+                if (evt.getOldValue().equals(getTurnout())) {
+                    throw new PropertyVetoException(getDisplayName(), evt);
+                }
+            }
+        } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
+            if (evt.getOldValue() instanceof Turnout) {
+                if (evt.getOldValue().equals(getTurnout())) {
+                    setTurnout((Turnout)null);
+                }
+            }
+        }
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -145,35 +184,10 @@ public class ExpressionTurnout extends AbstractDigitalExpression implements Prop
         return Bundle.getMessage("Turnout_Long", turnoutName, _is_IsNot.toString(), _turnoutState._text);
     }
     
-    public void setTurnoutName(String turnoutName) {
-        _turnoutName = turnoutName;
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        if (_listenersAreRegistered) {
-            RuntimeException e = new RuntimeException("setup must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
-            throw e;
-        }
-        
-        // Don't setup again if we already has the correct turnout
-        if ((_turnoutHandle != null) && (_turnoutHandle.getName().equals(_turnoutName))) {
-            return;
-        }
-        
-        // Remove the old _turnoutHandle if it exists
-        _turnoutHandle = null;
-        
-        if (_turnoutName != null) {
-            Turnout t = InstanceManager.getDefault(TurnoutManager.class).getTurnout(_turnoutName);
-            if (t != null) {
-                _turnoutHandle = InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).getNamedBeanHandle(_turnoutName, t);
-            } else {
-                log.error("Turnout {} does not exists", _turnoutName);
-            }
-        }
+        // Do nothing
     }
     
     /** {@inheritDoc} */

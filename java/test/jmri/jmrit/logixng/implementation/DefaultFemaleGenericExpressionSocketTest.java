@@ -2,8 +2,6 @@ package jmri.jmrit.logixng.implementation;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
-import jmri.Turnout;
-import jmri.TurnoutManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
@@ -26,9 +24,7 @@ import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
  */
 public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBase {
 
-    private String _turnoutSystemName;
-    private Turnout _turnout;
-    private ExpressionTurnout _expression;
+    private MyExpressionTurnout _expression;
     private FemaleGenericExpressionSocket femaleGenericSocket;
     
     @Test
@@ -74,10 +70,7 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
     
     @Override
     protected boolean hasSocketBeenSetup() {
-        if (_expression.getTurnout() == null) {
-            return false;
-        }
-        return _turnout == _expression.getTurnout().getBean();
+        return _expression._hasBeenSetup;
     }
     
     // DefaultFemaleGenericExpressionSocket is a virtual female socket that
@@ -110,10 +103,7 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
         
         flag = new AtomicBoolean();
         errorFlag = new AtomicBoolean();
-        _turnoutSystemName = "IT1";
-        _turnout = InstanceManager.getDefault(TurnoutManager.class).provide(_turnoutSystemName);
-        _expression = new ExpressionTurnout("IQDE321");
-        _expression.setTurnoutName(_turnoutSystemName);
+        _expression = new MyExpressionTurnout("IQDE321");
         ExpressionTurnout otherExpression = new ExpressionTurnout("IQDE322");
         maleSocket = new DefaultMaleDigitalExpressionSocket(_expression);
         otherMaleSocket = new DefaultMaleDigitalExpressionSocket(otherExpression);
@@ -134,6 +124,23 @@ public class DefaultFemaleGenericExpressionSocketTest extends FemaleSocketTestBa
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyExpressionTurnout extends ExpressionTurnout {
+        
+        private boolean _hasBeenSetup = false;
+        
+        public MyExpressionTurnout(String systemName) {
+            super(systemName);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            _hasBeenSetup = true;
+        }
     }
     
 }

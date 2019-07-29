@@ -150,8 +150,9 @@ public class Or extends AbstractDigitalExpression implements FemaleSocketListene
         boolean hasFreeSocket = false;
         for (ExpressionEntry entry : _expressionEntries) {
             hasFreeSocket = !entry._socket.isConnected();
-            if (hasFreeSocket) {
-                break;
+            if (socket == entry._socket) {
+                entry._socketSystemName =
+                        socket.getConnectedSocket().getSystemName();
             }
         }
         if (!hasFreeSocket) {

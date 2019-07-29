@@ -24,7 +24,7 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
 
     private String _memorySystemName;
     private Memory _memory;
-    private AnalogActionMemory _action;
+    private MyAnalogActionMemory _action;
     
     @Test
     public void testGetName() {
@@ -39,10 +39,7 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
     
     @Override
     protected boolean hasSocketBeenSetup() {
-        if (_action.getMemory() == null) {
-            return false;
-        }
-        return _memory == _action.getMemory().getBean();
+        return _action._hasBeenSetup;
     }
     
     // The minimal setup for log4J
@@ -57,8 +54,8 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
         errorFlag = new AtomicBoolean();
         _memorySystemName = "IM1";
         _memory = InstanceManager.getDefault(MemoryManager.class).provide(_memorySystemName);
-        _action = new AnalogActionMemory("IQAA321");
-        _action.setMemoryName(_memorySystemName);
+        _action = new MyAnalogActionMemory("IQAA321");
+        _action.setMemory(_memory);
         AnalogActionBean otherAction = new AnalogActionMemory("IQAA322");
         maleSocket = new DefaultMaleAnalogActionSocket(_action);
         otherMaleSocket = new DefaultMaleAnalogActionSocket(otherAction);
@@ -78,6 +75,23 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
+    }
+    
+    
+    
+    private class MyAnalogActionMemory extends AnalogActionMemory {
+        
+        private boolean _hasBeenSetup = false;
+        
+        public MyAnalogActionMemory(String systemName) {
+            super(systemName);
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public void setup() {
+            _hasBeenSetup = true;
+        }
     }
     
 }

@@ -30,6 +30,8 @@ public class ExpressionLightXml extends jmri.managers.configurexml.AbstractNamed
     public Element store(Object o) {
         ExpressionLight p = (ExpressionLight) o;
 
+//        if (p.getLightName() == null) throw new RuntimeException("aaaaa");
+        
         Element element = new Element("expression-light");
         element.setAttribute("class", this.getClass().getName());
         element.addContent(new Element("systemName").addContent(p.getSystemName()));
@@ -38,8 +40,9 @@ public class ExpressionLightXml extends jmri.managers.configurexml.AbstractNamed
 
         NamedBeanHandle light = p.getLight();
         if (light != null) {
-            element.addContent(new Element("light").addContent(light.getName()));
+            element.addContent(new Element("sensor").addContent(light.getName()));
         }
+        
         element.addContent(new Element("is_isNot").addContent(p.get_Is_IsNot().name()));
         element.addContent(new Element("lightState").addContent(p.getLightState().name()));
 
