@@ -36,15 +36,20 @@ public class TriggerOnceXml extends jmri.managers.configurexml.AbstractNamedBean
 
         storeCommon(p, element);
 
-        Element e = new Element("expressions");
-        for (int i=0; i < p.getChildCount(); i++) {
-            MaleSocket socket = p.getChild(i).getConnectedSocket();
-            if (socket != null) {
-                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
-            }
+        Element e2 = new Element("socket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(0).getName()));
+        MaleSocket socket = p.getChild(0).getConnectedSocket();
+        String socketSystemName;
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getChildSocketSystemName();
         }
-        element.addContent(e);
-
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
+        
         return element;
     }
     
@@ -52,7 +57,7 @@ public class TriggerOnceXml extends jmri.managers.configurexml.AbstractNamedBean
     public boolean load(Element shared, Element perNode) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpressionBean h;
+        TriggerOnce h;
         if (uname == null) {
             h = new TriggerOnce(sys, null);
         } else {
@@ -61,6 +66,16 @@ public class TriggerOnceXml extends jmri.managers.configurexml.AbstractNamedBean
 
         loadCommon(h, shared);
 
+        Element socketElement = shared.getChild("socket");
+        String socketName = socketElement.getChild("socketName").getTextTrim();
+        Element systemNameElement = socketElement.getChild("systemName");
+        String systemName = null;
+        if (systemNameElement != null) {
+            systemName = systemNameElement.getTextTrim();
+        }
+        h.getChild(0).setName(socketName);
+        h.setChildSocketSystemName(systemName);
+        
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;
     }

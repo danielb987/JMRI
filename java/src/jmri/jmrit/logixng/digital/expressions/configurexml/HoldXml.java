@@ -7,7 +7,6 @@ import jmri.jmrit.logixng.digital.expressions.Hold;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jmri.jmrit.logixng.DigitalExpressionBean;
 
 /**
  * Handle XML configuration for ActionLightXml objects.
@@ -36,15 +35,33 @@ public class HoldXml extends jmri.managers.configurexml.AbstractNamedBeanManager
         
         storeCommon(p, element);
         
-        Element e = new Element("expressions");
-        for (int i=0; i < p.getChildCount(); i++) {
-            MaleSocket socket = p.getChild(i).getConnectedSocket();
-            if (socket != null) {
-                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
-            }
+        Element e2 = new Element("holdSocket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(0).getName()));
+        MaleSocket socket = p.getChild(0).getConnectedSocket();
+        String socketSystemName;
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getHoldActionSocketSystemName();
         }
-        element.addContent(e);
-
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
+        
+        e2 = new Element("triggerSocket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(1).getName()));
+        socket = p.getChild(1).getConnectedSocket();
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getTriggerExpressionSocketSystemName();
+        }
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
+        
         return element;
     }
     
@@ -52,7 +69,7 @@ public class HoldXml extends jmri.managers.configurexml.AbstractNamedBeanManager
     public boolean load(Element shared, Element perNode) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpressionBean h;
+        Hold h;
         if (uname == null) {
             h = new Hold(sys);
         } else {
@@ -61,6 +78,26 @@ public class HoldXml extends jmri.managers.configurexml.AbstractNamedBeanManager
 
         loadCommon(h, shared);
 
+        Element socketElement = shared.getChild("holdSocket");
+        String socketName = socketElement.getChild("socketName").getTextTrim();
+        Element systemNameElement = socketElement.getChild("systemName");
+        String systemName = null;
+        if (systemNameElement != null) {
+            systemName = systemNameElement.getTextTrim();
+        }
+        h.getChild(0).setName(socketName);
+        h.setHoldActionSocketSystemName(systemName);
+        
+        socketElement = shared.getChild("triggerSocket");
+        socketName = socketElement.getChild("socketName").getTextTrim();
+        systemNameElement = socketElement.getChild("systemName");
+        systemName = null;
+        if (systemNameElement != null) {
+            systemName = systemNameElement.getTextTrim();
+        }
+        h.getChild(1).setName(socketName);
+        h.setTriggerExpressionSocketSystemName(systemName);
+        
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;
     }

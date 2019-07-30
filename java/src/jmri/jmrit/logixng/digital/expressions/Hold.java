@@ -1,10 +1,8 @@
 package jmri.jmrit.logixng.digital.expressions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.DigitalActionManager;
@@ -65,45 +63,7 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
         _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
                 .createFemaleSocket(this, this, "E2");
     }
-/*
-    public Hold(
-            String sys,
-            String holdExpressionSocketName,
-            String triggerExpressionSocketName,
-            MaleDigitalExpressionSocket holdExpression,
-            MaleDigitalExpressionSocket triggerExpression)
-            
-            throws BadUserNameException, BadSystemNameException {
-        
-        super(sys);
-        
-        _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(
-                        this, this, holdExpressionSocketName, holdExpression);
-        _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(
-                        this, this, triggerExpressionSocketName, triggerExpression);
-    }
-
-    public Hold(
-            String sys, String user,
-            String holdExpressionSocketName,
-            String triggerExpressionSocketName,
-            MaleDigitalExpressionSocket holdExpression,
-            MaleDigitalExpressionSocket triggerExpression)
-            
-            throws BadUserNameException, BadSystemNameException {
-        
-        super(sys, user);
-        
-        _holdExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(
-                        this, this, holdExpressionSocketName, holdExpression);
-        _triggerExpressionSocket = InstanceManager.getDefault(DigitalExpressionManager.class)
-                .createFemaleExpressionSocket(
-                        this, this, triggerExpressionSocketName, triggerExpression);
-    }
-*/
+    
     private Hold(Hold template, String sys) {
         super(sys);
         _template = template;
@@ -203,8 +163,16 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
                 _triggerExpressionSocket.getName());
     }
 
+    public String getHoldActionSocketSystemName() {
+        return _holdExpressionSocketSystemName;
+    }
+
     public void setHoldActionSocketSystemName(String systemName) {
         _holdExpressionSocketSystemName = systemName;
+    }
+
+    public String getTriggerExpressionSocketSystemName() {
+        return _triggerExpressionSocketSystemName;
     }
 
     public void setTriggerExpressionSocketSystemName(String systemName) {
@@ -244,7 +212,7 @@ public class Hold extends AbstractDigitalExpression implements FemaleSocketListe
                 _triggerExpressionSocket.disconnect();
                 if (socketSystemName != null) {
                     MaleSocket maleSocket =
-                            InstanceManager.getDefault(DigitalActionManager.class)
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
                                     .getBeanBySystemName(socketSystemName);
                     _triggerExpressionSocket.disconnect();
                     if (maleSocket != null) {

@@ -3,7 +3,6 @@ package jmri.jmrit.logixng.digital.expressions;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
@@ -146,7 +145,11 @@ public class TriggerOnce extends AbstractDigitalExpression implements FemaleSock
         return Bundle.getMessage("TriggerOnce_Long");
     }
 
-    public void setAnalogActionSocketSystemName(String systemName) {
+    public String getChildSocketSystemName() {
+        return _childExpressionSystemName;
+    }
+
+    public void setChildSocketSystemName(String systemName) {
         _childExpressionSystemName = systemName;
     }
 

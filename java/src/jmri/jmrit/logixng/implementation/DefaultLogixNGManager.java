@@ -391,6 +391,10 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketAntecedent2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAntecedent2);
                     socketOr.getChild(index++).connect(socketAntecedent2);
                     
+                    Antecedent expressionAntecedent3 = new Antecedent(getSystemNamePrefix()+"DE:10009", "My Antecedent expression", "R1");
+                    MaleSocket socketAntecedent3 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionAntecedent3);
+                    socketAntecedent2.getChild(0).connect(socketAntecedent3);
+                    
                     False expressionFalse = new False(getSystemNamePrefix()+"DE:00010");
                     MaleSocket socketFalse = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionFalse);
                     socketOr.getChild(index++).connect(socketFalse);
@@ -407,6 +411,14 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketHold2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionHold2);
                     socketOr.getChild(index++).connect(socketHold2);
                     
+                    Hold expressionHold3 = new Hold(getSystemNamePrefix()+"DE:10013", "My other Hold expression");
+                    MaleSocket socketHold3 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionHold3);
+                    socketHold2.getChild(0).connect(socketHold3);
+                    
+                    Hold expressionHold4 = new Hold(getSystemNamePrefix()+"DE:10014", "My other Hold expression");
+                    MaleSocket socketHold4 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionHold4);
+                    socketHold2.getChild(1).connect(socketHold4);
+                    
                     ResetOnTrue expressionResetOnTrue = new ResetOnTrue(getSystemNamePrefix()+"DE:00016", null);
                     MaleSocket socketResetOnTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue);
                     socketOr.getChild(index++).connect(socketResetOnTrue);
@@ -414,6 +426,10 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     ResetOnTrue expressionResetOnTrue2 = new ResetOnTrue(getSystemNamePrefix()+"DE:00017", "My ResetOnTrue expression");
                     MaleSocket socketResetOnTrue2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue2);
                     socketOr.getChild(index++).connect(socketResetOnTrue2);
+                    
+                    ResetOnTrue expressionResetOnTrue3 = new ResetOnTrue(getSystemNamePrefix()+"DE:10017", "My ResetOnTrue expression");
+                    MaleSocket socketResetOnTrue3 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue3);
+                    socketResetOnTrue2.getChild(0).connect(socketResetOnTrue3);
                     
                     Timer expressionTimer = new Timer(getSystemNamePrefix()+"DE:000020", null);
                     MaleSocket socketTimer = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTimer);
@@ -518,7 +534,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socketSecondMany.getChild(index++).connect(socketShutdownComputer2);
                     
                     ActionLight actionLight = new ActionLight(getSystemNamePrefix()+"DA:00014");
-                    actionLight.setLight(light2);
+//                    actionLight.setLight(light2);
                     actionLight.setLightState(ActionLight.LightState.ON);
                     socketLight2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionLight);
                     socketSecondMany.getChild(index++).connect(socketLight2);
@@ -530,7 +546,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socketSecondMany.getChild(index++).connect(socketLight2);
                     
                     ActionSensor actionSensor = new ActionSensor(getSystemNamePrefix()+"DA:00015");
-                    actionSensor.setSensor(sensor2);
+//                    actionSensor.setSensor(sensor2);
                     actionSensor.setSensorState(ActionSensor.SensorState.ACTIVE);
                     socketSensor2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionSensor);
                     socketSecondMany.getChild(index++).connect(socketSensor2);
@@ -542,7 +558,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     socketSecondMany.getChild(index++).connect(socketSensor2);
                     
                     ActionTurnout actionTurnout = new ActionTurnout(getSystemNamePrefix()+"DA:00016");
-                    actionTurnout.setTurnout(turnout2);
+//                    actionTurnout.setTurnout(turnout2);
                     actionTurnout.setTurnoutState(ActionTurnout.TurnoutState.THROWN);
                     socketTurnout2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionTurnout);
                     socketSecondMany.getChild(index++).connect(socketTurnout2);

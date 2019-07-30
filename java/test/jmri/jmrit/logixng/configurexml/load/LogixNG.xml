@@ -50,7 +50,7 @@
     </light>
   </lights>
   <memories class="jmri.managers.configurexml.DefaultMemoryManagerXml">
-    <memory value="1:28 fm">
+    <memory value="2:48 fm">
       <systemName>IMCURRENTTIME</systemName>
     </memory>
     <memory value="1.0">
@@ -207,17 +207,14 @@
     </shutdown-computer>
     <action-light class="jmri.jmrit.logixng.digital.actions.configurexml.ActionLightXml">
       <systemName>IQDA:00014</systemName>
-      <light>IL2_Daniel</light>
       <lightState>ON</lightState>
     </action-light>
     <action-sensor class="jmri.jmrit.logixng.digital.actions.configurexml.ActionSensorXml">
       <systemName>IQDA:00015</systemName>
-      <sensor>IS2_Daniel</sensor>
       <sensorState>ACTIVE</sensorState>
     </action-sensor>
     <action-turnout class="jmri.jmrit.logixng.digital.actions.configurexml.ActionTurnoutXml">
       <systemName>IQDA:00016</systemName>
-      <turnout>IT2_Daniel</turnout>
       <turnoutState>THROWN</turnoutState>
     </action-turnout>
     <action-turnout class="jmri.jmrit.logixng.digital.actions.configurexml.ActionTurnoutXml">
@@ -455,10 +452,13 @@
     </antecedent>
     <antecedent class="jmri.jmrit.logixng.digital.expressions.configurexml.AntecedentXml">
       <systemName>IQDE:00009</systemName>
-      <userName>My Antecedent expression</userName>
       <expressions>
         <socket>
           <socketName>E1</socketName>
+          <systemName>IQDE:10009</systemName>
+        </socket>
+        <socket>
+          <socketName>E2</socketName>
         </socket>
       </expressions>
     </antecedent>
@@ -471,12 +471,24 @@
     </false>
     <hold class="jmri.jmrit.logixng.digital.expressions.configurexml.HoldXml">
       <systemName>IQDE:00012</systemName>
-      <expressions />
+      <holdSocket>
+        <socketName>E1</socketName>
+      </holdSocket>
+      <triggerSocket>
+        <socketName>E2</socketName>
+      </triggerSocket>
     </hold>
     <hold class="jmri.jmrit.logixng.digital.expressions.configurexml.HoldXml">
       <systemName>IQDE:00013</systemName>
       <userName>My Hold expression</userName>
-      <expressions />
+      <holdSocket>
+        <socketName>E1</socketName>
+        <systemName>IQDE:10013</systemName>
+      </holdSocket>
+      <triggerSocket>
+        <socketName>E2</socketName>
+        <systemName>IQDE:10014</systemName>
+      </triggerSocket>
     </hold>
     <expression-light class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionLightXml">
       <systemName>IQDE:000014</systemName>
@@ -492,12 +504,22 @@
     </expression-sensor>
     <reset-on-true class="jmri.jmrit.logixng.digital.expressions.configurexml.ResetOnTrueXml">
       <systemName>IQDE:00016</systemName>
-      <expressions />
+      <primarySocket>
+        <socketName>E1</socketName>
+      </primarySocket>
+      <secondarySocket>
+        <socketName>E2</socketName>
+      </secondarySocket>
     </reset-on-true>
     <reset-on-true class="jmri.jmrit.logixng.digital.expressions.configurexml.ResetOnTrueXml">
       <systemName>IQDE:00017</systemName>
-      <userName>My ResetOnTrue expression</userName>
-      <expressions />
+      <primarySocket>
+        <socketName>E1</socketName>
+        <systemName>IQDE:10017</systemName>
+      </primarySocket>
+      <secondarySocket>
+        <socketName>E2</socketName>
+      </secondarySocket>
     </reset-on-true>
     <expression-turnout class="jmri.jmrit.logixng.digital.expressions.configurexml.ExpressionTurnoutXml">
       <systemName>IQDE:000018</systemName>
@@ -514,12 +536,16 @@
     </timer>
     <trigger-once class="jmri.jmrit.logixng.digital.expressions.configurexml.TriggerOnceXml">
       <systemName>IQDE:000022</systemName>
-      <expressions />
+      <socket>
+        <socketName>E1</socketName>
+      </socket>
     </trigger-once>
     <trigger-once class="jmri.jmrit.logixng.digital.expressions.configurexml.TriggerOnceXml">
       <systemName>IQDE:000023</systemName>
       <userName>My TriggerOnce expression</userName>
-      <expressions />
+      <socket>
+        <socketName>E1</socketName>
+      </socket>
     </trigger-once>
     <true class="jmri.jmrit.logixng.digital.expressions.configurexml.TrueXml">
       <systemName>IQDE:000025</systemName>
@@ -528,6 +554,44 @@
       <systemName>IQDE:000026</systemName>
       <userName>My True expression</userName>
     </true>
+    <antecedent class="jmri.jmrit.logixng.digital.expressions.configurexml.AntecedentXml">
+      <systemName>IQDE:10009</systemName>
+      <userName>My Antecedent expression</userName>
+      <expressions>
+        <socket>
+          <socketName>E1</socketName>
+        </socket>
+      </expressions>
+    </antecedent>
+    <hold class="jmri.jmrit.logixng.digital.expressions.configurexml.HoldXml">
+      <systemName>IQDE:10013</systemName>
+      <holdSocket>
+        <socketName>E1</socketName>
+      </holdSocket>
+      <triggerSocket>
+        <socketName>E2</socketName>
+      </triggerSocket>
+    </hold>
+    <hold class="jmri.jmrit.logixng.digital.expressions.configurexml.HoldXml">
+      <systemName>IQDE:10014</systemName>
+      <userName>My other Hold expression</userName>
+      <holdSocket>
+        <socketName>E1</socketName>
+      </holdSocket>
+      <triggerSocket>
+        <socketName>E2</socketName>
+      </triggerSocket>
+    </hold>
+    <reset-on-true class="jmri.jmrit.logixng.digital.expressions.configurexml.ResetOnTrueXml">
+      <systemName>IQDE:10017</systemName>
+      <userName>My ResetOnTrue expression</userName>
+      <primarySocket>
+        <socketName>E1</socketName>
+      </primarySocket>
+      <secondarySocket>
+        <socketName>E2</socketName>
+      </secondarySocket>
+    </reset-on-true>
   </logixngDigitalExpressions>
   <logixngAnalogExpressions class="jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogExpressionManagerXml">
     <analog-expression-memory class="jmri.jmrit.logixng.analog.expressions.configurexml.AnalogExpressionMemoryXml">
@@ -569,13 +633,13 @@
       <userName>My action</userName>
     </string-action-memory>
   </logixngStringActions>
-  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Tue Jul 30 01:28:30 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
+  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Tue Jul 30 02:48:01 CEST 2019" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
   <filehistory>
     <operation>
       <type>Store</type>
-      <date>Tue Jul 30 01:28:30 CEST 2019</date>
+      <date>Tue Jul 30 02:48:01 CEST 2019</date>
       <filename />
     </operation>
   </filehistory>
-  <!--Written by JMRI version 4.17.3ish+daniel+20190729T2328Z on Tue Jul 30 01:28:30 CEST 2019-->
+  <!--Written by JMRI version 4.17.3ish+daniel+20190730T0047Z on Tue Jul 30 02:48:01 CEST 2019-->
 </layout-config>

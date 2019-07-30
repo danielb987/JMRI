@@ -36,15 +36,33 @@ public class ResetOnTrueXml extends jmri.managers.configurexml.AbstractNamedBean
 
         storeCommon(p, element);
 
-        Element e = new Element("expressions");
-        for (int i=0; i < p.getChildCount(); i++) {
-            MaleSocket socket = p.getChild(i).getConnectedSocket();
-            if (socket != null) {
-                e.addContent(new Element("systemName").addContent(socket.getSystemName()));
-            }
+        Element e2 = new Element("primarySocket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(0).getName()));
+        MaleSocket socket = p.getChild(0).getConnectedSocket();
+        String socketSystemName;
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getPrimaryExpressionSocketSystemName();
         }
-        element.addContent(e);
-
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
+        
+        e2 = new Element("secondarySocket");
+        e2.addContent(new Element("socketName").addContent(p.getChild(1).getName()));
+        socket = p.getChild(1).getConnectedSocket();
+        if (socket != null) {
+            socketSystemName = socket.getSystemName();
+        } else {
+            socketSystemName = p.getSecondaryExpressionSocketSystemName();
+        }
+        if (socketSystemName != null) {
+            e2.addContent(new Element("systemName").addContent(socketSystemName));
+        }
+        element.addContent(e2);
+        
         return element;
     }
     
@@ -52,7 +70,7 @@ public class ResetOnTrueXml extends jmri.managers.configurexml.AbstractNamedBean
     public boolean load(Element shared, Element perNode) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        DigitalExpressionBean h;
+        ResetOnTrue h;
         if (uname == null) {
             h = new ResetOnTrue(sys, null);
         } else {
@@ -61,6 +79,26 @@ public class ResetOnTrueXml extends jmri.managers.configurexml.AbstractNamedBean
 
         loadCommon(h, shared);
 
+        Element socketElement = shared.getChild("primarySocket");
+        String socketName = socketElement.getChild("socketName").getTextTrim();
+        Element systemNameElement = socketElement.getChild("systemName");
+        String systemName = null;
+        if (systemNameElement != null) {
+            systemName = systemNameElement.getTextTrim();
+        }
+        h.getChild(0).setName(socketName);
+        h.setPrimaryExpressionSocketSystemName(systemName);
+        
+        socketElement = shared.getChild("secondarySocket");
+        socketName = socketElement.getChild("socketName").getTextTrim();
+        systemNameElement = socketElement.getChild("systemName");
+        systemName = null;
+        if (systemNameElement != null) {
+            systemName = systemNameElement.getTextTrim();
+        }
+        h.getChild(1).setName(socketName);
+        h.setSecondaryExpressionSocketSystemName(systemName);
+        
         InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(h);
         return true;
     }

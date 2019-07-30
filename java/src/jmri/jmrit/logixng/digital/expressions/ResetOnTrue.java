@@ -11,6 +11,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
+import jmri.jmrit.logixng.MaleSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,8 +176,16 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
         }
     }
 
+    public String getPrimaryExpressionSocketSystemName() {
+        return _primaryExpressionSocketSystemName;
+    }
+
     public void setPrimaryExpressionSocketSystemName(String systemName) {
         _primaryExpressionSocketSystemName = systemName;
+    }
+
+    public String getSecondaryExpressionSocketSystemName() {
+        return _secondaryExpressionSocketSystemName;
     }
 
     public void setSecondaryExpressionSocketSystemName(String systemName) {
@@ -187,15 +196,47 @@ public class ResetOnTrue extends AbstractDigitalExpression implements FemaleSock
     @Override
     public void setup() {
         try {
-            if ((!_primaryExpressionSocket.isConnected()) && (_primaryExpressionSocketSystemName != null)) {
-                _primaryExpressionSocket.connect(
-                        InstanceManager.getDefault(DigitalExpressionManager.class)
-                                .getBeanBySystemName(_primaryExpressionSocketSystemName));
+            if ( !_primaryExpressionSocket.isConnected()
+                    || !_primaryExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_primaryExpressionSocketSystemName)) {
+                
+                String socketSystemName = _primaryExpressionSocketSystemName;
+                _primaryExpressionSocket.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    if (maleSocket != null) {
+                        _primaryExpressionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital expression " + socketSystemName);
+                    }
+                }
+            } else {
+                _primaryExpressionSocket.getConnectedSocket().setup();
             }
-            if ((!_secondaryExpressionSocket.isConnected()) && (_secondaryExpressionSocketSystemName != null)) {
-                _secondaryExpressionSocket.connect(
-                        InstanceManager.getDefault(DigitalExpressionManager.class)
-                                .getBeanBySystemName(_secondaryExpressionSocketSystemName));
+            
+            if ( !_secondaryExpressionSocket.isConnected()
+                    || !_secondaryExpressionSocket.getConnectedSocket().getSystemName()
+                            .equals(_secondaryExpressionSocketSystemName)) {
+                
+                String socketSystemName = _secondaryExpressionSocketSystemName;
+                _secondaryExpressionSocket.disconnect();
+                if (socketSystemName != null) {
+                    MaleSocket maleSocket =
+                            InstanceManager.getDefault(DigitalExpressionManager.class)
+                                    .getBeanBySystemName(socketSystemName);
+                    _secondaryExpressionSocket.disconnect();
+                    if (maleSocket != null) {
+                        _secondaryExpressionSocket.connect(maleSocket);
+                        maleSocket.setup();
+                    } else {
+                        log.error("cannot load digital action " + socketSystemName);
+                    }
+                }
+            } else {
+                _secondaryExpressionSocket.getConnectedSocket().setup();
             }
         } catch (SocketAlreadyConnectedException ex) {
             // This shouldn't happen and is a runtime error if it does.
