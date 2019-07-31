@@ -2,22 +2,21 @@ package jmri.jmrit.logixng.string.actions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.Memory;
-import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import jmri.MemoryManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.util.JUnitUtil;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Test SetStringIO
+ * Test StringActionMemory
  * 
  * @author Daniel Bergqvist 2018
  */
@@ -82,38 +81,38 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
     
     @Test
     public void testAction() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
-        StringActionMemory _action = (StringActionMemory)_base;
-        _action.setValue("");
+        StringActionMemory action = (StringActionMemory)_base;
+        action.setValue("");
         Assert.assertEquals("Memory has correct value", "", _memory.getValue());
-        _action.setValue("Test");
+        action.setValue("Test");
         Assert.assertEquals("Memory has correct value", "Test", _memory.getValue());
-        _action.setMemory((Memory)null);
-        _action.setValue("Other test");
+        action.setMemory((Memory)null);
+        action.setValue("Other test");
         Assert.assertEquals("Memory has correct value", "Test", _memory.getValue());
     }
     
     @Test
     public void testMemory() {
-        StringActionMemory _action = (StringActionMemory)_base;
-        _action.setMemory((Memory)null);
-        Assert.assertNull("Memory is null", _action.getMemory());
+        StringActionMemory action = (StringActionMemory)_base;
+        action.setMemory((Memory)null);
+        Assert.assertNull("Memory is null", action.getMemory());
         ((StringActionMemory)_base).setMemory(_memory);
-        Assert.assertTrue("Memory matches", _memory == _action.getMemory().getBean());
+        Assert.assertTrue("Memory matches", _memory == action.getMemory().getBean());
         
-        _action.setMemory((NamedBeanHandle<Memory>)null);
-        Assert.assertNull("Memory is null", _action.getMemory());
+        action.setMemory((NamedBeanHandle<Memory>)null);
+        Assert.assertNull("Memory is null", action.getMemory());
         Memory otherMemory = InstanceManager.getDefault(MemoryManager.class).provide("IM99");
         Assert.assertNotNull("memory is not null", otherMemory);
         NamedBeanHandle<Memory> memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                 .getNamedBeanHandle(otherMemory.getDisplayName(), otherMemory);
         ((StringActionMemory)_base).setMemory(memoryHandle);
-        Assert.assertTrue("Memory matches", memoryHandle == _action.getMemory());
-        Assert.assertTrue("Memory matches", otherMemory == _action.getMemory().getBean());
+        Assert.assertTrue("Memory matches", memoryHandle == action.getMemory());
+        Assert.assertTrue("Memory matches", otherMemory == action.getMemory().getBean());
         
-        _action.setMemory((String)null);
-        Assert.assertNull("Memory is null", _action.getMemory());
-        _action.setMemory(memoryHandle.getName());
-        Assert.assertTrue("Memory matches", memoryHandle == _action.getMemory());
+        action.setMemory((String)null);
+        Assert.assertNull("Memory is null", action.getMemory());
+        action.setMemory(memoryHandle.getName());
+        Assert.assertTrue("Memory matches", memoryHandle == action.getMemory());
     }
     
     @Test
@@ -124,38 +123,38 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         Assert.assertNotEquals("Memory is not equal", _memory, otherMemory);
         
         // Get the expression and set the memory
-        StringActionMemory _action = (StringActionMemory)_base;
-        _action.setMemory(_memory);
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        StringActionMemory action = (StringActionMemory)_base;
+        action.setMemory(_memory);
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for some other propery
-        _action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for a string
-        _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
-        _action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for another memory
-        _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherMemory, null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
-        _action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherMemory, null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherMemory, null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherMemory, null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for its own memory
         boolean thrown = false;
         try {
-            _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", _memory, null));
+            action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", _memory, null));
         } catch (PropertyVetoException ex) {
             thrown = true;
         }
         Assert.assertTrue("Expected exception thrown", thrown);
         
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
-        _action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", _memory, null));
-        Assert.assertNull("Memory is null", _action.getMemory());
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", _memory, null));
+        Assert.assertNull("Memory is null", action.getMemory());
     }
     
     @Test
@@ -181,14 +180,14 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
     @Test
     public void testChild() {
         Assert.assertTrue("Num children is zero", 0 == _base.getChildCount());
-        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        boolean hasThrown = false;
         try {
             _base.getChild(0);
         } catch (UnsupportedOperationException ex) {
-            hasThrown.set(true);
+            hasThrown = true;
             Assert.assertTrue("Error message is correct", "Not supported.".equals(ex.getMessage()));
         }
-        Assert.assertTrue("Exception is thrown", hasThrown.get());
+        Assert.assertTrue("Exception is thrown", hasThrown);
     }
     
     // The minimal setup for log4J

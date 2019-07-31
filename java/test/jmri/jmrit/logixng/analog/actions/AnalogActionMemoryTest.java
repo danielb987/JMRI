@@ -2,22 +2,21 @@ package jmri.jmrit.logixng.analog.actions;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.Memory;
-import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import jmri.MemoryManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.util.JUnitUtil;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Test SetAnalogIO
+ * Test AnalogActionMemory
  * 
  * @author Daniel Bergqvist 2018
  */
@@ -83,38 +82,38 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
     
     @Test
     public void testAction() throws SocketAlreadyConnectedException, SocketAlreadyConnectedException {
-        AnalogActionMemory _action = (AnalogActionMemory)_base;
-        _action.setValue(0.0d);
+        AnalogActionMemory action = (AnalogActionMemory)_base;
+        action.setValue(0.0d);
         Assert.assertTrue("Memory has correct value", 0.0d == (Double)_memory.getValue());
-        _action.setValue(1.0d);
+        action.setValue(1.0d);
         Assert.assertTrue("Memory has correct value", 1.0d == (Double)_memory.getValue());
-        _action.setMemory((Memory)null);
-        _action.setValue(2.0d);
+        action.setMemory((Memory)null);
+        action.setValue(2.0d);
         Assert.assertTrue("Memory has correct value", 1.0d == (Double)_memory.getValue());
     }
     
     @Test
     public void testMemory() {
-        AnalogActionMemory _action = (AnalogActionMemory)_base;
-        _action.setMemory((Memory)null);
-        Assert.assertNull("Memory is null", _action.getMemory());
+        AnalogActionMemory action = (AnalogActionMemory)_base;
+        action.setMemory((Memory)null);
+        Assert.assertNull("Memory is null", action.getMemory());
         ((AnalogActionMemory)_base).setMemory(_memory);
-        Assert.assertTrue("Memory matches", _memory == _action.getMemory().getBean());
+        Assert.assertTrue("Memory matches", _memory == action.getMemory().getBean());
         
-        _action.setMemory((NamedBeanHandle<Memory>)null);
-        Assert.assertNull("Memory is null", _action.getMemory());
+        action.setMemory((NamedBeanHandle<Memory>)null);
+        Assert.assertNull("Memory is null", action.getMemory());
         Memory otherMemory = InstanceManager.getDefault(MemoryManager.class).provide("IM99");
         Assert.assertNotNull("memory is not null", otherMemory);
         NamedBeanHandle<Memory> memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class)
                 .getNamedBeanHandle(otherMemory.getDisplayName(), otherMemory);
         ((AnalogActionMemory)_base).setMemory(memoryHandle);
-        Assert.assertTrue("Memory matches", memoryHandle == _action.getMemory());
-        Assert.assertTrue("Memory matches", otherMemory == _action.getMemory().getBean());
+        Assert.assertTrue("Memory matches", memoryHandle == action.getMemory());
+        Assert.assertTrue("Memory matches", otherMemory == action.getMemory().getBean());
         
-        _action.setMemory((String)null);
-        Assert.assertNull("Memory is null", _action.getMemory());
-        _action.setMemory(memoryHandle.getName());
-        Assert.assertTrue("Memory matches", memoryHandle == _action.getMemory());
+        action.setMemory((String)null);
+        Assert.assertNull("Memory is null", action.getMemory());
+        action.setMemory(memoryHandle.getName());
+        Assert.assertTrue("Memory matches", memoryHandle == action.getMemory());
     }
     
     @Test
@@ -125,38 +124,38 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         Assert.assertNotEquals("Memory is not equal", _memory, otherMemory);
         
         // Get the expression and set the memory
-        AnalogActionMemory _action = (AnalogActionMemory)_base;
-        _action.setMemory(_memory);
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        AnalogActionMemory action = (AnalogActionMemory)_base;
+        action.setMemory(_memory);
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for some other propery
-        _action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for a string
-        _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
-        _action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for another memory
-        _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherMemory, null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
-        _action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherMemory, null));
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherMemory, null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherMemory, null));
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
         
         // Test vetoableChange() for its own memory
         boolean thrown = false;
         try {
-            _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", _memory, null));
+            action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", _memory, null));
         } catch (PropertyVetoException ex) {
             thrown = true;
         }
         Assert.assertTrue("Expected exception thrown", thrown);
         
-        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
-        _action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", _memory, null));
-        Assert.assertNull("Memory is null", _action.getMemory());
+        Assert.assertEquals("Memory matches", _memory, action.getMemory().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", _memory, null));
+        Assert.assertNull("Memory is null", action.getMemory());
     }
     
     @Test
@@ -182,14 +181,14 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
     @Test
     public void testChild() {
         Assert.assertTrue("Num children is zero", 0 == _base.getChildCount());
-        AtomicBoolean hasThrown = new AtomicBoolean(false);
+        boolean hasThrown = false;
         try {
             _base.getChild(0);
         } catch (UnsupportedOperationException ex) {
-            hasThrown.set(true);
+            hasThrown = true;
             Assert.assertTrue("Error message is correct", "Not supported.".equals(ex.getMessage()));
         }
-        Assert.assertTrue("Exception is thrown", hasThrown.get());
+        Assert.assertTrue("Exception is thrown", hasThrown);
     }
     
     // The minimal setup for log4J
