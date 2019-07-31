@@ -7,6 +7,7 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Light;
 import jmri.LightManager;
+import jmri.NamedBeanHandle;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
@@ -18,6 +19,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -95,6 +97,44 @@ public class ExpressionLightTest {
         light.setCommandedState(Light.ON);
         // The action should now be executed so the atomic boolean should be true
         Assert.assertTrue("atomicBoolean is true",atomicBoolean.get());
+    }
+    
+    @Test
+    public void testSetLight() {
+        // Test setLight() when listeners are registered
+        Light turnout = InstanceManager.getDefault(LightManager.class).provide("IT1");
+        Assert.assertNotNull("Light is not null", turnout);
+        ExpressionLight expression = new ExpressionLight();
+        expression.setLight(turnout);
+        
+        Assert.assertNotNull("Light is not null", expression.getLight());
+        expression.registerListeners();
+        boolean thrown = false;
+        try {
+            expression.setLight((String)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setLight must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setLight((NamedBeanHandle<Light>)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setLight must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setLight((Light)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setLight must not be called when listeners are registered");
     }
     
     @Test

@@ -5,6 +5,7 @@ import java.beans.PropertyVetoException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.NamedBeanHandle;
 import jmri.Sensor;
 import jmri.SensorManager;
 import jmri.jmrit.logixng.ConditionalNG;
@@ -18,6 +19,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -95,6 +97,44 @@ public class ExpressionSensorTest {
         sensor.setCommandedState(Sensor.ACTIVE);
         // The action should now be executed so the atomic boolean should be true
         Assert.assertTrue("atomicBoolean is true",atomicBoolean.get());
+    }
+    
+    @Test
+    public void testSetSensor() {
+        // Test setSensor() when listeners are registered
+        Sensor turnout = InstanceManager.getDefault(SensorManager.class).provide("IT1");
+        Assert.assertNotNull("Sensor is not null", turnout);
+        ExpressionSensor expression = new ExpressionSensor();
+        expression.setSensor(turnout);
+        
+        Assert.assertNotNull("Sensor is not null", expression.getSensor());
+        expression.registerListeners();
+        boolean thrown = false;
+        try {
+            expression.setSensor((String)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setSensor must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setSensor((NamedBeanHandle<Sensor>)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setSensor must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setSensor((Sensor)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setSensor must not be called when listeners are registered");
     }
     
     @Test

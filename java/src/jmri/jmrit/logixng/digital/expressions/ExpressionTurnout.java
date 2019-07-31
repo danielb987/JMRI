@@ -62,7 +62,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression
     public void setTurnout(String turnoutName) {
         if (_listenersAreRegistered) {
             RuntimeException e = new RuntimeException("setTurnout must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
+            log.error("setTurnout must not be called when listeners are registered", e);
             throw e;
         }
         Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).getTurnout(turnoutName);
@@ -72,7 +72,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression
     public void setTurnout(NamedBeanHandle<Turnout> handle) {
         if (_listenersAreRegistered) {
             RuntimeException e = new RuntimeException("setTurnout must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
+            log.error("setTurnout must not be called when listeners are registered", e);
             throw e;
         }
         _turnoutHandle = handle;
@@ -81,7 +81,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression
     public void setTurnout(@CheckForNull Turnout turnout) {
         if (_listenersAreRegistered) {
             RuntimeException e = new RuntimeException("setTurnout must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
+            log.error("setTurnout must not be called when listeners are registered", e);
             throw e;
         }
         if (turnout != null) {

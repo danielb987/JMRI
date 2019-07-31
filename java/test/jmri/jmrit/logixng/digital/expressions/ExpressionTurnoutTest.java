@@ -6,6 +6,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Turnout;
+import jmri.NamedBeanHandle;
+import jmri.Turnout;
 import jmri.TurnoutManager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
@@ -18,6 +20,7 @@ import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.digital.actions.IfThen;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -95,6 +98,44 @@ public class ExpressionTurnoutTest {
         turnout.setCommandedState(Turnout.THROWN);
         // The action should now be executed so the atomic boolean should be true
         Assert.assertTrue("atomicBoolean is true",atomicBoolean.get());
+    }
+    
+    @Test
+    public void testSetTurnout() {
+        // Test setTurnout() when listeners are registered
+        Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
+        Assert.assertNotNull("Turnout is not null", turnout);
+        ExpressionTurnout expression = new ExpressionTurnout();
+        expression.setTurnout(turnout);
+        
+        Assert.assertNotNull("Turnout is not null", expression.getTurnout());
+        expression.registerListeners();
+        boolean thrown = false;
+        try {
+            expression.setTurnout((String)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setTurnout must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setTurnout((NamedBeanHandle<Turnout>)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setTurnout must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setTurnout((Turnout)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setTurnout must not be called when listeners are registered");
     }
     
     @Test

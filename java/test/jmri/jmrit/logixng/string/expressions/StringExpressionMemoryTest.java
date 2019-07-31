@@ -20,6 +20,7 @@ import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.digital.actions.DoStringAction;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.jmrit.logixng.string.actions.StringActionMemory;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -190,6 +191,36 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         Assert.assertNull("Memory is null", expression.getMemory());
         expression.setMemory(memoryHandle.getName());
         Assert.assertTrue("Memory matches", memoryHandle == expression.getMemory());
+        
+        // Test setMemory() when listeners are registered
+        Assert.assertNotNull("Memory is not null", expression.getMemory());
+        expression.registerListeners();
+        boolean thrown = false;
+        try {
+            expression.setMemory((String)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setMemory must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setMemory((NamedBeanHandle<Memory>)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setMemory must not be called when listeners are registered");
+        
+        thrown = false;
+        try {
+            expression.setMemory((Memory)null);
+        } catch (RuntimeException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        JUnitAppender.assertErrorMessage("setMemory must not be called when listeners are registered");
     }
     
     @Test

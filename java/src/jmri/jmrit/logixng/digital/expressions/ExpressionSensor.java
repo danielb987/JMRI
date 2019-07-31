@@ -62,7 +62,7 @@ public class ExpressionSensor extends AbstractDigitalExpression
     public void setSensor(String sensorName) {
         if (_listenersAreRegistered) {
             RuntimeException e = new RuntimeException("setSensor must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
+            log.error("setSensor must not be called when listeners are registered", e);
             throw e;
         }
         Sensor sensor = InstanceManager.getDefault(SensorManager.class).getSensor(sensorName);
@@ -72,7 +72,7 @@ public class ExpressionSensor extends AbstractDigitalExpression
     public void setSensor(NamedBeanHandle<Sensor> handle) {
         if (_listenersAreRegistered) {
             RuntimeException e = new RuntimeException("setSensor must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
+            log.error("setSensor must not be called when listeners are registered", e);
             throw e;
         }
         _sensorHandle = handle;
@@ -81,7 +81,7 @@ public class ExpressionSensor extends AbstractDigitalExpression
     public void setSensor(@CheckForNull Sensor sensor) {
         if (_listenersAreRegistered) {
             RuntimeException e = new RuntimeException("setSensor must not be called when listeners are registered");
-            log.error("setup must not be called when listeners are registered", e);
+            log.error("setSensor must not be called when listeners are registered", e);
             throw e;
         }
         if (sensor != null) {
