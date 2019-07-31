@@ -304,8 +304,6 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             }
         }
         
-        ExpressionLight expressionLightAAA = null;
-        
         // FOR TESTING ONLY. REMOVE LATER.
         int test = 1;
         if (test == 1) {
