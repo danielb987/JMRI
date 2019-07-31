@@ -205,6 +205,12 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         _expression.setMemory(_memory);
         Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
         
+        // Test vetoableChange() for a string
+        _expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        _expression.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        
         // Test vetoableChange() for another memory
         _expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherMemory, null));
         Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
