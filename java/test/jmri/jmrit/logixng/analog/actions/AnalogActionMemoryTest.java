@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.analog.actions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.Memory;
@@ -108,6 +110,43 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         ((AnalogActionMemory)_base).setMemory(memoryHandle);
         Assert.assertTrue("Memory matches", memoryHandle == _action.getMemory());
         Assert.assertTrue("Memory matches", otherMemory == _action.getMemory().getBean());
+        
+        _action.setMemory((String)null);
+        Assert.assertNull("Memory is null", _action.getMemory());
+        _action.setMemory(memoryHandle.getName());
+        Assert.assertTrue("Memory matches", memoryHandle == _action.getMemory());
+    }
+    
+    @Test
+    public void testVetoableChange() throws PropertyVetoException {
+        // Get some other memory for later use
+        Memory otherMemory = InstanceManager.getDefault(MemoryManager.class).provide("IM99");
+        Assert.assertNotNull("Memory is not null", otherMemory);
+        Assert.assertNotEquals("Memory is not equal", _memory, otherMemory);
+        
+        // Get the expression and set the memory
+        AnalogActionMemory _expression = (AnalogActionMemory)_base;
+        _expression.setMemory(_memory);
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        
+        // Test vetoableChange() for another memory
+        _expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherMemory, null));
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        _expression.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherMemory, null));
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        
+        // Test vetoableChange() for its own memory
+        boolean thrown = false;
+        try {
+            _expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", _memory, null));
+        } catch (PropertyVetoException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        _expression.vetoableChange(new PropertyChangeEvent(this, "DoDelete", _memory, null));
+        Assert.assertNull("Memory is null", _expression.getMemory());
     }
     
     @Test

@@ -1,5 +1,6 @@
 package jmri.jmrit.logixng.analog.actions;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import javax.annotation.CheckForNull;
@@ -11,8 +12,6 @@ import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Sets a Memory.
@@ -46,8 +45,12 @@ public class AnalogActionMemory extends AbstractAnalogAction
     }
     
     public void setMemory(String memoryName) {
-        Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
-        _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+        if (memoryName != null) {
+            Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
+            _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+        } else {
+            _memoryHandle = null;
+        }
     }
     
     public void setMemory(NamedBeanHandle<Memory> handle) {
@@ -76,16 +79,16 @@ public class AnalogActionMemory extends AbstractAnalogAction
     }
 
     @Override
-    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
         if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Memory) {
-                if (evt.getOldValue().equals(getMemory())) {
+                if (evt.getOldValue().equals(getMemory().getBean())) {
                     throw new PropertyVetoException(getDisplayName(), evt);
                 }
             }
         } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Memory) {
-                if (evt.getOldValue().equals(getMemory())) {
+                if (evt.getOldValue().equals(getMemory().getBean())) {
                     setMemory((Memory)null);
                 }
             }
@@ -152,8 +155,5 @@ public class AnalogActionMemory extends AbstractAnalogAction
     @Override
     public void disposeMe() {
     }
-    
-    
-    private final static Logger log = LoggerFactory.getLogger(AnalogActionMemory.class);
     
 }

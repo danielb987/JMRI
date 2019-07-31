@@ -53,16 +53,16 @@ public class StringExpressionMemory extends AbstractStringExpression
     }
     
     @Override
-    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
         if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Memory) {
-                if (evt.getOldValue().equals(getMemory())) {
+                if (evt.getOldValue().equals(getMemory().getBean())) {
                     throw new PropertyVetoException(getDisplayName(), evt);
                 }
             }
         } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Memory) {
-                if (evt.getOldValue().equals(getMemory())) {
+                if (evt.getOldValue().equals(getMemory().getBean())) {
                     setMemory((Memory)null);
                 }
             }
@@ -87,8 +87,12 @@ public class StringExpressionMemory extends AbstractStringExpression
             log.error("setMemory must not be called when listeners are registered", e);
             throw e;
         }
-        Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
-        _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+        if (memoryName != null) {
+            Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
+            _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+        } else {
+            _memoryHandle = null;
+        }
     }
     
     public void setMemory(NamedBeanHandle<Memory> handle) {
