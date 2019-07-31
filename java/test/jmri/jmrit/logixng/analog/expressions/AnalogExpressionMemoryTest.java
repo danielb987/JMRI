@@ -205,6 +205,10 @@ public class AnalogExpressionMemoryTest extends AbstractAnalogExpressionTestBase
         _expression.setMemory(_memory);
         Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
         
+        // Test vetoableChange() for some other propery
+        _expression.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());
+        
         // Test vetoableChange() for a string
         _expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
         Assert.assertEquals("Memory matches", _memory, _expression.getMemory().getBean());

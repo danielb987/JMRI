@@ -129,6 +129,10 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         _action.setMemory(_memory);
         Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
         
+        // Test vetoableChange() for some other propery
+        _action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
+        
         // Test vetoableChange() for a string
         _action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
         Assert.assertEquals("Memory matches", _memory, _action.getMemory().getBean());
