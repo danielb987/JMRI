@@ -101,13 +101,13 @@ public class ActionLight extends AbstractDigitalAction implements VetoableChange
     public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
         if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Light) {
-                if (evt.getOldValue().equals(getLight())) {
+                if (evt.getOldValue().equals(getLight().getBean())) {
                     throw new PropertyVetoException(getDisplayName(), evt);
                 }
             }
         } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Light) {
-                if (evt.getOldValue().equals(getLight())) {
+                if (evt.getOldValue().equals(getLight().getBean())) {
                     setLight((Light)null);
                 }
             }
@@ -228,8 +228,5 @@ public class ActionLight extends AbstractDigitalAction implements VetoableChange
         }
         
     }
-    
-    
-    private final static Logger log = LoggerFactory.getLogger(ActionLight.class);
     
 }

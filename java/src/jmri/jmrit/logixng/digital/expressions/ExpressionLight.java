@@ -116,13 +116,13 @@ public class ExpressionLight extends AbstractDigitalExpression
     public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
         if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Light) {
-                if (evt.getOldValue().equals(getLight())) {
+                if (evt.getOldValue().equals(getLight().getBean())) {
                     throw new PropertyVetoException(getDisplayName(), evt);
                 }
             }
         } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Light) {
-                if (evt.getOldValue().equals(getLight())) {
+                if (evt.getOldValue().equals(getLight().getBean())) {
                     setLight((Light)null);
                 }
             }

@@ -101,13 +101,13 @@ public class ActionTurnout extends AbstractDigitalAction implements VetoableChan
     public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
         if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Turnout) {
-                if (evt.getOldValue().equals(getTurnout())) {
+                if (evt.getOldValue().equals(getTurnout().getBean())) {
                     throw new PropertyVetoException(getDisplayName(), evt);
                 }
             }
         } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Turnout) {
-                if (evt.getOldValue().equals(getTurnout())) {
+                if (evt.getOldValue().equals(getTurnout().getBean())) {
                     setTurnout((Turnout)null);
                 }
             }
@@ -230,8 +230,5 @@ public class ActionTurnout extends AbstractDigitalAction implements VetoableChan
         }
         
     }
-    
-    
-    private final static Logger log = LoggerFactory.getLogger(ActionTurnout.class);
     
 }

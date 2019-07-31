@@ -116,13 +116,13 @@ public class ExpressionSensor extends AbstractDigitalExpression
     public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
         if ("CanDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Sensor) {
-                if (evt.getOldValue().equals(getSensor())) {
+                if (evt.getOldValue().equals(getSensor().getBean())) {
                     throw new PropertyVetoException(getDisplayName(), evt);
                 }
             }
         } else if ("DoDelete".equals(evt.getPropertyName())) { // No I18N
             if (evt.getOldValue() instanceof Sensor) {
-                if (evt.getOldValue().equals(getSensor())) {
+                if (evt.getOldValue().equals(getSensor().getBean())) {
                     setSensor((Sensor)null);
                 }
             }

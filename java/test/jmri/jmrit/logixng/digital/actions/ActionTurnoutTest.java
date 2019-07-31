@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Turnout;
@@ -70,6 +72,49 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
         conditionalNG.execute();
         // The action should now be executed so the turnout should be thrown
         Assert.assertTrue("turnout is thrown",turnout.getCommandedState() == Turnout.CLOSED);
+    }
+    
+    @Test
+    public void testVetoableChange() throws PropertyVetoException {
+        // Get the action and set the turnout
+        Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
+        Assert.assertNotNull("Turnout is not null", turnout);
+        ActionTurnout action = new ActionTurnout();
+        action.setTurnout(turnout);
+        
+        // Get some other turnout for later use
+        Turnout otherTurnout = InstanceManager.getDefault(TurnoutManager.class).provide("IM99");
+        Assert.assertNotNull("Turnout is not null", otherTurnout);
+        Assert.assertNotEquals("Turnout is not equal", turnout, otherTurnout);
+        
+        // Test vetoableChange() for some other propery
+        action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Turnout matches", turnout, action.getTurnout().getBean());
+        
+        // Test vetoableChange() for a string
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Turnout matches", turnout, action.getTurnout().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Turnout matches", turnout, action.getTurnout().getBean());
+        
+        // Test vetoableChange() for another turnout
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherTurnout, null));
+        Assert.assertEquals("Turnout matches", turnout, action.getTurnout().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherTurnout, null));
+        Assert.assertEquals("Turnout matches", turnout, action.getTurnout().getBean());
+        
+        // Test vetoableChange() for its own turnout
+        boolean thrown = false;
+        try {
+            action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", turnout, null));
+        } catch (PropertyVetoException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        Assert.assertEquals("Turnout matches", turnout, action.getTurnout().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", turnout, null));
+        Assert.assertNull("Turnout is null", action.getTurnout());
     }
     
     // The minimal setup for log4J

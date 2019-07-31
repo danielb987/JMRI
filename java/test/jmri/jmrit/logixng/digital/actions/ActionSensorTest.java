@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Sensor;
@@ -70,6 +72,49 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
         conditionalNG.execute();
         // The action should now be executed so the sensor should be thrown
         Assert.assertTrue("sensor is thrown",sensor.getCommandedState() == Sensor.INACTIVE);
+    }
+    
+    @Test
+    public void testVetoableChange() throws PropertyVetoException {
+        // Get the action and set the sensor
+        Sensor sensor = InstanceManager.getDefault(SensorManager.class).provide("IS1");
+        Assert.assertNotNull("Sensor is not null", sensor);
+        ActionSensor action = new ActionSensor();
+        action.setSensor(sensor);
+        
+        // Get some other sensor for later use
+        Sensor otherSensor = InstanceManager.getDefault(SensorManager.class).provide("IM99");
+        Assert.assertNotNull("Sensor is not null", otherSensor);
+        Assert.assertNotEquals("Sensor is not equal", sensor, otherSensor);
+        
+        // Test vetoableChange() for some other propery
+        action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Sensor matches", sensor, action.getSensor().getBean());
+        
+        // Test vetoableChange() for a string
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Sensor matches", sensor, action.getSensor().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Sensor matches", sensor, action.getSensor().getBean());
+        
+        // Test vetoableChange() for another sensor
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherSensor, null));
+        Assert.assertEquals("Sensor matches", sensor, action.getSensor().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherSensor, null));
+        Assert.assertEquals("Sensor matches", sensor, action.getSensor().getBean());
+        
+        // Test vetoableChange() for its own sensor
+        boolean thrown = false;
+        try {
+            action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", sensor, null));
+        } catch (PropertyVetoException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        Assert.assertEquals("Sensor matches", sensor, action.getSensor().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", sensor, null));
+        Assert.assertNull("Sensor is null", action.getSensor());
     }
     
     // The minimal setup for log4J

@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.actions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Light;
@@ -70,6 +72,49 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
         conditionalNG.execute();
         // The action should now be executed so the light should be on
         Assert.assertTrue("light is on",light.getCommandedState() == Light.OFF);
+    }
+    
+    @Test
+    public void testVetoableChange() throws PropertyVetoException {
+        // Get the action and set the light
+        Light light = InstanceManager.getDefault(LightManager.class).provide("IL1");
+        Assert.assertNotNull("Light is not null", light);
+        ActionLight action = new ActionLight();
+        action.setLight(light);
+        
+        // Get some other light for later use
+        Light otherLight = InstanceManager.getDefault(LightManager.class).provide("IM99");
+        Assert.assertNotNull("Light is not null", otherLight);
+        Assert.assertNotEquals("Light is not equal", light, otherLight);
+        
+        // Test vetoableChange() for some other propery
+        action.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Light matches", light, action.getLight().getBean());
+        
+        // Test vetoableChange() for a string
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Light matches", light, action.getLight().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Light matches", light, action.getLight().getBean());
+        
+        // Test vetoableChange() for another light
+        action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherLight, null));
+        Assert.assertEquals("Light matches", light, action.getLight().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherLight, null));
+        Assert.assertEquals("Light matches", light, action.getLight().getBean());
+        
+        // Test vetoableChange() for its own light
+        boolean thrown = false;
+        try {
+            action.vetoableChange(new PropertyChangeEvent(this, "CanDelete", light, null));
+        } catch (PropertyVetoException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        Assert.assertEquals("Light matches", light, action.getLight().getBean());
+        action.vetoableChange(new PropertyChangeEvent(this, "DoDelete", light, null));
+        Assert.assertNull("Light is null", action.getLight());
     }
     
     // The minimal setup for log4J

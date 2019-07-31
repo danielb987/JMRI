@@ -1,5 +1,7 @@
 package jmri.jmrit.logixng.digital.expressions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.JmriException;
@@ -8,21 +10,19 @@ import jmri.TurnoutManager;
 import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.digital.actions.IfThen;
-import jmri.jmrit.logixng.Is_IsNot_Enum;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import jmri.jmrit.logixng.DigitalExpressionBean;
-import jmri.jmrit.logixng.DigitalActionBean;
 
 /**
  * Test ExpressionTurnout
@@ -33,7 +33,7 @@ public class ExpressionTurnoutTest {
 
     @Test
     public void testCtor() {
-        DigitalExpressionBean t = new ExpressionTurnout("IQDE321", null);
+        ExpressionTurnout t = new ExpressionTurnout("IQDE321", null);
         Assert.assertNotNull("exists",t);
     }
     
@@ -63,7 +63,7 @@ public class ExpressionTurnoutTest {
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        DigitalActionBean actionIfThen = new IfThen(IfThen.Type.TRIGGER_ACTION);
+        IfThen actionIfThen = new IfThen(IfThen.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
         conditionalNG.getChild(0).connect(socketIfThen);
         
@@ -74,7 +74,7 @@ public class ExpressionTurnoutTest {
         MaleSocket socketTurnout = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTurnout);
         socketIfThen.getChild(0).connect(socketTurnout);
         
-        DigitalActionBean actionAtomicBoolean = new ActionAtomicBoolean(atomicBoolean, true);
+        ActionAtomicBoolean actionAtomicBoolean = new ActionAtomicBoolean(atomicBoolean, true);
         MaleSocket socketAtomicBoolean = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionAtomicBoolean);
         socketIfThen.getChild(1).connect(socketAtomicBoolean);
         
@@ -95,6 +95,49 @@ public class ExpressionTurnoutTest {
         turnout.setCommandedState(Turnout.THROWN);
         // The action should now be executed so the atomic boolean should be true
         Assert.assertTrue("atomicBoolean is true",atomicBoolean.get());
+    }
+    
+    @Test
+    public void testVetoableChange() throws PropertyVetoException {
+        // Get the expression and set the turnout
+        Turnout turnout = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
+        Assert.assertNotNull("Turnout is not null", turnout);
+        ExpressionTurnout expression = new ExpressionTurnout();
+        expression.setTurnout(turnout);
+        
+        // Get some other turnout for later use
+        Turnout otherTurnout = InstanceManager.getDefault(TurnoutManager.class).provide("IM99");
+        Assert.assertNotNull("Turnout is not null", otherTurnout);
+        Assert.assertNotEquals("Turnout is not equal", turnout, otherTurnout);
+        
+        // Test vetoableChange() for some other propery
+        expression.vetoableChange(new PropertyChangeEvent(this, "CanSomething", "test", null));
+        Assert.assertEquals("Turnout matches", turnout, expression.getTurnout().getBean());
+        
+        // Test vetoableChange() for a string
+        expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", "test", null));
+        Assert.assertEquals("Turnout matches", turnout, expression.getTurnout().getBean());
+        expression.vetoableChange(new PropertyChangeEvent(this, "DoDelete", "test", null));
+        Assert.assertEquals("Turnout matches", turnout, expression.getTurnout().getBean());
+        
+        // Test vetoableChange() for another turnout
+        expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", otherTurnout, null));
+        Assert.assertEquals("Turnout matches", turnout, expression.getTurnout().getBean());
+        expression.vetoableChange(new PropertyChangeEvent(this, "DoDelete", otherTurnout, null));
+        Assert.assertEquals("Turnout matches", turnout, expression.getTurnout().getBean());
+        
+        // Test vetoableChange() for its own turnout
+        boolean thrown = false;
+        try {
+            expression.vetoableChange(new PropertyChangeEvent(this, "CanDelete", turnout, null));
+        } catch (PropertyVetoException ex) {
+            thrown = true;
+        }
+        Assert.assertTrue("Expected exception thrown", thrown);
+        
+        Assert.assertEquals("Turnout matches", turnout, expression.getTurnout().getBean());
+        expression.vetoableChange(new PropertyChangeEvent(this, "DoDelete", turnout, null));
+        Assert.assertNull("Turnout is null", expression.getTurnout());
     }
     
     // The minimal setup for log4J
