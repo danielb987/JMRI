@@ -114,11 +114,11 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
     }
 
     /**
-     * Utility method to load the individual Logix objects. If there's no
-     * additional info needed for a specific logix type, invoke this with the
-     * parent of the set of Logix elements.
+     * Utility method to load the individual LogixNG objects. If there's no
+     * additional info needed for a specific logixng type, invoke this with the
+     * parent of the set of LogixNG elements.
      *
-     * @param logixNGs Element containing the Logix elements to load.
+     * @param logixNGs Element containing the LogixNG elements to load.
      */
     public void loadLogixNGs(Element logixNGs) {
         List<Element> logixNGList = logixNGs.getChildren("logixng");  // NOI18N

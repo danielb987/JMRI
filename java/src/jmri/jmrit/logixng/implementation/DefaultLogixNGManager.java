@@ -424,11 +424,11 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     ResetOnTrue expressionResetOnTrue2 = new ResetOnTrue(getSystemNamePrefix()+"DE:00018", "My ResetOnTrue expression");
                     MaleSocket socketResetOnTrue2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue2);
-                    socketOr.getChild(index++).connect(socketResetOnTrue2);
+                    expressionResetOnTrue.getChild(0).connect(socketResetOnTrue2);
                     
                     ResetOnTrue expressionResetOnTrue3 = new ResetOnTrue(getSystemNamePrefix()+"DE:00019", "My ResetOnTrue expression");
                     MaleSocket socketResetOnTrue3 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionResetOnTrue3);
-                    socketResetOnTrue2.getChild(0).connect(socketResetOnTrue3);
+                    expressionResetOnTrue.getChild(1).connect(socketResetOnTrue3);
                     
                     Timer expressionTimer = new Timer(getSystemNamePrefix()+"DE:00020", null);
                     MaleSocket socketTimer = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTimer);
@@ -444,11 +444,11 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     TriggerOnce expressionTriggerOnce2 = new TriggerOnce(getSystemNamePrefix()+"DE:00023", "My TriggerOnce expression");
                     MaleSocket socketTriggerOnce2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTriggerOnce2);
-                    socketOr.getChild(index++).connect(socketTriggerOnce2);
+                    expressionTriggerOnce.getChild(0).connect(socketTriggerOnce2);
                     
                     True expressionTrue = new True(getSystemNamePrefix()+"DE:00024");
                     MaleSocket socketTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue);
-                    socketOr.getChild(index++).connect(socketTrue);
+                    expressionTriggerOnce.getChild(1).connect(socketTrue);
                     
                     True expressionTrue2 = new True(getSystemNamePrefix()+"DE:00025", "My True expression");
                     MaleSocket socketTrue2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue2);
