@@ -448,7 +448,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     
                     True expressionTrue = new True(getSystemNamePrefix()+"DE:00024");
                     MaleSocket socketTrue = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue);
-                    expressionTriggerOnce.getChild(1).connect(socketTrue);
+                    socketOr.getChild(index++).connect(socketTrue);
                     
                     True expressionTrue2 = new True(getSystemNamePrefix()+"DE:00025", "My True expression");
                     MaleSocket socketTrue2 = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expressionTrue2);

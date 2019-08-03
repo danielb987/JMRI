@@ -20,7 +20,7 @@ public class LogixNG_StartupTest {
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
-
+    
     @Test
     public void testCreate() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
