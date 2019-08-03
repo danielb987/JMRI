@@ -30,8 +30,54 @@ public class DefaultLogixNGManagerXmlTest {
     public void testLoad() {
         DefaultLogixNGManagerXml b = new DefaultLogixNGManagerXml();
         Assert.assertNotNull("exists", b);
+        
+        // Test the method load(Element element, Object o)
         b.load((Element)null, (Object)null);
         JUnitAppender.assertErrorMessage("Invalid method called");
+        
+        // Test the method load(Element element, Object o)
+        b.load((Element)null, (Object)null);
+        JUnitAppender.assertErrorMessage("Invalid method called");
+        
+        // Test loading a logixng without system name
+        Element e = new Element("logixngs");
+        Element e2 = new Element("logixng");
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        if (1==0) return;
+        JUnitAppender.assertWarnMessage("unexpected null in systemName [Element: <logixng/>]");
+/*        
+        // Test loading the same class twice, in order to check field "xmlClasses"
+        e = new Element("logixngs");
+        e2 = new Element("existing_class");
+        e2.setAttribute("class", "jmri.jmrit.logixng.analog.actions.configurexml.AnalogActionMemoryXml");
+        e.addContent(e2);
+        e2.addContent(new Element("systemName").addContent("IQAA1"));
+        b.loadLogixNGs(e);
+        
+        e = new Element("logixngs");
+        e2 = new Element("existing_class");
+        e2.setAttribute("class", "jmri.jmrit.logixng.analog.actions.configurexml.AnalogActionMemoryXml");
+        e.addContent(e2);
+        e2.addContent(new Element("systemName").addContent("IQAA2"));
+        b.loadLogixNGs(e);
+/*        
+        // Test trying to load a class with private constructor
+        e = new Element("logixngs");
+        e2 = new Element("existing_class");
+        e2.setAttribute("class", "jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXmlTest$PrivateConstructorXml");
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        JUnitAppender.assertErrorMessage("cannot create constructor");
+        
+        // Test trying to load a class which throws an exception
+        e = new Element("logixngs");
+        e2 = new Element("existing_class");
+        e2.setAttribute("class", "jmri.jmrit.logixng.analog.implementation.configurexml.DefaultAnalogActionManagerXmlTest$ThrowExceptionXml");
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        JUnitAppender.assertErrorMessage("cannot create constructor");
+*/
     }
 
     @Test
@@ -124,6 +170,31 @@ public class DefaultLogixNGManagerXmlTest {
     }
     
     
+    private class MyLogixNG extends jmri.jmrit.logixng.implementation.DefaultLogixNG {
+        
+        MyLogixNG() {
+            super("IQ9999");
+        }
+        
+    }
+    
+/*    
+    // This class is loaded by reflection. The class cannot be private since
+    // Spotbugs will in that case flag it as "is never used locally"
+    class PrivateConstructorXml extends DefaultLogixNGXml {
+        private PrivateConstructorXml() {
+        }
+    }
+    
+    // This class is loaded by reflection. The class cannot be private since
+    // Spotbugs will in that case flag it as "is never used locally"
+    class ThrowExceptionXml extends DefaultLogixNGXml {
+        @Override
+        public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+            throw new JmriConfigureXmlException();
+        }
+    }
+*/    
     class MyManager extends DefaultLogixNGManager {
         MyManager() {
             super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));

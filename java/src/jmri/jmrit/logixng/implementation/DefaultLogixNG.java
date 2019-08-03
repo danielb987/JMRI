@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright 2018
  */
-public final class DefaultLogixNG extends AbstractNamedBean
+public class DefaultLogixNG extends AbstractNamedBean
         implements LogixNG {
 //        implements LogixNG, FemaleSocketListener {
     

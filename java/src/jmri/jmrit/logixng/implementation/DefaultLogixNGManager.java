@@ -671,7 +671,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     }
                     
                     if (load == 1) {
-                        java.util.Set<LogixNG> set = new java.util.HashSet(InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet());
+                        java.util.Set<LogixNG> set = new java.util.HashSet<>(InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet());
                         
                         for (LogixNG logixNG : set) {
                             InstanceManager.getDefault(LogixNG_Manager.class).deleteLogixNG(logixNG);
