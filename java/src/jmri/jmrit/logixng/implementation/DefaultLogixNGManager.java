@@ -8,6 +8,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 import jmri.InstanceManager;
 import jmri.InvokeOnGuiThread;
 import jmri.JmriException;
@@ -196,22 +197,27 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     @Override
     public void setupInitialConditionalNGTree(ConditionalNG conditionalNG) {
         try {
+            DigitalActionManager digitalActionManager =
+                    InstanceManager.getDefault(DigitalActionManager.class);
+            
             FemaleSocket femaleSocket = conditionalNG.getFemaleSocket();
             MaleDigitalActionSocket actionManySocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).registerAction(new Many(getSystemNamePrefix()+"DA:00001"));
+                    InstanceManager.getDefault(DigitalActionManager.class)
+                            .registerAction(new Many(digitalActionManager.getNewSystemName()));
             femaleSocket.connect(actionManySocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             femaleSocket = actionManySocket.getChild(0);
             MaleDigitalActionSocket actionHoldAnythingSocket =
-                    InstanceManager.getDefault(DigitalActionManager.class).registerAction(new HoldAnything(getSystemNamePrefix()+"DA:00002"));
+                    InstanceManager.getDefault(DigitalActionManager.class)
+                            .registerAction(new HoldAnything(digitalActionManager.getNewSystemName()));
             femaleSocket.connect(actionHoldAnythingSocket);
             femaleSocket.setLock(Base.Lock.HARD_LOCK);
 
             femaleSocket = actionManySocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .registerAction(new IfThen(getSystemNamePrefix()+"DA:00003", IfThen.Type.TRIGGER_ACTION));
+                            .registerAction(new IfThen(digitalActionManager.getNewSystemName(), IfThen.Type.TRIGGER_ACTION));
             femaleSocket.connect(actionIfThenSocket);
             
             /* FOR TESTING ONLY */
@@ -330,11 +336,18 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     turnout4.setCommandedState(Turnout.CLOSED);
                     Turnout turnout5 = InstanceManager.getDefault(TurnoutManager.class).provide("IT5_Daniel");
                     turnout5.setCommandedState(Turnout.CLOSED);
+                    
     //                AtomicBoolean atomicBoolean = new AtomicBoolean(false);
                     LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
                     ConditionalNG conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
                     InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
-                    
+                    logixNG.addConditionalNG(conditionalNG);
+                    logixNG.setEnabled(true);
+                    conditionalNG.setEnabled(true);
+
+                    logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("Another logixNG");
+                    conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
+                    InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
                     logixNG.addConditionalNG(conditionalNG);
 
 //                    DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
@@ -658,8 +671,9 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     }
                     
                     if (load == 1) {
+                        java.util.Set<LogixNG> set = new java.util.HashSet(InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet());
                         
-                        for (LogixNG logixNG : InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet()) {
+                        for (LogixNG logixNG : set) {
                             InstanceManager.getDefault(LogixNG_Manager.class).deleteLogixNG(logixNG);
                         }
                         java.util.SortedSet<MaleAnalogActionSocket> set1 = InstanceManager.getDefault(AnalogActionManager.class).getNamedBeanSet();

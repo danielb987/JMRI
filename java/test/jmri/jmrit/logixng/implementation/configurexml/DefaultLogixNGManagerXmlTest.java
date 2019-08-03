@@ -35,6 +35,14 @@ public class DefaultLogixNGManagerXmlTest {
     }
 
     @Test
+    public void testStore() {
+        DefaultLogixNGManagerXml b = new DefaultLogixNGManagerXml();
+        Assert.assertNotNull("exists", b);
+        // Calling store() with null is OK.
+        b.store((Object)null);
+    }
+
+    @Test
     public void testReplaceActionManagerWithoutConfigManager() {
         
         // if old manager exists, remove it from configuration process
