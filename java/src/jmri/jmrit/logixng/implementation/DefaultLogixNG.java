@@ -32,7 +32,7 @@ public final class DefaultLogixNG extends AbstractNamedBean
 //    private String _socketSystemName = null;
 //    private final FemaleDigitalActionSocket _femaleActionSocket;
     private boolean _enabled = false;
-    private boolean _userEnabled = false;
+//    private boolean _userEnabled = false;
     
     public DefaultLogixNG(String sys) throws BadUserNameException, BadSystemNameException  {
         super(sys);
@@ -203,27 +203,28 @@ public final class DefaultLogixNG extends AbstractNamedBean
     /** {@inheritDoc} */
     @Override
     public boolean isEnabled() {
-        return _enabled && _userEnabled;
+        return _enabled;
+//        return _enabled && _userEnabled;
     }
     
-    /**
+    /*.*
      * Set whenether this object is enabled or disabled by the user.
      * 
      * @param enable true if this object should be enabled, false otherwise
-     */
+     *./
     public void setUserEnabled(boolean enable) {
         _userEnabled = enable;
     }
-    
-    /**
+*/    
+    /*.*
      * Determines whether this object is enabled by the user.
      * 
      * @return true if the object is enabled, false otherwise
-     */
+     *./
     public boolean isUserEnabled() {
         return _userEnabled;
     }
-    
+*/    
     
     /**
      * Persistant instance variables (saved between runs)
