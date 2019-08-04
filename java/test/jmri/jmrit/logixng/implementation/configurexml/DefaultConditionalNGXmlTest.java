@@ -19,6 +19,14 @@ public class DefaultConditionalNGXmlTest {
     public final ExpectedException thrown = ExpectedException.none();
 
     @Test
+    public void testStore() {
+        thrown.expect(UnsupportedOperationException.class);
+        DefaultConditionalNGXml b = new DefaultConditionalNGXml();
+        Assert.assertNotNull("exists", b);
+        b.store((Object) null);
+    }
+    
+    @Test
     public void testLoad() throws JmriConfigureXmlException {
         DefaultConditionalNGXml b;
         
