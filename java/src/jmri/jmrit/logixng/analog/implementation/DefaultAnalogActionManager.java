@@ -140,17 +140,6 @@ public class DefaultAnalogActionManager extends AbstractManager<MaleAnalogAction
     }
 
     @Override
-    public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
-            Base parent, FemaleSocketListener listener, String socketName,
-            MaleAnalogActionSocket maleSocket){
-        
-        FemaleAnalogActionSocket socket =
-                new DefaultFemaleAnalogActionSocket(parent, listener, socketName, maleSocket);
-        
-        return socket;
-    }
-    
-    @Override
     public Map<Category, List<Class<? extends Base>>> getActionClasses() {
         return actionClassList;
     }

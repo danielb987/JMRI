@@ -166,18 +166,7 @@ public class DefaultDigitalExpressionManager extends AbstractManager<MaleDigital
             return new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName);
         }
     }
-/*
-    @Override
-    public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
-            Base parent, FemaleSocketListener listener, String socketName,
-            MaleDigitalExpressionSocket maleSocket) {
-        
-        FemaleDigitalExpressionSocket socket =
-                new DefaultFemaleDigitalExpressionSocket(parent, listener, socketName, maleSocket);
-        
-        return socket;
-    }
-*/    
+    
     @Override
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
         return expressionClassList;

@@ -42,16 +42,6 @@ public final class DefaultConditionalNG extends AbstractBase
         _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleSocket(this, this, "");
     }
     
-    public DefaultConditionalNG(String sys, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
-        super(sys);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
-    }
-    
-    public DefaultConditionalNG(String sys, String user, MaleDigitalActionSocket action) throws BadUserNameException, BadSystemNameException  {
-        super(sys, user);
-        _femaleActionSocket = InstanceManager.getDefault(DigitalActionManager.class).createFemaleActionSocket(this, this, "", action);
-    }
-    
     private DefaultConditionalNG(DefaultConditionalNG template, String sys) {
         super(sys);
         _template = template;

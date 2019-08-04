@@ -2,8 +2,6 @@ package jmri.jmrit.logixng.analog.implementation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.AnalogExpressionManager;
 import jmri.jmrit.logixng.Base;
@@ -12,7 +10,6 @@ import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.implementation.AbstractFemaleSocket;
 
 /**
@@ -23,23 +20,6 @@ public class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
 
     public DefaultFemaleAnalogExpressionSocket(Base parent, FemaleSocketListener listener, String name) {
         super(parent, listener, name);
-    }
-    
-    public DefaultFemaleAnalogExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String name,
-            MaleAnalogExpressionSocket maleSocket) {
-        
-        super(parent, listener, name);
-        
-        try {
-            connect(maleSocket);
-        } catch (SocketAlreadyConnectedException e) {
-            // This should never be able to happen since a newly created
-            // socket is not connected.
-            throw new RuntimeException(e);
-        }
     }
     
     /** {@inheritDoc} */

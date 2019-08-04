@@ -8,7 +8,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
 import jmri.jmrit.logixng.implementation.AbstractFemaleSocket;
@@ -23,22 +22,6 @@ public final class DefaultFemaleDigitalActionSocket
 
     public DefaultFemaleDigitalActionSocket(Base parent, FemaleSocketListener listener, String name) {
         super(parent, listener, name);
-    }
-    
-    public DefaultFemaleDigitalActionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String name,
-            MaleDigitalActionSocket maleSocket) {
-        super(parent, listener, name);
-        
-        try {
-            connect(maleSocket);
-        } catch (SocketAlreadyConnectedException e) {
-            // This should never be able to happen since a newly created
-            // socket is not connected.
-            throw new RuntimeException(e);
-        }
     }
     
     /** {@inheritDoc} */

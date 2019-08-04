@@ -23,23 +23,6 @@ public class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSocket
         super(parent, listener, name);
     }
     
-    public DefaultFemaleDigitalExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String name,
-            MaleDigitalExpressionSocket maleSocket) {
-        
-        super(parent, listener, name);
-        
-        try {
-            connect(maleSocket);
-        } catch (SocketAlreadyConnectedException e) {
-            // This should never be able to happen since a newly created
-            // socket is not connected.
-            throw new RuntimeException(e);
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public Base getNewObjectBasedOnTemplate(String sys) {

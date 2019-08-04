@@ -10,7 +10,6 @@ import jmri.jmrit.logixng.FemaleAnalogActionSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.MaleAnalogActionSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.implementation.AbstractFemaleSocket;
 
 /**
@@ -22,23 +21,6 @@ public final class DefaultFemaleAnalogActionSocket
 
     public DefaultFemaleAnalogActionSocket(Base parent, FemaleSocketListener listener, String name) {
         super(parent, listener, name);
-    }
-    
-    public DefaultFemaleAnalogActionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String name,
-            MaleAnalogActionSocket maleSocket) {
-        
-        super(parent, listener, name);
-        
-        try {
-            connect(maleSocket);
-        } catch (SocketAlreadyConnectedException e) {
-            // This should never be able to happen since a newly created
-            // socket is not connected.
-            throw new RuntimeException(e);
-        }
     }
     
     /** {@inheritDoc} */

@@ -32,12 +32,6 @@ public interface AnalogActionManager extends Manager<MaleAnalogActionSocket> {
     public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
-    public FemaleAnalogActionSocket createFemaleAnalogActionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleAnalogActionSocket maleSocket);
-
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 

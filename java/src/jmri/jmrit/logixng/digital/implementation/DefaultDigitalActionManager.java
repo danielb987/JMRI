@@ -22,6 +22,7 @@ import jmri.jmrit.logixng.DigitalActionFactory;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleDigitalActionSocket;
 import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.managers.AbstractManager;
 import jmri.jmrit.logixng.DigitalActionBean;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
@@ -149,17 +150,6 @@ public class DefaultDigitalActionManager extends AbstractManager<MaleDigitalActi
     public FemaleDigitalActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
         return new DefaultFemaleDigitalActionSocket(parent, listener, socketName);
-    }
-
-    @Override
-    public FemaleDigitalActionSocket createFemaleActionSocket(
-            Base parent, FemaleSocketListener listener, String socketName,
-            MaleDigitalActionSocket maleSocket){
-        
-        FemaleDigitalActionSocket socket =
-                new DefaultFemaleDigitalActionSocket(parent, listener, socketName, maleSocket);
-        
-        return socket;
     }
 
     @Override

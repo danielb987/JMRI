@@ -102,7 +102,7 @@ public class TemplateTest {
         Light l = tim.provide(LightManager.class, NullLight.class, "IL1");
         Logix x = tim.provide(LogixManager.class, NullLogix.class, "IX1");
         Memory m = tim.provide(MemoryManager.class, NullMemory.class, "IM1");
-        OBlock ob = tim.provide(OBlockManager.class, OBlock.class, "IB1");
+        OBlock ob = tim.provide(OBlockManager.class, OBlock.class, "OB1");
         Reporter r = tim.provide(ReporterManager.class, NullReporter.class, "IR1");
         Sensor s = tim.provide(SensorManager.class, NullSensor.class, "IS1");
         SignalHead sh = tim.provide(SignalHeadManager.class, NullSignalHead.class, "IH1");
@@ -125,7 +125,7 @@ public class TemplateTest {
         Assert.assertTrue("Objects are the same", l.equals(tim.get(LightManager.class, NullLight.class, "IL1")));
         Assert.assertTrue("Objects are the same", x.equals(tim.get(LogixManager.class, NullLogix.class, "IX1")));
         Assert.assertTrue("Objects are the same", m.equals(tim.get(MemoryManager.class, NullMemory.class, "IM1")));
-        Assert.assertTrue("Objects are the same", ob.equals(tim.get(OBlockManager.class, OBlock.class, "IB1")));
+        Assert.assertTrue("Objects are the same", ob.equals(tim.get(OBlockManager.class, OBlock.class, "OB1")));
         Assert.assertTrue("Objects are the same", r.equals(tim.get(ReporterManager.class, NullReporter.class, "IR1")));
         Assert.assertTrue("Objects are the same", s.equals(tim.get(SensorManager.class, NullSensor.class, "IS1")));
         Assert.assertTrue("Objects are the same", sh.equals(tim.get(SignalHeadManager.class, NullSignalHead.class, "IH1")));

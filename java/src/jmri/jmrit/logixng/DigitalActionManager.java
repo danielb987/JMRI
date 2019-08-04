@@ -32,12 +32,6 @@ public interface DigitalActionManager extends Manager<MaleDigitalActionSocket> {
     public FemaleDigitalActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
-    public FemaleDigitalActionSocket createFemaleActionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleDigitalActionSocket maleSocket);
-
     /**
      * Get a set of classes that implements the DigitalActionBean interface.
      * 

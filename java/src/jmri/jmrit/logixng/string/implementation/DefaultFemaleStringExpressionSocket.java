@@ -9,7 +9,6 @@ import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleStringExpressionSocket;
 import jmri.jmrit.logixng.MaleStringExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.StringExpressionManager;
 import jmri.jmrit.logixng.implementation.AbstractFemaleSocket;
 
@@ -21,23 +20,6 @@ public class DefaultFemaleStringExpressionSocket extends AbstractFemaleSocket
 
     public DefaultFemaleStringExpressionSocket(Base parent, FemaleSocketListener listener, String name) {
         super(parent, listener, name);
-    }
-    
-    public DefaultFemaleStringExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String name,
-            MaleStringExpressionSocket maleSocket) {
-        
-        super(parent, listener, name);
-        
-        try {
-            connect(maleSocket);
-        } catch (SocketAlreadyConnectedException e) {
-            // This should never be able to happen since a newly created
-            // socket is not connected.
-            throw new RuntimeException(e);
-        }
     }
     
     /** {@inheritDoc} */
