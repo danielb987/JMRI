@@ -44,7 +44,6 @@ public class DefaultLogixNGManagerXmlTest {
         Element e2 = new Element("logixng");
         e.addContent(e2);
         b.loadLogixNGs(e);
-        if (1==0) return;
         JUnitAppender.assertWarnMessage("unexpected null in systemName [Element: <logixng/>]");
 /*        
         // Test loading the same class twice, in order to check field "xmlClasses"

@@ -78,7 +78,7 @@ public class DefaultConditionalNGXml extends jmri.managers.configurexml.Abstract
 
     @Override
     public void load(Element element, Object o) {
-        throw new UnsupportedOperationException("Not supported.");
+        log.error("Invalid method called");  // NOI18N
     }
 
     /**
@@ -91,7 +91,8 @@ public class DefaultConditionalNGXml extends jmri.managers.configurexml.Abstract
      */
     @Override
     public boolean load(Element sharedConditionalNG, Element perNodeConditionalNG) {
-        throw new UnsupportedOperationException("Not supported.");
+        log.error("Invalid method called");  // NOI18N
+        return false;
     }
 
     /**
