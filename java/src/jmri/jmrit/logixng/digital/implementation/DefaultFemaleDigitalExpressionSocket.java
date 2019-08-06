@@ -70,7 +70,7 @@ public class DefaultFemaleDigitalExpressionSocket extends AbstractFemaleSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getConditionalNG().getSystemName() + "IQDE10";
+        return InstanceManager.getDefault(DigitalExpressionManager.class).getSystemNamePrefix() + "DE10";
     }
 
     /** {@inheritDoc} */

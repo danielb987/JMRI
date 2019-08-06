@@ -15,6 +15,6 @@ public interface StringActionFactory {
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends StringActionBean>>> getStringActionClasses();
+    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses();
     
 }

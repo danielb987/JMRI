@@ -1,18 +1,27 @@
 package jmri.jmrit.logixng.string.implementation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.Memory;
 import jmri.MemoryManager;
+import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
+import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
 import jmri.jmrit.logixng.string.actions.StringActionMemory;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Test ExpressionTimer
@@ -25,6 +34,9 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
     private Memory _memory;
     private MyStringActionMemory _action;
     
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
     @Test
     public void testGetName() {
         Assert.assertTrue("String matches", "A1".equals(femaleSocket.getName()));
@@ -39,6 +51,39 @@ public class DefaultFemaleStringActionSocketTest extends FemaleSocketTestBase {
     @Override
     protected boolean hasSocketBeenSetup() {
         return _action._hasBeenSetup;
+    }
+    
+    @Test
+    public void testSystemName() {
+        Assert.assertEquals("String matches", "IQSA10", femaleSocket.getExampleSystemName());
+        Assert.assertEquals("String matches", "IQSA:0001", femaleSocket.getNewSystemName());
+    }
+    
+    @Test
+    public void testGetConnectableClasses() {
+        Map<Category, List<Class<? extends Base>>> map = new HashMap<>();
+        
+        List<Class<? extends Base>> classes = new ArrayList<>();
+        classes.add(jmri.jmrit.logixng.string.actions.StringActionMemory.class);
+        map.put(Category.ITEM, classes);
+        
+        classes = new ArrayList<>();
+        map.put(Category.COMMON, classes);
+        
+        classes = new ArrayList<>();
+        map.put(Category.OTHER, classes);
+        
+        classes = new ArrayList<>();
+        map.put(Category.EXRAVAGANZA, classes);
+        
+        Assert.assertTrue("maps are equal",
+                isConnectionClassesEquals(map, femaleSocket.getConnectableClasses()));
+    }
+    
+    @Test
+    public void testGetNewObjectBasedOnTemplate() {
+        thrown.expect(UnsupportedOperationException.class);
+        femaleSocket.getNewObjectBasedOnTemplate(null);
     }
     
     // The minimal setup for log4J

@@ -1,9 +1,12 @@
 package jmri.jmrit.logixng.digital.implementation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import jmri.InstanceManager;
-import jmri.Turnout;
-import jmri.TurnoutManager;
+import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
@@ -12,7 +15,9 @@ import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Test ExpressionTimer
@@ -23,6 +28,9 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
 
     private MyActionTurnout _action;
     
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
     @Test
     public void testGetName() {
         Assert.assertTrue("String matches", "A1".equals(femaleSocket.getName()));
@@ -37,6 +45,47 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
     @Override
     protected boolean hasSocketBeenSetup() {
         return _action._hasBeenSetup;
+    }
+    
+    @Test
+    public void testSystemName() {
+        Assert.assertEquals("String matches", "IQDA10", femaleSocket.getExampleSystemName());
+        Assert.assertEquals("String matches", "IQDA:0001", femaleSocket.getNewSystemName());
+    }
+    
+    @Test
+    public void testGetConnectableClasses() {
+        Map<Category, List<Class<? extends Base>>> map = new HashMap<>();
+        
+        List<Class<? extends Base>> classes = new ArrayList<>();
+        classes.add(jmri.jmrit.logixng.digital.actions.ActionLight.class);
+        classes.add(jmri.jmrit.logixng.digital.actions.ActionTurnout.class);
+        classes.add(jmri.jmrit.logixng.digital.actions.ActionSensor.class);
+        map.put(Category.ITEM, classes);
+        
+        classes = new ArrayList<>();
+        classes.add(jmri.jmrit.logixng.digital.actions.DoAnalogAction.class);
+        classes.add(jmri.jmrit.logixng.digital.actions.Many.class);
+        classes.add(jmri.jmrit.logixng.digital.actions.HoldAnything.class);
+        classes.add(jmri.jmrit.logixng.digital.actions.DoStringAction.class);
+        classes.add(jmri.jmrit.logixng.digital.actions.IfThen.class);
+        map.put(Category.COMMON, classes);
+        
+        classes = new ArrayList<>();
+        map.put(Category.OTHER, classes);
+        
+        classes = new ArrayList<>();
+        classes.add(jmri.jmrit.logixng.digital.actions.ShutdownComputer.class);
+        map.put(Category.EXRAVAGANZA, classes);
+        
+        Assert.assertTrue("maps are equal",
+                isConnectionClassesEquals(map, femaleSocket.getConnectableClasses()));
+    }
+    
+    @Test
+    public void testGetNewObjectBasedOnTemplate() {
+        thrown.expect(UnsupportedOperationException.class);
+        femaleSocket.getNewObjectBasedOnTemplate(null);
     }
     
     // The minimal setup for log4J

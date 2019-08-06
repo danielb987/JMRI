@@ -32,12 +32,6 @@ public interface StringActionManager extends Manager<MaleStringActionSocket> {
     public FemaleStringActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
 
-    public FemaleStringActionSocket createFemaleStringActionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleStringActionSocket maleSocket);
-
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 

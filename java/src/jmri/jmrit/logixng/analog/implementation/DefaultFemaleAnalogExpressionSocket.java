@@ -68,7 +68,7 @@ public class DefaultFemaleAnalogExpressionSocket extends AbstractFemaleSocket
     /** {@inheritDoc} */
     @Override
     public String getExampleSystemName() {
-        return getConditionalNG().getSystemName() + "IQAE10";
+        return InstanceManager.getDefault(AnalogExpressionManager.class).getSystemNamePrefix() + "AE10";
     }
 
     /** {@inheritDoc} */

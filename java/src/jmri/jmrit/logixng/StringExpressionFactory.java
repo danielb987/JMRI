@@ -11,10 +11,10 @@ import java.util.Set;
 public interface StringExpressionFactory {
 
     /**
-     * Get a set of classes that implements the StringExpressionBean interface.
+     * Get a set of classes that implements the StringExpression interface.
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends StringExpressionBean>>> getStringExpressionClasses();
+    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses();
     
 }

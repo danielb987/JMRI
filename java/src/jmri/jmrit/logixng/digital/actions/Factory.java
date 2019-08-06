@@ -16,7 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class Factory implements DigitalActionFactory {
 
     @Override
-    public Set<Map.Entry<Category, Class<? extends Base>>> getActionClasses() {
+    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses() {
         Set<Map.Entry<Category, Class<? extends Base>>> digitalActionClasses = new HashSet<>();
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, IfThen.class));
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, Many.class));

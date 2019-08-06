@@ -1,13 +1,21 @@
 package jmri.jmrit.logixng;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.NamedBean;
+import jmri.managers.AbstractManager;
 import jmri.util.junit.annotations.ToDo;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for testing FemaleStringExpressionSocket classes
@@ -21,6 +29,90 @@ public abstract class FemaleSocketTestBase {
     protected MaleSocket maleSocket;
     protected MaleSocket otherMaleSocket;
     protected FemaleSocket femaleSocket;
+    
+    
+    private SortedSet<String> getClassNames(List<Class<? extends Base>> classes) {
+        SortedSet<String> set = new TreeSet<>();
+        
+        for (Class<? extends Base> clazz : classes) {
+            set.add(clazz.getName());
+        }
+        
+        return set;
+    }
+    
+    private boolean isSetsEqual(SortedSet<String> set1, SortedSet<String> set2) {
+        if (set1.size() != set2.size()) {
+            return false;
+        }
+        for (String s1 : set1) {
+            if (!set2.contains(s1)) {
+                return false;
+            }
+        }
+        for (String s2 : set2) {
+            if (!set1.contains(s2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Asserts that the two maps of connection classes holds the same classes.
+     * The reason to why this method returns a boolean is because every test
+     * method is expected to have an assertion. And the statistical analysis is
+     * not able to see that that assertion is here, so we therefore also need
+     * an assertion in the caller method.
+     * @param expectedMap the expected result
+     * @param actualMap the actual result
+     * @return true if assertion is correct
+     */
+    public final boolean isConnectionClassesEquals(
+            Map<Category, List<Class<? extends Base>>> expectedMap,
+            Map<Category, List<Class<? extends Base>>> actualMap) {
+        
+        List<Class<? extends Base>> classes;
+/*        
+        for (Category category : Category.values()) {
+            classes = femaleSocket.getConnectableClasses().get(category);
+            for (Class<? extends Base> clazz : classes) {
+                System.out.format("FemaleSocket: %s, category: %s, class: %s%n",
+                        femaleSocket.getClass().getName(),
+                        category.name(),
+                        clazz.getName());
+            }
+        }
+*/        
+        for (Category category : Category.values()) {
+            
+            if (!isSetsEqual(
+                    getClassNames(expectedMap.get(category)),
+                    getClassNames(actualMap.get(category)))) {
+                
+                classes = femaleSocket.getConnectableClasses().get(category);
+                for (Class<? extends Base> clazz : classes) {
+                    System.err.format("Set of classes are different:%n");
+                    System.err.format("FemaleSocket: %s, category: %s, class: %s%n",
+                            femaleSocket.getClass().getName(),
+                            category.name(),
+                            clazz.getName());
+/*
+                    log.error("Set of classes are different:");
+                    log.error("FemaleSocket: {}, category: {}, class: {}",
+                            femaleSocket.getClass().getName(),
+                            category.name(),
+                            clazz.getName());
+*/
+                }
+                
+                return false;
+            }
+        }
+        
+        // We will not get here if assertion fails.
+        return true;
+    }
     
     abstract protected boolean hasSocketBeenSetup();
     
@@ -409,4 +501,6 @@ public abstract class FemaleSocketTestBase {
         
     }
     
+    private final static Logger log = LoggerFactory.getLogger(FemaleSocketTestBase.class);
+
 }

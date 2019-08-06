@@ -48,14 +48,14 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         }
         
         for (StringActionFactory actionFactory : ServiceLoader.load(StringActionFactory.class)) {
-            actionFactory.getStringActionClasses().forEach((entry) -> {
+            actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
         
 //        for (LogixNGPluginFactory actionFactory : ServiceLoader.load(LogixNGPluginFactory.class)) {
-//            actionFactory.getStringActionClasses().forEach((entry) -> {
+//            actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action plugin: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
 //                actionClassList.get(entry.getKey()).add(entry.getValue());
 //            });
@@ -139,19 +139,6 @@ public class DefaultStringActionManager extends AbstractManager<MaleStringAction
         return new DefaultFemaleStringActionSocket(parent, listener, socketName);
     }
 
-    @Override
-    public FemaleStringActionSocket createFemaleStringActionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleStringActionSocket maleSocket){
-        
-        FemaleStringActionSocket socket =
-                new DefaultFemaleStringActionSocket(parent, listener, socketName, maleSocket);
-        
-        return socket;
-    }
-    
     @Override
     public Map<Category, List<Class<? extends Base>>> getActionClasses() {
         return actionClassList;

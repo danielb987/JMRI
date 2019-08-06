@@ -6,7 +6,6 @@ import jmri.InstanceManager;
 import jmri.ShutDownManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.SystemType;
@@ -26,19 +25,16 @@ public class ShutdownComputer extends AbstractDigitalAction {
     public ShutdownComputer(int seconds)
             throws BadUserNameException {
         super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
-//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
 
     public ShutdownComputer(String sys, int seconds)
             throws BadUserNameException {
         super(sys);
-//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
 
     public ShutdownComputer(String sys, String user, int seconds)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
-//        jmri.InstanceManager.turnoutManagerInstance().addVetoableChangeListener(this);
     }
     
     private ShutdownComputer(ShutdownComputer template, String sys) {

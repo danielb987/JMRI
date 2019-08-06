@@ -11,10 +11,10 @@ import java.util.Set;
 public interface AnalogExpressionFactory {
 
     /**
-     * Get a set of classes that implements the AnalogExpressionBean interface.
+     * Get a set of classes that implements the AnalogExpression interface.
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends AnalogExpressionBean>>> getAnalogExpressionClasses();
+    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses();
     
 }
