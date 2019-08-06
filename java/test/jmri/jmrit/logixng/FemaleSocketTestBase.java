@@ -491,6 +491,11 @@ public abstract class FemaleSocketTestBase {
         public void printTree(PrintWriter writer, String indent, String currentIndent) {
             throw new UnsupportedOperationException("Not supported.");
         }
+
+        @Override
+        public boolean isActive() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
         
     }
     

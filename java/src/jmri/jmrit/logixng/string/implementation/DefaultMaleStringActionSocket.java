@@ -70,7 +70,7 @@ public class DefaultMaleStringActionSocket extends AbstractMaleSocket implements
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return _action.isExternal();
     }
     
     /** {@inheritDoc} */

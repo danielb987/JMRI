@@ -71,7 +71,7 @@ public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket imple
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return _expression.isExternal();
     }
     
     /** {@inheritDoc} */

@@ -83,7 +83,7 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return _expression.isExternal();
     }
     
     private double internalEvaluate() {

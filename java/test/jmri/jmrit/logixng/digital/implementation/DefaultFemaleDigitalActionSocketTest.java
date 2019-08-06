@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.digital.implementation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.jmrit.logixng.Base;
@@ -31,6 +32,13 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
+    @Test
+    public void testBundleClass() {
+        Assert.assertEquals("bundle is correct", "Test Bundle bb aa cc", Bundle.getMessage("TestBundle", "aa", "bb", "cc"));
+        Assert.assertEquals("bundle is correct", "Generic", Bundle.getMessage(Locale.US, "SocketTypeGeneric"));
+        Assert.assertEquals("bundle is correct", "Test Bundle bb aa cc", Bundle.getMessage(Locale.US, "TestBundle", "aa", "bb", "cc"));
+    }
+    
     @Test
     public void testGetName() {
         Assert.assertTrue("String matches", "A1".equals(femaleSocket.getName()));

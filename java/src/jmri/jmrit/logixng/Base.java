@@ -268,6 +268,13 @@ public interface Base {
     public void setLock(Lock lock);
 
     /**
+     * Is this item active? If this item is enabled and all the parents are
+     * enabled, this item is active.
+     * @return true if active, false otherwise.
+     */
+    public boolean isActive();
+
+    /**
      * Setup this object and its children.
      * This method is used to lookup system names for child sockets, turnouts,
      * sensors, and so on.
@@ -309,7 +316,9 @@ public interface Base {
      * 
      * @return true if the object is enabled, false otherwise
      */
-//    public boolean isEnabled();
+    public default boolean isEnabled() {
+        return true;
+    }
     
     /**
      * Register listeners if this object needs that.

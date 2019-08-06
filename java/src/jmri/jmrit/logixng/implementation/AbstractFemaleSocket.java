@@ -147,6 +147,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return _name;
     }
 
+    /** {@inheritDoc} */
     abstract public void disposeMe();
     
     /** {@inheritDoc} */
@@ -202,36 +203,49 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isActive() {
+        return isEnabled() && ((getParent() == null) || getParent().isEnabled());
+    }
+    
+    /** {@inheritDoc} */
     @Override
     public Category getCategory() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public FemaleSocket getChild(int index) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getChildCount() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getUserName() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setUserName(String s) throws NamedBean.BadUserNameException {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getSystemName() {
         throw new UnsupportedOperationException("Not supported.");

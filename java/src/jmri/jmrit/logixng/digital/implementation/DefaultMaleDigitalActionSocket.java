@@ -70,7 +70,7 @@ public class DefaultMaleDigitalActionSocket extends AbstractMaleSocket implement
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return _action.isExternal();
     }
     
     /** {@inheritDoc} */

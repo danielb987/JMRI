@@ -70,7 +70,7 @@ public class DefaultMaleStringExpressionSocket extends AbstractMaleSocket implem
     /** {@inheritDoc} */
     @Override
     public boolean isExternal() {
-        return false;
+        return _expression.isExternal();
     }
     
     /** {@inheritDoc} */

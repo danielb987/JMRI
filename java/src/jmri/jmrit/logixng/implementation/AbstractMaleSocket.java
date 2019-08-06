@@ -81,6 +81,12 @@ public abstract class AbstractMaleSocket implements Base {
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isActive() {
+        return isEnabled() && ((getParent() == null) || getParent().isEnabled());
+    }
+    
     /**
      * Print the tree to a stream.
      * This method is the implementation of printTree(PrintStream, String)
