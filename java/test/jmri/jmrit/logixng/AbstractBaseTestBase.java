@@ -1,7 +1,5 @@
 package jmri.jmrit.logixng;
 
-import jmri.jmrit.logixng.analog.expressions.*;
-import jmri.AnalogIO;
 import jmri.JmriException;
 import jmri.jmrit.logixng.implementation.AbstractBase;
 import org.junit.Assert;
@@ -68,6 +66,12 @@ public abstract class AbstractBaseTestBase {
         Assert.assertTrue("Parent matches", a == _base.getParent());
         _base.setParent(null);
         Assert.assertNull("Parent matches", _base.getParent());
+    }
+    
+    @Test
+    public void testIsEnabled() {
+        MyBase a = new MyBase();
+        Assert.assertTrue("isEnabled() returns true by default", a.isEnabled());
     }
     
     @Test

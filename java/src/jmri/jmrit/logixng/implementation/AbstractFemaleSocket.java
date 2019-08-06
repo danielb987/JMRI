@@ -147,7 +147,6 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         return _name;
     }
 
-    /** {@inheritDoc} */
     abstract public void disposeMe();
     
     /** {@inheritDoc} */
