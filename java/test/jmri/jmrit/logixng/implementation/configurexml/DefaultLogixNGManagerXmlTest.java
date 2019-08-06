@@ -168,7 +168,7 @@ public class DefaultLogixNGManagerXmlTest {
         JUnitUtil.tearDown();
     }
     
-    
+/*    
     private class MyLogixNG extends jmri.jmrit.logixng.implementation.DefaultLogixNG {
         
         MyLogixNG() {

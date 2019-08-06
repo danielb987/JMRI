@@ -13,7 +13,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
-import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
 import jmri.jmrit.logixng.string.expressions.StringExpressionMemory;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -57,6 +56,15 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
     public void testSystemName() {
         Assert.assertEquals("String matches", "IQSE10", femaleSocket.getExampleSystemName());
         Assert.assertEquals("String matches", "IQSE:0001", femaleSocket.getNewSystemName());
+    }
+    
+    @Test
+    public void testSetValue() {
+        // Every test method should have an assertion
+        Assert.assertNotNull("femaleSocket is not null", femaleSocket);
+        Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
+        // Test evaluate() when not connected
+        Assert.assertEquals("strings are equals", "", ((DefaultFemaleStringExpressionSocket)femaleSocket).evaluate());
     }
     
     @Test

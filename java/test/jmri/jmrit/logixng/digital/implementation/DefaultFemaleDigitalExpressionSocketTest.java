@@ -54,6 +54,15 @@ public class DefaultFemaleDigitalExpressionSocketTest extends FemaleSocketTestBa
     }
     
     @Test
+    public void testSetValue() {
+        // Every test method should have an assertion
+        Assert.assertNotNull("femaleSocket is not null", femaleSocket);
+        Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
+        // Test evaluate() when not connected
+        Assert.assertFalse("result is false", ((DefaultFemaleDigitalExpressionSocket)femaleSocket).evaluate());
+    }
+    
+    @Test
     public void testGetConnectableClasses() {
         Map<Category, List<Class<? extends Base>>> map = new HashMap<>();
         

@@ -501,6 +501,6 @@ public abstract class FemaleSocketTestBase {
         
     }
     
-    private final static Logger log = LoggerFactory.getLogger(FemaleSocketTestBase.class);
+//    private final static Logger log = LoggerFactory.getLogger(FemaleSocketTestBase.class);
 
 }
