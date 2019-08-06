@@ -20,6 +20,7 @@ import org.junit.Test;
 import jmri.jmrit.logixng.AnalogExpressionBean;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.analog.actions.AnalogActionMemory;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -61,12 +62,30 @@ public class DefaultFemaleAnalogExpressionSocketTest extends FemaleSocketTestBas
     }
     
     @Test
-    public void testSetValue() {
+    public void testSetValue() throws SocketAlreadyConnectedException {
         // Every test method should have an assertion
         Assert.assertNotNull("femaleSocket is not null", femaleSocket);
         Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
         // Test evaluate() when not connected
         Assert.assertTrue("values are equals", 0.0 == ((DefaultFemaleAnalogExpressionSocket)femaleSocket).evaluate());
+        // Test evaluate() when connected
+        femaleSocket.connect(maleSocket);
+        _memory.setValue(0.0);
+        Assert.assertTrue("values are equals", 0.0 == ((DefaultFemaleAnalogExpressionSocket)femaleSocket).evaluate());
+        _memory.setValue(1.2);
+        Assert.assertTrue("values are equals", 1.2 == ((DefaultFemaleAnalogExpressionSocket)femaleSocket).evaluate());
+    }
+    
+    @Test
+    public void testReset() throws SocketAlreadyConnectedException {
+        // Every test method should have an assertion
+        Assert.assertNotNull("femaleSocket is not null", femaleSocket);
+        Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
+        // Test reset() when not connected
+        ((DefaultFemaleAnalogExpressionSocket)femaleSocket).reset();
+        // Test reset() when connected
+        femaleSocket.connect(maleSocket);
+        ((DefaultFemaleAnalogExpressionSocket)femaleSocket).reset();
     }
     
     @Test

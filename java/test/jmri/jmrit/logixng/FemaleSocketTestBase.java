@@ -1,21 +1,14 @@
 package jmri.jmrit.logixng;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.NamedBean;
-import jmri.managers.AbstractManager;
-import jmri.util.junit.annotations.ToDo;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base class for testing FemaleStringExpressionSocket classes

@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import jmri.InstanceManager;
+import jmri.JmriException;
+import jmri.Turnout;
+import jmri.TurnoutManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.FemaleSocketListener;
 import jmri.jmrit.logixng.FemaleSocketTestBase;
+import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
 import jmri.util.JUnitUtil;
 import org.junit.After;
@@ -54,12 +59,33 @@ public class DefaultFemaleDigitalExpressionSocketTest extends FemaleSocketTestBa
     }
     
     @Test
-    public void testSetValue() {
+    public void testSetValue() throws JmriException {
         // Every test method should have an assertion
         Assert.assertNotNull("femaleSocket is not null", femaleSocket);
         Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
         // Test evaluate() when not connected
         Assert.assertFalse("result is false", ((DefaultFemaleDigitalExpressionSocket)femaleSocket).evaluate());
+        // Test evaluate() when connected
+        femaleSocket.connect(maleSocket);
+        Turnout t = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("IT1");
+        _expression.setTurnout(t);
+        _expression.setTurnoutState(ExpressionTurnout.TurnoutState.THROWN);
+        t.setState(Turnout.CLOSED);
+        Assert.assertFalse("turnout is not thrown", ((DefaultFemaleDigitalExpressionSocket)femaleSocket).evaluate());
+        t.setState(Turnout.THROWN);
+        Assert.assertTrue("turnout is thrown", ((DefaultFemaleDigitalExpressionSocket)femaleSocket).evaluate());
+    }
+    
+    @Test
+    public void testReset() throws SocketAlreadyConnectedException {
+        // Every test method should have an assertion
+        Assert.assertNotNull("femaleSocket is not null", femaleSocket);
+        Assert.assertFalse("femaleSocket is not connected", femaleSocket.isConnected());
+        // Test reset() when not connected
+        ((DefaultFemaleDigitalExpressionSocket)femaleSocket).reset();
+        // Test reset() when connected
+        femaleSocket.connect(maleSocket);
+        ((DefaultFemaleDigitalExpressionSocket)femaleSocket).reset();
     }
     
     @Test
