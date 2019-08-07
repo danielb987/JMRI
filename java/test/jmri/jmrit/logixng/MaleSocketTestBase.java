@@ -2,6 +2,7 @@ package jmri.jmrit.logixng;
 
 import jmri.JmriException;
 import jmri.NamedBean;
+import jmri.jmrit.logixng.Debugable.DebugConfig;
 import jmri.util.JUnitAppender;
 import org.junit.After;
 import org.junit.Assert;
@@ -115,6 +116,11 @@ public abstract class MaleSocketTestBase {
     
     @Test
     public void testProperty() {
+        // Remove all properties to be sure we don't hit any problem later
+        for (String property : ((NamedBean)maleSocketA).getPropertyKeys()) {
+            ((NamedBean)maleSocketA).removeProperty(property);
+        }
+        
         // Test set property and read it
         ((NamedBean)maleSocketA).setProperty("Abc", "Something");
         Assert.assertEquals("getProperty() is correct",
@@ -123,6 +129,7 @@ public abstract class MaleSocketTestBase {
         ((NamedBean)maleSocketA).setProperty("Abc", "Something else");
         Assert.assertEquals("getProperty() is correct",
                 "Something else", ((NamedBean)maleSocketA).getProperty("Abc"));
+        Assert.assertEquals("num properties", 1, ((NamedBean)maleSocketA).getPropertyKeys().size());
         // Test set property with another key and read it
         ((NamedBean)maleSocketA).setProperty("Def", "Something different");
         Assert.assertEquals("getProperty() is correct",
@@ -130,10 +137,23 @@ public abstract class MaleSocketTestBase {
         // Test that the previous key hasn't been changed
         Assert.assertEquals("getProperty() is correct",
                 "Something else", ((NamedBean)maleSocketA).getProperty("Abc"));
+        Assert.assertEquals("num properties", 2, ((NamedBean)maleSocketA).getPropertyKeys().size());
         // Test removing the property and read it
         ((NamedBean)maleSocketA).removeProperty("Abc");
         Assert.assertNull("getProperty() is null",
                 ((NamedBean)maleSocketA).getProperty("Abc"));
+        Assert.assertEquals("num properties", 1, ((NamedBean)maleSocketA).getPropertyKeys().size());
+    }
+    
+    @Test
+    public void testDebugConfig() {
+        DebugConfig debugConfig = maleSocketA.createDebugConfig();
+        Assert.assertNotNull("debugConfig is not null", debugConfig);
+        maleSocketA.setDebugConfig(debugConfig);
+        Assert.assertTrue("debugConfig correct",
+                debugConfig == maleSocketA.getDebugConfig());
+        maleSocketA.setDebugConfig(null);
+        Assert.assertNull("debugConfig is null", maleSocketA.getDebugConfig());
     }
     
 }
