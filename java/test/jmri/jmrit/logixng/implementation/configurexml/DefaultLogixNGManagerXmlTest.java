@@ -2,7 +2,7 @@ package jmri.jmrit.logixng.implementation.configurexml;
 
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.configurexml.JmriConfigureXmlException;
+import jmri.JmriException;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
@@ -45,6 +45,38 @@ public class DefaultLogixNGManagerXmlTest {
         e.addContent(e2);
         b.loadLogixNGs(e);
         JUnitAppender.assertWarnMessage("unexpected null in systemName [Element: <logixng/>]");
+        
+        
+        // Test load LogixNG without attribute "enable"
+        e = new Element("logixngs");
+        e2 = new Element("logixng");
+        e2.addContent(new Element("systemName").addContent("IQ1001"));
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        
+        // Test load LogixNG with bad conditionalng (no systemName in the conditionalNG)
+        e = new Element("logixngs");
+        e2 = new Element("logixng");
+        e2.addContent(new Element("systemName").addContent("IQ1002"));
+        Element eConditional = new Element("conditionalng");
+        e2.addContent(eConditional);
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        JUnitAppender.assertWarnMessage("unexpected null in systemName [Element: <conditionalng/>]");
+        JUnitAppender.assertErrorMessage("exception thrown");
+        
+        
+        
+        
+//        e2.setAttribute("class", "jmri.jmrit.logixng.analog.actions.configurexml.AnalogActionMemoryXml");
+//        e.addContent(e2);
+//        e2.addContent(new Element("systemName").addContent("IQAA1"));
+//        b.loadLogixNGs(e);
+        
+        
+        
+        
+        
 /*        
         // Test loading the same class twice, in order to check field "xmlClasses"
         e = new Element("logixngs");

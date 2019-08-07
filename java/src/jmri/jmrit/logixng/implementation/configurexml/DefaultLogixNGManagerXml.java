@@ -178,10 +178,10 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
             return;
         }
         // if old manager exists, remove it from configuration process
-        if (InstanceManager.getNullableDefault(jmri.LogixManager.class) != null) {
+        if (InstanceManager.getNullableDefault(jmri.jmrit.logixng.LogixNG_Manager.class) != null) {
             ConfigureManager cmOD = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
             if (cmOD != null) {
-                cmOD.deregister(InstanceManager.getDefault(jmri.LogixManager.class));
+                cmOD.deregister(InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class));
             }
 
         }
