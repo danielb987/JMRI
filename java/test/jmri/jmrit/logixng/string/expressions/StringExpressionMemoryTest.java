@@ -192,6 +192,11 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         expression.setMemory(memoryHandle.getName());
         Assert.assertTrue("Memory matches", memoryHandle == expression.getMemory());
         
+        // Test setMemory with a memory name that doesn't exists
+        expression.setMemory("Non existent memory");
+        Assert.assertTrue("Memory matches", memoryHandle == expression.getMemory());
+        JUnitAppender.assertWarnMessage("memory 'Non existent memory' does not exists");
+        
         // Test setMemory() when listeners are registered
         Assert.assertNotNull("Memory is not null", expression.getMemory());
         expression.registerListeners();

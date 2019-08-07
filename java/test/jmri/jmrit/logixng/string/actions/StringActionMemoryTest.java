@@ -9,6 +9,7 @@ import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -113,6 +114,11 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         Assert.assertNull("Memory is null", action.getMemory());
         action.setMemory(memoryHandle.getName());
         Assert.assertTrue("Memory matches", memoryHandle == action.getMemory());
+        
+        // Test setMemory with a memory name that doesn't exists
+        action.setMemory("Non existent memory");
+        Assert.assertTrue("Memory matches", memoryHandle == action.getMemory());
+        JUnitAppender.assertWarnMessage("memory 'Non existent memory' does not exists");
     }
     
     @Test

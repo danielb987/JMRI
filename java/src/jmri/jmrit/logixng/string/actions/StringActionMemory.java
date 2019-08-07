@@ -52,7 +52,7 @@ public class StringActionMemory extends AbstractStringAction
             if (memory != null) {
                 _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
             } else {
-                log.warn("memory {} does not exists", memoryName);
+                log.warn("memory '{}' does not exists", memoryName);
             }
         } else {
             _memoryHandle = null;
