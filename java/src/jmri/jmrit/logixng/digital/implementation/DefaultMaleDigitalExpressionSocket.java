@@ -98,7 +98,7 @@ public class DefaultMaleDigitalExpressionSocket extends AbstractMaleSocket imple
 
     @Override
     public int getState() {
-        return lastEvaluationResult ? DigitalExpressionBean.TRUE : DigitalExpressionBean.FALSE;
+        return _expression.getState();
     }
 
     @Override

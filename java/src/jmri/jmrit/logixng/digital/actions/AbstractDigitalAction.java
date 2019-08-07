@@ -20,6 +20,7 @@ public abstract class AbstractDigitalAction extends AbstractBase
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
+    private int _state = DigitalActionBean.UNKNOWN;
     
     
     public AbstractDigitalAction(String sys) throws BadSystemNameException {
@@ -93,13 +94,14 @@ public abstract class AbstractDigitalAction extends AbstractBase
 
     @Override
     public void setState(int s) throws JmriException {
-        log.warn("Unexpected call to setState in AbstractAction.");  // NOI18N
+        log.warn("Unexpected call to setState in AbstractDigitalAction.");  // NOI18N
+        _state = s;
     }
 
     @Override
     public int getState() {
-        log.warn("Unexpected call to getState in AbstractAction.");  // NOI18N
-        return UNKNOWN;
+        log.warn("Unexpected call to getState in AbstractDigitalAction.");  // NOI18N
+        return _state;
     }
     
     

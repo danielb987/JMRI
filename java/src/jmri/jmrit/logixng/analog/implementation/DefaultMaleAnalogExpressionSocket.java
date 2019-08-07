@@ -144,7 +144,7 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
 
     @Override
     public int getState() {
-        return NamedBean.UNKNOWN;
+        return _expression.getState();
     }
 
     @Override
@@ -280,7 +280,7 @@ public class DefaultMaleAnalogExpressionSocket extends AbstractMaleSocket implem
     
     @Override
     public void setState(int s) throws JmriException {
-        // Do nothing
+        _expression.setState(s);
     }
 
     @Override

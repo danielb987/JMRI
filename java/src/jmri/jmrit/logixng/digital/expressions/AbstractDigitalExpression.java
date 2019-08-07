@@ -18,6 +18,7 @@ public abstract class AbstractDigitalExpression extends AbstractBase
 
     private Base _parent = null;
     private Lock _lock = Lock.NONE;
+    private int _state = DigitalExpressionBean.UNKNOWN;
     
     
     public AbstractDigitalExpression(String sys) throws BadSystemNameException {
@@ -60,13 +61,14 @@ public abstract class AbstractDigitalExpression extends AbstractBase
 
     @Override
     public void setState(int s) throws JmriException {
-        log.warn("Unexpected call to setState in AbstractExpression.");  // NOI18N
+        log.warn("Unexpected call to setState in AbstractDigitalExpression.");  // NOI18N
+        _state = s;
     }
 
     @Override
     public int getState() {
-        log.warn("Unexpected call to getState in AbstractExpression.");  // NOI18N
-        return UNKNOWN;
+        log.warn("Unexpected call to getState in AbstractDigitalExpression.");  // NOI18N
+        return _state;
     }
     
     
