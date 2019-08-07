@@ -350,6 +350,11 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
                     logixNG.addConditionalNG(conditionalNG);
 
+                    logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("Yet another logixNG");
+                    conditionalNG = new DefaultConditionalNG(logixNG.getSystemName()+":1");
+                    InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
+                    logixNG.addConditionalNG(conditionalNG);
+
 //                    DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
 //                    MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
 //                    conditionalNG.getChild(0).connect(socketIfThen);
