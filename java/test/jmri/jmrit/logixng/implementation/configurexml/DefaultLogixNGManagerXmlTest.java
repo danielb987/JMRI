@@ -2,7 +2,7 @@ package jmri.jmrit.logixng.implementation.configurexml;
 
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.JmriException;
+import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
@@ -65,17 +65,48 @@ public class DefaultLogixNGManagerXmlTest {
         JUnitAppender.assertWarnMessage("unexpected null in systemName [Element: <conditionalng/>]");
         JUnitAppender.assertErrorMessage("exception thrown");
         
+        // Test loading a LogixNG that already exists
+        e = new Element("logixngs");
+        e2 = new Element("logixng");
+        String systemName = "IQ1001";
+        Assert.assertNotNull("bean exists",
+                InstanceManager.getDefault(LogixNG_Manager.class).getBeanBySystemName(systemName));
+        e2.addContent(new Element("systemName").addContent(systemName));
+        e.addContent(e2);
+        b.loadLogixNGs(e);
         
+        // Test load LogixNG with attribute "enable" as empty string
+        e = new Element("logixngs");
+        e2 = new Element("logixng");
+        e2.addContent(new Element("systemName").addContent("IQ1003"));
+        e2.setAttribute("enabled", "");
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBeanBySystemName("IQ1003");
+        Assert.assertNotNull("bean is not null", logixNG);
+        Assert.assertFalse("bean is not enabled", logixNG.isEnabled());
         
+        // Test load LogixNG with attribute "enable" as invalid value
+        e = new Element("logixngs");
+        e2 = new Element("logixng");
+        e2.addContent(new Element("systemName").addContent("IQ1004"));
+        e2.setAttribute("enabled", "invalid value");
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBeanBySystemName("IQ1004");
+        Assert.assertNotNull("bean is not null", logixNG);
+        Assert.assertFalse("bean is not enabled", logixNG.isEnabled());
         
-//        e2.setAttribute("class", "jmri.jmrit.logixng.analog.actions.configurexml.AnalogActionMemoryXml");
-//        e.addContent(e2);
-//        e2.addContent(new Element("systemName").addContent("IQAA1"));
-//        b.loadLogixNGs(e);
-        
-        
-        
-        
+        // Test load LogixNG with attribute "enable" as yes
+        e = new Element("logixngs");
+        e2 = new Element("logixng");
+        e2.addContent(new Element("systemName").addContent("IQ1005"));
+        e2.setAttribute("enabled", "yes");
+        e.addContent(e2);
+        b.loadLogixNGs(e);
+        logixNG = InstanceManager.getDefault(LogixNG_Manager.class).getBeanBySystemName("IQ1005");
+        Assert.assertNotNull("bean is not null", logixNG);
+        Assert.assertTrue("bean is enabled", logixNG.isEnabled());
         
 /*        
         // Test loading the same class twice, in order to check field "xmlClasses"
@@ -151,6 +182,14 @@ public class DefaultLogixNGManagerXmlTest {
         Assert.assertFalse("manager is not a MyManager",
                 InstanceManager.getDefault(LogixNG_Manager.class)
                         instanceof MyManager);
+        
+        // Test replace the manager when where is no manager registered yet
+        InstanceManager.deregister(
+                InstanceManager.getDefault(LogixNG_Manager.class),
+                LogixNG_Manager.class);
+        
+        Assert.assertNotNull("manager is not null",
+                InstanceManager.getDefault(LogixNG_Manager.class));
     }
     
     @Test
