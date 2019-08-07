@@ -12,6 +12,8 @@ import jmri.NamedBeanHandleManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets a Memory.
@@ -47,7 +49,11 @@ public class AnalogActionMemory extends AbstractAnalogAction
     public void setMemory(String memoryName) {
         if (memoryName != null) {
             Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
-            _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+            if (memory != null) {
+                _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+            } else {
+                log.warn("memory {} does not exists", memoryName);
+            }
         } else {
             _memoryHandle = null;
         }
@@ -156,4 +162,6 @@ public class AnalogActionMemory extends AbstractAnalogAction
     public void disposeMe() {
     }
     
+    private final static Logger log = LoggerFactory.getLogger(AnalogActionMemory.class);
+
 }

@@ -89,7 +89,11 @@ public class StringExpressionMemory extends AbstractStringExpression
         }
         if (memoryName != null) {
             Memory memory = InstanceManager.getDefault(MemoryManager.class).getMemory(memoryName);
-            _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+            if (memory != null) {
+                _memoryHandle = InstanceManager.getDefault(NamedBeanHandleManager.class).getNamedBeanHandle(memoryName, memory);
+            } else {
+                log.warn("memory {} does not exists", memoryName);
+            }
         } else {
             _memoryHandle = null;
         }
