@@ -29,15 +29,16 @@ public interface StringExpressionManager extends Manager<MaleStringExpressionSoc
      */
     public String getNewSystemName();
 
+    /**
+     * Create a female socket for analog expressions
+     * @param parent
+     * @param listener
+     * @param socketName
+     * @return 
+     */
     public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
-/*
-    public FemaleStringExpressionSocket createFemaleStringExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleStringExpressionSocket maleSocket);
-*/
+    
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 

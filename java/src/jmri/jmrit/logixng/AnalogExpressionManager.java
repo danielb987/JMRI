@@ -29,15 +29,16 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
      */
     public String getNewSystemName();
 
-    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
+    /**
+     * Create a female socket for analog expressions
+     * @param parent
+     * @param listener
+     * @param socketName
+     * @return 
+     */
+    public FemaleAnalogExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
-/*
-    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleAnalogExpressionSocket maleSocket);
-*/
+    
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 

@@ -23,7 +23,7 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.LogixNG;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
-import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThenElse;
 import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.jmrit.logixng.digital.expressions.Antecedent;
@@ -61,10 +61,10 @@ public class ImportConditional {
     
     public void doImport() throws SocketAlreadyConnectedException {
         boolean triggerOnChange = _conditional.getTriggerOnChange();
-        IfThen.Type type = triggerOnChange ? IfThen.Type.TRIGGER_ACTION : IfThen.Type.CONTINOUS_ACTION;
+        IfThenElse.Type type = triggerOnChange ? IfThenElse.Type.TRIGGER_ACTION : IfThenElse.Type.CONTINOUS_ACTION;
         
         // This will fail, but fix it later.
-        IfThen ifThen = new IfThen("", null, type);
+        IfThenElse ifThen = new IfThenElse("", null, type);
         
         Conditional.AntecedentOperator ao = _conditional.getLogicType();
         String antecedentExpression = _conditional.getAntecedentExpression();

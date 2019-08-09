@@ -1,5 +1,8 @@
 package jmri.jmrit.logixng.digital.actions.configurexml;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import jmri.util.JUnitAppender;
@@ -16,7 +19,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2019
  */
-public class DigitalActionsTest {
+public class DigitalActionsXmlTest {
 
     @Test
     public void testDigitalActions() throws JmriConfigureXmlException {
@@ -103,5 +106,5 @@ public class DigitalActionsTest {
     public void tearDown() {
         JUnitUtil.tearDown();
     }
-    
+
 }

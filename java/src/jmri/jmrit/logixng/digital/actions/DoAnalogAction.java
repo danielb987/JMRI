@@ -33,7 +33,7 @@ public class DoAnalogAction
     public DoAnalogAction() {
         super(InstanceManager.getDefault(DigitalActionManager.class).getNewSystemName());
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, "A1");
     }
@@ -41,7 +41,7 @@ public class DoAnalogAction
     public DoAnalogAction(String sys) {
         super(sys);
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, "A1");
     }
@@ -49,7 +49,7 @@ public class DoAnalogAction
     public DoAnalogAction(String sys, String user) {
         super(sys, user);
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, this, "E1");
+                .createFemaleSocket(this, this, "E1");
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, "A1");
     }
@@ -58,7 +58,7 @@ public class DoAnalogAction
         super(sys);
         _template = template;
         _analogExpressionSocket = InstanceManager.getDefault(AnalogExpressionManager.class)
-                .createFemaleAnalogExpressionSocket(this, this, _template._analogExpressionSocket.getName());
+                .createFemaleSocket(this, this, _template._analogExpressionSocket.getName());
         _analogActionSocket = InstanceManager.getDefault(AnalogActionManager.class)
                 .createFemaleAnalogActionSocket(this, this, _template._analogActionSocket.getName());
     }

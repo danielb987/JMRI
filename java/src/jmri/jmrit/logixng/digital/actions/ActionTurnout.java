@@ -13,8 +13,6 @@ import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.util.ThreadingUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This action sets the state of a turnout.

@@ -6,7 +6,7 @@ import java.util.Locale;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.implementation.DefaultLogixNG;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
-import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThenElse;
 import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.expressions.And;
 import jmri.jmrit.logixng.digital.expressions.ExpressionTurnout;
@@ -146,7 +146,7 @@ public class LogixNGTest {
     @Test
     public void testBundle() {
         Assert.assertTrue("bean type is correct", "LogixNG".equals(new DefaultLogixNG("IQA55").getBeanType()));
-        Assert.assertTrue("bean type is correct", "Digital action".equals(new IfThen("IQDA321", IfThen.Type.TRIGGER_ACTION).getBeanType()));
+        Assert.assertTrue("bean type is correct", "Digital action".equals(new IfThenElse("IQDA321", IfThenElse.Type.TRIGGER_ACTION).getBeanType()));
         Assert.assertTrue("bean type is correct", "Digital expression".equals(new And("IQDE321").getBeanType()));
     }
     

@@ -49,7 +49,7 @@ import jmri.jmrit.logixng.digital.actions.ActionTurnout;
 import jmri.jmrit.logixng.digital.actions.DoAnalogAction;
 import jmri.jmrit.logixng.digital.actions.DoStringAction;
 import jmri.jmrit.logixng.digital.actions.HoldAnything;
-import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThenElse;
 import jmri.jmrit.logixng.digital.actions.Many;
 import jmri.jmrit.logixng.digital.actions.ShutdownComputer;
 import jmri.jmrit.logixng.digital.expressions.And;
@@ -217,7 +217,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             femaleSocket = actionManySocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .registerAction(new IfThen(digitalActionManager.getNewSystemName(), IfThen.Type.TRIGGER_ACTION));
+                            .registerAction(new IfThenElse(digitalActionManager.getNewSystemName(), IfThenElse.Type.TRIGGER_ACTION));
             femaleSocket.connect(actionIfThenSocket);
             
             /* FOR TESTING ONLY */
@@ -234,7 +234,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
             femaleSocket = actionIfThenSocket.getChild(1);
             MaleDigitalActionSocket actionIfThenSocket2 =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .registerAction(new IfThen(femaleSocket.getConditionalNG(), IfThen.Type.CONTINOUS_ACTION));
+                            .registerAction(new IfThenElse(femaleSocket.getConditionalNG(), IfThenElse.Type.CONTINOUS_ACTION));
             femaleSocket.connect(actionIfThenSocket2);
 */            
             /* FOR TESTING ONLY */
@@ -355,7 +355,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     InstanceManager.getDefault(LogixNG_Manager.class).setupInitialConditionalNGTree(conditionalNG);
                     logixNG.addConditionalNG(conditionalNG);
 
-//                    DigitalAction actionIfThen = new IfThen(conditionalNG, IfThen.Type.TRIGGER_ACTION);
+//                    DigitalAction actionIfThen = new IfThenElse(conditionalNG, IfThenElse.Type.TRIGGER_ACTION);
 //                    MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
 //                    conditionalNG.getChild(0).connect(socketIfThen);
 
@@ -526,7 +526,7 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     MaleSocket socketHoldAnything = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionHoldAnything);
                     socketSecondMany.getChild(index++).connect(socketHoldAnything);
                     
-                    IfThen actionIfThen2 = new IfThen(getSystemNamePrefix()+"DA:00012", "My if then", IfThen.Type.TRIGGER_ACTION);
+                    IfThenElse actionIfThen2 = new IfThenElse(getSystemNamePrefix()+"DA:00012", "My if then", IfThenElse.Type.TRIGGER_ACTION);
                     MaleSocket socketIfThen2 = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen2);
                     socketSecondMany.getChild(index++).connect(socketIfThen2);
                     

@@ -18,7 +18,7 @@ import jmri.jmrit.logixng.LogixNG_Manager;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import jmri.jmrit.logixng.digital.actions.ActionAtomicBoolean;
-import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -66,7 +66,7 @@ public class ExpressionTurnoutTest {
         logixNG.addConditionalNG(conditionalNG);
         logixNG.activateLogixNG();
         
-        IfThen actionIfThen = new IfThen(IfThen.Type.TRIGGER_ACTION);
+        IfThenElse actionIfThen = new IfThenElse(IfThenElse.Type.TRIGGER_ACTION);
         MaleSocket socketIfThen = InstanceManager.getDefault(DigitalActionManager.class).registerAction(actionIfThen);
         conditionalNG.getChild(0).connect(socketIfThen);
         

@@ -6,7 +6,7 @@ import jmri.InstanceManager;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThenElse;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class IfThenSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
-    IfThen.Type type = IfThen.Type.TRIGGER_ACTION;
+    IfThenElse.Type type = IfThenElse.Type.TRIGGER_ACTION;
     
     
     /** {@inheritDoc} */
@@ -47,14 +47,14 @@ public class IfThenSwing implements SwingConfiguratorInterface {
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName) {
-        IfThen action = new IfThen(systemName, type);
+        IfThenElse action = new IfThenElse(systemName, type);
         return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }
 
     /** {@inheritDoc} */
     @Override
     public MaleSocket createNewObject(@Nonnull String systemName, @Nonnull String userName) {
-        IfThen action = new IfThen(systemName, userName, type);
+        IfThenElse action = new IfThenElse(systemName, userName, type);
         return InstanceManager.getDefault(DigitalActionManager.class).registerAction(action);
     }
     

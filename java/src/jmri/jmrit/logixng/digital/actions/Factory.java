@@ -18,7 +18,7 @@ public class Factory implements DigitalActionFactory {
     @Override
     public Set<Map.Entry<Category, Class<? extends Base>>> getClasses() {
         Set<Map.Entry<Category, Class<? extends Base>>> digitalActionClasses = new HashSet<>();
-        digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, IfThen.class));
+        digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, IfThenElse.class));
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, Many.class));
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, HoldAnything.class));
         digitalActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, DoAnalogAction.class));

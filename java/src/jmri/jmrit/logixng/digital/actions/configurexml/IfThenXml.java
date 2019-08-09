@@ -2,7 +2,7 @@ package jmri.jmrit.logixng.digital.actions.configurexml;
 
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.digital.actions.IfThen;
+import jmri.jmrit.logixng.digital.actions.IfThenElse;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
      */
     @Override
     public Element store(Object o) {
-        IfThen p = (IfThen) o;
+        IfThenElse p = (IfThenElse) o;
 
         Element element = new Element("if-then");
         element.setAttribute("class", this.getClass().getName());
@@ -72,15 +72,15 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
     public boolean load(Element shared, Element perNode) {
         
         Attribute typeAttribute = shared.getAttribute("type");
-        IfThen.Type type = IfThen.Type.valueOf(typeAttribute.getValue());
+        IfThenElse.Type type = IfThenElse.Type.valueOf(typeAttribute.getValue());
         
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
-        IfThen h;
+        IfThenElse h;
         if (uname == null) {
-            h = new IfThen(sys, type);
+            h = new IfThenElse(sys, type);
         } else {
-            h = new IfThen(sys, uname, type);
+            h = new IfThenElse(sys, uname, type);
         }
 
         loadCommon(h, shared);

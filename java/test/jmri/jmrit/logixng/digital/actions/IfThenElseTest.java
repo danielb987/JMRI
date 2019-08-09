@@ -11,26 +11,26 @@ import jmri.jmrit.logixng.DigitalActionWithEnableExecution;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 
 /**
- * Test IfThen
+ * Test IfThenElse
  * 
  * @author Daniel Bergqvist 2018
  */
-public class IfThenTest extends AbstractDigitalActionTestBase {
+public class IfThenElseTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        DigitalActionBean t = new IfThen("IQDA321", null, IfThen.Type.TRIGGER_ACTION);
+        DigitalActionBean t = new IfThenElse("IQDA321", null, IfThenElse.Type.TRIGGER_ACTION);
         Assert.assertNotNull("exists",t);
-        t = new IfThen("IQDA321", null, IfThen.Type.CONTINOUS_ACTION);
+        t = new IfThenElse("IQDA321", null, IfThenElse.Type.CONTINOUS_ACTION);
         Assert.assertNotNull("exists",t);
     }
     
     @Test
     public void testToString() {
-        DigitalActionBean a1 = new IfThen("IQDA321", null, IfThen.Type.TRIGGER_ACTION);
-        Assert.assertTrue("If E then A".equals(a1.getLongDescription()));
-        DigitalActionBean a2 = new IfThen("IQDA321", null, IfThen.Type.CONTINOUS_ACTION);
-        Assert.assertTrue("If E then A".equals(a2.getLongDescription()));
+        DigitalActionBean a1 = new IfThenElse("IQDA321", null, IfThenElse.Type.TRIGGER_ACTION);
+        Assert.assertEquals("strings are equal", "If then else", a1.getShortDescription());
+        DigitalActionBean a2 = new IfThenElse("IQDA321", null, IfThenElse.Type.CONTINOUS_ACTION);
+        Assert.assertEquals("strings are equal", "If E then A1 else A2", a2.getLongDescription());
     }
     
     @Test
@@ -50,7 +50,7 @@ public class IfThenTest extends AbstractDigitalActionTestBase {
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        _base = new IfThen("IQDA321", null, IfThen.Type.TRIGGER_ACTION);
+        _base = new IfThenElse("IQDA321", null, IfThenElse.Type.TRIGGER_ACTION);
     }
 
     @After

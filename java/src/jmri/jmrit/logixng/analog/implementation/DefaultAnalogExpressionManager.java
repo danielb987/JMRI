@@ -142,7 +142,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     }
 
     @Override
-    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
+    public FemaleAnalogExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
         
         LogixNGPreferences preferences = InstanceManager.getDefault(LogixNGPreferences.class);
@@ -156,7 +156,7 @@ public class DefaultAnalogExpressionManager extends AbstractManager<MaleAnalogEx
     }
 /*
     @Override
-    public FemaleAnalogExpressionSocket createFemaleAnalogExpressionSocket(
+    public FemaleAnalogExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName,
             MaleAnalogExpressionSocket maleSocket) {
         
