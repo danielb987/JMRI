@@ -12,7 +12,7 @@ import org.junit.runners.Suite;
     DoAnalogActionTest.class,
     DoStringActionTest.class,
     HoldAnythingTest.class,
-    IfThenTest.class,
+    IfThenElseTest.class,
     ManyTest.class,
     ShutdownComputerTest.class,
     SocketTest.class,
