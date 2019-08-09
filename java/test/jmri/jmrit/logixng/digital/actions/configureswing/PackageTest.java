@@ -10,7 +10,7 @@ import org.junit.runners.Suite;
     ActionTurnoutSwingTest.class,
     DoAnalogActionSwingTest.class,
     DoStringActionSwingTest.class,
-    IfThenSwingTest.class,
+    IfThenElseSwingTest.class,
     HoldAnythingSwingTest.class,
     ManySwingTest.class,
     ShutdownComputerSwingTest.class,

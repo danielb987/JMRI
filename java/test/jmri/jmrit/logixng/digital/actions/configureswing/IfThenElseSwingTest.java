@@ -14,13 +14,13 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist 2018
  */
-public class IfThenSwingTest {
+public class IfThenElseSwingTest {
 
     @Test
     public void testCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        IfThenSwing t = new IfThenSwing();
+        IfThenElseSwing t = new IfThenElseSwing();
         Assert.assertNotNull("exists",t);
     }
     
@@ -29,9 +29,9 @@ public class IfThenSwingTest {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Assert.assertTrue("panel is not null",
-            null != new IfThenSwing().getConfigPanel());
+            null != new IfThenElseSwing().getConfigPanel());
         Assert.assertTrue("panel is not null",
-            null != new IfThenSwing().getConfigPanel(new IfThenElse("IQDA1", IfThenElse.Type.TRIGGER_ACTION)));
+            null != new IfThenElseSwing().getConfigPanel(new IfThenElse("IQDA1", IfThenElse.Type.TRIGGER_ACTION)));
     }
     
     // The minimal setup for log4J

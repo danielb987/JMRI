@@ -15,9 +15,9 @@ import jmri.jmrit.logixng.MaleSocket;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2019
  */
-public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class IfThenElseXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
-    public IfThenXml() {
+    public IfThenElseXml() {
     }
 
     /**
@@ -108,5 +108,5 @@ public class IfThenXml extends jmri.managers.configurexml.AbstractNamedBeanManag
         log.error("Invalid method called");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(IfThenXml.class);
+    private final static Logger log = LoggerFactory.getLogger(IfThenElseXml.class);
 }

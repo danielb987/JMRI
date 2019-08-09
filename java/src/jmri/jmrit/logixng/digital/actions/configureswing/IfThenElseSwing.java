@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Configures an ActionTurnout object with a Swing JPanel.
  */
-public class IfThenSwing implements SwingConfiguratorInterface {
+public class IfThenElseSwing implements SwingConfiguratorInterface {
 
     private JPanel panel;
     IfThenElse.Type type = IfThenElse.Type.TRIGGER_ACTION;
