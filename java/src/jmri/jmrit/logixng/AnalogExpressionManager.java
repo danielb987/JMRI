@@ -31,10 +31,10 @@ public interface AnalogExpressionManager extends Manager<MaleAnalogExpressionSoc
 
     /**
      * Create a female socket for analog expressions
-     * @param parent
-     * @param listener
-     * @param socketName
-     * @return 
+     * @param parent the parent that will own the new female socket
+     * @param listener the listener for the female socket
+     * @param socketName the name of the new socket
+     * @return the new female socket
      */
     public FemaleAnalogExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
