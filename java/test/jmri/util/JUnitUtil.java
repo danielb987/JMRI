@@ -70,6 +70,7 @@ import jmri.jmrit.logixng.analog.implementation.DefaultAnalogExpressionManager;
 import jmri.jmrit.logixng.analog.implementation.DefaultAnalogActionManager;
 import jmri.jmrit.logixng.string.implementation.DefaultStringExpressionManager;
 import jmri.jmrit.logixng.string.implementation.DefaultStringActionManager;
+import jmri.jmrit.roster.RosterConfigManager;
 import jmri.jmrix.ConnectionConfigManager;
 import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrix.internal.InternalReporterManager;
@@ -97,6 +98,7 @@ import jmri.util.managers.SignalHeadManagerThrowExceptionScaffold;
 import jmri.util.managers.SignalMastManagerThrowExceptionScaffold;
 import jmri.util.managers.TurnoutManagerThrowExceptionScaffold;
 import jmri.util.managers.WarrantManagerThrowExceptionScaffold;
+import jmri.util.prefs.InitializationException;
 import jmri.util.prefs.JmriConfigurationProvider;
 import jmri.util.prefs.JmriPreferencesProvider;
 import jmri.util.prefs.JmriUserInterfaceConfigurationProvider;
@@ -621,7 +623,14 @@ public class JUnitUtil {
      * tests of {@code git-working-copy/temp}.
      */
     public static void resetFileUtilSupport() {
-        FileUtilSupport.getDefault().setUserFilesPath(FileUtil.getPreferencesPath());
+        try {
+            Field field = FileUtilSupport.class.getDeclaredField("defaultInstance");
+            field.setAccessible(true);
+            field.set(null, null);
+            FileUtilSupport.getDefault().setUserFilesPath(ProfileManager.getDefault().getActiveProfile(), FileUtil.getPreferencesPath());
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            log.error("Exception resetting FileUtilSupport", ex);
+        }
     }
 
     static public interface ReleaseUntil {
@@ -990,7 +999,7 @@ public class JUnitUtil {
         // use reflection to reset static fields in the class.
         try {
             Class<?> c = jmri.managers.DefaultShutDownManager.class;
-            java.lang.reflect.Field f = c.getDeclaredField("shuttingDown");
+            Field f = c.getDeclaredField("shuttingDown");
             f.setAccessible(true);
             f.set(sm, false);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException x) {
@@ -1026,13 +1035,23 @@ public class JUnitUtil {
         InstanceManager.setDefault(ConnectionConfigManager.class, new ConnectionConfigManager());
     }
 
+    public static void initRosterConfigManager() {
+        RosterConfigManager manager = new RosterConfigManager();
+        try {
+            manager.initialize(ProfileManager.getDefault().getActiveProfile());
+        } catch (InitializationException ex) {
+            log.error("Failed to initialize RosterConfigManager", ex);
+        }
+        InstanceManager.setDefault(RosterConfigManager.class, manager);
+    }
+
     /*
      * Use reflection to reset the jmri.Application instance
      */
     public static void resetApplication() {
         try {
             Class<?> c = jmri.Application.class;
-            java.lang.reflect.Field f = c.getDeclaredField("name");
+            Field f = c.getDeclaredField("name");
             f.setAccessible(true);
             f.set(new jmri.Application(), null);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException x) {
@@ -1046,7 +1065,7 @@ public class JUnitUtil {
     public static void resetAppsBase() {
         try {
             Class<?> c = apps.AppsBase.class;
-            java.lang.reflect.Field f = c.getDeclaredField("preInit");
+            Field f = c.getDeclaredField("preInit");
             f.setAccessible(true);
             f.set(null, false);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException x) {
@@ -1060,7 +1079,7 @@ public class JUnitUtil {
     public static void resetNodeIdentity() {
         try {
             Class<?> c = jmri.util.node.NodeIdentity.class;
-            java.lang.reflect.Field f = c.getDeclaredField("instance");
+            Field f = c.getDeclaredField("instance");
             f.setAccessible(true);
             f.set(c, null);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException x) {
