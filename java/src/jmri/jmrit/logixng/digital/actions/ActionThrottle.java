@@ -5,7 +5,6 @@ import jmri.InstanceManager;
 import jmri.LocoAddress;
 import jmri.ThrottleListener;
 import jmri.ThrottleManager;
-import jmri.jmris.AbstractThrottleServer;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.FemaleSocket;
@@ -16,6 +15,7 @@ import jmri.jmrit.logixng.DigitalExpressionManager;
 import jmri.jmrit.logixng.FemaleAnalogExpressionSocket;
 import jmri.jmrit.logixng.FemaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleAnalogExpressionSocket;
+import jmri.jmrit.logixng.MaleDigitalExpressionSocket;
 import jmri.jmrit.logixng.MaleSocket;
 import jmri.jmrit.logixng.SocketAlreadyConnectedException;
 import org.slf4j.Logger;
@@ -33,8 +33,14 @@ public class ActionThrottle extends AbstractDigitalAction
         implements FemaleSocketListener {
 
     private ActionThrottle _template;
+    
+    // The throttle if we have anyone or if a request is sent, null otherwise
     private DccThrottle _throttle;
     private ThrottleListener _throttleListener;
+    
+    // true if a throttle request is sent
+    private boolean _throttleIsRequested = false;
+    
     private String _locoAddressSocketSystemName;
     private String _locoSpeedSocketSystemName;
     private String _locoDirectionSocketSystemName;
@@ -125,7 +131,12 @@ public class ActionThrottle extends AbstractDigitalAction
                 || (newLocoAddress != _throttle.getLocoAddress().getNumber())) {
             
             if (_throttle != null) {
+                // Stop the loco
+                _throttle.setSpeedSetting(0);
+                // Release the loco
                 InstanceManager.getDefault(ThrottleManager.class).releaseThrottle(_throttle, _throttleListener);
+                _throttle = null;
+                _throttleIsRequested = false;
             }
             
             if (newLocoAddress != -1) {
@@ -160,9 +171,34 @@ public class ActionThrottle extends AbstractDigitalAction
                 
                 if (!result) {
                     log.warn("loco {} cannot be aquired", newLocoAddress);
+                } else {
+                    _throttleIsRequested = true;
                 }
             }
             
+        }
+        
+        // We have a throttle if _throttle is not null and _throttleIsRequested
+        // is false.
+        if ((_throttle != null) && (!_throttleIsRequested)) {
+            
+            double speed = 0;
+            boolean isForward = true;
+            
+            if (_locoSpeedSocket.isConnected()) {
+                speed =
+                        ((MaleAnalogExpressionSocket)_locoSpeedSocket.getConnectedSocket())
+                                .evaluate();
+            }
+            
+            if (_locoDirectionSocket.isConnected()) {
+                isForward =
+                        ((MaleDigitalExpressionSocket)_locoDirectionSocket.getConnectedSocket())
+                                .evaluate();
+            }
+
+            _throttle.setSpeedSetting((float) speed);
+            _throttle.setIsForward(isForward);
         }
         
 //        jmri.jmrit.throttle.ControlPanel b;
