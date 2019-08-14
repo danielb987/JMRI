@@ -216,10 +216,8 @@ public class DefaultStringExpressionManager extends AbstractManager<MaleStringEx
 
     @InvokeOnGuiThread  // this method is not thread safe
     static public DefaultStringExpressionManager instance() {
-        if (log.isDebugEnabled()) {
-            if (!ThreadingUtil.isGUIThread()) {
-                Log4JUtil.warnOnce(log, "instance() called on wrong thread");
-            }
+        if (!ThreadingUtil.isGUIThread()) {
+            Log4JUtil.warnOnce(log, "instance() called on wrong thread");
         }
         
         if (_instance == null) {

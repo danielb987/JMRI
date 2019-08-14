@@ -106,9 +106,7 @@ public class DefaultDigitalExpressionManagerXml extends jmri.managers.configurex
     public void loadExpressions(Element expressions) {
         
         List<Element> expressionList = expressions.getChildren();  // NOI18N
-        if (log.isDebugEnabled()) {
-            log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
-        }
+        log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
 //        DigitalExpressionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class);
 
         for (int i = 0; i < expressionList.size(); i++) {

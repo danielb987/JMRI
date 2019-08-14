@@ -107,9 +107,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
      */
     public void loadLogixNGs(Element logixNGs) {
         List<Element> logixNGList = logixNGs.getChildren("logixng");  // NOI18N
-        if (log.isDebugEnabled()) {
-            log.debug("Found " + logixNGList.size() + " logixngs");  // NOI18N
-        }
+        log.debug("Found " + logixNGList.size() + " logixngs");  // NOI18N
         LogixNG_Manager tm = InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
 
         for (int i = 0; i < logixNGList.size(); i++) {
@@ -128,10 +126,8 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
             if (logixNGList.get(i).getAttribute("enabled") != null) {  // NOI18N
                 yesno = logixNG_Element.getAttribute("enabled").getValue();  // NOI18N
             }
-            if (log.isDebugEnabled()) {
-                log.debug("create logixng: (" + sysName + ")("  // NOI18N
-                        + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-            }
+            log.debug("create logixng: (" + sysName + ")("  // NOI18N
+                    + (userName == null ? "<null>" : userName) + ")");  // NOI18N
 
             // Create a new LogixNG but don't setup the initial tree.
             DefaultLogixNG logixNG = (DefaultLogixNG)tm.createLogixNG(sysName, userName);

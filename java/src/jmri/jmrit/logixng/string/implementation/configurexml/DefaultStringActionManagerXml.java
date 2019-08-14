@@ -110,9 +110,7 @@ public class DefaultStringActionManagerXml extends jmri.managers.configurexml.Ab
     public void loadActions(Element actions) {
         
         List<Element> actionList = actions.getChildren();  // NOI18N
-        if (log.isDebugEnabled()) {
-            log.debug("Found " + actionList.size() + " actions");  // NOI18N
-        }
+        log.debug("Found " + actionList.size() + " actions");  // NOI18N
 
         for (int i = 0; i < actionList.size(); i++) {
             

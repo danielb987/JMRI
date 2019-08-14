@@ -111,9 +111,7 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
     public void loadActions(Element actions) {
         
         List<Element> actionList = actions.getChildren();  // NOI18N
-        if (log.isDebugEnabled()) {
-            log.debug("Found " + actionList.size() + " actions");  // NOI18N
-        }
+        log.debug("Found {} actions", actionList.size());  // NOI18N
 
         for (int i = 0; i < actionList.size(); i++) {
             
@@ -127,7 +125,7 @@ public class DefaultAnalogActionManagerXml extends jmri.managers.configurexml.Ab
                     clazz = Class.forName(className);
                     xmlClasses.put(className, clazz);
                 } catch (ClassNotFoundException ex) {
-                    log.error("cannot load class " + className, ex);
+                    log.error("cannot load class {}", className, ex);
                 }
             }
             

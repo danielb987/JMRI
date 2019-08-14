@@ -115,10 +115,8 @@ public class DefaultConditionalNGXml extends jmri.managers.configurexml.Abstract
         if (conditionalNG_Element.getAttribute("enabled") != null) {  // NOI18N
             yesno = conditionalNG_Element.getAttribute("enabled").getValue();  // NOI18N
         }
-        if (log.isDebugEnabled()) {
-            log.debug("create conditionalng: (" + sysName + ")("  // NOI18N
-                    + (userName == null ? "<null>" : userName) + ")");  // NOI18N
-        }
+        log.debug("create conditionalng: (" + sysName + ")("  // NOI18N
+                + (userName == null ? "<null>" : userName) + ")");  // NOI18N
         
         // Create a new ConditionalNG but don't setup the initial tree.
         DefaultConditionalNG conditionalNG = new DefaultConditionalNG(sysName, userName);
