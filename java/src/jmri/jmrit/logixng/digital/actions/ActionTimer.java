@@ -25,7 +25,7 @@ public class ActionTimer extends AbstractDigitalAction
     private ActionTimer _template;
     private String _actionSocketSystemName;
     private final FemaleDigitalActionSocket _actionSocket;
-    private final Timer _timer = new Timer(true);  // This must not be final since ActionTimerTest changes it.
+    private final Timer _timer = new Timer(true);
     long _delay = 0;
     boolean _isActive = false;
     
