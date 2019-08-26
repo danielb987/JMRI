@@ -10,7 +10,7 @@ import java.util.BitSet;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.Base;
@@ -40,7 +40,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
     /**
      * Create a new instance of Antecedent with system name and user name.
      */
-    public Antecedent(@Nonnull String sys, @Nullable String user,
+    public Antecedent(@Nonnull String sys, @CheckForNull String user,
             @Nonnull String antecedent) {
         super(sys, user);
         Objects.requireNonNull(antecedent, "antecedent must not be null");
@@ -48,7 +48,7 @@ public class Antecedent extends AbstractDigitalExpression implements FemaleSocke
         init();
     }
 
-    public Antecedent(@Nonnull String sys, @Nullable String user,
+    public Antecedent(@Nonnull String sys, @CheckForNull String user,
             @Nonnull String antecedent,
             List<Map.Entry<String, String>> expressionSystemNames)
             throws BadUserNameException, BadSystemNameException {

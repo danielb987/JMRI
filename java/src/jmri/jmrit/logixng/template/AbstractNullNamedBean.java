@@ -2,7 +2,7 @@ package jmri.jmrit.logixng.template;
 
 //import jmri.;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.implementation.AbstractBase;
@@ -35,7 +35,7 @@ public abstract class AbstractNullNamedBean extends AbstractBase {
      *                                               normalized
      * @throws jmri.NamedBean.BadSystemNameException if the system name is null
      */
-    protected AbstractNullNamedBean(@Nonnull String sys, @Nullable String user) throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
+    protected AbstractNullNamedBean(@Nonnull String sys, @CheckForNull String user) throws NamedBean.BadUserNameException, NamedBean.BadSystemNameException {
         super(sys, user);
     }
 
