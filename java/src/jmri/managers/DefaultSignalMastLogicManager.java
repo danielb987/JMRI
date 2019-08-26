@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import jmri.InstanceManager;
 import jmri.JmriException;
@@ -300,21 +301,23 @@ public class DefaultSignalMastLogicManager
             throw e;
         }
 
-        for (SignalMast key : validPaths.keySet()) {
+        for (Map.Entry<SignalMast, List<NamedBean>> entry : validPaths.entrySet()) {
+            SignalMast key = entry.getKey();
             SignalMastLogic sml = getSignalMastLogic(key);
             if (sml == null) {
                 sml = newSignalMastLogic(key);
             }
-            List<NamedBean> validDestMast = validPaths.get(key);
-            for (int i = 0; i < validDestMast.size(); i++) {
-                if (!sml.isDestinationValid((SignalMast) validDestMast.get(i))) {
+
+            List<NamedBean> validDestMast = entry.getValue();
+            for (NamedBean sm : validDestMast) {
+                if (!sml.isDestinationValid((SignalMast) sm)) {
                     try {
-                        sml.setDestinationMast((SignalMast) validDestMast.get(i));
-                        sml.useLayoutEditorDetails(true, true, (SignalMast) validDestMast.get(i));
-                        sml.useLayoutEditor(true, (SignalMast) validDestMast.get(i));
+                        sml.setDestinationMast((SignalMast) sm);
+                        sml.useLayoutEditorDetails(true, true, (SignalMast) sm);
+                        sml.useLayoutEditor(true, (SignalMast) sm);
                     } catch (JmriException e) {
                         //log.debug("We shouldn't get an exception here");
-                        log.error("Exception found when adding pair " + source.getDisplayName() + " to destination " + validDestMast.get(i).getDisplayName() + "\n" + e.toString());
+                        log.error("Exception found when adding pair {}  to destination {}/\n{}", source.getDisplayName(), sm.getDisplayName(), e.toString());
                         //throw e;
                     }
                 }
