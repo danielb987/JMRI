@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import jmri.Reportable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +111,7 @@ public final class TypeConversionUtil {
      * @param do_i18n true if internationalization should be done, false otherwise
      * @return the boolean value
      */
-    public static boolean convertToBoolean(@Nullable Object value, boolean do_i18n) {
+    public static boolean convertToBoolean(@CheckForNull Object value, boolean do_i18n) {
         if (value == null) {
             return false;
         }
@@ -182,7 +182,7 @@ public final class TypeConversionUtil {
      * @param value the value to convert
      * @return the long value
      */
-    public static long convertToLong(@Nullable Object value) {
+    public static long convertToLong(@CheckForNull Object value) {
         if (value == null) {
             log.warn("the object is null and the returned number is therefore 0.0");
             return 0;
@@ -235,7 +235,7 @@ public final class TypeConversionUtil {
      * @param do_i18n true if internationalization should be done, false otherwise
      * @return the double value
      */
-    public static double convertToDouble(@Nullable Object value, boolean do_i18n) {
+    public static double convertToDouble(@CheckForNull Object value, boolean do_i18n) {
         if (value == null) {
             log.warn("the object is null and the returned number is therefore 0.0");
             return 0.0d;
@@ -287,7 +287,7 @@ public final class TypeConversionUtil {
      * @return the String value
      */
     @Nonnull
-    public static String convertToString(@Nullable Object value, boolean do_i18n) {
+    public static String convertToString(@CheckForNull Object value, boolean do_i18n) {
         if (value == null) {
             return "";
         }
