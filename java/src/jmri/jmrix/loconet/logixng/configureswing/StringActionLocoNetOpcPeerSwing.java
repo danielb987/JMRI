@@ -31,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Configures an ActionTurnout object with a Swing JPanel.
+ * Configures an StringActionLocoNetOpcPeer object with a Swing JPanel.
+ * 
+ * @author Daniel Bergqvist Copyright 2019
  */
 public class StringActionLocoNetOpcPeerSwing extends AbstractActionSwing {
 

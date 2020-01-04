@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * that the length is a multiple of three. The longest string that can be sent
  * is 129 characters.
  * 
- * @author Daniel Bergqvist Copyright 2018
+ * @author Daniel Bergqvist Copyright 2019
  */
 public class StringActionLocoNetOpcPeer extends AbstractStringAction
         implements LocoNetListener {

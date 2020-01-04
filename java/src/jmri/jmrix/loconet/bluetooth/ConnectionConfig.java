@@ -5,6 +5,9 @@ import java.util.Vector;
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import jmri.jmrix.loconet.nodes.swing.ConfigNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +16,9 @@ import org.slf4j.LoggerFactory;
  * connection via a LocoNetBluetoothAdapter object.
  */
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
+
+    private final JPanel panel = new JPanel();
+    private final ConfigNodes configNodes = new ConfigNodes();
 
     /**
      * Ctor for an object being created during load process; Swing init is
@@ -28,6 +34,18 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
      */
     public ConnectionConfig() {
         super();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadDetails(JPanel details) {
+        panel.removeAll();
+        super.loadDetails(panel);
+        details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
+        details.add(panel);
+        details.add(configNodes.getButton());
     }
 
     @Override
