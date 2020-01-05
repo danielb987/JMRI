@@ -21,7 +21,7 @@ import jmri.AnalogIOManager;
  * @author	Bob Jacobsen 2003, 2006, 2008
  * @author      Daniel Bergqvist Copyright (C) 2020
  */
-public class ProxyAnalogIO_ManagerTest {
+public class ProxyStringIOManagerTest {
 
     public String getSystemName(int i) {
         return "JV" + i;

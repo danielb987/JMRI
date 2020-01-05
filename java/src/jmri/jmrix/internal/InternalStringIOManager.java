@@ -3,14 +3,14 @@ package jmri.jmrix.internal;
 import javax.annotation.Nonnull;
 
 /**
- * Implement a AnalogIOManager for "Internal" (virtual) AnalogIOs.
+ * Implement a StringIOManager for "Internal" (virtual) StringIOs.
  *
  * @author Bob Jacobsen Copyright (C) 2009
  * @author Daniel Bergqvist Copyright (C) 2020
  */
-public class InternalAnalogIOManager extends jmri.managers.AbstractAnalogIOManager {
+public class InternalStringIOManager extends jmri.managers.AbstractStringIOManager {
 
-    public InternalAnalogIOManager(InternalSystemConnectionMemo memo) {
+    public InternalStringIOManager(InternalSystemConnectionMemo memo) {
         super(memo);
     }
 
