@@ -1,5 +1,6 @@
 package jmri.jmrix.loconet.nodes.swing;
 
+import java.awt.GraphicsEnvironment;
 import jmri.jmrix.loconet.nodes.*;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
@@ -20,6 +21,8 @@ public class NodeConfigManagerFrameTest {
     
     @Test
     public void testCTor() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        
         NodeConfigManagerFrame b = new NodeConfigManagerFrame(memo);
         Assert.assertNotNull("exists", b);
     }

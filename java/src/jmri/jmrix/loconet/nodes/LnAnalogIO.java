@@ -130,7 +130,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
                 if (min < 0) throw new IllegalArgumentException("Min value is less than 0");
                 break;
             case ThirtyTwoBitSigned:
-                if (min < -2147483648) throw new IllegalArgumentException("Min value is less than -2147483648");
+                // min is a 32 bit signed integer and cannot be to small
                 break;
             case Float:
                 throw new UnsupportedOperationException("Use setMin(double) to set min value for floating types");
@@ -155,7 +155,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
                 if (max > 65535) throw new IllegalArgumentException("Min value is greater than 65535");
                 break;
             case ThirtyTwoBitSigned:
-                if (max > 2147483647) throw new IllegalArgumentException("Min value is greater than 2147483647");
+                // max is a 32 bit signed integer and cannot be to big
                 break;
             case Float:
                 throw new UnsupportedOperationException("Use setMax(double) to set max value for floating types");

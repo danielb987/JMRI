@@ -1322,9 +1322,9 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         setNodeParameters();
 
         // register any orphan sensors that this node may have
-        if (_memo.getSensorManager() != null) {
+//        if (_memo.getSensorManager() != null) {
 //            (_memo.getSensorManager()).registerSensorsForNode(curNode);
-        }
+//        }
 
         // reset text displays after succefully adding node
         resetNotes();
