@@ -13,6 +13,7 @@ import org.junit.runners.Suite;
         jmri.jmrix.loconet.soundloader.PackageTest.class,
         jmri.jmrix.loconet.spjfile.PackageTest.class,
         jmri.jmrix.loconet.messageinterp.PackageTest.class,
+        jmri.jmrix.loconet.nodes.PackageTest.class,
         SlotManagerTest.class,
         LocoNetSlotTest.class,
         LnOpsModeProgrammerTest.class,

@@ -1,6 +1,9 @@
 package jmri.jmrix.loconet.usb_dcs52;
 
-import jmri.util.SystemType;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
+import jmri.jmrix.loconet.nodes.swing.ConfigNodes;
 
 /**
  * Definition of objects to handle configuring a DCS52 USB layout connection via a
@@ -13,6 +16,9 @@ import jmri.util.SystemType;
  */
 
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
+
+    private final JPanel panel = new JPanel();
+    private final ConfigNodes configNodes = new ConfigNodes();
 
     /**
      * Ctor for an object being created during load process; Swing init is
@@ -30,6 +36,20 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
      */
     public ConnectionConfig() {
         super();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadDetails(JPanel details) {
+        panel.removeAll();
+        super.loadDetails(panel);
+        details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
+        details.add(panel);
+        
+        details.add(configNodes.getButton(
+                (LocoNetSystemConnectionMemo)adapter.getSystemConnectionMemo()));
     }
 
     @Override

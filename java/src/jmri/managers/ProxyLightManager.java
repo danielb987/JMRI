@@ -11,7 +11,7 @@ import jmri.LightManager;
  * @author	Bob Jacobsen Copyright (C) 2010, 2018
  * @author	Dave Duchamp Copyright (C) 2004
  */
-public class ProxyLightManager extends AbstractProxyManager<Light>
+public class ProxyLightManager extends AbstractProvidingProxyManager<Light>
         implements LightManager {
 
     public ProxyLightManager() {

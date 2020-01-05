@@ -1,8 +1,11 @@
 package jmri.jmrix.loconet.locormi;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
+import jmri.jmrix.loconet.nodes.swing.ConfigNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +19,9 @@ import org.slf4j.LoggerFactory;
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
 
     private final static Logger log = LoggerFactory.getLogger(ConnectionConfig.class);
+
+    private final JPanel panel = new JPanel();
+    private final ConfigNodes configNodes = new ConfigNodes();
 
     /**
      * Ctor for an object being created during load process; Swing init is
@@ -68,9 +74,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return lmc;
     }
 
-    /**
+    /*.*
      * {@inheritDoc}
-     */
+     *./
     @Override
     public void loadDetails(JPanel details) {
         //details.setLayout(new BoxLayout(details, BoxLayout.X_AXIS));
@@ -78,6 +84,26 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         host = new JTextField(20);
         host.setText(hostName);
         details.add(host);
+    }
+*/
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadDetails(JPanel details) {
+        panel.removeAll();
+        
+        //panel.setLayout(new BoxLayout(details, BoxLayout.X_AXIS));
+        panel.add(new JLabel("Server hostname:"));
+        host = new JTextField(20);
+        host.setText(hostName);
+        panel.add(host);
+        
+        details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
+        details.add(panel);
+        
+        details.add(configNodes.getButton(
+                (LocoNetSystemConnectionMemo)adapter.getSystemConnectionMemo()));
     }
 
     public boolean isOptList2Advanced() {

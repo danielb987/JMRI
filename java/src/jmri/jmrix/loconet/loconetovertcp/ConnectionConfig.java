@@ -1,5 +1,10 @@
 package jmri.jmrix.loconet.loconetovertcp;
 
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
+import jmri.jmrix.loconet.nodes.swing.ConfigNodes;
+
 
 /**
  * Definition of objects to handle configuring a LocoNetOverTcp layout
@@ -10,6 +15,9 @@ package jmri.jmrix.loconet.loconetovertcp;
  *
  */
 public class ConnectionConfig extends jmri.jmrix.AbstractNetworkConnectionConfig {
+
+    private final JPanel panel = new JPanel();
+    private final ConfigNodes configNodes = new ConfigNodes();
 
     /**
      * Ctor for an object being created during load process; Swing init is
@@ -26,6 +34,20 @@ public class ConnectionConfig extends jmri.jmrix.AbstractNetworkConnectionConfig
      */
     public ConnectionConfig() {
         super();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadDetails(JPanel details) {
+        panel.removeAll();
+        super.loadDetails(panel);
+        details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
+        details.add(panel);
+        
+        details.add(configNodes.getButton(
+                (LocoNetSystemConnectionMemo)adapter.getSystemConnectionMemo()));
     }
 
     @Override
