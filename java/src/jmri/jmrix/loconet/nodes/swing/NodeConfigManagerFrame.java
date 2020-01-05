@@ -452,14 +452,14 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             cmriNode.clear();
         }
 
-        SerialNode node = null;
+//        SerialNode node = null;
 //        SerialNode node = (SerialNode) _memo.getLnTrafficController().getNode(0);
 //        int index = 1;
-        while (node != null) {
-            cmriNode.add(node);
+//        while (node != null) {
+//            cmriNode.add(node);
 //            node = (SerialNode) _memo.getLnTrafficController().getNode(index);
 //            index++;
-        }
+//        }
 
         numConfigNodes = cmriNode.size();
     }

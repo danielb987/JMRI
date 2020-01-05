@@ -102,8 +102,12 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
         details.add(panel);
         
-        details.add(configNodes.getButton(
-                (LocoNetSystemConnectionMemo)adapter.getSystemConnectionMemo()));
+        // The test jmri.jmrix.loconet.locormi.ConnectionConfigTest doesn't
+        // initialize 'adapter'.
+        if (adapter != null) {
+            details.add(configNodes.getButton(
+                    (LocoNetSystemConnectionMemo)adapter.getSystemConnectionMemo()));
+        }
     }
 
     public boolean isOptList2Advanced() {
