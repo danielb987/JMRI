@@ -15,12 +15,12 @@ public class LocoNetNode {
     private int _serialNumber = 0;
     private String _name;
     
-    private final LocoNetSystemConnectionMemo _lm;
+//    private final LocoNetSystemConnectionMemo _lm;
 //    private final LnTrafficController _tc;
     
     public LocoNetNode(int address, LocoNetSystemConnectionMemo lm) {
         _address = address;
-        _lm = lm;
+//        _lm = lm;
 //        _tc = _lm.getLnTrafficController();
     }
     
