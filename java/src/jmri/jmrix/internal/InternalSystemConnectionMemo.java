@@ -74,6 +74,7 @@ public class InternalSystemConnectionMemo extends jmri.jmrix.SystemConnectionMem
     private InternalLightManager lightManager;
     private InternalReporterManager reporterManager;
     private InternalTurnoutManager turnoutManager;
+    private InternalAnalogIOManager analogIOManager;
 
     private jmri.managers.DefaultPowerManager powerManager;
     private InternalConsistManager consistManager;
@@ -118,6 +119,16 @@ public class InternalSystemConnectionMemo extends jmri.jmrix.SystemConnectionMem
             InstanceManager.setTurnoutManager(turnoutManager);
         }
         return turnoutManager;
+    }
+
+    public InternalAnalogIOManager getAnalogIOManager() {
+        if (analogIOManager == null) {
+            log.debug("Create InternalAnalogIOManager by request");
+            analogIOManager = new InternalAnalogIOManager(this);
+            // special due to ProxyManager support
+            InstanceManager.setAnalogIOManager(analogIOManager);
+        }
+        return analogIOManager;
     }
 
     public jmri.managers.DefaultPowerManager getPowerManager() {

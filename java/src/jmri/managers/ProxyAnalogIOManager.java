@@ -2,7 +2,7 @@ package jmri.managers;
 
 import javax.annotation.Nonnull;
 import jmri.AnalogIO;
-import jmri.AnalogIO_Manager;
+import jmri.AnalogIOManager;
 
 /**
  * Implementation of a AnalogIOManager that can serve as a proxy for multiple
@@ -12,10 +12,10 @@ import jmri.AnalogIO_Manager;
  * @author	Dave Duchamp Copyright (C) 2004
  * @author	Daniel Bergqvist Copyright (C) 2020
  */
-public class ProxyAnalogIO_Manager extends AbstractProxyManager<AnalogIO>
-        implements AnalogIO_Manager {
+public class ProxyAnalogIOManager extends AbstractProxyManager<AnalogIO>
+        implements AnalogIOManager {
 
-    public ProxyAnalogIO_Manager() {
+    public ProxyAnalogIOManager() {
         super();
     }
 
@@ -26,8 +26,7 @@ public class ProxyAnalogIO_Manager extends AbstractProxyManager<AnalogIO>
 
     @Override
     protected AbstractManager<AnalogIO> makeInternalManager() {
-        throw new RuntimeException("Not implemented yet");
-//        return jmri.InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class).getAnalogIOManager();
+        return jmri.InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class).getAnalogIOManager();
     }
 
     @Override

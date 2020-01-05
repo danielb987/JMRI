@@ -32,6 +32,7 @@ import jmri.jmrit.simpleclock.SimpleTimebase;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import org.openide.util.lookup.ServiceProvider;
+import jmri.AnalogIOManager;
 
 /**
  * Provide the usual default implementations for the
@@ -63,6 +64,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         InternalSystemConnectionMemo memo = InstanceManager.getDefault(InternalSystemConnectionMemo.class);
         // In order for getDefault() to create a new object, the manager also
         // needs to be added to the method getInitalizes() below.
+
+        if (type == AnalogIOManager.class) {
+            return new ProxyAnalogIOManager();
+        }
 
         if (type == AudioManager.class) {
             return new DefaultAudioManager(memo);
@@ -154,7 +159,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
     @Override
     public Set<Class<?>> getInitalizes() {
         Set<Class<?>> set = super.getInitalizes();
-        set.addAll(Arrays.asList(
+        set.addAll(Arrays.asList(AnalogIOManager.class,
                 AudioManager.class,
                 BlockManager.class,
                 ClockControl.class,

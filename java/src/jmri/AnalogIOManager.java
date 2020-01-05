@@ -5,6 +5,6 @@ package jmri;
  * 
  * @author Daniel Bergqvist Copyright (C) 2020
  */
-public interface AnalogIO_Manager extends Manager<AnalogIO> {
+public interface AnalogIOManager extends Manager<AnalogIO> {
 
 }
