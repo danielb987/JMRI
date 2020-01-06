@@ -23,6 +23,7 @@ import jmri.SignalHeadManager;
 import jmri.SignalMastLogicManager;
 import jmri.SignalMastManager;
 import jmri.SignalSystemManager;
+import jmri.StringIOManager;
 import jmri.Timebase;
 import jmri.TurnoutManager;
 import jmri.implementation.AbstractInstanceInitializer;
@@ -133,6 +134,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultSignalSystemManager(memo);
         }
 
+        if (type == StringIOManager.class) {
+            return new ProxyStringIOManager();
+        }
+
         if (type == Timebase.class) {
             Timebase timebase = new SimpleTimebase();
             InstanceManager.getOptionalDefault(ConfigureManager.class).ifPresent((cm) -> {
@@ -177,6 +182,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 SignalMastLogicManager.class,
                 SignalMastManager.class,
                 SignalSystemManager.class,
+                StringIOManager.class,
                 Timebase.class,
                 TurnoutManager.class,
                 VSDecoderManager.class

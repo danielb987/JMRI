@@ -1,11 +1,12 @@
 package jmri.managers;
 
 import java.beans.PropertyChangeListener;
-import jmri.AnalogIO;
+import javax.annotation.Nonnull;
+import jmri.StringIO;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.implementation.AbstractNamedBean;
-import jmri.jmrix.internal.InternalAnalogIOManager;
+import jmri.jmrix.internal.InternalStringIOManager;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -13,10 +14,10 @@ import org.junit.Test;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import jmri.AnalogIOManager;
+import jmri.StringIOManager;
 
 /**
- * Test the ProxyAnalogIOManager.
+ * Test the ProxyStringIOManager.
  *
  * @author	Bob Jacobsen 2003, 2006, 2008
  * @author      Daniel Bergqvist Copyright (C) 2020
@@ -24,10 +25,10 @@ import jmri.AnalogIOManager;
 public class ProxyStringIOManagerTest {
 
     public String getSystemName(int i) {
-        return "JV" + i;
+        return "JC" + i;
     }
 
-    protected AnalogIOManager l = null;	// holds objects under test
+    protected StringIOManager l = null;	// holds objects under test
 
     static protected boolean listenerResult = false;
 
@@ -39,8 +40,8 @@ public class ProxyStringIOManagerTest {
         }
     }
 
-    private AnalogIO newAnalogIO(String sysName, String userName) {
-        return new MyAnalogIO(sysName, userName);
+    private StringIO newStringIO(String sysName, String userName) {
+        return new MyStringIO(sysName, userName);
     }
     
     @Test
@@ -49,9 +50,9 @@ public class ProxyStringIOManagerTest {
     }
 
     @Test
-    public void testAnalogIOPutGet() {
+    public void testStringIOPutGet() {
         // create
-        AnalogIO t = newAnalogIO(getSystemName(getNumToTest1()), "mine");
+        StringIO t = newStringIO(getSystemName(getNumToTest1()), "mine");
         l.register(t);
         // check
         Assert.assertTrue("real object returned ", t != null);
@@ -62,7 +63,7 @@ public class ProxyStringIOManagerTest {
     @Test
     public void testDefaultSystemName() {
         // create
-        AnalogIO t = l.provideAnalogIO("" + getNumToTest1());
+        StringIO t = l.provideStringIO("" + getNumToTest1());
         // check
         Assert.assertTrue("real object returned ", t != null);
         Assert.assertTrue("system name correct ", t == l.getBySystemName(getSystemName(getNumToTest1())));
@@ -71,10 +72,10 @@ public class ProxyStringIOManagerTest {
     @Test(expected=IllegalArgumentException.class)
     public void testProvideFailure() {
         try {
-            l.provideAnalogIO("");
+            l.provideStringIO("");
             Assert.fail("didn't throw");
         } catch (IllegalArgumentException ex) {
-            JUnitAppender.assertErrorMessage("Invalid system name for AnalogIO: System name must start with \"" + l.getSystemNamePrefix() + "\".");
+            JUnitAppender.assertErrorMessage("Invalid system name for StringIO: System name must start with \"" + l.getSystemNamePrefix() + "\".");
             throw ex;
         }
     }
@@ -82,13 +83,13 @@ public class ProxyStringIOManagerTest {
     @Test
     public void testSingleObject() {
         // test that you always get the same representation
-        AnalogIO t1 = newAnalogIO(getSystemName(getNumToTest1()), "mine");
+        StringIO t1 = newStringIO(getSystemName(getNumToTest1()), "mine");
         l.register(t1);
         Assert.assertTrue("t1 real object returned ", t1 != null);
         Assert.assertTrue("same by user ", t1 == l.getByUserName("mine"));
         Assert.assertTrue("same by system ", t1 == l.getBySystemName(getSystemName(getNumToTest1())));
 
-//        AnalogIO t2 = newAnalogIO(getSystemName(getNumToTest1()), "mine");
+//        StringIO t2 = newStringIO(getSystemName(getNumToTest1()), "mine");
 //        Assert.assertTrue("t2 real object returned ", t2 != null);
         // check
 //        Assert.assertTrue("same new ", t1 == t2);
@@ -103,27 +104,27 @@ public class ProxyStringIOManagerTest {
 /*
     @Test
     public void testUpperLower() {
-        AnalogIO t = l.provideAnalogIO("" + getNumToTest2());
+        StringIO t = l.provideStringIO("" + getNumToTest2());
         String name = t.getSystemName();
-        Assert.assertNull(l.getAnalogIO(name.toLowerCase()));
+        Assert.assertNull(l.getStringIO(name.toLowerCase()));
     }
 */
     @Test
     public void testRename() {
         // get light
-        AnalogIO t1 = newAnalogIO(getSystemName(getNumToTest1()), "before");
+        StringIO t1 = newStringIO(getSystemName(getNumToTest1()), "before");
         Assert.assertNotNull("t1 real object ", t1);
         l.register(t1);
         t1.setUserName("after");
-        AnalogIO t2 = l.getByUserName("after");
+        StringIO t2 = l.getByUserName("after");
         Assert.assertEquals("same object", t1, t2);
         Assert.assertEquals("no old object", null, l.getByUserName("before"));
     }
 /*
     @Test
     public void testTwoNames() {
-        AnalogIO il211 = l.provideAnalogIO("IL211");
-        AnalogIO jl211 = l.provideAnalogIO("JL211");
+        StringIO il211 = l.provideStringIO("IL211");
+        StringIO jl211 = l.provideStringIO("JL211");
 
         Assert.assertNotNull(il211);
         Assert.assertNotNull(jl211);
@@ -132,7 +133,7 @@ public class ProxyStringIOManagerTest {
 
     @Test
     public void testDefaultNotInternal() {
-        AnalogIO lut = l.provideAnalogIO("211");
+        StringIO lut = l.provideStringIO("211");
 
         Assert.assertNotNull(lut);
         Assert.assertEquals("JL211", lut.getSystemName());
@@ -140,10 +141,10 @@ public class ProxyStringIOManagerTest {
 
     @Test
     public void testProvideUser() {
-        AnalogIO l1 = l.provideAnalogIO("211");
+        StringIO l1 = l.provideStringIO("211");
         l1.setUserName("user 1");
-        AnalogIO l2 = l.provideAnalogIO("user 1");
-        AnalogIO l3 = l.getAnalogIO("user 1");
+        StringIO l2 = l.provideStringIO("user 1");
+        StringIO l3 = l.getStringIO("user 1");
 
         Assert.assertNotNull(l1);
         Assert.assertNotNull(l2);
@@ -152,36 +153,36 @@ public class ProxyStringIOManagerTest {
         Assert.assertEquals(l3, l2);
         Assert.assertEquals(l1, l3);
 
-        AnalogIO l4 = l.getAnalogIO("JLuser 1");
+        StringIO l4 = l.getStringIO("JLuser 1");
         Assert.assertNull(l4);
     }
 */
     @Test
     public void testInstanceManagerIntegration() {
         jmri.util.JUnitUtil.resetInstanceManager();
-        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class));
+        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class));
 
-//        jmri.util.JUnitUtil.initInternalAnalogIOManager();
+//        jmri.util.JUnitUtil.initInternalStringIOManager();
 
-        Assert.assertTrue(InstanceManager.getDefault(AnalogIOManager.class) instanceof ProxyAnalogIOManager);
+        Assert.assertTrue(InstanceManager.getDefault(StringIOManager.class) instanceof ProxyStringIOManager);
 
-        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class));
-        AnalogIO b = newAnalogIO("IV1", null);
-        InstanceManager.getDefault(AnalogIOManager.class).register(b);
-        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class).getBySystemName("IV1"));
-//        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class).provideAnalogIO("IL1"));
+        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class));
+        StringIO b = newStringIO("IC1", null);
+        InstanceManager.getDefault(StringIOManager.class).register(b);
+        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class).getBySystemName("IC1"));
+//        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class).provideStringIO("IL1"));
 
-        InternalAnalogIOManager m = new InternalAnalogIOManager(new InternalSystemConnectionMemo("J", "Juliet"));
-        InstanceManager.setAnalogIOManager(m);
+        InternalStringIOManager m = new InternalStringIOManager(new InternalSystemConnectionMemo("J", "Juliet"));
+        InstanceManager.setStringIOManager(m);
 
-        b = newAnalogIO("IV2", null);
-        InstanceManager.getDefault(AnalogIOManager.class).register(b);
-        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class).getBySystemName("IV1"));
-//        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class).provideAnalogIO("JL1"));
-        b = newAnalogIO("IV3", null);
-        InstanceManager.getDefault(AnalogIOManager.class).register(b);
-        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class).getBySystemName("IV1"));
-//        Assert.assertNotNull(InstanceManager.getDefault(AnalogIOManager.class).provideAnalogIO("IL2"));
+        b = newStringIO("IC2", null);
+        InstanceManager.getDefault(StringIOManager.class).register(b);
+        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class).getBySystemName("IC1"));
+//        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class).provideStringIO("JL1"));
+        b = newStringIO("IC3", null);
+        InstanceManager.getDefault(StringIOManager.class).register(b);
+        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class).getBySystemName("IC1"));
+//        Assert.assertNotNull(InstanceManager.getDefault(StringIOManager.class).provideStringIO("IL2"));
     }
 
     /**
@@ -202,8 +203,8 @@ public class ProxyStringIOManagerTest {
     public void setUp() {
         JUnitUtil.setUp();
         // create and register the manager object
-        l = new InternalAnalogIOManager(new InternalSystemConnectionMemo("J", "Juliet"));
-        jmri.InstanceManager.setAnalogIOManager(l);
+        l = new InternalStringIOManager(new InternalSystemConnectionMemo("J", "Juliet"));
+        jmri.InstanceManager.setStringIOManager(l);
     }
 
     @After
@@ -212,11 +213,11 @@ public class ProxyStringIOManagerTest {
     }
 
     
-    private class MyAnalogIO extends AbstractNamedBean implements AnalogIO {
+    private class MyStringIO extends AbstractNamedBean implements StringIO {
 
-        double _value = 0.0;
+        String _value = "";
         
-        public MyAnalogIO(String sys, String userName) {
+        public MyStringIO(String sys, String userName) {
             super(sys, userName);
         }
         
@@ -232,39 +233,19 @@ public class ProxyStringIOManagerTest {
 
         @Override
         public String getBeanType() {
-            return "AnalogIO";
+            return "StringIO";
         }
 
         @Override
-        public void setCommandedAnalogValue(double value) throws JmriException {
+        public void setCommandedStringValue(@Nonnull String value) throws JmriException {
             _value = value;
         }
 
         @Override
-        public double getCommandedAnalogValue() {
+        public String getCommandedStringValue() {
             return _value;
         }
 
-        @Override
-        public double getMin() {
-            return Float.MIN_VALUE;
-        }
-
-        @Override
-        public double getMax() {
-            return Float.MAX_VALUE;
-        }
-
-        @Override
-        public double getResolution() {
-            return 0.1;
-        }
-
-        @Override
-        public AbsoluteOrRelative getAbsoluteOrRelative() {
-            return AbsoluteOrRelative.ABSOLUTE;
-        }
-    
     }
     
 }
