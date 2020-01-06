@@ -12,7 +12,7 @@ import jmri.implementation.AbstractAnalogIO;
  */
 public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
 
-    private LocoNetNode _node;
+    private LnNode _node;
     private int _address;
     
     private Type _type = Type.EightBitSigned;
@@ -28,7 +28,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     private boolean _cutOutOfBoundsValues;
     
     
-    public LnAnalogIO(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LocoNetNode node) {
+    public LnAnalogIO(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LnNode node) {
         super(sysName, userName);
         _node = node;
     }
@@ -37,7 +37,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
      * Get the node this analog IO belongs to.
      * @return the node that owns this item
      */
-    public LocoNetNode getNode() {
+    public LnNode getNode() {
         return _node;
     }
     
@@ -48,7 +48,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
      * node to another.
      * @param node the new node that owns this item
      */
-    void setNode(LocoNetNode node) {
+    void setNode(LnNode node) {
         _node = node;
     }
     

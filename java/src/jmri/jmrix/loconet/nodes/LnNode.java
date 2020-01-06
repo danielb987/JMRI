@@ -5,11 +5,15 @@ import jmri.jmrix.loconet.LnTrafficController;
 
 /**
  * A node on the LocoNet bus.
- * A node has an address and may have a number of AnalogIO and StringIO beans.
+ * The node is defined by its address. If the user wants to move the node to
+ * a new address, JMRI needs to copy the node to a new node and remove the
+ * old node.
+ * <p>
+ * A node may have a number of AnalogIO and StringIO beans.
  */
-public class LocoNetNode {
+public class LnNode {
 
-    private int _address;
+    private final int _address;
     private int _manufacturerID = 0;
     private int _developerID = 0;
     private int _serialNumber = 0;
@@ -18,15 +22,15 @@ public class LocoNetNode {
 //    private final LocoNetSystemConnectionMemo _lm;
 //    private final LnTrafficController _tc;
     
-    public LocoNetNode(int address, LocoNetSystemConnectionMemo lm) {
+    public LnNode(int address, LocoNetSystemConnectionMemo lm) {
         _address = address;
 //        _lm = lm;
 //        _tc = _lm.getLnTrafficController();
     }
     
-    public void setAddress(int address) {
-        _address = address;
-    }
+//    public void setAddress(int address) {
+//        _address = address;
+//    }
     
     public int getAddress() {
         return _address;

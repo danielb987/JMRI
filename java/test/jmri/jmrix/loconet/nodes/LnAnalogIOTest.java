@@ -19,7 +19,7 @@ public class LnAnalogIOTest {
     
     @Test
     public void testCTor() {
-        LocoNetNode node = new LocoNetNode(1, memo);
+        LnNode node = new LnNode(1, memo);
         LnAnalogIO b = new LnAnalogIO("IV1", null, node);
         Assert.assertNotNull("exists", b);
     }
