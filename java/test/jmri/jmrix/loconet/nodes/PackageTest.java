@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
     jmri.jmrix.loconet.nodes.swing.PackageTest.class,
     BundleTest.class,
     LnAnalogIOTest.class,
+    LnStringIOTest.class,
 })
 /**
  * Tests for the jmri.jmrix.loconet.node package.
