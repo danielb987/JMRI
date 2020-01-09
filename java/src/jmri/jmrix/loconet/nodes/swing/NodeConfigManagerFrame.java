@@ -2318,7 +2318,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     /**
      * Handles checkboxes for cpNode options
      */
-    private class HandlerClass implements ItemListener {
+//    private class HandlerClass implements ItemListener {
+    private static class HandlerClass implements ItemListener {
 
         @Override
         public void itemStateChanged(ItemEvent e) {
