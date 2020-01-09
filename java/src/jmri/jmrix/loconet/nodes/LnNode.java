@@ -1,6 +1,5 @@
 package jmri.jmrix.loconet.nodes;
 
-import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LnTrafficController;
 
 /**
@@ -19,18 +18,12 @@ public class LnNode {
     private int _serialNumber = 0;
     private String _name;
     
-//    private final LocoNetSystemConnectionMemo _lm;
 //    private final LnTrafficController _tc;
     
-    public LnNode(int address, LocoNetSystemConnectionMemo lm) {
+    public LnNode(int address, LnTrafficController tc) {
         _address = address;
-//        _lm = lm;
 //        _tc = _lm.getLnTrafficController();
     }
-    
-//    public void setAddress(int address) {
-//        _address = address;
-//    }
     
     public int getAddress() {
         return _address;

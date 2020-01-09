@@ -11,7 +11,7 @@ import jmri.jmrix.loconet.loconetovertcp.ConnectionConfig;
  *
  * @author   Paul Bender  Copyright (C) 2016
  */
-public class ConnectionConfigXmlTest extends jmri.jmrix.configurexml.AbstractNetworkConnectionConfigXmlTestBase {
+public class ConnectionConfigXmlTest extends jmri.jmrix.loconet.configurexml.LoconetNetworkConnectionConfigXmlTestBase {
 
     // The minimal setup for log4J
     @Before

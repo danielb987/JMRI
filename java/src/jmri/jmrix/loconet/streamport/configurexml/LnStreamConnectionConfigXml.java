@@ -1,8 +1,10 @@
 package jmri.jmrix.loconet.streamport.configurexml;
 
 import jmri.jmrix.configurexml.AbstractStreamConnectionConfigXml;
+import jmri.jmrix.loconet.nodes.configurexml.LoadAndStoreXml;
 import jmri.jmrix.loconet.streamport.LnStreamConnectionConfig;
 import jmri.jmrix.loconet.streamport.LnStreamPortController;
+import org.jdom2.Element;
 
 /**
  * Handle XML persistance of layout connections by persistening the
@@ -22,6 +24,16 @@ public class LnStreamConnectionConfigXml extends AbstractStreamConnectionConfigX
         super();
     }
 
+    /**
+     * Write out the LnNode objects too
+     *
+     * @param e Element being extended
+     */
+    @Override
+    protected void extendElement(Element e) {
+        new LoadAndStoreXml(adapter).store(e);
+    }
+
     @Override
     protected void getInstance() {
         if (adapter == null) {
@@ -34,6 +46,16 @@ public class LnStreamConnectionConfigXml extends AbstractStreamConnectionConfigX
         adapter = ((LnStreamConnectionConfig) object).getAdapter();
     }
 
+    /**
+     * Read the LnNode elements
+     * @param shared  connection information common to all nodes
+     * @param perNode connection information unique to this node
+     */
+    @Override
+    protected void unpackElement(Element shared, Element perNode) {
+        new LoadAndStoreXml(adapter).load(shared);
+    }
+    
     @Override
     protected void register() {
 	if(adapter!=null) {

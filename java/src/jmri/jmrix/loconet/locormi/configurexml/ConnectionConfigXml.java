@@ -2,8 +2,10 @@ package jmri.jmrix.loconet.locormi.configurexml;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import jmri.jmrix.SystemConnectionMemo;
 import jmri.jmrix.configurexml.AbstractSerialConnectionConfigXml;
 import jmri.jmrix.loconet.locormi.ConnectionConfig;
+import jmri.jmrix.loconet.nodes.configurexml.LoadAndStoreXml;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,11 @@ public class ConnectionConfigXml extends AbstractSerialConnectionConfigXml {
         }
 
         e.setAttribute("class", this.getClass().getName()); // NOI18N
+
+        // Store LnNodes
+        if (c.getLnMessageClient() != null) {
+            new LoadAndStoreXml(c.getLnMessageClient().getAdapterMemo()).store(e);
+        }
 
         return e;
     }
@@ -131,6 +138,10 @@ public class ConnectionConfigXml extends AbstractSerialConnectionConfigXml {
 
         // register, so can be picked up
         register(cc);
+
+        // Load LnNodes
+        new LoadAndStoreXml(adapter).load(shared);
+
         return result;
     }
 

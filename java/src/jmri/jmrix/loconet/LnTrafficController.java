@@ -1,8 +1,16 @@
 package jmri.jmrix.loconet;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 import javax.annotation.Nonnull;
+import jmri.NamedBean.DuplicateSystemNameException;
+import jmri.jmrix.loconet.nodes.LnNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +29,11 @@ public abstract class LnTrafficController implements LocoNetInterface {
      */
     LocoNetSystemConnectionMemo memo = null;
 
+    /**
+     * List of nodes on the LocoNet
+     */
+    SortedMap<Integer, LnNode> _lnNodes = new TreeMap<>();
+    
     /**
      * Constructor without reference to a LocoNetSystemConnectionMemo.
      */
@@ -177,7 +190,50 @@ public abstract class LnTrafficController implements LocoNetInterface {
         return transmittedMsgCount;
     }
     protected int transmittedMsgCount = 0;
+    
+    /**
+     * Register a LnNode.
+     * @param node the node
+     * @throws DuplicateSystemNameException if a different bean with the same system
+     *                                      name is already registered in the
+     *                                      manager
+     */
+    public void register(@Nonnull LnNode node) throws DuplicateSystemNameException {
+        synchronized(this) {
+            LnNode n = _lnNodes.get(node.getAddress());
+            if (n != null) {
+                if (n != node) throw new DuplicateSystemNameException("AddressExists");
+                return;
+            }
+            _lnNodes.put(node.getAddress(), node);
+        }
+    }
 
+    public void deleteNode(LnNode node) {
+        synchronized(this) {
+            _lnNodes.remove(node.getAddress());
+        }
+    }
+
+    public void deleteAllNodes() {
+        synchronized(this) {
+            _lnNodes.clear();
+        }
+    }
+
+    @Nonnull
+    public LnNode getNode(int address) {
+        synchronized(this) {
+            return _lnNodes.get(address);
+        }
+    }
+    
+    @Nonnull
+    public SortedMap<Integer, LnNode> getNodes() {
+        return Collections.unmodifiableSortedMap(_lnNodes);
+    }
+    
+    
     private final static Logger log = LoggerFactory.getLogger(LnTrafficController.class);
 
 }

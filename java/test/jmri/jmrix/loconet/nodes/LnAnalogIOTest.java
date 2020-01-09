@@ -19,7 +19,7 @@ public class LnAnalogIOTest {
     
     @Test
     public void testCTor() {
-        LnNode node = new LnNode(1, memo);
+        LnNode node = new LnNode(1, lnis);
         LnAnalogIO b = new LnAnalogIO("IV1", null, node);
         Assert.assertNotNull("exists", b);
     }

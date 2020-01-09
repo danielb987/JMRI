@@ -4,6 +4,7 @@ import java.awt.GraphicsEnvironment;
 import jmri.jmrix.configurexml.AbstractSerialConnectionConfigXml;
 import jmri.jmrix.loconet.hexfile.ConnectionConfig;
 import jmri.jmrix.loconet.hexfile.LnHexFilePort;
+import jmri.jmrix.loconet.nodes.configurexml.LoadAndStoreXml;
 import org.jdom2.Element;
 
 /**
@@ -50,6 +51,9 @@ public class ConnectionConfigXml extends AbstractSerialConnectionConfigXml {
         }
 
         e.setAttribute("class", this.getClass().getName()); // NOI18N
+
+        // Store LnNodes
+        new LoadAndStoreXml(adapter).store(e);
 
         return e;
     }
@@ -125,6 +129,10 @@ public class ConnectionConfigXml extends AbstractSerialConnectionConfigXml {
 
         // register, so can be picked up
         register();
+
+        // Load LnNodes
+        new LoadAndStoreXml(adapter).load(shared);
+
         if (adapter.getDisabled()) {
             if (!GraphicsEnvironment.isHeadless() && f != null) {
                 f.setVisible(false);

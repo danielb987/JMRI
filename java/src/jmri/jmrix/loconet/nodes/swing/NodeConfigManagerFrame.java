@@ -11,9 +11,10 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.*;
 // import jmri.jmrix.cmri.CMRISystemConnectionMemo;
-import jmri.jmrix.cmri.serial.SerialNode;
+//import jmri.jmrix.cmri.serial.LnNode;
 // import jmri.jmrix.cmri.serial.nodeiolist.NodeIOListFrame;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
+import jmri.jmrix.loconet.nodes.LnNode;
 import jmri.util.davidflanagan.HardcopyWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
 
-    ArrayList<SerialNode> cmriNode = new ArrayList<>();
+    ArrayList<LnNode> lnNode = new ArrayList<>();
     public int numConfigNodes = 0;
 
     public int numBits = 48;  // number of bits in assignment table
@@ -94,9 +95,9 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     protected boolean changedNode = false;  // true if a node was changed, deleted, or added
     protected boolean editMode = false;     // true if in edit mode
 
-    protected SerialNode curNode = null;    // Serial Node being edited
+    protected LnNode curNode = null;    // Serial Node being edited
     protected int nodeAddress = 0;          // Node address
-    protected int nodeType = SerialNode.SMINI; // Node type - default SMINI
+//    protected int nodeType = LnNode.SMINI; // Node type - default SMINI
     protected int bitsPerCard = 24;         // number of bits per card
     protected int receiveDelay = 0;         // transmission delay
     protected int pulseWidth = 500;         // pulse width for turnout control (milliseconds)
@@ -175,7 +176,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 
-        // load the SerialNode data
+        // load the LnNode data
         initializeNodes();
 
         // Set up the assignment panel
@@ -448,20 +449,22 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
      */
     public void initializeNodes() {
         // get all configured nodes
-        if (!cmriNode.isEmpty()) {
-            cmriNode.clear();
+        if (!lnNode.isEmpty()) {
+            lnNode.clear();
         }
+        
+        lnNode.addAll(_memo.getLnTrafficController().getNodes().values());
 
 //        SerialNode node = null;
 //        SerialNode node = (SerialNode) _memo.getLnTrafficController().getNode(0);
 //        int index = 1;
 //        while (node != null) {
-//            cmriNode.add(node);
+//            lnNode.add(node);
 //            node = (SerialNode) _memo.getLnTrafficController().getNode(index);
 //            index++;
 //        }
 
-        numConfigNodes = cmriNode.size();
+        numConfigNodes = lnNode.size();
     }
 
     /**
@@ -515,23 +518,23 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
 
         @Override
         public int getRowCount() {
-            return cmriNode.size();
+            return lnNode.size();
         }
 
         public void removeRow(int row) {
-            cmriNode.remove(row);
-            numConfigNodes = cmriNode.size();
+            lnNode.remove(row);
+            numConfigNodes = lnNode.size();
             fireTableRowsDeleted(row, row);
         }
 
-        public void addRow(SerialNode newNode) {
-            cmriNode.add(newNode);
-            numConfigNodes = cmriNode.size();
+        public void addRow(LnNode newNode) {
+            lnNode.add(newNode);
+            numConfigNodes = lnNode.size();
             fireTableDataChanged();
         }
 
-        public void changeRow(int row, SerialNode aNode) {
-            cmriNode.set(row, aNode);
+        public void changeRow(int row, LnNode aNode) {
+            lnNode.set(row, aNode);
             fireTableDataChanged();
         }
 
@@ -556,43 +559,44 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             switch (c) {
                 case NODENUM_COLUMN:
                     if (!doingPrint) {
-                        return cmriNode.get(r).getNodeAddress();
+                        return lnNode.get(r).getAddress();
                     } else {
-                        return Integer.toString(cmriNode.get(r).getNodeAddress());
+                        return Integer.toString(lnNode.get(r).getAddress());
                     }
-
+/*
                 case NODETYPE_COLUMN:
-                    return "  " + nodeTableTypes[cmriNode.get(r).getNodeType()];
+                    return "  " + nodeTableTypes[lnNode.get(r).getNodeType()];
 
                 case NUMBITS_COLUMN:
-                    return Integer.toString(cmriNode.get(r).getNumBitsPerCard());
+                    return Integer.toString(lnNode.get(r).getNumBitsPerCard());
 
                 case NUMINCARDS_COLUMN:
-                    if (cmriNode.get(r).getNodeType() == SerialNode.SMINI) {
-                        return Integer.toString(cmriNode.get(r).numInputCards() * 3);
+                    if (lnNode.get(r).getNodeType() == LnNode.SMINI) {
+                        return Integer.toString(lnNode.get(r).numInputCards() * 3);
                     } else {
-                        return Integer.toString(cmriNode.get(r).numInputCards());
+                        return Integer.toString(lnNode.get(r).numInputCards());
                     }
 
                 case NUMOUTCARDS_COLUMN:
-                    if (cmriNode.get(r).getNodeType() == SerialNode.SMINI) {
-                        return Integer.toString(cmriNode.get(r).numOutputCards() * 3);
+                    if (lnNode.get(r).getNodeType() == LnNode.SMINI) {
+                        return Integer.toString(lnNode.get(r).numOutputCards() * 3);
                     } else {
-                        return Integer.toString(cmriNode.get(r).numOutputCards());
+                        return Integer.toString(lnNode.get(r).numOutputCards());
                     }
 
                 case NUMINBYTES_COLUMN:
-                    return Integer.toString((cmriNode.get(r).getNumBitsPerCard()) * cmriNode.get(r).numInputCards());
+                    return Integer.toString((lnNode.get(r).getNumBitsPerCard()) * lnNode.get(r).numInputCards());
 
                 case NUMOUTBYTES_COLUMN:
-                    return Integer.toString((cmriNode.get(r).getNumBitsPerCard()) * cmriNode.get(r).numOutputCards());
+                    return Integer.toString((lnNode.get(r).getNumBitsPerCard()) * lnNode.get(r).numOutputCards());
 
                 case SELECT_COLUMN:
 
                     return "Select";
                 case NODEDESC_COLUMN:
 
-                    return " " + cmriNode.get(r).getcmriNodeDesc();
+                    return " " + lnNode.get(r).getcmriNodeDesc();
+*/                    
                 default:
                     return "";
             }
@@ -785,12 +789,12 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             searchlightBits[i] = false;
             firstSearchlight[i] = false;
         }
-        for (int i = 0; i < SerialNode.NUMCMRINETOPTS; i++) {
-            cmrinetOpts[i] = 0;
-        }
-        for (int i = 0; i < SerialNode.NUMCPNODEOPTS; i++) {
-            cpnodeOpts[i] = 0;
-        }
+//        for (int i = 0; i < LnNode.NUMCMRINETOPTS; i++) {
+//            cmrinetOpts[i] = 0;
+//        }
+//        for (int i = 0; i < LnNode.NUMCPNODEOPTS; i++) {
+//            cpnodeOpts[i] = 0;
+//        }
         nodeDescText = "";
     }
 
@@ -845,7 +849,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     panelnetOpt.setVisible(true);
                     panelnetOptBox.setVisible(true);
                     panelnodeOpt.setVisible(false);
-                    nodeType = SerialNode.SMINI;
+//                    nodeType = LnNode.SMINI;
                     onBoardBytesText.setText(Bundle.getMessage("LabelOnBoardBytes") + " 3 Input, 6 Output");
                 } else if (s.equals("USIC_SUSIC")) {
                     panel2.setVisible(true);
@@ -860,7 +864,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     panelnetOpt.setVisible(true);
                     panelnetOptBox.setVisible(true);
                     panelnodeOpt.setVisible(false);
-                    nodeType = SerialNode.USIC_SUSIC;
+//                    nodeType = LnNode.USIC_SUSIC;
                     onBoardBytesText.setText("  ");
                 } else if (s.equals("CPNODE")) {
                     panel2.setVisible(false);
@@ -875,7 +879,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     panelnetOpt.setVisible(true);
                     panelnetOptBox.setVisible(true);
                     panelnodeOpt.setVisible(true);
-                    nodeType = SerialNode.CPNODE;
+//                    nodeType = LnNode.CPNODE;
                     onBoardBytesText.setText(Bundle.getMessage("LabelOnBoardBytes") + " 2 Bytes");
                 } else if (s.equals("CPMEGA")) {
                     panel2.setVisible(false);
@@ -890,7 +894,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     panelnetOpt.setVisible(true);
                     panelnetOptBox.setVisible(true);
                     panelnodeOpt.setVisible(true);
-                    nodeType = SerialNode.CPMEGA;
+//                    nodeType = LnNode.CPMEGA;
                     onBoardBytesText.setText(Bundle.getMessage("LabelOnBoardBytes") + " 8 Bytes");
                 }
                 /*
@@ -1288,8 +1292,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             return;
         }
 
-        // get a SerialNode corresponding to this node address if one exists
-//        curNode = (SerialNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
+        // get a LnNode corresponding to this node address if one exists
+//        curNode = (LnNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
         // curNode can never be null at this point. Was this intended to catch
         // an exception?
         if (curNode != null) {
@@ -1310,12 +1314,12 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         if (!readPulseWidth()) {
             return;
         }
-        if (!checkConsistency()) {
-            return;
-        }
+//        if (!checkConsistency()) {
+//            return;
+//        }
 
         // all ready, create the new node
-//        curNode = new SerialNode(nodeAddress, nodeType, _memo.getLnTrafficController());
+//        curNode = new LnNode(nodeAddress, nodeType, _memo.getLnTrafficController());
         nodeTableModel.addRow(curNode);
 
         // configure the new node
@@ -1351,8 +1355,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             return;
         }
 
-        // get the SerialNode corresponding to this node address
-//        curNode = (SerialNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
+        // get the LnNode corresponding to this node address
+//        curNode = (LnNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
         if (curNode == null) {
             statusText1.setText(Bundle.getMessage("Error4"));
             statusText1.setVisible(true);
@@ -1365,13 +1369,13 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         nodeAddrStatic.setText(Integer.toString(nodeAddress));
         nodeAddrField.setVisible(false);
         nodeAddrStatic.setVisible(true);
-
+/*
         // get information for this node and set up combo box
         nodeType = curNode.getNodeType();
         switch (nodeType) {
 
             // SMINI
-            case SerialNode.SMINI:
+            case LnNode.SMINI:
                 nodeTypeBox.setSelectedItem("SMINI");
                 bitsPerCard = 24;
                 cardSizeBox.setSelectedItem(Bundle.getMessage("CardSize24"));
@@ -1394,7 +1398,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 break;
 
             // USIC/SUSIC
-            case SerialNode.USIC_SUSIC:
+            case LnNode.USIC_SUSIC:
                 nodeTypeBox.setSelectedItem("USIC_SUSIC");
                 bitsPerCard = curNode.getNumBitsPerCard();
                 if (bitsPerCard == 24) {
@@ -1408,33 +1412,33 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 break;
 
             // CPNODE
-            case SerialNode.CPNODE:
+            case LnNode.CPNODE:
                 nodeTypeBox.setSelectedItem("CPNODE");
                 bitsPerCard = 8;
                 cardSize8Box.setSelectedItem(Bundle.getMessage("CardSize8"));
                 onBoardBytesText.setText(Bundle.getMessage("LabelOnBoardBytes") + " 2 Bytes");
 
                 // cpNode Options
-                cbx_cpnodeopt_SENDEOT.setSelected(curNode.iscpnodeBit(SerialNode.optbitNode_SENDEOT));
+                cbx_cpnodeopt_SENDEOT.setSelected(curNode.iscpnodeBit(LnNode.optbitNode_SENDEOT));
                 cbx_cpnodeopt_BIT1.setSelected(false);
                 cbx_cpnodeopt_BIT2.setSelected(false);
-                cbx_cpnodeopt_BIT8.setSelected(curNode.iscpnodeBit(SerialNode.optbitNode_BIT8));
-                cbx_cpnodeopt_BIT15.setSelected(curNode.iscpnodeBit(SerialNode.optbitNode_BIT15));
+                cbx_cpnodeopt_BIT8.setSelected(curNode.iscpnodeBit(LnNode.optbitNode_BIT8));
+                cbx_cpnodeopt_BIT15.setSelected(curNode.iscpnodeBit(LnNode.optbitNode_BIT15));
                 break;
 
             // CPMEGA
-            case SerialNode.CPMEGA:
+            case LnNode.CPMEGA:
                 nodeTypeBox.setSelectedItem("CPMEGA");
                 bitsPerCard = 8;
                 cardSize8Box.setSelectedItem(Bundle.getMessage("CardSize8"));
                 onBoardBytesText.setText(Bundle.getMessage("LabelOnBoardBytes") + " 8 Bytes");
 
                 // cpMega Options
-                cbx_cpnodeopt_SENDEOT.setSelected(curNode.iscpnodeBit(SerialNode.optbitNode_SENDEOT));
+                cbx_cpnodeopt_SENDEOT.setSelected(curNode.iscpnodeBit(LnNode.optbitNode_SENDEOT));
                 cbx_cpnodeopt_BIT1.setSelected(false);
                 cbx_cpnodeopt_BIT2.setSelected(false);
-                cbx_cpnodeopt_BIT8.setSelected(curNode.iscpnodeBit(SerialNode.optbitNode_BIT8));
-                cbx_cpnodeopt_BIT15.setSelected(curNode.iscpnodeBit(SerialNode.optbitNode_BIT15));
+                cbx_cpnodeopt_BIT8.setSelected(curNode.iscpnodeBit(LnNode.optbitNode_BIT8));
+                cbx_cpnodeopt_BIT15.setSelected(curNode.iscpnodeBit(LnNode.optbitNode_BIT15));
                 break;
 
             default:
@@ -1443,11 +1447,11 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         }
 
         // CMRInet Options for all node types
-        cbx_cmrinetopt_AUTOPOLL.setSelected(curNode.isCMRInetBit(SerialNode.optbitNet_AUTOPOLL));
-        cbx_cmrinetopt_USECMRIX.setSelected(curNode.isCMRInetBit(SerialNode.optbitNet_USECMRIX));
-        cbx_cmrinetopt_USEBCC.setSelected(curNode.isCMRInetBit(SerialNode.optbitNet_USEBCC));
-        cbx_cmrinetopt_BIT8.setSelected(curNode.isCMRInetBit(SerialNode.optbitNet_BIT8));
-        cbx_cmrinetopt_BIT15.setSelected(curNode.isCMRInetBit(SerialNode.optbitNet_BIT15));
+        cbx_cmrinetopt_AUTOPOLL.setSelected(curNode.isCMRInetBit(LnNode.optbitNet_AUTOPOLL));
+        cbx_cmrinetopt_USECMRIX.setSelected(curNode.isCMRInetBit(LnNode.optbitNet_USECMRIX));
+        cbx_cmrinetopt_USEBCC.setSelected(curNode.isCMRInetBit(LnNode.optbitNet_USEBCC));
+        cbx_cmrinetopt_BIT8.setSelected(curNode.isCMRInetBit(LnNode.optbitNet_BIT8));
+        cbx_cmrinetopt_BIT15.setSelected(curNode.isCMRInetBit(LnNode.optbitNet_BIT15));
 
         // set up receive delay
         receiveDelay = curNode.getTransmissionDelay();
@@ -1472,7 +1476,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             }
         }
 
-        if (nodeType == SerialNode.CPMEGA) {
+        if (nodeType == LnNode.CPMEGA) {
             for (int i = 0; i < 8; i++) // Remap the onboard bytes
             {
                 if (curNode.isOutputCard(i)) {
@@ -1488,17 +1492,18 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         // ensure that table displays correctly
         panel2.setVisible(false);
         panel2a.setVisible(false);
-        if (nodeType == SerialNode.USIC_SUSIC) {
+        if (nodeType == LnNode.USIC_SUSIC) {
             panel2.setVisible(true);
-        } else if (nodeType == SerialNode.SMINI) {
+        } else if (nodeType == LnNode.SMINI) {
             panel2a.setVisible(true);
-        } else if (nodeType == SerialNode.CPNODE) {
+        } else if (nodeType == LnNode.CPNODE) {
             panel2c.setVisible(false);
             panel2b.setVisible(true);
-        } else if (nodeType == SerialNode.CPMEGA) {
+        } else if (nodeType == LnNode.CPMEGA) {
             panel2c.setVisible(true);
             panel2b.setVisible(false);
         }
+*/        
 
     }
 
@@ -1515,8 +1520,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             return;
         }
 
-        // get the SerialNode corresponding to this node address
-//        curNode = (SerialNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
+        // get the LnNode corresponding to this node address
+//        curNode = (LnNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
         if (curNode == null) {
             statusText1.setText(Bundle.getMessage("Error4"));
             statusText1.setVisible(true);
@@ -1551,18 +1556,18 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         }
 
         // check consistency of node information
-        if (!checkConsistency()) {
-            return;
-        }
-
+//        if (!checkConsistency()) {
+//            return;
+//        }
+/*
         // update node information
         if (curNode.getNodeType() != nodeType) {
             // node type has changed
             curNode.setNodeType(nodeType);
         }
-
+*/
         // cmri node description  c2
-        curNode.setcmriNodeDesc(nodeDescription.getText());
+//        curNode.setcmriNodeDesc(nodeDescription.getText());
         setNodeParameters();
         nodeTableModel.changeRow(selectedTableRow, curNode);
 
@@ -1633,8 +1638,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             return;
         }
 
-        // get the SerialNode corresponding to this node address
-//        curNode = (SerialNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
+        // get the LnNode corresponding to this node address
+//        curNode = (LnNode) _memo.getLnTrafficController().getNodeFromAddress(nodeAddress);
         deleteNodeAddress = nodeAddr;
         // Load the node data into the window
 
@@ -1719,6 +1724,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
      * particular node type.
      */
     void setNodeParameters() {
+/*        
         // receive delay is common for all node types
         int numInput = 0;
         int numOutput = 0;
@@ -1731,7 +1737,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         switch (nodeType) {
 
             // SMINI
-            case SerialNode.SMINI:
+            case LnNode.SMINI:
 
                 // Note: most parameters are set by default on creation
                 int numSet = 0;
@@ -1771,7 +1777,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 break;
 
             // USIC/SUSIC
-            case SerialNode.USIC_SUSIC:
+            case LnNode.USIC_SUSIC:
                 // set number of bits per card
                 curNode.setNumBitsPerCard(bitsPerCard);
                 // configure the input/output cards
@@ -1779,12 +1785,12 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 numOutput = 0;
                 for (int i = 0; i < 64; i++) {
                     if ("No Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.NO_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.NO_CARD);
                     } else if ("Input Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.INPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.INPUT_CARD);
                         numInput++;
                     } else if ("Output Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.OUTPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.OUTPUT_CARD);
                         numOutput++;
                     } else {
                         log.error("Unexpected card type - " + cardType[i]);
@@ -1800,7 +1806,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 break;
 
             // CPNODE
-            case SerialNode.CPNODE:
+            case LnNode.CPNODE:
                 // set number of bits per card
                 bitsPerCard = 8;
                 curNode.setNumBitsPerCard(bitsPerCard);
@@ -1810,12 +1816,12 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 for (int i = 4; i < 64; i++) // Skip the onboard bytes
                 {
                     if ("No Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.NO_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.NO_CARD);
                     } else if ("Input Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.INPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.INPUT_CARD);
                         numInput++;
                     } else if ("Output Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.OUTPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.OUTPUT_CARD);
                         numOutput++;
                     } else {
                         log.error("Unexpected card type - " + cardType[i]);
@@ -1834,7 +1840,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 break;
 
             // CPMEGA
-            case SerialNode.CPMEGA:
+            case LnNode.CPMEGA:
                 // set number of bits per card
                 bitsPerCard = 8;
                 curNode.setNumBitsPerCard(bitsPerCard);
@@ -1844,12 +1850,12 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 for (int i = 0; i < 8; i++) // Pick up the onboard bytes
                 {
                     if ("No Card".equals(onBoardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.NO_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.NO_CARD);
                     } else if ("Input Card".equals(onBoardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.INPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.INPUT_CARD);
                         numInput++;
                     } else if ("Output Card".equals(onBoardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.OUTPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.OUTPUT_CARD);
                         numOutput++;
                     } else {
                         log.error("Unexpected card type - " + onBoardType[i]);
@@ -1860,12 +1866,12 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                 for (int i = 8; i < 64; i++) // Skip the onboard bytes
                 {
                     if ("No Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.NO_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.NO_CARD);
                     } else if ("Input Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.INPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.INPUT_CARD);
                         numInput++;
                     } else if ("Output Card".equals(cardType[i])) {
-                        curNode.setCardTypeByAddress(i, SerialNode.OUTPUT_CARD);
+                        curNode.setCardTypeByAddress(i, LnNode.OUTPUT_CARD);
                         numOutput++;
                     } else {
                         log.error("Unexpected card type - " + cardType[i]);
@@ -1892,7 +1898,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         curNode.setcmriNodeDesc(nodeDescription.getText());
 
         // Cause reinitialization of this Node to reflect these parameters
-//        _memo.getLnTrafficController().initializeSerialNode(curNode);
+//        _memo.getLnTrafficController().initializeLnNode(curNode);
+*/        
     }
 
     /**
@@ -2037,15 +2044,15 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         return true;
     }
 
-    /**
+    /*.*
      * Check for consistency errors by node type. If an error is detected, a
      * suitable error message is placed in the Notes area.
      *
      * @return true if successful; false otherwise
-     */
+     *./
     protected boolean checkConsistency() {
         switch (nodeType) {
-            case SerialNode.SMINI:
+            case LnNode.SMINI:
                 // ensure that number of searchlight bits is consistent
                 int numBits = 0;
                 for (int i = 0; i < 48; i++) {
@@ -2062,7 +2069,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     return (false);
                 }
                 break;
-            case SerialNode.USIC_SUSIC:
+            case LnNode.USIC_SUSIC:
                 // ensure that at least one card is defined
                 numCards = 0;
                 boolean atNoCard = false;
@@ -2126,7 +2133,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     }
                 }
                 break;
-            case SerialNode.CPNODE:
+            case LnNode.CPNODE:
                 for (int j = 0; j < 64; j++) {
                     if ((cardType[j].equals(Bundle.getMessage("CardTypeOutput")))
                             || (cardType[j].equals(Bundle.getMessage("CardTypeInput")))) {
@@ -2134,7 +2141,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
                     }
                 }
                 break;
-            case SerialNode.CPMEGA:
+            case LnNode.CPMEGA:
                 for (int j = 0; j < 64; j++) {
                     if ((cardType[j].equals(Bundle.getMessage("CardTypeOutput")))
                             || (cardType[j].equals(Bundle.getMessage("CardTypeInput")))) {
@@ -2150,7 +2157,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         }
         return true;
     }
-
+*/
     /**
      * Set up table for selecting card type by address for USIC_SUSIC nodes
      */
@@ -2314,32 +2321,34 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
 
         @Override
         public void itemStateChanged(ItemEvent e) {
+/*            
             JCheckBox checkbox = (JCheckBox) e.getSource();
 
             if (checkbox == cbx_cmrinetopt_AUTOPOLL) {
-                curNode.setCMRInetOpts(SerialNode.optbitNet_AUTOPOLL, (cbx_cmrinetopt_AUTOPOLL.isSelected() ? 1 : 0));
+                curNode.setCMRInetOpts(LnNode.optbitNet_AUTOPOLL, (cbx_cmrinetopt_AUTOPOLL.isSelected() ? 1 : 0));
             } else if (checkbox == cbx_cmrinetopt_USECMRIX) {
-                curNode.setCMRInetOpts(SerialNode.optbitNet_USECMRIX, (cbx_cmrinetopt_USECMRIX.isSelected() ? 1 : 0));
-                curNode.setcpnodeOpts(SerialNode.optbitNet_USECMRIX, curNode.getCMRInetOpts(SerialNode.optbitNet_USECMRIX));
+                curNode.setCMRInetOpts(LnNode.optbitNet_USECMRIX, (cbx_cmrinetopt_USECMRIX.isSelected() ? 1 : 0));
+                curNode.setcpnodeOpts(LnNode.optbitNet_USECMRIX, curNode.getCMRInetOpts(LnNode.optbitNet_USECMRIX));
             } else if (checkbox == cbx_cmrinetopt_USEBCC) {
-                curNode.setCMRInetOpts(SerialNode.optbitNet_USEBCC, (cbx_cmrinetopt_USEBCC.isSelected() ? 1 : 0));
-                curNode.setcpnodeOpts(SerialNode.optbitNet_USEBCC, curNode.getCMRInetOpts(SerialNode.optbitNet_USEBCC));
+                curNode.setCMRInetOpts(LnNode.optbitNet_USEBCC, (cbx_cmrinetopt_USEBCC.isSelected() ? 1 : 0));
+                curNode.setcpnodeOpts(LnNode.optbitNet_USEBCC, curNode.getCMRInetOpts(LnNode.optbitNet_USEBCC));
             } else if (checkbox == cbx_cmrinetopt_BIT8) {
-                curNode.setCMRInetOpts(SerialNode.optbitNet_BIT8, (cbx_cmrinetopt_BIT8.isSelected() ? 1 : 0));
+                curNode.setCMRInetOpts(LnNode.optbitNet_BIT8, (cbx_cmrinetopt_BIT8.isSelected() ? 1 : 0));
             } else if (checkbox == cbx_cmrinetopt_BIT15) {
-                curNode.setCMRInetOpts(SerialNode.optbitNet_BIT15, (cbx_cmrinetopt_BIT15.isSelected() ? 1 : 0));
+                curNode.setCMRInetOpts(LnNode.optbitNet_BIT15, (cbx_cmrinetopt_BIT15.isSelected() ? 1 : 0));
             } else if (checkbox == cbx_cpnodeopt_SENDEOT) {
-                curNode.setcpnodeOpts(SerialNode.optbitNode_SENDEOT, (cbx_cpnodeopt_SENDEOT.isSelected() ? 1 : 0));
+                curNode.setcpnodeOpts(LnNode.optbitNode_SENDEOT, (cbx_cpnodeopt_SENDEOT.isSelected() ? 1 : 0));
             } else if (checkbox == cbx_cpnodeopt_BIT1) {
                 cbx_cpnodeopt_BIT1.setSelected(false);
             } else if (checkbox == cbx_cpnodeopt_BIT2) {
                 cbx_cpnodeopt_BIT2.setSelected(false);
             } else if (checkbox == cbx_cpnodeopt_BIT8) {
-                curNode.setcpnodeOpts(SerialNode.optbitNode_BIT8, (cbx_cpnodeopt_BIT8.isSelected() ? 1 : 0));
+                curNode.setcpnodeOpts(LnNode.optbitNode_BIT8, (cbx_cpnodeopt_BIT8.isSelected() ? 1 : 0));
             } else if (checkbox == cbx_cpnodeopt_BIT15) {
-                curNode.setcpnodeOpts(SerialNode.optbitNode_BIT15, (cbx_cpnodeopt_BIT15.isSelected() ? 1 : 0));
+                curNode.setcpnodeOpts(LnNode.optbitNode_BIT15, (cbx_cpnodeopt_BIT15.isSelected() ? 1 : 0));
             }
             changedNode = true;
+*/            
         }
     }
 

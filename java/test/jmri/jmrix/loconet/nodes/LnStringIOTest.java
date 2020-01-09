@@ -19,7 +19,7 @@ public class LnStringIOTest {
     
     @Test
     public void testCTor() {
-        LnNode node = new LnNode(1, memo);
+        LnNode node = new LnNode(1, lnis);
         LnStringIO b = new LnStringIO("IC1", null, node);
         Assert.assertNotNull("exists", b);
     }

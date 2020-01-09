@@ -11,7 +11,7 @@ import jmri.jmrix.loconet.usb_dcs52.ConnectionConfig;
  *
  * @author   Paul Bender  Copyright (C) 2016
  */
-public class ConnectionConfigXmlTest extends jmri.jmrix.configurexml.AbstractSerialConnectionConfigXmlTestBase {
+public class ConnectionConfigXmlTest extends jmri.jmrix.loconet.configurexml.LoconetSerialConnectionConfigXmlTestBase {
 
     // The minimal setup for log4J
     @Before
