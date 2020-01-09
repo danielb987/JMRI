@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author	Bob Jacobsen Copyright (C) 2004
  * @author	Dave Duchamp Copyright (C) 2004
  * @author	Chuck Catania Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018
+ * @author      Daniel Bergqvist Copyright (C) 2020
  */
 public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
 
@@ -766,7 +767,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     private String[] nodeTableColumnsNames
             = {"Address", "   Type", "Bits per Card", "IN Cards", "OUT Cards", "IN Bits", "OUT Bits", " ", "  Description"};
 
-    private String[] nodeTableTypes = {"--", "SMINI", "SUSIC", "CPNODE", "CPMEGA"};
+//    private String[] nodeTableTypes = {"--", "SMINI", "SUSIC", "CPNODE", "CPMEGA"};
 
     /*
      * ----------------------------------------------------------
@@ -2471,8 +2472,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     }
     private final String[] osnodeConfigColumnNames = {"  Byte ", "Port Type"};
 
-    private final int[] cpnodeOpts = new int[16];  // Local storage for node options
-    private final int[] cmrinetOpts = new int[16];  // Local storage for node options
+//    private final int[] cpnodeOpts = new int[16];  // Local storage for node options
+//    private final int[] cmrinetOpts = new int[16];  // Local storage for node options
 
     private final static Logger log = LoggerFactory.getLogger(NodeConfigManagerFrame.class);
 

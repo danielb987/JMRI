@@ -10,13 +10,13 @@ import org.jdom2.Element;
 
 /**
  * Load and store methods used by the ConnectionConfigXml classes.
+ * 
+ * @author Daniel Bergqvist Copyright (C) 2020
  */
 public class LoadAndStoreXml {
 
     private final LnTrafficController _tc;
     
-    
-    private static boolean runOnce = false;
     
     public LoadAndStoreXml(SystemConnectionMemo memo) {
         _tc = ((LocoNetSystemConnectionMemo)memo).getLnTrafficController();
