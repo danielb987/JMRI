@@ -2,9 +2,7 @@ package jmri.jmrix.loconet;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -86,7 +84,7 @@ public abstract class LnTrafficController implements LocoNetInterface {
     // The methods to implement adding and removing listeners
 
     // relies on Vector being a synchronized class
-    protected Vector<LocoNetListener> listeners = new Vector<LocoNetListener>();
+    protected Vector<LocoNetListener> listeners = new Vector<>();
 
     @Override
     public synchronized void addLocoNetListener(int mask, @Nonnull LocoNetListener l) {
@@ -120,9 +118,9 @@ public abstract class LnTrafficController implements LocoNetInterface {
         receivedByteCount += m.getNumDataElements();
 
         // make a copy of the listener vector for notifications; synchronized not needed once copied
-        ArrayList<LocoNetListener> v;
+        List<LocoNetListener> v;
         synchronized (this) {
-            v = new ArrayList<LocoNetListener>(listeners);
+            v = new ArrayList<>(listeners);
         }
 
         // forward to all listeners
