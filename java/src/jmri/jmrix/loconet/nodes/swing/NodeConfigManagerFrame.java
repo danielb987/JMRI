@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
 
-    ArrayList<LnNode> lnNode = new ArrayList<>();
+    List<LnNode> lnNode = new ArrayList<>();
     public int numConfigNodes = 0;
 
     public int numBits = 48;  // number of bits in assignment table
@@ -58,6 +59,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
     JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
     JButton printButton = new JButton(Bundle.getMessage("PrintButtonText"));
+    JButton discoverButton = new JButton(Bundle.getMessage("DiscoverButtonText"));
 
     NodeConfigManagerFrame curFrame;
 
@@ -303,6 +305,16 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         }
         panel3.add(printButton);
 
+        // Set up Print button
+        discoverButton.setVisible(true);
+        discoverButton.setToolTipText(Bundle.getMessage("DiscoverButtonTip"));
+//        if (numConfigNodes > 0) {
+            discoverButton.addActionListener((java.awt.event.ActionEvent e) -> {
+                discoverButtonActionPerformed(e);
+            });
+//        }
+        panel3.add(discoverButton);
+
         // Set up Done button
         doneButton.setVisible(true);
         doneButton.setToolTipText(Bundle.getMessage("DoneButtonTip"));
@@ -380,6 +392,58 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         writer.increaseLineSpacing(20);
         // print the assignments
         (nodeTableModel).printTable(writer, colWidth);
+    }
+
+    /**
+     * Print.
+     *
+     * @param e the triggering event
+     */
+    public void discoverButtonActionPerformed(java.awt.event.ActionEvent e) {
+        // DANIEL
+        
+//        jmri.jmrix.loconet.LnTrafficController tc = _memo.getLnTrafficController();
+        
+        DiscoverNodesFrame f = new DiscoverNodesFrame(_memo);
+        try {
+            f.initComponents();
+        } catch (Exception ex) {
+            log.error("NodeConfigManagerAction Exception-C2: "+ex.toString());
+        }
+        f.setLocation(20,40);
+        f.setVisible(true);
+//        jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.createSvDiscoverQueryMessage();
+//        jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.SV_CMD_DISCOVER_DEVICES_QUERY;
+//        jmri.jmrix.loconet.LnConstants.OPC_PEER_XFER;
+        
+/*        
+        int[] colWidth = new int[10];
+        // initialize column widths
+        TableColumnModel nodeTableColumnModel = nodeTable.getColumnModel();
+        colWidth[0] = nodeTableColumnModel.getColumn(NodeTableModel.NODENUM_COLUMN).getWidth();
+        colWidth[1] = nodeTableColumnModel.getColumn(NodeTableModel.NODETYPE_COLUMN).getWidth();
+        colWidth[2] = nodeTableColumnModel.getColumn(NodeTableModel.NUMBITS_COLUMN).getWidth();
+        colWidth[3] = nodeTableColumnModel.getColumn(NodeTableModel.NUMINCARDS_COLUMN).getWidth();
+        colWidth[4] = nodeTableColumnModel.getColumn(NodeTableModel.NUMOUTCARDS_COLUMN).getWidth();
+        colWidth[5] = nodeTableColumnModel.getColumn(NodeTableModel.SELECT_COLUMN).getWidth();
+        colWidth[6] = nodeTableColumnModel.getColumn(NodeTableModel.NUMBITS_COLUMN).getWidth();
+        colWidth[7] = nodeTableColumnModel.getColumn(NodeTableModel.NUMBITS_COLUMN).getWidth();
+        colWidth[8] = nodeTableColumnModel.getColumn(NodeTableModel.NUMBITS_COLUMN).getWidth();
+        colWidth[9] = nodeTableColumnModel.getColumn(NodeTableModel.NUMBITS_COLUMN).getWidth();
+
+        // set up a page title
+        String head = "CMRInet Node Table";
+        // initialize a printer writer
+        HardcopyWriter writer = null;
+        try {
+            writer = new HardcopyWriter(curFrame, head, 10, .8, .5, .5, .5, false);
+        } catch (HardcopyWriter.PrintCanceledException ex) {
+            return;
+        }
+        writer.increaseLineSpacing(20);
+        // print the assignments
+        (nodeTableModel).printTable(writer, colWidth);
+*/        
     }
 
     /**
@@ -560,6 +624,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             switch (c) {
                 case NODENUM_COLUMN:
                     if (!doingPrint) {
+                        if (lnNode.get(r) == null) return 0;    // DANIEL
                         return lnNode.get(r).getAddress();
                     } else {
                         return Integer.toString(lnNode.get(r).getAddress());
@@ -837,6 +902,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             public void actionPerformed(java.awt.event.ActionEvent event) {
                 String s = (String) nodeTypeBox.getSelectedItem();
 
+                s = "SMINI";    // DANIEL
                 if (s.equals("SMINI")) {
                     panel2.setVisible(false);
                     panel2a.setVisible(true);
