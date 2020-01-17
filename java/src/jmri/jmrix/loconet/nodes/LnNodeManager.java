@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
  */
 public class LnNodeManager implements InstanceManagerAutoDefault {
 
+    public static final int PUBLIC_DOMAIN_DIY_MANAGER_ID = 13;
+    public static final String PUBLIC_DOMAIN_DIY_MANAGER = "Public-domain and DIY";
     private final XmlFile _xmlFile = new XmlFile();
     private final DecoderIndexFile _decoderIndexFile;
     private final Map<Integer, String> _lnDIYDeveloperList = new HashMap<>();
@@ -78,6 +80,10 @@ public class LnNodeManager implements InstanceManagerAutoDefault {
     
     public String getManufacturer(int manufacturerID) {
         return _decoderIndexFile.mfgNameFromId(Integer.toString(manufacturerID));
+    }
+    
+    public String getDeveloper(int developerID) {
+        return _lnDIYDeveloperList.get(developerID);
     }
     
     

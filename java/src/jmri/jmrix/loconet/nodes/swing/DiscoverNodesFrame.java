@@ -47,7 +47,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     private LnTrafficController _tc;
     private List<DecoderFile> _decoders;
     private Map<Integer, List<DecoderFile>> decoderFileMap = new HashMap<>();
-    private List<LnNode> lnNode = new ArrayList<>();
+    private List<LnNode> lnNodes = new ArrayList<>();
     
     protected JPanel nodeTablePanel = null;
     protected Border inputBorder = BorderFactory.createEtchedBorder();
@@ -108,17 +108,30 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         headerLabel.setHorizontalAlignment(JLabel.CENTER);
         headerLabel.setBackground(Color.LIGHT_GRAY);
         
+        TableColumn nodeAddrColumn = assignmentColumnModel.getColumn(NodeTableModel.ADDRESS_COLUMN);
+        nodeAddrColumn.setMinWidth(40);
+        nodeAddrColumn.setMaxWidth(80);
+        nodeAddrColumn.setCellRenderer(dtcen);
+//        nodeAddrColumn.setResizable(true);
+        nodeAddrColumn.setResizable(false);
+        
         TableColumn nodenumColumn = assignmentColumnModel.getColumn(NodeTableModel.MANUFACTURER_COLUMN);
-        nodenumColumn.setMinWidth(40);
-        nodenumColumn.setMaxWidth(80);
+//        nodenumColumn.setMinWidth(40);
+//        nodenumColumn.setMaxWidth(80);
+        nodenumColumn.setMinWidth(150);
+        nodenumColumn.setMaxWidth(200);
         nodenumColumn.setCellRenderer(dtcen);
-        nodenumColumn.setResizable(false);
+        nodenumColumn.setResizable(true);
+//        nodenumColumn.setResizable(false);
         
         TableColumn nodetypeColumn = assignmentColumnModel.getColumn(NodeTableModel.DEVELOPER_COLUMN);
-        nodetypeColumn.setMinWidth(40);
-        nodetypeColumn.setMaxWidth(80);
+//        nodenumColumn.setMinWidth(40);
+//        nodenumColumn.setMaxWidth(80);
+        nodetypeColumn.setMinWidth(150);
+        nodetypeColumn.setMaxWidth(200);
         nodetypeColumn.setCellRenderer(dtcen);
-        nodetypeColumn.setResizable(false);
+        nodetypeColumn.setResizable(true);
+//        nodetypeColumn.setResizable(false);
         
         JScrollPane nodeTableScrollPane = new JScrollPane(nodeTable);
         
@@ -209,6 +222,8 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         LnNodeManager lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
         _decoders = InstanceManager.getDefault(DecoderIndexFile.class).matchingDecoderList(null, null, null, null, null, null);
         
+        
+        
         for (DecoderFile decoderFile : _decoders) {
 //            jmri.LocoAddress.Protocol[] protocols = decoderFile.getSupportedProtocols();
             
@@ -261,8 +276,16 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     
     
     
-    // jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.createSvDiscoverQueryMessage();
-
+    private void addNode(LnNode node) {
+        List<DecoderFile> decoderFiles = decoderFileMap.get(node.getManufacturerID());
+        System.out.format("Num items for manufacturerID %d: %d%n", node.getManufacturerID(), decoderFiles.size());
+        jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
+            System.out.println(node.toString());
+            nodeTableModel.addRow(node);
+        });
+    }
+    
+    
     @Override
     public void message(LocoNetMessage msg) {
         // Return if the message is not a SV2 message
@@ -273,12 +296,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         
         if (command == Sv2Command.SV2_DISCOVER_DEVICE_REPORT) {
             LnNode node = new LnNode(contents, _tc);
-            List<DecoderFile> decoderFiles = decoderFileMap.get(node.getManufacturerID());
-            System.out.format("Num items for manufacturerID %d: %d%n", node.getManufacturerID(), decoderFiles.size());
-            jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
-                System.out.println(node.toString());
-                nodeTableModel.addRow(node);
-            });
+            addNode(node);
         }
     }
     
@@ -333,23 +351,23 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 
         @Override
         public int getRowCount() {
-            return lnNode.size();
+            return lnNodes.size();
         }
 
         public void removeRow(int row) {
-            lnNode.remove(row);
+            lnNodes.remove(row);
 //            numConfigNodes = lnNode.size();
             fireTableRowsDeleted(row, row);
         }
 
         public void addRow(LnNode newNode) {
-            lnNode.add(newNode);
+            lnNodes.add(newNode);
 //            numConfigNodes = lnNode.size();
             fireTableDataChanged();
         }
 
         public void changeRow(int row, LnNode aNode) {
-            lnNode.set(row, aNode);
+            lnNodes.set(row, aNode);
             fireTableDataChanged();
         }
 /*
@@ -372,16 +390,27 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         @Override
         public Object getValueAt(int r, int c) {
             switch (c) {
+                case ADDRESS_COLUMN:
+                    return lnNodes.get(r).getAddress();
+//                    return Integer.toString(lnNode.get(r).getNumBitsPerCard());
+                    
                 case MANUFACTURER_COLUMN:
-                    if (lnNode.get(r) == null) return 0;    // DANIEL
-                    return lnNode.get(r).getAddress();
-/*
+                    if (lnNodes.get(r) == null) return 0;    // DANIEL
+                    return lnNodes.get(r).getManufacturer();
+//                    return lnNode.get(r).getAddress();
+                    
                 case DEVELOPER_COLUMN:
-                    return "  " + nodeTableTypes[lnNode.get(r).getNodeType()];
-
+                    return lnNodes.get(r).getDeveloper();
+//                    return "  " + nodeTableTypes[lnNode.get(r).getNodeType()];
+                    
                 case PRODUCT_COLUMN:
-                    return Integer.toString(lnNode.get(r).getNumBitsPerCard());
-
+                    return lnNodes.get(r).getProduct();
+//                    return Integer.toString(lnNode.get(r).getNumBitsPerCard());
+                    
+                case SERIALNO_COLUMN:
+                    return lnNodes.get(r).getSerialNumber();
+//                    return Integer.toString(lnNode.get(r).getNumBitsPerCard());
+/*                    
                 case NUMINCARDS_COLUMN:
                     if (lnNode.get(r).getNodeType() == LnNode.SMINI) {
                         return Integer.toString(lnNode.get(r).numInputCards() * 3);
@@ -414,11 +443,11 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
             }
         }
         
-        private static final int MANUFACTURER_COLUMN = 0;
-        private static final int DEVELOPER_COLUMN = 1;
-        private static final int PRODUCT_COLUMN = 2;
-        private static final int SERIALNO_COLUMN = 3;
-        private static final int ADDRESS_COLUMN = 4;
+        private static final int ADDRESS_COLUMN = 0;
+        private static final int MANUFACTURER_COLUMN = 1;
+        private static final int DEVELOPER_COLUMN = 2;
+        private static final int PRODUCT_COLUMN = 3;
+        private static final int SERIALNO_COLUMN = 4;
 //        private static final int NUMINBYTES_COLUMN = 5;
 //        private static final int NUMOUTBYTES_COLUMN = 6;
 //        private static final int SELECT_COLUMN = 7;
@@ -430,7 +459,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     }
 
     private final String[] nodeTableColumnsNames
-            = {"Address", "   Type", "Bits per Card", "IN Cards", "OUT Cards", "IN Bits", "OUT Bits", " ", "  Description"};
+            = {"Address", "Manufacturer", "Developer", "Product", "Serial No", "OUT Cards", "IN Bits", "OUT Bits", " ", "  Description"};
     
     
     
