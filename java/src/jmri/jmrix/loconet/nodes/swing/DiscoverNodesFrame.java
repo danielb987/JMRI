@@ -219,7 +219,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     
     
     public void readDecoderTypes() {
-        LnNodeManager lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
+//        LnNodeManager lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
         _decoders = InstanceManager.getDefault(DecoderIndexFile.class).matchingDecoderList(null, null, null, null, null, null);
         
         
@@ -235,8 +235,8 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
             
             // loadDecoderFile()
             
-            Element decoderRoot = null;
-            try {
+//            Element decoderRoot = null;
+//////            try {
                 int manufacturerID = Integer.parseInt(decoderFile.getMfgID());
                 List<DecoderFile> decoderFiles = decoderFileMap.get(manufacturerID);
                 if (decoderFiles == null) {
@@ -247,19 +247,19 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 ////                System.out.format("%s, %s, %s, %s, %s%n", decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel());
 //                System.out.format("%s, %s%n", decoderFile.getMfgID(), decoderFile.getProductID());
 //                if (1==1)
-                if ("Public-domain and DIY".equals(decoderFile.getMfg())) {
-                    if (!decoderFile.getFamily().equals(decoderFile.getModel())) {
+//////                if ("Public-domain and DIY".equals(decoderFile.getMfg())) {
+//////                    if (!decoderFile.getFamily().equals(decoderFile.getModel())) {
 //                        System.out.format("%s, %s, %s, %s, %s, %s, %s, %s%n", decoderFile.getShowable().name(), decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getDeveloperID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel(), decoderFile.getModelElement());
-                        decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
-                    }
-                }
-            } catch (org.jdom2.JDOMException e) {
-                log.error("Exception while parsing decoder XML file: " + decoderFile.getFileName(), e);
-                return;
-            } catch (java.io.IOException e) {
-                log.error("Exception while reading decoder XML file: " + decoderFile.getFileName(), e);
-                return;
-            }
+//////                        decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
+//////                    }
+//////                }
+//////            } catch (org.jdom2.JDOMException e) {
+//////                log.error("Exception while parsing decoder XML file: " + decoderFile.getFileName(), e);
+//////                return;
+//////            } catch (java.io.IOException e) {
+//////                log.error("Exception while reading decoder XML file: " + decoderFile.getFileName(), e);
+//////                return;
+//////            }
 //            re.
             
             // note that we're leaving the filename null
