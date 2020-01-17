@@ -71,7 +71,7 @@ public class LnNodeManager implements InstanceManagerAutoDefault {
                 int id = el.getAttribute("devID").getIntValue();
                 String name = el.getAttribute("name").getValue();
                 _lnDIYDeveloperList.put(id, name);
-                System.out.format("Developer: %d, %s%n", id, name);
+//                System.out.format("Developer: %d, %s%n", id, name);
             }
         } else {
             log.warn("no mfgList found");

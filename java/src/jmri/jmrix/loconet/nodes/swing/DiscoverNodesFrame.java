@@ -249,7 +249,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 //                if (1==1)
                 if ("Public-domain and DIY".equals(decoderFile.getMfg())) {
                     if (!decoderFile.getFamily().equals(decoderFile.getModel())) {
-                        System.out.format("%s, %s, %s, %s, %s, %s, %s, %s%n", decoderFile.getShowable().name(), decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getDeveloperID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel(), decoderFile.getModelElement());
+//                        System.out.format("%s, %s, %s, %s, %s, %s, %s, %s%n", decoderFile.getShowable().name(), decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getDeveloperID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel(), decoderFile.getModelElement());
                         decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
                     }
                 }
@@ -277,10 +277,10 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     
     
     private void addNode(LnNode node) {
-        List<DecoderFile> decoderFiles = decoderFileMap.get(node.getManufacturerID());
-        System.out.format("Num items for manufacturerID %d: %d%n", node.getManufacturerID(), decoderFiles.size());
+//        List<DecoderFile> decoderFiles = decoderFileMap.get(node.getManufacturerID());
+//        System.out.format("Num items for manufacturerID %d: %d%n", node.getManufacturerID(), decoderFiles.size());
         jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
-            System.out.println(node.toString());
+//            System.out.println(node.toString());
             nodeTableModel.addRow(node);
         });
     }
