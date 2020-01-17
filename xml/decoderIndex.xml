@@ -13755,6 +13755,9 @@
       <family name="LNSV2-using boards" mfg="Public-domain and DIY" file="Public_Domain_LNSV2_basic.xml">
         <model model="Basic definition" />
       </family>
+      <family name="Daniel Bergqvist example card" mfg="Public-domain and DIY" developerID="17" file="Public_Domain_LNSV2_DanielBergqvist.xml">
+        <model model="StringIO and AnalogIO" />
+      </family>
       <family name="MERG decoders" mfg="Public-domain and DIY" lowVersionID="104" file="Public_Domain_MERG_DIY_10.xml">
         <model model="MERG-DIY 10" numOuts="5" numFns="3">
           <output name="01" label="White" />

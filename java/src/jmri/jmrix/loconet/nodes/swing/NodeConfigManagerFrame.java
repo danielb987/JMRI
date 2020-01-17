@@ -175,82 +175,82 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         // set the frame's initial state
         setTitle(Bundle.getMessage("WindowTitle") + Bundle.getMessage("WindowConnectionMemo")+_memo.getUserName());  // NOI18N
         setSize(500, 150);
-
+        
         Container contentPane = getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-
+        
         // load the LnNode data
         initializeNodes();
-
+        
         // Set up the assignment panel
         nodeTablePanel = new JPanel();
         nodeTablePanel.setLayout(new BoxLayout(nodeTablePanel, BoxLayout.Y_AXIS));
-
+        
         nodeTableModel = new NodeTableModel();
         nodeTable = new JTable(nodeTableModel);
-
+        
         nodeTable.setShowGrid(true);
         nodeTable.setGridColor(Color.black);
         nodeTable.setRowSelectionAllowed(false);
         nodeTable.setFont(new Font("Arial", Font.PLAIN, 14));
         nodeTable.setRowHeight(30);
-
+        
         nodeTable.getTableHeader().setReorderingAllowed(false);
         nodeTable.setPreferredScrollableViewportSize(new java.awt.Dimension(300, 350));
         TableColumnModel assignmentColumnModel = nodeTable.getColumnModel();
-
+        
         DefaultTableCellRenderer dtcen = new DefaultTableCellRenderer();
         dtcen.setHorizontalAlignment(SwingConstants.CENTER);
         DefaultTableCellRenderer dtrt = new DefaultTableCellRenderer();
         dtrt.setHorizontalAlignment(SwingConstants.RIGHT);
-
+        
         TableCellRenderer rendererFromHeader = nodeTable.getTableHeader().getDefaultRenderer();
         JLabel headerLabel = (JLabel) rendererFromHeader;
         headerLabel.setHorizontalAlignment(JLabel.CENTER);
         headerLabel.setBackground(Color.LIGHT_GRAY);
-
+        
         TableColumn nodenumColumn = assignmentColumnModel.getColumn(NodeTableModel.NODENUM_COLUMN);
         nodenumColumn.setMinWidth(40);
         nodenumColumn.setMaxWidth(80);
         nodenumColumn.setCellRenderer(dtcen);
         nodenumColumn.setResizable(false);
-
+        
         TableColumn nodetypeColumn = assignmentColumnModel.getColumn(NodeTableModel.NODETYPE_COLUMN);
         nodetypeColumn.setMinWidth(40);
         nodetypeColumn.setMaxWidth(80);
         nodetypeColumn.setCellRenderer(dtcen);
         nodetypeColumn.setResizable(false);
-
+        
         TableColumn numbitsColumn = assignmentColumnModel.getColumn(NodeTableModel.NUMBITS_COLUMN);
         numbitsColumn.setMinWidth(40);
         numbitsColumn.setMaxWidth(120);
         numbitsColumn.setCellRenderer(dtcen);
         numbitsColumn.setResizable(false);
-
+        
         TableColumn numinputsColumn = assignmentColumnModel.getColumn(NodeTableModel.NUMINCARDS_COLUMN);
         numinputsColumn.setMinWidth(40);
         numinputsColumn.setMaxWidth(80);
         numinputsColumn.setCellRenderer(dtcen);
         numinputsColumn.setResizable(false);
-
+        
         TableColumn numoutputsColumn = assignmentColumnModel.getColumn(NodeTableModel.NUMOUTCARDS_COLUMN);
         numoutputsColumn.setMinWidth(10);
         numoutputsColumn.setMaxWidth(100);
         numoutputsColumn.setCellRenderer(dtcen);
         numoutputsColumn.setResizable(false);
-
+        
         TableColumn numinbytesColumn = assignmentColumnModel.getColumn(NodeTableModel.NUMINBYTES_COLUMN);
         numinbytesColumn.setMinWidth(10);
         numinbytesColumn.setMaxWidth(80);
         numinbytesColumn.setCellRenderer(dtcen);
         numinbytesColumn.setResizable(false);
-
+        
         TableColumn numoutbytesColumn = assignmentColumnModel.getColumn(NodeTableModel.NUMOUTBYTES_COLUMN);
         numoutbytesColumn.setMinWidth(10);
         numoutbytesColumn.setMaxWidth(100);
         numoutbytesColumn.setCellRenderer(dtcen);
         numoutbytesColumn.setResizable(false);
-
+        
         TableColumn selectColumn = assignmentColumnModel.getColumn(NodeTableModel.SELECT_COLUMN);
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.addItem(Bundle.getMessage("SelectSelect"));
@@ -258,35 +258,35 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         comboBox.addItem(Bundle.getMessage("SelectInfo"));
         comboBox.addItem(Bundle.getMessage("SelectDelete"));
         selectColumn.setCellEditor(new DefaultCellEditor(comboBox));
-
+        
         selectColumn.setMinWidth(40);
         selectColumn.setMaxWidth(90);
         selectColumn.setCellRenderer(dtcen);
         selectColumn.setResizable(false);
-
+        
         TableColumn nodedescColumn = assignmentColumnModel.getColumn(NodeTableModel.NODEDESC_COLUMN);
         nodedescColumn.setMinWidth(40);
         nodedescColumn.setMaxWidth(350);
         nodedescColumn.setResizable(true);
         JScrollPane nodeTableScrollPane = new JScrollPane(nodeTable);
-
+        
         Border inputBorderTitled = BorderFactory.createTitledBorder(inputBorder,
                 " ",
                 TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
         nodeTablePanel.add(nodeTableScrollPane, BorderLayout.CENTER);
         nodeTablePanel.setBorder(inputBorderTitled);
         setPreferredSize(new Dimension(950, 550));
-
+        
         nodeTable.setAutoCreateRowSorter(true);
         nodeTable.getRowSorter().toggleSortOrder(NodeTableModel.NODENUM_COLUMN);
-
+        
         contentPane.add(nodeTablePanel);
-
+        
         // Setup main window buttons
         JPanel panel3 = new JPanel();
         panel3.setLayout(new BoxLayout(panel3, FlowLayout.RIGHT));
         panel3.setPreferredSize(new Dimension(950, 50));
-
+        
         // Set up Add button
         addButton.setVisible(true);
         addButton.setToolTipText(Bundle.getMessage("AddButtonTip"));
@@ -294,7 +294,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             addButtonActionPerformed(e);
         });
         panel3.add(addButton);
-
+        
         // Set up Print button
         printButton.setVisible(true);
         printButton.setToolTipText(Bundle.getMessage("PrintButtonTip"));
@@ -304,7 +304,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             });
         }
         panel3.add(printButton);
-
+        
         // Set up Print button
         discoverButton.setVisible(true);
         discoverButton.setToolTipText(Bundle.getMessage("DiscoverButtonTip"));
@@ -314,7 +314,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             });
 //        }
         panel3.add(discoverButton);
-
+        
         // Set up Done button
         doneButton.setVisible(true);
         doneButton.setToolTipText(Bundle.getMessage("DoneButtonTip"));
@@ -322,7 +322,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             doneButtonActionPerformed();
         });
         panel3.add(doneButton);
-
+        
         contentPane.add(panel3);
         addHelpMenu("package.jmri.jmrix.cmri.serial.nodeconfigmanager.NodeConfigManagerFrame", true);
         // pack for display
@@ -668,16 +668,16 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             }
         }
 
-        public static final int NODENUM_COLUMN = 0;
-        public static final int NODETYPE_COLUMN = 1;
-        public static final int NUMBITS_COLUMN = 2;
-        public static final int NUMINCARDS_COLUMN = 3;
-        public static final int NUMOUTCARDS_COLUMN = 4;
-        public static final int NUMINBYTES_COLUMN = 5;
-        public static final int NUMOUTBYTES_COLUMN = 6;
-        public static final int SELECT_COLUMN = 7;
-        public static final int NODEDESC_COLUMN = 8;
-        public static final int NUM_COLUMNS = NODEDESC_COLUMN + 1;
+        private static final int NODENUM_COLUMN = 0;
+        private static final int NODETYPE_COLUMN = 1;
+        private static final int NUMBITS_COLUMN = 2;
+        private static final int NUMINCARDS_COLUMN = 3;
+        private static final int NUMOUTCARDS_COLUMN = 4;
+        private static final int NUMINBYTES_COLUMN = 5;
+        private static final int NUMOUTBYTES_COLUMN = 6;
+        private static final int SELECT_COLUMN = 7;
+        private static final int NODEDESC_COLUMN = 8;
+        private static final int NUM_COLUMNS = NODEDESC_COLUMN + 1;
 
 //        private String[] pollStatus = {"ERROR","IDLE","POLLING","TIMEOUT","SLOW POLL"};
         /**
@@ -829,7 +829,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         }
     }
 
-    private String[] nodeTableColumnsNames
+    private final String[] nodeTableColumnsNames
             = {"Address", "   Type", "Bits per Card", "IN Cards", "OUT Cards", "IN Bits", "OUT Bits", " ", "  Description"};
 
 //    private String[] nodeTableTypes = {"--", "SMINI", "SUSIC", "CPNODE", "CPMEGA"};
