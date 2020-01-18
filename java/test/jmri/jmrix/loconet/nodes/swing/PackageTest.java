@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     BundleTest.class,
     ConfigNodesTest.class,
+    DiscoverNodesFrameTest.class,
     NodeConfigManagerFrameTest.class,
 })
 /**
