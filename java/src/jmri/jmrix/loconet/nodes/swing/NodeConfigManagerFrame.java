@@ -900,9 +900,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         nodeTypeBox.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent event) {
-//                String s = (String) nodeTypeBox.getSelectedItem();
-
-                s = "SMINI";    // DANIEL
+                String s = (String) nodeTypeBox.getSelectedItem();
+                
                 if (s.equals("SMINI")) {
                     panel2.setVisible(false);
                     panel2a.setVisible(true);
