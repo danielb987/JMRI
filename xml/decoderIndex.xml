@@ -10858,16 +10858,16 @@
         <model model="DCCACC" />
       </family>
       <family name="BTLocobridge" mfg="Möllehem Gårdsproduktion" type="stationary" comment="Bluetooth LocoNet interface" file="MGP_BT_LocoBridge.xml">
-        <model model="BTLocobridge" lowVersionID="1" />
+        <model model="BTLocobridge" lowVersionID="1" productID="10" />
       </family>
       <family name="Panel" mfg="Möllehem Gårdsproduktion" type="stationary" comment="Panel, a LocoNet decoder control panels" file="MGP_Panel.xml">
-        <model model="Panel" lowVersionID="1" />
+        <model model="Panel" lowVersionID="1" productID="3,4" />
       </family>
       <family name="Servo5" mfg="Möllehem Gårdsproduktion" type="stationary" comment="Servo5, a LocoNet decoder for railway switches" file="MGP_Servo5.xml">
-        <model model="Servo5" lowVersionID="1" />
+        <model model="Servo5" lowVersionID="1" productID="2" />
       </family>
       <family name="Signal10" mfg="Möllehem Gårdsproduktion" type="stationary" comment="Signal10, a LocoNet decoder for railway signals" file="MGP_Signal10.xml">
-        <model model="Signal10" lowVersionID="1" />
+        <model model="Signal10" lowVersionID="1" productID="11,12,13,14" />
       </family>
       <family name="MRC 14/28/128 step decoders" mfg="MRC" file="MRC_128step.xml">
         <model model="AD322" lowVersionID="32" formFactor="N" numOuts="4" numFns="6">
@@ -13756,7 +13756,7 @@
         <model model="Basic definition" />
       </family>
       <family name="Daniel Bergqvist example card" mfg="Public-domain and DIY" file="Public_Domain_LNSV2_DanielBergqvist.xml">
-        <model model="StringIO and AnalogIO" />
+        <model model="StringIO and AnalogIO" developerID="17" productID="1" />
       </family>
       <family name="MERG decoders" mfg="Public-domain and DIY" lowVersionID="104" file="Public_Domain_MERG_DIY_10.xml">
         <model model="MERG-DIY 10" numOuts="5" numFns="3">

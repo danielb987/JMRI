@@ -1,15 +1,10 @@
 package jmri.jmrix.loconet.nodes.swing;
 
-import static jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.isSupportedSv2Message;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -45,9 +40,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 
     private LocoNetSystemConnectionMemo _memo = null;
     private LnTrafficController _tc;
-    private List<DecoderFile> _decoders;
-    private Map<Integer, List<DecoderFile>> decoderFileMap = new HashMap<>();
-    private List<LnNode> lnNodes = new ArrayList<>();
+    private final List<LnNode> lnNodes = new ArrayList<>();
     
     protected JPanel nodeTablePanel = null;
     protected Border inputBorder = BorderFactory.createEtchedBorder();
@@ -184,24 +177,6 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         nodeTablePanel.setVisible(true);
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        readDecoderTypes();
-        
-        
-        
         _tc = _memo.getLnTrafficController();
         _tc.addLocoNetListener(~0, this);
         
@@ -218,69 +193,8 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     }
     
     
-    public void readDecoderTypes() {
-//        LnNodeManager lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
-        _decoders = InstanceManager.getDefault(DecoderIndexFile.class).matchingDecoderList(null, null, null, null, null, null);
-        
-        
-        
-        for (DecoderFile decoderFile : _decoders) {
-//            jmri.LocoAddress.Protocol[] protocols = decoderFile.getSupportedProtocols();
-            
-            RosterEntry re = new RosterEntry();
-            re.setDecoderFamily(decoderFile.getFamily());
-            re.setDecoderModel(decoderFile.getModel());
-            re.setId("LabelNewDecoder");
-//            re.setId(Bundle.getMessage("LabelNewDecoder"));
-            
-            // loadDecoderFile()
-            
-//            Element decoderRoot = null;
-//////            try {
-                int manufacturerID = Integer.parseInt(decoderFile.getMfgID());
-                List<DecoderFile> decoderFiles = decoderFileMap.get(manufacturerID);
-                if (decoderFiles == null) {
-                    decoderFiles = new ArrayList<>();
-                    decoderFileMap.put(manufacturerID, decoderFiles);
-                }
-                decoderFiles.add(decoderFile);
-////                System.out.format("%s, %s, %s, %s, %s%n", decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel());
-//                System.out.format("%s, %s%n", decoderFile.getMfgID(), decoderFile.getProductID());
-//                if (1==1)
-//////                if ("Public-domain and DIY".equals(decoderFile.getMfg())) {
-//////                    if (!decoderFile.getFamily().equals(decoderFile.getModel())) {
-//                        System.out.format("%s, %s, %s, %s, %s, %s, %s, %s%n", decoderFile.getShowable().name(), decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getDeveloperID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel(), decoderFile.getModelElement());
-//////                        decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
-//////                    }
-//////                }
-//////            } catch (org.jdom2.JDOMException e) {
-//////                log.error("Exception while parsing decoder XML file: " + decoderFile.getFileName(), e);
-//////                return;
-//////            } catch (java.io.IOException e) {
-//////                log.error("Exception while reading decoder XML file: " + decoderFile.getFileName(), e);
-//////                return;
-//////            }
-//            re.
-            
-            // note that we're leaving the filename null
-            // add the new roster entry to the in-memory roster
-//////            Roster.getDefault().addEntry(re);
-            
-//            re.
-//            startProgrammer(decoderFile, re, (String) programmerBox.getSelectedItem());
-        }
-        
-        
-    }
-    
-    
-    
-    
     private void addNode(LnNode node) {
-//        List<DecoderFile> decoderFiles = decoderFileMap.get(node.getManufacturerID());
-//        System.out.format("Num items for manufacturerID %d: %d%n", node.getManufacturerID(), decoderFiles.size());
         jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
-//            System.out.println(node.toString());
             nodeTableModel.addRow(node);
         });
     }
@@ -289,7 +203,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     @Override
     public void message(LocoNetMessage msg) {
         // Return if the message is not a SV2 message
-        if (!isSupportedSv2Message(msg)) return;
+        if (!LnSv2MessageContents.isSupportedSv2Message(msg)) return;
         LnSv2MessageContents contents = new LnSv2MessageContents(msg);
         
         Sv2Command command = LnSv2MessageContents.extractMessageType(msg);
@@ -319,16 +233,16 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
                 case DEVELOPER_COLUMN:
                 case PRODUCT_COLUMN:
                     return String.class;
-
+                    
                 case SERIALNO_COLUMN:
                 case ADDRESS_COLUMN:
 //                case NUMINBYTES_COLUMN:
 //                case NUMOUTBYTES_COLUMN:
                     return Integer.class;
-
+                    
                 case SELECT_COLUMN:
                     return String.class;
-
+                    
 //                case NODEDESC_COLUMN:
                 default:
                     return String.class;
@@ -356,13 +270,11 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 
         public void removeRow(int row) {
             lnNodes.remove(row);
-//            numConfigNodes = lnNode.size();
             fireTableRowsDeleted(row, row);
         }
 
         public void addRow(LnNode newNode) {
             lnNodes.add(newNode);
-//            numConfigNodes = lnNode.size();
             fireTableDataChanged();
         }
 
@@ -463,7 +375,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     
     
     
-//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiscoverNodesFrame.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiscoverNodesFrame.class);
     
 }
 

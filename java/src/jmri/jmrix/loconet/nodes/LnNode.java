@@ -1,8 +1,11 @@
 package jmri.jmrix.loconet.nodes;
 
 import jmri.InstanceManager;
+import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A node on the LocoNet bus.
@@ -14,14 +17,14 @@ import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents;
  */
 public class LnNode {
 
-    private final LnNodeManager lnNodeManager;
+    private final LnNodeManager _lnNodeManager;
     private final int _address;
     private int _manufacturerID = 0;
     private String _manufacturer = "";
     private int _developerID = 0;
     private String _developer = "";
     private int _productID = 0;
-    private String _product = "Daniel";
+    private String _product = "";
     private int _serialNumber = 0;
     private String _name;
     
@@ -34,7 +37,7 @@ public class LnNode {
      * @param tc the traffic controller for the LocoNet.
      */
     public LnNode(int address, LnTrafficController tc) {
-        lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
+        _lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
         _address = address;
 //        _tc = _lm.getLnTrafficController();
     }
@@ -46,13 +49,15 @@ public class LnNode {
      * @param tc the traffic controller for the LocoNet.
      */
     public LnNode(LnSv2MessageContents contents, LnTrafficController tc) {
-        lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
+        _lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
         setManufacturerID(contents.getSv2ManufacturerID());
         setDeveloperID(contents.getSv2DeveloperID());
-        _productID = contents.getSv2ProductID();
+        setProductID(contents.getSv2ProductID());
         _serialNumber = contents.getSv2SerialNum();
         _address = contents.getDestAddr();
 //        _tc = _lm.getLnTrafficController();
+        
+        log.debug(String.format("LnNode: %d, %d, %d%n", contents.getSv2ManufacturerID(), contents.getSv2DeveloperID(), contents.getSv2ProductID()));
     }
     
     public int getAddress() {
@@ -61,7 +66,7 @@ public class LnNode {
     
     public final void setManufacturerID(int id) {
         _manufacturerID = id;
-        _manufacturer = lnNodeManager.getManufacturer(_manufacturerID);
+        _manufacturer = _lnNodeManager.getManufacturer(_manufacturerID);
         
         // Ensure that the _developer field is up to date
         setDeveloperID(_developerID);
@@ -78,7 +83,7 @@ public class LnNode {
     public final void setDeveloperID(int id) {
         _developerID = id;
         if (_manufacturerID == LnNodeManager.PUBLIC_DOMAIN_DIY_MANAGER_ID) {
-            _developer = lnNodeManager.getDeveloper(_developerID);
+            _developer = _lnNodeManager.getDeveloper(_developerID);
         } else {
             _developer = "";
         }
@@ -92,8 +97,15 @@ public class LnNode {
         return _developer;
     }
     
-    public void setProductID(int id) {
+    public final void setProductID(int id) {
         _productID = id;
+        DecoderFile product =
+                _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+        if (product != null) {
+            _product = product.getModel();
+        } else {
+            _product = "Unknown. ProductID: " + Integer.toString(id);
+        }
     }
     
     public int getProductID() {
@@ -130,5 +142,8 @@ public class LnNode {
                 _address,
                 _name);
     }
+    
+    
+    private final static Logger log = LoggerFactory.getLogger(LnNode.class);
     
 }

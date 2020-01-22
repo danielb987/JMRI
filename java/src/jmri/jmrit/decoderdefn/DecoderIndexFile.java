@@ -527,7 +527,7 @@ public class DecoderIndexFile extends XmlFile {
             String replacementFamilyName = ((attr = decoder.getAttribute("replacementFamily")) != null ? attr.getValue() : ParentReplacementFamilyName);
             int numFns = ((attr = decoder.getAttribute("numFns")) != null ? Integer.parseInt(attr.getValue()) : -1);
             int numOuts = ((attr = decoder.getAttribute("numOuts")) != null ? Integer.parseInt(attr.getValue()) : -1);
-            String devId = ((attr = decoder.getAttribute("developerId")) != null ? attr.getValue() : "-1");
+            String devId = ((attr = decoder.getAttribute("developerID")) != null ? attr.getValue() : "-1");
             DecoderFile df = new DecoderFile(mfg, mfgID,
                     ((attr = decoder.getAttribute("model")) != null ? attr.getValue() : null),
                     loVersID, hiVersID, familyName, filename, devId, numFns, numOuts, decoder,
