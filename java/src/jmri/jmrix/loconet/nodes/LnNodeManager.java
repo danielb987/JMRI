@@ -83,7 +83,9 @@ public class LnNodeManager implements InstanceManagerAutoDefault {
                 String productIDs = decoder.getProductID();
                 String[] products = productIDs.split(",");
                 for (String p : products) {
-                    System.out.format("Manufacturer: %s, Developer: %s, ProductID: %s. Expect manufacturer: %d, developer: %d, productID: %d, num decoders: %d%n", decoder.getMfgID(), decoder.getDeveloperID(), p, manufacturerID, developerID, productID, decoders.size());
+                    log.debug(String.format(
+                            "Manufacturer: %s, Developer: %s, ProductID: %s. Expect manufacturer: %d, developer: %d, productID: %d, num decoders: %d%n",
+                            decoder.getMfgID(), decoder.getDeveloperID(), p, manufacturerID, developerID, productID, decoders.size()));
                     if (productID == Integer.parseInt(p)) return decoder;
                 }
             }
