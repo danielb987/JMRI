@@ -255,7 +255,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.addItem(Bundle.getMessage("SelectSelect"));
         comboBox.addItem(Bundle.getMessage("SelectEdit"));
-        comboBox.addItem(Bundle.getMessage("SelectInfo"));
+//        comboBox.addItem(Bundle.getMessage("SelectInfo"));
         comboBox.addItem(Bundle.getMessage("SelectDelete"));
         selectColumn.setCellEditor(new DefaultCellEditor(comboBox));
         
@@ -608,8 +608,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
             if (col == SELECT_COLUMN) {
                 if (Bundle.getMessage("SelectEdit").equals(value)) {
                     editActionSelected();
-                } else if (Bundle.getMessage("SelectInfo").equals(value)) {
-                    infoActionSelected();
+//                } else if (Bundle.getMessage("SelectInfo").equals(value)) {
+//                    infoActionSelected();
                 } else if (Bundle.getMessage("SelectDelete").equals(value)) {
                     deleteActionSelected();
                 }

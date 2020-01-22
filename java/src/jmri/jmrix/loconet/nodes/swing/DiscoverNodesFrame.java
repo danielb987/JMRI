@@ -4,17 +4,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.*;
-import jmri.InstanceManager;
+import jmri.DccLocoAddress;
 import jmri.jmrit.decoderdefn.DecoderFile;
-import jmri.jmrit.decoderdefn.DecoderIndexFile;
-import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
+import jmri.jmrit.symbolicprog.ProgDefault;
+import jmri.jmrit.symbolicprog.SymbolicProgBundle;
+import jmri.jmrit.symbolicprog.tabbedframe.PaneServiceProgFrame;
 import jmri.jmrix.loconet.LocoNetListener;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LnTrafficController;
@@ -132,8 +134,9 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.addItem(Bundle.getMessage("SelectSelect"));
         comboBox.addItem(Bundle.getMessage("SelectEdit"));
-        comboBox.addItem(Bundle.getMessage("SelectInfo"));
+//        comboBox.addItem(Bundle.getMessage("SelectInfo"));
         comboBox.addItem(Bundle.getMessage("SelectDelete"));
+        comboBox.addItem(Bundle.getMessage("SelectProgram"));
         selectColumn.setCellEditor(new DefaultCellEditor(comboBox));
         
         selectColumn.setMinWidth(40);
@@ -171,7 +174,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         panel3.add(doneButton);
         
         contentPane.add(panel3);
-        addHelpMenu("package.jmri.jmrix.cmri.serial.nodeconfigmanager.NodeConfigManagerFrame", true);
+//        addHelpMenu("package.jmri.jmrix.cmri.serial.nodeconfigmanager.NodeConfigManagerFrame", true);
         // pack for display
         pack();
         nodeTablePanel.setVisible(true);
@@ -214,6 +217,80 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         }
     }
     
+    /**
+     * Get the selected node address from the node table.
+     */
+    private LnNode getSelectedNode() {
+        int addr = (Integer)nodeTable.getValueAt(
+                nodeTable.getSelectedRow(), NodeTableModel.ADDRESS_COLUMN);
+        
+        for (LnNode node : lnNodes) {
+            if (node.getAddress() == addr) return node;
+        }
+        // If here, the node is not found
+        return null;
+    }
+    
+    /**
+     * Handle the delete button click
+     */
+    public void openProgrammerActionSelected() {
+        
+        LnNode selectedNode = getSelectedNode();
+        log.debug(String.format("LnNode: Mfg: %s, Dev: %s, Prod: %s, decoderFile: %s%n",
+                selectedNode.getManufacturer(), selectedNode.getDeveloper(), selectedNode.getProduct(), selectedNode.getDecoderFile()));
+        
+        String programmerFilename;
+        
+        if (ProgDefault.getDefaultProgFile() != null) {
+            programmerFilename = ProgDefault.getDefaultProgFile();
+        } else {
+            programmerFilename = ProgDefault.findListOfProgFiles()[0];
+        }
+        
+//        DccLocoAddress addr = new DccLocoAddress(selectedNode.getAddress(), true);
+        DccLocoAddress addr = new DccLocoAddress(selectedNode.getAddress(), false);
+        
+        RosterEntry re = new RosterEntry();
+//        re.setLongAddress(true);
+//        System.out.format("DccAddress: %d%n", selectedNode.getAddress());
+        re.setDccAddress(Integer.toString(selectedNode.getAddress()));
+        re.setMfg(selectedNode.getDecoderFile().getMfg());
+        re.setDecoderFamily(selectedNode.getDecoderFile().getFamily());
+//        re.setModel(selectedNode.getDecoderFile().getModel());
+        re.setDecoderModel(selectedNode.getDecoderFile().getModel());
+        
+        String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
+                new Object[]{selectedNode.getProduct()});
+//        String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
+//                new Object[]{"new decoder"});
+//        title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
+//                new Object[]{re.getId()});
+        JFrame p = new PaneServiceProgFrame(selectedNode.getDecoderFile(), re,
+                title, "programmers" + File.separator + programmerFilename + ".xml",
+                _memo.getProgrammerManager().getAddressedProgrammer(addr));
+        p.pack();
+        p.setVisible(true);
+        
+        
+        
+/*
+        NodeConfigManagerFrame f = new NodeConfigManagerFrame(_memo);
+        f.nodeTableModel = nodeTableModel;
+        f.selectedTableRow = nodeTable.convertRowIndexToModel(nodeTable.getSelectedRow());
+        try {
+            f.initNodeConfigWindow();
+            f.deleteNodeButtonActionPerformed(selectedNodeAddr);
+        } catch (Exception ex) {
+            log.info("deleteActionSelected", ex);
+
+        }
+        f.setLocation(200, 200);
+        f.buttonSet_DELETE();
+        f.setVisible(true);
+*/        
+    }
+
     
     
     /**
@@ -282,23 +359,28 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
             lnNodes.set(row, aNode);
             fireTableDataChanged();
         }
-/*
+
         @Override
         public void setValueAt(Object value, int row, int col) {
             if (col == SELECT_COLUMN) {
                 if (Bundle.getMessage("SelectEdit").equals(value)) {
-                    editActionSelected();
-                } else if (Bundle.getMessage("SelectInfo").equals(value)) {
-                    infoActionSelected();
+//                    editActionSelected();
+//                } else if (Bundle.getMessage("SelectInfo").equals(value)) {
+//                    infoActionSelected();
                 } else if (Bundle.getMessage("SelectDelete").equals(value)) {
-                    deleteActionSelected();
+//                    deleteActionSelected();
+//        comboBox.addItem(Bundle.getMessage("SelectProgram"));
+//        comboBox.addItem("Daniel Open programmer");
+//                } else if ("Daniel Open programmer".equals(value)) {
+                } else if (Bundle.getMessage("SelectProgram").equals(value)) {
+                    openProgrammerActionSelected();
                 }
             } else {
                 log.info("setValueAt Row" + row + " value " + value);
             }
             fireTableDataChanged();
         }
-*/
+
         @Override
         public Object getValueAt(int r, int c) {
             switch (c) {
@@ -375,7 +457,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     
     
     
-//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiscoverNodesFrame.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiscoverNodesFrame.class);
     
 }
 

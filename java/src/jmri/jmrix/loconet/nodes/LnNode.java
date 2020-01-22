@@ -27,6 +27,7 @@ public class LnNode {
     private String _product = "";
     private int _serialNumber = 0;
     private String _name;
+    private DecoderFile _decoderFile;
     
 //    private final LnTrafficController _tc;
     
@@ -99,10 +100,9 @@ public class LnNode {
     
     public final void setProductID(int id) {
         _productID = id;
-        DecoderFile product =
-                _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
-        if (product != null) {
-            _product = product.getModel();
+        _decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+        if (_decoderFile != null) {
+            _product = _decoderFile.getModel();
         } else {
             _product = "Unknown. ProductID: " + Integer.toString(id);
         }
@@ -114,6 +114,10 @@ public class LnNode {
     
     public String getProduct() {
         return _product;
+    }
+    
+    public DecoderFile getDecoderFile() {
+        return _decoderFile;
     }
     
     public void setSerialNumber(int serialNumber) {
