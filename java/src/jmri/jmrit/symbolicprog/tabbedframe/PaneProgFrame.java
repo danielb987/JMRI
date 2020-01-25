@@ -1349,7 +1349,14 @@ abstract public class PaneProgFrame extends JmriJFrame
         // start operation
         return doRead();
     }
-
+    
+    /**
+     * Click the "ReadAll" button
+     */
+    public void triggerReadAll() {
+        readAllButton.doClick();
+    }
+    
     /**
      * Invoked by the "Read All" button, this sets in motion a continuing
      * sequence of "read all" operations on the panes.

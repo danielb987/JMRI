@@ -266,11 +266,12 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 //                new Object[]{"new decoder"});
 //        title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
 //                new Object[]{re.getId()});
-        JFrame p = new PaneServiceProgFrame(selectedNode.getDecoderFile(), re,
+        PaneServiceProgFrame p = new PaneServiceProgFrame(selectedNode.getDecoderFile(), re,
                 title, "programmers" + File.separator + programmerFilename + ".xml",
                 _memo.getProgrammerManager().getAddressedProgrammer(addr));
         p.pack();
         p.setVisible(true);
+        jmri.util.ThreadingUtil.runOnGUIEventually(p::triggerReadAll);
         
         
         
