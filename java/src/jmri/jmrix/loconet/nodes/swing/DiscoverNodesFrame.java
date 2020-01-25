@@ -25,6 +25,7 @@ import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents;
 import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.Sv2Command;
 import jmri.jmrix.loconet.nodes.LnNode;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
+import jmri.util.ThreadingUtil;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
@@ -197,7 +198,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     
     
     private void addNode(LnNode node) {
-        jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
+        ThreadingUtil.runOnGUIEventually(() -> {
             nodeTableModel.addRow(node);
         });
     }
@@ -266,11 +267,12 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 //                new Object[]{"new decoder"});
 //        title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
 //                new Object[]{re.getId()});
-        JFrame p = new PaneServiceProgFrame(selectedNode.getDecoderFile(), re,
+        PaneServiceProgFrame p = new PaneServiceProgFrame(selectedNode.getDecoderFile(), re,
                 title, "programmers" + File.separator + programmerFilename + ".xml",
                 _memo.getProgrammerManager().getAddressedProgrammer(addr));
         p.pack();
         p.setVisible(true);
+        ThreadingUtil.runOnGUIEventually(p::clickButtonReadAll);
         
         
         
