@@ -13,6 +13,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.*;
 import jmri.DccLocoAddress;
 import jmri.jmrit.decoderdefn.DecoderFile;
+import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.symbolicprog.ProgDefault;
 import jmri.jmrit.symbolicprog.SymbolicProgBundle;
@@ -260,6 +261,10 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         re.setDecoderFamily(selectedNode.getDecoderFile().getFamily());
 //        re.setModel(selectedNode.getDecoderFile().getModel());
         re.setDecoderModel(selectedNode.getDecoderFile().getModel());
+        re.setId(SymbolicProgBundle.getMessage("LabelNewDecoder")); // NOI18N
+        // note that we're leaving the filename null
+        // add the new roster entry to the in-memory roster
+        Roster.getDefault().addEntry(re);
         
         String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
                 new Object[]{selectedNode.getProduct()});
