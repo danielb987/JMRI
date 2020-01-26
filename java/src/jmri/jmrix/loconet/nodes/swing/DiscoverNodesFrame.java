@@ -17,7 +17,7 @@ import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.symbolicprog.ProgDefault;
 import jmri.jmrit.symbolicprog.SymbolicProgBundle;
-import jmri.jmrit.symbolicprog.tabbedframe.PaneServiceProgFrame;
+import jmri.jmrit.symbolicprog.tabbedframe.PaneOpsProgFrame;
 import jmri.jmrix.loconet.LocoNetListener;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LnTrafficController;
@@ -272,7 +272,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
 //                new Object[]{"new decoder"});
 //        title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
 //                new Object[]{re.getId()});
-        PaneServiceProgFrame p = new PaneServiceProgFrame(selectedNode.getDecoderFile(), re,
+        PaneOpsProgFrame p = new PaneOpsProgFrame(selectedNode.getDecoderFile(), re,
                 title, "programmers" + File.separator + programmerFilename + ".xml",
                 _memo.getProgrammerManager().getAddressedProgrammer(addr));
         p.pack();
