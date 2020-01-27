@@ -59,7 +59,8 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
     JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
     JButton printButton = new JButton(Bundle.getMessage("PrintButtonText"));
-    JButton discoverButton = new JButton(Bundle.getMessage("DiscoverButtonText"));
+    JButton discoverNodesButton = new JButton(Bundle.getMessage("DiscoverNodesButtonText"));
+    JButton discoverThrottleButton = new JButton(Bundle.getMessage("DiscoverThrottleButtonText"));
 
     NodeConfigManagerFrame curFrame;
 
@@ -306,14 +307,24 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         panel3.add(printButton);
         
         // Set up Print button
-        discoverButton.setVisible(true);
-        discoverButton.setToolTipText(Bundle.getMessage("DiscoverButtonTip"));
+        discoverNodesButton.setVisible(true);
+        discoverNodesButton.setToolTipText(Bundle.getMessage("DiscoverNodesButtonTip"));
 //        if (numConfigNodes > 0) {
-            discoverButton.addActionListener((java.awt.event.ActionEvent e) -> {
-                discoverButtonActionPerformed(e);
+            discoverNodesButton.addActionListener((java.awt.event.ActionEvent e) -> {
+                discoverNodesButtonActionPerformed(e);
             });
 //        }
-        panel3.add(discoverButton);
+        panel3.add(discoverNodesButton);
+        
+        // Set up Print button
+        discoverThrottleButton.setVisible(true);
+        discoverThrottleButton.setToolTipText(Bundle.getMessage("DiscoverThrottleButtonTip"));
+//        if (numConfigNodes > 0) {
+            discoverThrottleButton.addActionListener((java.awt.event.ActionEvent e) -> {
+                discoverThrottleButtonActionPerformed(e);
+            });
+//        }
+        panel3.add(discoverThrottleButton);
         
         // Set up Done button
         doneButton.setVisible(true);
@@ -395,26 +406,20 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     }
 
     /**
-     * Print.
+     * Discover nodes.
      *
      * @param e the triggering event
      */
-    public void discoverButtonActionPerformed(java.awt.event.ActionEvent e) {
-        // DANIEL
-        
-//        jmri.jmrix.loconet.LnTrafficController tc = _memo.getLnTrafficController();
+    public void discoverNodesButtonActionPerformed(java.awt.event.ActionEvent e) {
         
         DiscoverNodesFrame f = new DiscoverNodesFrame(_memo);
         try {
             f.initComponents();
         } catch (Exception ex) {
-            log.error("NodeConfigManagerAction Exception-C2: "+ex.toString());
+            log.error("NodeConfigManagerFrame Exception-C2: "+ex.toString());
         }
         f.setLocation(20,40);
         f.setVisible(true);
-//        jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.createSvDiscoverQueryMessage();
-//        jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.SV_CMD_DISCOVER_DEVICES_QUERY;
-//        jmri.jmrix.loconet.LnConstants.OPC_PEER_XFER;
         
 /*        
         int[] colWidth = new int[10];
@@ -444,6 +449,23 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
         // print the assignments
         (nodeTableModel).printTable(writer, colWidth);
 */        
+    }
+
+    /**
+     * Discover nodes.
+     *
+     * @param e the triggering event
+     */
+    public void discoverThrottleButtonActionPerformed(java.awt.event.ActionEvent e) {
+        
+        DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
+        try {
+            f.initComponents();
+        } catch (Exception ex) {
+            log.error("NodeConfigManagerFrame Exception-C2: "+ex.toString());
+        }
+        f.setLocation(20,40);
+        f.setVisible(true);
     }
 
     /**
