@@ -2,6 +2,7 @@ package jmri.jmrix.loconet.nodes.swing;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -25,6 +26,7 @@ import jmri.jmrit.symbolicprog.SymbolicProgBundle;
 import jmri.jmrit.symbolicprog.tabbedframe.PaneOpsProgFrame;
 import jmri.jmrit.throttle.AddressListener;
 import jmri.jmrit.throttle.ThrottleFrameManager;
+import jmri.jmrix.loconet.LnConstants;
 import jmri.jmrix.loconet.LocoNetListener;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LnTrafficController;
@@ -50,22 +52,35 @@ import org.jdom2.Element;
  */
 public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoNetListener, ThrottleListener {
 
-    private static final ResourceBundle rbx = ResourceBundle.getBundle("jmri.jmrit.throttle.ThrottleBundle");
+    private static final ResourceBundle _rbx =
+            ResourceBundle.getBundle("jmri.jmrit.throttle.ThrottleBundle");
+    
+    private final LnNodeManager _lnNodeManager;
     
     private LocoNetSystemConnectionMemo _memo = null;
     private LnTrafficController _tc;
-    private final List<LnNode> lnNodes = new ArrayList<>();
     
-    protected JPanel nodeTablePanel = null;
-    protected Border inputBorder = BorderFactory.createEtchedBorder();
+    private final Border _inputBorder = BorderFactory.createEtchedBorder();
     
-    protected JTable nodeTable = null;
+    private JTextField _locoAddress;
+    private JTextField _throttleId;
+    private JTextField _manufacturer;
+    private JTextField _developer;
+    private JTextField _product;
+    private JCheckBox _fremoFrediBug;
+    private JButton _programmerButton;
     
-    JButton throttleIdButton = new JButton(Bundle.getMessage("ButtonThrottleId"));
-    JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
+    private int _currentDispatchAddress;
+    private DccThrottle _throttle;
     
-    private int currentAddress;
-    private DccThrottle throttle;
+    private GetLocoState _getLocoState = GetLocoState.NONE;
+    private int _requestThrottleAddress;
+    
+    private int _discoverLocoAddress;
+    private int _discoverThrottleID;
+    private int _manufacturerID;
+    private int _developerID;
+    private int _productID;
     
     /**
      * Constructor method
@@ -75,6 +90,8 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     public DiscoverThrottleFrame(LocoNetSystemConnectionMemo memo) {
         super();
         _memo = memo;
+        
+        _lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
         
         // addHelpMenu("package.jmri.jmrix.cmri.serial.nodeconfigmanager.NodeConfigManagerFrame", true); // NOI18N duplicate, see initComponents
     }
@@ -87,7 +104,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         // set the frame's initial state
         setTitle(Bundle.getMessage("WindowTitle") + Bundle.getMessage("WindowConnectionMemo")+_memo.getUserName());  // NOI18N
 //        setSize(500, 150);
-        setSize(700, 300);
+        setSize(800, 400);
         
         GridBagConstraints c = new GridBagConstraints();
         
@@ -95,10 +112,8 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
         
         JPanel throttlePanel = new JPanel();
-//        throttlePanel.setLayout(new BoxLayout(nodeTablePanel, BoxLayout.Y_AXIS));
-//        throttlePanel.setLayout(new GridLayout(5, 3));
         throttlePanel.setLayout(new GridBagLayout());
-        Border throttleBorderTitled = BorderFactory.createTitledBorder(inputBorder,
+        Border throttleBorderTitled = BorderFactory.createTitledBorder(_inputBorder,
                 Bundle.getMessage("TitleThrottle"),
                 TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
         throttlePanel.setBorder(throttleBorderTitled);
@@ -125,9 +140,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_END;
         throttlePanel.add(labelLocoAddress, c);
         
-        JTextField locoAddress = new JTextField("123");
-        locoAddress.setEditable(false);
-        locoAddress.setColumns(5);
+        _locoAddress = new JTextField();
+        _locoAddress.setEditable(false);
+        _locoAddress.setColumns(5);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 1;
@@ -135,7 +150,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(locoAddress, c);
+        throttlePanel.add(_locoAddress, c);
         
         JLabel labelThrottleId = new JLabel(Bundle.getMessage("ThrottleId"));
         c.gridwidth = 1;
@@ -147,9 +162,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_END;
         throttlePanel.add(labelThrottleId, c);
         
-        JTextField throttleId = new JTextField("456");
-        throttleId.setEditable(false);
-        throttleId.setColumns(10);
+        _throttleId = new JTextField();
+        _throttleId.setEditable(false);
+        _throttleId.setColumns(10);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 1;
@@ -157,7 +172,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(throttleId, c);
+        throttlePanel.add(_throttleId, c);
         
         JLabel labelManufacturer = new JLabel(Bundle.getMessage("Manufacturer"));
         c.gridwidth = 1;
@@ -169,9 +184,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_END;
         throttlePanel.add(labelManufacturer, c);
         
-        JTextField manufacturer = new JTextField("789");
-        manufacturer.setEditable(false);
-        manufacturer.setColumns(30);
+        _manufacturer = new JTextField();
+        _manufacturer.setEditable(false);
+        _manufacturer.setColumns(30);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 1;
@@ -179,7 +194,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(manufacturer, c);
+        throttlePanel.add(_manufacturer, c);
         
         JLabel labelDeveloper = new JLabel(Bundle.getMessage("Developer"));
         c.gridwidth = 1;
@@ -191,9 +206,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_END;
         throttlePanel.add(labelDeveloper, c);
         
-        JTextField developer = new JTextField("Abc");
-        developer.setEditable(false);
-        developer.setColumns(30);
+        _developer = new JTextField();
+        _developer.setEditable(false);
+        _developer.setColumns(30);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 1;
@@ -201,7 +216,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(developer, c);
+        throttlePanel.add(_developer, c);
         
         JLabel labelProduct = new JLabel(Bundle.getMessage("Product"));
         c.gridwidth = 1;
@@ -213,9 +228,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_END;
         throttlePanel.add(labelProduct, c);
         
-        JTextField product = new JTextField("Def");
-        product.setEditable(false);
-        product.setColumns(30);
+        _product = new JTextField();
+        _product.setEditable(false);
+        _product.setColumns(30);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 1;
@@ -223,17 +238,63 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(product, c);
+        throttlePanel.add(_product, c);
         
-        JButton programmerButton = new JButton(Bundle.getMessage("ButtonOpenProgrammer"));
+        _fremoFrediBug = new JCheckBox(Bundle.getMessage("FremoFrediBug"));
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 1;
+        c.gridy = 6;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = java.awt.GridBagConstraints.LINE_START;
+        throttlePanel.add(_fremoFrediBug, c);
+        
+        JLabel labelFremoFrediBug = new JLabel(Bundle.getMessage("FremoFrediBugInfo1"));
         c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 0;
-        c.gridy = 6;
+        c.gridy = 7;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = java.awt.GridBagConstraints.LINE_START;
+        throttlePanel.add(labelFremoFrediBug, c);
+        
+        JLabel labelFremoFrediBug2 = new JLabel(Bundle.getMessage("FremoFrediBugInfo2"));
+        c.gridwidth = 2;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 8;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = java.awt.GridBagConstraints.LINE_START;
+        throttlePanel.add(labelFremoFrediBug2, c);
+        
+        JPanel buttonPanel = new JPanel();
+        
+        _programmerButton = new JButton(Bundle.getMessage("ButtonOpenProgrammer"));
+        _programmerButton.setEnabled(false);
+        _programmerButton.addActionListener((ActionEvent e) -> {
+            openProgrammer();
+        });
+        buttonPanel.add(_programmerButton);
+        
+        JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
+        doneButton.setToolTipText(Bundle.getMessage("DoneButtonTip"));
+        doneButton.addActionListener((ActionEvent e) -> {
+            setVisible(false);
+            dispose();
+        });
+        buttonPanel.add(doneButton);
+        
+        c.gridwidth = 2;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 9;
         c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.anchor = java.awt.GridBagConstraints.CENTER;
-        throttlePanel.add(programmerButton, c);
+        throttlePanel.add(buttonPanel, c);
         
         contentPane.add(throttlePanel);
         
@@ -242,7 +303,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         
         JPanel dispatchPanel = new JPanel();
         dispatchPanel.setLayout(new GridBagLayout());
-        Border dispatchBorderTitled = BorderFactory.createTitledBorder(inputBorder,
+        Border dispatchBorderTitled = BorderFactory.createTitledBorder(_inputBorder,
                 Bundle.getMessage("TitleDispatch"),
                 TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
         dispatchPanel.setBorder(dispatchBorderTitled);
@@ -297,93 +358,40 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.NONE;
         c.anchor = java.awt.GridBagConstraints.CENTER;
         dispatchButton.addActionListener((java.awt.event.ActionEvent e) -> {
-            currentAddress = 0;
+            _currentDispatchAddress = 0;
             try {
-                currentAddress = Integer.parseInt(address.getText());
+                _currentDispatchAddress = Integer.parseInt(address.getText());
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, rbx.getString("AddressIsInvalid"));
+                JOptionPane.showMessageDialog(this, Bundle.getMessage("AddressIsInvalid"));
                 return;
             }
             boolean requestOK
-                    = InstanceManager.throttleManagerInstance().requestThrottle(currentAddress, this, true);
+                    = InstanceManager.throttleManagerInstance().requestThrottle(_currentDispatchAddress, this, true);
             if (!requestOK) {
-                JOptionPane.showMessageDialog(this, rbx.getString("AddressInUse"));
+                JOptionPane.showMessageDialog(this, _rbx.getString("AddressInUse"));
             }
         });
         dispatchPanel.add(dispatchButton, c);
         
         contentPane.add(dispatchPanel);
         
-        
-        
-/*        
+        // Start listen to the LocoNet
         _tc = _memo.getLnTrafficController();
         _tc.addLocoNetListener(~0, this);
-        
-        _tc.sendLocoNetMessage(LnSv2MessageContents.createSvDiscoverQueryMessage());
-*/        
     }
     
     /**
-     * Handle the done button click.
+     * Open programmer
      */
-    public void throttleIdButtonActionPerformed() {
-        DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
-        try {
-            f.initComponents();
-        } catch (Exception ex) {
-            log.error("NodeConfigManagerAction Exception-C2: "+ex.toString());
-        }
-        f.setLocation(20,40);
-        f.setVisible(true);
-    }
-    
-    /**
-     * Handle the done button click.
-     */
-    public void doneButtonActionPerformed() {
-//        changedNode = false;
-        setVisible(false);
-        dispose();
-    }
-    
-    @Override
-    public void message(LocoNetMessage msg) {
-        // Return if the message is not a SV2 message
-        if (!LnSv2MessageContents.isSupportedSv2Message(msg)) return;
-        LnSv2MessageContents contents = new LnSv2MessageContents(msg);
+    public void openProgrammer() {
         
-        Sv2Command command = LnSv2MessageContents.extractMessageType(msg);
+        // Check if we have a loco
+        if (_discoverThrottleID == 0) return;
         
-        if (command == Sv2Command.SV2_DISCOVER_DEVICE_REPORT) {
-            LnNode node = new LnNode(contents, _tc);
-//DANIEL            addNode(node);
-        }
-    }
-    
-    /*.*
-     * Get the selected node address from the node table.
-     *./
-    private LnNode getSelectedNode() {
-        int addr = (Integer)nodeTable.getValueAt(
-                nodeTable.getSelectedRow(), NodeTableModel.ADDRESS_COLUMN);
+        DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
         
-        for (LnNode node : lnNodes) {
-            if (node.getAddress() == addr) return node;
-        }
-        // If here, the node is not found
-        return null;
-    }
-    
-    /**
-     * Handle the open programmer button click
-     */
-    public void openProgrammerActionSelected() {
-        
-//        LnNode selectedNode = getSelectedNode();
-        LnNode selectedNode = null;
         log.debug(String.format("LnNode: Mfg: %s, Dev: %s, Prod: %s, decoderFile: %s%n",
-                selectedNode.getManufacturer(), selectedNode.getDeveloper(), selectedNode.getProduct(), selectedNode.getDecoderFile()));
+                _manufacturer.getText(), _developer.getText(), _product.getText(), decoderFile));
         
         String programmerFilename;
         
@@ -393,54 +401,97 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
             programmerFilename = ProgDefault.findListOfProgFiles()[0];
         }
         
-//        DccLocoAddress addr = new DccLocoAddress(selectedNode.getAddress(), true);
-        DccLocoAddress addr = new DccLocoAddress(selectedNode.getAddress(), false);
+        DccLocoAddress addr = new DccLocoAddress(_discoverThrottleID, false);
         
         RosterEntry re = new RosterEntry();
-//        re.setLongAddress(true);
-//        System.out.format("DccAddress: %d%n", selectedNode.getAddress());
-        re.setDccAddress(Integer.toString(selectedNode.getAddress()));
-        re.setMfg(selectedNode.getDecoderFile().getMfg());
-        re.setDecoderFamily(selectedNode.getDecoderFile().getFamily());
-//        re.setModel(selectedNode.getDecoderFile().getModel());
-        re.setDecoderModel(selectedNode.getDecoderFile().getModel());
+        re.setDccAddress(Integer.toString(_discoverThrottleID));
+        re.setMfg(decoderFile.getMfg());
+        re.setDecoderFamily(decoderFile.getFamily());
+        re.setDecoderModel(decoderFile.getModel());
         re.setId(SymbolicProgBundle.getMessage("LabelNewDecoder")); // NOI18N
         // note that we're leaving the filename null
         // add the new roster entry to the in-memory roster
         Roster.getDefault().addEntry(re);
         
         String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
-                new Object[]{selectedNode.getProduct()});
+                new Object[]{_product.getText()});
 //        String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
 //                new Object[]{"new decoder"});
 //        title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
 //                new Object[]{re.getId()});
-        PaneOpsProgFrame p = new PaneOpsProgFrame(selectedNode.getDecoderFile(), re,
+        PaneOpsProgFrame p = new PaneOpsProgFrame(decoderFile, re,
                 title, "programmers" + File.separator + programmerFilename + ".xml",
                 _memo.getProgrammerManager().getAddressedProgrammer(addr));
         p.pack();
         p.setVisible(true);
         ThreadingUtil.runOnGUIEventually(p::clickButtonReadAll);
-        
-        
-        
-/*
-        NodeConfigManagerFrame f = new NodeConfigManagerFrame(_memo);
-        f.nodeTableModel = nodeTableModel;
-        f.selectedTableRow = nodeTable.convertRowIndexToModel(nodeTable.getSelectedRow());
-        try {
-            f.initNodeConfigWindow();
-            f.deleteNodeButtonActionPerformed(selectedNodeAddr);
-        } catch (Exception ex) {
-            log.info("deleteActionSelected", ex);
-
-        }
-        f.setLocation(200, 200);
-        f.buttonSet_DELETE();
-        f.setVisible(true);
-*/        
     }
     
+    @Override
+    public void message(LocoNetMessage msg) {
+        
+        switch (msg.getOpCode()) {
+            case LnConstants.OPC_LOCO_ADR:
+                _getLocoState = GetLocoState.REQUEST_SLOT;
+                _requestThrottleAddress = msg.getElement(1)*128 + msg.getElement(2);
+                break;
+                
+            case LnConstants.OPC_SL_RD_DATA:
+                if (_getLocoState == GetLocoState.REQUEST_SLOT
+                        && _requestThrottleAddress == msg.getElement(9)*128 + msg.getElement(4)) {
+                    _getLocoState = GetLocoState.READ_SLOT;
+                } else {
+                    _getLocoState = GetLocoState.NONE;
+                }
+                break;
+                
+            case LnConstants.OPC_WR_SL_DATA:
+                if (_getLocoState == GetLocoState.READ_SLOT
+                        && _requestThrottleAddress == msg.getElement(9)*128 + msg.getElement(4)) {
+                    
+                    _discoverLocoAddress = _requestThrottleAddress;
+                    
+                    // Fremo FREDi has a bug so the address is wrong. If the
+                    // checkbox is selected, adjust for that bug.
+                    if (_fremoFrediBug.isSelected()) {
+                        // Fix for wrong address in Fremo FREDi.
+                        _discoverThrottleID = msg.getElement(12)*256 + msg.getElement(11);
+                    } else {
+                        _discoverThrottleID = msg.getElement(12)*128 + msg.getElement(11);
+                    }
+                    
+                    _tc.sendLocoNetMessage(LnSv2MessageContents.createSvDiscoverQueryMessage());
+                }
+                _getLocoState = GetLocoState.NONE;
+                break;
+        }
+        
+        // Return if the message is not a SV2 message
+        if (LnSv2MessageContents.isSupportedSv2Message(msg)) {
+            LnSv2MessageContents contents = new LnSv2MessageContents(msg);
+            
+            Sv2Command command = LnSv2MessageContents.extractMessageType(msg);
+            if (command == Sv2Command.SV2_DISCOVER_DEVICE_REPORT
+                    && _discoverThrottleID == contents.getDestAddr() ) {
+                
+                _manufacturerID = contents.getSv2ManufacturerID();
+                _developerID = contents.getSv2DeveloperID();
+                _productID = contents.getSv2ProductID();
+                DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+                
+                _locoAddress.setText(Integer.toString(_discoverLocoAddress));
+                _throttleId.setText(Integer.toString(_discoverThrottleID));
+                _manufacturer.setText(_lnNodeManager.getManufacturer(_manufacturerID));
+                _developer.setText(_lnNodeManager.getDeveloper(_developerID));
+                if (decoderFile != null) {
+                    _product.setText(decoderFile.getModel());
+                } else {
+                    _product.setText("");
+                }
+                _programmerButton.setEnabled(true);
+            }
+        }
+    }
     
     /**
      * Get notification that a throttle has been found as we requested.
@@ -449,27 +500,25 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
      */
     @Override
     public void notifyThrottleFound(DccThrottle t) {
-        log.debug("Asked for " + currentAddress + " got " + t.getLocoAddress());
-        if (((DccLocoAddress) t.getLocoAddress()).getNumber() != currentAddress) {
-            log.warn("Not correct address, asked for " + currentAddress + " got " + t.getLocoAddress() + ", requesting again...");
+        log.debug("Asked for " + _currentDispatchAddress + " got " + t.getLocoAddress());
+        if (((DccLocoAddress) t.getLocoAddress()).getNumber() != _currentDispatchAddress) {
+            log.warn("Not correct address, asked for " + _currentDispatchAddress + " got " + t.getLocoAddress() + ", requesting again...");
             boolean requestOK
-                    = InstanceManager.throttleManagerInstance().requestThrottle(currentAddress, this, true);
+                    = InstanceManager.throttleManagerInstance().requestThrottle(_currentDispatchAddress, this, true);
             if (!requestOK) {
-                JOptionPane.showMessageDialog(this, rbx.getString("AddressInUse"));
-//                JOptionPane.showMessageDialog(mainPanel, rbx.getMessage("AddressInUse"));
+                JOptionPane.showMessageDialog(this, _rbx.getString("AddressInUse"));
             }
             return;
         }
-
-        throttle = t;
-        currentAddress = t.getLocoAddress().getNumber();
-//DANIEL        throttle.addPropertyChangeListener(this);
-
+        
+        _throttle = t;
+        _currentDispatchAddress = t.getLocoAddress().getNumber();
+        
         if (InstanceManager.throttleManagerInstance().hasDispatchFunction()) {
-            dispatchAddress();
+            ThreadingUtil.runOnGUIEventually(this::dispatchAddress);
         } else {
+            ThreadingUtil.runOnGUIEventually(this::releaseAddress);
             JOptionPane.showMessageDialog(this, Bundle.getMessage("NoDispatchFunction"));
-            releaseAddress();
         }
     }
 
@@ -478,17 +527,18 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
      */
     public void dispatchAddress() {
         final ThrottleListener listener = this;
-        if (throttle != null) {
-            int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(throttle.getLocoAddress()) - 1;
+        if (_throttle != null) {
+            int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
 //            int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(throttle.getLocoAddress());
 
             if ( usageCount != 0 ) {
+                ThreadingUtil.runOnGUIEventually(this::releaseAddress);
                 JOptionPane.showMessageDialog(this, Bundle.getMessage("CannotDispatch", usageCount));
                 return;
             }
-            jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
-                InstanceManager.throttleManagerInstance().dispatchThrottle(throttle, listener);
-            });
+//            jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
+                InstanceManager.throttleManagerInstance().dispatchThrottle(_throttle, listener);
+//            });
 //            InstanceManager.throttleManagerInstance().dispatchThrottle(throttle, this);
         }
     }
@@ -497,12 +547,12 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
      * Release the current address.
      */
     public void releaseAddress() {
-        InstanceManager.throttleManagerInstance().releaseThrottle(throttle, this);
+        InstanceManager.throttleManagerInstance().releaseThrottle(_throttle, this);
     }
 
     @Override
     public void notifyFailedThrottleRequest(LocoAddress address, String reason) {
-        javax.swing.JOptionPane.showMessageDialog(null, reason, rbx.getString("FailedSetupRequestTitle"), javax.swing.JOptionPane.WARNING_MESSAGE);
+        javax.swing.JOptionPane.showMessageDialog(null, reason, _rbx.getString("FailedSetupRequestTitle"), javax.swing.JOptionPane.WARNING_MESSAGE);
     }
     
     /**
@@ -595,6 +645,14 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
 */
     }
     
+    
+    
+    private enum GetLocoState {
+        NONE,
+        REQUEST_SLOT,
+        READ_SLOT,
+        WRITE_SLOT,
+    }
     
     
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiscoverThrottleFrame.class);

@@ -256,7 +256,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     }
     
     /**
-     * Handle the delete button click
+     * Open programmer
      */
     public void openProgrammerActionSelected() {
         
