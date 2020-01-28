@@ -30,11 +30,11 @@
 
         <variables>
 
-            <variable CV="9998" item="Long Address" 
+            <variable CV="3" item="Long Address" 
                       comment="Board SV address" 
-                      infoOnly="yes" mask="VVVVVVVV" default="1024"
+                      mask="VVVVVVVV" default="1024"
                       tooltip="Device address MUST be unique across all SV2 devices on the LocoNet connection">
-                <splitVal highCV="9999" upperMask="XVVVVVVV" min="1024" max="32383" />
+                <splitVal highCV="4" upperMask="XVVVVVVV" min="1024" max="32383" />
                 <label>Device Address/Throttle Id as decimal value (1024-32383, 0x0400-0x7E7F)</label>
                 <label xml:lang="de">Geräte Adresse/Throttle ID als Dezimalwert (1024-32383, 0x0400-0x7E7F)</label>
             </variable>

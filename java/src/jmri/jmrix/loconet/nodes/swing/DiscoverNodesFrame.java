@@ -52,6 +52,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     protected NodeTableModel nodeTableModel = null;
     protected JTable nodeTable = null;
     
+//    JButton throttleIdButton = new JButton(Bundle.getMessage("ButtonThrottleId"));
     JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
     
     /**
@@ -166,7 +167,15 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         JPanel panel3 = new JPanel();
         panel3.setLayout(new BoxLayout(panel3, FlowLayout.RIGHT));
         panel3.setPreferredSize(new Dimension(950, 50));
-        
+/*        
+        // Set up Done button
+        throttleIdButton.setVisible(true);
+        throttleIdButton.setToolTipText(Bundle.getMessage("ThrottleIdButtonTip"));
+        throttleIdButton.addActionListener((java.awt.event.ActionEvent e) -> {
+            throttleIdButtonActionPerformed();
+        });
+        panel3.add(throttleIdButton);
+*/        
         // Set up Done button
         doneButton.setVisible(true);
         doneButton.setToolTipText(Bundle.getMessage("DoneButtonTip"));
@@ -188,6 +197,20 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         _tc.sendLocoNetMessage(LnSv2MessageContents.createSvDiscoverQueryMessage());
     }
     
+    /*.*
+     * Handle the done button click.
+     *./
+    public void throttleIdButtonActionPerformed() {
+        DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
+        try {
+            f.initComponents();
+        } catch (Exception ex) {
+            log.error("DiscoverNodesFrame Exception-C2: "+ex.toString());
+        }
+        f.setLocation(20,40);
+        f.setVisible(true);
+    }
+    
     /**
      * Handle the done button click.
      */
@@ -196,7 +219,6 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
         setVisible(false);
         dispose();
     }
-    
     
     private void addNode(LnNode node) {
         ThreadingUtil.runOnGUIEventually(() -> {
@@ -234,7 +256,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     }
     
     /**
-     * Handle the delete button click
+     * Open programmer
      */
     public void openProgrammerActionSelected() {
         
