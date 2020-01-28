@@ -27,7 +27,7 @@ public class BundleTest {
 "WindowConnectionMemo    = WindowConnectionMemo\n" +
 "SelectSelect            = SelectSelect\n" +
 "SelectEdit              = SelectEdit\n" +
-"SelectInfo              = SelectInfo\n" +
+// "SelectInfo              = SelectInfo\n" +
 "SelectDelete            = SelectDelete\n" +
 "\n" +
 "AddButtonTip            = AddButtonTip\n" +
