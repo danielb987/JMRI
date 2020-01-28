@@ -67,7 +67,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     private JTextField _manufacturer;
     private JTextField _developer;
     private JTextField _product;
-    private JCheckBox _fremoFrediBug;
     private JButton _programmerButton;
     
     private int _currentDispatchAddress;
@@ -77,7 +76,13 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     private int _requestThrottleAddress;
     
     private int _discoverLocoAddress;
+    
+    // There is a bug in FREMO FREDi throttles with product id 11 that causes
+    // the throttle to use the wrong ID when programming SV2 variables.
+    private int _discoverThrottleID_correct;
+    private int _discoverThrottleID_bug;
     private int _discoverThrottleID;
+    
     private int _manufacturerID;
     private int _developerID;
     private int _productID;
@@ -103,8 +108,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     public void initComponents() {
         // set the frame's initial state
         setTitle(Bundle.getMessage("WindowTitle") + Bundle.getMessage("WindowConnectionMemo")+_memo.getUserName());  // NOI18N
-//        setSize(500, 150);
-        setSize(800, 400);
+        setSize(700, 300);
         
         GridBagConstraints c = new GridBagConstraints();
         
@@ -240,36 +244,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_product, c);
         
-        _fremoFrediBug = new JCheckBox(Bundle.getMessage("FremoFrediBug"));
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 1;
-        c.gridy = 6;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(_fremoFrediBug, c);
-        
-        JLabel labelFremoFrediBug = new JLabel(Bundle.getMessage("FremoFrediBugInfo1"));
-        c.gridwidth = 2;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 7;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(labelFremoFrediBug, c);
-        
-        JLabel labelFremoFrediBug2 = new JLabel(Bundle.getMessage("FremoFrediBugInfo2"));
-        c.gridwidth = 2;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 8;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = java.awt.GridBagConstraints.LINE_START;
-        throttlePanel.add(labelFremoFrediBug2, c);
-        
         JPanel buttonPanel = new JPanel();
         
         _programmerButton = new JButton(Bundle.getMessage("ButtonOpenProgrammer"));
@@ -290,7 +264,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 0;
-        c.gridy = 9;
+        c.gridy = 6;
         c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.anchor = java.awt.GridBagConstraints.CENTER;
@@ -386,7 +360,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     public void openProgrammer() {
         
         // Check if we have a loco
-        if (_discoverThrottleID == 0) return;
+        if (_discoverThrottleID_correct == 0) return;
         
         DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
         
@@ -451,14 +425,10 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                     
                     _discoverLocoAddress = _requestThrottleAddress;
                     
-                    // Fremo FREDi has a bug so the address is wrong. If the
-                    // checkbox is selected, adjust for that bug.
-                    if (_fremoFrediBug.isSelected()) {
-                        // Fix for wrong address in Fremo FREDi.
-                        _discoverThrottleID = msg.getElement(12)*256 + msg.getElement(11);
-                    } else {
-                        _discoverThrottleID = msg.getElement(12)*128 + msg.getElement(11);
-                    }
+                    _discoverThrottleID_correct = msg.getElement(12)*128 + msg.getElement(11);
+                    
+                    // FREDi has a bug that gives the wrong address.
+                    _discoverThrottleID_bug = msg.getElement(12)*256 + msg.getElement(11);
                     
                     _tc.sendLocoNetMessage(LnSv2MessageContents.createSvDiscoverQueryMessage());
                 }
@@ -470,17 +440,28 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         if (LnSv2MessageContents.isSupportedSv2Message(msg)) {
             LnSv2MessageContents contents = new LnSv2MessageContents(msg);
             
+            int manufacturerID = contents.getSv2ManufacturerID();
+            int developerID = contents.getSv2DeveloperID();
+            int productID = contents.getSv2ProductID();
+            
+            _discoverThrottleID = _discoverThrottleID_correct;
+            if (manufacturerID == 13        // NMRA Public-domain and DIY
+                    && developerID == 1     // FREMO
+                    && productID == 11) {   // FREDi with the address bug
+                _discoverThrottleID = _discoverThrottleID_bug;
+            }
+            
             Sv2Command command = LnSv2MessageContents.extractMessageType(msg);
             if (command == Sv2Command.SV2_DISCOVER_DEVICE_REPORT
                     && _discoverThrottleID == contents.getDestAddr() ) {
                 
-                _manufacturerID = contents.getSv2ManufacturerID();
-                _developerID = contents.getSv2DeveloperID();
-                _productID = contents.getSv2ProductID();
+                _manufacturerID = manufacturerID;
+                _developerID = developerID;
+                _productID = productID;
                 DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
                 
                 _locoAddress.setText(Integer.toString(_discoverLocoAddress));
-                _throttleId.setText(Integer.toString(_discoverThrottleID));
+                _throttleId.setText(Integer.toString(_discoverThrottleID_bug));
                 _manufacturer.setText(_lnNodeManager.getManufacturer(_manufacturerID));
                 _developer.setText(_lnNodeManager.getDeveloper(_developerID));
                 if (decoderFile != null) {
