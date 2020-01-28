@@ -434,6 +434,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                 }
                 _getLocoState = GetLocoState.NONE;
                 break;
+                
+            default:
+                // Do nothing. We don't care about other opcodes.
         }
         
         // Return if the message is not a SV2 message
