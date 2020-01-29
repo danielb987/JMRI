@@ -174,7 +174,7 @@ public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
     @Override
     public void initComponents() {
         // set the frame's initial state
-        setTitle(Bundle.getMessage("WindowTitle") + Bundle.getMessage("WindowConnectionMemo")+_memo.getUserName());  // NOI18N
+        setTitle(Bundle.getMessage("ConfigureNodesWindowTitle"));  // NOI18N
         setSize(500, 150);
         
         Container contentPane = getContentPane();

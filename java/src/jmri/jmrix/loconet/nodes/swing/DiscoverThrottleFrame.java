@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.annotation.CheckForNull;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -67,6 +68,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     private JTextField _manufacturer;
     private JTextField _developer;
     private JTextField _product;
+    private JComboBox<RosterEntryItem> _rosterEntryItem;
     private JButton _programmerButton;
     
     private int _currentDispatchAddress;
@@ -107,8 +109,8 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     @Override
     public void initComponents() {
         // set the frame's initial state
-        setTitle(Bundle.getMessage("WindowTitle") + Bundle.getMessage("WindowConnectionMemo")+_memo.getUserName());  // NOI18N
-        setSize(700, 300);
+        setTitle(Bundle.getMessage("DiscoverThrottleWindowTitle"));  // NOI18N
+        setSize(800, 300);
         
         GridBagConstraints c = new GridBagConstraints();
         
@@ -244,6 +246,27 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_product, c);
         
+        JLabel labelRosterEntry = new JLabel(Bundle.getMessage("RosterEntry"));
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 6;
+        c.weightx = 0;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = java.awt.GridBagConstraints.LINE_END;
+        throttlePanel.add(labelRosterEntry, c);
+        
+        _rosterEntryItem = new JComboBox<>();
+        _rosterEntryItem.addItem(new RosterEntryItem(null));
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 1;
+        c.gridy = 6;
+        c.weightx = 0;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = java.awt.GridBagConstraints.LINE_START;
+        throttlePanel.add(_rosterEntryItem, c);
+        
         JPanel buttonPanel = new JPanel();
         
         _programmerButton = new JButton(Bundle.getMessage("ButtonOpenProgrammer"));
@@ -264,7 +287,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 0;
-        c.gridy = 6;
+        c.gridy = 7;
         c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.anchor = java.awt.GridBagConstraints.CENTER;
@@ -377,15 +400,20 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         
         DccLocoAddress addr = new DccLocoAddress(_discoverThrottleID, false);
         
-        RosterEntry re = new RosterEntry();
-        re.setDccAddress(Integer.toString(_discoverThrottleID));
-        re.setMfg(decoderFile.getMfg());
-        re.setDecoderFamily(decoderFile.getFamily());
-        re.setDecoderModel(decoderFile.getModel());
-        re.setId(SymbolicProgBundle.getMessage("LabelNewDecoder")); // NOI18N
-        // note that we're leaving the filename null
-        // add the new roster entry to the in-memory roster
-        Roster.getDefault().addEntry(re);
+        RosterEntryItem rosterEntryItem = (RosterEntryItem) _rosterEntryItem.getSelectedItem();
+        
+        RosterEntry re = rosterEntryItem._entry;
+        if (re == null) {
+            re = new RosterEntry();
+            re.setDccAddress(Integer.toString(_discoverThrottleID));
+            re.setMfg(decoderFile.getMfg());
+            re.setDecoderFamily(decoderFile.getFamily());
+            re.setDecoderModel(decoderFile.getModel());
+            re.setId(SymbolicProgBundle.getMessage("LabelNewDecoder")); // NOI18N
+            // note that we're leaving the filename null
+            // add the new roster entry to the in-memory roster
+            Roster.getDefault().addEntry(re);
+        }
         
         String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
                 new Object[]{_product.getText()});
@@ -443,36 +471,53 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         if (LnSv2MessageContents.isSupportedSv2Message(msg)) {
             LnSv2MessageContents contents = new LnSv2MessageContents(msg);
             
-            int manufacturerID = contents.getSv2ManufacturerID();
-            int developerID = contents.getSv2DeveloperID();
-            int productID = contents.getSv2ProductID();
-            
-            _discoverThrottleID = _discoverThrottleID_correct;
-            if (manufacturerID == 13        // NMRA Public-domain and DIY
-                    && developerID == 1     // FREMO
-                    && productID == 11) {   // FREDi with the address bug
-                _discoverThrottleID = _discoverThrottleID_bug;
-            }
-            
             Sv2Command command = LnSv2MessageContents.extractMessageType(msg);
-            if (command == Sv2Command.SV2_DISCOVER_DEVICE_REPORT
-                    && _discoverThrottleID == contents.getDestAddr() ) {
-                
-                _manufacturerID = manufacturerID;
-                _developerID = developerID;
-                _productID = productID;
-                DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
-                
-                _locoAddress.setText(Integer.toString(_discoverLocoAddress));
-                _throttleId.setText(Integer.toString(_discoverThrottleID_bug));
-                _manufacturer.setText(_lnNodeManager.getManufacturer(_manufacturerID));
-                _developer.setText(_lnNodeManager.getDeveloper(_developerID));
-                if (decoderFile != null) {
-                    _product.setText(decoderFile.getModel());
-                } else {
-                    _product.setText("");
+            if (command == Sv2Command.SV2_DISCOVER_DEVICE_REPORT) {
+                int manufacturerID = contents.getSv2ManufacturerID();
+                int developerID = contents.getSv2DeveloperID();
+                int productID = contents.getSv2ProductID();
+
+                _discoverThrottleID = _discoverThrottleID_correct;
+                if (manufacturerID == 13        // NMRA Public-domain and DIY
+                        && developerID == 1     // FREMO
+                        && productID == 11) {   // FREDi with the address bug
+                    _discoverThrottleID = _discoverThrottleID_bug;
                 }
-                _programmerButton.setEnabled(true);
+                
+                if (_discoverThrottleID == contents.getDestAddr() ) {
+                    _manufacturerID = manufacturerID;
+                    _developerID = developerID;
+                    _productID = productID;
+                    DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+
+                    _locoAddress.setText(Integer.toString(_discoverLocoAddress));
+                    _throttleId.setText(Integer.toString(_discoverThrottleID_bug));
+                    _manufacturer.setText(_lnNodeManager.getManufacturer(_manufacturerID));
+                    _developer.setText(_lnNodeManager.getDeveloper(_developerID));
+                    
+                    if (decoderFile != null) {
+                        _product.setText(decoderFile.getModel());
+                        
+                        List<RosterEntry> entries =
+                                Roster.getDefault().getEntriesMatchingCriteria(
+                                        null, null, Integer.toString(_discoverThrottleID),
+                                        _manufacturer.getText(), decoderFile.getModel(),
+                                        decoderFile.getFamily(), null, null);
+                        
+                        _rosterEntryItem.removeAllItems();
+                        _rosterEntryItem.addItem(new RosterEntryItem(null));
+                        for (RosterEntry e : entries) {
+                            RosterEntryItem entryItem = new RosterEntryItem(e);
+                            _rosterEntryItem.addItem(entryItem);
+    //                        System.out.format("Entry: %s%n", e);
+                            System.out.format("EntryItem: %s%n", entryItem);
+                        }
+                    } else {
+                        _product.setText("");
+                    }
+                    
+                    _programmerButton.setEnabled(true);
+                }
             }
         }
     }
@@ -630,6 +675,20 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     }
     
     
+    private class RosterEntryItem {
+        
+        private final RosterEntry _entry;
+        
+        public RosterEntryItem(@CheckForNull RosterEntry entry) {
+            _entry = entry;
+        }
+        
+        @Override
+        public String toString() {
+            if (_entry == null) return Bundle.getMessage("NewRosterEntry");
+            return _entry.getId();
+        }
+    }
     
     private enum GetLocoState {
         NONE,
