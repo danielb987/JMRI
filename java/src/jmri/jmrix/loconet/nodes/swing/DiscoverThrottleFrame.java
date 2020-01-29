@@ -675,7 +675,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     }
     
     
-    private class RosterEntryItem {
+    private static class RosterEntryItem {
         
         private final RosterEntry _entry;
         
