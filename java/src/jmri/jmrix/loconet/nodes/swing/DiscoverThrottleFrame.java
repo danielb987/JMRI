@@ -509,8 +509,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                         for (RosterEntry e : entries) {
                             RosterEntryItem entryItem = new RosterEntryItem(e);
                             _rosterEntryItem.addItem(entryItem);
-    //                        System.out.format("Entry: %s%n", e);
-                            System.out.format("EntryItem: %s%n", entryItem);
                         }
                     } else {
                         _product.setText("");
