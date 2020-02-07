@@ -73,7 +73,7 @@ public class DiscoverNodesFrame extends jmri.util.JmriJFrame implements LocoNetL
     @Override
     public void initComponents() {
         // set the frame's initial state
-        setTitle(Bundle.getMessage("WindowTitle") + Bundle.getMessage("WindowConnectionMemo")+_memo.getUserName());  // NOI18N
+        setTitle(Bundle.getMessage("DiscoverNodesWindowTitle"));  // NOI18N
         setSize(500, 150);
         
         Container contentPane = getContentPane();

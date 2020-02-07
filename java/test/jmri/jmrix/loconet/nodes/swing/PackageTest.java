@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
     BundleTest.class,
     ConfigNodesTest.class,
     DiscoverNodesFrameTest.class,
+    DiscoverThrottleFrameTest.class,
     NodeConfigManagerFrameTest.class,
 })
 /**
