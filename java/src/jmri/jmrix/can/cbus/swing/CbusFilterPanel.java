@@ -78,8 +78,8 @@ public class CbusFilterPanel extends JPanel {
     private static double _iconScale = 0.25;
     
     private NamedIcon getCollapsed() {
-        NamedIcon collapsed = new NamedIcon("resources/icons/decorations/ArrowStyle2.png","resources/icons/decorations/ArrowStyle2.png");
-        collapsed.scale(_iconScale,this);
+        NamedIcon collapsed = new NamedIcon("resources/icons/decorations/ArrowStyle2.png", "resources/icons/decorations/ArrowStyle2.png");
+        collapsed.scale(_iconScale, this);
         return collapsed;
     }
     
@@ -154,8 +154,11 @@ public class CbusFilterPanel extends JPanel {
         JPanel spinnerAndButton = new JPanel();
         spinnerAndButton.setLayout(new GridLayout(1,2,0,0));
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(0, 0, 65535, 1));
-        JComponent comp = spinner.getEditor();
-        JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
+        
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner, "#");
+        spinner.setEditor(editor);
+        
+        JFormattedTextField field = (JFormattedTextField) editor.getComponent(0);
         DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
         formatter.setCommitsOnValidEdit(true);
         spinner.addChangeListener((ChangeEvent e) -> {
