@@ -137,8 +137,6 @@ public class ToolsMenu extends JMenu {
         add(new jmri.web.server.WebServerAction());
 
         add(new JSeparator());
-        // LogixNG menu
-        add(new jmri.jmrit.logixng.tools.swing.LogixNGMenu());
     }
 
 }

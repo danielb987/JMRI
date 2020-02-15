@@ -114,12 +114,6 @@ public abstract class AppsBase {
         // all loaded, initialize objects as necessary
         InstanceManager.getDefault(jmri.LogixManager.class).activateAllLogixs();
         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).initializeLayoutBlockPaths();
-        
-        jmri.jmrit.logixng.LogixNG_Manager logixNG_Manager =
-                InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
-        logixNG_Manager.resolveAllTrees();
-        logixNG_Manager.setupAllLogixNGs();
-        logixNG_Manager.activateAllLogixNGs();
 
     }
 

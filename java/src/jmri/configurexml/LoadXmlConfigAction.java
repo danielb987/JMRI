@@ -55,12 +55,6 @@ public class LoadXmlConfigAction extends LoadStoreBaseAction {
                         InstanceManager.getDefault(jmri.LogixManager.class).activateAllLogixs();
                         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).initializeLayoutBlockPaths();
                         new jmri.jmrit.catalog.configurexml.DefaultCatalogTreeManagerXml().readCatalogTrees();
-                        
-                        jmri.jmrit.logixng.LogixNG_Manager logixNG_Manager =
-                                InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
-                        logixNG_Manager.resolveAllTrees();
-                        logixNG_Manager.setupAllLogixNGs();
-                        logixNG_Manager.activateAllLogixNGs();
                     }
                 }
             } catch (JmriException e) {
