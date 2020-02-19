@@ -1,11 +1,20 @@
 package jmri.jmrit.display.layoutEditor;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import jmri.InstanceManager;
+import jmri.Manager;
+import jmri.NamedBean;
 import jmri.configurexml.LoadAndStoreTestBase;
 import jmri.util.JUnitUtil;
+import org.junit.Before;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test that configuration files can be read and then stored again consistently.
@@ -33,6 +42,37 @@ public class LayoutEditorLoadAndStoreTest extends LoadAndStoreTestBase {
         super(inFile, inPass, SaveType.User, true);
     }
 
+    private void checkManagers() {
+        Map<Class<?>, List<Object>> managers = InstanceManager.getDefault().getManagers();
+        for (Map.Entry<Class<?>, List<Object>> e : managers.entrySet()) {
+            for (Object o : e.getValue()) {
+                if (o instanceof Manager) {
+                    Manager<? extends NamedBean> m = (Manager<? extends NamedBean>)o;
+                    Set<? extends NamedBean> set = m.getNamedBeanSet();
+                    if (!set.isEmpty()) {
+                        for (jmri.NamedBean nb : set) {
+                            log.error(String.format("Manager %s has bean %s%n", m.getClass().getName(), nb.getSystemName()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            log.error("Cannot sleep 1000 ms");
+        }
+        
+        checkManagers();
+    }
+    
     @After
     @Override
     public void tearDown() {
@@ -41,4 +81,6 @@ public class LayoutEditorLoadAndStoreTest extends LoadAndStoreTestBase {
         JUnitUtil.resetWindows(false, false);
         super.tearDown();
     }
+
+    private final static Logger log = LoggerFactory.getLogger(LayoutEditorLoadAndStoreTest.class);
 }

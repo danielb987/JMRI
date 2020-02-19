@@ -881,4 +881,8 @@ public final class InstanceManager {
         log.trace(text);
     }
 
+    public Map<Class<?>, List<Object>> getManagers() {
+        return managerLists;
+    }
+    
 }
