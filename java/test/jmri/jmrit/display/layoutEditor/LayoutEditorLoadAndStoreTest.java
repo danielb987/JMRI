@@ -65,9 +65,9 @@ public class LayoutEditorLoadAndStoreTest extends LoadAndStoreTestBase {
         super.setUp();
         
         try {
-            Thread.sleep(1000);
+            Thread.sleep(30000);
         } catch (InterruptedException ex) {
-            log.error("Cannot sleep 1000 ms");
+            log.error("Cannot sleep 30000 ms");
         }
         
         checkManagers();
