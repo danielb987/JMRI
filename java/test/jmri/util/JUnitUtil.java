@@ -221,6 +221,8 @@ public class JUnitUtil {
 
         // Do a minimal amount of de-novo setup
         resetInstanceManager();
+        // Reset instance manager twice
+        resetInstanceManager();
 
         // Log and/or check the use of setUp and tearDown
         if (checkSetUpTearDownSequence || printSetUpTearDownNames) {
