@@ -132,11 +132,4 @@ public abstract class AbstractAnalogIO extends AbstractNamedBean implements Anal
         return suffix1.compareTo(suffix2);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @Nonnull
-    public String toString() {
-        return this.getClass().getName() + " (" + this.getSystemName() + ")"; //NOI18N
-    }
-
 }
