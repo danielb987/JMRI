@@ -12,7 +12,6 @@ import jmri.*;
 import jmri.jmrix.SystemConnectionMemo;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.NamedBeanComparator;
-import jmri.util.com.dictiography.collections.IndexedTreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,29 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist Copyright (C) 2020
  */
 abstract public class AbstractProxyManager<E extends NamedBean> implements ProxyManager<E>, Manager.ManagerDataListener<E> {
-
-    /**
-     * Number of managers available through getManager(i) and getManagerList(),
-     * including the Internal manager
-     *
-     * @return the number of managers.
-     */
-    protected int nMgrs() {
-        // make sure internal present
-        initInternal();
-        return mgrs.size();
-    }
-
-    protected Manager<E> getMgr(int index) {
-        // make sure internal present
-        initInternal();
-
-        if (index < mgrs.size()) {
-            return mgrs.exact(index);
-        } else {
-            throw new IllegalArgumentException("illegal index " + index); // NOI18N
-        }
-    }
 
     /**
      * {@inheritDoc}
@@ -152,10 +128,7 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
         return internalManager;
     }
 
-    final IndexedTreeSet<Manager<E>> mgrs = new IndexedTreeSet<>(new Comparator<Manager<E>>(){
-        @Override
-        public int compare(Manager<E> e1, Manager<E> e2) { return e1.getSystemPrefix().compareTo(e2.getSystemPrefix()); }
-    });
+    final Set<Manager<E>> mgrs = new TreeSet<>((Manager<E> e1, Manager<E> e2) -> e1.getSystemPrefix().compareTo(e2.getSystemPrefix()));
     private Manager<E> internalManager = null;
     protected Manager<E> defaultManager = null;
 
@@ -181,14 +154,12 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
     @CheckReturnValue
     @CheckForNull
     public E getBySystemName(@Nonnull String systemName) {
-        // System names can be matched to managers by system and type at front of name
-        int index = matchTentative(systemName);
-        if (index >= 0) {
-            Manager<E> m = getMgr(index);
-            return m.getBySystemName(systemName);
+        Manager<E> m = getManager(systemName);
+        if (m == null) {
+            log.debug("getBySystemName did not find manager from name {}, defer to default manager", systemName);
+            m = getDefaultManager();
         }
-        log.debug("getBySystemName did not find manager from name {}, defer to default manager", systemName); // NOI18N
-        return getDefaultManager().getBySystemName(systemName);
+        return m.getBySystemName(systemName);
     }
 
     /** {@inheritDoc} */
@@ -215,10 +186,9 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
     @Override
     @Nonnull
     public String validateSystemNameFormat(@Nonnull String systemName, @Nonnull Locale locale) {
-        int i = matchTentative(systemName);
-        Manager manager = getDefaultManager();
-        if (i >= 0) {
-            manager = getMgr(i);
+        Manager manager = getManager(systemName);
+        if (manager == null) {
+            manager = getDefaultManager();
         }
         return manager.validateSystemNameFormat(systemName, locale);
     }
@@ -232,19 +202,14 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
      */
     @Override
     public NameValidity validSystemNameFormat(@Nonnull String systemName) {
-        int i = matchTentative(systemName);
-        if (i >= 0) {
-            return getMgr(i).validSystemNameFormat(systemName);
-        }
-        return NameValidity.INVALID;
+        Manager m = getManager(systemName);
+        return m == null ? NameValidity.INVALID : m.validSystemNameFormat(systemName);
     }
 
     /** {@inheritDoc} */
     @Override
     public void dispose() {
-        for (Manager<E> m : mgrs) {
-            m.dispose();
-        }
+        mgrs.forEach(m -> m.dispose());
         mgrs.clear();
         if (internalManager != null) {
             internalManager.dispose(); // don't make if not made yet
@@ -252,47 +217,46 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
     }
 
     /**
-     * Find the index of a matching manager.
-     *
-     * @param  systemName the system name to find a manager for
-     * @return the index of the matching manager, or -1 if there is no match,
-     *         which is not considered an error
+     * Get the manager for the given system name.
+     * 
+     * @param systemName the given name 
+     * @return the requested manager or null if there is no matching manager
      */
-    protected int matchTentative(String systemName) {
-        for (Manager<E> m : mgrs) {
-            if (systemName.startsWith(m.getSystemPrefix() + m.typeLetter())) {
-                return mgrs.entryIndex(m);
+    @CheckForNull
+    protected Manager<E> getManager(@Nonnull String systemName) {
+        // make sure internal present
+        initInternal();
+        for (Manager<E> m : getManagerList()) {
+            if (systemName.startsWith(m.getSystemNamePrefix())) {
+                return m;
             }
         }
-        return -1;
+        return null;
     }
 
     /**
-     * Find the index of a matching manager. Throws IllegalArgumentException if
-     * there is no match, here considered to be an error that must be reported.
+     * Get the manager for the given system name or the default manager if there
+     * is no matching manager.
      *
-     * @param systemName the system name to find a manager for
-     * @return the index of the matching manager
+     * @param systemName the given name
+     * @return the requested manager or the default manager if there is no
+     *         matching manager
      */
-    protected int match(String systemName) {
-        // make sure internal present
-        initInternal();
-
-        int index = matchTentative(systemName);
-        if (index < 0) {
-            throw new IllegalArgumentException("System name " + systemName + " failed to match"); // NOI18N
+    @Nonnull
+    protected Manager<E> getManagerOrDefault(@Nonnull String systemName) {
+        Manager<E> manager = getManager(systemName);
+        if (manager == null) {
+            manager = getDefaultManager();
         }
-        return index;
+        return manager;
     }
 
     /** {@inheritDoc} */
     @Override
     public void deleteBean(@Nonnull E s, @Nonnull String property) throws PropertyVetoException {
-        String systemName = s.getSystemName();
-        try {
-            getMgr(match(systemName)).deleteBean(s, property);
-        } catch (PropertyVetoException e) {
-            throw e;
+        Manager<E> m = getManager(s.getSystemName());
+        if (m != null) {
+            m.deleteBean(s, property);
         }
     }
 
@@ -303,8 +267,10 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
      */
     @Override
     public void register(@Nonnull E s) {
-        String systemName = s.getSystemName();
-        getMgr(match(systemName)).register(s);
+        Manager<E> m = getManager(s.getSystemName());
+        if (m != null) {
+            m.register(s);
+        }
     }
 
     /**
@@ -316,8 +282,10 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
      */
     @Override
     public void deregister(@Nonnull E s) {
-        String systemName = s.getSystemName();
-        getMgr(match(systemName)).deregister(s);
+        Manager<E> m = getManager(s.getSystemName());
+        if (m != null) {
+            m.deregister(s);
+        }
     }
 
     /** {@inheritDoc} */
@@ -325,9 +293,7 @@ abstract public class AbstractProxyManager<E extends NamedBean> implements Proxy
     @Override
     public List<NamedBeanPropertyDescriptor<?>> getKnownBeanProperties() {
         List<NamedBeanPropertyDescriptor<?>> l = new ArrayList<>();
-        for (Manager<E> m : mgrs) {
-            l.addAll(m.getKnownBeanProperties());
-        }
+        mgrs.forEach(m -> l.addAll(m.getKnownBeanProperties()));
         return l;
     }
 
