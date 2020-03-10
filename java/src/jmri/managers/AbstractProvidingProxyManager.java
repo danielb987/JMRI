@@ -12,7 +12,6 @@ import jmri.*;
 import jmri.jmrix.SystemConnectionMemo;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.NamedBeanComparator;
-import jmri.util.com.dictiography.collections.IndexedTreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,52 +55,23 @@ abstract public class AbstractProvidingProxyManager<E extends NamedBean> extends
             return t;
         }
         // Doesn't exist. If the systemName was specified, find that system
-        int index = matchTentative(name);
-        if (index >= 0) {
-            return makeBean(index, name, null);
+        Manager<E> manager = getManager(name);
+        if (manager != null) {
+            return makeBean(manager, name, null);
         }
         log.debug("provideNamedBean did not find manager for name {}, defer to default", name); // NOI18N
-        return makeBean(mgrs.entryIndex(getDefaultManager()), getDefaultManager().makeSystemName(name), null);
+        return makeBean(getDefaultManager(), getDefaultManager().makeSystemName(name), null);
     }
 
     /**
      * Defer creation of the proper type to the subclass.
      *
-     * @param index      the manager to invoke
+     * @param manager    the manager to invoke
      * @param systemName the system name
      * @param userName   the user name
      * @return a bean
      */
-    abstract protected E makeBean(int index, String systemName, String userName);
-
-    /** {@inheritDoc} */
-    @Override
-    @CheckReturnValue
-    @CheckForNull
-    public E getBySystemName(@Nonnull String systemName) {
-        // System names can be matched to managers by system and type at front of name
-        int index = matchTentative(systemName);
-        if (index >= 0) {
-            Manager<E> m = getMgr(index);
-            return m.getBySystemName(systemName);
-        }
-        log.debug("getBySystemName did not find manager from name {}, defer to default manager", systemName); // NOI18N
-        return getDefaultManager().getBySystemName(systemName);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @CheckReturnValue
-    @CheckForNull
-    public E getByUserName(@Nonnull String userName) {
-        for (Manager<E> m : this.mgrs) {
-            E b = m.getByUserName(userName);
-            if (b != null) {
-                return b;
-            }
-        }
-        return null;
-    }
+    abstract protected E makeBean(Manager<E> manager, String systemName, String userName);
 
     /**
      * Return an instance with the specified system and user names. Note that
@@ -138,14 +108,14 @@ abstract public class AbstractProvidingProxyManager<E extends NamedBean> extends
         initInternal();
 
         // if the systemName is specified, find that system
-        int i = matchTentative(systemName);
-        if (i >= 0) {
-            return makeBean(i, systemName, userName);
+        Manager<E> m = getManager(systemName);
+        if (m != null) {
+            return makeBean(m, systemName, userName);
         }
 
         // did not find a manager, allow it to default to the primary
         log.debug("Did not find manager for system name {}, delegate to primary", systemName); // NOI18N
-        return makeBean(mgrs.entryIndex(getDefaultManager()), systemName, userName);
+        return makeBean(getDefaultManager(), systemName, userName);
     }
 
     /**
