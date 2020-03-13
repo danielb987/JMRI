@@ -129,9 +129,9 @@ public abstract class AbstractMonPaneTestBase extends jmri.util.swing.JmriPanelT
 
     @Test
     public void testFilterFormatting() throws Exception {
-/*
-        pane.initComponents();
 
+        pane.initComponents();
+/*
         pane.setFilterText("00");
         new org.netbeans.jemmy.QueueTool().waitEmpty(100);
         Assert.assertEquals("filter field unedited", "00", pane.getFilterText());
