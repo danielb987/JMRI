@@ -169,8 +169,8 @@ public class BundleTest {
             String s2 = ss.substring(0, ss.indexOf('=')).trim();
 //            System.out.println(s2+";");
             try {
-                Bundle.getMessage(s2);
-//                String s3 = Bundle.getMessage(s2);
+                String s3 = Bundle.getMessage(s2);
+                Assert.assertNotNull("bundle is not null", s3);
 //                System.out.println(s2+": "+s3);
             } catch (Exception e) {
                 e.printStackTrace();
