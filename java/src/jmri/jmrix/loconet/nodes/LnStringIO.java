@@ -26,7 +26,7 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     }
     
     /**
-     * Get the node this analog IO belongs to.
+     * Get the node this StringIO belongs to.
      * @return the node that owns this item
      */
     public LnNode getNode() {
@@ -34,7 +34,7 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     }
     
     /**
-     * Set the node this analog IO belongs to.
+     * Set the node this StringIO belongs to.
      * This method is package-private since it should only be changed by the
      * node that owns it, and only in the case when the item is moved from one
      * node to another.
@@ -99,7 +99,7 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     protected void sendStringToLayout(@Nonnull String value) throws JmriException {
         throw new UnsupportedOperationException("Not supported.");
     }
-
+    
     
     public enum Type {
         

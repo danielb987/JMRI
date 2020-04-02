@@ -17,7 +17,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     
     private Type _type = Type.EightBitSigned;
     
-    // Which min and max value that is used depends on the type of the analog IO.
+    // Which min and max value that is used depends on the type of the AnalogIO.
     private int _minInt;
     private int _maxInt;
     private double _minDouble;
@@ -34,7 +34,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     }
     
     /**
-     * Get the node this analog IO belongs to.
+     * Get the node this AnalogIO belongs to.
      * @return the node that owns this item
      */
     public LnNode getNode() {
@@ -42,7 +42,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     }
     
     /**
-     * Set the node this analog IO belongs to.
+     * Set the node this AnalogIO belongs to.
      * This method is package-private since it should only be changed by the
      * node that owns it, and only in the case when the item is moved from one
      * node to another.
@@ -252,7 +252,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     protected void sendValueToLayout(double value) throws JmriException {
         throw new UnsupportedOperationException("Not supported.");
     }
-
+    
     
     public enum Type {
         
