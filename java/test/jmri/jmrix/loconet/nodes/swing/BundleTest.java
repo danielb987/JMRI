@@ -160,8 +160,8 @@ public class BundleTest {
 "HeadingPort             = HeadingPort\n" +
 "\n" +
 "\n" +
-"NodeBoxLabel            = NodeBoxLabel\n" +
-"";
+"NodeBoxLabel            = NodeBoxLabel\n";
+        
         String sa[] = s.split("\n");
         for (String ss : sa) {
             if (ss.startsWith("#")) continue;
