@@ -169,7 +169,8 @@ public class BundleTest {
             String s2 = ss.substring(0, ss.indexOf('=')).trim();
 //            System.out.println(s2+";");
             try {
-                String s3 = Bundle.getMessage(s2);
+                Bundle.getMessage(s2);
+//                String s3 = Bundle.getMessage(s2);
 //                System.out.println(s2+": "+s3);
             } catch (Exception e) {
                 e.printStackTrace();
