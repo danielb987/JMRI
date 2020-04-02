@@ -23,8 +23,8 @@ public class BundleTest {
 "\n" +
 "ConfigureNodesTitle = Configure nodes\n" +
 "\n" +
-"WindowTitle             = WindowTitle\n" +
-"WindowConnectionMemo    = WindowConnectionMemo\n" +
+// "WindowTitle             = WindowTitle\n" +
+// "WindowConnectionMemo    = WindowConnectionMemo\n" +
 "SelectSelect            = SelectSelect\n" +
 "SelectEdit              = SelectEdit\n" +
 // "SelectInfo              = SelectInfo\n" +
@@ -170,7 +170,7 @@ public class BundleTest {
 //            System.out.println(s2+";");
             try {
                 String s3 = Bundle.getMessage(s2);
-                System.out.println(s2+": "+s3);
+//                System.out.println(s2+": "+s3);
             } catch (Exception e) {
                 e.printStackTrace();
             }
