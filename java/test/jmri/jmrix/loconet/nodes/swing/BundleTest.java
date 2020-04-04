@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Test Bundle
  * 
- * @author Daniel Bergqvist 2018
+ * @author Daniel Bergqvist 2020
  */
 public class BundleTest {
 
