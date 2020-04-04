@@ -26,35 +26,12 @@ public class DiscoverThrottleFrameTest {
     private DiscoverThrottleFrame showDiscoverThrottleFrame() {
         DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
         f.initComponents();
-        f.setLocation(20,40);
+//        f.setLocation(20,40);
         f.setVisible(true);
         return f;
     }
     
-    @Test
-    public void testCTor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        
-        DiscoverThrottleFrame b = new DiscoverThrottleFrame(_memo);
-        Assert.assertNotNull("exists", b);
-    }
-    
-    @Test
-    public void testDiscoverThrottle() throws InterruptedException {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        
-        for (LocoNetMessage l : _lnis.outbound) {
-            System.out.format("LocoNet aaa: %s%n", l.toMonitorString());
-        }
-        
-        // Clear list of loconet messages
-//        _lnis.outbound.clear();
-        
-        showDiscoverThrottleFrame();
-        
-        JFrame frame = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);  // NOI18N
-        Assert.assertNotNull(frame);
-        
+    private void connectThrottle() {
         // Request slot for loco address 5502
         LocoNetMessage m = new LocoNetMessage(new int[]{0xBF, 0x2A, 0x7E, 0x14});
         _lnis.sendTestMessage(m);
@@ -75,10 +52,10 @@ public class DiscoverThrottleFrameTest {
         
         Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() >= 1;}));
         
-        for (LocoNetMessage l : _lnis.outbound) {
-            System.out.format("LocoNet: %s%n", l.toString());
-            System.out.format("LocoNet: %s%n", l.toMonitorString());
-        }
+//        for (LocoNetMessage l : _lnis.outbound) {
+//            System.out.format("LocoNet: %s%n", l.toString());
+//            System.out.format("LocoNet: %s%n", l.toMonitorString());
+//        }
         
         // (SV Format 2) Discover all devices request initiated by agent 1
         int[] data = {0xE5, 0x10, 0x01, 0x07, 0x02, 0x10, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x0E};
@@ -91,6 +68,33 @@ public class DiscoverThrottleFrameTest {
         // Device characteristics are manufacturer 13, developer number 1, product 11, serial number 4 218
         m = new LocoNetMessage(new int[]{0xE5, 0x10, 0x01, 0x47, 0x02, 0x10, 0x7A, 0x10, 0x0D, 0x01, 0x10, 0x0B, 0x00, 0x7A, 0x10, 0x49});
         _lnis.sendTestMessage(m);
+    }
+    
+    @Test
+    public void testCTor() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        
+        DiscoverThrottleFrame b = new DiscoverThrottleFrame(_memo);
+        Assert.assertNotNull("exists", b);
+    }
+    
+    @Test
+    public void testDiscoverThrottle() throws InterruptedException {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        
+//        for (LocoNetMessage l : _lnis.outbound) {
+//            System.out.format("LocoNet aaa: %s%n", l.toMonitorString());
+//        }
+        
+        // Clear list of loconet messages
+//        _lnis.outbound.clear();
+        
+        showDiscoverThrottleFrame();
+        
+        JFrame frame = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);  // NOI18N
+        Assert.assertNotNull(frame);
+        
+        connectThrottle();
         
         Thread.sleep(20000);
         
