@@ -258,6 +258,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         
         _rosterEntryItem = new JComboBox<>();
         _rosterEntryItem.addItem(new RosterEntryItem(null));
+        labelRosterEntry.setLabelFor(_rosterEntryItem);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 1;
