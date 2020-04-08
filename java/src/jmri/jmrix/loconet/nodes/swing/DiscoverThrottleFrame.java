@@ -2,18 +2,13 @@ package jmri.jmrix.loconet.nodes.swing;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.CheckForNull;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.*;
 import jmri.DccLocoAddress;
 import jmri.DccThrottle;
 import jmri.InstanceManager;
@@ -25,8 +20,6 @@ import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.symbolicprog.ProgDefault;
 import jmri.jmrit.symbolicprog.SymbolicProgBundle;
 import jmri.jmrit.symbolicprog.tabbedframe.PaneOpsProgFrame;
-import jmri.jmrit.throttle.AddressListener;
-import jmri.jmrit.throttle.ThrottleFrameManager;
 import jmri.jmrix.loconet.LnConstants;
 import jmri.jmrix.loconet.LocoNetListener;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
@@ -34,11 +27,8 @@ import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetMessage;
 import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents;
 import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents.Sv2Command;
-import jmri.jmrix.loconet.nodes.LnNode;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.ThreadingUtil;
-import org.jdom2.Attribute;
-import org.jdom2.Element;
 
 /**
  * Frame for discovering throttle on the LocoNet.
@@ -65,6 +55,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     
     private JTextField _locoAddress;
     private JTextField _throttleId;
+    private JTextField _throttleId_Hex;
     private JTextField _manufacturer;
     private JTextField _developer;
     private JTextField _product;
@@ -79,11 +70,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     
     private int _discoverLocoAddress;
     
-    // There is a bug in FREMO FREDi throttles with product id 11 that causes
-    // the throttle to use the wrong ID when programming SV2 variables.
-    private int _discoverThrottleID_correct;
-    private int _discoverThrottleID_bug;
-    private int _discoverThrottleID;
+    private int _discoverThrottle_DeviceID;
     
     private int _manufacturerID;
     private int _developerID;
@@ -153,7 +140,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.gridheight = 1;
         c.gridx = 1;
         c.gridy = 1;
-        c.weightx = 1;
+        c.weightx = 0;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_locoAddress, c);
@@ -175,10 +162,22 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.gridheight = 1;
         c.gridx = 1;
         c.gridy = 2;
-        c.weightx = 1;
+        c.weightx = 0;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_throttleId, c);
+        
+        _throttleId_Hex = new JTextField();
+        _throttleId_Hex.setEditable(false);
+        _throttleId_Hex.setColumns(10);
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 2;
+        c.gridy = 2;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = java.awt.GridBagConstraints.LINE_START;
+        throttlePanel.add(_throttleId_Hex, c);
         
         JLabel labelManufacturer = new JLabel(Bundle.getMessage("Manufacturer"));
         c.gridwidth = 1;
@@ -193,7 +192,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         _manufacturer = new JTextField();
         _manufacturer.setEditable(false);
         _manufacturer.setColumns(30);
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 1;
         c.gridy = 3;
@@ -215,7 +214,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         _developer = new JTextField();
         _developer.setEditable(false);
         _developer.setColumns(30);
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 1;
         c.gridy = 4;
@@ -237,7 +236,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         _product = new JTextField();
         _product.setEditable(false);
         _product.setColumns(30);
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 1;
         c.gridy = 5;
@@ -259,7 +258,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         _rosterEntryItem = new JComboBox<>();
         _rosterEntryItem.addItem(new RosterEntryItem(null));
         labelRosterEntry.setLabelFor(_rosterEntryItem);
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 1;
         c.gridy = 6;
@@ -384,7 +383,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     public void openProgrammer() {
         
         // Check if we have a loco
-        if (_discoverThrottleID_correct == 0) return;
+        if (_discoverThrottle_DeviceID == 0) return;
         
         DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
         
@@ -399,14 +398,14 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
             programmerFilename = ProgDefault.findListOfProgFiles()[0];
         }
         
-        DccLocoAddress addr = new DccLocoAddress(_discoverThrottleID, false);
+        DccLocoAddress addr = new DccLocoAddress(_discoverThrottle_DeviceID, false);
         
         RosterEntryItem rosterEntryItem = (RosterEntryItem) _rosterEntryItem.getSelectedItem();
         
         RosterEntry re = rosterEntryItem._entry;
         if (re == null) {
             re = new RosterEntry();
-            re.setDccAddress(Integer.toString(_discoverThrottleID));
+            re.setDccAddress(Integer.toString(_discoverThrottle_DeviceID));
             re.setMfg(decoderFile.getMfg());
             re.setDecoderFamily(decoderFile.getFamily());
             re.setDecoderModel(decoderFile.getModel());
@@ -454,10 +453,8 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                     
                     _discoverLocoAddress = _requestThrottleAddress;
                     
-                    _discoverThrottleID_correct = msg.getElement(12)*128 + msg.getElement(11);
-                    
-                    // FREDi has a bug that gives the wrong address.
-                    _discoverThrottleID_bug = msg.getElement(12)*256 + msg.getElement(11);
+//                    _discoverThrottleID = msg.getElement(12)*128 + msg.getElement(11);
+                    _discoverThrottle_DeviceID = msg.getElement(12)*256 + msg.getElement(11);
                     
                     _tc.sendLocoNetMessage(LnSv2MessageContents.createSvDiscoverQueryMessage());
                 }
@@ -478,21 +475,15 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                 int developerID = contents.getSv2DeveloperID();
                 int productID = contents.getSv2ProductID();
 
-                _discoverThrottleID = _discoverThrottleID_correct;
-                if (manufacturerID == 13        // NMRA Public-domain and DIY
-                        && developerID == 1     // FREMO
-                        && productID == 11) {   // FREDi with the address bug
-                    _discoverThrottleID = _discoverThrottleID_bug;
-                }
-                
-                if (_discoverThrottleID == contents.getDestAddr() ) {
+                if (_discoverThrottle_DeviceID == contents.getDestAddr() ) {
                     _manufacturerID = manufacturerID;
                     _developerID = developerID;
                     _productID = productID;
                     DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
 
                     _locoAddress.setText(Integer.toString(_discoverLocoAddress));
-                    _throttleId.setText(Integer.toString(_discoverThrottleID_bug));
+                    _throttleId.setText(Integer.toString(_discoverThrottle_DeviceID));
+                    _throttleId_Hex.setText(String.format("0x%04X", _discoverThrottle_DeviceID));
                     _manufacturer.setText(_lnNodeManager.getManufacturer(_manufacturerID));
                     _developer.setText(_lnNodeManager.getDeveloper(_developerID));
                     
@@ -501,7 +492,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                         
                         List<RosterEntry> entries =
                                 Roster.getDefault().getEntriesMatchingCriteria(
-                                        null, null, Integer.toString(_discoverThrottleID),
+                                        null, null, Integer.toString(_discoverThrottle_DeviceID),
                                         _manufacturer.getText(), decoderFile.getModel(),
                                         decoderFile.getFamily(), null, null);
                         
