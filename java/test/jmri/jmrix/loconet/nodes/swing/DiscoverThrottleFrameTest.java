@@ -244,7 +244,7 @@ public class DiscoverThrottleFrameTest {
         
         
         
-        Thread.sleep(20000);
+//        Thread.sleep(20000);
         
         JUnitUtil.dispose(f1);
         
