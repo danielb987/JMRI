@@ -31,8 +31,13 @@ public class LocoNetInterfaceScaffold extends LnTrafficController {
      */
     public Vector<LocoNetMessage> outbound = new Vector<LocoNetMessage>();  // public OK here, so long as this is a test class
 
+    private void debugLocoNetMessage(LocoNetMessage m, String info) {
+        System.out.format("LocoNet %s: %s - %s%n", info, m.toString(), m.toMonitorString());
+    }
+
     @Override
     public void sendLocoNetMessage(LocoNetMessage m) {
+        debugLocoNetMessage(m, "send");
         log.debug("sendLocoNetMessage [{}]", m);
         // save a copy
         outbound.addElement(m);
@@ -59,6 +64,7 @@ public class LocoNetInterfaceScaffold extends LnTrafficController {
      */
     public void sendTestMessage(LocoNetMessage m) {
         // forward a test message to LocoNetListeners
+        debugLocoNetMessage(m, "test");
         log.debug("sendTestMessage    [{}]", m);
         notify(m);
         return;
