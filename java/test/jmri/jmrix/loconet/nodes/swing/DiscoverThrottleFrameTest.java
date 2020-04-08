@@ -1,6 +1,5 @@
 package jmri.jmrix.loconet.nodes.swing;
 
-import java.awt.Component;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -153,12 +152,20 @@ public class DiscoverThrottleFrameTest {
         int[] svValues = {2, 20, 122, 16, 4, 4, 1, 42, 126, 3, 85, 3, 2, 0, 37, 3, 25, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255};
         
         while (svSet != 0) {
-            Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() > 0;}));
+            StringBuilder sb = new StringBuilder();
+//            int numSVsNotRead = 0;
+            for (int i=1; i <= 30; i++) {
+//                if ((svSet & (1 << (i-1))) != 0) numSVsNotRead++;
+                if ((svSet & (1 << (i-1))) != 0) sb.append(i).append(", ");
+            }
             
-//            for (LocoNetMessage l : _lnis.outbound) {
-//                System.out.format("LocoNet: %s%n", l.toString());
-//                System.out.format("LocoNet: %s%n", l.toMonitorString());
-//            }
+            Assert.assertTrue("reply not received. numSVsNotRead: "+sb.toString(), JUnitUtil.waitFor(()->{return _lnis.outbound.size() > 0;}));
+//            Assert.assertTrue("reply not received. numSVsNotRead: "+Integer.toString(numSVsNotRead), JUnitUtil.waitFor(()->{return _lnis.outbound.size() > 0;}));
+            
+            for (LocoNetMessage l : _lnis.outbound) {
+                System.out.format("LocoNet: %s%n", l.toString());
+                System.out.format("LocoNet: %s%n", l.toMonitorString());
+            }
             
             int svNo = -1;
             
