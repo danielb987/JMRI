@@ -158,7 +158,7 @@ public class DiscoverThrottleFrameTest {
             }
             
             if (!JUnitUtil.waitFor(()->{return _lnis.outbound.size() > 0;})) {
-                System.out.format("Not all SVs are read: ", sb.toString());
+                System.out.format("Not all SVs are read: %s%n", sb.toString());
                 break;
             }
 //            Assert.assertTrue("reply not received. numSVsNotRead: "+sb.toString(), JUnitUtil.waitFor(()->{return _lnis.outbound.size() > 0;}));
