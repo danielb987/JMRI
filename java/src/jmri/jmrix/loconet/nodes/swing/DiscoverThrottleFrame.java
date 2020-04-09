@@ -144,6 +144,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_locoAddress, c);
+        labelLocoAddress.setLabelFor(_locoAddress);
         
         JLabel labelThrottleId = new JLabel(Bundle.getMessage("ThrottleId"));
         c.gridwidth = 1;
@@ -166,6 +167,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_throttleId, c);
+        labelThrottleId.setLabelFor(_throttleId);
         
         _throttleId_Hex = new JTextField();
         _throttleId_Hex.setEditable(false);
@@ -178,6 +180,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_throttleId_Hex, c);
+        _throttleId_Hex.setName("throttleId_Hex");  // for GUI test NOI18N
         
         JLabel labelManufacturer = new JLabel(Bundle.getMessage("Manufacturer"));
         c.gridwidth = 1;
@@ -200,6 +203,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_manufacturer, c);
+        labelManufacturer.setLabelFor(_manufacturer);
         
         JLabel labelDeveloper = new JLabel(Bundle.getMessage("Developer"));
         c.gridwidth = 1;
@@ -222,6 +226,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_developer, c);
+        labelDeveloper.setLabelFor(_developer);
         
         JLabel labelProduct = new JLabel(Bundle.getMessage("Product"));
         c.gridwidth = 1;
@@ -244,6 +249,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_product, c);
+        labelProduct.setLabelFor(_product);
         
         JLabel labelRosterEntry = new JLabel(Bundle.getMessage("RosterEntry"));
         c.gridwidth = 1;
@@ -257,7 +263,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         
         _rosterEntryItem = new JComboBox<>();
         _rosterEntryItem.addItem(new RosterEntryItem(null));
-        labelRosterEntry.setLabelFor(_rosterEntryItem);
         c.gridwidth = 2;
         c.gridheight = 1;
         c.gridx = 1;
@@ -266,6 +271,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.NONE;
         c.anchor = java.awt.GridBagConstraints.LINE_START;
         throttlePanel.add(_rosterEntryItem, c);
+        labelRosterEntry.setLabelFor(_rosterEntryItem);
         
         JPanel buttonPanel = new JPanel();
         

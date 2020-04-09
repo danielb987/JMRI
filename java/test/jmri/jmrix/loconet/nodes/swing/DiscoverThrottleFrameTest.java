@@ -4,6 +4,7 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 import jmri.InstanceManager;
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrit.roster.Roster;
@@ -25,6 +26,8 @@ import org.netbeans.jemmy.operators.JComboBoxOperator;
 import org.netbeans.jemmy.operators.JDialogOperator;
 import org.netbeans.jemmy.operators.JFrameOperator;
 import org.netbeans.jemmy.operators.JLabelOperator;
+import org.netbeans.jemmy.operators.JTextFieldOperator;
+import org.netbeans.jemmy.util.NameComponentChooser;
 
 /**
  * Test DiscoverNodesFrameTest
@@ -83,6 +86,24 @@ public class DiscoverThrottleFrameTest {
         _lnis.sendTestMessage(m);
     }
     
+    private void assertTextField(JFrameOperator jf, String label, String value) {
+        // Find the combo box by label
+        JLabelOperator jlo = new JLabelOperator(jf,label);
+        JTextFieldOperator to = new JTextFieldOperator((JTextField) jlo.getLabelFor());
+        Assert.assertEquals(label, value, to.getText());
+    }
+    
+    private void verifyDiscoverThrottleFrameValues(JFrame f1, JFrameOperator jf) {
+        assertTextField(jf, Bundle.getMessage("LocoAddress"), "5502");
+        assertTextField(jf, Bundle.getMessage("ThrottleId"), "4218");
+        assertTextField(jf, Bundle.getMessage("Manufacturer"), "Public-domain and DIY");
+        assertTextField(jf, Bundle.getMessage("Developer"), "FREMO");
+        assertTextField(jf, Bundle.getMessage("Product"), "FREDi using LNSV2");
+        
+        JTextField throttleId_Hex = JTextFieldOperator.findJTextField(f1, new NameComponentChooser("throttleId_Hex"));
+        Assert.assertEquals("throttleId_Hex", "0x107A", throttleId_Hex.getText());
+    }
+    
     @Test
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -91,7 +112,6 @@ public class DiscoverThrottleFrameTest {
         Assert.assertNotNull("exists", b);
     }
     
-    @Ignore
     @Test
     public void testDiscoverThrottle() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -110,15 +130,10 @@ public class DiscoverThrottleFrameTest {
         
         connectThrottle();
         
-        Thread.sleep(20000);
+        verifyDiscoverThrottleFrameValues(frame, new JFrameOperator(frame));
+//        Thread.sleep(20000);
         
         JUnitUtil.dispose(frame);
-    }
-    
-    @Test
-    public void testOpenProgrammerNewNode() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assume.assumeTrue("To do", false);
     }
     
     private void addItemToRoster() {
@@ -198,6 +213,59 @@ public class DiscoverThrottleFrameTest {
     }
     
     @Test
+    public void testOpenProgrammerNewNode() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        addItemToRoster();
+        
+        // Show the discover throttle frame
+        showDiscoverThrottleFrame();
+        
+        // Connect the FREDi
+        connectThrottle();
+        
+        // Clear LocoNet outbound list
+        _lnis.outbound.clear();
+        
+        
+        // Find the discover throttle frame
+        JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
+        JFrameOperator jf = new JFrameOperator(f1);
+        verifyDiscoverThrottleFrameValues(f1, jf);
+        // Find the combo box labeled "RosterEntry"
+        JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("RosterEntry"));
+        // Wait for the buttom OpenProgrammer gets enables
+        JButtonOperator bo = new JButtonOperator(jf,Bundle.getMessage("ButtonOpenProgrammer"));
+        Assert.assertTrue("button is enabled", JUnitUtil.waitFor(()->{return bo.isEnabled();}));
+        // Select item "Test throttle"
+        JComboBoxOperator co = new JComboBoxOperator((JComboBox) jlo.getLabelFor());
+        co.selectItem("New roster entry");
+        // And press OpenProgrammer
+        jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonOpenProgrammer"));
+        
+        
+        // The programmer reads SV1 - SV30
+        respondToSvReadMessages();
+        
+        
+        // Find the programmer frame
+        JFrame f2 = JFrameOperator.waitJFrame("Program FREDi using LNSV2 in Service Mode (Programming Track)", true, true);
+        JFrameOperator jf2 = new JFrameOperator(f2);
+        jf2.requestClose();
+        
+        // Find the "Choose one" frame that gives the user the option to save changes
+        JDialog f3 = JDialogOperator.waitJDialog("Choose one", true, true);
+        JDialogOperator jf3 = new JDialogOperator(f3);
+        jf3.requestClose();
+        
+        
+        
+        
+//        Thread.sleep(20000);
+        
+        JUnitUtil.dispose(f1);
+    }
+    
+    @Test
     public void testOpenProgrammerExistingNode() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         addItemToRoster();
@@ -215,7 +283,8 @@ public class DiscoverThrottleFrameTest {
         // Find the discover throttle frame
         JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
         JFrameOperator jf = new JFrameOperator(f1);
-        // Select the item "aaa" in the combo box labeled "RosterEntry"
+        verifyDiscoverThrottleFrameValues(f1, jf);
+        // Find the combo box labeled "RosterEntry"
         JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("RosterEntry"));
         // Wait for the buttom OpenProgrammer gets enables
         JButtonOperator bo = new JButtonOperator(jf,Bundle.getMessage("ButtonOpenProgrammer"));
@@ -247,8 +316,6 @@ public class DiscoverThrottleFrameTest {
 //        Thread.sleep(20000);
         
         JUnitUtil.dispose(f1);
-        
-        Assume.assumeTrue("To do", false);
     }
     
     @Test
