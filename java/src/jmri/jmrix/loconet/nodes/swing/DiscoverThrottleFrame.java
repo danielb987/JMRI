@@ -555,26 +555,23 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         if (_throttle != null) {
             int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
 //            int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(throttle.getLocoAddress());
-
+            
             if ( usageCount != 0 ) {
                 ThreadingUtil.runOnGUIEventually(this::releaseAddress);
                 JOptionPane.showMessageDialog(this, Bundle.getMessage("CannotDispatch", usageCount));
                 return;
             }
-//            jmri.util.ThreadingUtil.runOnGUIEventually(() -> {
-                InstanceManager.throttleManagerInstance().dispatchThrottle(_throttle, listener);
-//            });
-//            InstanceManager.throttleManagerInstance().dispatchThrottle(throttle, this);
+            InstanceManager.throttleManagerInstance().dispatchThrottle(_throttle, listener);
         }
     }
-
+    
     /**
      * Release the current address.
      */
     public void releaseAddress() {
         InstanceManager.throttleManagerInstance().releaseThrottle(_throttle, this);
     }
-
+    
     @Override
     public void notifyFailedThrottleRequest(LocoAddress address, String reason) {
         javax.swing.JOptionPane.showMessageDialog(null, reason, _rbx.getString("FailedSetupRequestTitle"), javax.swing.JOptionPane.WARNING_MESSAGE);
