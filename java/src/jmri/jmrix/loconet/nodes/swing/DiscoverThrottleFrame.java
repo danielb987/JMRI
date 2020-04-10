@@ -14,6 +14,7 @@ import jmri.DccThrottle;
 import jmri.InstanceManager;
 import jmri.LocoAddress;
 import jmri.ThrottleListener;
+import jmri.ThrottleManager;
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
@@ -539,7 +540,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         _throttle = t;
         _currentDispatchAddress = t.getLocoAddress().getNumber();
         
-        if (InstanceManager.throttleManagerInstance().hasDispatchFunction()) {
+        if (InstanceManager.getDefault(ThrottleManager.class).hasDispatchFunction()) {
             ThreadingUtil.runOnGUIEventually(this::dispatchAddress);
         } else {
             ThreadingUtil.runOnGUIEventually(this::releaseAddress);
