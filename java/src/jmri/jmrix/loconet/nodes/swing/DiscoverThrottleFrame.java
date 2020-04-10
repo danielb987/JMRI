@@ -526,7 +526,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     @Override
     public void notifyThrottleFound(DccThrottle t) {
         log.debug("Asked for " + _currentDispatchAddress + " got " + t.getLocoAddress());
-        if (((DccLocoAddress) t.getLocoAddress()).getNumber() != _currentDispatchAddress) {
+        if (t.getLocoAddress().getNumber() != _currentDispatchAddress) {
             log.warn("Not correct address, asked for " + _currentDispatchAddress + " got " + t.getLocoAddress() + ", requesting again...");
             boolean requestOK
                     = InstanceManager.throttleManagerInstance().requestThrottle(_currentDispatchAddress, this, true);
@@ -600,71 +600,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         } else {
             InstanceManager.throttleManagerInstance().cancelThrottleRequest(address, this);
         }
-/*        
-        if ( question == ThrottleListener.DecisionType.STEAL ){
-            if ( InstanceManager.getDefault(ThrottleFrameManager.class).getThrottlesPreferences().isSilentSteal() ){
-                InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.STEAL );
-                return;
-            }
-            jmri.util.ThreadingUtil.runOnGUI(() -> {
-                if ( javax.swing.JOptionPane.YES_OPTION == javax.swing.JOptionPane.showConfirmDialog(
-                    this, rbx.getMessage("StealQuestionText",address.toString()), 
-                    rbx.getMessage("StealRequestTitle"), javax.swing.JOptionPane.YES_NO_OPTION)) {
-                        InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.STEAL );
-                } else {
-                    InstanceManager.throttleManagerInstance().cancelThrottleRequest(address, this);
-                }
-            });
-        }
-        else if ( question == ThrottleListener.DecisionType.SHARE ){
-            if ( InstanceManager.getDefault(ThrottleFrameManager.class).getThrottlesPreferences().isSilentShare() ){
-                InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.SHARE );
-                return;
-            }
-            jmri.util.ThreadingUtil.runOnGUI(() -> {
-                if ( javax.swing.JOptionPane.YES_OPTION == javax.swing.JOptionPane.showConfirmDialog(
-                    this, rbx.getMessage("ShareQuestionText",address.toString()), 
-                    rbx.getMessage("ShareRequestTitle"), javax.swing.JOptionPane.YES_NO_OPTION)) {
-                        InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.SHARE );
-                } else {
-                    InstanceManager.throttleManagerInstance().cancelThrottleRequest(address, this);
-                }
-            });
-        }
-        else if ( question == ThrottleListener.DecisionType.STEAL_OR_SHARE ){
-            
-            if ( InstanceManager.getDefault(ThrottleFrameManager.class).getThrottlesPreferences().isSilentSteal() ){
-                InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.STEAL );
-                return;
-            }
-            if ( InstanceManager.getDefault(ThrottleFrameManager.class).getThrottlesPreferences().isSilentShare() ){
-                InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.SHARE );
-                return;
-            }
-            
-            String[] options = new String[] {rbx.getMessage("StealButton"), 
-                rbx.getMessage("ShareButton"), rbx.getMessage("CancelButton")};
-            jmri.util.ThreadingUtil.runOnGUI(() -> {
-                int response = javax.swing.JOptionPane.showOptionDialog(
-                    this, rbx.getMessage("StealShareQuestionText",address.toString()),
-                    rbx.getMessage("StealShareRequestTitle"),
-                    javax.swing.JOptionPane.DEFAULT_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE,
-                    null, options, options[1]);
-            
-                if (response == 0){
-                    log.debug("steal clicked");
-                    InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.STEAL );
-                } else if ( response == 1 ) {
-                    log.debug("share clicked");
-                    InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.SHARE );
-                }
-                else {
-                    log.debug("cancel clicked");
-                    InstanceManager.throttleManagerInstance().cancelThrottleRequest(address, this);
-                }
-            });
-        }
-*/
     }
     
     
