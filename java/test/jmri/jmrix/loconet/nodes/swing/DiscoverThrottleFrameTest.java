@@ -10,6 +10,7 @@ import jmri.ThrottleManager;
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
+import jmri.jmrit.symbolicprog.ProgDefault;
 import jmri.jmrix.loconet.LnCommandStationType;
 import jmri.jmrix.loconet.LnThrottleManager;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
@@ -214,6 +215,8 @@ public class DiscoverThrottleFrameTest {
         // Clear LocoNet outbound list
         _lnis.outbound.clear();
         
+        // Test when ProgDefault.getDefaultProgFile() returns not null
+        ProgDefault.setDefaultProgFile(ProgDefault.findListOfProgFiles()[0]);
         
         // Find the discover throttle frame
         JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
@@ -251,6 +254,7 @@ public class DiscoverThrottleFrameTest {
     @Test
     public void testOpenProgrammerExistingNode() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        
         addItemToRoster();
         
         // Show the discover throttle frame
@@ -262,6 +266,8 @@ public class DiscoverThrottleFrameTest {
         // Clear LocoNet outbound list
         _lnis.outbound.clear();
         
+        // Test when ProgDefault.getDefaultProgFile() returns null
+        ProgDefault.setDefaultProgFile(null);
         
         // Find the discover throttle frame
         JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
