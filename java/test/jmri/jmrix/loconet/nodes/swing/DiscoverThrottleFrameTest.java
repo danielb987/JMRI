@@ -6,20 +6,21 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import jmri.InstanceManager;
+import jmri.ThrottleManager;
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
+import jmri.jmrix.loconet.LnCommandStationType;
+import jmri.jmrix.loconet.LnThrottleManager;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LocoNetInterfaceScaffold;
 import jmri.jmrix.loconet.LocoNetMessage;
-import jmri.jmrix.loconet.SlotManager;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JComboBoxOperator;
@@ -28,6 +29,8 @@ import org.netbeans.jemmy.operators.JFrameOperator;
 import org.netbeans.jemmy.operators.JLabelOperator;
 import org.netbeans.jemmy.operators.JTextFieldOperator;
 import org.netbeans.jemmy.util.NameComponentChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test DiscoverNodesFrameTest
@@ -38,11 +41,11 @@ public class DiscoverThrottleFrameTest {
 
     private LocoNetInterfaceScaffold _lnis;
     private LocoNetSystemConnectionMemo _memo;
+    private ThrottleManager _tm = null;
     
     private DiscoverThrottleFrame showDiscoverThrottleFrame() {
         DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
         f.initComponents();
-//        f.setLocation(20,40);
         f.setVisible(true);
         return f;
     }
@@ -113,15 +116,8 @@ public class DiscoverThrottleFrameTest {
     }
     
     @Test
-    public void testDiscoverThrottle() throws InterruptedException {
+    public void testDiscoverThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        
-//        for (LocoNetMessage l : _lnis.outbound) {
-//            System.out.format("LocoNet aaa: %s%n", l.toMonitorString());
-//        }
-        
-        // Clear list of loconet messages
-//        _lnis.outbound.clear();
         
         showDiscoverThrottleFrame();
         
@@ -131,7 +127,6 @@ public class DiscoverThrottleFrameTest {
         connectThrottle();
         
         verifyDiscoverThrottleFrameValues(frame, new JFrameOperator(frame));
-//        Thread.sleep(20000);
         
         JUnitUtil.dispose(frame);
     }
@@ -176,12 +171,6 @@ public class DiscoverThrottleFrameTest {
                 System.out.format("Not all SVs are read: %s%n", sb.toString());
                 break;
             }
-//            Assert.assertTrue("reply not received. numSVsNotRead: "+sb.toString(), JUnitUtil.waitFor(()->{return _lnis.outbound.size() > 0;}));
-            
-//            for (LocoNetMessage l : _lnis.outbound) {
-//                System.out.format("LocoNet: %s%n", l.toString());
-//                System.out.format("LocoNet: %s%n", l.toMonitorString());
-//            }
             
             int svNo = -1;
             
@@ -215,7 +204,6 @@ public class DiscoverThrottleFrameTest {
     @Test
     public void testOpenProgrammerNewNode() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        addItemToRoster();
         
         // Show the discover throttle frame
         showDiscoverThrottleFrame();
@@ -257,16 +245,11 @@ public class DiscoverThrottleFrameTest {
         JDialogOperator jf3 = new JDialogOperator(f3);
         jf3.requestClose();
         
-        
-        
-        
-//        Thread.sleep(20000);
-        
         JUnitUtil.dispose(f1);
     }
     
     @Test
-    public void testOpenProgrammerExistingNode() throws InterruptedException {
+    public void testOpenProgrammerExistingNode() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         addItemToRoster();
         
@@ -310,18 +293,101 @@ public class DiscoverThrottleFrameTest {
         JDialogOperator jf3 = new JDialogOperator(f3);
         jf3.requestClose();
         
-        
-        
-        
-//        Thread.sleep(20000);
-        
         JUnitUtil.dispose(f1);
+    }
+    
+    private void expectReply(int[] data) {
+        Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() >= 1;}));
+/*        
+        System.out.format("LocoNet expectReply: ");
+        for (int i=0; i < data.length; i++) {     // Don't check the last byte since the checksum is not calculated yet.
+            System.out.format("%2X ", data[i]);
+        }
+        System.out.format("%n");
+        
+        for (LocoNetMessage l : _lnis.outbound) {
+            System.out.format("LocoNet: %s%n", l.toString());
+            System.out.format("LocoNet: %s", l.toMonitorString());
+        }
+        System.out.format("LocoNet expectReply done.%n");
+        System.out.format("%n");
+*/        
+        Assert.assertEquals("num bytes sent is correct", data.length, _lnis.outbound.get(0).getNumDataElements());
+        for (int i=0; i < data.length-1; i++) {     // Don't check the last byte since the checksum is not calculated yet.
+            Assert.assertEquals("sent byte "+Integer.toString(i), data[i] & 0xFF, _lnis.outbound.get(0).getElement(i) & 0xFF);
+        }
+        
+        // Remove the SV read message
+        _lnis.outbound.remove(0);
     }
     
     @Test
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assume.assumeTrue("To do", false);
+        
+        // Show the discover throttle frame
+        showDiscoverThrottleFrame();
+        
+        // Clear LocoNet outbound list
+        _lnis.outbound.clear();
+        
+        
+        // Find the discover throttle frame
+        JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
+        JFrameOperator jf = new JFrameOperator(f1);
+        
+        // Find the text box by label
+        JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("DispatchInfoMessage1"));
+        JTextFieldOperator to = new JTextFieldOperator((JTextField) jlo.getLabelFor());
+        to.setText("5502");
+        
+        // And press Dispatch
+        jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonDispatch"));
+        
+        // Request slot for loco address 5502
+        int[] data = {0xBF, 0x2A, 0x7E, 0x14};
+        expectReply(data);
+        
+        // Report of slot 16 information:
+	// Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
+	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+	// Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
+        LocoNetMessage m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x23, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x05});
+        _lnis.sendTestMessage(m);
+        
+        // Set status of slot 16 to IN_USE
+        data = new int[]{0xBA, 0x10, 0x10, 0x45};
+        expectReply(data);
+        
+        // Report of slot 16 information:
+	// Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Forward at speed 0,
+	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+	// Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
+        m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x15});
+        _lnis.sendTestMessage(m);
+        
+        // Write slot 16 with status value 19 (0x13) - Loco is Not Consisted, Common and operating in 128 speed step mode
+        data = new int[]{0xB5, 0x10, 0x13, 0x49};
+        expectReply(data);
+        
+        // Mark slot 16 as DISPATCHED
+        data = new int[]{0xBA, 0x10, 0x00, 0x55};
+        expectReply(data);
+        
+        // Report of slot 16 information:
+	// Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
+	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+	// Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170)
+        m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x23, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x7A, 0x10, 0x1C});
+        _lnis.sendTestMessage(m);
+        
+        // Write slot 16 with status value 19 (0x13) - Loco is Not Consisted, Common and operating in 128 speed step mode
+        data = new int[]{0xB5, 0x10, 0x13, 0x49};
+        expectReply(data);
+        
+//        Thread.sleep(20000);
+        
+        JUnitUtil.dispose(f1);
     }
     
     // The minimal setup for log4J
@@ -334,14 +400,24 @@ public class DiscoverThrottleFrameTest {
         InstanceManager.setDefault(jmri.jmrit.symbolicprog.ProgrammerConfigManager.class,
                 new jmri.jmrit.symbolicprog.ProgrammerConfigManager());
         
-        _lnis = new LocoNetInterfaceScaffold();
-        SlotManager sm = new SlotManager(_lnis);
-        _memo = new LocoNetSystemConnectionMemo(_lnis, sm);
+        _memo = new LocoNetSystemConnectionMemo();
+        _lnis = new LocoNetInterfaceScaffold(_memo);
+        _memo.setLnTrafficController(_lnis);
+        _memo.configureCommandStation(LnCommandStationType.COMMAND_STATION_DCS100, false, false, false);
+        _memo.configureManagers();
+        _tm = new LnThrottleManager(_memo);
+        InstanceManager.setDefault(ThrottleManager.class, _tm);
+        log.debug("new throttle manager is {}", _tm.toString());
+        _memo.getSensorManager().dispose(); // get rid of sensor manager to prevent it from sending interrogation messages
+        _memo.getPowerManager().dispose(); // get rid of power manager to prevent it from sending slot 0 read message
+        
     }
 
     @After
     public void tearDown() {
         JUnitUtil.tearDown();
     }
+
+    private final static Logger log = LoggerFactory.getLogger(DiscoverThrottleFrameTest.class);
 
 }

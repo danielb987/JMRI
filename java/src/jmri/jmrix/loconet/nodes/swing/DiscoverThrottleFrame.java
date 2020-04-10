@@ -341,7 +341,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.anchor = java.awt.GridBagConstraints.EAST;
         dispatchPanel.add(labelAddress, c);
         
-//        JTextField address = new JTextField("Daniel LocoAddress");
         JTextField address = new JTextField();
         address.setColumns(5);
         c.gridwidth = 1;
@@ -352,6 +351,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = java.awt.GridBagConstraints.WEST;
         dispatchPanel.add(address, c);
+        infoDispatch1.setLabelFor(address);
         
         JButton dispatchButton = new JButton(Bundle.getMessage("ButtonDispatch"));
         c.gridwidth = 2;
@@ -370,7 +370,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                 return;
             }
             boolean requestOK
-                    = InstanceManager.throttleManagerInstance().requestThrottle(_currentDispatchAddress, this, true);
+                    = InstanceManager.getDefault(ThrottleManager.class).requestThrottle(_currentDispatchAddress, this, true);
             if (!requestOK) {
                 JOptionPane.showMessageDialog(this, _rbx.getString("AddressInUse"));
             }
@@ -530,7 +530,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         if (t.getLocoAddress().getNumber() != _currentDispatchAddress) {
             log.warn("Not correct address, asked for " + _currentDispatchAddress + " got " + t.getLocoAddress() + ", requesting again...");
             boolean requestOK
-                    = InstanceManager.throttleManagerInstance().requestThrottle(_currentDispatchAddress, this, true);
+                    = InstanceManager.getDefault(ThrottleManager.class).requestThrottle(_currentDispatchAddress, this, true);
             if (!requestOK) {
                 JOptionPane.showMessageDialog(this, _rbx.getString("AddressInUse"));
             }
@@ -554,15 +554,15 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     public void dispatchAddress() {
         final ThrottleListener listener = this;
         if (_throttle != null) {
-            int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
-//            int usageCount  = InstanceManager.throttleManagerInstance().getThrottleUsageCount(throttle.getLocoAddress());
+            int usageCount  = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
+//            int usageCount  = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(throttle.getLocoAddress());
             
             if ( usageCount != 0 ) {
                 ThreadingUtil.runOnGUIEventually(this::releaseAddress);
                 JOptionPane.showMessageDialog(this, Bundle.getMessage("CannotDispatch", usageCount));
                 return;
             }
-            InstanceManager.throttleManagerInstance().dispatchThrottle(_throttle, listener);
+            InstanceManager.getDefault(ThrottleManager.class).dispatchThrottle(_throttle, listener);
         }
     }
     
@@ -570,7 +570,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
      * Release the current address.
      */
     public void releaseAddress() {
-        InstanceManager.throttleManagerInstance().releaseThrottle(_throttle, this);
+        InstanceManager.getDefault(ThrottleManager.class).releaseThrottle(_throttle, this);
     }
     
     @Override
@@ -597,9 +597,9 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     public void notifyDecisionRequired(LocoAddress address, ThrottleListener.DecisionType question) {
         if ( question == ThrottleListener.DecisionType.STEAL
                 || question == ThrottleListener.DecisionType.STEAL_OR_SHARE ){
-            InstanceManager.throttleManagerInstance().responseThrottleDecision(address, this, ThrottleListener.DecisionType.STEAL );
+            InstanceManager.getDefault(ThrottleManager.class).responseThrottleDecision(address, this, ThrottleListener.DecisionType.STEAL );
         } else {
-            InstanceManager.throttleManagerInstance().cancelThrottleRequest(address, this);
+            InstanceManager.getDefault(ThrottleManager.class).cancelThrottleRequest(address, this);
         }
     }
     
