@@ -334,10 +334,6 @@ public class DiscoverThrottleFrameTest {
         InstanceManager.setDefault(jmri.jmrit.symbolicprog.ProgrammerConfigManager.class,
                 new jmri.jmrit.symbolicprog.ProgrammerConfigManager());
         
-//        _memo = new LocoNetSystemConnectionMemo();
-//        _lnis = new LocoNetInterfaceScaffold(_memo);
-//        _memo.setLnTrafficController(_lnis);
-        
         _lnis = new LocoNetInterfaceScaffold();
         SlotManager sm = new SlotManager(_lnis);
         _memo = new LocoNetSystemConnectionMemo(_lnis, sm);
