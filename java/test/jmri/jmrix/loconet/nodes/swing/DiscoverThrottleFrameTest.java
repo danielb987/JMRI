@@ -18,6 +18,7 @@ import jmri.jmrix.loconet.LocoNetInterfaceScaffold;
 import jmri.jmrix.loconet.LocoNetMessage;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.JUnitUtil;
+import jmri.util.ThreadingUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -44,11 +45,12 @@ public class DiscoverThrottleFrameTest {
     private LocoNetSystemConnectionMemo _memo;
     private ThrottleManager _tm = null;
     
-    private DiscoverThrottleFrame showDiscoverThrottleFrame() {
-        DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
-        f.initComponents();
-        f.setVisible(true);
-        return f;
+    private void showDiscoverThrottleFrame() {
+        ThreadingUtil.runOnGUI(() -> {
+            DiscoverThrottleFrame f = new DiscoverThrottleFrame(_memo);
+            f.initComponents();
+            f.setVisible(true);
+        });
     }
     
     private void connectThrottle() {
@@ -105,15 +107,19 @@ public class DiscoverThrottleFrameTest {
         assertTextField(jf, Bundle.getMessage("Product"), "FREDi using LNSV2");
         
         JTextField throttleId_Hex = JTextFieldOperator.findJTextField(f1, new NameComponentChooser("throttleId_Hex"));
-        Assert.assertEquals("throttleId_Hex", "0x107A", throttleId_Hex.getText());
+        ThreadingUtil.runOnGUI(() -> {
+            Assert.assertEquals("throttleId_Hex", "0x107A", throttleId_Hex.getText());
+        });
     }
     
     @Test
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        DiscoverThrottleFrame b = new DiscoverThrottleFrame(_memo);
-        Assert.assertNotNull("exists", b);
+        ThreadingUtil.runOnGUI(() -> {
+            DiscoverThrottleFrame b = new DiscoverThrottleFrame(_memo);
+            Assert.assertNotNull("exists", b);
+        });
     }
     
     @Test

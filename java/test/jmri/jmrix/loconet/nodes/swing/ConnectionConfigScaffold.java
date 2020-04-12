@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import jmri.jmrix.ConnectionConfig;
 import jmri.util.JmriJFrame;
+import jmri.util.ThreadingUtil;
+import jmri.util.ThreadingUtil.ThreadAction;
 import jmri.util.swing.JemmyUtil;
 import org.junit.Assume;
 import org.netbeans.jemmy.operators.JFrameOperator;
@@ -22,18 +24,21 @@ public class ConnectionConfigScaffold {
     public static void testConfigNodes(ConnectionConfig cc) {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        JmriJFrame frame = new JmriJFrame();
-        frame.setTitle("ConfigNodePanel");  // NOI18N
-        frame.setSize(800, 300);
-        JPanel detailsPanel = new JPanel();
-        frame.getContentPane().add(detailsPanel);
+        ThreadingUtil.runOnGUI(() -> {
+            JmriJFrame frame = new JmriJFrame();
+            frame.setTitle("ConfigNodePanel");  // NOI18N
+            frame.setSize(800, 300);
+            JPanel detailsPanel = new JPanel();
+            frame.getContentPane().add(detailsPanel);
+            
+            // verify no exceptions thrown
+            cc.loadDetails(detailsPanel);
+            
+            frame.setVisible(true);
+        });
         
-        // verify no exceptions thrown
-        cc.loadDetails(detailsPanel);
         // load details MAY produce an error message if no ports are found.
         jmri.util.JUnitAppender.suppressErrorMessage("No usable ports returned");
-        
-        frame.setVisible(true);
         
         // Find the discover throttle frame
         JFrame f1 = JFrameOperator.waitJFrame("ConfigNodePanel", true, true);

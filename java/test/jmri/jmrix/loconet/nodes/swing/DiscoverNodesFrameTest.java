@@ -4,6 +4,7 @@ import java.awt.GraphicsEnvironment;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.util.JUnitUtil;
+import jmri.util.ThreadingUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -22,8 +23,10 @@ public class DiscoverNodesFrameTest {
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        DiscoverNodesFrame b = new DiscoverNodesFrame(memo);
-        Assert.assertNotNull("exists", b);
+        ThreadingUtil.runOnGUI(() -> {
+            DiscoverNodesFrame b = new DiscoverNodesFrame(memo);
+            Assert.assertNotNull("exists", b);
+        });
     }
     
     // The minimal setup for log4J

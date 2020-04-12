@@ -3,6 +3,7 @@ package jmri.jmrix.loconet.nodes.swing;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.util.JUnitUtil;
+import jmri.util.ThreadingUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -19,8 +20,10 @@ public class ConfigNodesTest {
     
     @Test
     public void testCTor() {
-        ConfigNodes b = new ConfigNodes();
-        Assert.assertNotNull("exists", b);
+        ThreadingUtil.runOnGUI(() -> {
+            ConfigNodes b = new ConfigNodes();
+            Assert.assertNotNull("exists", b);
+        });
     }
     
     // The minimal setup for log4J

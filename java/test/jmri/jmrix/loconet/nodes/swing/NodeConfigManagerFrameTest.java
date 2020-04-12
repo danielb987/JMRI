@@ -5,6 +5,7 @@ import jmri.jmrix.loconet.nodes.*;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.util.JUnitUtil;
+import jmri.util.ThreadingUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -23,8 +24,10 @@ public class NodeConfigManagerFrameTest {
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        NodeConfigManagerFrame b = new NodeConfigManagerFrame(memo);
-        Assert.assertNotNull("exists", b);
+        ThreadingUtil.runOnGUI(() -> {
+            NodeConfigManagerFrame b = new NodeConfigManagerFrame(memo);
+            Assert.assertNotNull("exists", b);
+        });
     }
     
     // The minimal setup for log4J
