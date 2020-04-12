@@ -21,16 +21,13 @@ import org.netbeans.jemmy.operators.JFrameOperator;
  **/
 public class ConnectionConfigTest extends jmri.jmrix.AbstractSerialConnectionConfigTestBase  {
 
-    private static final ResourceBundle rbxNodesSwingBundle = ResourceBundle.getBundle("jmri.jmrix.loconet.nodes.swing.NodesSwingBundle");
-    private static final ResourceBundle rbxNamedBeanBundle = ResourceBundle.getBundle("jmri.NamedBeanBundle");
-    
     /**
      * Test the "Configure nodes" button.
      * This button is common to many ConnectionConfig classes which
      * inherit from different parent classes.
      */
     @Test
-    public void testConfigNodes() throws InterruptedException {
+    public void testConfigNodes() {
         jmri.jmrix.loconet.nodes.swing.ConnectionConfigScaffold.testConfigNodes(cc);
     }
     
