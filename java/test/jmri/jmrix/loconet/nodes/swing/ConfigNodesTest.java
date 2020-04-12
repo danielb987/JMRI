@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test AnalogIO
+ * Test ConfigNodes
  */
 public class ConfigNodesTest {
 

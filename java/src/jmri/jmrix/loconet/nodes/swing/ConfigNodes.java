@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class ConfigNodes {
 
     public JButton getButton(final LocoNetSystemConnectionMemo lnMemo) {
-        JButton b = new JButton(Bundle.getMessage("ConfigureNodesTitle"));
+        JButton b = new JButton(Bundle.getMessage("ConfigureNodesButton"));
         b.addActionListener((ActionEvent e) -> {
             NodeConfigManagerFrame f = new NodeConfigManagerFrame(lnMemo);
             try {
