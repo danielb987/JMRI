@@ -1,17 +1,9 @@
 package jmri.jmrix.loconet.usb_dcs52;
 
-import java.awt.GraphicsEnvironment;
-import java.util.ResourceBundle;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import jmri.util.swing.JemmyUtil;
-import jmri.util.JmriJFrame;
 import jmri.util.JUnitUtil;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.netbeans.jemmy.operators.JFrameOperator;
 
 /**
  * Tests for ConnectionConfig class.
@@ -30,7 +22,7 @@ public class ConnectionConfigTest extends jmri.jmrix.AbstractSerialConnectionCon
     public void testConfigNodes() {
         jmri.jmrix.loconet.nodes.swing.ConnectionConfigScaffold.testConfigNodes(cc);
     }
-    
+
     @Before
     @Override
     public void setUp() {
