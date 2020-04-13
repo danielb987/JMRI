@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import jmri.jmrix.ConnectionConfig;
 import jmri.util.JmriJFrame;
 import jmri.util.ThreadingUtil;
-import jmri.util.ThreadingUtil.ThreadAction;
 import jmri.util.swing.JemmyUtil;
 import org.junit.Assume;
 import org.netbeans.jemmy.operators.JFrameOperator;

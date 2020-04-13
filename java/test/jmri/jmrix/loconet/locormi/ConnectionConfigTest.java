@@ -3,7 +3,6 @@ package jmri.jmrix.loconet.locormi;
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -19,9 +18,9 @@ public class ConnectionConfigTest extends jmri.jmrix.AbstractSerialConnectionCon
      * This button is common to many ConnectionConfig classes which
      * inherit from different parent classes.
      */
-    @Ignore("The test doesn't set the field 'ConnectionConfig.adapter' which is needed for this test")
     @Test
     public void testConfigNodes() {
+        ((ConnectionConfig)cc).lmc = new LnMessageClient();
         jmri.jmrix.loconet.nodes.swing.ConnectionConfigScaffold.testConfigNodes(cc);
     }
 

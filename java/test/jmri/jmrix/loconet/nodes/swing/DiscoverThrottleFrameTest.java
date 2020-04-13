@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JComboBoxOperator;
@@ -107,9 +108,7 @@ public class DiscoverThrottleFrameTest {
         assertTextField(jf, Bundle.getMessage("Product"), "FREDi using LNSV2");
         
         JTextField throttleId_Hex = JTextFieldOperator.findJTextField(f1, new NameComponentChooser("throttleId_Hex"));
-        ThreadingUtil.runOnGUI(() -> {
-            Assert.assertEquals("throttleId_Hex", "0x107A", throttleId_Hex.getText());
-        });
+        Assert.assertEquals("throttleId_Hex", "0x107A", throttleId_Hex.getText());
     }
     
     @Test
@@ -223,7 +222,6 @@ public class DiscoverThrottleFrameTest {
         
         // Test when ProgDefault.getDefaultProgFile() returns not null
         ProgDefault.setDefaultProgFile(ProgDefault.findListOfProgFiles()[0]);
-        
         // Find the discover throttle frame
         JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
         JFrameOperator jf = new JFrameOperator(f1);
@@ -235,7 +233,9 @@ public class DiscoverThrottleFrameTest {
         Assert.assertTrue("button is enabled", JUnitUtil.waitFor(()->{return bo.isEnabled();}));
         // Select item "Test throttle"
         JComboBoxOperator co = new JComboBoxOperator((JComboBox) jlo.getLabelFor());
+        
         co.selectItem("New roster entry");
+        
         // And press OpenProgrammer
         jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonOpenProgrammer"));
         
@@ -287,6 +287,7 @@ public class DiscoverThrottleFrameTest {
         // Select item "Test throttle"
         JComboBoxOperator co = new JComboBoxOperator((JComboBox) jlo.getLabelFor());
         co.selectItem("Test throttle");
+        
         // And press OpenProgrammer
         jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonOpenProgrammer"));
         
@@ -333,6 +334,7 @@ public class DiscoverThrottleFrameTest {
         _lnis.outbound.remove(0);
     }
     
+//    @Ignore
     @Test
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -351,6 +353,7 @@ public class DiscoverThrottleFrameTest {
         // Find the text box by label
         JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("DispatchInfoMessage1"));
         JTextFieldOperator to = new JTextFieldOperator((JTextField) jlo.getLabelFor());
+        
         to.setText("5502");
         
         // And press Dispatch

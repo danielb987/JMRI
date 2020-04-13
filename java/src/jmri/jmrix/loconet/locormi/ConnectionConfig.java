@@ -104,9 +104,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         
         // The test jmri.jmrix.loconet.locormi.ConnectionConfigTest doesn't
         // initialize 'adapter'.
-        if (adapter != null) {
+        if (lmc != null) {
             details.add(configNodes.getButton(
-                    (LocoNetSystemConnectionMemo)adapter.getSystemConnectionMemo()));
+                    (LocoNetSystemConnectionMemo)lmc.getAdapterMemo()));
         }
     }
 

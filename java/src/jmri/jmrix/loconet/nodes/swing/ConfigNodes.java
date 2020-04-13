@@ -25,7 +25,6 @@ public class ConfigNodes {
             f.setLocation(20,40);
             f.setVisible(true);
         });
-//        b.addActionListener(new NodeConfigManagerAction((CMRISystemConnectionMemo)adapter.getSystemConnectionMemo()));
         return b;
     }
     
