@@ -555,7 +555,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         final ThrottleListener listener = this;
         if (_throttle != null) {
             int usageCount  = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
-//            int usageCount  = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(throttle.getLocoAddress());
             
             if ( usageCount != 0 ) {
                 ThreadingUtil.runOnGUIEventually(this::releaseAddress);
