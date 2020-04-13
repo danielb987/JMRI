@@ -334,7 +334,6 @@ public class DiscoverThrottleFrameTest {
         _lnis.outbound.remove(0);
     }
     
-//    @Ignore
     @Test
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -399,6 +398,40 @@ public class DiscoverThrottleFrameTest {
         // Write slot 16 with status value 19 (0x13) - Loco is Not Consisted, Common and operating in 128 speed step mode
         data = new int[]{0xB5, 0x10, 0x13, 0x49};
         expectReply(data);
+        
+//        Thread.sleep(20000);
+        
+        JUnitUtil.dispose(f1);
+    }
+    
+    @Test
+    public void testDispatchThrottleBadAddress() throws InterruptedException {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        
+        // Show the discover throttle frame
+        showDiscoverThrottleFrame();
+        
+        // Find the discover throttle frame
+        JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
+        JFrameOperator jf = new JFrameOperator(f1);
+        
+        // Find the text box by label
+        JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("DispatchInfoMessage1"));
+        JTextFieldOperator to = new JTextFieldOperator((JTextField) jlo.getLabelFor());
+        
+        to.setText("a2");   // This address is deliberately bad
+        
+        // And press Dispatch
+        jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonDispatch"));
+        
+        // Find the discover throttle frame
+        JDialog d = JDialogOperator.waitJDialog("Message", true, true);
+        JDialogOperator jd = new JDialogOperator(d);
+        
+        // Find the text box by label, to verify that the message box show the correct message
+        new JLabelOperator(jd,Bundle.getMessage("AddressIsInvalid"));
+        
+        jd.requestClose();
         
 //        Thread.sleep(20000);
         
