@@ -465,54 +465,12 @@ public class DiscoverThrottleFrameTest {
         JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("DispatchInfoMessage1"));
         JTextFieldOperator to = new JTextFieldOperator((JTextField) jlo.getLabelFor());
         
-        to.setText("23");   // This address is deliberately bad
+        to.setText("23");
         
         // And press Dispatch
         jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonDispatch"));
         
-        // Find the discover throttle frame
-        JDialog d = JDialogOperator.waitJDialog("Message", true, true);
-        JDialogOperator jd = new JDialogOperator(d);
-        
-        // Find the text box by label, to verify that the message box show the correct message
-        new JLabelOperator(jd,_rbx.getString("AddressInUse"));
-        
-        jd.requestClose();
-        
-//        Thread.sleep(20000);
-        
-        JUnitUtil.dispose(f1);
-    }
-    
-    @Test
-    @SuppressWarnings("ResultOfObjectAllocationIgnored")    // We use JLabelOperator to verify correct value of message box
-    public void testDispatchThrottleUsageCount() throws InterruptedException {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        
-        _tm = new FakeThrottleManager(_memo);
-        InstanceManager.setDefault(ThrottleManager.class, _tm);
-        
-        // Show the discover throttle frame
-        showDiscoverThrottleFrame();
-        
-        // Clear LocoNet outbound list
-        _lnis.outbound.clear();
-        
-        
-        // Find the discover throttle frame
-        JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
-        JFrameOperator jf = new JFrameOperator(f1);
-        
-        // Find the text box by label
-        JLabelOperator jlo = new JLabelOperator(jf,Bundle.getMessage("DispatchInfoMessage1"));
-        JTextFieldOperator to = new JTextFieldOperator((JTextField) jlo.getLabelFor());
-        
-        to.setText("5502");
-        
-        // And press Dispatch
-        jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonDispatch"));
-        
-        // Find the discover throttle frame
+        // Find the message dialog
         JDialog d = JDialogOperator.waitJDialog("Message", true, true);
         JDialogOperator jd = new JDialogOperator(d);
         
@@ -572,25 +530,9 @@ public class DiscoverThrottleFrameTest {
             return false;
         }
         
-        /**
-         * Always return 2 to test "Address in use by others"
-         */
-        @Override
-        public int getThrottleUsageCount(LocoAddress la) {
-            return 2;
-        }
-        
-        /**
-         * Do nothing. This method is called when address is in use when dispatching
-         */
-        @Override
-        public void releaseThrottle(DccThrottle t, ThrottleListener l) {
-            // Do nothing
-        }
-        
     }
     
-
+    
     private final static Logger log = LoggerFactory.getLogger(DiscoverThrottleFrameTest.class);
 
 }

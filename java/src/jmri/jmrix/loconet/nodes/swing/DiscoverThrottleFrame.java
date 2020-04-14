@@ -387,7 +387,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     /**
      * Open programmer
      */
-    public void openProgrammer() {
+    private void openProgrammer() {
         
         // Check if we have a loco
         if (_discoverThrottle_DeviceID == 0) return;
@@ -424,10 +424,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         
         String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
                 new Object[]{_product.getText()});
-//        String title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
-//                new Object[]{"new decoder"});
-//        title = java.text.MessageFormat.format(SymbolicProgBundle.getMessage("FrameServiceProgrammerTitle"),
-//                new Object[]{re.getId()});
         PaneOpsProgFrame p = new PaneOpsProgFrame(decoderFile, re,
                 title, "programmers" + File.separator + programmerFilename + ".xml",
                 _memo.getProgrammerManager().getAddressedProgrammer(addr));
@@ -460,7 +456,6 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                     
                     _discoverLocoAddress = _requestThrottleAddress;
                     
-//                    _discoverThrottleID = msg.getElement(12)*128 + msg.getElement(11);
                     _discoverThrottle_DeviceID = msg.getElement(12)*256 + msg.getElement(11);
                     
                     _tc.sendLocoNetMessage(LnSv2MessageContents.createSvDiscoverQueryMessage());
@@ -551,10 +546,10 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     /**
      * Dispatch the current address for use by other throttles
      */
-    public void dispatchAddress() {
+    private void dispatchAddress() {
         final ThrottleListener listener = this;
         if (_throttle != null) {
-            int usageCount  = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
+            int usageCount = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
             
             if ( usageCount != 0 ) {
                 ThreadingUtil.runOnGUIEventually(this::releaseAddress);
@@ -568,7 +563,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     /**
      * Release the current address.
      */
-    public void releaseAddress() {
+    private void releaseAddress() {
         InstanceManager.getDefault(ThrottleManager.class).releaseThrottle(_throttle, this);
     }
     
