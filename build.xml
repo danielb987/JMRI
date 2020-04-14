@@ -761,7 +761,7 @@
             <jvmarg value="-Xmx1536m"/>
 	    <jvmarg line="${test-single.jvmargs}"/>
         </java>    
-	<fail>
+        <fail>
             <condition>
                 <istrue value="${test.failed}" />
             </condition>
