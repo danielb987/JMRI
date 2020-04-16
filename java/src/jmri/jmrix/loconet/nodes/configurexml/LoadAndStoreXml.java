@@ -2,7 +2,6 @@ package jmri.jmrix.loconet.nodes.configurexml;
 
 import java.util.List;
 import jmri.jmrix.PortAdapter;
-import jmri.jmrix.SystemConnectionMemo;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.nodes.LnNode;
@@ -18,8 +17,8 @@ public class LoadAndStoreXml {
     private final LnTrafficController _tc;
     
     
-    public LoadAndStoreXml(SystemConnectionMemo memo) {
-        _tc = ((LocoNetSystemConnectionMemo)memo).getLnTrafficController();
+    public LoadAndStoreXml(LocoNetSystemConnectionMemo memo) {
+        _tc = memo.getLnTrafficController();
     }
     
     public LoadAndStoreXml(PortAdapter adapter) {

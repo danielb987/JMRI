@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import jmri.jmrix.SystemConnectionMemo;
 import jmri.jmrix.configurexml.AbstractSerialConnectionConfigXml;
+import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.locormi.ConnectionConfig;
 import jmri.jmrix.loconet.nodes.configurexml.LoadAndStoreXml;
 import org.jdom2.Element;
@@ -55,7 +56,8 @@ public class ConnectionConfigXml extends AbstractSerialConnectionConfigXml {
 
         // Store LnNodes
         if (c.getLnMessageClient() != null) {
-            new LoadAndStoreXml(c.getLnMessageClient().getAdapterMemo()).store(e);
+            new LoadAndStoreXml((LocoNetSystemConnectionMemo) c.getLnMessageClient().getAdapterMemo())
+                    .store(e);
         }
 
         return e;
