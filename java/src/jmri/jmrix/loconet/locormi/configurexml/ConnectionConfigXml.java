@@ -2,7 +2,6 @@ package jmri.jmrix.loconet.locormi.configurexml;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import jmri.jmrix.SystemConnectionMemo;
 import jmri.jmrix.configurexml.AbstractSerialConnectionConfigXml;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.locormi.ConnectionConfig;
