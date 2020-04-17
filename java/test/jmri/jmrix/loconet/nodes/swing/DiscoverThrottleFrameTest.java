@@ -6,9 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import jmri.DccThrottle;
 import jmri.InstanceManager;
-import jmri.LocoAddress;
 import jmri.ThrottleListener;
 import jmri.ThrottleManager;
 import jmri.jmrit.decoderdefn.DecoderFile;
@@ -23,11 +21,13 @@ import jmri.jmrix.loconet.LocoNetMessage;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.JUnitUtil;
 import jmri.util.ThreadingUtil;
+import jmri.util.junit.rules.RetryRule;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JComboBoxOperator;
@@ -45,6 +45,12 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Bergqvist 2020
  */
 public class DiscoverThrottleFrameTest {
+
+    // Sometimes, the throttle request returns a throttle which is already
+    // in use. When this happens, JMRI sends a different reply than what the
+    // test expects, and the test fails.
+    @Rule
+    public RetryRule retryRule = new RetryRule(2); // allow 2 retries
 
     private static final ResourceBundle _rbx =
             ResourceBundle.getBundle("jmri.jmrit.throttle.ThrottleBundle");
