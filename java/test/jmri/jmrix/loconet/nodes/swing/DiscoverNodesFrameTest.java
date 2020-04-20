@@ -50,6 +50,7 @@ public class DiscoverNodesFrameTest {
 
     @After
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

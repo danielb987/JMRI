@@ -51,6 +51,7 @@ public class NodeConfigManagerFrameTest {
 
     @After
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 
