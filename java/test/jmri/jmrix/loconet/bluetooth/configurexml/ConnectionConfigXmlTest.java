@@ -27,6 +27,7 @@ public class ConnectionConfigXmlTest extends jmri.jmrix.loconet.configurexml.Loc
     @After
     @Override
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
         xmlAdapter = null;
         cc = null;
