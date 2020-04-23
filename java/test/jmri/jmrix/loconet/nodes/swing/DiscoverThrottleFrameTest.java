@@ -21,13 +21,11 @@ import jmri.jmrix.loconet.LocoNetMessage;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.JUnitUtil;
 import jmri.util.ThreadingUtil;
-import jmri.util.junit.rules.RetryRule;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JComboBoxOperator;
@@ -46,12 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DiscoverThrottleFrameTest {
 
-    // Sometimes, the throttle request returns a throttle which is already
-    // in use. When this happens, JMRI sends a different reply than what the
-    // test expects, and the test fails.
-    @Rule
-    public RetryRule retryRule = new RetryRule(2); // allow 2 retries
-
     private static final ResourceBundle _rbx =
             ResourceBundle.getBundle("jmri.jmrit.throttle.ThrottleBundle");
     
@@ -68,6 +60,9 @@ public class DiscoverThrottleFrameTest {
     }
     
     private void connectThrottle() {
+        int usageCount = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(5502);
+        Assert.assertEquals("Throttle usage count is zero", 0, usageCount);
+        
         // Request slot for loco address 5502
         LocoNetMessage m = new LocoNetMessage(new int[]{0xBF, 0x2A, 0x7E, 0x14});
         _lnis.sendTestMessage(m);
@@ -515,6 +510,7 @@ public class DiscoverThrottleFrameTest {
 
     @After
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
     
