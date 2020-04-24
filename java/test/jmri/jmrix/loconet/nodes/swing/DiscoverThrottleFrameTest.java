@@ -2,10 +2,7 @@ package jmri.jmrix.loconet.nodes.swing;
 
 import java.awt.GraphicsEnvironment;
 import java.util.ResourceBundle;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
+import javax.swing.*;
 import jmri.InstanceManager;
 import jmri.ThrottleListener;
 import jmri.ThrottleManager;
@@ -13,26 +10,12 @@ import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.symbolicprog.ProgDefault;
-import jmri.jmrix.loconet.LnCommandStationType;
-import jmri.jmrix.loconet.LnThrottleManager;
-import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
-import jmri.jmrix.loconet.LocoNetInterfaceScaffold;
-import jmri.jmrix.loconet.LocoNetMessage;
+import jmri.jmrix.loconet.*;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.JUnitUtil;
 import jmri.util.ThreadingUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.netbeans.jemmy.operators.JButtonOperator;
-import org.netbeans.jemmy.operators.JComboBoxOperator;
-import org.netbeans.jemmy.operators.JDialogOperator;
-import org.netbeans.jemmy.operators.JFrameOperator;
-import org.netbeans.jemmy.operators.JLabelOperator;
-import org.netbeans.jemmy.operators.JTextFieldOperator;
+import org.junit.*;
+import org.netbeans.jemmy.operators.*;
 import org.netbeans.jemmy.util.NameComponentChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +43,6 @@ public class DiscoverThrottleFrameTest {
     }
     
     private void connectThrottle() {
-        int usageCount = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(5502);
-        Assert.assertEquals("Throttle usage count is zero", 0, usageCount);
         
         // Request slot for loco address 5502
         LocoNetMessage m = new LocoNetMessage(new int[]{0xBF, 0x2A, 0x7E, 0x14});
@@ -352,7 +333,6 @@ public class DiscoverThrottleFrameTest {
         // Clear LocoNet outbound list
         _lnis.outbound.clear();
         
-        
         // Find the discover throttle frame
         JFrame f1 = JFrameOperator.waitJFrame(Bundle.getMessage("DiscoverThrottleWindowTitle"), true, true);
         JFrameOperator jf = new JFrameOperator(f1);
@@ -366,10 +346,14 @@ public class DiscoverThrottleFrameTest {
         // And press Dispatch
         jmri.util.swing.JemmyUtil.pressButton(jf,Bundle.getMessage("ButtonDispatch"));
         
+        // Step 1: Request loco
+        
+        // When the button "Dispatch" is pressed, JMRI first request that loco
         // Request slot for loco address 5502
         int[] data = {0xBF, 0x2A, 0x7E, 0x14};
         expectReply(data);
         
+        // The command station reponds to that throttle request
         // Report of slot 16 information:
 	// Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
 	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
@@ -377,10 +361,12 @@ public class DiscoverThrottleFrameTest {
         LocoNetMessage m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x23, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x05});
         _lnis.sendTestMessage(m);
         
+        // JMRI sets the status of the slot to be IN_USE
         // Set status of slot 16 to IN_USE
         data = new int[]{0xBA, 0x10, 0x10, 0x45};
         expectReply(data);
         
+        // The command station responds with updated status of the slot
         // Report of slot 16 information:
 	// Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Forward at speed 0,
 	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
@@ -388,6 +374,9 @@ public class DiscoverThrottleFrameTest {
         m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x15});
         _lnis.sendTestMessage(m);
         
+        // Step 2: Dispatch the loco
+        
+        // JMRI now dispatches the loco
         // Write slot 16 with status value 19 (0x13) - Loco is Not Consisted, Common and operating in 128 speed step mode
         data = new int[]{0xB5, 0x10, 0x13, 0x49};
         expectReply(data);
@@ -396,6 +385,7 @@ public class DiscoverThrottleFrameTest {
         data = new int[]{0xBA, 0x10, 0x00, 0x55};
         expectReply(data);
         
+        // The command station responds with updated status of the slot
         // Report of slot 16 information:
 	// Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
 	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
