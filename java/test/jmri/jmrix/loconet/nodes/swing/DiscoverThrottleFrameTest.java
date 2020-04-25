@@ -2,6 +2,7 @@ package jmri.jmrix.loconet.nodes.swing;
 
 import java.awt.GraphicsEnvironment;
 import java.util.ResourceBundle;
+import java.util.Vector;
 import javax.swing.*;
 import jmri.InstanceManager;
 import jmri.ThrottleListener;
@@ -14,9 +15,16 @@ import jmri.jmrix.loconet.*;
 import jmri.jmrix.loconet.nodes.LnNodeManager;
 import jmri.util.JUnitUtil;
 import jmri.util.ThreadingUtil;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Assume;
+//import org.junit.*;
 import org.netbeans.jemmy.operators.*;
 import org.netbeans.jemmy.util.NameComponentChooser;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +108,7 @@ public class DiscoverThrottleFrameTest {
         Assert.assertEquals("throttleId_Hex", "0x107A", throttleId_Hex.getText());
     }
     
+    @Disabled
     @Test
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -110,6 +119,7 @@ public class DiscoverThrottleFrameTest {
         });
     }
     
+    @Disabled
     @Test
     public void testDiscoverThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -196,6 +206,7 @@ public class DiscoverThrottleFrameTest {
         }
     }
     
+    @Disabled
     @Test
     public void testOpenProgrammerNewNode() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -246,6 +257,7 @@ public class DiscoverThrottleFrameTest {
         JUnitUtil.dispose(f1);
     }
     
+    @Disabled
     @Test
     public void testOpenProgrammerExistingNode() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -300,6 +312,32 @@ public class DiscoverThrottleFrameTest {
     
     private void expectReply(int[] data) {
         Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() >= 1;}));
+        
+        
+        if (data.length != _lnis.outbound.get(0).getNumDataElements()) {
+            Vector<LocoNetMessage> outbound = new Vector<>(_lnis.outbound);
+            log.error(String.format("LocoNet expectReply: "));
+//            System.out.format("LocoNet expectReply: ");
+            for (int i=0; i < data.length; i++) {     // Don't check the last byte since the checksum is not calculated yet.
+                log.error(String.format("%2X ", data[i]));
+//                System.out.format("%2X ", data[i]);
+            }
+            log.error(String.format("%n"));
+//            System.out.format("%n");
+
+            for (LocoNetMessage l : outbound) {
+                log.error(String.format("LocoNet: %s%n", l.toString()));
+                log.error(String.format("LocoNet: %s", l.toMonitorString()));
+//                System.out.format("LocoNet: %s%n", l.toString());
+//                System.out.format("LocoNet: %s", l.toMonitorString());
+            }
+            log.error(String.format("LocoNet expectReply done.%n"));
+            log.error(String.format("%n"));
+//            System.out.format("LocoNet expectReply done.%n");
+//            System.out.format("%n");
+        }
+        
+        
 /*        
         System.out.format("LocoNet expectReply: ");
         for (int i=0; i < data.length; i++) {     // Don't check the last byte since the checksum is not calculated yet.
@@ -323,6 +361,7 @@ public class DiscoverThrottleFrameTest {
         _lnis.outbound.remove(0);
     }
     
+    @RepeatedTest(20)
     @Test
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -402,6 +441,7 @@ public class DiscoverThrottleFrameTest {
         JUnitUtil.dispose(f1);
     }
     
+    @Disabled
     @Test
     @SuppressWarnings("ResultOfObjectAllocationIgnored")    // We use JLabelOperator to verify correct value of message box
     public void testDispatchThrottleBadAddress() {
@@ -437,6 +477,7 @@ public class DiscoverThrottleFrameTest {
         JUnitUtil.dispose(f1);
     }
     
+    @Disabled
     @Test
     @SuppressWarnings("ResultOfObjectAllocationIgnored")    // We use JLabelOperator to verify correct value of message box
     public void testDispatchThrottleAddressInUse() {
@@ -476,7 +517,7 @@ public class DiscoverThrottleFrameTest {
     }
     
     // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
@@ -498,7 +539,7 @@ public class DiscoverThrottleFrameTest {
         
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
