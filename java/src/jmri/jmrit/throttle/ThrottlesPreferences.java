@@ -138,7 +138,7 @@ public class ThrottlesPreferences {
         setWindowDimension(tp.getWindowDimension());
         setUseExThrottle(tp.isUsingExThrottle());
         setUsingToolBar(tp.isUsingToolBar());
-        setUsingFunctionIcon(tp._useFunctionIcon);
+        setUsingFunctionIcon(tp.isUsingFunctionIcon());
         setResizeWindow(tp.isResizingWindow());
         setSaveThrottleOnLayoutSave(tp.isSavingThrottleOnLayoutSave());
         setUseRosterImage(tp.isUsingRosterImage());
@@ -243,11 +243,6 @@ public class ThrottlesPreferences {
         this.dirty = true;
     }
 
-    /**
-     * Check if function icons are in use.
-     * 
-     * @return user preference to use function icons.
-     */
     public boolean isUsingFunctionIcon() {
         return _useFunctionIcon;
     }
@@ -255,16 +250,6 @@ public class ThrottlesPreferences {
     public void setUsingFunctionIcon(boolean useFunctionIcon) {
         _useFunctionIcon = useFunctionIcon;
         this.dirty = true;
-    }
-
-    /**
-     * Retrun true if throttle icons should be shown; this returns
-     * isUsingExThrottle() &quot;&quot; isUsingFunctionIcon()
-     * 
-     * @return true if throttle icons should be used.
-     */
-    public boolean isUsingIcons() {
-        return (isUsingExThrottle() && isUsingFunctionIcon());
     }
 
     public boolean isResizingWindow() {
