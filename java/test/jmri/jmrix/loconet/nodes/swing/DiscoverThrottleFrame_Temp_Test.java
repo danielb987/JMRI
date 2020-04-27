@@ -1,7 +1,6 @@
 package jmri.jmrix.loconet.nodes.swing;
 
 import java.awt.GraphicsEnvironment;
-import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.swing.*;
 import jmri.InstanceManager;
@@ -43,6 +42,13 @@ public class DiscoverThrottleFrame_Temp_Test {
         Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() >= 1;}));
         
         if (data.length != _lnis.outbound.get(0).getNumDataElements()) {
+            log.error(String.format("Count: %d: num bytes sent is wrong: expected: %d, actual: %d", count, data.length, _lnis.outbound.get(0).getNumDataElements()));
+        }
+//        Assume.assumeTrue(data.length == _lnis.outbound.get(0).getNumDataElements());
+        
+        Assert.assertEquals("num bytes sent is correct", data.length, _lnis.outbound.get(0).getNumDataElements());
+        
+        if (data.length != _lnis.outbound.get(0).getNumDataElements()) {
             Vector<LocoNetMessage> outbound = new Vector<>(_lnis.outbound);
             log.error(String.format("LocoNet expectReply: "));
             for (int i=0; i < data.length; i++) {     // Don't check the last byte since the checksum is not calculated yet.
@@ -67,6 +73,8 @@ public class DiscoverThrottleFrame_Temp_Test {
         _lnis.outbound.remove(0);
     }
     
+//    @RepeatedTest(1000)
+//    @RepeatedTest(100)
     @RepeatedTest(20)
 //    @RepeatedTest(2)
     @Test
@@ -151,6 +159,7 @@ public class DiscoverThrottleFrame_Temp_Test {
     // The minimal setup for log4J
     @BeforeEach
     public void setUp() {
+        count++;
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.initRosterConfigManager();
@@ -178,11 +187,11 @@ public class DiscoverThrottleFrame_Temp_Test {
         _lnis = null;
         _memo = null;
         _tm = null;
-        System.gc();
-        Thread.sleep(5000);
+//        System.gc();
+//        Thread.sleep(5000);
     }
     
-    
+    static int count = 0;
     private final static Logger log = LoggerFactory.getLogger(DiscoverThrottleFrame_Temp_Test.class);
 
 }

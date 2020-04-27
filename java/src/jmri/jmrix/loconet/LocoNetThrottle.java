@@ -41,6 +41,8 @@ public class LocoNetThrottle extends AbstractThrottle implements SlotListener {
     protected boolean isDisposing = false;
     // set isInitialized to false to enable setting the throttle ID.
     protected boolean isInitialized = false;
+    
+    private final Object lock = new Object();
 
     /**
      * Constructor
@@ -390,9 +392,11 @@ public class LocoNetThrottle extends AbstractThrottle implements SlotListener {
      */
     @Override
     protected void throttleDispose() {
-        if (isDisposing) return;
-        log.debug("throttleDispose - disposing of throttle (and setting slot = null)");
-        isDisposing = true;
+        synchronized(lock) {
+            if (isDisposing) return;
+            log.debug("throttleDispose - disposing of throttle (and setting slot = null)");
+            isDisposing = true;
+        }
 
         // Release throttle connections
         if (slot != null) {
@@ -418,7 +422,9 @@ public class LocoNetThrottle extends AbstractThrottle implements SlotListener {
             network = null;
 
             finishRecord();
-            isDisposing = false;
+            synchronized(lock) {
+                isDisposing = false;
+            }
         }
     }
 
@@ -478,6 +484,10 @@ public class LocoNetThrottle extends AbstractThrottle implements SlotListener {
     @SuppressFBWarnings(value = "FE_FLOATING_POINT_EQUALITY") // OK to compare floating point, notify on any change
     @Override
     public void notifyChangedSlot(LocoNetSlot pSlot) {
+        synchronized(lock) {
+            if (isDisposing) return;
+        }
+        
         if (slot != pSlot) {
             log.error("notified of change in different slot");
         }
