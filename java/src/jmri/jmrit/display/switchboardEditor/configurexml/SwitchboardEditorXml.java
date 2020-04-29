@@ -102,9 +102,9 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         int rangemin = 1;
         int rangemax = 32;
         int columns = 4;
-        String type = "T";
-        String connection = "I";
-        String shape = "key";
+        String type;
+        String connection;
+        String shape;
         String name;
 
         try {
@@ -136,7 +136,7 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         }
 
         // If available, override location and size with machine dependent values
-        if (!InstanceManager.getDefault(apps.gui.GuiLafPreferencesManager.class).isEditorUseOldLocSize()) {
+        if (!InstanceManager.getDefault(jmri.util.gui.GuiLafPreferencesManager.class).isEditorUseOldLocSize()) {
             jmri.UserPreferencesManager prefsMgr = InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class);
             if (prefsMgr != null) {
 

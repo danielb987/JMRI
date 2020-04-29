@@ -46,7 +46,6 @@ public class EditCircuitPathsTest {
         JUnitUtil.dispose(pFrame);
     }
 
-    // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
@@ -56,6 +55,7 @@ public class EditCircuitPathsTest {
 
     @After
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

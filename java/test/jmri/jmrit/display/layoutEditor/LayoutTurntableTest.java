@@ -2,6 +2,7 @@ package jmri.jmrit.display.layoutEditor;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.geom.Point2D;
+
 import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -12,7 +13,7 @@ import org.junit.Test;
 /**
  * Test simple functioning of LayoutTurntable
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
 public class LayoutTurntableTest {
 
@@ -56,6 +57,7 @@ public class LayoutTurntableTest {
         }
         lt = null;
         layoutEditor = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 }

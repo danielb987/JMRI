@@ -1,13 +1,14 @@
 package jmri.jmrit.display.layoutEditor;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
 import org.junit.*;
 
 /**
  * Test simple functioning of LayoutEditorVerticalToolBarPanel
  *
- * @author	George Warner Copyright (C) 2019
+ * @author George Warner Copyright (C) 2019
  */
 public class LayoutEditorVerticalToolBarPanelTest {
 
@@ -27,6 +28,7 @@ public class LayoutEditorVerticalToolBarPanelTest {
 
     @After
     public void tearDown() throws Exception {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
     // private final static Logger log = LoggerFactory.getLogger(LayoutEditorVerticalToolBarPanelTest.class);

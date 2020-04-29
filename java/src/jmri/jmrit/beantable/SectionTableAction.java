@@ -1074,10 +1074,13 @@ public class SectionTableAction extends AbstractTableAction<Section> {
      */
     private void deleteSectionPressed(String sName) {
         final Section s = jmri.InstanceManager.getDefault(jmri.SectionManager.class).getBySystemName(sName);
+        if (s == null){
+            throw new IllegalArgumentException("Not deleting Section :" + sName + ": , Not Found.");
+        }
         String fullName = s.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME);
         ArrayList<Transit> affectedTransits = jmri.InstanceManager.getDefault(jmri.TransitManager.class).getListUsingSection(s);
         final JDialog dialog = new JDialog();
-        String msg = "";
+        String msg;
         dialog.setTitle(Bundle.getMessage("WarningTitle"));
         dialog.setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         dialog.getContentPane().setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.Y_AXIS));
@@ -1161,7 +1164,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
         JMenuBar menuBar = f.getJMenuBar();
         int pos = menuBar.getMenuCount() -1; // count the number of menus to insert the TableMenu before 'Window' and 'Help'
         int offset = 1;
-        log.debug("setMenuBar number of menu items = " + pos);
+        log.debug("setMenuBar number of menu items = {}", pos);
         for (int i = 0; i <= pos; i++) {
             if (menuBar.getComponent(i) instanceof JMenu) {
                 if (((JMenu) menuBar.getComponent(i)).getText().equals(Bundle.getMessage("MenuHelp"))) {

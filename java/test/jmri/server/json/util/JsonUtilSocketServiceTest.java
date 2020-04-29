@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Locale;
+
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.server.json.JsonServerPreferences;
@@ -57,6 +58,7 @@ public class JsonUtilSocketServiceTest {
     @After
     public void tearDown() {
         JUnitUtil.resetWindows(false, false);
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

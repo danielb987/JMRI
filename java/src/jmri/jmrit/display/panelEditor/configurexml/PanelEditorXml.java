@@ -65,7 +65,7 @@ public class PanelEditorXml extends AbstractXmlAdapter {
         // include contents
         List<Positionable> contents = p.getContents();
         if (log.isDebugEnabled()) {
-            log.debug("N elements: " + contents.size());
+            log.debug("N elements: {}", contents.size());
         }
         for (Positionable sub : contents) {
             if (sub != null && sub.storeItem()) {
@@ -133,7 +133,7 @@ public class PanelEditorXml extends AbstractXmlAdapter {
         }
 
         // If available, override location and size with machine dependent values
-        if (!InstanceManager.getDefault(apps.gui.GuiLafPreferencesManager.class).isEditorUseOldLocSize()) {
+        if (!InstanceManager.getDefault(jmri.util.gui.GuiLafPreferencesManager.class).isEditorUseOldLocSize()) {
             jmri.UserPreferencesManager prefsMgr = InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class);
             if (prefsMgr != null) {
 
@@ -159,53 +159,14 @@ public class PanelEditorXml extends AbstractXmlAdapter {
 
         // Load editor option flags. This has to be done before the content
         // items are loaded, to preserve the individual item settings
-        boolean value = true;
-        if ((a = shared.getAttribute("editable")) != null && a.getValue().equals("no")) {
-            value = false;
-        }
-        panel.setAllEditable(value);
-
-        value = true;
-        if ((a = shared.getAttribute("positionable")) != null && a.getValue().equals("no")) {
-            value = false;
-        }
-        panel.setAllPositionable(value);
-
-        /*
-         value = false;
-         if ((a = element.getAttribute("showcoordinates"))!=null && a.getValue().equals("yes"))
-         value = true;
-         panel.setShowCoordinates(value);
-         */
-        value = true;
-        if ((a = shared.getAttribute("showtooltips")) != null && a.getValue().equals("no")) {
-            value = false;
-        }
-        panel.setAllShowToolTip(value);
-
-        value = true;
-        if ((a = shared.getAttribute("controlling")) != null && a.getValue().equals("no")) {
-            value = false;
-        }
-        panel.setAllControlling(value);
-
-        value = false;
-        if ((a = shared.getAttribute("hide")) != null && a.getValue().equals("yes")) {
-            value = true;
-        }
-        panel.setShowHidden(value);
-
-        value = true;
-        if ((a = shared.getAttribute("panelmenu")) != null && a.getValue().equals("no")) {
-            value = false;
-        }
-        panel.setPanelMenuVisible(value);
-
-        String state = "both";
-        if ((a = shared.getAttribute("scrollable")) != null) {
-            state = a.getValue();
-        }
-        panel.setScroll(state);
+        panel.setAllEditable(!shared.getAttributeValue("editable","yes").equals("no"));
+        panel.setAllPositionable(!shared.getAttributeValue("positionable","yes").equals("no"));
+        //panel.setShowCoordinates(shared.getAttributeValue("showcoordinates","no").equals("yes"));
+        panel.setAllShowToolTip(!shared.getAttributeValue("showtooltips","yes").equals("no"));
+        panel.setAllControlling(!shared.getAttributeValue("controlling", "yes").equals("no"));
+        panel.setShowHidden(shared.getAttributeValue("hide","no").equals("yes"));
+        panel.setPanelMenuVisible(!shared.getAttributeValue("panelmenu","yes").equals("no"));
+        panel.setScroll(shared.getAttributeValue("scrollable","both"));
 
         // set color if needed
         try {

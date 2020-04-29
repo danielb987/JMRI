@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Default implementation of a SignalMastLogicManager.
  * @see jmri.SignalMastLogicManager
  *
- * @author	Kevin Dickerson Copyright (C) 2011
+ * @author Kevin Dickerson Copyright (C) 2011
  */
 public class DefaultSignalMastLogicManager
         extends AbstractManager<SignalMastLogic>
@@ -213,7 +213,7 @@ public class DefaultSignalMastLogicManager
             try {
                 sml.useLayoutEditor(false, mast);
             } catch (JmriException e) {
-                log.error("Error occurred while trying to disable layout editor use " + e);
+                log.error("Error occurred while trying to disable layout editor use {}", e);
             }
         }
     }
@@ -396,8 +396,9 @@ public class DefaultSignalMastLogicManager
             LayoutBlock faceLBlock = sml.getFacingBlock();
             if (faceLBlock != null) {
                 boolean sourceIntermediate = false;
-                if (sml.getSourceMast().getProperty("intermediateSignal") != null) {
-                    sourceIntermediate = ((Boolean) sml.getSourceMast().getProperty("intermediateSignal"));
+                Object intermSigProp = sml.getSourceMast().getProperty("intermediateSignal"); 
+                if ( intermSigProp != null) {
+                    sourceIntermediate = ((Boolean) intermSigProp);
                 }
                 for (SignalMast destMast : sml.getDestinationList()) {
                     if (!sml.getAutoBlocksBetweenMasts(destMast).isEmpty()) {
@@ -426,8 +427,9 @@ public class DefaultSignalMastLogicManager
                         sml.setAssociatedSection(sec, destMast);
                         sec.setProperty("forwardMast", destMast.getDisplayName());
                         boolean destIntermediate = false;
-                        if (destMast.getProperty("intermediateSignal") != null) {
-                            destIntermediate = ((Boolean) destMast.getProperty("intermediateSignal"));
+                        Object destMastImSigProp = destMast.getProperty("intermediateSignal"); 
+                        if ( destMastImSigProp != null) {
+                            destIntermediate = ((Boolean) destMastImSigProp);
                         }
                         if (sourceIntermediate || destIntermediate) {
                             sec.setProperty("intermediateSection", true);
@@ -439,7 +441,7 @@ public class DefaultSignalMastLogicManager
                     }
                 }
             } else {
-                log.info("No facing block found " + sml.getSourceMast().getDisplayName());
+                log.info("No facing block found {}", sml.getSourceMast().getDisplayName());
             }
         }
     }

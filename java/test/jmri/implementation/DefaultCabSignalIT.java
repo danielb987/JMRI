@@ -22,7 +22,7 @@ import org.junit.*;
 /**
  * Integration Tests for DefaultCabSignal
  *
- * @author Paul Bender Copyright (C) 2019	
+ * @author Paul Bender Copyright (C) 2019
  */
 public class DefaultCabSignalIT {
 
@@ -167,7 +167,6 @@ public class DefaultCabSignalIT {
         }
     }
 
-    // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
@@ -188,9 +187,10 @@ public class DefaultCabSignalIT {
     public void tearDown() {
         cs.dispose(); // verify no exceptions
         cs = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultCabSignalTest.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultCabSignalIT.class);
 
 }
