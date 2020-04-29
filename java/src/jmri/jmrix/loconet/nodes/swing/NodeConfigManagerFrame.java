@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
  * Update are executed from the NodeTableManager. This class was derived from
  * the NodeConfig class.
  *
- * @author	Bob Jacobsen Copyright (C) 2004
- * @author	Dave Duchamp Copyright (C) 2004
- * @author	Chuck Catania Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018
- * @author      Daniel Bergqvist Copyright (C) 2020
+ * @author  Bob Jacobsen Copyright (C) 2004
+ * @author  Dave Duchamp Copyright (C) 2004
+ * @author  Chuck Catania Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018
+ * @author  Daniel Bergqvist Copyright (C) 2020
  */
 public class NodeConfigManagerFrame extends jmri.util.JmriJFrame {
 

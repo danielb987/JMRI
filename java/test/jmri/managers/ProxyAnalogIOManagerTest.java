@@ -18,8 +18,8 @@ import jmri.AnalogIOManager;
 /**
  * Test the ProxyAnalogIOManager.
  *
- * @author	Bob Jacobsen 2003, 2006, 2008
- * @author      Daniel Bergqvist Copyright (C) 2020
+ * @author  Bob Jacobsen 2003, 2006, 2008
+ * @author  Daniel Bergqvist Copyright (C) 2020
  */
 public class ProxyAnalogIOManagerTest {
 
@@ -27,7 +27,7 @@ public class ProxyAnalogIOManagerTest {
         return "JV" + i;
     }
 
-    protected AnalogIOManager l = null;	// holds objects under test
+    protected AnalogIOManager l = null;     // holds objects under test
 
     static protected boolean listenerResult = false;
 

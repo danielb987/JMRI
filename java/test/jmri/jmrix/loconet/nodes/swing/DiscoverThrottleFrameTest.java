@@ -57,16 +57,16 @@ public class DiscoverThrottleFrameTest {
         _lnis.sendTestMessage(m);
         
         // Report of slot 16 information
-	// Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Reverse at speed 0,
-	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=On
-	// Master supports LocoNet 1.1; Track Status: Off/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170).
+        // Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Reverse at speed 0,
+        // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=On
+        // Master supports LocoNet 1.1; Track Status: Off/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170).
         m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x20, 0x06, 0x00, 0x2A, 0x08, 0x7A, 0x10, 0x25});
         _lnis.sendTestMessage(m);
         
         // Write slot 16 information
-	// Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Reverse at speed 0,
-	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=On
-	// Master supports LocoNet 1.1; Track Status: Off/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170).
+        // Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Reverse at speed 0,
+        // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=On
+        // Master supports LocoNet 1.1; Track Status: Off/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170).
         m = new LocoNetMessage(new int[]{0xEF, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x20, 0x06, 0x00, 0x2A, 0x08, 0x7A, 0x10, 0x2D});
         _lnis.sendTestMessage(m);
         
@@ -394,9 +394,9 @@ public class DiscoverThrottleFrameTest {
         
         // The command station reponds to that throttle request
         // Report of slot 16 information:
-	// Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
-	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
-	// Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
+        // Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
+        // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+        // Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
         LocoNetMessage m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x23, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x05});
         _lnis.sendTestMessage(m);
         
@@ -407,9 +407,9 @@ public class DiscoverThrottleFrameTest {
         
         // The command station responds with updated status of the slot
         // Report of slot 16 information:
-	// Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Forward at speed 0,
-	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
-	// Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
+        // Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Forward at speed 0,
+        // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+        // Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
         m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x15});
         _lnis.sendTestMessage(m);
         
@@ -426,9 +426,9 @@ public class DiscoverThrottleFrameTest {
         
         // The command station responds with updated status of the slot
         // Report of slot 16 information:
-	// Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
-	// F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
-	// Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170)
+        // Loco 5502 is Not Consisted, Idle, operating in 128 SS mode, and is moving Forward at speed 0,
+        // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+        // Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x10 0x7A (2170)
         m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x23, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x7A, 0x10, 0x1C});
         _lnis.sendTestMessage(m);
         

@@ -8,9 +8,9 @@ import jmri.AnalogIOManager;
  * Implementation of a AnalogIOManager that can serve as a proxy for multiple
  * system-specific implementations.
  *
- * @author	Bob Jacobsen Copyright (C) 2010, 2018
- * @author	Dave Duchamp Copyright (C) 2004
- * @author	Daniel Bergqvist Copyright (C) 2020
+ * @author  Bob Jacobsen Copyright (C) 2010, 2018
+ * @author  Dave Duchamp Copyright (C) 2004
+ * @author  Daniel Bergqvist Copyright (C) 2020
  */
 public class ProxyAnalogIOManager extends AbstractProxyManager<AnalogIO>
         implements AnalogIOManager {

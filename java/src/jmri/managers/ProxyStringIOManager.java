@@ -8,9 +8,9 @@ import jmri.StringIOManager;
  * Implementation of a StringIOManager that can serve as a proxy for multiple
  * system-specific implementations.
  *
- * @author	Bob Jacobsen Copyright (C) 2010, 2018
- * @author	Dave Duchamp Copyright (C) 2004
- * @author	Daniel Bergqvist Copyright (C) 2020
+ * @author  Bob Jacobsen Copyright (C) 2010, 2018
+ * @author  Dave Duchamp Copyright (C) 2004
+ * @author  Daniel Bergqvist Copyright (C) 2020
  */
 public class ProxyStringIOManager extends AbstractProxyManager<StringIO>
         implements StringIOManager {

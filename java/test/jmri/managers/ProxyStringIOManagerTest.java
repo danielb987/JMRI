@@ -19,8 +19,8 @@ import jmri.StringIOManager;
 /**
  * Test the ProxyStringIOManager.
  *
- * @author	Bob Jacobsen 2003, 2006, 2008
- * @author      Daniel Bergqvist Copyright (C) 2020
+ * @author  Bob Jacobsen 2003, 2006, 2008
+ * @author  Daniel Bergqvist Copyright (C) 2020
  */
 public class ProxyStringIOManagerTest {
 
@@ -28,7 +28,7 @@ public class ProxyStringIOManagerTest {
         return "JC" + i;
     }
 
-    protected StringIOManager l = null;	// holds objects under test
+    protected StringIOManager l = null;     // holds objects under test
 
     static protected boolean listenerResult = false;
 
