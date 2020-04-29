@@ -58,9 +58,9 @@ public class LnStreamConnectionConfigXml extends AbstractStreamConnectionConfigX
     
     @Override
     protected void register() {
-	if(adapter!=null) {
-	   return; // already registered.
-	}
+        if (adapter != null) {
+            return; // already registered.
+        }
         this.register(new LnStreamConnectionConfig(adapter));
     }
 
