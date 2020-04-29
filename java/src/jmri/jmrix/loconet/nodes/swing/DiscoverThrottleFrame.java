@@ -556,7 +556,10 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                 JOptionPane.showMessageDialog(this, Bundle.getMessage("CannotDispatch", usageCount));
                 return;
             }
-            InstanceManager.getDefault(ThrottleManager.class).dispatchThrottle(_throttle, listener);
+            jmri.util.ThreadingUtil.runOnGUIDelayed(() -> {
+                InstanceManager.getDefault(ThrottleManager.class).dispatchThrottle(_throttle, listener);
+            }, 100);
+//            InstanceManager.getDefault(ThrottleManager.class).dispatchThrottle(_throttle, listener);
         }
     }
     

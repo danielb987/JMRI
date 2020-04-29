@@ -46,6 +46,7 @@ public class DiscoverThrottleFrame_Temp_Test {
         }
 //        Assume.assumeTrue(data.length == _lnis.outbound.get(0).getNumDataElements());
         
+//        Assert.assertEquals("Random: "+Long.toString(Math.round(Math.random()*100))+",  num bytes sent is correct. Count: "+Integer.toString(count), data.length, _lnis.outbound.get(0).getNumDataElements());
         Assert.assertEquals("num bytes sent is correct", data.length, _lnis.outbound.get(0).getNumDataElements());
         
         if (data.length != _lnis.outbound.get(0).getNumDataElements()) {
@@ -128,6 +129,17 @@ public class DiscoverThrottleFrame_Temp_Test {
         m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x15});
         _lnis.sendTestMessage(m);
         
+        Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() >= 1;}));
+        
+//        if (1==0 && _lnis.outbound.get(0).getOpCode() == 0xEF) {
+            // Write slot 16 information:
+            // Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Forward at speed 0,
+            // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+            // Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
+            data = new int[]{0xEF, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x1D};
+            expectReply(data);
+//        }
+        
         // Step 2: Dispatch the loco
         
         // JMRI now dispatches the loco
@@ -147,6 +159,17 @@ public class DiscoverThrottleFrame_Temp_Test {
         m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x10, 0x23, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x7A, 0x10, 0x1C});
         _lnis.sendTestMessage(m);
         
+        Assert.assertTrue("reply not received", JUnitUtil.waitFor(()->{return _lnis.outbound.size() >= 1;}));
+        
+/*        if (1==0 && _lnis.outbound.get(0).getOpCode() == 0xEF) {
+            // Write slot 16 information:
+            // Loco 5502 is Not Consisted, In-Use, operating in 128 SS mode, and is moving Forward at speed 0,
+            // F0=Off, F1=Off, F2=Off, F3=Off, F4=Off, F5=Off, F6=Off, F7=Off, F8=Off
+            // Master supports LocoNet 1.1; Track Status: On/Running; Programming Track Status: Available; STAT2=0x00, ThrottleID=0x02 0x71 (369).
+            data = new int[]{0xEF, 0x0E, 0x10, 0x33, 0x7E, 0x00, 0x00, 0x07, 0x00, 0x2A, 0x00, 0x71, 0x02, 0x1D};
+            expectReply(data);
+        }
+*/        
         // Write slot 16 with status value 19 (0x13) - Loco is Not Consisted, Common and operating in 128 speed step mode
         data = new int[]{0xB5, 0x10, 0x13, 0x49};
         expectReply(data);
