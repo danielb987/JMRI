@@ -20,8 +20,8 @@ import org.netbeans.jemmy.operators.*;
 import org.netbeans.jemmy.util.NameComponentChooser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
+//import org.junit.jupiter.api.Disabled;
+//import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -329,8 +329,7 @@ public class DiscoverThrottleFrameTest {
         _lnis.outbound.remove(0);
     }
     
-//    @RepeatedTest(50)
-    @RepeatedTest(20)
+//    @RepeatedTest(20)
     @Test
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
