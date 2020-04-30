@@ -329,8 +329,8 @@ public class DiscoverThrottleFrameTest {
         _lnis.outbound.remove(0);
     }
     
-    @RepeatedTest(50)
-//    @RepeatedTest(20)
+//    @RepeatedTest(50)
+    @RepeatedTest(20)
     @Test
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
