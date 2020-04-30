@@ -536,7 +536,10 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         _currentDispatchAddress = t.getLocoAddress().getNumber();
         
         if (InstanceManager.getDefault(ThrottleManager.class).hasDispatchFunction()) {
-            ThreadingUtil.runOnGUIEventually(this::dispatchAddress);
+            // Sometimes JMRI updates the slot with the JMRI throttle ID.
+            // We need to wait some time to ensure that that slot update comes
+            // before we dispatches the throttle.
+            ThreadingUtil.runOnGUIDelayed(this::dispatchAddress, 100);
         } else {
             ThreadingUtil.runOnGUIEventually(this::releaseAddress);
             JOptionPane.showMessageDialog(this, Bundle.getMessage("NoDispatchFunction"));
@@ -549,13 +552,15 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
     private void dispatchAddress() {
         final ThrottleListener listener = this;
         if (_throttle != null) {
-            int usageCount = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(_throttle.getLocoAddress()) - 1;
+            int usageCount = InstanceManager.getDefault(ThrottleManager.class).getThrottleUsageCount(_throttle.getLocoAddress());
             
-            if ( usageCount != 0 ) {
+            if ( usageCount != 1 ) {
+                log.error("Cannot dispatch throttle. Usage count should be 1 but is {}", usageCount);
                 ThreadingUtil.runOnGUIEventually(this::releaseAddress);
                 JOptionPane.showMessageDialog(this, Bundle.getMessage("CannotDispatch", usageCount));
                 return;
             }
+            
             InstanceManager.getDefault(ThrottleManager.class).dispatchThrottle(_throttle, listener);
         }
     }
