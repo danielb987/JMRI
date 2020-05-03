@@ -514,7 +514,8 @@ public class DiscoverThrottleFrameTest {
         _memo.getPowerManager().dispose(); // get rid of power manager to prevent it from sending slot 0 read message
         
         // Make sure we have a LnNodeManager
-        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
+        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_lnis));
+//        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @AfterEach

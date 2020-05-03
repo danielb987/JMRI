@@ -35,12 +35,12 @@ public class LnNodeManager {
     public static final String PUBLIC_DOMAIN_DIY_MANAGER = "Public-domain and DIY";
     
     
-    private final LocoNetSystemConnectionMemo _memo;
+//    private final LocoNetSystemConnectionMemo _memo;
     private final LocoNetInterface _throttledController;
     
     
-    public LnNodeManager(LocoNetSystemConnectionMemo memo, LocoNetInterface throttledController) {
-        _memo = memo;
+//    public LnNodeManager(LocoNetSystemConnectionMemo memo, LocoNetInterface throttledController) {
+    public LnNodeManager(LocoNetInterface throttledController) {
         _throttledController = throttledController;
         
         // There must be one LnNodeManager for each LocoNet connection.

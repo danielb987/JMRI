@@ -45,7 +45,8 @@ public class LnStringIOTest {
         JUnitUtil.initLogixManager();
         
         // Make sure we have a LnNodeManager
-        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
+        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_lnis));
+//        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @After
