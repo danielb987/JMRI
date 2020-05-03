@@ -380,7 +380,7 @@
     <xs:attribute name="tooltip" type="xs:string"/>
   </xs:complexType>
 
-  <xs:element name="paneAAAA" type="PaneType">
+  <xs:element name="pane" type="PaneType">
     <xs:annotation><xs:documentation>
       Can appear as top-level element in xml/programmer/parts files.
     </xs:documentation></xs:annotation>
