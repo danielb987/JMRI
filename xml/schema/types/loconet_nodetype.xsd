@@ -51,6 +51,7 @@
 
   <xs:complexType name="LocoNetNodeType">
     <xs:choice maxOccurs="unbounded">
+<!--
       <xs:element name="name" type="PreservedTextType" minOccurs="0">
         <xs:annotation><xs:documentation>
         The name element is allowed to appear in two places, but the preferred one
@@ -94,8 +95,9 @@
         <xs:element name="grid" type="GridType" minOccurs="1" maxOccurs="unbounded"/>
         <xs:element name="group" type="PaneGroupType" minOccurs="0" maxOccurs="unbounded" />
       </xs:choice>
-            
+-->
     </xs:choice>
+<!--
     <xs:attribute name="tooltip" type="xs:string"/>
     <xs:attribute name="nameFmt" type="labelItemType" default="label">
       <xs:annotation><xs:documentation>
@@ -105,8 +107,9 @@
     </xs:attribute>
     <xs:attribute name="include" type="xs:string" default=""/>
     <xs:attribute name="exclude" type="xs:string" default=""/>
+-->
   </xs:complexType>
-  
+<!--  
   <xs:simpleType name="labelItemType">
     <xs:annotation>
         <xs:documentation>
@@ -316,7 +319,7 @@
   </xs:complexType>
   
   <xs:complexType name="LabelType">
-    <xs:sequence minOccurs="0" maxOccurs="unbounded"><!-- allows any order of elements -->
+    <xs:sequence minOccurs="0" maxOccurs="unbounded"><!.-- allows any order of elements --.>
       <xs:element name="qualifier" type="QualifierType" minOccurs="0" maxOccurs="unbounded" >
         <xs:annotation><xs:documentation>
         Qualifies whether this label will appear in the interface, depending
@@ -380,7 +383,7 @@
     </xs:attribute>
     <xs:attribute name="tooltip" type="xs:string"/>
   </xs:complexType>
-
+-->
   <xs:element name="loconet-node" type="LocoNetNodeType">
     <xs:annotation><xs:documentation>
       Can appear as top-level element in xml/programmer/parts files.
