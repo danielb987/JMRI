@@ -93,6 +93,8 @@
 -->
     </variables>
   </decoder>
+  <pane>
+  </pane>
   <loconet-node>
     <stringios>
       <stringio>
