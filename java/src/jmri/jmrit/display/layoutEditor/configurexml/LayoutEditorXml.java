@@ -133,7 +133,7 @@ public class LayoutEditorXml extends AbstractXmlAdapter {
                 panel.addContent(e);
             }
         } catch (Exception e) {
-            log.error("Error storing contents element: {}", e);
+            log.error("Error storing contents element: ", e);
         }
 
         // note: moving zoom attribute into per-window user preference
@@ -150,7 +150,7 @@ public class LayoutEditorXml extends AbstractXmlAdapter {
                         panel.addContent(e);
                     }
                 } catch (Exception e) {
-                    log.error("Error storing contents element: {}", e);
+                    log.error("Error storing contents element: ", e);
                 }
             } else {
                 log.warn("Null entry found when storing panel contents.");
@@ -211,7 +211,7 @@ public class LayoutEditorXml extends AbstractXmlAdapter {
                     panel.addContent(e);
                 }
             } catch (Exception e) {
-                log.error("Error storing layoutturnout element: {}", e);
+                log.error("Error storing layoutturnout element: ", e);
             }
         }
 
@@ -223,7 +223,7 @@ public class LayoutEditorXml extends AbstractXmlAdapter {
                     panel.addContent(e);
                 }
             } catch (Exception e) {
-                log.error("Error storing layout shape element: {}", e);
+                log.error("Error storing layout shape element: ", e);
             }
         }
 
@@ -748,5 +748,5 @@ public class LayoutEditorXml extends AbstractXmlAdapter {
     public int loadOrder() {
         return jmri.Manager.PANELFILES;
     }
-    private final static Logger log = LoggerFactory.getLogger(LayoutEditorXml.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LayoutEditorXml.class);
 }

@@ -689,7 +689,7 @@ public class ConnectivityUtil {
                     txt.append("???");
                 }
             }
-            log.error(txt.toString());
+            log.error("Turnouts for Block {}", txt.toString());
         }
         return result;
     }
@@ -2819,5 +2819,5 @@ public class ConnectivityUtil {
     }
 
     // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(ConnectivityUtil.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConnectivityUtil.class);
 }
