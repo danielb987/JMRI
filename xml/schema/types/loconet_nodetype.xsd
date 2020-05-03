@@ -49,7 +49,7 @@
     </xs:appinfo>
 </xs:annotation>
 
-  <xs:complexType name="PaneType">
+  <xs:complexType name="LocoNetNodeType">
     <xs:choice maxOccurs="unbounded">
       <xs:element name="name" type="PreservedTextType" minOccurs="0">
         <xs:annotation><xs:documentation>
@@ -381,7 +381,7 @@
     <xs:attribute name="tooltip" type="xs:string"/>
   </xs:complexType>
 
-  <xs:element name="pane" type="PaneType">
+  <xs:element name="loconet-node" type="LocoNetNodeType">
     <xs:annotation><xs:documentation>
       Can appear as top-level element in xml/programmer/parts files.
     </xs:documentation></xs:annotation>
