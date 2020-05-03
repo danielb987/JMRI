@@ -53,7 +53,7 @@
     <xs:sequence>
       <xs:element name="stringios" minOccurs="0" maxOccurs="1">
       </xs:element>
-      <xs:element name="analogios" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="analogios" minOccurs="0" maxOccurs="1">
       </xs:element>
     </xs:sequence>
 <!--
