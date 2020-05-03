@@ -94,81 +94,85 @@
     </variables>
   </decoder>
   <loconet-node>
-    <stringio>
-	  <!-- A file name for a sound to play on the mp3 player -->
-	  <name>mp3_player</name>
-	  <variable_length>yes</variable_length>
-	  <max_length>32</max_length>
-	  <first_sv>52</first_sv>
-	  <encoding>utf8</encoding>
-	  <pad_spaces>no</pad_spaces>
-	  <read_write>write</read_write>
-	</stringio>
-    <stringio>
-	  <!-- Show text on the LCD display -->
-	  <name>LCD display</name>
-	  <variable_length>no</variable_length>
-	  <max_length>16</max_length>
-	  <first_sv>60</first_sv>
-	  <encoding>latin1</encoding>
-	  <pad_spaces>yes</pad_spaces>
-	  <read_write>read_write</read_write>
-	</stringio>
-    <stringio>
-	  <!-- Read input from the keyboard -->
-	  <name>Keyboard</name>
-	  <variable_length>no</variable_length>
-	  <max_length>8</max_length>
-	  <first_sv>64</first_sv>
-	  <encoding>latin1</encoding>
-	  <pad_spaces>no</pad_spaces>
-	  <read_write>read</read_write>
-	</stringio>
+    <stringios>
+      <stringio>
+        <!-- A file name for a sound to play on the mp3 player -->
+        <name>mp3_player</name>
+        <variable_length>yes</variable_length>
+        <max_length>32</max_length>
+        <first_sv>52</first_sv>
+        <encoding>utf8</encoding>
+        <pad_spaces>no</pad_spaces>
+        <read_write>write</read_write>
+      </stringio>
+      <stringio>
+        <!-- Show text on the LCD display -->
+        <name>LCD display</name>
+        <variable_length>no</variable_length>
+        <max_length>16</max_length>
+        <first_sv>60</first_sv>
+        <encoding>latin1</encoding>
+        <pad_spaces>yes</pad_spaces>
+        <read_write>read_write</read_write>
+      </stringio>
+      <stringio>
+        <!-- Read input from the keyboard -->
+        <name>Keyboard</name>
+        <variable_length>no</variable_length>
+        <max_length>8</max_length>
+        <first_sv>64</first_sv>
+        <encoding>latin1</encoding>
+        <pad_spaces>no</pad_spaces>
+        <read_write>read</read_write>
+      </stringio>
+    </stringios>
+	<analogios>
     <analogio>
-	  <!-- Measure the output voltage of the DCC booster -->
-	  <name>Voltage</name>
-	  <type>float</type>
-	  <signed>no</signed>
-	  <first_sv>20</first_sv>
-	  <min_value>0</min_value>
-	  <max_value>20</max_value>
-	  <read_write>read</read_write>
-	</analogio>
-    <analogio>
-	  <!-- Measure the output current of the DCC booster -->
-	  <name>Current</name>
-	  <type>float</type>
-	  <signed>no</signed>
-	  <first_sv>24</first_sv>
-	  <min_value>0</min_value>
-	  <max_value>3.5</max_value>
-	  <read_write>read</read_write>
-	</analogio>
-    <analogio>
-	  <!-- Set the brightness of the lights in the room -->
-	  <name>Room light</name>
-	  <type>byte</type>
-	  <signed>no</signed>
-	  <first_sv>28</first_sv>
-	  <min_value>0</min_value>
-	  <max_value>31</max_value>
-	  <read_write>write</read_write>
-	</analogio>
-    <analogio>
-	  <!-- Count axles. Negative value is reverse direction -->
-	  <name>Axle count</name>
-	  <type>word</type>
-	  <signed>yes</signed>
-	  <first_sv>32</first_sv>
-	  <read_write>read_write</read_write>
-	</analogio>
-    <analogio>
-	  <!-- Total axle count, independent of direction -->
-	  <name>Total axle count</name>
-	  <type>word</type>
-	  <signed>no</signed>
-	  <first_sv>32</first_sv>
-	  <read_write>read_write</read_write>
-	</analogio>
+      <!-- Measure the output voltage of the DCC booster -->
+        <name>Voltage</name>
+        <type>float</type>
+        <signed>no</signed>
+        <first_sv>20</first_sv>
+        <min_value>0</min_value>
+        <max_value>20</max_value>
+        <read_write>read</read_write>
+      </analogio>
+      <analogio>
+        <!-- Measure the output current of the DCC booster -->
+        <name>Current</name>
+        <type>float</type>
+        <signed>no</signed>
+        <first_sv>24</first_sv>
+        <min_value>0</min_value>
+        <max_value>3.5</max_value>
+        <read_write>read</read_write>
+      </analogio>
+      <analogio>
+        <!-- Set the brightness of the lights in the room -->
+        <name>Room light</name>
+        <type>byte</type>
+        <signed>no</signed>
+        <first_sv>28</first_sv>
+        <min_value>0</min_value>
+        <max_value>31</max_value>
+        <read_write>write</read_write>
+      </analogio>
+      <analogio>
+        <!-- Count axles. Negative value is reverse direction -->
+        <name>Axle count</name>
+        <type>word</type>
+        <signed>yes</signed>
+        <first_sv>32</first_sv>
+        <read_write>read_write</read_write>
+      </analogio>
+      <analogio>
+        <!-- Total axle count, independent of direction -->
+        <name>Total axle count</name>
+        <type>word</type>
+        <signed>no</signed>
+        <first_sv>32</first_sv>
+        <read_write>read_write</read_write>
+      </analogio>
+	</analogios>
   </loconet-node>
 </decoder-config>

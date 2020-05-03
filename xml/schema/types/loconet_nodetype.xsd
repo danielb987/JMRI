@@ -50,8 +50,14 @@
 </xs:annotation>
 
   <xs:complexType name="LocoNetNodeType">
-    <xs:choice maxOccurs="unbounded">
+    <xs:sequence>
+      <xs:element name="stringios" minOccurs="0" maxOccurs="1">
+      </xs:element>
+      <xs:element name="analogios" minOccurs="0" maxOccurs="1"/>
+      </xs:element>
+    </xs:sequence>
 <!--
+    <xs:choice maxOccurs="unbounded">
       <xs:element name="name" type="PreservedTextType" minOccurs="0">
         <xs:annotation><xs:documentation>
         The name element is allowed to appear in two places, but the preferred one
@@ -95,8 +101,8 @@
         <xs:element name="grid" type="GridType" minOccurs="1" maxOccurs="unbounded"/>
         <xs:element name="group" type="PaneGroupType" minOccurs="0" maxOccurs="unbounded" />
       </xs:choice>
--->
     </xs:choice>
+-->
 <!--
     <xs:attribute name="tooltip" type="xs:string"/>
     <xs:attribute name="nameFmt" type="labelItemType" default="label">
