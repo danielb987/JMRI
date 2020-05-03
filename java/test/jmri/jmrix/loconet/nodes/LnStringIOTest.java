@@ -1,5 +1,6 @@
 package jmri.jmrix.loconet.nodes;
 
+import jmri.InstanceManager;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.util.JUnitUtil;
@@ -14,13 +15,14 @@ import org.junit.Test;
  */
 public class LnStringIOTest {
 
-    private LnTrafficController lnis;
-    private LocoNetSystemConnectionMemo memo;
+    private LnTrafficController _lnis;
+    private LocoNetSystemConnectionMemo _memo;
     
     @Test
     public void testCTor() {
-        LnNode node = new LnNode(1, lnis);
-        LnStringIO b = new LnStringIO("IC1", null, node);
+        LnNode node = new LnNode(1, _lnis);
+//        if (1==1) throw new RuntimeException("System name: "+node.getSystemName());
+        LnStringIO b = new LnStringIO("LC1:10", null, node);
         Assert.assertNotNull("exists", b);
     }
     
@@ -31,16 +33,19 @@ public class LnStringIOTest {
         JUnitUtil.resetInstanceManager();
         
         // The class under test uses one LocoNet connection it pulls from the InstanceManager.
-        memo = new jmri.jmrix.loconet.LocoNetSystemConnectionMemo();
-        lnis = new jmri.jmrix.loconet.LocoNetInterfaceScaffold(memo);
-        memo.setLnTrafficController(lnis);
-        memo.configureCommandStation(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100, false, false, false);
-        memo.configureManagers();
-        jmri.InstanceManager.store(memo, jmri.jmrix.loconet.LocoNetSystemConnectionMemo.class);
+        _memo = new jmri.jmrix.loconet.LocoNetSystemConnectionMemo();
+        _lnis = new jmri.jmrix.loconet.LocoNetInterfaceScaffold(_memo);
+        _memo.setLnTrafficController(_lnis);
+        _memo.configureCommandStation(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100, false, false, false);
+        _memo.configureManagers();
+        jmri.InstanceManager.store(_memo, jmri.jmrix.loconet.LocoNetSystemConnectionMemo.class);
         
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initLogixManager();
+        
+        // Make sure we have a LnNodeManager
+        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @After

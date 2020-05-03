@@ -1,8 +1,13 @@
 package jmri.jmrix.loconet.nodes;
 
+import javax.annotation.Nonnull;
 import jmri.InstanceManager;
+import jmri.JmriException;
+import jmri.NamedBean;
+import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrix.loconet.LnTrafficController;
+import jmri.jmrix.loconet.LocoNetInterface;
 import jmri.jmrix.loconet.lnsvf2.LnSv2MessageContents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +34,7 @@ public class LnNode {
     private String _name;
     private DecoderFile _decoderFile;
     
-//    private final LnTrafficController _tc;
+    private final LocoNetInterface _tc;
     
     /**
      * Create a LnNode with an address.
@@ -37,9 +42,10 @@ public class LnNode {
      * @param address the address of the node
      * @param tc the traffic controller for the LocoNet.
      */
-    public LnNode(int address, LnTrafficController tc) {
+    public LnNode(int address, LocoNetInterface tc) {
         _lnNodeManager = InstanceManager.getDefault(LnNodeManager.class);
         _address = address;
+        _tc = tc;
 //        _tc = _lm.getLnTrafficController();
     }
     
@@ -56,9 +62,14 @@ public class LnNode {
         setProductID(contents.getSv2ProductID());
         _serialNumber = contents.getSv2SerialNum();
         _address = contents.getDestAddr();
+        _tc = tc;
 //        _tc = _lm.getLnTrafficController();
         
         log.debug(String.format("LnNode: %d, %d, %d%n", contents.getSv2ManufacturerID(), contents.getSv2DeveloperID(), contents.getSv2ProductID()));
+    }
+    
+    public LocoNetInterface getTrafficController() {
+        return _tc;
     }
     
     public int getAddress() {
@@ -67,7 +78,7 @@ public class LnNode {
     
     public final void setManufacturerID(int id) {
         _manufacturerID = id;
-        _manufacturer = _lnNodeManager.getManufacturer(_manufacturerID);
+        _manufacturer = _lnNodeManager.getDecoderList().getManufacturer(_manufacturerID);
         
         // Ensure that the _developer field is up to date
         setDeveloperID(_developerID);
@@ -84,7 +95,7 @@ public class LnNode {
     public final void setDeveloperID(int id) {
         _developerID = id;
         if (_manufacturerID == LnNodeManager.PUBLIC_DOMAIN_DIY_MANAGER_ID) {
-            _developer = _lnNodeManager.getDeveloper(_developerID);
+            _developer = _lnNodeManager.getDecoderList().getDeveloper(_developerID);
         } else {
             _developer = "";
         }
@@ -100,7 +111,8 @@ public class LnNode {
     
     public final void setProductID(int id) {
         _productID = id;
-        _decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+        _decoderFile = _lnNodeManager.getDecoderList()
+                .getProduct(_manufacturerID, _developerID, _productID);
         if (_decoderFile != null) {
             _product = _decoderFile.getModel();
         } else {
@@ -146,7 +158,6 @@ public class LnNode {
                 _address,
                 _name);
     }
-    
     
     private final static Logger log = LoggerFactory.getLogger(LnNode.class);
     

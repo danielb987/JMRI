@@ -392,7 +392,8 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
         // Check if we have a loco
         if (_discoverThrottle_DeviceID == 0) return;
         
-        DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+        DecoderFile decoderFile = _lnNodeManager.getDecoderList()
+                .getProduct(_manufacturerID, _developerID, _productID);
         
         log.debug(String.format("LnNode: Mfg: %s, Dev: %s, Prod: %s, decoderFile: %s%n",
                 _manufacturer.getText(), _developer.getText(), _product.getText(), decoderFile));
@@ -481,13 +482,16 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
                     _manufacturerID = manufacturerID;
                     _developerID = developerID;
                     _productID = productID;
-                    DecoderFile decoderFile = _lnNodeManager.getProduct(_manufacturerID, _developerID, _productID);
+                    DecoderFile decoderFile = _lnNodeManager.getDecoderList()
+                            .getProduct(_manufacturerID, _developerID, _productID);
 
                     _locoAddress.setText(Integer.toString(_discoverLocoAddress));
                     _throttleId.setText(Integer.toString(_discoverThrottle_DeviceID));
                     _throttleId_Hex.setText(String.format("0x%04X", _discoverThrottle_DeviceID));
-                    _manufacturer.setText(_lnNodeManager.getManufacturer(_manufacturerID));
-                    _developer.setText(_lnNodeManager.getDeveloper(_developerID));
+                    _manufacturer.setText(_lnNodeManager.getDecoderList()
+                            .getManufacturer(_manufacturerID));
+                    _developer.setText(_lnNodeManager.getDecoderList()
+                            .getDeveloper(_developerID));
                     
                     if (decoderFile != null) {
                         _product.setText(decoderFile.getModel());
@@ -539,6 +543,7 @@ public class DiscoverThrottleFrame extends jmri.util.JmriJFrame implements LocoN
             // Sometimes JMRI updates the slot with the JMRI throttle ID.
             // We need to wait some time to ensure that that slot update comes
             // before we dispatches the throttle.
+            // This is probably not needed for the real world, but for the tests.
             ThreadingUtil.runOnGUIDelayed(this::dispatchAddress, 100);
         } else {
             ThreadingUtil.runOnGUIEventually(this::releaseAddress);

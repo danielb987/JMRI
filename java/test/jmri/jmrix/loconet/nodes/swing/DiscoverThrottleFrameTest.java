@@ -138,7 +138,8 @@ public class DiscoverThrottleFrameTest {
         int developerID = 1;        // FREMO
         int productID = 11;         // FREDi
         int _discoverThrottleID = 4218;
-        DecoderFile decoderFile = lnNodeManager.getProduct(manufacturerID, developerID, productID);
+        DecoderFile decoderFile = lnNodeManager.getDecoderList()
+                .getProduct(manufacturerID, developerID, productID);
         RosterEntry re = new RosterEntry();
         re.setDccAddress(Integer.toString(_discoverThrottleID));
         re.setMfg(decoderFile.getMfg());
@@ -335,9 +336,6 @@ public class DiscoverThrottleFrameTest {
     public void testDispatchThrottle() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
-        // Make sure we have a LnNodeManager
-        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager());
-        
         // Show the discover throttle frame
         showDiscoverThrottleFrame();
         
@@ -515,6 +513,9 @@ public class DiscoverThrottleFrameTest {
         log.debug("new throttle manager is {}", _tm.toString());
         _memo.getSensorManager().dispose(); // get rid of sensor manager to prevent it from sending interrogation messages
         _memo.getPowerManager().dispose(); // get rid of power manager to prevent it from sending slot 0 read message
+        
+        // Make sure we have a LnNodeManager
+        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @AfterEach

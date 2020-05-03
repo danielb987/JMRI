@@ -2,6 +2,7 @@ package jmri.jmrix.loconet.nodes;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Manager;
 import jmri.NamedBean;
@@ -12,8 +13,8 @@ import jmri.implementation.AbstractAnalogIO;
  */
 public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
 
-    private LnNode _node;
-    private int _address;
+    private final LnNode _node;
+    private final int _startSVAddress;
     
     private Type _type = Type.EightBitSigned;
     
@@ -28,9 +29,36 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     private boolean _cutOutOfBoundsValues;
     
     
+    public LnAnalogIO(@Nonnull LnNode node, int startSVAddress, @CheckForNull String userName) {
+        super(getSystemName(node, startSVAddress), userName);
+        _node = node;
+        _startSVAddress = startSVAddress;
+    }
+    
     public LnAnalogIO(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LnNode node) {
         super(sysName, userName);
+        
+        String[] parts = sysName.split(":");
         _node = node;
+        
+        _startSVAddress = Integer.parseInt(parts[1]);
+        
+        if (!sysName.equals(getSystemName(node, _startSVAddress))) {
+            throw new IllegalArgumentException("the system name is invalid");
+        }
+    }
+    
+    /**
+     * Get the system name for this StringIO.
+     * This method is needed since the constructor needs a system name to its parent constructor.
+     * @param node the LnNode that is StringIO is located on
+     * @param startSVAddress the start address of the StringIO of the LnNode
+     * @return the system name
+     */
+    private static String getSystemName(@Nonnull LnNode node, int startSVAddress) {
+        // The system name of StringIO with address 1234 and start SV 59 on connection L2 should be L2C1234:59
+        String systemPrefix = node.getTrafficController().getSystemConnectionMemo().getSystemPrefix();
+        return String.format("%sV%d:%d", systemPrefix, node.getAddress(), startSVAddress);
     }
     
     /**
@@ -41,30 +69,39 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
         return _node;
     }
     
-    /**
-     * Set the node this AnalogIO belongs to.
-     * This method is package-private since it should only be changed by the
-     * node that owns it, and only in the case when the item is moved from one
-     * node to another.
-     * @param node the new node that owns this item
-     */
-    void setNode(LnNode node) {
-        _node = node;
-    }
-    
     @Override
     public int getAddress() {
-        return _address;
+        return _node.getAddress();
     }
     
     @Override
-    public void setAddress(int address) {
-        _address = address;
+    public int getStartSVAddress() {
+        return _startSVAddress;
+    }
+    
+    @Override
+    public int getNumSVs() {
+        switch (_type) {
+            case EightBitSigned:
+            case EightBitUnsigned:
+                return 1;
+                
+            case SixteenBitSigned:
+            case SixteenBitUnsigned:
+                return 2;
+                
+            case ThirtyTwoBitSigned:
+            case Float:
+                return 4;
+                
+            default:
+                throw new RuntimeException("_type has invalid value: "+_type.name());
+        }
     }
     
     @Override
     public Manager<? extends NamedBean> getManager() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return InstanceManager.getDefault(jmri.AnalogIOManager.class);
     }
     
     public Type getType() {

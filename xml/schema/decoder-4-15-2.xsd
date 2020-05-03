@@ -35,6 +35,7 @@
 
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/general.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/panetype.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/types/loconet_nodetype.xsd"/>
   <xs:import namespace='http://docbook.org/ns/docbook' schemaLocation='http://jmri.org/xml/schema/docbook/docbook.xsd'/>
   <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd" />
   <xs:import namespace="http://www.w3.org/2001/XInclude" schemaLocation="http://www.w3.org/2001/XInclude.xsd"/>
@@ -196,8 +197,9 @@
               the authorgroup/revhistory style to enable future automated processing.
           </xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="decoder" type="DecoderType" minOccurs="1" maxOccurs="1"/>
-        <xs:element name="pane"    type="PaneType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="decoder"       type="DecoderType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="pane"          type="PaneType" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:element name="loconet-node"  type="LocoNetNodeType" minOccurs="0" maxOccurs="1">
       </xs:sequence>
       <xs:attribute name="showEmptyPanes" type="yesNoType"/>
     </xs:complexType>

@@ -2,6 +2,7 @@ package jmri.jmrix.loconet.nodes;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Manager;
 import jmri.NamedBean;
@@ -12,17 +13,44 @@ import jmri.implementation.AbstractStringIO;
  */
 public class LnStringIO extends AbstractStringIO implements NodeItem {
 
-    private LnNode _node;
-    private int _address;
+    private final LnNode _node;
+    private final int _startSVAddress;
     
-    private Type _type = Type.EightByteString;
+    private Type _type = Type.FixedLengthString;
     private int _maxLength;
     private boolean _cutLongStrings;
     
     
+    public LnStringIO(@Nonnull LnNode node, int startSVAddress, @CheckForNull String userName) {
+        super(getSystemName(node, startSVAddress), userName);
+        _node = node;
+        _startSVAddress = startSVAddress;
+    }
+    
     public LnStringIO(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LnNode node) {
         super(sysName, userName);
+        
+        String[] parts = sysName.split(":");
         _node = node;
+        
+        _startSVAddress = Integer.parseInt(parts[1]);
+        
+        if (!sysName.equals(getSystemName(node, _startSVAddress))) {
+            throw new IllegalArgumentException("the system name is invalid");
+        }
+    }
+    
+    /**
+     * Get the system name for this StringIO.
+     * This method is needed since the constructor needs a system name to its parent constructor.
+     * @param node the LnNode that is StringIO is located on
+     * @param startSVAddress the start address of the StringIO of the LnNode
+     * @return the system name
+     */
+    private static String getSystemName(@Nonnull LnNode node, int startSVAddress) {
+        // The system name of StringIO with address 1234 and start SV 59 on connection L2 should be L2C1234:59
+        String systemPrefix = node.getTrafficController().getSystemConnectionMemo().getSystemPrefix();
+        return String.format("%sC%d:%d", systemPrefix, node.getAddress(), startSVAddress);
     }
     
     /**
@@ -33,30 +61,33 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
         return _node;
     }
     
-    /**
-     * Set the node this StringIO belongs to.
-     * This method is package-private since it should only be changed by the
-     * node that owns it, and only in the case when the item is moved from one
-     * node to another.
-     * @param node the new node that owns this item
-     */
-    void setNode(LnNode node) {
-        _node = node;
-    }
-    
     @Override
     public int getAddress() {
-        return _address;
+        return _node.getAddress();
     }
     
     @Override
-    public void setAddress(int address) {
-        _address = address;
+    public int getStartSVAddress() {
+        return _startSVAddress;
+    }
+    
+    @Override
+    public int getNumSVs() {
+        switch (_type) {
+            case FixedLengthString:
+                return _maxLength;
+                
+            case VariableLenghtString:
+                return 4;
+                
+            default:
+                throw new RuntimeException("_type has invalid value: "+_type.name());
+        }
     }
     
     @Override
     public Manager<? extends NamedBean> getManager() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return InstanceManager.getDefault(jmri.StringIOManager.class);
     }
     
     public Type getType() {
@@ -74,10 +105,10 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     
     public void setMaximumLength(int length) {
         switch (_type) {
-            case EightByteString:
+            case FixedLengthString:
                 if (length > 8) throw new IllegalArgumentException("Max length is greater than 8 bytes");
                 break;
-            case VariableString:
+            case VariableLenghtString:
                 if (length > 129) throw new IllegalArgumentException("Max length is greater than 129 bytes");
                 break;
             default:
@@ -103,11 +134,11 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     
     public enum Type {
         
-        EightByteString(Bundle.getMessage("TypeEightByteString"),
-            Bundle.getMessage("TypeEightByteString_FormatDescr")),
+        FixedLengthString(Bundle.getMessage("TypeFixedLengthString"),
+            Bundle.getMessage("TypeFixedLengthString_FormatDescr")),
         
-        VariableString(Bundle.getMessage("TypeVariableString"),
-            Bundle.getMessage("TypeVariableString_FormatDescr"));
+        VariableLenghtString(Bundle.getMessage("TypeVariableLenghtString"),
+            Bundle.getMessage("TypeVariableLenghtString_FormatDescr"));
         
         private final String _name;
         private final String _formatDescr;
