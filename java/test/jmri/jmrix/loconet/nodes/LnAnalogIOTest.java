@@ -21,7 +21,8 @@ public class LnAnalogIOTest {
     @Test
     public void testCTor() {
         LnNode node = new LnNode(1, _lnis);
-        LnAnalogIO b = new LnAnalogIO("IV1", null, node);
+//        if (1==1) throw new RuntimeException("System name: "+node.getSystemName());
+        LnAnalogIO b = new LnAnalogIO("LV1:10", null, node);
         Assert.assertNotNull("exists", b);
     }
     
