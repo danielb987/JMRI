@@ -18,13 +18,14 @@ public class LnNodeManagerTest {
     
     @Test
     public void testCTor() {
-        LnNodeManager m = new LnNodeManager(_lnis);
+        LnNodeManager m = new LnNodeManager();
         Assert.assertNotNull("exists", m);
     }
     
     @Test
     public void testConstants() {
-        LnNodeManager m = new LnNodeManager(_lnis);
+        LnNodeManager m = new LnNodeManager();
+        
         Assert.assertEquals("PUBLIC_DOMAIN_DIY_MANAGER_ID is correct",
                 13, LnNodeManager.PUBLIC_DOMAIN_DIY_MANAGER_ID);
         Assert.assertEquals("PUBLIC_DOMAIN_DIY_MANAGER is correct",

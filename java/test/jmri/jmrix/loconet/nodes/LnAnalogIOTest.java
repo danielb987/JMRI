@@ -1,6 +1,5 @@
 package jmri.jmrix.loconet.nodes;
 
-import jmri.InstanceManager;
 import jmri.jmrix.loconet.LnTrafficController;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.util.JUnitUtil;
@@ -12,6 +11,8 @@ import org.junit.Test;
 
 /**
  * Test AnalogIO
+ * 
+ * @author Daniel Bergqvist Copyright (C) 2020
  */
 public class LnAnalogIOTest {
 
@@ -20,7 +21,11 @@ public class LnAnalogIOTest {
     
     @Test
     public void testCTor() {
-        LnNode node = new LnNode(1, _lnis);
+        LnNode node = new LnNode(1,     // Address
+                LnNodeManager.PUBLIC_DOMAIN_DIY_MANAGER_ID,
+                LnNodeTest.DEVELOPER_ID_DANIEL_BERGQVIST,
+                LnNodeTest.PRODUCT_ID,
+                _lnis);
 //        if (1==1) throw new RuntimeException("System name: "+node.getSystemName());
         LnAnalogIO b = new LnAnalogIO("LV1:10", null, node);
         Assert.assertNotNull("exists", b);
@@ -43,10 +48,6 @@ public class LnAnalogIOTest {
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initLogixManager();
-        
-        // Make sure we have a LnNodeManager
-        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_lnis));
-//        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @After

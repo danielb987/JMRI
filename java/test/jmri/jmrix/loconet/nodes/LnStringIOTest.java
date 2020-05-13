@@ -20,9 +20,15 @@ public class LnStringIOTest {
     
     @Test
     public void testCTor() {
-        LnNode node = new LnNode(1, _lnis);
+        LnNode lnNode = new LnNode(1,     // Address
+                LnNodeManager.PUBLIC_DOMAIN_DIY_MANAGER_ID,
+                LnNodeTest.DEVELOPER_ID_DANIEL_BERGQVIST,
+                LnNodeTest.PRODUCT_ID,
+                _lnis);
 //        if (1==1) throw new RuntimeException("System name: "+node.getSystemName());
-        LnStringIO b = new LnStringIO("LC1:10", null, node);
+//        LnStringIO b = new LnStringIO(node, "LC1:10", null);
+        InstanceManager.getDefault(LnNodeManager.class).register(lnNode);
+        LnStringIO b = new LnStringIO("LC1:10", null);
         Assert.assertNotNull("exists", b);
     }
     
@@ -43,10 +49,6 @@ public class LnStringIOTest {
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initLogixManager();
-        
-        // Make sure we have a LnNodeManager
-        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_lnis));
-//        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @After

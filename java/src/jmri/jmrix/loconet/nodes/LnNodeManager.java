@@ -1,24 +1,26 @@
 package jmri.jmrix.loconet.nodes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.CheckForNull;
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import jmri.InstanceManager;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+import jmri.jmrix.loconet.nodes.configurexml.DecoderList;
 import jmri.InstanceManagerAutoDefault;
-import jmri.Manager;
-import jmri.jmrit.XmlFile;
-import jmri.jmrit.decoderdefn.DecoderFile;
-import jmri.jmrit.decoderdefn.DecoderIndexFile;
-import jmri.jmrit.roster.RosterEntry;
-import jmri.jmrix.loconet.LocoNetInterface;
-import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
-import jmri.managers.AbstractManager;
-import org.jdom2.Attribute;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
+import jmri.NamedBean;
+import jmri.beans.PropertyChangeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,23 +29,122 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Daniel Bergqvist Copyright (C) 2020
  */
-public class LnNodeManager {
+public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChangeListener, PropertyChangeProvider {
 
     private static DecoderList _decoderList;
     
     public static final int PUBLIC_DOMAIN_DIY_MANAGER_ID = 13;
     public static final String PUBLIC_DOMAIN_DIY_MANAGER = "Public-domain and DIY";
     
+//    protected final TreeSet<LnNode> _lnNodes = new TreeSet<>(memo.getNamedBeanComparator(getNamedBeanClass()));
+    protected final ConcurrentMap<Integer, LnNode> _lnNodesMap = new ConcurrentHashMap<>();
     
-//    private final LocoNetSystemConnectionMemo _memo;
-    private final LocoNetInterface _throttledController;
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private final VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
     
     
-//    public LnNodeManager(LocoNetSystemConnectionMemo memo, LocoNetInterface throttledController) {
-    public LnNodeManager(LocoNetInterface throttledController) {
-        _throttledController = throttledController;
+    public LnNodeManager() {
+    }
+    
+    /**
+     * Get the LnNode.
+     *
+     * @param address the address of the node
+     * @return the LnNode or null if none exists
+     */
+    @CheckReturnValue
+    @CheckForNull
+    public LnNode getLnNode(int address) {
+        return _lnNodesMap.get(address);
+    }
+    
+    /**
+     * Method for a UI to delete a LnNode.
+     * <p>
+     * The UI should first request a "CanDelete", this will return a list of
+     * locations (and descriptions) where the bean is in use via throwing a
+     * VetoException, then if that comes back clear, or the user agrees with the
+     * actions, then a "DoDelete" can be called which inform the listeners to
+     * delete the bean, then it will be deregistered and disposed of.
+     * <p>
+     * If a property name of "DoNotDelete" is thrown back in the VetoException
+     * then the delete process should be aborted.
+     *
+     * @param lnNode   The NamedBean to be deleted
+     * @param property The programmatic name of the request. "CanDelete" will
+     *                 enquire with all listeners if the item can be deleted.
+     *                 "DoDelete" tells the listener to delete the item
+     * @throws java.beans.PropertyVetoException - If the recipients wishes the
+     *                                          delete to be aborted (see
+     *                                          above)
+     */
+    public void deleteBean(@Nonnull LnNode lnNode, @Nonnull String property)
+            throws java.beans.PropertyVetoException {
         
-        // There must be one LnNodeManager for each LocoNet connection.
+        // throws PropertyVetoException if vetoed
+        fireVetoableChange(property, lnNode, null);
+        if (property.equals("DoDelete")) { // NOI18N
+            deregister(lnNode);
+            lnNode.dispose();
+        }
+    }
+
+    /**
+     * Remember a LnNode created outside the manager.
+     *
+     * @param lnNode the bean
+     * @throws DuplicateSystemNameException if a different bean with the same system
+     *                                      name is already registered in the
+     *                                      manager
+     */
+    public void register(@Nonnull LnNode lnNode) {
+        LnNode existingBean = getLnNode(lnNode.getAddress());
+        if (existingBean != null) {
+            if (existingBean == existingBean) {
+                log.debug("the LnNode is already registered: {}", lnNode.getAddress());
+            } else {
+                log.error("a different LnNode with this address is already registered: {}", lnNode.getAddress());
+                throw new NamedBean.DuplicateSystemNameException(
+                        "a different LnNode with this address is already registered: "
+                                + Integer.toString(lnNode.getAddress()));
+            }
+        }
+        
+        // clear caches
+//        cachedSystemNameList = null;
+//        cachedNamedBeanList = null;
+        
+        // save this bean
+//        _lnNodes.add(lnNode);
+        _lnNodesMap.put(lnNode.getAddress(), lnNode);
+        
+        // notifications
+//        int position = getPosition(lnNode);
+//        fireDataListenersAdded(position, position, lnNode);
+//        fireIndexedPropertyChange("beans", position, null, lnNode);
+//        firePropertyChange("length", null, _lnNodes.size());
+        // listen for name and state changes to forward
+//        lnNode.addPropertyChangeListener(this);
+    }
+    
+    public void deregister(@Nonnull LnNode lnNode) {
+//        int position = getPosition(lnNode);
+
+        // clear caches
+//        cachedSystemNameList = null;
+//        cachedNamedBeanList = null;
+
+        // stop listening for user name changes
+//        lnNode.removePropertyChangeListener(this);
+        
+        // remove LnNode from local storage
+//        _lnNodes.remove(lnNode);
+        _lnNodesMap.remove(lnNode.getAddress());
+        
+        // notifications
+//        fireDataListenersRemoved(position, position, lnNode);
+//        fireIndexedPropertyChange("beans", position, lnNode, null);
+//        firePropertyChange("length", null, _lnNodes.size());
     }
     
     public DecoderList getDecoderList() {
@@ -56,202 +157,115 @@ public class LnNodeManager {
     }
     
     /**
-     * Provides a LnNode.
-     * Returns the LnNode if it exists, creates it otherwise.
-     * @param address the node address
-     * @return Never null
-     * @throws IllegalArgumentException if the node doesn't already exist and the
-     *                                  manager cannot create it due to
-     *                                  an illegal name or name that can't
-     *                                  be parsed.
+     * Inform all registered listeners of a vetoable change. If the
+     * propertyName is "CanDelete" ALL listeners with an interest in the bean
+     * will throw an exception, which is recorded returned back to the invoking
+     * method, so that it can be presented back to the user. However if a
+     * listener decides that the bean can not be deleted then it should throw an
+     * exception with a property name of "DoNotDelete", this is thrown back up
+     * to the user and the delete process should be aborted.
+     *
+     * @param p   The programmatic name of the property that is to be changed.
+     *            "CanDelete" will inquire with all listeners if the item can
+     *            be deleted. "DoDelete" tells the listener to delete the item.
+     * @param old The old value of the property.
+     * @param n   The new value of the property.
+     * @throws PropertyVetoException if the recipients wishes the delete to be
+     *                               aborted.
      */
-    @Nonnull
-    public LnNode provide(int address) throws IllegalArgumentException {
-        return new LnNode(address,_throttledController);
-    }
-    
-    
-    
-    /**
-     * List of decoders.
-     * It takes some time to load this list so we don't want each LnNodeManager
-     * to have its own list.
-     */
-    public static final class DecoderList {
-        
-        private final XmlFile _xmlFile = new XmlFile();
-        private final DecoderIndexFile _decoderIndexFile;
-        private final Map<Integer, String> _lnDIYDeveloperList = new HashMap<>();
-        private final List<DecoderFile> _decoders = new ArrayList<>();
-        private final Map<Integer, List<DecoderFile>> decoderFileMap = new HashMap<>();
-        
-        public DecoderList() {
-            _decoderIndexFile = InstanceManager.getDefault(DecoderIndexFile.class);
-            try {
-                readLnDIYDeveloperList();
-            } catch (JDOMException | IOException ex) {
-                log.error("Cannot load LocoNet Hackers DIY SV & IPL DeveloperId List", ex);
-            }
-            readDecoderTypes();
-        }
-        
-        private void readLnDIYDeveloperList() throws org.jdom2.JDOMException, java.io.IOException {
-            // always reads the file distributed with JMRI
-            Element developerList = _xmlFile.rootFromName("loconet_hackers_diy_list.xml");
-
-            if (developerList != null) {
-                List<Element> l = developerList.getChildren("developer");
-                if (log.isDebugEnabled()) {
-                    log.debug("readMfgSection sees " + l.size() + " children");
-                }
-                for (Element el : l) {
-                    int id = el.getAttribute("devID").getIntValue();
-                    String name = el.getAttribute("name").getValue();
-                    _lnDIYDeveloperList.put(id, name);
-                }
-            } else {
-                log.warn("no mfgList found");
-            }
-        }
-
-        public String getManufacturer(int manufacturerID) {
-            return _decoderIndexFile.mfgNameFromId(Integer.toString(manufacturerID));
-        }
-
-        public String getDeveloper(int developerID) {
-            return _lnDIYDeveloperList.get(developerID);
-        }
-
-        public DecoderFile getProduct(int manufacturerID, int developerID, int productID) {
-
-            String developer = manufacturerID == PUBLIC_DOMAIN_DIY_MANAGER_ID ? Integer.toString(developerID) : null;
-
-            List<DecoderFile> decoders = decoderFileMap.get(manufacturerID);
-
-            for (DecoderFile decoder : decoders) {
-                if (developer == null || (developer.equals(decoder.getDeveloperID()))) {
-                    String productIDs = decoder.getProductID();
-                    String[] products = productIDs.split(",");
-                    for (String p : products) {
-                        log.debug(String.format(
-                                "Manufacturer: %s, Developer: %s, ProductID: %s. Expect manufacturer: %d, developer: %d, productID: %d, num decoders: %d%n",
-                                decoder.getMfgID(), decoder.getDeveloperID(), p, manufacturerID, developerID, productID, decoders.size()));
-                        if (productID == Integer.parseInt(p)) return decoder;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-
-        private void readDecoderTypes() {
-            _decoders.clear();
-
-            List<DecoderFile> decoders =
-                    InstanceManager.getDefault(DecoderIndexFile.class)
-                            .matchingDecoderList(null, null, null, null, null, null);
-
-            String oldMfg = "";
-            String oldDev = "";
-            String oldModel = "";
-            String oldFam = "";
-            String oldProd = "";
-
-            for (DecoderFile decoderFile : decoders) {
-                String mfg = decoderFile.getMfg();
-                int mfgID = Integer.parseInt(decoderFile.getMfgID());
-                String dev = decoderFile.getDeveloperID();
-                String model = decoderFile.getModel();
-                String fam = decoderFile.getFamily();
-                String prod = decoderFile.getProductID();
-
-                if (prod == null) prod = "";
-
-                if (!oldMfg.equals(mfg) || !oldDev.equals(dev) || !oldModel.equals(model)
-                        || !oldFam.equals(fam) || !oldProd.equals(prod)) {
-
-                    List<DecoderFile> decoderFiles = decoderFileMap.get(mfgID);
-                    if (decoderFiles == null) {
-                        decoderFiles = new ArrayList<>();
-                        decoderFileMap.put(mfgID, decoderFiles);
-                    }
-                    decoderFiles.add(decoderFile);
-                    _decoders.add(decoderFile);
-                }
-
-                oldMfg = mfg; oldDev = dev; oldModel = model;
-                oldFam = fam; oldProd = prod;
-            }
-
-    /*        
-
-            String lastFile = "";
-
-            for (DecoderFile decoderFile : _decoders) {
-    //            jmri.LocoAddress.Protocol[] protocols = decoderFile.getSupportedProtocols();
-
-                RosterEntry re = new RosterEntry();
-                re.setDecoderFamily(decoderFile.getFamily());
-                re.setDecoderModel(decoderFile.getModel());
-                re.setId("LabelNewDecoder");
-    //            re.setId(Bundle.getMessage("LabelNewDecoder"));
-
-                // loadDecoderFile()
-
-    //            Element decoderRoot = null;
-                Element decoderRoot;
+    @OverridingMethodsMustInvokeSuper
+    public void fireVetoableChange(String p, Object old, Object n) throws PropertyVetoException {
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, p, old, n);
+        if (p.equals("CanDelete")) { // NOI18N
+            StringBuilder message = new StringBuilder();
+            for (VetoableChangeListener vc : vetoableChangeSupport.getVetoableChangeListeners()) {
                 try {
-                    int manufacturerID = Integer.parseInt(decoderFile.getMfgID());
-                    List<DecoderFile> decoderFiles = decoderFileMap.get(manufacturerID);
-                    if (decoderFiles == null) {
-                        decoderFiles = new ArrayList<>();
-                        decoderFileMap.put(manufacturerID, decoderFiles);
+                    vc.vetoableChange(evt);
+                } catch (PropertyVetoException e) {
+                    if (e.getPropertyChangeEvent().getPropertyName().equals("DoNotDelete")) { // NOI18N
+                        log.info(e.getMessage());
+                        throw e;
                     }
-                    decoderFiles.add(decoderFile);
-    ////                System.out.format("%s, %s, %s, %s, %s%n", decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel());
-    //                System.out.format("%s, %s%n", decoderFile.getMfgID(), decoderFile.getProductID());
-                    if (1==0) {
-    //////                if ("Public-domain and DIY".equals(decoderFile.getMfg())) {
-    //////                    if (!decoderFile.getFamily().equals(decoderFile.getModel())) {
-    //                        System.out.format("%s, %s, %s, %s, %s, %s, %s, %s%n", decoderFile.getShowable().name(), decoderFile.getMfg(), decoderFile.getMfgID(), decoderFile.getDeveloperID(), decoderFile.getProductID(), decoderFile.getFamily(), decoderFile.getModel(), decoderFile.getModelElement());
-                            decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
-                            if (!lastFile.equals(decoderFile.getFileName())) {
-                                Element e = decoderRoot.getChild("decoder");
-                                Element ef = e.getChild("family");
-                                String efa = ef != null ? ef.getAttribute("name").getValue() : "--";
-                                Element e2 = e.getChild("programming");
-                                String e3 = e2.getChildTextTrim("mode");
-                                if (e3 != null)
-    //                            if ("LOCONETSV2MODE".equals(e3))
-                                    System.out.format("%s: %s:%s, %s, %s%n", decoderFile.getFileName(), e.getName(), efa, e2.getName(), e3);
-                            }
-
-                            lastFile = decoderFile.getFileName();
-    //////                    }
-                    }
-                } catch (org.jdom2.JDOMException e) {
-                    log.error("Exception while parsing decoder XML file: " + decoderFile.getFileName(), e);
-                    return;
-                } catch (java.io.IOException e) {
-                    log.error("Exception while reading decoder XML file: " + decoderFile.getFileName(), e);
-                    return;
+                    message.append(e.getMessage()).append("<hr>"); // NOI18N
                 }
-    //            re.
-
-                // note that we're leaving the filename null
-                // add the new roster entry to the in-memory roster
-    //////            Roster.getDefault().addEntry(re);
-
-    //            re.
-    //            startProgrammer(decoderFile, re, (String) programmerBox.getSelectedItem());
             }
-    */        
-
+            throw new PropertyVetoException(message.toString(), evt);
+        } else {
+            try {
+                vetoableChangeSupport.fireVetoableChange(evt);
+            } catch (PropertyVetoException e) {
+                log.error("Change vetoed.", e);
+            }
         }
-
     }
     
+    /** {@inheritDoc} */
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
+
+        Collection<LnNode> nodes = _lnNodesMap.values();
+        
+        if ("CanDelete".equals(evt.getPropertyName())) { // NOI18N
+            StringBuilder message = new StringBuilder();
+            message.append(Bundle.getMessage("VetoFoundIn", "LnNode"))
+                    .append("<ul>");
+            boolean found = false;
+            for (LnNode node : nodes) {
+                try {
+                    node.vetoableChange(evt);
+                } catch (PropertyVetoException e) {
+                    if (e.getPropertyChangeEvent().getPropertyName().equals("DoNotDelete")) { // NOI18N
+                        throw e;
+                    }
+                    found = true;
+                    message.append("<li>")
+                            .append(e.getMessage())
+                            .append("</li>");
+                }
+            }
+            message.append("</ul>")
+                    .append(Bundle.getMessage("VetoWillBeRemovedFrom", "LnNode"));
+            if (found) {
+                throw new PropertyVetoException(message.toString(), evt);
+            }
+        } else {
+            for (LnNode node : nodes) {
+                // throws PropertyVetoException if vetoed
+                node.vetoableChange(evt);
+            }
+        }
+    }
+    
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+    
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(propertyName, listener);
+    }
+    
+    @Override
+    public PropertyChangeListener[] getPropertyChangeListeners() {
+        return pcs.getPropertyChangeListeners();
+    }
+    
+    @Override
+    public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return pcs.getPropertyChangeListeners(propertyName);
+    }
+    
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+    
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(propertyName, listener);
+    }
     
     
     private final static Logger log = LoggerFactory.getLogger(LnNodeManager.class);

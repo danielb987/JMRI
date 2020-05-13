@@ -11,6 +11,15 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
+
+
+<!-- The purpose of this file is to demonstrate the use of AnalogIO and     -->
+<!-- StringIO for LocoNet devices. An Arduino project that supports this    -->
+<!-- decoder can be found at:                                               -->
+<!--     https://github.com/danielb987/JMRI_LogixNG_Arduino                 -->
+
+
+
 <decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <version author="Bob Jacobsen" version="1" lastUpdated="20150812"/>
   <version author="Daniel Bergqvist" version="2" lastUpdated="20200418"/>
@@ -59,64 +68,65 @@
         <decVal/>
         <label>Manufacturer ID: </label>
       </variable>
-<!--
-      <variable item="Dummy 10" CV="10">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 11" CV="11">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 12" CV="12">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 13" CV="13">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 14" CV="14">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 15" CV="15">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 16" CV="16">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 17" CV="17">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 18" CV="18">
-        <decVal/>
-      </variable>
-      <variable item="Dummy 19" CV="19">
-        <decVal/>
-      </variable>
--->
     </variables>
   </decoder>
-  <pane>
-  </pane>
+
+
+
+  <!-- Define the LocoNet specific items of this device, such as AnalogIOs and StringIOs -->
+
   <loconet-node>
+
+    <!-- Define the StringIOs this device has -->
+
     <stringios>
+
+      <!-- This StringIO takes a file name for a sound to play on the mp3 player -->
+
       <stringio>
-        <!-- A file name for a sound to play on the mp3 player -->
-        <name>mp3_player</name>
+        <name>MP3 player</name>
+
+		<!-- The string can be of variable length. This is important since -->
+		<!-- we don't want the file name be padded with spaces.            -->
         <variable_length>yes</variable_length>
+
+		<!-- The maximum length of the strings this StringIO can handle    -->
         <max_length>32</max_length>
+
+		<!-- The first SV register used by this StringIO -->
         <first_sv>52</first_sv>
+
+		<!-- The file names are encoded as UTF-8 -->
         <encoding>utf8</encoding>
+
+		<!-- No padding of spaces of the end of the string -->
         <pad_spaces>no</pad_spaces>
+
+		<!-- File names can only be written to the device -->
         <read_write>write</read_write>
+
       </stringio>
+
+
+      <!-- This StringIO show a text on the LCD display -->
+
       <stringio>
-        <!-- Show text on the LCD display -->
         <name>LCD display</name>
         <variable_length>no</variable_length>
         <max_length>16</max_length>
         <first_sv>60</first_sv>
+
+		<!-- Use latin1 as character encoding -->
         <encoding>latin1</encoding>
+
+		<!-- The text is always 16 characters. If the text is shorter, pad with spaces -->
         <pad_spaces>yes</pad_spaces>
+
+		<!-- The text can both be read and written, for example if the user changes the text using a local keyboard -->
         <read_write>read_write</read_write>
+
       </stringio>
+
       <stringio>
         <!-- Read input from the keyboard -->
         <name>Keyboard</name>
@@ -128,27 +138,103 @@
         <read_write>read</read_write>
       </stringio>
     </stringios>
-	<analogios>
-    <analogio>
-      <!-- Measure the output voltage of the DCC booster -->
+
+
+    <!-- Define the AnalogIOs this device has -->
+
+    <analogios>
+
+      <!-- This AnalogIO measures the output voltage of the DCC booster -->
+      <analogio>
+
         <name>Voltage</name>
+
+		<!-- The type of data sent to and from the device.                -->
+		<!--   int8 - 8 bit value. 0 - 255 or -128 - 127                  -->
+		<!--   int16 - 16 bit value. 0 - 65.535 or -32.768 - 32.767       -->
+		<!--   int32 - 32 bit value. -2.147.483.648 to 2.147.483.647      -->
+		<!--   float - a single-precision 32-bit IEEE 754 floating point  -->
+
         <type>float</type>
-        <signed>no</signed>
+
+        <!-- Four SV registers are used for this value, SV reg 20 - 23    -->
         <first_sv>20</first_sv>
+
+		<!-- Specify the min and max value for this AnalogIO used by JMRI -->
         <min_value>0</min_value>
         <max_value>20</max_value>
+
+		<!-- This value may only be read -->
         <read_write>read</read_write>
+
       </analogio>
+
+      <!-- This AnalogIO measures the output current of the DCC booster -->
+
       <analogio>
-        <!-- Measure the output current of the DCC booster -->
+
         <name>Current</name>
-        <type>float</type>
+
+		<!-- The type of data sent to and from the device.                -->
+		<!--   int8 - 8 bit value. 0 - 255 or -128 - 127                  -->
+		<!--   int16 - 16 bit value. 0 - 65.535 or -32.768 - 32.767       -->
+		<!--   int32 - 32 bit value. -2.147.483.648 to 2.147.483.647      -->
+		<!--   float - a single-precision 32-bit IEEE 754 floating point  -->
+
+        <type>int_16</type>
+
+		<!-- Is negative values allowed? -->
         <signed>no</signed>
+
+        <!-- Two SV registers are used for this value, SV reg 24 and 25   -->
         <first_sv>24</first_sv>
+
+		<!-- Specify the min and max value for this AnalogIO used by JMRI -->
         <min_value>0</min_value>
         <max_value>3.5</max_value>
+
+		<!-- This value may only be read -->
         <read_write>read</read_write>
+
+		<!-- Define the conversion of values between JMRI and the device. -->
+		<!-- If the device has a simple CPU, for example an Arduino Uno,  -->
+		<!-- it's recommended to make the conversion in JMRI instead of   -->
+		<!-- in the device CPU, since the computer JMRI runs on has a lot -->
+		<!-- more of CPU power.                                           -->
+		<!-- This tag is optional and can be left out if no conversion is -->
+		<!-- needed.                                                      -->
+
+        <convert>
+
+		  <!-- Define min and max of the values sent to and received from -->
+		  <!-- the device.                                                -->
+
+          <device>
+            <min_value>0</min_value>
+            <max_value>1023</max_value>
+		  </device>
+
+		  <!-- Define min and max of values used by JMRI. Note that these -->
+		  <!-- values may be different from the min and max values        -->
+		  <!-- specified above in the <analogio> section. For example,    -->
+		  <!-- a device that controls the voltage to the layout may use   -->
+		  <!-- the values 0 to 1023, where 1023 means 25 volts. But the   -->
+		  <!-- device may not be able to give more than 20 volts. In that -->
+		  <!-- case, the max value specified here should be 25, since the -->
+		  <!-- maximum value of the device, 1023, means 25 volts. And     -->
+		  <!-- since the device is not able to give more that 20 volts on -->
+		  <!-- its output, the max value specified in the <analogio>      -->
+		  <!-- section should be 20.                                      -->
+
+		  <jmri>
+            <min_value>0</min_value>
+            <max_value>3.5</max_value>
+		  </jmri>
+
+		</convert>
+
       </analogio>
+
       <analogio>
         <!-- Set the brightness of the lights in the room -->
         <name>Room light</name>
@@ -160,16 +246,35 @@
         <read_write>write</read_write>
       </analogio>
       <analogio>
+
         <!-- Count axles. Negative value is reverse direction -->
         <name>Axle count</name>
+
+		<!-- The type of data sent to and from the device.                -->
+		<!--   int8 - 8 bit value. 0 - 255 or -128 - 127                  -->
+		<!--   int16 - 16 bit value. 0 - 65.535 or -32.768 - 32.767       -->
+		<!--   int32 - 32 bit value. -2.147.483.648 to 2.147.483.647      -->
+		<!--   float - a single-precision 32-bit IEEE 754 floating point  -->
         <type>word</type>
+
         <signed>yes</signed>
+
         <first_sv>32</first_sv>
+
+		<!-- Read and write. We use write to clear the count  -->
         <read_write>read_write</read_write>
+
       </analogio>
+
       <analogio>
         <!-- Total axle count, independent of direction -->
         <name>Total axle count</name>
+
+		<!-- The type of data sent to and from the device.                -->
+		<!--   int8 - 8 bit value. 0 - 255 or -128 - 127                  -->
+		<!--   int16 - 16 bit value. 0 - 65.535 or -32.768 - 32.767       -->
+		<!--   int32 - 32 bit value. -2.147.483.648 to 2.147.483.647      -->
+		<!--   float - a single-precision 32-bit IEEE 754 floating point  -->
         <type>word</type>
         <signed>no</signed>
         <first_sv>32</first_sv>

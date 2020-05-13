@@ -27,17 +27,32 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
         _startSVAddress = startSVAddress;
     }
     
-    public LnStringIO(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LnNode node) {
+//    public LnStringIO(@Nonnull LnNode node, @Nonnull String sysName, @CheckForNull String userName) {
+    public LnStringIO(@Nonnull String sysName, @CheckForNull String userName) {
         super(sysName, userName);
         
-        String[] parts = sysName.split(":");
-        _node = node;
+        String systemPrefix = Manager.getSystemPrefix(sysName);
+        
+        // Remove system prefix and type letter
+        String name = sysName.substring(systemPrefix.length()+1);
+        
+        // Get LnNode address and startSV_Address
+        String[] parts = name.split(":");
+        
+        _node = InstanceManager.getDefault(LnNodeManager.class)
+                .getLnNode(Integer.parseInt(parts[0]));
+        
+        if (_node == null) {
+            throw new IllegalArgumentException("LnNode "+parts[0]+" does not exist");
+        }
+        
+//        _node = node;
         
         _startSVAddress = Integer.parseInt(parts[1]);
         
-        if (!sysName.equals(getSystemName(node, _startSVAddress))) {
-            throw new IllegalArgumentException("the system name is invalid");
-        }
+//        if (!sysName.equals(getSystemName(node, _startSVAddress))) {
+//            throw new IllegalArgumentException("the system name is invalid");
+//        }
     }
     
     /**

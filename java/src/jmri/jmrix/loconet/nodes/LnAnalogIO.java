@@ -10,6 +10,8 @@ import jmri.implementation.AbstractAnalogIO;
 
 /**
  * An AnalogIO on the LocoNet
+ * 
+ * @author Daniel Bergqvist Copyright (C) 2020
  */
 public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
 
@@ -292,6 +294,10 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
     
     
     public enum Type {
+        
+        // The Bit value is used by the LnAnalogIO_Sensor class
+        Bit(Bundle.getMessage("TypeBit"),
+            Bundle.getMessage("TypeBit_FormatDescr")),
         
         EightBitSigned(Bundle.getMessage("TypeEightBitSigned"),
             Bundle.getMessage("TypeEightBitSigned_FormatDescr")),

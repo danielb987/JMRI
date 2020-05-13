@@ -59,14 +59,16 @@ public class LoadAndStoreXml {
             List<Element> nodeElements = l.get(0).getChildren("node");
             for (Element e : nodeElements) {
                 int addr = Integer.parseInt(e.getChild("address").getTextTrim());
-
-                LnNode node = new LnNode(addr, _tc);
-
+                
+                int manufacturerID = Integer.parseInt(e.getChild("manufacturer-id").getTextTrim());
+                int developerID = Integer.parseInt(e.getChild("developer-id").getTextTrim());
+                int productID = Integer.parseInt(e.getChild("product-id").getTextTrim());
+                
+                LnNode node = new LnNode(addr, manufacturerID, developerID, productID, _tc);
+                
                 node.setName(e.getChild("name").getTextTrim());
-                node.setManufacturerID(Integer.parseInt(e.getChild("manufacturer-id").getTextTrim()));
-                node.setDeveloperID(Integer.parseInt(e.getChild("developer-id").getTextTrim()));
                 node.setSerialNumber(Integer.parseInt(e.getChild("serial-number").getTextTrim()));
-
+                
                 _tc.register(node);
             }
         }

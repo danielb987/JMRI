@@ -39,12 +39,14 @@ public class LoconetConnectionConfigXmlScaffold {
         _xmlAdapter = xmlAdapter;
     }
     
-    private void createTestNode(int address, String name, int manID, int devID, int serID) {
-        LnNode node = new LnNode(address, _tc);
-        node.setManufacturerID(manID);
-        node.setDeveloperID(devID);
-        node.setSerialNumber(serID);
+    private void createTestNode(int address, String name, int manID, int devID, int prodID, int serID) {
+        LnNode node = new LnNode(address,
+                manID,
+                devID,
+                prodID,
+                _tc);
         node.setName(name);
+        node.setSerialNumber(serID);
         _nodes.add(node);
         _tc.register(node);
     }
@@ -70,10 +72,10 @@ public class LoconetConnectionConfigXmlScaffold {
         
         _nodes = new ArrayList<>(_tc.getNodes().values());
         
-        createTestNode(57, "North yard", 10, 12, 342);
-        createTestNode(132, "East yard", 27, 33, 1);
-        createTestNode(14, "West yard", 312, 2, 3223);
-        createTestNode(253, "South yard", 3, 1212, 23);
+        createTestNode(57, "North yard", 10, 12, 0, 342);
+        createTestNode(132, "East yard", 27, 33, 0, 1);
+        createTestNode(14, "West yard", 312, 2, 0, 3223);
+        createTestNode(253, "South yard", 3, 1212, 0, 23);
     }
     
     @Test

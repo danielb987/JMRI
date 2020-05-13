@@ -52,8 +52,12 @@
   <xs:complexType name="LocoNetNodeType">
     <xs:sequence>
       <xs:element name="stringios" minOccurs="0" maxOccurs="1">
+        <xs:element name="stringio" minOccurs="1" maxOccurs="unbounded">
+        </xs:element>
       </xs:element>
       <xs:element name="analogios" minOccurs="0" maxOccurs="1">
+        <xs:element name="analogio" minOccurs="1" maxOccurs="unbounded">
+        </xs:element>
       </xs:element>
     </xs:sequence>
 <!--

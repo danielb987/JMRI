@@ -512,10 +512,6 @@ public class DiscoverThrottleFrameTest {
         log.debug("new throttle manager is {}", _tm.toString());
         _memo.getSensorManager().dispose(); // get rid of sensor manager to prevent it from sending interrogation messages
         _memo.getPowerManager().dispose(); // get rid of power manager to prevent it from sending slot 0 read message
-        
-        // Make sure we have a LnNodeManager
-        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_lnis));
-//        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager(_memo, _lnis));
     }
 
     @AfterEach
