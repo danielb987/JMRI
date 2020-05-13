@@ -46,13 +46,7 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
             throw new IllegalArgumentException("LnNode "+parts[0]+" does not exist");
         }
         
-//        _node = node;
-        
         _startSVAddress = Integer.parseInt(parts[1]);
-        
-//        if (!sysName.equals(getSystemName(node, _startSVAddress))) {
-//            throw new IllegalArgumentException("the system name is invalid");
-//        }
     }
     
     /**

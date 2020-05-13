@@ -15,7 +15,7 @@ import org.junit.Test;
  * 
  * @author Daniel Bergqvist Copyright (C) 2020
  */
-public class LnAnalogIOTest {
+public class LnAnalogIO_SensorTest {
 
     private LnTrafficController _lnis;
     private LocoNetSystemConnectionMemo _memo;
@@ -29,7 +29,7 @@ public class LnAnalogIOTest {
                 _lnis);
 //        if (1==1) throw new RuntimeException("System name: "+node.getSystemName());
         InstanceManager.getDefault(LnNodeManager.class).register(node);
-        LnAnalogIO b = new LnAnalogIO("LV1:10", null);
+        LnAnalogIO_Sensor b = new LnAnalogIO_Sensor("LV1:10", null);
         Assert.assertNotNull("exists", b);
     }
     

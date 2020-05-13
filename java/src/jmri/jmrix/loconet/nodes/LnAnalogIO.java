@@ -37,8 +37,29 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
         _startSVAddress = startSVAddress;
     }
     
-    public LnAnalogIO(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LnNode node) {
+    public LnAnalogIO(@Nonnull String sysName, @CheckForNull String userName) {
         super(sysName, userName);
+        
+        String systemPrefix = Manager.getSystemPrefix(sysName);
+        
+        // Remove system prefix and type letter
+        String name = sysName.substring(systemPrefix.length()+1);
+        
+        // Get LnNode address and startSV_Address
+        String[] parts = name.split(":");
+        
+        _node = InstanceManager.getDefault(LnNodeManager.class)
+                .getLnNode(Integer.parseInt(parts[0]));
+        
+        if (_node == null) {
+            throw new IllegalArgumentException("LnNode "+parts[0]+" does not exist");
+        }
+        
+        _startSVAddress = Integer.parseInt(parts[1]);
+        
+        
+        
+/*        
         
         String[] parts = sysName.split(":");
         _node = node;
@@ -48,6 +69,7 @@ public class LnAnalogIO extends AbstractAnalogIO implements NodeItem {
         if (!sysName.equals(getSystemName(node, _startSVAddress))) {
             throw new IllegalArgumentException("the system name is invalid");
         }
+*/        
     }
     
     /**

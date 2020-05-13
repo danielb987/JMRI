@@ -7,12 +7,8 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -20,6 +16,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.jmrix.loconet.nodes.configurexml.DecoderList;
 import jmri.InstanceManagerAutoDefault;
 import jmri.NamedBean;
+import jmri.NamedBean.DuplicateSystemNameException;
 import jmri.beans.PropertyChangeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,6 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
     public static final int PUBLIC_DOMAIN_DIY_MANAGER_ID = 13;
     public static final String PUBLIC_DOMAIN_DIY_MANAGER = "Public-domain and DIY";
     
-//    protected final TreeSet<LnNode> _lnNodes = new TreeSet<>(memo.getNamedBeanComparator(getNamedBeanClass()));
     protected final ConcurrentMap<Integer, LnNode> _lnNodesMap = new ConcurrentHashMap<>();
     
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -93,14 +89,14 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
      * Remember a LnNode created outside the manager.
      *
      * @param lnNode the bean
-     * @throws DuplicateSystemNameException if a different bean with the same system
-     *                                      name is already registered in the
+     * @throws DuplicateSystemNameException if a different node with the same
+     *                                      address is already registered in the
      *                                      manager
      */
-    public void register(@Nonnull LnNode lnNode) {
+    public void register(@Nonnull LnNode lnNode) throws DuplicateSystemNameException {
         LnNode existingBean = getLnNode(lnNode.getAddress());
         if (existingBean != null) {
-            if (existingBean == existingBean) {
+            if (lnNode == existingBean) {
                 log.debug("the LnNode is already registered: {}", lnNode.getAddress());
             } else {
                 log.error("a different LnNode with this address is already registered: {}", lnNode.getAddress());

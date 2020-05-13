@@ -4,7 +4,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.JmriException;
+import jmri.Manager;
 import jmri.Sensor;
 import jmri.implementation.AbstractSensor;
 
@@ -23,7 +25,7 @@ import jmri.implementation.AbstractSensor;
  */
 public final class LnAnalogIO_Sensor extends AbstractSensor implements PropertyChangeListener {
 
-    private final LnAnalogIO lnAnalogIO_Sensor;
+    private final LnAnalogIO lnAnalogIO;
     
     
     public LnAnalogIO_Sensor(@Nonnull LnNode node, int startSVAddress, @CheckForNull String userName) {
@@ -36,14 +38,33 @@ public final class LnAnalogIO_Sensor extends AbstractSensor implements PropertyC
                 startSVAddress),
                 userName);
         
-        lnAnalogIO_Sensor = new LnAnalogIO(node, startSVAddress, userName);
+        lnAnalogIO = new LnAnalogIO(node, startSVAddress, userName);
         
-        lnAnalogIO_Sensor.addPropertyChangeListener("State", this);
+        lnAnalogIO.addPropertyChangeListener("State", this);
     }
     
-    public LnAnalogIO_Sensor(@Nonnull String sysName, @CheckForNull String userName, @Nonnull LnNode node) {
+    public LnAnalogIO_Sensor(@Nonnull String sysName, @CheckForNull String userName) {
         super(sysName, userName);
         
+        
+        String systemPrefix = Manager.getSystemPrefix(sysName);
+        
+        // Remove system prefix and type letter
+        String name = sysName.substring(systemPrefix.length()+1);
+        
+        // Get LnNode address and startSV_Address
+        String[] parts = name.split(":");
+        
+        LnNode node = InstanceManager.getDefault(LnNodeManager.class)
+                .getLnNode(Integer.parseInt(parts[0]));
+        
+        if (node == null) {
+            throw new IllegalArgumentException("LnNode "+parts[0]+" does not exist");
+        }
+        
+        int startSVAddress = Integer.parseInt(parts[1]);
+        
+/*        
         String systemPrefix =
                 node.getTrafficController()
                         .getSystemConnectionMemo()
@@ -63,18 +84,19 @@ public final class LnAnalogIO_Sensor extends AbstractSensor implements PropertyC
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("System name is not valid", e);
         }
+*/        
         
-        lnAnalogIO_Sensor = new LnAnalogIO(node, startSVAddress, userName);
+        lnAnalogIO = new LnAnalogIO(node, startSVAddress, userName);
         
-        lnAnalogIO_Sensor.addPropertyChangeListener("State", this);
+        lnAnalogIO.addPropertyChangeListener("State", this);
     }
     
     @Override
     public void setKnownState(int newState) throws JmriException {
         if (newState == Sensor.ACTIVE) {
-            lnAnalogIO_Sensor.setCommandedAnalogValue(1);
+            lnAnalogIO.setCommandedAnalogValue(1);
         } else {
-            lnAnalogIO_Sensor.setCommandedAnalogValue(0);
+            lnAnalogIO.setCommandedAnalogValue(0);
         }
     }
 /*    
@@ -91,12 +113,12 @@ public final class LnAnalogIO_Sensor extends AbstractSensor implements PropertyC
 */    
     @Override
     public void requestUpdateFromLayout() {
-        lnAnalogIO_Sensor.requestUpdateFromLayout();
+        lnAnalogIO.requestUpdateFromLayout();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        double value = lnAnalogIO_Sensor.getKnownAnalogValue();
+        double value = lnAnalogIO.getKnownAnalogValue();
         
         if (value != 0) {
             setOwnState(Sensor.ACTIVE);
