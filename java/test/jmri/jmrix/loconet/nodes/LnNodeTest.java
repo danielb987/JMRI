@@ -135,6 +135,6 @@ public class LnNodeTest {
     }
 
 
-    private final static Logger log = LoggerFactory.getLogger(LnNodeTest.class);
+//    private final static Logger log = LoggerFactory.getLogger(LnNodeTest.class);
 
 }
