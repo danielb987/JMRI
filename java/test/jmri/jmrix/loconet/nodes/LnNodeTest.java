@@ -83,7 +83,6 @@ public class LnNodeTest {
             return;
         }
 *./        
-        
         Assert.assertNotNull("decoderFile is not null", decoderFile);
         
         Element decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
