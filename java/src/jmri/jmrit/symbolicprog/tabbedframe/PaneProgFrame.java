@@ -366,6 +366,7 @@ abstract public class PaneProgFrame extends JmriJFrame
      * @param pFrameTitle     Name/title for the frame
      * @param pProgrammerFile Name of the programmer file to use
      * @param pProg           Programmer object to be used to access CVs
+     * @param opsMode         true for opsmode, else false.
      */
     public PaneProgFrame(DecoderFile pDecoderFile, @Nonnull RosterEntry pRosterEntry,
             String pFrameTitle, String pProgrammerFile, Programmer pProg, boolean opsMode) {
@@ -510,7 +511,8 @@ abstract public class PaneProgFrame extends JmriJFrame
      *                      "model" and "productID".
      * @param aRosterEntry  The current roster entry, used to get "family".
      * @param extraIncludes additional "include" terms
-     * @param extraExcludes additional "exclude" terms
+     * @param extraExcludes additional "exclude" terms.
+     * @return true if front ended included, else false.
      */
     public static boolean isIncludedFE(Element e, Element aModelElement, RosterEntry aRosterEntry, String extraIncludes, String extraExcludes) {
 
@@ -1717,7 +1719,8 @@ abstract public class PaneProgFrame extends JmriJFrame
     }
 
     /**
-     * get value of Preference option to show empty panes
+     * get value of Preference option to show empty panes.
+     * @return value from programmer config. manager, else true.
      */
     public static boolean getShowEmptyPanes() {
         return (InstanceManager.getNullableDefault(ProgrammerConfigManager.class) == null)
@@ -1726,7 +1729,7 @@ abstract public class PaneProgFrame extends JmriJFrame
     }
 
     /**
-     * Get value of whether current item should show empty panes
+     * Get value of whether current item should show empty panes.
      */
     private boolean isShowingEmptyPanes() {
         boolean temp = getShowEmptyPanes();
