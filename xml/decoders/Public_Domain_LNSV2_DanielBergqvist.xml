@@ -88,7 +88,7 @@
 
 		<!-- The string can be of variable length. This is important since -->
 		<!-- we don't want the file name be padded with spaces.            -->
-        <variable_length>yes</variable_length>
+        <type>VariableLenghtString</type>
 
 		<!-- The maximum length of the strings this StringIO can handle    -->
         <max_length>32</max_length>
@@ -112,7 +112,7 @@
 
       <stringio>
         <name>LCD display</name>
-        <variable_length>no</variable_length>
+        <type>FixedLengthString</type>
         <max_length>16</max_length>
         <first_sv>60</first_sv>
 
@@ -130,7 +130,7 @@
       <stringio>
         <!-- Read input from the keyboard -->
         <name>Keyboard</name>
-        <variable_length>no</variable_length>
+        <type>FixedLengthString</type>
         <max_length>8</max_length>
         <first_sv>64</first_sv>
         <encoding>latin1</encoding>

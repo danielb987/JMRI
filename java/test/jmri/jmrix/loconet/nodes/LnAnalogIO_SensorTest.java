@@ -49,12 +49,10 @@ public class LnAnalogIO_SensorTest {
         
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixManager();
     }
 
     @After
     public void tearDown() {
-        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

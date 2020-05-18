@@ -45,12 +45,10 @@ public class DiscoverNodesFrameTest {
         
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixManager();
     }
 
     @After
     public void tearDown() {
-        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

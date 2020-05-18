@@ -16,6 +16,7 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     private final LnNode _node;
     private final int _startSVAddress;
     
+    private String _description = "";
     private Type _type = Type.FixedLengthString;
     private int _maxLength;
     private boolean _cutLongStrings;
@@ -99,11 +100,19 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
         return InstanceManager.getDefault(jmri.StringIOManager.class);
     }
     
+    public String getDescription() {
+        return _description;
+    }
+    
+    public void setDescription(String description) {
+        _description = description;
+    }
+    
     public Type getType() {
         return _type;
     }
     
-    protected void setType(Type type) {
+    public void setType(Type type) {
         _type = type;
     }
     

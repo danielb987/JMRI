@@ -120,7 +120,6 @@ public class LnNodeTest {
         
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initLogixManager();
         
         // Make sure we have a LnNodeManager
 //        InstanceManager.setDefault(LnNodeManager.class, new LnNodeManager());
