@@ -26,7 +26,7 @@ public class StringIO_DecoderDefinition {
         
         AbstractXmlAdapter.EnumIO<LnStringIO.Type> map = new AbstractXmlAdapter.EnumIoNames<>(LnStringIO.Type.class);
         lnStringIO.setType(map.inputFromString(e.getChildText("type")));
-//        lnStringIO.setMaximumLength(Integer.parseInt(e.getChildText("max_length")));
+        lnStringIO.setMaximumLength(Integer.parseInt(e.getChildText("max_length")));
         
         System.out.format("System name: %s%n", lnStringIO.getSystemName());
         System.out.format("Name: %s%n", lnStringIO.getDescription());

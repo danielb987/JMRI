@@ -124,7 +124,8 @@ public class LnStringIO extends AbstractStringIO implements NodeItem {
     public void setMaximumLength(int length) {
         switch (_type) {
             case FixedLengthString:
-                if (length > 8) throw new IllegalArgumentException("Max length is greater than 8 bytes");
+                if ((length % 4) != 0) throw new IllegalArgumentException("Length is not a multiple of 4 bytes");
+//                if (length > 8) throw new IllegalArgumentException("Max length is greater than 8 bytes");
                 break;
             case VariableLenghtString:
                 if (length > 129) throw new IllegalArgumentException("Max length is greater than 129 bytes");
