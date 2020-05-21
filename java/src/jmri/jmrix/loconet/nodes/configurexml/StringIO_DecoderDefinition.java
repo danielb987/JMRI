@@ -28,10 +28,10 @@ public class StringIO_DecoderDefinition {
         lnStringIO.setType(map.inputFromString(e.getChildText("type")));
         lnStringIO.setMaximumLength(Integer.parseInt(e.getChildText("max_length")));
         
-        System.out.format("System name: %s%n", lnStringIO.getSystemName());
-        System.out.format("Name: %s%n", lnStringIO.getDescription());
-        System.out.format("Type: %s%n", lnStringIO.getType().name());
-        System.out.format("Maximum length: %d%n", lnStringIO.getMaximumLength());
+//        System.out.format("System name: %s%n", lnStringIO.getSystemName());
+//        System.out.format("Name: %s%n", lnStringIO.getDescription());
+//        System.out.format("Type: %s%n", lnStringIO.getType().name());
+//        System.out.format("Maximum length: %d%n", lnStringIO.getMaximumLength());
         
         return lnStringIO;
     }
