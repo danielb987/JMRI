@@ -3,7 +3,6 @@ package jmri.managers;
 import java.util.Arrays;
 import java.util.Set;
 import jmri.AudioManager;
-import jmri.BlockManager;
 import jmri.ClockControl;
 import jmri.ConditionalManager;
 import jmri.ConfigureManager;
@@ -164,7 +163,6 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         Set<Class<?>> set = super.getInitalizes();
         set.addAll(Arrays.asList(AnalogIOManager.class,
                 AudioManager.class,
-                BlockManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
                 IdTagManager.class,
