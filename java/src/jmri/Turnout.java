@@ -4,6 +4,9 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
 
+import org.apiguardian.api.API;
+import static org.apiguardian.api.API.Status.*;
+
 /**
  * Represent a Turnout on the layout.
  * <p>
@@ -72,6 +75,7 @@ import javax.annotation.CheckForNull;
  * @see jmri.InstanceManager
  * @see jmri.jmrit.simpleturnoutctrl.SimpleTurnoutCtrlFrame
  */
+@API(status = EXPERIMENTAL)
 public interface Turnout extends DigitalIO {
 
     /**
@@ -216,6 +220,7 @@ public interface Turnout extends DigitalIO {
      * @return the feedback type
      */
     @Nonnull
+    @API(status = MAINTAINED)
     public String getFeedbackModeName();
 
     /**
