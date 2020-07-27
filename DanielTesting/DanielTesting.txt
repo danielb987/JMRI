@@ -1,0 +1,4 @@
+Daniel is testing upper case folders.
+
+/ Daniel
+
