@@ -86,7 +86,7 @@
 -warn:+noEffectAssign
 -warn:+nonnullNotRepeated
 -warn:+null
--warn:+nullAnnot
+-warn:+nullAnnot(javax.annotation.Nullable|javax.annotation.Nonnull|javax.annotation.ParametersAreNonnullByDefault)
 -warn:+nullAnnotConflict
 -warn:+nullAnnotRedundant
 -warn:+nullDereference

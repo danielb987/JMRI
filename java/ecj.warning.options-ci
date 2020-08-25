@@ -79,7 +79,7 @@
 -err:+noEffectAssign
 -err:+nonnullNotRepeated
 -err:+null
--err:+nullAnnot
+-err:+nullAnnot(javax.annotation.Nullable|javax.annotation.Nonnull|javax.annotation.ParametersAreNonnullByDefault)
 -err:+nullAnnotConflict
 -err:+nullAnnotRedundant
 -err:+nullDereference
