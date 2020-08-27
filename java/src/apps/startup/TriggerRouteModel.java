@@ -59,10 +59,10 @@ public class TriggerRouteModel extends AbstractStartupModel {
         } catch (NullPointerException ex) {
             log.error("Unable to set route \"{}\"; it has not been defined. Is its panel loaded?", this.getUserName());
             // it would be better to use a RouteNotFoundException if one existed
-            InitializationException exception = new InitializationException(Bundle.getMessage(Locale.ENGLISH, "TriggerRouteModel.RouteNotDefined", this.getUserName()),
-                    Bundle.getMessage("TriggerRouteModel.RouteNotDefined", this.getUserName()), ex);
-            this.addException(exception);
-            throw new JmriException(exception);
+            Bundle b = new Bundle();
+            b.sdfjklfjs(null);
+//            this.addException(exception);
+//            throw new JmriException(exception);
         }
 
     }

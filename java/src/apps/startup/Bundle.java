@@ -72,7 +72,7 @@ public class Bundle extends apps.Bundle {
      * @param subs   One or more objects to be inserted into the message
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key, Object... subs) {
+    static String getMessage(@CheckForNull Locale locale, String key, Object... subs) {
         return getBundle().handleGetMessage(locale, key, subs);
     }
 
