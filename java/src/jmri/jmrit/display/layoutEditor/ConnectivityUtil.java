@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Block;
 import jmri.EntryPoint;
 import jmri.InstanceManager;
@@ -763,7 +764,7 @@ final public class ConnectivityUtil {
      */
     @CheckReturnValue
     @CheckForNull
-    public SignalHead getSignalHeadAtAnchor(@CheckForNull PositionablePoint p,
+    public SignalHead getSignalHeadAtAnchor(@Nullable PositionablePoint p,
             @CheckForNull Block block, boolean facing) {
         if ((p == null) || (block == null)) {
             log.error("null arguments in call to getSignalHeadAtAnchor");
@@ -807,7 +808,7 @@ final public class ConnectivityUtil {
      */
     @CheckReturnValue
     @CheckForNull
-    public SignalMast getSignalMastAtAnchor(@CheckForNull PositionablePoint p,
+    public SignalMast getSignalMastAtAnchor(@Nullable PositionablePoint p,
             @CheckForNull Block block, boolean facing) {
         if ((p == null) || (block == null)) {
             log.error("null arguments in call to getSignalHeadAtAnchor");
@@ -870,7 +871,7 @@ final public class ConnectivityUtil {
      */
     @CheckReturnValue
     @CheckForNull
-    public SignalHead getSignalHeadAtLevelXing(@CheckForNull LevelXing x,
+    public SignalHead getSignalHeadAtLevelXing(@Nullable LevelXing x,
             @CheckForNull Block block, boolean facing) {
         if ((x == null) || (block == null)) {
             log.error("null arguments in call to getSignalHeadAtLevelXing");
@@ -1185,7 +1186,7 @@ final public class ConnectivityUtil {
      * @return true if successful; false otherwise
      */
     public boolean removeSensorsFromSignalHeadLogic(
-            @CheckForNull List<String> names, @CheckForNull SignalHead sh) {
+            @CheckForNull List<String> names, @Nullable SignalHead sh) {
         if (sh == null) {
             log.error("Null signal head on entry to removeSensorsFromSignalHeadLogic");
             return false;
@@ -1248,7 +1249,7 @@ final public class ConnectivityUtil {
      */
     @CheckReturnValue
     @CheckForNull
-    public TrackNode getNextNode(@CheckForNull TrackNode currentNode, int currentNodeType) {
+    public TrackNode getNextNode(@Nullable TrackNode currentNode, int currentNodeType) {
         if (currentNode == null) {
             log.error("getNextNode called with a null Track Node");
             return null;
@@ -2385,7 +2386,7 @@ final public class ConnectivityUtil {
      * @return 'true' if designated Block is connected; 'false' if not
      */
     private boolean trackSegmentLeadsTo(
-            @CheckForNull TrackSegment trackSegment, @CheckForNull LayoutTrack layoutTrack) {
+            @CheckForNull TrackSegment trackSegment, @Nullable LayoutTrack layoutTrack) {
         if ((trackSegment == null) || (layoutTrack == null)) {
             log.error("Null argument on entry to trackSegmentLeadsTo");
             return false;

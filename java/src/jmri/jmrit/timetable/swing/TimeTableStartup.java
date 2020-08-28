@@ -1,5 +1,7 @@
 package jmri.jmrit.timetable.swing;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.util.startup.AbstractStartupActionFactory;
 import jmri.util.startup.StartupActionFactory;
 import java.util.Locale;
@@ -15,7 +17,7 @@ import org.openide.util.lookup.ServiceProvider;
 public final class TimeTableStartup extends AbstractStartupActionFactory {
 
     @Override
-    public String getTitle(Class<?> clazz, Locale locale) {
+    public String getTitle(Class<?> clazz, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         if (clazz.equals(TimeTableAction.class)) {
             return Bundle.getMessage(locale, "TimeTableAction"); // NOI18N
         }

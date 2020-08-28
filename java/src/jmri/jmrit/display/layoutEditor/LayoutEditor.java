@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.*;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -328,7 +330,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
             ENUM_MAP = Collections.unmodifiableMap(map);
         }
 
-        public static ToolBarSide getName(@CheckForNull String name) {
+        public static ToolBarSide getName(@Nullable String name) {
             return ENUM_MAP.get(name);
         }
 
@@ -3004,7 +3006,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     }
 
     private boolean findLayoutTracksHitPoint(@Nonnull Point2D loc,
-            boolean requireUnconnected, @CheckForNull LayoutTrack avoid) {
+            boolean requireUnconnected, @Nullable LayoutTrack avoid) {
         boolean result = false; // assume failure (pessimist!)
 
         foundTrack = null;
@@ -6215,7 +6217,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         return sh;
     }
 
-    public boolean containsSignalHead(@CheckForNull SignalHead head) {
+    public boolean containsSignalHead(@Nullable SignalHead head) {
         if (head != null) {
             for (SignalHeadIcon h : signalList) {
                 if (h.getSignalHead() == head) {
@@ -6226,7 +6228,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         return false;
     }
 
-    public void removeSignalHead(@CheckForNull SignalHead head) {
+    public void removeSignalHead(@Nullable SignalHead head) {
         if (head != null) {
             for (SignalHeadIcon h : signalList) {
                 if (h.getSignalHead() == head) {
@@ -6983,7 +6985,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     /**
      * @param color new color for turnout circle.
      */
-    public void setTurnoutCircleColor(@CheckForNull Color color) {
+    public void setTurnoutCircleColor(@Nullable Color color) {
         if (color == null) {
             turnoutCircleColor = getDefaultTrackColorColor();
         } else {
@@ -6995,7 +6997,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     /**
      * @param color new color for turnout circle.
      */
-    public void setTurnoutCircleThrownColor(@CheckForNull Color color) {
+    public void setTurnoutCircleThrownColor(@Nullable Color color) {
         if (color == null) {
             turnoutCircleThrownColor = getDefaultTrackColorColor();
         } else {
@@ -7184,7 +7186,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
      * @param inBlock the block
      * @return true if block was highlighted
      */
-    public boolean highlightBlock(@CheckForNull Block inBlock) {
+    public boolean highlightBlock(@Nullable Block inBlock) {
         boolean result = false; // assume failure (pessimist!)
 
         if (leToolBarPanel.blockIDComboBox.getSelectedItem() != inBlock) {

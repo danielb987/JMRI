@@ -2,6 +2,7 @@ package jmri.jmrix.roco.z21;
 
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager;
 import jmri.Manager.NameValidity;
 import jmri.NamedBean;
@@ -109,7 +110,7 @@ public class Z21CanBusAddress {
      * @see jmri.Manager#validateSystemNameFormat(java.lang.String,
      * java.util.Locale)
      */
-    public static String validateSystemNameFormat(String name, Manager manager, Locale locale) {
+    public static String validateSystemNameFormat(String name, Manager manager, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         name = manager.validateSystemNamePrefix(name, locale);
         String[] parts = name.substring(manager.getSystemNamePrefix().length()).split(":");
         if (parts.length != 2) {
@@ -135,7 +136,7 @@ public class Z21CanBusAddress {
         return name;
     }
 
-    private static NamedBean.BadSystemNameException newBadSystemNameException(String name, String reasonKey, Locale locale){
+    private static NamedBean.BadSystemNameException newBadSystemNameException(String name, String reasonKey, @Nullable Locale locale){    // Spotbugs warns that Locale.ENGLISH may be null
         return new NamedBean.BadSystemNameException(
                 Bundle.getMessage(Locale.ENGLISH, reasonKey, name),
                 Bundle.getMessage(locale, reasonKey, name));

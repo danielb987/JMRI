@@ -1,6 +1,8 @@
 package jmri;
 
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
@@ -63,7 +65,7 @@ public interface ShutDownManager extends PropertyChangeProvider {
      *
      * @param task the task not to execute
      */
-    public void deregister(@CheckForNull ShutDownTask task);
+    public void deregister(@Nullable ShutDownTask task);
 
     /**
      * Deregister a task. Attempts to deregister a task that is not
@@ -71,7 +73,7 @@ public interface ShutDownManager extends PropertyChangeProvider {
      *
      * @param task the task not to call
      */
-    public void deregister(@CheckForNull Callable<Boolean> task);
+    public void deregister(@Nullable Callable<Boolean> task);
 
     /**
      * Deregister a task. Attempts to deregister a task that is not
@@ -79,7 +81,7 @@ public interface ShutDownManager extends PropertyChangeProvider {
      *
      * @param task the task not to run
      */
-    public void deregister(@CheckForNull Runnable task);
+    public void deregister(@Nullable Runnable task);
 
     /**
      * Provide access to the current registered shutdown tasks.

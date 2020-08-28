@@ -2,6 +2,7 @@ package jmri.jmrix.oaktree;
 
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager.NameValidity;
 import jmri.NamedBean;
 import org.slf4j.Logger;
@@ -169,7 +170,7 @@ public class SerialAddress {
      * @return systemName unmodified
      * @throws IllegalArgumentException if unable to validate systemName
      */
-    public static String validateSystemNameFormat(String systemName, String prefix, Locale locale) throws IllegalArgumentException {
+    public static String validateSystemNameFormat(String systemName, String prefix, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         if (!systemName.startsWith(prefix)) {
             throw new NamedBean.BadSystemNameException(
                     Bundle.getMessage(Locale.ENGLISH, "InvalidSystemNameInvalidPrefix", systemName),

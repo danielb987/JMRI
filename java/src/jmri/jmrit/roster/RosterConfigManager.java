@@ -10,6 +10,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.implementation.FileLocationsPreferences;
 import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
@@ -111,7 +112,7 @@ public class RosterConfigManager extends AbstractPreferencesManager {
      * @return the default owner
      */
     @Nonnull
-    public String getDefaultOwner(@CheckForNull Profile profile) {
+    public String getDefaultOwner(@Nullable Profile profile) {
         String owner = defaultOwners.get(profile);
         // defaultOwner should never be null, but check anyway to ensure its not
         if (owner == null) {
@@ -127,7 +128,7 @@ public class RosterConfigManager extends AbstractPreferencesManager {
      * @param profile      the profile to set the default owner for
      * @param defaultOwner the default owner to set
      */
-    public void setDefaultOwner(@CheckForNull Profile profile, @CheckForNull String defaultOwner) {
+    public void setDefaultOwner(@Nullable Profile profile, @Nullable String defaultOwner) {
         if (defaultOwner == null) {
             defaultOwner = "";
         }
@@ -153,7 +154,7 @@ public class RosterConfigManager extends AbstractPreferencesManager {
      * @return the directory
      */
     @Nonnull
-    public String getDirectory(@CheckForNull Profile profile) {
+    public String getDirectory(@Nullable Profile profile) {
         String directory = directories.get(profile);
         if (directory == null) {
             directory = FileUtil.PREFERENCES;
@@ -170,7 +171,7 @@ public class RosterConfigManager extends AbstractPreferencesManager {
      * @param profile   the profile to set the directory for
      * @param directory the directory to set
      */
-    public void setDirectory(@CheckForNull Profile profile, @CheckForNull String directory) {
+    public void setDirectory(@Nullable Profile profile, @Nullable String directory) {
         if (directory == null || directory.isEmpty()) {
             directory = FileUtil.PREFERENCES;
         }
@@ -200,7 +201,7 @@ public class RosterConfigManager extends AbstractPreferencesManager {
      * @return the roster for the profile
      */
     @Nonnull
-    public Roster getRoster(@CheckForNull Profile profile) {
+    public Roster getRoster(@Nullable Profile profile) {
         Roster roster = rosters.get(profile);
         if (roster == null) {
             roster = new Roster();
@@ -217,7 +218,7 @@ public class RosterConfigManager extends AbstractPreferencesManager {
      * @return the roster just set, so this method can be used in a chain
      */
     @Nonnull
-    public Roster setRoster(@CheckForNull Profile profile, @Nonnull Roster roster) {
+    public Roster setRoster(@Nullable Profile profile, @Nonnull Roster roster) {
         rosters.put(profile, roster);
         return getRoster(profile);
     }

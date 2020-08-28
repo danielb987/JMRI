@@ -3,6 +3,7 @@ package jmri;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for obtaining Lights.
@@ -99,7 +100,7 @@ public interface LightManager extends ProvidingManager<Light> {
      *                                  parsed.
      */
     @Nonnull
-    public Light newLight(@Nonnull String systemName, @CheckForNull String userName);
+    public Light newLight(@Nonnull String systemName, @Nullable String userName);
 
     /**
      * Locate a Light by its user name.

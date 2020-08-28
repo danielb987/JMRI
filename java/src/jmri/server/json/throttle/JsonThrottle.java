@@ -1,5 +1,7 @@
 package jmri.server.json.throttle;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.ADDRESS;
 import static jmri.server.json.JSON.F;
 import static jmri.server.json.JSON.FORWARD;
@@ -197,7 +199,7 @@ public class JsonThrottle implements ThrottleListener, PropertyChangeListener {
         }
     }
 
-    public void onMessage(Locale locale, JsonNode data, JsonThrottleSocketService server) {
+    public void onMessage(@Nullable Locale locale, JsonNode data, JsonThrottleSocketService server) {    // Spotbugs warns that Locale.ENGLISH may be null
         data.fields().forEachRemaining((entry) -> {
             String k = entry.getKey();
             JsonNode v = entry.getValue();

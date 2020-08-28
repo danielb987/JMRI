@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -44,7 +46,7 @@ public class HtmlTrainCommon extends TrainCommon {
 
     static private final Logger log = LoggerFactory.getLogger(HtmlTrainCommon.class);
 
-    public HtmlTrainCommon(Locale locale, Train train) throws IOException {
+    public HtmlTrainCommon(@Nullable Locale locale, Train train) throws IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         this.locale = locale;
         this.train = train;
         FileInputStream is = null;

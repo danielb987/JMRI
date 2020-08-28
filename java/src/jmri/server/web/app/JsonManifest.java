@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.server.web.spi.AngularRoute;
 import jmri.server.web.spi.WebManifest;
 import jmri.server.web.spi.WebMenuItem;
@@ -74,7 +76,7 @@ public class JsonManifest implements WebManifest {
     }
 
     @Override
-    public Set<URI> getPreloadedTranslations(Locale locale) {
+    public Set<URI> getPreloadedTranslations(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         this.initialize();
         Set<URI> found = new HashSet<>();
         this.translations.forEach((translation) -> {

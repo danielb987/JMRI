@@ -3,6 +3,8 @@ package jmri.beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -31,13 +33,13 @@ public class PropertyChangeSupport implements PropertyChangeProvider, PropertyCh
 
     /** {@inheritDoc} */
     @Override
-    public void addPropertyChangeListener(@CheckForNull PropertyChangeListener listener) {
+    public void addPropertyChangeListener(@Nullable PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void addPropertyChangeListener(@CheckForNull String propertyName,
+    public void addPropertyChangeListener(@Nullable String propertyName,
             @CheckForNull PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
     }
@@ -50,19 +52,19 @@ public class PropertyChangeSupport implements PropertyChangeProvider, PropertyCh
 
     /** {@inheritDoc} */
     @Override
-    public PropertyChangeListener[] getPropertyChangeListeners(@CheckForNull String propertyName) {
+    public PropertyChangeListener[] getPropertyChangeListeners(@Nullable String propertyName) {
         return propertyChangeSupport.getPropertyChangeListeners(propertyName);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void removePropertyChangeListener(@CheckForNull PropertyChangeListener listener) {
+    public void removePropertyChangeListener(@Nullable PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void removePropertyChangeListener(@CheckForNull String propertyName,
+    public void removePropertyChangeListener(@Nullable String propertyName,
             @CheckForNull PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
     }

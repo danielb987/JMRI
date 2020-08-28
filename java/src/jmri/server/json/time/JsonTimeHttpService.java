@@ -1,5 +1,7 @@
 package jmri.server.json.time;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.OFF;
 import static jmri.server.json.JSON.ON;
 import static jmri.server.json.JSON.RATE;
@@ -34,7 +36,7 @@ public class JsonTimeHttpService extends JsonHttpService {
 
     @Override
     // using @CheckForNull to override @Nonnull in super class
-    public JsonNode doGet(String type, @CheckForNull String name, JsonNode data, JsonRequest request)
+    public JsonNode doGet(String type, @Nullable String name, JsonNode data, JsonRequest request)
             throws JsonException {
         Timebase timebase = InstanceManager.getDefault(Timebase.class);
         return doGet(timebase, timebase.getTime(), request.id);
@@ -50,7 +52,7 @@ public class JsonTimeHttpService extends JsonHttpService {
 
     @Override
     // using @CheckForNull to override @Nonnull in super class
-    public JsonNode doPost(String type, @CheckForNull String name, JsonNode data, JsonRequest request)
+    public JsonNode doPost(String type, @Nullable String name, JsonNode data, JsonRequest request)
             throws JsonException {
         Timebase timebase = InstanceManager.getDefault(Timebase.class);
         try {

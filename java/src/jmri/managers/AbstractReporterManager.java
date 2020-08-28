@@ -3,6 +3,7 @@ package jmri.managers;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager;
 import jmri.Reporter;
 import jmri.ReporterManager;
@@ -95,7 +96,7 @@ public abstract class AbstractReporterManager extends AbstractManager<Reporter>
     /** {@inheritDoc} */
     @Override
     @Nonnull
-    public Reporter newReporter(@Nonnull String systemName, @CheckForNull String userName) {
+    public Reporter newReporter(@Nonnull String systemName, @Nullable String userName) {
         Objects.requireNonNull(systemName, "SystemName cannot be null. UserName was "
                + ((userName == null) ? "null" : userName));  // NOI18N
         log.debug("new Reporter: {} {}", systemName, userName);

@@ -1,6 +1,8 @@
 package jmri;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +167,7 @@ public interface Sensor extends DigitalIO {
      *
      * @param re the reporter to associate with the sensor
      */
-    public void setReporter(@CheckForNull Reporter re);
+    public void setReporter(@Nullable Reporter re);
 
     /**
      * Retrieve the reporter associated with this sensor if there is one.

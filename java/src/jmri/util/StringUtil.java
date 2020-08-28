@@ -4,6 +4,7 @@ import java.util.Arrays;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Common utility methods for working with Strings.
@@ -393,7 +394,7 @@ public class StringUtil {
      */
     @CheckReturnValue
     @CheckForNull
-    public static String parenQuote(@CheckForNull String in) {
+    public static String parenQuote(@Nullable String in) {
         if (in == null || in.equals("")) {
             return in;
         }
@@ -431,7 +432,7 @@ public class StringUtil {
      */
     @CheckReturnValue
     @CheckForNull
-    static String parenUnQuote(@CheckForNull String in) {
+    static String parenUnQuote(@Nullable String in) {
         if (in == null || in.equals("")) {
             return in;
         }
@@ -453,7 +454,7 @@ public class StringUtil {
 
     @CheckReturnValue
     @Nonnull
-    public static java.util.List<String> splitParens(@CheckForNull String in) {
+    public static java.util.List<String> splitParens(@Nullable String in) {
         java.util.ArrayList<String> result = new java.util.ArrayList<>();
         if (in == null || in.equals("")) {
             return result;

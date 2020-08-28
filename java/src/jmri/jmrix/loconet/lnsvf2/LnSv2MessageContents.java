@@ -1,6 +1,8 @@
 package jmri.jmrix.loconet.lnsvf2;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.jmrix.loconet.LnConstants;
 import jmri.jmrix.loconet.LocoNetMessage;
 import org.slf4j.Logger;
@@ -309,7 +311,7 @@ public class LnSv2MessageContents {
      *      properties have been translated to that Locale, else in the deafult 
      *      English language.
      */
-    public String toString(Locale locale) {
+    public String toString(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         String returnString;
         log.debug("interpreting an SV2 message - cmd is {}", sv_cmd);  // NOI18N
         

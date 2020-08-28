@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -29,7 +31,7 @@ public class HtmlConductor extends HtmlTrainCommon {
 
     private final static Logger log = LoggerFactory.getLogger(HtmlConductor.class);
 
-    public HtmlConductor(Locale locale, Train train) throws IOException {
+    public HtmlConductor(@Nullable Locale locale, Train train) throws IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         super(locale, train);
         this.resourcePrefix = "Conductor";  // NOI18N
     }

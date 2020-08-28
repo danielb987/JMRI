@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JOptionPane;
 import jmri.Block;
 import jmri.BlockManager;
@@ -168,7 +169,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
 
     @CheckReturnValue
     @CheckForNull
-    public LayoutBlock getLayoutBlock(@CheckForNull Block block) {
+    public LayoutBlock getLayoutBlock(@Nullable Block block) {
         for (LayoutBlock lb : getNamedBeanSet()) {
             if (lb.getBlock() == block) {
                 return lb;
@@ -187,7 +188,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
      */
     @CheckReturnValue
     @CheckForNull
-    public LayoutBlock getBlockWithSensorAssigned(@CheckForNull Sensor s) {
+    public LayoutBlock getBlockWithSensorAssigned(@Nullable Sensor s) {
         for (LayoutBlock block : getNamedBeanSet()) {
             if (block.getOccupancySensor() == s) {
                 return block;
@@ -1396,7 +1397,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
      */
     @CheckReturnValue
     @CheckForNull
-    public NamedBean getFacingNamedBean(@CheckForNull Block facingBlock,
+    public NamedBean getFacingNamedBean(@Nullable Block facingBlock,
             @CheckForNull Block protectedBlock,
             @CheckForNull LayoutEditor panel) {
         NamedBean bean = getFacingBean(facingBlock, protectedBlock, panel, SignalMast.class);
@@ -1449,7 +1450,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
      */
     @CheckReturnValue
     @CheckForNull
-    public Sensor getFacingSensor(@CheckForNull Block facingBlock,
+    public Sensor getFacingSensor(@Nullable Block facingBlock,
             @CheckForNull Block protectedBlock,
             @CheckForNull LayoutEditor panel) {
         return (Sensor) getFacingBean(facingBlock, protectedBlock, panel, Sensor.class);
@@ -1469,7 +1470,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
      */
     @CheckReturnValue
     @CheckForNull
-    public NamedBean getFacingBean(@CheckForNull Block facingBlock,
+    public NamedBean getFacingBean(@Nullable Block facingBlock,
             @CheckForNull Block protectedBlock,
             @CheckForNull LayoutEditor panel, Class< ?> T) {
         //check input
@@ -2025,7 +2026,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
 
     @Nonnull
     public List<LayoutBlock> getProtectingBlocksBySensor(
-            @CheckForNull Sensor sensor, @CheckForNull LayoutEditor panel) {
+            @CheckForNull Sensor sensor, @Nullable LayoutEditor panel) {
         return getProtectingBlocksByBean(sensor, panel);
     }
 
@@ -2104,7 +2105,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
     @CheckReturnValue
     @CheckForNull
     public LayoutBlock getProtectedBlockBySensor(
-            @CheckForNull Sensor sensor, @CheckForNull LayoutEditor panel) {
+            @CheckForNull Sensor sensor, @Nullable LayoutEditor panel) {
         List<LayoutBlock> proBlocks = getProtectingBlocksByBean(sensor, panel);
 
         if (proBlocks.isEmpty()) {
@@ -2124,7 +2125,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
     @CheckReturnValue
     @CheckForNull
     public LayoutBlock getFacingBlockByNamedBean(
-            @Nonnull NamedBean nb, @CheckForNull LayoutEditor panel) {
+            @Nonnull NamedBean nb, @Nullable LayoutEditor panel) {
         if (nb instanceof SignalHead) {
             return getFacingBlock((SignalHead) nb, panel);
         }
@@ -2354,7 +2355,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
     @CheckReturnValue
     @CheckForNull
     public LayoutBlock getProtectedBlock(
-            @Nonnull SignalHead signalHead, @CheckForNull LayoutEditor panel) {
+            @Nonnull SignalHead signalHead, @Nullable LayoutEditor panel) {
         LayoutBlock result = null;  //assume failure (pessimist!)
         if (panel != null) {
             String userName = signalHead.getUserName();
@@ -2402,7 +2403,7 @@ public class LayoutBlockManager extends AbstractManager<LayoutBlock> implements 
     @CheckReturnValue
     @CheckForNull
     public LayoutBlock getFacingBlock(
-            @Nonnull SignalHead signalHead, @CheckForNull LayoutEditor panel) {
+            @Nonnull SignalHead signalHead, @Nullable LayoutEditor panel) {
         LayoutBlock result = null;  //assume failure (pessimist!)
         if (panel != null) {
             String userName = signalHead.getUserName();

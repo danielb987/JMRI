@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -76,7 +78,7 @@ public abstract class JsonNonProvidedNamedBeanHttpService<T extends NamedBean> e
      * @throws JsonException may be thrown by concrete implementations
      */
     @Nonnull
-    protected final JsonNode doGetList(Manager<T> manager, String type, JsonNode data, Locale locale, int id)
+    protected final JsonNode doGetList(Manager<T> manager, String type, JsonNode data, @Nullable Locale locale, int id)    // Spotbugs warns that Locale.ENGLISH may be null
             throws JsonException {
         return doGetList(manager, type, data, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }

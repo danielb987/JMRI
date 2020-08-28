@@ -16,6 +16,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import jmri.Version;
 import jmri.profile.Profile;
 import jmri.profile.ProfileUtils;
@@ -70,7 +71,7 @@ public final class JmriPreferencesProvider {
      *         path.
      */
     @Nonnull
-    static synchronized JmriPreferencesProvider findProvider(@CheckForNull File path, boolean shared) {
+    static synchronized JmriPreferencesProvider findProvider(@Nullable File path, boolean shared) {
         if (shared) {
             return SHARED_PROVIDERS.computeIfAbsent(path, v -> new JmriPreferencesProvider(path, shared));
         } else {
@@ -98,7 +99,7 @@ public final class JmriPreferencesProvider {
      *         clazz for project.
      */
     @Nonnull
-    public static Preferences getPreferences(@CheckForNull final Profile project, @CheckForNull final Class<?> clazz,
+    public static Preferences getPreferences(@Nullable final Profile project, @Nullable final Class<?> clazz,
             final boolean shared) {
         return getPreferences(project, clazz != null ? clazz.getPackage() : null, shared);
     }
@@ -121,7 +122,7 @@ public final class JmriPreferencesProvider {
      *         project.
      */
     @Nonnull
-    public static Preferences getPreferences(@CheckForNull final Profile project, @CheckForNull final Package pkg,
+    public static Preferences getPreferences(@Nullable final Profile project, @Nullable final Package pkg,
             final boolean shared) {
         if (project != null) {
             return findProvider(project.getPath(), shared).getPreferences(pkg);
@@ -153,7 +154,7 @@ public final class JmriPreferencesProvider {
      */
     @Nonnull
     @Deprecated
-    public static Preferences getPreferences(@CheckForNull final Profile project, @CheckForNull final String pkg,
+    public static Preferences getPreferences(@Nullable final Profile project, @Nullable final String pkg,
             final boolean shared) {
         if (project != null) {
             return findProvider(project.getPath(), shared).getPreferences(pkg);
@@ -183,7 +184,7 @@ public final class JmriPreferencesProvider {
      *             construction of a Profile object.
      */
     @Deprecated
-    public static Preferences getPreferences(@CheckForNull final File path, @CheckForNull final Class<?> clazz,
+    public static Preferences getPreferences(@Nullable final File path, @Nullable final Class<?> clazz,
             final boolean shared) {
         return findProvider(path, shared).getPreferences(clazz);
     }
@@ -195,7 +196,7 @@ public final class JmriPreferencesProvider {
      * @return The shared or private Preferences node for the package.
      */
     // package private
-    Preferences getPreferences(@CheckForNull final Package pkg) {
+    Preferences getPreferences(@Nullable final Package pkg) {
         if (pkg == null) {
             return this.root;
         }
@@ -211,7 +212,7 @@ public final class JmriPreferencesProvider {
      *         clazz.
      */
     // package private
-    Preferences getPreferences(@CheckForNull final Class<?> clazz) {
+    Preferences getPreferences(@Nullable final Class<?> clazz) {
         return getPreferences(clazz != null ? clazz.getPackage() : null);
     }
 
@@ -222,14 +223,14 @@ public final class JmriPreferencesProvider {
      * @return The shared or private Preferences node for the package.
      */
     // package private
-    Preferences getPreferences(@CheckForNull final String pkg) {
+    Preferences getPreferences(@Nullable final String pkg) {
         if (pkg == null) {
             return this.root;
         }
         return this.root.node(pkg);
     }
 
-    JmriPreferencesProvider(@CheckForNull File path, boolean shared) {
+    JmriPreferencesProvider(@Nullable File path, boolean shared) {
         this.path = path;
         this.shared = shared;
         this.firstUse = !this.getPreferencesFile().exists();

@@ -1,5 +1,7 @@
 package jmri.jmris.json;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.DATA;
 import static jmri.server.json.JSON.MODE;
 import static jmri.server.json.JSON.NODE_CV;
@@ -78,7 +80,7 @@ public class JsonProgrammerServer extends AbstractProgrammerServer {
         this.parseRequest(Locale.getDefault(), this.mapper.readTree(statusString).path(DATA));
     }
 
-    public void parseRequest(Locale locale, JsonNode data) throws JmriException, IOException {
+    public void parseRequest(@Nullable Locale locale, JsonNode data) throws JmriException, IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         // get a programming mode, if possible
         ProgrammingMode mode = ProgrammingMode.REGISTERMODE;
         String requestMode = data.path(MODE).asText();

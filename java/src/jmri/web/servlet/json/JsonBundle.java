@@ -3,6 +3,8 @@ package jmri.web.servlet.json;
 import java.util.Locale;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -54,7 +56,7 @@ public class JsonBundle extends jmri.server.json.Bundle {
      * @param key    Bundle key to be translated
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key) {
+    static String getMessage(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key);
     }
 
@@ -89,7 +91,7 @@ public class JsonBundle extends jmri.server.json.Bundle {
      * @param subs   One or more objects to be inserted into the message
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key, Object... subs) {
+    static String getMessage(@Nullable Locale locale, String key, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key, subs);
     }
 
@@ -106,7 +108,7 @@ public class JsonBundle extends jmri.server.json.Bundle {
     }
 
     @Override
-    protected String retry(Locale locale, String key) {
+    protected String retry(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return super.getBundle().handleGetMessage(locale, key);
     }
 

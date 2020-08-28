@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Provide integration for the JMRI web services so servlets can visually
@@ -81,5 +82,5 @@ public interface WebManifest {
      * @param locale the requested locale for the translations
      * @return a list of translation sources
      */
-    public Set<URI> getPreloadedTranslations(Locale locale);
+    public Set<URI> getPreloadedTranslations(@Nullable Locale locale);    // Spotbugs warns that Locale.ENGLISH may be null
 }

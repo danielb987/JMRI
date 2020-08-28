@@ -12,6 +12,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import jmri.util.*;
 import jmri.util.swing.JmriColorChooser;
@@ -417,7 +419,7 @@ public class LayoutShape {
     private JPopupMenu popup = null;
 
     @Nonnull
-    protected JPopupMenu showShapePopUp(@CheckForNull MouseEvent mouseEvent, HitPointType hitPointType) {
+    protected JPopupMenu showShapePopUp(@Nullable MouseEvent mouseEvent, HitPointType hitPointType) {
         if (popup != null) {
             popup.removeAll();
         } else {

@@ -1,6 +1,8 @@
 package jmri.jmrit.roster;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.util.startup.AbstractStartupActionFactory;
 import jmri.util.startup.StartupActionFactory;
 import org.openide.util.lookup.ServiceProvider;
@@ -14,7 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
 public final class RosterStartupActionFactory extends AbstractStartupActionFactory {
 
     @Override
-    public String getTitle(Class<?> clazz, Locale locale) throws IllegalArgumentException {
+    public String getTitle(Class<?> clazz, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         if (clazz.equals(RecreateRosterAction.class)) {
             return Bundle.getMessage(locale, "StartupRecreateRosterAction");
         }

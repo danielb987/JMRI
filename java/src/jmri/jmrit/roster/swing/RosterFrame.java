@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -1490,7 +1492,7 @@ public class RosterFrame extends TwoPaneTBWindow implements RosterEntrySelector,
      *            ProgrammerManager, care will be taken not to trigger the
      *            automatic creation of a new ProgrammerManager
      */
-    protected void updateProgrammerStatus(@CheckForNull PropertyChangeEvent evt) {
+    protected void updateProgrammerStatus(@Nullable PropertyChangeEvent evt) {
         log.debug("Updating Programmer Status");
         ConnectionConfig oldServMode = serModeProCon;
         ConnectionConfig oldOpsMode = opsModeProCon;

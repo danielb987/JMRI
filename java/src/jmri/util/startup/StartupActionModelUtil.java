@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import jmri.Disposable;
 import jmri.InstanceManager;
 import jmri.beans.Bean;
@@ -90,7 +91,7 @@ public class StartupActionModelUtil extends Bean implements Disposable {
     }
 
     @CheckForNull
-    public String getClassName(@CheckForNull String name) {
+    public String getClassName(@Nullable String name) {
         if (name != null && !name.isEmpty()) {
             this.prepareActionsHashMap();
             for (Entry<Class<?>, ActionAttributes> entry : this.actions.entrySet()) {
@@ -205,7 +206,7 @@ public class StartupActionModelUtil extends Bean implements Disposable {
     }
 
     @CheckForNull
-    public String getOverride(@CheckForNull String name) {
+    public String getOverride(@Nullable String name) {
         this.prepareActionsHashMap();
         if (name != null && this.overrides.containsKey(name)) {
             return this.overrides.get(name).getName();

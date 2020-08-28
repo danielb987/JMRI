@@ -3,6 +3,7 @@ package jmri.beans;
 import java.beans.PropertyChangeListener;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 /**
  * A set of methods that would need to be implemented to ensure the implementing
@@ -30,7 +31,7 @@ public interface PropertyChangeProvider {
      *
      * @param listener The PropertyChangeListener to be added
      */
-    public void addPropertyChangeListener(@CheckForNull PropertyChangeListener listener);
+    public void addPropertyChangeListener(@Nullable PropertyChangeListener listener);
 
     /**
      * Add a {@link java.beans.PropertyChangeListener} for a specific property.
@@ -38,7 +39,7 @@ public interface PropertyChangeProvider {
      * @param propertyName The name of the property to listen on.
      * @param listener     The PropertyChangeListener to be added
      */
-    public void addPropertyChangeListener(@CheckForNull String propertyName,
+    public void addPropertyChangeListener(@Nullable String propertyName,
             @CheckForNull PropertyChangeListener listener);
 
     /**
@@ -58,14 +59,14 @@ public interface PropertyChangeProvider {
      * @return an array of PropertyChangeListeners
      */
     @Nonnull
-    public PropertyChangeListener[] getPropertyChangeListeners(@CheckForNull String propertyName);
+    public PropertyChangeListener[] getPropertyChangeListeners(@Nullable String propertyName);
 
     /**
      * Remove the specified listener from this object.
      *
      * @param listener The {@link java.beans.PropertyChangeListener} to remove.
      */
-    public void removePropertyChangeListener(@CheckForNull PropertyChangeListener listener);
+    public void removePropertyChangeListener(@Nullable PropertyChangeListener listener);
 
     /**
      * Remove the specified listener of the specified property from this object.
@@ -74,7 +75,7 @@ public interface PropertyChangeProvider {
      * @param listener     The {@link java.beans.PropertyChangeListener} to
      *                     remove.
      */
-    public void removePropertyChangeListener(@CheckForNull String propertyName,
+    public void removePropertyChangeListener(@Nullable String propertyName,
             @CheckForNull PropertyChangeListener listener);
 
 }

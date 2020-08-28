@@ -1,5 +1,7 @@
 package jmri.server.json;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.FORCE_DELETE;
 import static jmri.server.json.JSON.CONFLICT;
 
@@ -530,7 +532,7 @@ public abstract class JsonHttpService {
      * @see #message(ObjectMapper, ArrayNode, String, int)
      * @see #message(ObjectMapper, String, JsonNode, String, int)
      */
-    public final ObjectNode message(@Nonnull String type, @Nonnull JsonNode data, @CheckForNull String method, int id) {
+    public final ObjectNode message(@Nonnull String type, @Nonnull JsonNode data, @Nullable String method, int id) {
         return message(mapper, type, data, method, id);
     }
 

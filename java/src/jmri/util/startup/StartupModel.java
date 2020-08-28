@@ -2,6 +2,7 @@ package jmri.util.startup;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import jmri.JmriException;
 
@@ -29,7 +30,7 @@ public interface StartupModel {
      *
      * @param name the name, an empty string, or null
      */
-    public void setName(@CheckForNull String name);
+    public void setName(@Nullable String name);
 
     /**
      * Test is model is a valid model. Invalid models will not be shown or saved

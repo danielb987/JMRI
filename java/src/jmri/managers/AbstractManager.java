@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
@@ -96,7 +97,7 @@ public abstract class AbstractManager<E extends NamedBean> extends VetoableChang
     /** {@inheritDoc} */
     @Override
     @Nonnull
-    public String makeSystemName(@Nonnull String s, boolean logErrors, Locale locale) {
+    public String makeSystemName(@Nonnull String s, boolean logErrors, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         try {
             return Manager.super.makeSystemName(s, logErrors, locale);
         } catch (IllegalArgumentException ex) {

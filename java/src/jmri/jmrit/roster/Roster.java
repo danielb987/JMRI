@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -201,7 +203,7 @@ public class Roster extends XmlFile implements RosterGroupSelector, PropertyChan
      * @return the roster for the profile
      */
     public static synchronized @Nonnull
-    Roster getRoster(@CheckForNull Profile profile) {
+    Roster getRoster(@Nullable Profile profile) {
         return InstanceManager.getDefault(RosterConfigManager.class).getRoster(profile);
     }
 
@@ -1259,7 +1261,7 @@ public class Roster extends XmlFile implements RosterGroupSelector, PropertyChan
      * @param locale The desired locale
      * @return "All Entries" in the specified locale
      */
-    public static String allEntries(Locale locale) {
+    public static String allEntries(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return Bundle.getMessage(locale, "ALLENTRIES"); // NOI18N
     }
 

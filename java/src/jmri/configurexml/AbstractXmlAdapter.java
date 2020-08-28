@@ -4,6 +4,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
@@ -244,7 +245,7 @@ public abstract class AbstractXmlAdapter implements XmlAdapter {
          * @return enum value.
          */
         @Nonnull
-        abstract public T inputFromString(@CheckForNull String s);
+        abstract public T inputFromString(@Nullable String s);
 
         /**
          * Convert a JDOM Attribute from an XML file to an enum value
@@ -283,7 +284,7 @@ public abstract class AbstractXmlAdapter implements XmlAdapter {
         /** {@inheritDoc} */
         @Override
         @Nonnull
-        public T inputFromString(@CheckForNull String s) {
+        public T inputFromString(@Nullable String s) {
             if (s == null) {
                 log.error("from String null get {} for {}", clazz.getEnumConstants()[0].name(), clazz);
                 return clazz.getEnumConstants()[0];
@@ -336,7 +337,7 @@ public abstract class AbstractXmlAdapter implements XmlAdapter {
         /** {@inheritDoc} */
         @Override
         @Nonnull
-        public T inputFromString(@CheckForNull String s) {
+        public T inputFromString(@Nullable String s) {
             if (s == null) {
                 log.error("from String null get {} for {}", clazz.getEnumConstants()[0].name(), clazz);
                 return clazz.getEnumConstants()[0];
@@ -438,7 +439,7 @@ public abstract class AbstractXmlAdapter implements XmlAdapter {
         /** {@inheritDoc} */
         @Override
         @Nonnull
-        public T inputFromString(@CheckForNull String s) {
+        public T inputFromString(@Nullable String s) {
             if (s == null) {
                 log.error("from String null get {} for {}", clazz.getEnumConstants()[0].name(), clazz);
                 return clazz.getEnumConstants()[0];

@@ -3,6 +3,7 @@ package jmri.implementation;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.AnalogIO;
@@ -32,7 +33,7 @@ public abstract class AbstractAnalogIO extends AbstractNamedBean implements Anal
      * @param systemName AnalogIO system name
      * @param userName   AnalogIO user name
      */
-    public AbstractAnalogIO(@Nonnull String systemName, @CheckForNull String userName) {
+    public AbstractAnalogIO(@Nonnull String systemName, @Nullable String userName) {
         super(systemName, userName);
     }
 

@@ -1,5 +1,7 @@
 package jmri.server.json.operations;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.COLOR;
 import static jmri.server.json.JSON.COMMENT;
 import static jmri.server.json.JSON.ENGINES;
@@ -346,7 +348,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
         }
     }
 
-    private ObjectNode getCarType(String name, Locale locale, int id) throws JsonException {
+    private ObjectNode getCarType(String name, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         CarTypes manager = InstanceManager.getDefault(CarTypes.class);
         if (!manager.containsName(name)) {
             throw new JsonException(HttpServletResponse.SC_NOT_FOUND,
@@ -363,7 +365,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
         return data;
     }
 
-    private JsonNode getCarTypes(Locale locale, int id) throws JsonException {
+    private JsonNode getCarTypes(@Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         for (String name : InstanceManager.getDefault(CarTypes.class).getNames()) {
             array.add(message(CAR_TYPE, getCarType(name, locale, id), id));
@@ -371,7 +373,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
         return message(array, id);
     }
 
-    private ObjectNode getKernel(Kernel kernel, Locale locale, int id) {
+    private ObjectNode getKernel(Kernel kernel, @Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode data = mapper.createObjectNode();
         data.put(NAME, kernel.getName());
         data.put(WEIGHT, kernel.getAdjustedWeightTons());
@@ -386,7 +388,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
         return data;
     }
 
-    private ArrayNode getKernelCars(Kernel kernel, boolean asMessage, Locale locale) {
+    private ArrayNode getKernelCars(Kernel kernel, boolean asMessage, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         kernel.getCars().forEach(car -> {
             if (asMessage) {
@@ -398,7 +400,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
         return array;
     }
 
-    private JsonNode getKernels(Locale locale, int id) {
+    private JsonNode getKernels(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         carManager().getKernelNameList()
                 // individual kernels should not have id in array, but same
@@ -408,28 +410,28 @@ public class JsonOperationsHttpService extends JsonHttpService {
         return message(array, id);
     }
 
-    public ArrayNode getCars(Locale locale, int id) {
+    public ArrayNode getCars(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         carManager().getByIdList()
                 .forEach(car -> array.add(message(CAR, utilities.getCar(car, locale), id)));
         return array;
     }
 
-    public ArrayNode getEngines(Locale locale, int id) {
+    public ArrayNode getEngines(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         engineManager().getByIdList()
                 .forEach(engine -> array.add(message(ENGINE, utilities.getEngine(engine, locale), id)));
         return array;
     }
 
-    public JsonNode getLocations(Locale locale, int id) {
+    public JsonNode getLocations(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         locationManager().getLocationsByIdList()
                 .forEach(location -> array.add(message(LOCATION, utilities.getLocation(location, locale), id)));
         return message(array, id);
     }
 
-    public JsonNode getTrains(Locale locale, int id) {
+    public JsonNode getTrains(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         trainManager().getTrainsByIdList()
                 .forEach(train -> array.add(message(TRAIN, utilities.getTrain(train, locale), id)));
@@ -450,7 +452,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
      * @throws jmri.server.json.JsonException if the train cannot move to the
      *                                        location in data.
      */
-    public void setTrain(String name, JsonNode data, Locale locale, int id) throws JsonException {
+    public void setTrain(String name, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         Train train = InstanceManager.getDefault(TrainManager.class).getTrainById(name);
         JsonNode location = data.path(LOCATION);
         if (!location.isMissingNode()) {
@@ -463,11 +465,11 @@ public class JsonOperationsHttpService extends JsonHttpService {
         }
     }
 
-    public ObjectNode postLocation(String name, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postLocation(String name, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return postLocation(getLocationByName(name, locale, id), data, locale, id);
     }
 
-    public ObjectNode postLocation(Location location, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postLocation(Location location, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         // set things that throw exceptions first
         if (!data.path(REPORTER).isMissingNode()) {
             String name = data.path(REPORTER).asText();
@@ -484,11 +486,11 @@ public class JsonOperationsHttpService extends JsonHttpService {
         return utilities.getLocation(location, locale);
     }
 
-    public ObjectNode postTrack(String name, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postTrack(String name, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return postTrack(getTrackByName(name, data, locale, id), data, locale, id);
     }
 
-    public ObjectNode postTrack(Track track, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postTrack(Track track, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         // set things that throw exceptions first
         if (!data.path(REPORTER).isMissingNode()) {
             String name = data.path(REPORTER).asText();
@@ -519,7 +521,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
      * @return the JSON representation of the car
      * @throws JsonException if a car by name cannot be found
      */
-    public ObjectNode postCar(String name, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postCar(String name, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return postCar(getCarByName(name, locale, id), data, locale, id);
     }
 
@@ -536,7 +538,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
      * @return the JSON representation of the car
      * @throws JsonException if unable to set location
      */
-    public ObjectNode postCar(@Nonnull Car car, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postCar(@Nonnull Car car, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode result = postRollingStock(car, data, locale, id);
         car.setCaboose(data.path(CABOOSE).asBoolean(car.isCaboose()));
         car.setHazardous(data.path(HAZARDOUS).asBoolean(car.isHazardous()));
@@ -559,7 +561,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
      * @return the JSON representation of the engine
      * @throws JsonException if a engine by name cannot be found
      */
-    public ObjectNode postEngine(String name, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postEngine(String name, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return postEngine(getEngineByName(name, locale, id), data, locale, id);
     }
 
@@ -576,7 +578,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
      * @return the JSON representation of the engine
      * @throws JsonException if unable to set location
      */
-    public ObjectNode postEngine(@Nonnull Engine engine, JsonNode data, Locale locale, int id) throws JsonException {
+    public ObjectNode postEngine(@Nonnull Engine engine, JsonNode data, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         // set model early, since setting other values depend on it
         engine.setModel(data.path(MODEL).asText(engine.getModel()));
         ObjectNode result = postRollingStock(engine, data, locale, id);
@@ -597,7 +599,7 @@ public class JsonOperationsHttpService extends JsonHttpService {
      * @return the JSON representation of the rolling stock
      * @throws JsonException if unable to set location
      */
-    public ObjectNode postRollingStock(@Nonnull RollingStock rs, JsonNode data, Locale locale, int id)
+    public ObjectNode postRollingStock(@Nonnull RollingStock rs, JsonNode data, @Nullable Locale locale, int id)    // Spotbugs warns that Locale.ENGLISH may be null
             throws JsonException {
         String name = rs.getId();
         // make changes that can throw an exception first

@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -34,7 +36,7 @@ public class HtmlManifest extends HtmlTrainCommon {
     private JsonNode jsonManifest = null;
     private final static Logger log = LoggerFactory.getLogger(HtmlManifest.class);
 
-    public HtmlManifest(Locale locale, Train train) throws IOException {
+    public HtmlManifest(@Nullable Locale locale, Train train) throws IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         super(locale, train);
         this.mapper = new ObjectMapper();
         this.resourcePrefix = "Manifest";

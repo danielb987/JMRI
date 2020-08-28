@@ -1,5 +1,7 @@
 package jmri.jmrit.display.layoutEditor;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static java.lang.Float.POSITIVE_INFINITY;
 
 import java.awt.BasicStroke;
@@ -137,7 +139,7 @@ public class LayoutTurntable extends LayoutTrack {
      *
      * @param newLayoutBlock the LayoutBlock to set
      */
-    public void setLayoutBlock(@CheckForNull LayoutBlock newLayoutBlock) {
+    public void setLayoutBlock(@Nullable LayoutBlock newLayoutBlock) {
         LayoutBlock layoutBlock = getLayoutBlock();
         if (layoutBlock != newLayoutBlock) {
             /// block has changed, if old block exists, decrement use
@@ -162,7 +164,7 @@ public class LayoutTurntable extends LayoutTrack {
      *
      * @param name the name of the new LayoutBlock
      */
-    public void setLayoutBlockByName(@CheckForNull String name) {
+    public void setLayoutBlockByName(@Nullable String name) {
         if ((name != null) && !name.isEmpty()) {
             setLayoutBlock(layoutEditor.provideLayoutBlock(name));
         }

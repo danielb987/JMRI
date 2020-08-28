@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.Locale;
@@ -180,7 +182,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
      * @param request the JSON request
      * @throws JsonException if an error occurs
      */
-    protected void doDelete(@CheckForNull T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull JsonRequest request) throws JsonException {
+    protected void doDelete(@Nullable T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull JsonRequest request) throws JsonException {
         super.doDelete(type, name, data, request);
     }
 
@@ -221,7 +223,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
      * @deprecated since 4.19.2; use {@link #doDelete(NamedBean, String, String, JsonNode, JsonRequest)} instead
      */
     @Deprecated
-    protected void doDelete(@CheckForNull T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id) throws JsonException {
+    protected void doDelete(@Nullable T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id) throws JsonException {
         doDelete(type, name, data, new JsonRequest(locale, JSON.V5, JSON.DELETE, id));
     }
 
@@ -238,7 +240,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
      * @param request the JSON request
      * @throws JsonException if an error occurs
      */
-    protected final void deleteBean(@CheckForNull T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull JsonRequest request) throws JsonException {
+    protected final void deleteBean(@Nullable T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull JsonRequest request) throws JsonException {
         if (bean == null) {
             throw new JsonException(HttpServletResponse.SC_NOT_FOUND,
                     Bundle.getMessage(request.locale, JsonException.ERROR_NOT_FOUND, type, name), request.id);
@@ -269,7 +271,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
      * @deprecated since 4.19.2; use {@link #deleteBean(NamedBean, String, String, JsonNode, JsonRequest)} instead
      */
     @Deprecated
-    protected final void deleteBean(@CheckForNull T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id) throws JsonException {
+    protected final void deleteBean(@Nullable T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id) throws JsonException {
         deleteBean(bean, name, type, data, new JsonRequest(locale, JSON.V5, JSON.DELETE, id));
     }
 

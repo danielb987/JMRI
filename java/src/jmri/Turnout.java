@@ -3,6 +3,7 @@ package jmri;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 /**
  * Represent a Turnout on the layout.
@@ -252,7 +253,7 @@ public interface Turnout extends DigitalIO {
      * @param toper TurnoutOperation subclass instance
      */
     @InvokeOnLayoutThread
-    public void setTurnoutOperation(@CheckForNull TurnoutOperation toper);
+    public void setTurnoutOperation(@Nullable TurnoutOperation toper);
 
     /**
      * Return the inverted state of the specified state
@@ -287,7 +288,7 @@ public interface Turnout extends DigitalIO {
      * @param number the feedback number of the sensor, indexed from 0
      * @throws jmri.JmriException if unable to assign the feedback sensor
      */
-    public default void provideFeedbackSensor(@CheckForNull String name, int number) throws JmriException {
+    public default void provideFeedbackSensor(@Nullable String name, int number) throws JmriException {
         switch (number) {
             case 0:
                 provideFirstFeedbackSensor(name);
@@ -300,9 +301,9 @@ public interface Turnout extends DigitalIO {
         }
     }
 
-    public void provideFirstFeedbackSensor(@CheckForNull String pName) throws JmriException;
+    public void provideFirstFeedbackSensor(@Nullable String pName) throws JmriException;
 
-    public void provideSecondFeedbackSensor(@CheckForNull String pName) throws JmriException;
+    public void provideSecondFeedbackSensor(@Nullable String pName) throws JmriException;
 
     /**
      * Get the first feedback sensor.
@@ -498,7 +499,7 @@ public interface Turnout extends DigitalIO {
      *
      * @param decoderName the name of the decoder type
      */
-    public void setDecoderName(@CheckForNull String decoderName);
+    public void setDecoderName(@Nullable String decoderName);
 
     /**
      * Use a binary output for sending commands. This appears to expose a
@@ -557,7 +558,7 @@ public interface Turnout extends DigitalIO {
      *                follow another Turnout; silently ignored if
      *                {@link #isCanFollow()} is false
      */
-    public void setLeadingTurnout(@CheckForNull Turnout turnout);
+    public void setLeadingTurnout(@Nullable Turnout turnout);
 
     /**
      * Set both the leading Turnout and if the commanded state of the leading
@@ -573,7 +574,7 @@ public interface Turnout extends DigitalIO {
      *                                turnout; false to only have non-commanded
      *                                states match
      */
-    public void setLeadingTurnout(@CheckForNull Turnout turnout, boolean followingCommandedState);
+    public void setLeadingTurnout(@Nullable Turnout turnout, boolean followingCommandedState);
 
     /**
      * Check if this Turnout is following all states or only the non-commanded

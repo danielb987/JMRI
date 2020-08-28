@@ -2,6 +2,7 @@ package jmri.jmrix.loconet;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.IdTag;
 import jmri.InstanceManager;
 import jmri.managers.configurexml.DefaultIdTagManagerXml;
@@ -33,7 +34,7 @@ public class TranspondingTagManager extends jmri.managers.DefaultIdTagManager {
     
     @Override
     @Nonnull
-    public IdTag newIdTag(@Nonnull String systemName, @CheckForNull String userName) {
+    public IdTag newIdTag(@Nonnull String systemName, @Nullable String userName) {
         if (log.isDebugEnabled()) {
             log.debug("new IdTag:{};{}", (systemName == null) ? "null" : systemName, (userName == null) ? "null" : userName);
         }

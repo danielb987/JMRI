@@ -11,6 +11,8 @@ import java.awt.geom.Rectangle2D;
 import java.text.MessageFormat;
 import java.util.*;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import jmri.*;
 import jmri.jmrit.display.EditorManager;
@@ -356,7 +358,7 @@ public class PositionablePoint extends LayoutTrack {
         }
     }
 
-    private void setEastBoundSignalName(@CheckForNull String signalHead) {
+    private void setEastBoundSignalName(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalEastHeadNamed = null;
             return;
@@ -425,7 +427,7 @@ public class PositionablePoint extends LayoutTrack {
         }
     }
 
-    private void setWestBoundSignalName(@CheckForNull String signalHead) {
+    private void setWestBoundSignalName(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalWestHeadNamed = null;
             return;
@@ -709,7 +711,7 @@ public class PositionablePoint extends LayoutTrack {
      * @param newTrack the new track connection
      * @return true if successful
      */
-    public boolean replaceTrackConnection(@CheckForNull TrackSegment oldTrack, @CheckForNull TrackSegment newTrack) {
+    public boolean replaceTrackConnection(@Nullable TrackSegment oldTrack, @Nullable TrackSegment newTrack) {
         boolean result = false; // assume failure (pessimist!)
         // trying to replace old track with null?
         if (newTrack == null) {

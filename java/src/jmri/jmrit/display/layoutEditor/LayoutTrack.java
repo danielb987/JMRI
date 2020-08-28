@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.util.*;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import jmri.*;
 import jmri.util.*;
@@ -151,7 +153,7 @@ abstract public class LayoutTrack {
     }
 
     // optional parameter forceTrack = false
-    final protected Color getColorForTrackBlock(@CheckForNull LayoutBlock lb) {
+    final protected Color getColorForTrackBlock(@Nullable LayoutBlock lb) {
         return getColorForTrackBlock(lb, false);
     }
 
@@ -163,7 +165,7 @@ abstract public class LayoutTrack {
     }
 
     // optional parameter forceTrack = false
-    final protected Color setColorForTrackBlock(Graphics2D g2, @CheckForNull LayoutBlock lb) {
+    final protected Color setColorForTrackBlock(Graphics2D g2, @Nullable LayoutBlock lb) {
         return setColorForTrackBlock(g2, lb, false);
     }
 

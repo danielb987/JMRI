@@ -7,6 +7,8 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ListIterator;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -622,7 +624,7 @@ public class CombinedLocoSelPane extends LocoSelPane implements PropertyChangeLi
     // TODO: Fix inheritance.  This is both a base class (where startProgrammer really isn't part of the contract_
     //       and a first implementation (where this method is needed).  Because it's part of the contract, it can't be
     //       made abstract:  CombinedLocoSelListPane and CombinedLocoSelTreePane have no need for it.
-    protected void startProgrammer(@CheckForNull DecoderFile decoderFile, @Nonnull RosterEntry r, @Nonnull String progName) {
+    protected void startProgrammer(@Nullable DecoderFile decoderFile, @Nonnull RosterEntry r, @Nonnull String progName) {
         log.error("startProgrammer method in CombinedLocoSelPane should have been overridden");
     }
 

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
 import javax.usb.UsbDeviceDescriptor;
@@ -57,7 +58,7 @@ public final class UsbUtil {
      * @param serialNumber the serial number to match (null matches any)
      * @return a list of matching UsbDevices
      */
-    public static List<UsbDevice> getMatchingDevices(short idVendor, short idProduct, @CheckForNull String serialNumber) {
+    public static List<UsbDevice> getMatchingDevices(short idVendor, short idProduct, @Nullable String serialNumber) {
         return findUsbDevices(null, idVendor, idProduct, serialNumber);
     }
 
@@ -71,7 +72,7 @@ public final class UsbUtil {
      * @return the matching UsbDevice or null if no match could be found
      */
     @CheckForNull
-    public static UsbDevice getMatchingDevice(short idVendor, short idProduct, @CheckForNull String serialNumber, @Nonnull String idLocation) {
+    public static UsbDevice getMatchingDevice(short idVendor, short idProduct, @Nullable String serialNumber, @Nonnull String idLocation) {
         for (UsbDevice usbDevice : findUsbDevices(null, idVendor, idProduct, serialNumber)) {
             String locationID = getLocation(usbDevice);
             if (locationID.equals(idLocation)) {

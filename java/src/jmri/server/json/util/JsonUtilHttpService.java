@@ -1,5 +1,7 @@
 package jmri.server.json.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.CONTROL_PANEL;
 import static jmri.server.json.JSON.LAYOUT_PANEL;
 import static jmri.server.json.JSON.NAME;
@@ -65,7 +67,7 @@ public class JsonUtilHttpService extends JsonHttpService {
 
     @Override
     // use @CheckForNull to override @Nonnull specified in superclass
-    public JsonNode doGet(String type, @CheckForNull String name, JsonNode data, JsonRequest request)
+    public JsonNode doGet(String type, @Nullable String name, JsonNode data, JsonRequest request)
             throws JsonException {
         switch (type) {
             case JSON.HELLO:
@@ -143,7 +145,7 @@ public class JsonUtilHttpService extends JsonHttpService {
 
     @Override
     // Use @CheckForNull to override non-null requirement of superclass
-    public JsonNode doPost(String type, @CheckForNull String name,
+    public JsonNode doPost(String type, @Nullable String name,
             JsonNode data, JsonRequest request) throws JsonException {
         return this.doGet(type, name, data, request);
     }
@@ -202,7 +204,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @deprecated since 4.19.2; use {@link #getHello(int, JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getHello(Locale locale, int heartbeat, int id) {
+    public JsonNode getHello(@Nullable Locale locale, int heartbeat, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getHello(heartbeat, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -237,7 +239,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @return JSON metadata element.
      * @throws JsonException if name is not a recognized metadata element.
      */
-    public JsonNode getMetadata(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getMetadata(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getMetadata(name, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -270,7 +272,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @deprecated since 4.19.2; use {@link #getMetadata(JsonRequest)} instead
      */
     @Deprecated
-    public ArrayNode getMetadata(Locale locale, int id) throws JsonException {
+    public ArrayNode getMetadata(@Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getMetadata(new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -309,7 +311,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      *             {@link #getNetworkService(String, JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getNetworkService(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getNetworkService(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getNetworkService(name, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -343,7 +345,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @param id     message id set by client
      * @return the JSON networkServices message.
      */
-    public ArrayNode getNetworkServices(Locale locale, int id) {
+    public ArrayNode getNetworkServices(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getNetworkServices(new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -375,7 +377,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @deprecated since 4.19.2; use {@link #getNode(JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getNode(Locale locale, int id) {
+    public JsonNode getNode(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getNode(new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -389,7 +391,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @return the JSON panel message.
      * @throws JsonException if panel not found
      */
-    public JsonNode getPanel(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getPanel(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode panels = getPanels(JSON.XML, id);
         for (JsonNode panel : panels) {
             if (panel.path(JSON.DATA).path(JSON.NAME).asText().equals(name)) {
@@ -468,7 +470,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @deprecated since 4.19.2; use {@link #getRailroad(JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getRailroad(Locale locale, int id) {
+    public JsonNode getRailroad(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getRailroad(new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -506,7 +508,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      *             {@link #getSystemConnection(String, JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getSystemConnection(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getSystemConnection(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getSystemConnection(name, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -569,7 +571,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      *             instead
      */
     @Deprecated
-    public ArrayNode getSystemConnections(Locale locale, int id) {
+    public ArrayNode getSystemConnections(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getSystemConnections(new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -630,7 +632,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      * @deprecated since 4.19.2; use {@link #getConfigProfile(String, JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getConfigProfile(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getConfigProfile(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getConfigProfile(name, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 
@@ -661,7 +663,7 @@ public class JsonUtilHttpService extends JsonHttpService {
      *             {@link #getConfigProfiles(JsonRequest)} instead
      */
     @Deprecated
-    public ArrayNode getConfigProfiles(Locale locale, int id) {
+    public ArrayNode getConfigProfiles(@Nullable Locale locale, int id) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getConfigProfiles(new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 

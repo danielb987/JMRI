@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Locale;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.server.web.spi.WebMenuItem;
 
 /**
@@ -60,7 +61,7 @@ public class JsonMenuItem implements WebMenuItem {
     }
 
     @Override
-    public String getTitle(Locale locale) {
+    public String getTitle(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         if (this.title == null) {
             return Bundle.getMessage(locale, this.getPath());
         }

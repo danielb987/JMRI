@@ -1,6 +1,8 @@
 package jmri.jmrit.display.layoutEditor;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -179,7 +181,7 @@ public class TrackSegment extends LayoutTrack {
      * @param connectTrack   the track we want to connect to
      * @param connectionType where on that track we want to be connected
      */
-    protected void setNewConnect1(@CheckForNull LayoutTrack connectTrack, HitPointType connectionType) {
+    protected void setNewConnect1(@Nullable LayoutTrack connectTrack, HitPointType connectionType) {
         connect1 = connectTrack;
         type1 = connectionType;
     }
@@ -190,7 +192,7 @@ public class TrackSegment extends LayoutTrack {
      * @param connectTrack   the track we want to connect to
      * @param connectionType where on that track we want to be connected
      */
-    protected void setNewConnect2(@CheckForNull LayoutTrack connectTrack, HitPointType connectionType) {
+    protected void setNewConnect2(@Nullable LayoutTrack connectTrack, HitPointType connectionType) {
         connect2 = connectTrack;
         type2 = connectionType;
     }
@@ -203,7 +205,7 @@ public class TrackSegment extends LayoutTrack {
      * @param newType  the hit point type.
      * @return true if successful.
      */
-    public boolean replaceTrackConnection(@CheckForNull LayoutTrack oldTrack, @CheckForNull LayoutTrack newTrack, HitPointType newType) {
+    public boolean replaceTrackConnection(@Nullable LayoutTrack oldTrack, @Nullable LayoutTrack newTrack, HitPointType newType) {
         boolean result = false; // assume failure (pessimist!)
         // trying to replace old track with null?
         if (newTrack == null) {
@@ -450,7 +452,7 @@ public class TrackSegment extends LayoutTrack {
         return getConnectName(connect2, type2);
     }
 
-    private String getConnectName(@CheckForNull LayoutTrack layoutTrack, HitPointType type) {
+    private String getConnectName(@Nullable LayoutTrack layoutTrack, HitPointType type) {
         return (layoutTrack == null) ? null : layoutTrack.getName();
     }
 
@@ -475,7 +477,7 @@ public class TrackSegment extends LayoutTrack {
      */
     // only implemented here to suppress "does not override abstract method " error in compiler
     @Override
-    public void setConnection(HitPointType connectionType, @CheckForNull LayoutTrack o, HitPointType type) throws JmriException {
+    public void setConnection(HitPointType connectionType, @Nullable LayoutTrack o, HitPointType type) throws JmriException {
         // nothing to see here, move along
         throw new JmriException("Use setConnect1() or setConnect2() instead.");
     }
@@ -495,7 +497,7 @@ public class TrackSegment extends LayoutTrack {
         return result;
     }
 
-    public void setBezierControlPoint(@CheckForNull Point2D p, int index) {
+    public void setBezierControlPoint(@Nullable Point2D p, int index) {
         if (index < 0) {
             index += bezierControlPoints.size();
         }
@@ -517,7 +519,7 @@ public class TrackSegment extends LayoutTrack {
      *
      * @param newLayoutBlock the LayoutBlock to set
      */
-    public void setLayoutBlock(@CheckForNull LayoutBlock newLayoutBlock) {
+    public void setLayoutBlock(@Nullable LayoutBlock newLayoutBlock) {
         LayoutBlock layoutBlock = getLayoutBlock();
         if (layoutBlock != newLayoutBlock) {
             //block has changed, if old block exists, decrement use
@@ -539,7 +541,7 @@ public class TrackSegment extends LayoutTrack {
      *
      * @param name the name of the new LayoutBlock
      */
-    public void setLayoutBlockByName(@CheckForNull String name) {
+    public void setLayoutBlockByName(@Nullable String name) {
         if ((name != null) && !name.isEmpty()) {
             LayoutBlock b = layoutEditor.provideLayoutBlock(name);
             if (b != null) {

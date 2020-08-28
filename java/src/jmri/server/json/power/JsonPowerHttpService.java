@@ -1,5 +1,7 @@
 package jmri.server.json.power;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.DEFAULT;
 import static jmri.server.json.JSON.NAME;
 import static jmri.server.json.JSON.OFF;
@@ -32,7 +34,7 @@ public class JsonPowerHttpService extends JsonHttpService {
 
     @Override
     // Nullable to override inherited NonNull requirement
-    public JsonNode doGet(String type, @CheckForNull String name, JsonNode parameters, JsonRequest request)
+    public JsonNode doGet(String type, @Nullable String name, JsonNode parameters, JsonRequest request)
             throws JsonException {
         ObjectNode data = mapper.createObjectNode();
         PowerManager manager = InstanceManager.getNullableDefault(PowerManager.class);

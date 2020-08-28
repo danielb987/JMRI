@@ -9,6 +9,8 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
@@ -63,7 +65,7 @@ public class PanelMenu extends JMenu {
         updateMenu(null);
     }
 
-    private void updateMenu(@CheckForNull PropertyChangeEvent evt) {
+    private void updateMenu(@Nullable PropertyChangeEvent evt) {
         Set<Editor> editors = InstanceManager.getDefault(EditorManager.class).getAll();
         panelsSubMenu.removeAll();
         if (editors.isEmpty()) {

@@ -3,6 +3,7 @@ package jmri.managers;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import jmri.AddressedProgrammer;
 import jmri.AddressedProgrammerManager;
 import jmri.GlobalProgrammerManager;
@@ -57,7 +58,7 @@ public class DefaultProgrammerManager extends PropertyChangeSupport implements A
      * @param programmer the programmer to use; if null, acts as if no
      *                   programmer is available
      */
-    public DefaultProgrammerManager(@CheckForNull Programmer programmer) {
+    public DefaultProgrammerManager(@Nullable Programmer programmer) {
         this.programmer = programmer;
     }
 
@@ -68,7 +69,7 @@ public class DefaultProgrammerManager extends PropertyChangeSupport implements A
      *                   programmer is available
      * @param memo       the associated connection
      */
-    public DefaultProgrammerManager(@CheckForNull Programmer programmer, @Nonnull jmri.SystemConnectionMemo memo) {
+    public DefaultProgrammerManager(@Nullable Programmer programmer, @Nonnull jmri.SystemConnectionMemo memo) {
         this(programmer);
         this.userName = memo.getUserName();
     }

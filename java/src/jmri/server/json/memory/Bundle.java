@@ -4,6 +4,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Locale;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -38,6 +40,7 @@ public class Bundle extends jmri.server.json.Bundle {
      * @param key Bundle key to be translated
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key) {
         return getBundle().handleGetMessage(key);
     }
@@ -52,7 +55,8 @@ public class Bundle extends jmri.server.json.Bundle {
      * @param key    Bundle key to be translated
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key) {
+    @Nonnull
+    static String getMessage(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key);
     }
 
@@ -69,6 +73,7 @@ public class Bundle extends jmri.server.json.Bundle {
      * @param subs One or more objects to be inserted into the message
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key, Object... subs) {
         return getBundle().handleGetMessage(key, subs);
     }
@@ -87,7 +92,8 @@ public class Bundle extends jmri.server.json.Bundle {
      * @param subs   One or more objects to be inserted into the message
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key, Object... subs) {
+    @Nonnull
+    static String getMessage(@Nullable Locale locale, String key, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key, subs);
     }
 
@@ -104,7 +110,8 @@ public class Bundle extends jmri.server.json.Bundle {
     }
 
     @Override
-    protected String retry(Locale locale, String key) {
+    @Nonnull
+    protected String retry(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return super.getBundle().handleGetMessage(locale,key);
     }
 

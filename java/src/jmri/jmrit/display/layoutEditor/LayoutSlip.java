@@ -8,6 +8,8 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import jmri.*;
 import jmri.jmrit.display.layoutEditor.blockRoutingTable.LayoutBlockRouteTableAction;
@@ -126,7 +128,7 @@ abstract public class LayoutSlip extends LayoutTurnout {
         return result;
     }
 
-    public void setTurnoutB(@CheckForNull String tName) {
+    public void setTurnoutB(@Nullable String tName) {
         boolean reactivate = false;
         if (namedTurnoutB != null) {
             deactivateTurnout();
@@ -177,7 +179,7 @@ abstract public class LayoutSlip extends LayoutTurnout {
      * {@inheritDoc}
      */
     @Override
-    public void setConnection(HitPointType connectionType, @CheckForNull LayoutTrack o, HitPointType type) throws jmri.JmriException {
+    public void setConnection(HitPointType connectionType, @Nullable LayoutTrack o, HitPointType type) throws jmri.JmriException {
         if ((type != HitPointType.TRACK) && (type != HitPointType.NONE)) {
             String errString = MessageFormat.format("{0}.setConnection({1}, {2}, {3}); Invalid type",
                     getName(), connectionType, (o == null) ? "null" : o.getName(), type); // I18IN
@@ -669,7 +671,7 @@ abstract public class LayoutSlip extends LayoutTurnout {
      */
     @Override
     @Nonnull
-    protected JPopupMenu showPopup(@CheckForNull MouseEvent mouseEvent) {
+    protected JPopupMenu showPopup(@Nullable MouseEvent mouseEvent) {
         if (popup != null) {
             popup.removeAll();
         } else {

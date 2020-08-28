@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import jmri.implementation.AbstractShutDownTask;
 import jmri.implementation.SignalSpeedMap;
@@ -102,7 +103,7 @@ public class BlockManager extends AbstractManager<Block> implements ProvidingMan
      *         exists, or if there is trouble creating a new Block
      */
     @CheckForNull
-    public Block createNewBlock(@Nonnull String systemName, @CheckForNull String userName) {
+    public Block createNewBlock(@Nonnull String systemName, @Nullable String userName) {
         // Check that Block does not already exist
         Block r;
         if (userName != null && !userName.equals("")) {

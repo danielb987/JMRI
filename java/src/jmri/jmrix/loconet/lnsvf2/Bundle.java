@@ -4,6 +4,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Locale;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,7 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * @param key Bundle key to be translated
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key) {
         log.debug("interpreting key {} without parameters", key);
         return getBundle().handleGetMessage(key);
@@ -58,6 +61,7 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * @param subs One or more objects to be inserted into the message
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key, Object... subs) {
         log.debug("interpreting key {} with {} parameters", key, subs.length);
         return getBundle().handleGetMessage(key, subs);
@@ -75,7 +79,8 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
     }
 
     @Override
-    protected String retry(Locale locale, String key) {
+    @Nonnull
+    protected String retry(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return super.getBundle().handleGetMessage(locale,key);
     }
     // initialize logging
@@ -95,7 +100,8 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * @param subs   One or more objects to be inserted into the message
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key, Object... subs) {
+    @Nonnull
+    static String getMessage(@Nullable Locale locale, String key, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key, subs);
     }
 

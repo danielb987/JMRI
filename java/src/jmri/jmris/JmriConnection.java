@@ -3,6 +3,8 @@ package jmri.jmris;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
@@ -134,7 +136,7 @@ public class JmriConnection {
     /**
      * @param locale the locale to set
      */
-    public void setLocale(Locale locale) {
+    public void setLocale(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         this.locale = locale;
     }
 }

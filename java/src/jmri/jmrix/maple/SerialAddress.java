@@ -1,6 +1,8 @@
 package jmri.jmrix.maple;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager;
 import jmri.Manager.NameValidity;
 import org.slf4j.Logger;
@@ -76,7 +78,7 @@ public class SerialAddress {
      * @throws IllegalArgumentException if name is not valid
      * @see Manager#validateSystemNameFormat(java.lang.String, java.util.Locale)
      */
-    public static String validateSystemNameFormat(String name, Manager<?> manager, Locale locale) throws IllegalArgumentException {
+    public static String validateSystemNameFormat(String name, Manager<?> manager, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         int max = manager.typeLetter() == 'S' ? 1000 : 8000;
         return manager.validateIntegerSystemNameFormat(name, 0, max, locale);
     }

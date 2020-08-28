@@ -1,6 +1,8 @@
 package jmri.jmrit.log;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.Locale;
 
@@ -42,6 +44,7 @@ public class Bundle extends jmri.jmrit.Bundle {
      * @param key Bundle key to be translated
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key) {
         return getBundle().handleGetMessage(key);
     }
@@ -59,6 +62,7 @@ public class Bundle extends jmri.jmrit.Bundle {
      * @param subs One or more objects to be inserted into the message
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key, Object... subs) {
         return getBundle().handleGetMessage(key, subs);
     }
@@ -77,7 +81,8 @@ public class Bundle extends jmri.jmrit.Bundle {
      * @param subs   One or more objects to be inserted into the message
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key, Object... subs) {
+    @Nonnull
+    static String getMessage(@Nullable Locale locale, String key, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key, subs);
     }
 
@@ -94,7 +99,8 @@ public class Bundle extends jmri.jmrit.Bundle {
     }
 
     @Override
-    protected String retry(Locale locale, String key) {
+    @Nonnull
+    protected String retry(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return super.getBundle().handleGetMessage(locale,key);
     }
 

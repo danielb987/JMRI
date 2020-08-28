@@ -3,6 +3,7 @@ package jmri;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for controlling sensors.
@@ -93,7 +94,7 @@ public interface SensorManager extends ProvidingManager<Sensor> {
      *                                  parsed.
      */
     @Nonnull
-    public Sensor newSensor(@Nonnull String systemName, @CheckForNull String userName) throws IllegalArgumentException;
+    public Sensor newSensor(@Nonnull String systemName, @Nullable String userName) throws IllegalArgumentException;
 
     /**
      * Get an existing Sensor or return null if it doesn't exist. 

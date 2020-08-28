@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -1310,7 +1311,7 @@ public class JmriUserPreferencesManager extends Bean implements UserPreferencesM
             saveSize = true;
         }
 
-        void setProperty(@Nonnull String key, @CheckForNull Object value) {
+        void setProperty(@Nonnull String key, @Nullable Object value) {
             if (value == null) {
                 parameters.remove(key);
             } else {

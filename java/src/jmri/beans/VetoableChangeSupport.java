@@ -3,6 +3,8 @@ package jmri.beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.ThreadSafe;
@@ -37,7 +39,7 @@ public class VetoableChangeSupport extends PropertyChangeSupport implements Veto
      * {@inheritDoc}
      */
     @Override
-    public void addVetoableChangeListener(@CheckForNull VetoableChangeListener listener) {
+    public void addVetoableChangeListener(@Nullable VetoableChangeListener listener) {
         vetoableChangeSupport.addVetoableChangeListener(listener);
     }
 
@@ -45,7 +47,7 @@ public class VetoableChangeSupport extends PropertyChangeSupport implements Veto
      * {@inheritDoc}
      */
     @Override
-    public void addVetoableChangeListener(@CheckForNull String propertyName, @CheckForNull VetoableChangeListener listener) {
+    public void addVetoableChangeListener(@Nullable String propertyName, @Nullable VetoableChangeListener listener) {
         vetoableChangeSupport.addVetoableChangeListener(propertyName, listener);
     }
 
@@ -69,7 +71,7 @@ public class VetoableChangeSupport extends PropertyChangeSupport implements Veto
      * {@inheritDoc}
      */
     @Override
-    public void removeVetoableChangeListener(@CheckForNull VetoableChangeListener listener) {
+    public void removeVetoableChangeListener(@Nullable VetoableChangeListener listener) {
         vetoableChangeSupport.removeVetoableChangeListener(listener);
     }
 
@@ -77,7 +79,7 @@ public class VetoableChangeSupport extends PropertyChangeSupport implements Veto
      * {@inheritDoc}
      */
     @Override
-    public void removeVetoableChangeListener(@CheckForNull String propertyName, @CheckForNull VetoableChangeListener listener) {
+    public void removeVetoableChangeListener(@Nullable String propertyName, @Nullable VetoableChangeListener listener) {
         vetoableChangeSupport.removeVetoableChangeListener(propertyName, listener);
     }
 

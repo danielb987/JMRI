@@ -2,6 +2,7 @@ package jmri.managers;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Memory;
 import jmri.implementation.DefaultMemory;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
@@ -19,7 +20,7 @@ public class DefaultMemoryManager extends AbstractMemoryManager {
 
     @Override
     @Nonnull
-    protected Memory createNewMemory(@Nonnull String systemName, @CheckForNull String userName) {
+    protected Memory createNewMemory(@Nonnull String systemName, @Nullable String userName) {
         // makeSystemName validates that systemName is correct
         return new DefaultMemory(makeSystemName(systemName), userName);
     }

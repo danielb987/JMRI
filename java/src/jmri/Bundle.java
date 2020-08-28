@@ -6,6 +6,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -63,6 +65,7 @@ public class Bundle {
      * @param key Bundle key to be translated
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key) {
         return getBundle().handleGetMessage(key);
     }
@@ -77,7 +80,8 @@ public class Bundle {
      * @param key    Bundle key to be translated
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key) {
+    @Nonnull
+    static String getMessage(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key);
     }
 
@@ -94,6 +98,7 @@ public class Bundle {
      * @param subs One or more objects to be inserted into the message
      * @return Internationalized text
      */
+    @Nonnull
     static String getMessage(String key, Object... subs) {
         return getBundle().handleGetMessage(key, subs);
     }
@@ -112,7 +117,8 @@ public class Bundle {
      * @param subs   One or more objects to be inserted into the message
      * @return Internationalized text
      */
-    static String getMessage(Locale locale, String key, Object... subs) {
+    @Nonnull
+    static String getMessage(@Nullable Locale locale, String key, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getBundle().handleGetMessage(locale, key, subs);
     }
 
@@ -126,6 +132,7 @@ public class Bundle {
      * @return Internationalized text
      * @throws MissingResourceException if message cannot be found
      */
+    @Nonnull
     public String handleGetMessage(String key) {
         return this.handleGetMessage(Locale.getDefault(), key);
     }
@@ -141,7 +148,8 @@ public class Bundle {
      * @return Internationalized text
      * @throws MissingResourceException if message cannot be found
      */
-    public String handleGetMessage(Locale locale, String key) {
+    @Nonnull
+    public String handleGetMessage(@Nullable Locale locale, String key) {    // Spotbugs warns that Locale.ENGLISH may be null
         log.trace("handleGetMessage for key {}", key);
         if (bundleName() != null) {
             ResourceBundle rb = ResourceBundle.getBundle(bundleName(), locale);
@@ -166,6 +174,7 @@ public class Bundle {
      * @param subs Array of objects to be inserted into the message
      * @return Internationalized text
      */
+    @Nonnull
     public String handleGetMessage(String key, Object[] subs) {
         return this.handleGetMessage(Locale.getDefault(), key, subs);
     }
@@ -182,13 +191,15 @@ public class Bundle {
      * @param subs   Array of objects to be inserted into the message
      * @return Internationalized text
      */
-    public String handleGetMessage(Locale locale, String key, Object[] subs) {
+    @Nonnull
+    public String handleGetMessage(@Nullable Locale locale, String key, Object[] subs) {    // Spotbugs warns that Locale.ENGLISH may be null
         return MessageFormat.format(handleGetMessage(locale, key), subs);
     }
 
     // the following is different from the method in subclasses because
     // this is the root of the search tree
-    protected String retry(Locale locale, String key) throws MissingResourceException {
+    @Nonnull
+    protected String retry(@Nullable Locale locale, String key) throws MissingResourceException {    // Spotbugs warns that Locale.ENGLISH may be null
         throw new MissingResourceException("Resource '" + key + "' not found", this.getClass().toString(), key); // NOI18N
     }
 

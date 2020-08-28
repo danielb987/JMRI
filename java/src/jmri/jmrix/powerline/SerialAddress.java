@@ -1,6 +1,8 @@
 package jmri.jmrix.powerline;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager.NameValidity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +49,7 @@ public class SerialAddress {
      * @param locale the locale for messages to the user
      * @return the name, unchanged
      */
-    String validateSystemNameFormat(String name, char type, Locale locale) {
+    String validateSystemNameFormat(String name, char type, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         boolean aTest = aCodes.reset(name).matches();
         boolean hTest = hCodes.reset(name).matches();
         boolean iTest = iCodes.reset(name).matches();

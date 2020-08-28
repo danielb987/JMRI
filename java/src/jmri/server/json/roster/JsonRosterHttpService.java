@@ -1,5 +1,7 @@
 package jmri.server.json.roster;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.ADDRESS;
 import static jmri.server.json.JSON.COMMENT;
 import static jmri.server.json.JSON.DECODER_FAMILY;
@@ -139,7 +141,7 @@ public class JsonRosterHttpService extends JsonHttpService {
      * @throws jmri.server.json.JsonException If no roster entry exists for the
      *                                        given id
      */
-    public JsonNode getRosterEntry(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getRosterEntry(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         try {
             return getRosterEntry(locale, Roster.getDefault().getEntryForId(name), id);
         } catch (NullPointerException ex) {
@@ -161,7 +163,7 @@ public class JsonRosterHttpService extends JsonHttpService {
      * @throws jmri.server.json.JsonException if an error needs to be reported
      *                                        to the user
      */
-    public JsonNode getRosterEntry(Locale locale, @Nonnull RosterEntry entry, int id) throws JsonException {
+    public JsonNode getRosterEntry(@Nullable Locale locale, @Nonnull RosterEntry entry, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         String entryPath;
         try {
             entryPath = String.format("/%s/%s/", JsonRoster.ROSTER, URLEncoder.encode(entry.getId(), StandardCharsets.UTF_8.toString()));
@@ -243,11 +245,11 @@ public class JsonRosterHttpService extends JsonHttpService {
      * @deprecated since 4.19.2; use {@link #getRosterGroups(JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getRosterGroups(Locale locale, int id) throws JsonException {
+    public JsonNode getRosterGroups(@Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getRosterGroups(new JsonRequest(locale, V5, GET, id));
     }
 
-    public JsonNode getRosterGroup(Locale locale, String name, int id) throws JsonException {
+    public JsonNode getRosterGroup(@Nullable Locale locale, String name, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         if (name.equals(Roster.ALLENTRIES) || Roster.getDefault().getRosterGroupList().contains(name)) {
             int size = Roster.getDefault().getEntriesInGroup(name).size();
             ObjectNode data = mapper.createObjectNode();
@@ -292,7 +294,7 @@ public class JsonRosterHttpService extends JsonHttpService {
      * @throws jmri.server.json.JsonException if an error needs to be reported
      *                                        to the user
      */
-    public JsonNode postRosterEntry(Locale locale, String name, JsonNode data, int id) throws JsonException {
+    public JsonNode postRosterEntry(@Nullable Locale locale, String name, JsonNode data, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         RosterEntry entry;
         try {
             entry = Roster.getDefault().getEntryForId(name);

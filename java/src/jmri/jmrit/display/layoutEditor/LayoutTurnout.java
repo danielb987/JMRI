@@ -1,5 +1,7 @@
 package jmri.jmrit.display.layoutEditor;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static java.lang.Float.POSITIVE_INFINITY;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -591,7 +593,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalA1Name(@CheckForNull String signalHead) {
+    public void setSignalA1Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalA1HeadNamed = null;
             return;
@@ -617,7 +619,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalA2Name(@CheckForNull String signalHead) {
+    public void setSignalA2Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalA2HeadNamed = null;
             return;
@@ -643,7 +645,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalA3Name(@CheckForNull String signalHead) {
+    public void setSignalA3Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalA3HeadNamed = null;
             return;
@@ -669,7 +671,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalB1Name(@CheckForNull String signalHead) {
+    public void setSignalB1Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalB1HeadNamed = null;
             return;
@@ -695,7 +697,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalB2Name(@CheckForNull String signalHead) {
+    public void setSignalB2Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalB2HeadNamed = null;
             return;
@@ -721,7 +723,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalC1Name(@CheckForNull String signalHead) {
+    public void setSignalC1Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalC1HeadNamed = null;
             return;
@@ -747,7 +749,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalC2Name(@CheckForNull String signalHead) {
+    public void setSignalC2Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalC2HeadNamed = null;
             return;
@@ -773,7 +775,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalD1Name(@CheckForNull String signalHead) {
+    public void setSignalD1Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalD1HeadNamed = null;
             return;
@@ -799,7 +801,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return "";
     }
 
-    public void setSignalD2Name(@CheckForNull String signalHead) {
+    public void setSignalD2Name(@Nullable String signalHead) {
         if (signalHead == null || signalHead.isEmpty()) {
             signalD2HeadNamed = null;
             return;
@@ -979,7 +981,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSignalAMast(@CheckForNull String signalMast) {
+    public void setSignalAMast(@Nullable String signalMast) {
         if (signalMast == null || signalMast.isEmpty()) {
             signalAMastNamed = null;
             return;
@@ -1008,7 +1010,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSignalBMast(@CheckForNull String signalMast) {
+    public void setSignalBMast(@Nullable String signalMast) {
         if (signalMast == null || signalMast.isEmpty()) {
             signalBMastNamed = null;
             return;
@@ -1037,7 +1039,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSignalCMast(@CheckForNull String signalMast) {
+    public void setSignalCMast(@Nullable String signalMast) {
         if (signalMast == null || signalMast.isEmpty()) {
             signalCMastNamed = null;
             return;
@@ -1066,7 +1068,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSignalDMast(@CheckForNull String signalMast) {
+    public void setSignalDMast(@Nullable String signalMast) {
         if (signalMast == null || signalMast.isEmpty()) {
             signalDMastNamed = null;
             return;
@@ -1095,7 +1097,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSensorA(@CheckForNull String sensorName) {
+    public void setSensorA(@Nullable String sensorName) {
         if (sensorName == null || sensorName.isEmpty()) {
             sensorANamed = null;
             return;
@@ -1123,7 +1125,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSensorB(@CheckForNull String sensorName) {
+    public void setSensorB(@Nullable String sensorName) {
         if (sensorName == null || sensorName.isEmpty()) {
             sensorBNamed = null;
             return;
@@ -1151,7 +1153,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSensorC(@CheckForNull String sensorName) {
+    public void setSensorC(@Nullable String sensorName) {
         if (sensorName == null || sensorName.isEmpty()) {
             sensorCNamed = null;
             return;
@@ -1179,7 +1181,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return null;
     }
 
-    public void setSensorD(@CheckForNull String sensorName) {
+    public void setSensorD(@Nullable String sensorName) {
         if (sensorName == null || sensorName.isEmpty()) {
             sensorDNamed = null;
             return;
@@ -1197,7 +1199,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return linkedTurnoutName;
     }
 
-    public void setLinkedTurnoutName(@CheckForNull String s) {
+    public void setLinkedTurnoutName(@Nullable String s) {
         linkedTurnoutName = s;
     }  // Could be done with changing over to a NamedBeanHandle
 
@@ -1252,7 +1254,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return getState() == continuingSense;
     }
 
-    public void setTurnout(@CheckForNull String tName) {
+    public void setTurnout(@Nullable String tName) {
         if (namedTurnout != null) {
             deactivateTurnout();
         }
@@ -1287,7 +1289,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
         return result;
     }
 
-    public void setSecondTurnout(@CheckForNull String tName) {
+    public void setSecondTurnout(@Nullable String tName) {
         if (tName != null && tName.equals(secondTurnoutName)) {
             return;
         }
@@ -2750,7 +2752,7 @@ abstract public class LayoutTurnout extends LayoutTrack {
      */
     @Override
     @Nonnull
-    protected JPopupMenu showPopup(@CheckForNull MouseEvent mouseEvent) {
+    protected JPopupMenu showPopup(@Nullable MouseEvent mouseEvent) {
         log.trace("start LayoutTurnout.showPopup from {} of type {}", this, this.getClass() );
         if (popup != null) {
             popup.removeAll();

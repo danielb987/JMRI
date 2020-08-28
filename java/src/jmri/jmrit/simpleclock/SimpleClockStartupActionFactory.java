@@ -1,6 +1,8 @@
 package jmri.jmrit.simpleclock;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.util.startup.AbstractStartupActionFactory;
 import jmri.util.startup.StartupActionFactory;
 import org.openide.util.lookup.ServiceProvider;
@@ -14,7 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
 public final class SimpleClockStartupActionFactory extends AbstractStartupActionFactory {
 
     @Override
-    public String getTitle(Class<?> clazz, Locale locale) throws IllegalArgumentException {
+    public String getTitle(Class<?> clazz, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         if (clazz.equals(SimpleClockAction.class)) {
             return Bundle.getMessage(locale, "StartupSimpleClockAction");
         }

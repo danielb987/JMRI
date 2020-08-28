@@ -1,5 +1,7 @@
 package jmri.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 
 import java.awt.Component;
@@ -85,7 +87,7 @@ public class QuickPromptUtil {
      * @param validator       the validator instance. May be {@code null}
      * @return the updated value, or the original one.
      */
-    public static Integer promptForInteger(Component parentComponent, @Nonnull String message, @Nonnull String title, Integer oldValue, @CheckForNull Predicate<Integer> validator) {
+    public static Integer promptForInteger(Component parentComponent, @Nonnull String message, @Nonnull String title, Integer oldValue, @Nullable Predicate<Integer> validator) {
         Integer result = oldValue;
         Integer newValue = promptForData(parentComponent, message, title, oldValue, validator, (val) -> {
             try {

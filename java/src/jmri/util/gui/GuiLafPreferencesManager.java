@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -194,7 +195,7 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
     /**
      * @param locale the locale to set
      */
-    public void setLocale(Locale locale) {
+    public void setLocale(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         Locale oldLocale = this.locale;
         this.locale = locale;
         firePropertyChange(LOCALE, oldLocale, locale);

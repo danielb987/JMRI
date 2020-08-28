@@ -2,6 +2,7 @@ package jmri.managers;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Light;
 import jmri.LightManager;
 import jmri.Manager;
@@ -71,7 +72,7 @@ public abstract class AbstractLightManager extends AbstractManager<Light>
      */
     @Override
     @Nonnull
-    public Light newLight(@Nonnull String systemName, @CheckForNull String userName) {
+    public Light newLight(@Nonnull String systemName, @Nullable String userName) {
         log.debug("newLight: {};{}",
                 ((systemName == null) ? "null" : systemName),
                 ((userName == null) ? "null" : userName));

@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 import jmri.*;
 import jmri.Manager.NameValidity;
@@ -420,7 +421,7 @@ public class CMRISystemConnectionMemo extends DefaultSystemConnectionMemo implem
      * @return systemName unmodified
      * @throws IllegalArgumentException if unable to validate systemName
      */
-    public String validateSystemNameFormat(String systemName, char type, Locale locale) throws IllegalArgumentException {
+    public String validateSystemNameFormat(String systemName, char type, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         String prefix = getSystemPrefix() + type;
         if (!systemName.startsWith(prefix)) {
             throw new NamedBean.BadSystemNameException(

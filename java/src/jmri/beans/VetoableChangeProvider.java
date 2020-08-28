@@ -3,6 +3,7 @@ package jmri.beans;
 import java.beans.VetoableChangeListener;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 /**
  * A set of methods that would need to be implemented to ensure the implementing
@@ -30,7 +31,7 @@ public interface VetoableChangeProvider {
      *
      * @param listener The VetoableChangeListener to be added
      */
-    public void addVetoableChangeListener(@CheckForNull VetoableChangeListener listener);
+    public void addVetoableChangeListener(@Nullable VetoableChangeListener listener);
 
     /**
      * Add a {@link java.beans.VetoableChangeListener} for a specific property.
@@ -38,7 +39,7 @@ public interface VetoableChangeProvider {
      * @param propertyName The name of the property to listen on.
      * @param listener     The VetoableChangeListener to be added
      */
-    public void addVetoableChangeListener(@CheckForNull String propertyName, @CheckForNull VetoableChangeListener listener);
+    public void addVetoableChangeListener(@Nullable String propertyName, @Nullable VetoableChangeListener listener);
 
     /**
      * Get all {@link java.beans.VetoableChangeListener}s currently attached to
@@ -57,14 +58,14 @@ public interface VetoableChangeProvider {
      * @return An array of VetoableChangeListeners.
      */
     @Nonnull
-    public VetoableChangeListener[] getVetoableChangeListeners(@CheckForNull String propertyName);
+    public VetoableChangeListener[] getVetoableChangeListeners(@Nullable String propertyName);
 
     /**
      * Remove the specified listener from this object.
      *
      * @param listener The {@link java.beans.VetoableChangeListener} to remove.
      */
-    public void removeVetoableChangeListener(@CheckForNull VetoableChangeListener listener);
+    public void removeVetoableChangeListener(@Nullable VetoableChangeListener listener);
 
     /**
      * Remove the specified listener of the specified property from this object.
@@ -73,6 +74,6 @@ public interface VetoableChangeProvider {
      * @param listener     The {@link java.beans.VetoableChangeListener} to
      *                     remove.
      */
-    public void removeVetoableChangeListener(@CheckForNull String propertyName, @CheckForNull VetoableChangeListener listener);
+    public void removeVetoableChangeListener(@Nullable String propertyName, @Nullable VetoableChangeListener listener);
 
 }

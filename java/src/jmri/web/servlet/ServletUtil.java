@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
@@ -57,7 +59,7 @@ public class ServletUtil implements InstanceManagerAutoDefault {
      * @return an HTML footer
      * @throws IOException if template cannot be located
      */
-    public String getFooter(Locale locale, String context) throws IOException {
+    public String getFooter(@Nullable Locale locale, String context) throws IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         // Should return a built NavBar with li class for current context set to "active"
         String footer = String.format(locale, String.format(locale, "-->%s<!--", // NOI18N
                 FileUtil.readURL(FileUtil.findURL(Bundle.getMessage(locale, "Footer.html")))), // NOI18N
@@ -82,7 +84,7 @@ public class ServletUtil implements InstanceManagerAutoDefault {
      * @return an HTML navigation bar
      * @throws IOException if template cannot be located
      */
-    public String getNavBar(Locale locale, String context) throws IOException {
+    public String getNavBar(@Nullable Locale locale, String context) throws IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         // Should return a built NavBar with li class for current context set to "active"
         String navBar = String.format(locale, String.format(locale, "-->%s<!--", // NOI18N
                 FileUtil.readURL(FileUtil.findURL(Bundle.getMessage(locale, "NavBar.html")))), // NOI18N
@@ -160,7 +162,7 @@ public class ServletUtil implements InstanceManagerAutoDefault {
      * @param title  Portion of title specific to page
      * @return The complete title
      */
-    public String getTitle(Locale locale, String title) {
+    public String getTitle(@Nullable Locale locale, String title) {    // Spotbugs warns that Locale.ENGLISH may be null
         return String.format(Bundle.getMessage(locale, "HtmlTitle"), this.getRailroadName(false), title);
     }
 }

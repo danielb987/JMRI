@@ -2,6 +2,8 @@ package jmri;
 
 
 import edu.umd.cs.findbugs.annotations.OverrideMustInvoke;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.beans.*;
 import java.util.*;
@@ -156,7 +158,7 @@ public interface Manager<E extends NamedBean> extends SilenceablePropertyChangeP
      * @throws BadSystemNameException if a valid name can't be created
      */
     @Nonnull
-    public default String makeSystemName(@Nonnull String name, boolean logErrors, Locale locale) {
+    public default String makeSystemName(@Nonnull String name, boolean logErrors, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         String prefix = getSystemNamePrefix();
         // the one special case that is not caught by validation here
         if (name.trim().isEmpty()) { // In Java 9+ use name.isBlank() instead

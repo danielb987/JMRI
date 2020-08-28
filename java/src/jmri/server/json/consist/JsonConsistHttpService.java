@@ -1,5 +1,7 @@
 package jmri.server.json.consist;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.ADDRESS;
 import static jmri.server.json.JSON.ENGINES;
 import static jmri.server.json.JSON.FORWARD;
@@ -254,7 +256,7 @@ public class JsonConsistHttpService extends JsonHttpService {
      *             {@link #getConsist(LocoAddress, JsonRequest)} instead
      */
     @Deprecated
-    public JsonNode getConsist(Locale locale, LocoAddress address, int id) throws JsonException {
+    public JsonNode getConsist(@Nullable Locale locale, LocoAddress address, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         return getConsist(address, new JsonRequest(locale, JSON.V5, JSON.GET, id));
     }
 

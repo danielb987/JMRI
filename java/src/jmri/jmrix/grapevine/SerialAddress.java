@@ -2,6 +2,7 @@ package jmri.jmrix.grapevine;
 
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager.NameValidity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -309,7 +310,7 @@ public class SerialAddress {
      * @throws IllegalArgumentException if name is not valid
      * @see Manager#validateSystemNameFormat(java.lang.String, java.util.Locale)
      */
-    static String validateSystemNameFormat(String name, Manager manager, Locale locale) {
+    static String validateSystemNameFormat(String name, Manager manager, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         name = manager.validateSystemNamePrefix(name, locale);
         Pattern pattern;
         switch (manager.typeLetter()) {

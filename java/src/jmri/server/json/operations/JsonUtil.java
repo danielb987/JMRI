@@ -1,5 +1,7 @@
 package jmri.server.json.operations;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.server.json.JSON.COLOR;
 import static jmri.server.json.JSON.COMMENT;
 import static jmri.server.json.JSON.TRAIN_DIRECTION;
@@ -86,7 +88,7 @@ public class JsonUtil {
      * @return the JSON representation of the Car
      * @throws JsonException if no car by name exists
      */
-    public ObjectNode getCar(String name, Locale locale, int id) throws JsonException {
+    public ObjectNode getCar(String name, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         Car car = carManager().getById(name);
         if (car == null) {
             throw new JsonException(HttpServletResponse.SC_NOT_FOUND,
@@ -102,7 +104,7 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return the JSON representation of engine
      */
-    public ObjectNode getEngine(Engine engine, Locale locale) {
+    public ObjectNode getEngine(Engine engine, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getEngine(engine, getRollingStock(engine, locale), locale);
     }
 
@@ -115,7 +117,7 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return the JSON representation of engine
      */
-    public ObjectNode getEngine(Engine engine, ObjectNode data, Locale locale) {
+    public ObjectNode getEngine(Engine engine, ObjectNode data, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         data.put(JSON.MODEL, engine.getModel());
         data.put(JsonConsist.CONSIST, engine.getConsist() != null ? engine.getConsistName() : null);
         return data;
@@ -130,7 +132,7 @@ public class JsonUtil {
      * @return the JSON representation of engine
      * @throws JsonException if no engine exists by name
      */
-    public ObjectNode getEngine(String name, Locale locale, int id) throws JsonException {
+    public ObjectNode getEngine(String name, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         Engine engine = engineManager().getById(name);
         if (engine == null) {
             throw new JsonException(HttpServletResponse.SC_NOT_FOUND,
@@ -146,7 +148,7 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return the JSON representation of car
      */
-    public ObjectNode getCar(@Nonnull Car car, Locale locale) {
+    public ObjectNode getCar(@Nonnull Car car, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return getCar(car, getRollingStock(car, locale), locale);
     }
 
@@ -159,7 +161,7 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return the JSON representation of car
      */
-    public ObjectNode getCar(@Nonnull Car car, @Nonnull ObjectNode data, Locale locale) {
+    public ObjectNode getCar(@Nonnull Car car, @Nonnull ObjectNode data, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         data.put(JSON.LOAD, car.getLoadName()); // NOI18N
         data.put(JSON.HAZARDOUS, car.isHazardous());
         data.put(JsonOperations.CABOOSE, car.isCaboose());
@@ -200,7 +202,7 @@ public class JsonUtil {
      * @param locale   the client's locale
      * @return the JSON representation of location
      */
-    public ObjectNode getLocation(@Nonnull Location location, Locale locale) {
+    public ObjectNode getLocation(@Nonnull Location location, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode data = mapper.createObjectNode();
         data.put(USERNAME, location.getName());
         data.put(NAME, location.getId());
@@ -229,7 +231,7 @@ public class JsonUtil {
      * @return the JSON representation of the location
      * @throws JsonException if id does not match a known location
      */
-    public ObjectNode getLocation(String name, Locale locale, int id) throws JsonException {
+    public ObjectNode getLocation(String name, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         try {
             return getLocation(locationManager().getLocationById(name), locale);
         } catch (NullPointerException e) {
@@ -248,7 +250,7 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return a JSON representation of the track
      */
-    public ObjectNode getTrack(Track track, Locale locale) {
+    public ObjectNode getTrack(Track track, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode node = mapper.createObjectNode();
         node.put(USERNAME, track.getName());
         node.put(NAME, track.getId());
@@ -278,14 +280,14 @@ public class JsonUtil {
      * @param locale   the client's locale
      * @return the JSON representation of location
      */
-    public ObjectNode getRSLocation(@Nonnull Location location, Locale locale) {
+    public ObjectNode getRSLocation(@Nonnull Location location, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode data = mapper.createObjectNode();
         data.put(USERNAME, location.getName());
         data.put(NAME, location.getId());
         return data;
     }
 
-    private ObjectNode getRSLocation(Location location, RouteLocation routeLocation, Locale locale) {
+    private ObjectNode getRSLocation(Location location, RouteLocation routeLocation, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode node = getRSLocation(location, locale);
         if (routeLocation != null) {
             node.put(ROUTE, routeLocation.getId());
@@ -295,7 +297,7 @@ public class JsonUtil {
         return node;
     }
 
-    private ObjectNode getRSLocationAndTrack(Track track, RouteLocation routeLocation, Locale locale) {
+    private ObjectNode getRSLocationAndTrack(Track track, RouteLocation routeLocation, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode node = this.getRSLocation(track.getLocation(), routeLocation, locale);
         node.set(TRACK, this.getRSTrack(track, locale));
         return node;
@@ -311,14 +313,14 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return a JSON representation of the track
      */
-    public ObjectNode getRSTrack(Track track, Locale locale) {
+    public ObjectNode getRSTrack(Track track, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode node = mapper.createObjectNode();
         node.put(USERNAME, track.getName());
         node.put(NAME, track.getId());
         return node;
     }
 
-    public ObjectNode getRollingStock(@Nonnull RollingStock rs, Locale locale) {
+    public ObjectNode getRollingStock(@Nonnull RollingStock rs, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode node = mapper.createObjectNode();
         node.put(NAME, rs.getId());
         node.put(NUMBER, TrainCommon.splitString(rs.getNumber()));
@@ -369,7 +371,7 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return the JSON representation of train
      */
-    public ObjectNode getTrain(Train train, Locale locale) {
+    public ObjectNode getTrain(Train train, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode data = this.mapper.createObjectNode();
         data.put(USERNAME, train.getName());
         data.put(JSON.ICON_NAME, train.getIconName());
@@ -414,7 +416,7 @@ public class JsonUtil {
      * @return the JSON representation of the train with id
      * @throws JsonException if id does not represent a known train
      */
-    public ObjectNode getTrain(String name, Locale locale, int id) throws JsonException {
+    public ObjectNode getTrain(String name, @Nullable Locale locale, int id) throws JsonException {    // Spotbugs warns that Locale.ENGLISH may be null
         try {
             return getTrain(trainManager().getTrainById(name), locale);
         } catch (NullPointerException ex) {
@@ -429,28 +431,28 @@ public class JsonUtil {
      * @param locale the client's locale
      * @return an array of all trains
      */
-    public ArrayNode getTrains(Locale locale) {
+    public ArrayNode getTrains(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = this.mapper.createArrayNode();
         trainManager().getTrainsByNameList()
                 .forEach(train -> array.add(getTrain(train, locale)));
         return array;
     }
 
-    private ArrayNode getCarsForTrain(Train train, Locale locale) {
+    private ArrayNode getCarsForTrain(Train train, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         carManager().getByTrainDestinationList(train)
                 .forEach(car -> array.add(getCar(car, locale)));
         return array;
     }
 
-    private ArrayNode getEnginesForTrain(Train train, Locale locale) {
+    private ArrayNode getEnginesForTrain(Train train, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         engineManager().getByTrainBlockingList(train)
                 .forEach(engine -> array.add(getEngine(engine, locale)));
         return array;
     }
 
-    private ArrayNode getRouteLocationsForTrain(Train train, Locale locale) {
+    private ArrayNode getRouteLocationsForTrain(Train train, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ArrayNode array = mapper.createArrayNode();
         train.getRoute().getLocationsBySequenceList().forEach(route -> {
             ObjectNode root = mapper.createObjectNode();

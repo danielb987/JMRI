@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
@@ -822,7 +824,7 @@ public class Train extends PropertyChangeSupport implements Identifiable, Proper
      * @param locale The Locale.
      * @return Human-readable status
      */
-    public String getStatus(Locale locale) {
+    public String getStatus(@Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return this.getStatus(locale, this.getStatusCode());
     }
 
@@ -833,7 +835,7 @@ public class Train extends PropertyChangeSupport implements Identifiable, Proper
      * @param code   requested status
      * @return Human-readable status
      */
-    public String getStatus(Locale locale, int code) {
+    public String getStatus(@Nullable Locale locale, int code) {    // Spotbugs warns that Locale.ENGLISH may be null
         switch (code) {
         case CODE_RUN_SCRIPTS:
             return RUN_SCRIPTS;

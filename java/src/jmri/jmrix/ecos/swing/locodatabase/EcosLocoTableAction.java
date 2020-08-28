@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
@@ -235,7 +236,7 @@ public class EcosLocoTableAction extends AbstractTableAction<NamedBean> {
             }
 
             @Override
-            public JTable makeJTable(@Nonnull String name, @Nonnull TableModel model, @CheckForNull RowSorter<? extends TableModel> sorter) {
+            public JTable makeJTable(@Nonnull String name, @Nonnull TableModel model, @Nullable RowSorter<? extends TableModel> sorter) {
                 return this.configureJTable(name, this.makeJTable(model), sorter);
             }
 

@@ -1,6 +1,8 @@
 package jmri.jmrit.operations;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.jmrit.operations.automation.AutomationsTableFrameAction;
 import jmri.jmrit.operations.locations.LocationsTableAction;
 import jmri.jmrit.operations.rollingstock.cars.CarsTableAction;
@@ -22,7 +24,7 @@ import org.openide.util.lookup.ServiceProvider;
 public final class OperationsStartupActionFactory extends AbstractStartupActionFactory {
 
     @Override
-    public String getTitle(Class<?> clazz, Locale locale) throws IllegalArgumentException {
+    public String getTitle(Class<?> clazz, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         if (clazz.equals(AutomationsTableFrameAction.class)) {
             return Bundle.getMessage(locale, "StartupAutomationsTableFrameAction"); // NOI18N
         } else if (clazz.equals(CarsTableAction.class)) {

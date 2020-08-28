@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Locate an IdTag object representing a specific IdTag.
@@ -134,7 +135,7 @@ public interface IdTagManager extends ProvidingManager<IdTag> {
      *                                  parsed.
      */
     @Nonnull
-    public IdTag newIdTag(@Nonnull String systemName, @CheckForNull String userName);
+    public IdTag newIdTag(@Nonnull String systemName, @Nullable String userName);
 
     /**
      * Get a list of all IdTags seen by a specified Reporter within a specific

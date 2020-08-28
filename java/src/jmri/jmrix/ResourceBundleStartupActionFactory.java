@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.util.startup.AbstractStartupActionFactory;
 
 /**
@@ -22,7 +24,7 @@ public class ResourceBundleStartupActionFactory extends AbstractStartupActionFac
     }
 
     @Override
-    public String getTitle(Class<?> clazz, Locale locale) throws IllegalArgumentException {
+    public String getTitle(Class<?> clazz, @Nullable Locale locale) throws IllegalArgumentException {    // Spotbugs warns that Locale.ENGLISH may be null
         if (Arrays.asList(getActionClasses()).contains(clazz)) {
             return ResourceBundle.getBundle(bundle.getBaseBundleName(), locale).getString(clazz.getName());
         }

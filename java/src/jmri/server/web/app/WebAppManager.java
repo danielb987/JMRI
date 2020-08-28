@@ -1,5 +1,7 @@
 package jmri.server.web.app;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -151,7 +153,7 @@ public class WebAppManager extends AbstractPreferencesManager {
         return tags.toString();
     }
 
-    public String getNavigation(Profile profile, Locale locale) throws JsonProcessingException {
+    public String getNavigation(Profile profile, @Nullable Locale locale) throws JsonProcessingException {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode navigation = mapper.createArrayNode();
         List<WebMenuItem> items = new ArrayList<>();
@@ -192,15 +194,15 @@ public class WebAppManager extends AbstractPreferencesManager {
         return mapper.writeValueAsString(navigation);
     }
 
-    public String getHelpMenuItems(Profile profile, Locale locale) {
+    public String getHelpMenuItems(Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return this.getMenuItems("help", profile, locale); // NOI18N
     }
 
-    public String getUserMenuItems(Profile profile, Locale locale) {
+    public String getUserMenuItems(Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return this.getMenuItems("user", profile, locale); // NOI18N
     }
 
-    private String getMenuItems(String menu, Profile profile, Locale locale) {
+    private String getMenuItems(String menu, Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         StringBuilder navigation = new StringBuilder();
         List<WebMenuItem> items = new ArrayList<>();
         this.getManifests(profile).forEach((WebManifest manifest) -> {
@@ -232,7 +234,7 @@ public class WebAppManager extends AbstractPreferencesManager {
         return navigation.toString();
     }
 
-    private ObjectNode getMenuItem(WebMenuItem item, ObjectMapper mapper, Locale locale) {
+    private ObjectNode getMenuItem(WebMenuItem item, ObjectMapper mapper, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         ObjectNode navItem = mapper.createObjectNode();
         navItem.put("title", item.getTitle(locale));
         if (item.getIconClass() != null) {
@@ -244,7 +246,7 @@ public class WebAppManager extends AbstractPreferencesManager {
         return navItem;
     }
 
-    public String getAngularDependencies(Profile profile, Locale locale) {
+    public String getAngularDependencies(Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         StringJoiner dependencies = new StringJoiner("',\n  '", "\n  '", "'"); // NOI18N
         List<String> items = new ArrayList<>();
         this.getManifests(profile).forEach((WebManifest manifest) -> {
@@ -259,7 +261,7 @@ public class WebAppManager extends AbstractPreferencesManager {
         return dependencies.toString();
     }
 
-    public String getAngularRoutes(Profile profile, Locale locale) {
+    public String getAngularRoutes(Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         StringJoiner routes = new StringJoiner("\n", "\n", ""); // NOI18N
         Set<AngularRoute> items = new HashSet<>();
         this.getManifests(profile).forEach((WebManifest manifest) -> {
@@ -275,7 +277,7 @@ public class WebAppManager extends AbstractPreferencesManager {
         return routes.toString();
     }
 
-    public String getAngularSources(Profile profile, Locale locale) {
+    public String getAngularSources(Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         StringJoiner sources = new StringJoiner("\n", "\n\n", "\n"); // NOI18N
         List<URL> urls = new ArrayList<>();
         this.getManifests(profile).forEach((WebManifest manifest) -> {
@@ -291,7 +293,7 @@ public class WebAppManager extends AbstractPreferencesManager {
         return sources.toString();
     }
 
-    public Set<URI> getPreloadedTranslations(Profile profile, Locale locale) {
+    public Set<URI> getPreloadedTranslations(Profile profile, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         Set<URI> urls = new HashSet<>();
         this.getManifests(profile).forEach((WebManifest manifest) -> {
             urls.addAll(manifest.getPreloadedTranslations(locale));

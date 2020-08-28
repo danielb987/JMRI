@@ -1,5 +1,7 @@
 package jmri.jmrit.display.layoutEditor;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.Math.PI;
 
@@ -1137,7 +1139,7 @@ public class LevelXing extends LayoutTrack {
      */
     @Override
     @Nonnull
-    protected JPopupMenu showPopup(@CheckForNull MouseEvent mouseEvent) {
+    protected JPopupMenu showPopup(@Nullable MouseEvent mouseEvent) {
         if (popup != null) {
             popup.removeAll();
         } else {

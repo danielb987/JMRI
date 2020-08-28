@@ -1,5 +1,7 @@
 package jmri.jmrix.dccpp;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.jmrix.dccpp.DCCppConstants.MAX_SENSOR_ID;
 
 import java.util.Locale;
@@ -222,7 +224,7 @@ public class DCCppSensorManager extends jmri.managers.AbstractSensorManager impl
      * {@inheritDoc}
      */
     @Override
-    public String validateSystemNameFormat(String systemName, Locale locale) {
+    public String validateSystemNameFormat(String systemName, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         return validateIntegerSystemNameFormat(systemName, 1, MAX_SENSOR_ID, locale);
     }
 

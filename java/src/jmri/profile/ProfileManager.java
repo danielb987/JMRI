@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -150,7 +152,7 @@ public class ProfileManager extends Bean {
      *
      * @param identifier the profile path or id; can be null
      */
-    public void setActiveProfile(@CheckForNull String identifier) {
+    public void setActiveProfile(@Nullable String identifier) {
         log.debug("setActiveProfile called with {}", identifier);
         // handle null profile
         if (identifier == null) {
@@ -201,7 +203,7 @@ public class ProfileManager extends Bean {
      *
      * @param profile the profile to activate
      */
-    public void setActiveProfile(@CheckForNull Profile profile) {
+    public void setActiveProfile(@Nullable Profile profile) {
         Profile old = activeProfile;
         if (profile == null) {
             activeProfile = null;
@@ -219,7 +221,7 @@ public class ProfileManager extends Bean {
         return this.nextActiveProfile;
     }
 
-    protected void setNextActiveProfile(@CheckForNull Profile profile) {
+    protected void setNextActiveProfile(@Nullable Profile profile) {
         Profile old = this.nextActiveProfile;
         if (profile == null) {
             this.nextActiveProfile = null;
@@ -241,7 +243,7 @@ public class ProfileManager extends Bean {
         this.saveActiveProfile(this.getActiveProfile(), this.autoStartActiveProfile);
     }
 
-    protected void saveActiveProfile(@CheckForNull Profile profile, boolean autoStart) throws IOException {
+    protected void saveActiveProfile(@Nullable Profile profile, boolean autoStart) throws IOException {
         Properties p = new Properties();
         FileOutputStream os = null;
         File config = this.getConfigFile();

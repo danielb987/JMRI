@@ -3,6 +3,8 @@ package jmri.util.startup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
@@ -63,7 +65,7 @@ public abstract class AbstractActionModel implements StartupModel {
         return this.systemPrefix;
     }
 
-    public void setSystemPrefix(@CheckForNull String prefix) {
+    public void setSystemPrefix(@Nullable String prefix) {
         if (prefix == null) {
             this.systemPrefix = ""; // NOI18N
         } else {

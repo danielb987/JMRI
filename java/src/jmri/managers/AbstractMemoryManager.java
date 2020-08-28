@@ -3,6 +3,7 @@ package jmri.managers;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import jmri.Manager;
 import jmri.Memory;
 import jmri.MemoryManager;
@@ -67,7 +68,7 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
     /** {@inheritDoc} */
     @Override
     @Nonnull
-    public Memory newMemory(@Nonnull String systemName, @CheckForNull String userName) {
+    public Memory newMemory(@Nonnull String systemName, @Nullable String userName) {
         log.debug("new Memory: {}; {}", systemName, (userName == null ? "null" : userName)); // NOI18N
         Objects.requireNonNull(systemName, "SystemName cannot be null. UserName was "
                 + ((userName == null) ? "null" : userName));  // NOI18N
@@ -124,7 +125,7 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
      * @return a new Memory
      */
     @Nonnull
-    abstract protected Memory createNewMemory(@Nonnull String systemName, @CheckForNull String userName);
+    abstract protected Memory createNewMemory(@Nonnull String systemName, @Nullable String userName);
 
     /** {@inheritDoc} */
     @Override

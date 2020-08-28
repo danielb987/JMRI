@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.NamedBean;
@@ -1170,7 +1172,7 @@ public abstract class AbstractTurnout extends AbstractNamedBean implements
      * {@inheritDoc}
      */
     @Override
-    public void setLeadingTurnout(@CheckForNull Turnout turnout) {
+    public void setLeadingTurnout(@Nullable Turnout turnout) {
         if (isCanFollow()) {
             Turnout old = leadingTurnout;
             leadingTurnout = turnout;
@@ -1188,7 +1190,7 @@ public abstract class AbstractTurnout extends AbstractNamedBean implements
      * {@inheritDoc}
      */
     @Override
-    public void setLeadingTurnout(@CheckForNull Turnout turnout, boolean followingCommandedState) {
+    public void setLeadingTurnout(@Nullable Turnout turnout, boolean followingCommandedState) {
         setLeadingTurnout(turnout);
         setFollowingCommandedState(followingCommandedState);
     }

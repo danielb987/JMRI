@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Disposable;
 import jmri.IdTag;
 import jmri.IdTagManager;
@@ -190,7 +191,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     /** {@inheritDoc} */
     @Override
     @Nonnull
-    public IdTag newIdTag(@Nonnull String systemName, @CheckForNull String userName) {
+    public IdTag newIdTag(@Nonnull String systemName, @Nullable String userName) {
         if (!initialised && !loading) {
             init();
         }

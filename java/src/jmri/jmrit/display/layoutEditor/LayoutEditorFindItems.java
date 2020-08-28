@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.NamedBean;
 import jmri.Sensor;
 import jmri.SignalHead;
@@ -198,7 +200,7 @@ final public class LayoutEditorFindItems {
     }
 
     @CheckReturnValue
-    public LayoutTurnout findLayoutTurnoutByBean(@CheckForNull NamedBean bean) {
+    public LayoutTurnout findLayoutTurnoutByBean(@Nullable NamedBean bean) {
         List<LayoutTurnout> layoutTurnouts = layoutEditor.getLayoutTurnouts();
         if (bean instanceof SignalMast) {
             for (LayoutTurnout t : layoutTurnouts) {

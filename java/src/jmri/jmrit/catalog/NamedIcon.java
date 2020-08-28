@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -225,7 +227,7 @@ public class NamedIcon extends ImageIcon {
      *
      * @param name the new name, can be null
      */
-    public void setName(@CheckForNull String name) {
+    public void setName(@Nullable String name) {
         mName = name;
     }
 
@@ -245,7 +247,7 @@ public class NamedIcon extends ImageIcon {
      *
      * @param url the URL associated with this icon
      */
-    public void setURL(@CheckForNull String url) {
+    public void setURL(@Nullable String url) {
         mURL = url;
     }
 

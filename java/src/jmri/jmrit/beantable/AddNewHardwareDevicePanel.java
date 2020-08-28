@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -164,7 +165,7 @@ public class AddNewHardwareDevicePanel extends jmri.util.swing.JmriPanel {
      *
      * @param message the message to set
      */
-    public void setStatusBarText(@CheckForNull String message) {
+    public void setStatusBarText(@Nullable String message) {
         if (message == null) {
             statusBar.setText("");
         } else {

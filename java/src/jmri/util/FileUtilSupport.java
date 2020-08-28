@@ -1,5 +1,7 @@
 package jmri.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import static jmri.util.FileUtil.HOME;
 import static jmri.util.FileUtil.PREFERENCES;
 import static jmri.util.FileUtil.PROFILE;
@@ -122,7 +124,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public File getFile(@CheckForNull Profile profile, @Nonnull String path) throws FileNotFoundException {
+    public File getFile(@Nullable Profile profile, @Nonnull String path) throws FileNotFoundException {
         try {
             return new File(this.pathFromPortablePath(profile, path));
         } catch (NullPointerException ex) {
@@ -383,7 +385,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getExternalFilename(@CheckForNull Profile profile, @Nonnull String pName) {
+    public String getExternalFilename(@Nullable Profile profile, @Nonnull String pName) {
         String filename = this.pathFromPortablePath(profile, pName);
         return (filename != null) ? filename : pName.replace(SEPARATOR, File.separatorChar);
     }
@@ -410,7 +412,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getAbsoluteFilename(@CheckForNull Profile profile, @Nonnull String path) {
+    public String getAbsoluteFilename(@Nullable Profile profile, @Nonnull String path) {
         return this.pathFromPortablePath(profile, path);
     }
 
@@ -527,7 +529,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getPortableFilename(@CheckForNull Profile profile, @Nonnull File file) {
+    public String getPortableFilename(@Nullable Profile profile, @Nonnull File file) {
         return this.getPortableFilename(profile, file, false, false);
     }
 
@@ -558,7 +560,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getPortableFilename(@CheckForNull Profile profile, @Nonnull File file, boolean ignoreUserFilesPath, boolean ignoreProfilePath) {
+    public String getPortableFilename(@Nullable Profile profile, @Nonnull File file, boolean ignoreUserFilesPath, boolean ignoreProfilePath) {
         // compare full path name to see if same as preferences
         String filename = file.getAbsolutePath();
 
@@ -645,7 +647,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getPortableFilename(@CheckForNull Profile profile, @Nonnull String filename) {
+    public String getPortableFilename(@Nullable Profile profile, @Nonnull String filename) {
         return getPortableFilename(profile, filename, false, false);
     }
 
@@ -676,7 +678,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getPortableFilename(@CheckForNull Profile profile, @Nonnull String filename, boolean ignoreUserFilesPath,
+    public String getPortableFilename(@Nullable Profile profile, @Nonnull String filename, boolean ignoreUserFilesPath,
             boolean ignoreProfilePath) {
         if (isPortableFilename(filename)) {
             // if this already contains prefix, run through conversion to normalize
@@ -743,7 +745,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getUserFilesPath(@CheckForNull Profile profile) {
+    public String getUserFilesPath(@Nullable Profile profile) {
         String path = userFilesPaths.get(profile);
         return path != null ? path : getProfilePath(profile);
     }
@@ -756,7 +758,7 @@ public class FileUtilSupport extends Bean {
      * @param path    The path to the user's files directory using
      *                system-specific separators
      */
-    public void setUserFilesPath(@CheckForNull Profile profile, @Nonnull String path) {
+    public void setUserFilesPath(@Nullable Profile profile, @Nonnull String path) {
         String old = userFilesPaths.get(profile);
         if (!path.endsWith(File.separator)) {
             path = path + File.separator;
@@ -776,7 +778,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getProfilePath(@CheckForNull Profile profile) {
+    public String getProfilePath(@Nullable Profile profile) {
         String path = profilePaths.get(profile);
         if (path == null) {
             File f = profile != null ? profile.getPath() : null;
@@ -816,7 +818,7 @@ public class FileUtilSupport extends Bean {
      * @deprecated since 4.17.3 without replacement
      */
     @Deprecated
-    public void setProfilePath(@CheckForNull String path) {
+    public void setProfilePath(@Nullable String path) {
         // does nothing
     }
 
@@ -1038,7 +1040,7 @@ public class FileUtilSupport extends Bean {
      */
     @Nonnull
     @CheckReturnValue
-    public String getScriptsPath(@CheckForNull Profile profile) {
+    public String getScriptsPath(@Nullable Profile profile) {
         String path = scriptsPaths.get(profile);
         if (path != null) {
             return path;
@@ -1059,7 +1061,7 @@ public class FileUtilSupport extends Bean {
      * @param path    the scriptsPaths to set; null resets to the default,
      *                defined in {@link #getScriptsPath()}
      */
-    public void setScriptsPath(@CheckForNull Profile profile, @CheckForNull String path) {
+    public void setScriptsPath(@Nullable Profile profile, @Nullable String path) {
         String old = scriptsPaths.get(profile);
         if (path != null && !path.endsWith(File.separator)) {
             path = path + File.separator;
@@ -1706,7 +1708,7 @@ public class FileUtilSupport extends Bean {
      * @throws IllegalArgumentException if max is less than one
      * @see #backup(java.io.File)
      */
-    public void rotate(@Nonnull File file, int max, @CheckForNull String extension) throws IOException {
+    public void rotate(@Nonnull File file, int max, @Nullable String extension) throws IOException {
         if (max < 1) {
             throw new IllegalArgumentException();
         }
@@ -1780,7 +1782,7 @@ public class FileUtilSupport extends Bean {
      * @return Canonical path to use, or null if one cannot be found.
      * @since 2.7.2
      */
-    private String pathFromPortablePath(@CheckForNull Profile profile, @Nonnull String path) {
+    private String pathFromPortablePath(@Nullable Profile profile, @Nonnull String path) {
         if (path.startsWith(PROGRAM)) {
             if (new File(path.substring(PROGRAM.length())).isAbsolute()) {
                 path = path.substring(PROGRAM.length());

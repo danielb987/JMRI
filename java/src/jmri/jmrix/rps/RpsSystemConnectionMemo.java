@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import jmri.*;
 import jmri.jmrix.ConfiguringSystemConnectionMemo;
@@ -80,7 +81,7 @@ public class RpsSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
      * @param locale  the locale for user messages
      * @return name, unchanged
      */
-    public String validateSystemNameFormat(String name, Manager manager, Locale locale) {
+    public String validateSystemNameFormat(String name, Manager manager, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         manager.validateSystemNamePrefix(name, locale);
         String[] points = name.substring(manager.getSystemNamePrefix().length()).split(";");
         if (points.length < 3) {

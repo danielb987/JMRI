@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Properties;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -221,7 +223,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     }
 
     @Nonnull
-    private ScriptEngine getEngine(@CheckForNull String engineName, @Nonnull String type) throws ScriptException {
+    private ScriptEngine getEngine(@Nullable String engineName, @Nonnull String type) throws ScriptException {
         String name = names.get(engineName);
         ScriptEngine engine = getEngine(name);
         if (name == null || engine == null) {
@@ -238,7 +240,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @return a ScriptEngine or null if matching engine not found
      */
     @CheckForNull
-    public ScriptEngine getEngine(@CheckForNull String name) {
+    public ScriptEngine getEngine(@Nullable String name) {
         if (!engines.containsKey(name)) {
             name = names.get(name);
             ScriptEngineFactory factory;
@@ -380,7 +382,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @throws java.io.IOException           if the script file cannot be read.
      */
     @CheckForNull
-    private Object eval(File file, @CheckForNull ScriptContext context, @CheckForNull Bindings bindings)
+    private Object eval(File file, @Nullable ScriptContext context, @Nullable Bindings bindings)
             throws ScriptException, IOException {
         ScriptEngine engine;
         Object result = null;
@@ -503,7 +505,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     }
 
     @Nonnull
-    private ScriptEngineFactory getFactory(@CheckForNull String factoryName, @Nonnull String type)
+    private ScriptEngineFactory getFactory(@Nullable String factoryName, @Nonnull String type)
             throws ScriptException {
         String name = this.names.get(factoryName);
         ScriptEngineFactory factory = getFactory(name);
@@ -521,7 +523,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @return a ScriptEngineFactory or null
      */
     @CheckForNull
-    public ScriptEngineFactory getFactory(@CheckForNull String name) {
+    public ScriptEngineFactory getFactory(@Nullable String name) {
         if (!factories.containsKey(name)) {
             name = names.get(name);
         }
@@ -641,7 +643,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @param isFactory true for a not found ScriptEngineFactory, false for a
      *                  not found ScriptEngine
      */
-    private ScriptException scriptEngineNotFound(@CheckForNull String key, @Nonnull String type, boolean isFactory) {
+    private ScriptException scriptEngineNotFound(@Nullable String key, @Nonnull String type, boolean isFactory) {
         String expected = String.join(",", names.keySet());
         String factory = isFactory ? " factory" : "";
         log.error("Could not find script engine{} for {} \"{}\", expected one of {}", factory, type, key, expected);

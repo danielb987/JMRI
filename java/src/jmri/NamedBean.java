@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
@@ -110,7 +112,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
      * @throws jmri.NamedBean.BadUserNameException if the user name can not be
      *                                                 normalized
      */
-    public void setUserName(@CheckForNull String s) throws BadUserNameException;
+    public void setUserName(@Nullable String s) throws BadUserNameException;
 
     /**
      * Get a system-specific name. This encodes the hardware addressing
@@ -369,7 +371,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
      *
      * @param comment the comment or null to remove an existing comment
      */
-    public void setComment(@CheckForNull String comment);
+    public void setComment(@Nullable String comment);
 
     /**
      * Get a list of references for the specified bean.
@@ -377,7 +379,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
      * @param bean The bean to be checked.
      * @return a list of NamedBeanUsageReports or an empty ArrayList.
      */
-    default List<NamedBeanUsageReport> getUsageReport(@CheckForNull NamedBean bean) { return (new ArrayList<>()); }
+    default List<NamedBeanUsageReport> getUsageReport(@Nullable NamedBean bean) { return (new ArrayList<>()); }
 
     /**
      * Attach a key/value pair to the NamedBean, which can be retrieved later.
@@ -444,7 +446,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
      */
     @CheckReturnValue
     @CheckForNull
-    static public String normalizeUserName(@CheckForNull String inputName) throws BadUserNameException {
+    static public String normalizeUserName(@Nullable String inputName) throws BadUserNameException {
         String result = inputName;
         if (result != null) {
             result = result.trim();
@@ -572,7 +574,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
          * @param message bundle key to be translated
          * @param subs    One or more objects to be inserted into the message
          */
-        public BadUserNameException(Locale locale, String message, Object... subs) {
+        public BadUserNameException(@Nullable Locale locale, String message, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
             super(Bundle.getMessage(Locale.ENGLISH, message, subs),
                     Bundle.getMessage(locale, message, subs));
         }
@@ -620,7 +622,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
          * @param message bundle key to be translated
          * @param subs    One or more objects to be inserted into the message
          */
-        public BadSystemNameException(Locale locale, String message, Object... subs) {
+        public BadSystemNameException(@Nullable Locale locale, String message, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
             this(Bundle.getMessage(Locale.ENGLISH, message, subs),
                     Bundle.getMessage(locale, message, subs));
         }
@@ -681,7 +683,7 @@ public interface NamedBean extends Comparable<NamedBean>, PropertyChangeProvider
          * @param message bundle key to be translated
          * @param subs    One or more objects to be inserted into the message
          */
-        public DuplicateSystemNameException(Locale locale, String message, Object... subs) {
+        public DuplicateSystemNameException(@Nullable Locale locale, String message, Object... subs) {    // Spotbugs warns that Locale.ENGLISH may be null
             this(Bundle.getMessage(locale, message, subs),
                     Bundle.getMessage(locale, message, subs));
         }

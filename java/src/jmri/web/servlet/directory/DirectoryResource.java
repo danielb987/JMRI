@@ -5,6 +5,8 @@ import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.InstanceManager;
 import jmri.util.FileUtil;
 import jmri.web.servlet.ServletUtil;
@@ -27,7 +29,7 @@ public class DirectoryResource extends PathResource {
 
     private final Locale locale;
 
-    public DirectoryResource(Locale locale, Resource resource) throws IOException {
+    public DirectoryResource(@Nullable Locale locale, Resource resource) throws IOException {    // Spotbugs warns that Locale.ENGLISH may be null
         super(resource.getFile());
         this.locale = locale;
     }

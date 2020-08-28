@@ -1,6 +1,8 @@
 package jmri.jmrix.roco.z21;
 
 import java.util.Locale;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jmri.Manager;
 import jmri.Manager.NameValidity;
 import jmri.NamedBean;
@@ -71,7 +73,7 @@ public class Z21RMBusAddress {
      * @see jmri.Manager#validateSystemNameFormat(java.lang.String,
      * java.util.Locale)
      */
-    public static String validateSystemNameFormat(String name, Manager manager, Locale locale) {
+    public static String validateSystemNameFormat(String name, Manager manager, @Nullable Locale locale) {    // Spotbugs warns that Locale.ENGLISH may be null
         try {
             return manager.validateIntegerSystemNameFormat(name, 1, 160, locale);
         } catch (NumberFormatException ex) {

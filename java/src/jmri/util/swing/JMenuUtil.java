@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
@@ -53,7 +54,7 @@ public class JMenuUtil extends GuiUtilBase {
     }
 
     static @Nonnull
-    JMenu jMenuFromElement(@CheckForNull Element main, WindowInterface wi, Object context) {
+    JMenu jMenuFromElement(@Nullable Element main, WindowInterface wi, Object context) {
         boolean addSep = false;
         String name = "<none>";
         if (main == null) {
@@ -119,7 +120,7 @@ public class JMenuUtil extends GuiUtilBase {
     }
 
     static @Nonnull
-    JMenu createMenuGroupFromElement(@CheckForNull Element main, WindowInterface wi, Object context) {
+    JMenu createMenuGroupFromElement(@Nullable Element main, WindowInterface wi, Object context) {
         String name = "<none>";
         if (main == null) {
             log.warn("Menu from element called without an element");

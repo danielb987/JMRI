@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -46,7 +48,7 @@ public class JsonMessageClientManager implements InstanceManagerAutoDefault {
      *
      * @param client the client canceling the subscription
      */
-    public void unsubscribe(@CheckForNull String client) {
+    public void unsubscribe(@Nullable String client) {
         clients.remove(client);
     }
 
@@ -55,7 +57,7 @@ public class JsonMessageClientManager implements InstanceManagerAutoDefault {
      *
      * @param connection the connection canceling the subscription
      */
-    public void unsubscribe(@CheckForNull JsonConnection connection) {
+    public void unsubscribe(@Nullable JsonConnection connection) {
         List<String> keys = new ArrayList<>();
         clients.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(connection))
