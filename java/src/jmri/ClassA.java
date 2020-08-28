@@ -6,10 +6,15 @@ import javax.annotation.*;
 class ClassA {
     
     public void testA(@CheckForNull Object param) {
-        // Do nothing
+        testC(param);
     }
     
     public void testB(@Nullable Object param) {
+        testC(param);
+    }
+    
+    private void testC(Object param) {
         // Do nothing
     }
+    
 }
