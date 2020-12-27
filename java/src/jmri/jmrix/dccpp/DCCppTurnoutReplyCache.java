@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implement a feedback message cache for DCC++ turnouts.
- * <P>
+ * <p>
  *
  * @author Paul Bender Copyright (C) 2012
  * @author Mark Underwood Copyright (C) 2015
@@ -41,7 +41,7 @@ public class DCCppTurnoutReplyCache implements DCCppListener {
     // requestCachedStateFromLayout
     // provide any cached state to the turnout.  Otherwise, call the turnout's 
     // requestUpdateFromLayout() method.
-    // @param turnout - the DCCppTurnout object we are requesting data for.
+    // @param turnout  the DCCppTurnout object we are requesting data for.
     synchronized public void requestCachedStateFromLayout(DCCppTurnout turnout) {
         int pNumber = turnout.getNumber();
         if (messagePending[pNumber]) {
@@ -50,7 +50,7 @@ public class DCCppTurnoutReplyCache implements DCCppListener {
         try {
             if (messageCache[pNumber] != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Message for turnout " + pNumber + " cached.");
+                    log.debug("Message for turnout {} cached.", pNumber);
                 }
                 turnout.message(messageCache[pNumber]);
             } else {
@@ -68,7 +68,7 @@ public class DCCppTurnoutReplyCache implements DCCppListener {
     // requestCachedStateFromLayout
     // provide any cached state a sensor.  Otherwise, call the sensor's 
     // requestUpdateFromLayout() method.
-    // @param sensor - the DCCppSensor object we are requesting data for.
+    // @param sensor  the DCCppSensor object we are requesting data for.
     //
     // TODO: We don't have DCCppSensors yet. May never have them.
     /*
@@ -98,7 +98,7 @@ public class DCCppTurnoutReplyCache implements DCCppListener {
     @Override
     synchronized public void message(DCCppReply l) {
         if (log.isDebugEnabled()) {
-            log.debug("received message: " + l);
+            log.debug("received message: {}", l);
         }
         if (l.isTurnoutReply()) {
      // cache the message for later requests
@@ -116,7 +116,7 @@ public class DCCppTurnoutReplyCache implements DCCppListener {
     @Override
     public void notifyTimeout(DCCppMessage msg) {
         if (log.isDebugEnabled()) {
-            log.debug("Notified of timeout on message" + msg.toString());
+            log.debug("Notified of timeout on message{}", msg.toString());
         }
     }
 

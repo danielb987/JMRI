@@ -4,21 +4,25 @@ import jmri.Turnout;
 import jmri.implementation.AbstractTurnout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Xpa+Modem implementation of the Turnout interface.
- * <P>
+ * <p>
+ * Based on XNetTurnout.java
  *
- * @author	Paul Bender Copyright (C) 2004
+ * @author Paul Bender Copyright (C) 2004
  */
 public class XpaTurnout extends AbstractTurnout {
 
-    /**
-     *
-     */
-    // Private data member to keep track of what turnout we control.
+    // Private data member to keep track of what turnout we control
     private final int _number;
-    private XpaTrafficController tc = null;
+    private final XpaTrafficController tc;
+
+    @GuardedBy("this")
+    protected int _mThrown = Turnout.THROWN;
+    @GuardedBy("this")
+    protected int _mClosed = Turnout.CLOSED;
 
     /**
      * Xpa turnouts use any address allowed as an accessory decoder address on
@@ -37,23 +41,25 @@ public class XpaTurnout extends AbstractTurnout {
         return _number;
     }
 
-    // Handle a request to change state by sending a formatted DCC packet
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void forwardCommandChangeToLayout(int s) {
+    synchronized protected void forwardCommandChangeToLayout(int newState) {
         XpaMessage m;
         // sort out states
-        if ((s & Turnout.CLOSED) != 0) {
+        if ((newState & _mClosed) != 0) {
             // first look for the double case, which we can't handle
-            if ((s & Turnout.THROWN) != 0) {
+            if ((newState & _mThrown ) != 0) {
                 // this is the disaster case!
-                log.error("Cannot command both CLOSED and THROWN " + s);
+                log.error("Cannot command both CLOSED and THROWN {}", newState);
                 return;
             } else {
                 // send a CLOSED command
                 m = XpaMessage.getSwitchNormalMsg(_number);
             }
         } else {
-            // send a THROWN command
+            // send a THROWN command (or CLOSED if inverted)
             m = XpaMessage.getSwitchReverseMsg(_number);
         }
         tc.sendXpaMessage(m, null);
@@ -61,9 +67,26 @@ public class XpaTurnout extends AbstractTurnout {
 
     @Override
     protected void turnoutPushbuttonLockout(boolean _pushButtonLockout) {
-        if (log.isDebugEnabled()) {
-            log.debug("Send command to " + (_pushButtonLockout ? "Lock" : "Unlock") + " Pushbutton PT" + _number);
+        log.debug("Send command to {} Pushbutton PT{}", (_pushButtonLockout ? "Lock" : "Unlock"), _number);
+    }
+
+    @Override
+    synchronized public void setInverted(boolean inverted) {
+        log.debug("Inverting Turnout State for turnout {}", getSystemName() );
+        _inverted = inverted;
+        if (inverted) {
+            _mThrown = Turnout.CLOSED;
+            _mClosed = Turnout.THROWN;
+        } else {
+            _mThrown = Turnout.THROWN;
+            _mClosed = Turnout.CLOSED;
         }
+        super.setInverted(inverted);
+    }
+
+    @Override
+    public boolean canInvert() {
+        return true;
     }
 
     private final static Logger log = LoggerFactory.getLogger(XpaTurnout.class);

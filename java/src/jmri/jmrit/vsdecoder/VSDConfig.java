@@ -1,38 +1,32 @@
 package jmri.jmrit.vsdecoder;
 
-/**
- * class VSDConfig
- *
- * Data capsule ("Model"?) for passing configuration between the GUI and the
- * VSDecoder itself.
- */
-
-/*
- * <hr>
- * This file is part of JMRI.
- * <P>
- * JMRI is free software; you can redistribute it and/or modify it under 
- * the terms of version 2 of the GNU General Public License as published 
- * by the Free Software Foundation. See the "COPYING" file for a copy
- * of this license.
- * <P>
- * JMRI is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
- * for more details.
- * <P>
- *
- * @author   Mark Underwood Copyright (C) 2011
- * 
- */
 import jmri.DccLocoAddress;
 import jmri.LocoAddress;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.util.PhysicalLocation;
 
+/**
+ * Data capsule ("Model"?) for passing configuration between the GUI and the
+ * VSDecoder itself.
+ *
+ * <hr>
+ * This file is part of JMRI.
+ * <p>
+ * JMRI is free software; you can redistribute it and/or modify it under 
+ * the terms of version 2 of the GNU General Public License as published 
+ * by the Free Software Foundation. See the "COPYING" file for a copy
+ * of this license.
+ * <p>
+ * JMRI is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ * for more details.
+ *
+ * @author Mark Underwood Copyright (C) 2011
+ */
 public class VSDConfig {
 
-    private float DEFAULT_VOLUME = 0.8f;
+    public float DEFAULT_VOLUME = 0.8f;
 
     private String my_id;
     private String vsd_path;
@@ -54,35 +48,35 @@ public class VSDConfig {
     }
 
     public String getId() {
-        return (my_id);
+        return my_id;
     }
 
     public String getVSDPath() {
-        return (vsd_path);
+        return vsd_path;
     }
 
     public String getProfileName() {
-        return (profile_name);
+        return profile_name;
     }
 
     public LocoAddress getLocoAddress() {
-        return (address);
+        return address;
     }
 
     public DccLocoAddress getDccAddress() {
-        return (new DccLocoAddress(address.getNumber(), address.getProtocol()));
+        return new DccLocoAddress(address.getNumber(), address.getProtocol());
     }
 
     public float getVolume() {
-        return (volume);
+        return volume;
     }
 
     public PhysicalLocation getPhysicalLocation() {
-        return (location);
+        return location;
     }
 
     public RosterEntry getRosterEntry() {
-        return (roster);
+        return roster;
     }
 
     public void setId(String id) {

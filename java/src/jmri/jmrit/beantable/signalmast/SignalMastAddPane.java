@@ -1,25 +1,23 @@
 package jmri.jmrit.beantable.signalmast;
 
-import java.awt.*;
 
 import java.util.*;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 
 import jmri.*;
 import jmri.spi.JmriServiceProviderInterface;
 
 /**
- * Definition of JPanel used to configure a specific SignalMast type
+ * Definition of JPanel used to configure a specific SignalMast type.
  *
  * Implementing classes <em>must</em> be registered as service providers of this
  * type to be recognized and usable.
  * <p>
  * General design documentation is available on the 
- * <a href="http://jmri.org/help/en/html/doc/Technical/SystemStructure.shtml">Structure of External System Connections page</a>.
+ * <a href="http://jmri.org/help/en/html/doc/Technical/SystemStructure.shtml">Structure of
+ * External System Connections page</a>.
  *
  * The general sequence is:
  * <ul>
@@ -39,13 +37,16 @@ public abstract class SignalMastAddPane extends JPanel implements JmriServicePro
     /**
      * Provide a new list of aspects in the signal system.
      * Must be done at startup before the pane is shown.
-     * May be done later, to update to a new system.
+     * May be done later, to update to a newly selected system.
+     * @param map the signal appearance map.
+     * @param sigSystem the signal system.
      */
     abstract public void setAspectNames(@Nonnull SignalAppearanceMap map, 
                                @Nonnull SignalSystem sigSystem);
 
     /**
      * Can this pane edit a specific mast object, i.e. an object of its type?
+     *
      * @param mast the SignalMast to possibly display
      * @return true if this pane can handle that mast type; false if can't
      */
@@ -53,17 +54,18 @@ public abstract class SignalMastAddPane extends JPanel implements JmriServicePro
 
     /**
      * Load this pane with information from a mast.
-     * Do not invoke this is {@link #canHandleMast(SignalMast)} on that mast returns false.
+     * Do not invoke this if {@link #canHandleMast(SignalMast)} on that mast returns false.
      *
      * @param mast the SignalMast to display or null to reset a previous setting
      */
     abstract public void setMast(SignalMast mast);
     
     /**
-     * Called to either "create and register" or update an existing mast from the given information.
+     * Called to either "create and register" a new, or "update" an existing mast from the given information.
+     *
      * @param sigsysname the name of the signal system in use
-     * @param mastname the mast type name
-     * @param username user name value
+     * @param mastname   the mast type name
+     * @param username   user name value
      * @return false if the operation failed, in which case the user should have already been notified
      */
     abstract public boolean createMast(@Nonnull
@@ -72,7 +74,7 @@ public abstract class SignalMastAddPane extends JPanel implements JmriServicePro
                             String username);
     
     /**
-     * @return Human-prefered name for type of signal mast, in local language
+     * @return human-preferred name for type of signal mast, in local language
      */
     @Nonnull abstract public String getPaneName();
     
@@ -82,6 +84,7 @@ public abstract class SignalMastAddPane extends JPanel implements JmriServicePro
         /**
          * Is this pane available, given the current configuration of the program?
          * In other words, are all necessary managers and other objects present?
+         * @return always true.
          */
         public boolean isAvailable() { return true; }
 
@@ -99,6 +102,7 @@ public abstract class SignalMastAddPane extends JPanel implements JmriServicePro
          * Get all available instances as an {@link Collections#unmodifiableMap}
          * between the (localized) name and the pane. Note that this is a SortedMap in 
          * name order.
+         * @return all instance map sorted in name order.
          */
         final static public Map<String, SignalMastAddPaneProvider> getInstancesMap() {
             if (instanceMap == null) loadInstances();
@@ -108,6 +112,7 @@ public abstract class SignalMastAddPane extends JPanel implements JmriServicePro
         /**
          * Get all available instances as an {@link Collections#unmodifiableCollection}
          * between the (localized) name and the pane. 
+         * @return unmodifiable collection.
          */
         final static public Collection<SignalMastAddPaneProvider> getInstancesCollection() {
             if (instanceMap == null) loadInstances();

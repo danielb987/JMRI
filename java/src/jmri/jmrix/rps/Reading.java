@@ -5,18 +5,17 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Encodes a single set of input values (a "reading") for RPS.
- * <P>
+ * <p>
  * The values are in time units (nominally usec), and need to be converted to
  * space units during later calculations.
  * <p>
  * The values are indexed by Receiver number, as known to the RPS system. For
  * example, getValue(2) will return the time from RPS receiver 2.
- *
  * <p>
  * Objects of this class are immutable once created.
  *
- * @author	Bob Jacobsen Copyright (C) 2006, 2008
-  */
+ * @author Bob Jacobsen Copyright (C) 2006, 2008
+ */
 @javax.annotation.concurrent.Immutable
 public class Reading {
 
@@ -52,14 +51,16 @@ public class Reading {
     }
 
     /**
-     * Return the time at which this Reading was requested
+     * Return the time at which this Reading was requested.
+     * @return read request time.
      */
     public int getTime() {
         return time;
     }
 
     /**
-     * Return the ID int of the transmitter this reading describes
+     * Return the ID int of the transmitter this reading describes.
+     * @return ID of the transmitter.
      */
     public String getId() {
         return id;
@@ -67,13 +68,16 @@ public class Reading {
 
     /**
      * NValues is really the highest receiver number possible.
+     * @return highest receiver number possible.
      */
     public int getNValues() {
         return values.length - 1;
     }
 
     /**
-     * Convenience method to get a specific one of the values
+     * Convenience method to get a specific one of the values.
+     * @param i value index.
+     * @return value.
      */
     public double getValue(int i) {
         return values[i];
@@ -81,7 +85,7 @@ public class Reading {
 
     /*
      * Get the entire data array as an copy,
-     * to preserve immutability
+     * to preserve immutability.
      */
     public double[] getValues() {
         double[] retval = new double[values.length];
@@ -115,6 +119,5 @@ public class Reading {
     }
 
     final Object rawData;
+
 }
-
-

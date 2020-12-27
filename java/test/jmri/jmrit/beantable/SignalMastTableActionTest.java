@@ -1,16 +1,17 @@
 package jmri.jmrit.beantable;
 
+import jmri.SignalMast;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+import jmri.util.junit.annotations.*;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
-public class SignalMastTableActionTest extends AbstractTableActionBase {
+public class SignalMastTableActionTest extends AbstractTableActionBase<SignalMast> {
 
     @Test
     public void testCTor() {
@@ -38,9 +39,27 @@ public class SignalMastTableActionTest extends AbstractTableActionBase {
         Assert.assertTrue("Default include add button", a.includeAddButton());
     }
 
-    // The minimal setup for log4J
     @Override
-    @Before
+    public String getAddFrameName(){
+        return Bundle.getMessage("TitleAddSignalMast");
+    }
+
+    @Test
+    @Disabled("Signal Mast create frame does not have a hardware address")
+    @ToDo("Re-write parent class test to use the right name")
+    @Override
+    public void testAddThroughDialog() {
+    }
+
+    @Test
+    @Disabled("Signal Mast create frame does not have a hardware address")
+    @ToDo("Re-write parent class test to use the right name")
+    @Override
+    public void testEditButton() {
+    }
+
+    @Override
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
@@ -49,7 +68,7 @@ public class SignalMastTableActionTest extends AbstractTableActionBase {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         a = null;
         JUnitUtil.tearDown();

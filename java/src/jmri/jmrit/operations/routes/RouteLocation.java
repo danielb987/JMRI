@@ -1,13 +1,19 @@
 package jmri.jmrit.operations.routes;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.awt.Color;
 import java.awt.Point;
 import jmri.InstanceManager;
+import jmri.beans.PropertyChangeSupport;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.LocationManager;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
+import jmri.jmrit.operations.trains.TrainCommon;
+import jmri.util.ColorUtil;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -19,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Boudreau Copyright (C) 2008, 2013
  */
-public class RouteLocation implements java.beans.PropertyChangeListener {
+public class RouteLocation extends PropertyChangeSupport implements java.beans.PropertyChangeListener {
 
     public static final String NONE = "";
 
@@ -39,6 +45,7 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
     protected int _trainIconX = 0; // the x & y coordinates for the train icon
     protected int _trainIconY = 0;
     protected String _comment = NONE;
+    protected Color _commentColor = Color.black;
 
     protected int _carMoves = 0; // number of moves at this location
     protected int _trainWeight = 0; // total car weight departing this location
@@ -124,6 +131,30 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
 
     public String getComment() {
         return _comment;
+    }
+    
+    public void setCommentColor(Color color) {
+        Color old = _commentColor;
+        _commentColor = color;
+        if (!old.equals(_commentColor)) {
+            setDirtyAndFirePropertyChange("RouteLocationCommentColor", old, color); // NOI18N
+        }
+    }
+    
+    public Color getCommentColor() {
+        return _commentColor;
+    }
+    
+    public String getFormatedColorComment() {
+        return TrainCommon.formatColorString(getComment(), getCommentColor());
+    }
+  
+    public void setCommentTextColor(String color) {
+        setCommentColor(ColorUtil.stringToColor(color));
+    }
+    
+    public String getCommentTextColor() {
+        return ColorUtil.colorToColorName(getCommentColor());
     }
 
     public void setTrainDirection(int direction) {
@@ -460,6 +491,7 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
      *
      * @param e Consist XML element
      */
+    @SuppressWarnings("deprecation") // until there's a replacement for convertFromXmlComment()
     public RouteLocation(Element e) {
         Attribute a;
         if ((a = e.getAttribute(Xml.ID)) != null) {
@@ -556,6 +588,10 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
                 log.error("Route location ({}) sequence id isn't a valid number", getName(), a.getValue());
             }
         }
+        if ((a = e.getAttribute(Xml.COMMENT_COLOR)) != null) {
+            setCommentTextColor(a.getValue());
+        }
+        
         if ((a = e.getAttribute(Xml.COMMENT)) != null) {
             _comment = OperationsXml.convertFromXmlComment(a.getValue());
         }
@@ -592,6 +628,7 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
 //            e.setAttribute(Xml.TRAIN_ICON_RANGE_Y, Integer.toString(getTrainIconRangeY()));
 //        }
         
+        e.setAttribute(Xml.COMMENT_COLOR, getCommentTextColor());
         e.setAttribute(Xml.COMMENT, getComment());
 
         return e;
@@ -613,20 +650,6 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
         if (e.getPropertyName().equals(Location.NAME_CHANGED_PROPERTY)) {
             firePropertyChange(e.getPropertyName(), e.getOldValue(), e.getNewValue());
         }
-    }
-
-    java.beans.PropertyChangeSupport pcs = new java.beans.PropertyChangeSupport(this);
-
-    public synchronized void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
-        pcs.addPropertyChangeListener(l);
-    }
-
-    public synchronized void removePropertyChangeListener(java.beans.PropertyChangeListener l) {
-        pcs.removePropertyChangeListener(l);
-    }
-
-    protected void firePropertyChange(String p, Object old, Object n) {
-        pcs.firePropertyChange(p, old, n);
     }
 
     protected void setDirtyAndFirePropertyChange(String p, Object old, Object n) {

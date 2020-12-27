@@ -1,8 +1,7 @@
 package apps;
 
-import static apps.gui.GuiLafPreferencesManager.MIN_FONT_SIZE;
+import static jmri.util.gui.GuiLafPreferencesManager.MIN_FONT_SIZE;
 
-import apps.gui.GuiLafPreferencesManager;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -29,16 +28,16 @@ import jmri.InstanceManager;
 import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
 import jmri.swing.PreferencesPanel;
-import jmri.util.swing.SwingSettings;
+import jmri.util.gui.GuiLafPreferencesManager;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Provide GUI to configure Swing GUI LAF defaults
- * <P>
+ * <p>
  * Provides GUI configuration for SWING LAF by displaying radio buttons for each
  * LAF implementation available. This information is then persisted separately
- * by {@link apps.configurexml.GuiLafConfigPaneXml}
- * <P>
+ * by the {@link jmri.util.gui.GuiLafPreferencesManager}.
+ * <p>
  * Locale default language and country is also considered a GUI (and perhaps
  * LAF) configuration item.
  *
@@ -54,13 +53,13 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
     /**
      * Smallest font size shown to a user ({@value}).
      *
-     * @see apps.gui.GuiLafPreferencesManager#MIN_FONT_SIZE
+     * @see GuiLafPreferencesManager#MIN_FONT_SIZE
      */
     public static final int MIN_DISPLAYED_FONT_SIZE = MIN_FONT_SIZE;
     /**
      * Largest font size shown to a user ({@value}).
      *
-     * @see apps.gui.GuiLafPreferencesManager#MAX_FONT_SIZE
+     * @see GuiLafPreferencesManager#MAX_FONT_SIZE
      */
     public static final int MAX_DISPLAYED_FONT_SIZE = 20;
 
@@ -72,6 +71,8 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
     public JCheckBox mouseEvent;
     private JComboBox<Integer> fontSizeComboBox;
     public JCheckBox graphicStateDisplay;
+    public JCheckBox tabbedOblockEditor;
+    public JCheckBox editorUseOldLocSizeDisplay;
 
     public GuiLafConfigPane() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -84,6 +85,10 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
         add(p);
         doGraphicState(p = new JPanel());
         add(p);
+        doTabbedOblockEditor(p = new JPanel());
+        add(p);
+        doEditorUseOldLocSize(p = new JPanel());
+        add(p);
         doToolTipDismissDelay(p = new JPanel());
         add(p);
     }
@@ -91,7 +96,6 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
     void doClickSelection(JPanel panel) {
         panel.setLayout(new FlowLayout());
         mouseEvent = new JCheckBox(ConfigBundle.getMessage("GUIButtonNonStandardRelease"));
-        mouseEvent.setSelected(SwingSettings.getNonStandardMouseEvent());
         mouseEvent.addItemListener((ItemEvent e) -> {
             InstanceManager.getDefault(GuiLafPreferencesManager.class).setNonStandardMouseEvent(mouseEvent.isSelected());
         });
@@ -108,6 +112,27 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
         panel.add(graphicStateDisplay);
     }
 
+    void doTabbedOblockEditor(JPanel panel) {
+        panel.setLayout(new FlowLayout());
+        tabbedOblockEditor = new JCheckBox(ConfigBundle.getMessage("GUITabbedOblockEditor"));
+        tabbedOblockEditor.setSelected(InstanceManager.getDefault(GuiLafPreferencesManager.class).isOblockEditTabbed());
+        tabbedOblockEditor.setToolTipText(ConfigBundle.getMessage("GUIToolTipTabbedEdit"));
+        tabbedOblockEditor.addItemListener((ItemEvent e) -> {
+            InstanceManager.getDefault(GuiLafPreferencesManager.class).setOblockEditTabbed(tabbedOblockEditor.isSelected());
+        });
+        panel.add(tabbedOblockEditor);
+    }
+
+    void doEditorUseOldLocSize(JPanel panel) {
+        panel.setLayout(new FlowLayout());
+        editorUseOldLocSizeDisplay = new JCheckBox(ConfigBundle.getMessage("GUIUseOldLocSize"));
+        editorUseOldLocSizeDisplay.setSelected(InstanceManager.getDefault(GuiLafPreferencesManager.class).isEditorUseOldLocSize());
+        editorUseOldLocSizeDisplay.addItemListener((ItemEvent e) -> {
+            InstanceManager.getDefault(GuiLafPreferencesManager.class).setEditorUseOldLocSize(editorUseOldLocSizeDisplay.isSelected());
+        });
+        panel.add(editorUseOldLocSizeDisplay);
+    }
+
     void doLAF(JPanel panel) {
         // find L&F definitions
         panel.setLayout(new FlowLayout());
@@ -117,15 +142,16 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
             installedLAFs.put(plaf.getName(), plaf.getClassName());
         }
         // make the radio buttons
-        for (String name : installedLAFs.keySet()) {
+        for (java.util.Map.Entry<String, String> entry : installedLAFs.entrySet()) {
+            String name = entry.getKey();
             JRadioButton jmi = new JRadioButton(name);
             panel.add(jmi);
             LAFGroup.add(jmi);
             jmi.setActionCommand(name);
             jmi.addActionListener((ActionEvent e) -> {
-                InstanceManager.getDefault(GuiLafPreferencesManager.class).setLookAndFeel(name);
+                InstanceManager.getDefault(GuiLafPreferencesManager.class).setLookAndFeel(installedLAFs.get(name));
             });
-            if (installedLAFs.get(name).equals(UIManager.getLookAndFeel().getClass().getName())) {
+            if ( entry.getValue().equals(UIManager.getLookAndFeel().getClass().getName())) {
                 jmi.setSelected(true);
             }
         }
@@ -133,7 +159,7 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
 
     /**
      * Create and return a JPanel for configuring default local.
-     * <P>
+     * <p>
      * Most of the action is handled in a separate thread, which replaces the
      * contents of a JComboBox when the list of Locales is available.
      *

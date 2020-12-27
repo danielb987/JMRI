@@ -6,12 +6,12 @@ import javax.swing.JPanel;
  * Definition of objects to handle configuring a layout connection via an MRC
  * SerialDriverAdapter object.
  *
- * @author Bob Jacobsen Copyright (C) 2001, 2003 Copies from NCE
+ * @author Bob Jacobsen Copyright (C) 2001, 2003 copied from NCE
  * @author kcameron Copyright (C) 2014
  */
 public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConfig {
 
-    public final static String NAME = "Simulator";//IN18N
+    public final static String NAME = "Simulator";// NOI18N
 
     /**
      * Ctor for an object being created during load process; Swing init is
@@ -23,7 +23,7 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
     }
 
     /**
-     * Ctor for a functional Swing object with no existing adapter
+     * Ctor for a functional Swing object with no existing adapter.
      */
     public ConnectionConfig() {
         super();
@@ -34,15 +34,22 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
         super.loadDetails(details);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         if (adapter == null) {
             adapter = new SimulatorAdapter();
         }
     }
+
 }

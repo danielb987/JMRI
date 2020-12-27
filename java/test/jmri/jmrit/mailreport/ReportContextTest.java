@@ -1,14 +1,13 @@
 package jmri.jmrit.mailreport;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class ReportContextTest {
 
@@ -33,17 +32,17 @@ public class ReportContextTest {
         Assert.assertNotNull("exists",t);
         
         String output = t.getReport(false);
-        Assert.assertTrue(output.contains("JMRI Node ID:"));
+        Assert.assertTrue(output.contains("JMRI Network ID:"));
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetProfileManager();
+        JUnitUtil.resetProfileManager();
+        JUnitUtil.initRosterConfigManager();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

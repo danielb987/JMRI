@@ -2,28 +2,31 @@ package jmri.jmrix.rps;
 
 import java.io.File;
 import java.io.IOException;
+
 import javax.vecmath.Point3d;
+
 import jmri.util.FileUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.jdom2.Element;
+
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
+import org.jdom2.Element;
 
 /**
  * JUnit tests for the rps.PositionFile class.
- * <P>
+ * <p>
  * Stores a PositionFileTest.xml file in the temp directory below current
  * working directory.
  *
- * @author	Bob Jacobsen Copyright 2007
-  */
-public class PositionFileTest extends TestCase {
+ * @author Bob Jacobsen Copyright 2007
+ */
+public class PositionFileTest {
 
+    @Test
     public void testCtor() {
         new PositionFile();
     }
 
+    @Test
     public void testPointElement() {
         PositionFile f = new PositionFile();
 
@@ -33,6 +36,7 @@ public class PositionFileTest extends TestCase {
         checkPoint3d(in, out);
     }
 
+    @Test
     public void testReadingElement() {
         PositionFile f = new PositionFile();
 
@@ -60,6 +64,7 @@ public class PositionFileTest extends TestCase {
         }
     }
 
+    @Test
     public void testRW() throws IOException, org.jdom2.JDOMException {
         PositionFile fout = new PositionFile();
         fout.prepare();
@@ -91,26 +96,13 @@ public class PositionFileTest extends TestCase {
         Assert.assertEquals("no 2nd calibration reading", null, fin.getCalibrationReading(1));
     }
 
-    // from here down is testing infrastructure
-    public PositionFileTest(String s) {
-        super(s);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
     }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {PositionFileTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
+    
+    @AfterEach
+    public void tearDown() {
+        jmri.util.JUnitUtil.tearDown();
     }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(PositionFileTest.class);
-        return suite;
-    }
-
 }

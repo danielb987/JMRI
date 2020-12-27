@@ -29,6 +29,24 @@
         <authorinitials>PŠ</authorinitials>
         <revremark>Initial version</revremark>
     </revision>    
+    <revision>
+        <revnumber>2</revnumber>
+        <date>2018-09-22</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Panel indicators</revremark>
+    </revision>    
+    <revision>
+        <revnumber>3</revnumber>
+        <date>2019-02-19</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Aspect 25 Unlit</revremark>
+    </revision>    
+    <revision>
+        <revnumber>4</revnumber>
+        <date>2020-05-12</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Speed names</revremark>
+    </revision>    
   </revhistory>
 
   <aspects>
@@ -82,7 +100,7 @@
       <reference>Aspect 760</reference>
       <comment>Očekávejte rychlost 40 km/h</comment>
       <speed>Normal</speed>
-      <speed2>40 km/h</speed2>
+      <speed2>Slow</speed2>
       <route>Normal</route>
       <dccAspect>3</dccAspect>
     </aspect>
@@ -95,150 +113,150 @@
       <reference>Aspect 759</reference>
       <comment>Očekávejte rychlost 60 km/h</comment>
       <speed>Normal</speed>
-      <speed2>60 km/h</speed2>
+      <speed2>Medium</speed2>
       <route>Normal</route>
       <dccAspect>4</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a volno</name>
+      <name>Rychlost 40 a volno</name>
       <title>Slowly 40 km/h proceed clear</title>
       <indication>Proceed slowly 40 km/h and after last switch procced normal</indication>
       <description>Lower light yellow, upper light green</description>
       <reference>Aspect 780</reference>
-      <comment>Rychost 40 km/h a volno</comment>
-      <speed>40 km/h</speed>
+      <comment>Rychlost 40 km/h a volno</comment>
+      <speed>Slow</speed>
       <speed2>Normal</speed2>
       <route>Diverging</route>
       <dccAspect>6</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a výstraha</name>
+      <name>Rychlost 40 a výstraha</name>
       <title>Slowly 40 km/h proceed preparing to stop at next signal</title>
       <indication>Proceed slowly 40 km/h and preparing to stop at next signal</indication>
       <description>Lower light yellow, upper light yellow</description>
       <reference>Aspect 815</reference>
-      <comment>Rychost 40 km/h a výstraha</comment>
-      <speed>40 km/h</speed>
+      <comment>Rychlost 40 km/h a výstraha</comment>
+      <speed>Slow</speed>
       <speed2>Stop</speed2>
       <route>Diverging</route>
       <dccAspect>7</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a očekávej 40</name>
+      <name>Rychlost 40 a očekávej 40</name>
       <title>Slowly 40 km/h proceed 40 km/h</title>
       <indication>Slowly 40 km/h proceed preparing to 40 km/h at next signal</indication>
       <description>Lower light yellow, upper light yellow flashing</description>
       <reference>Aspect 809</reference>
       <comment>Rychlost 40 km/h a očekávejte rychlost 40 km/h</comment>
-      <speed>40 km/h</speed>
-      <speed2>40 km/h</speed2>
+      <speed>Slow</speed>
+      <speed2>Slow</speed2>
       <route>Diverging</route>
       <dccAspect>8</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a očekávej 60</name>
+      <name>Rychlost 40 a očekávej 60</name>
       <title>Slowly 40 km/h proceed 60 km/h</title>
       <indication>Slowly 40 km/h proceed preparing to 60 km/h at next signal</indication>
       <description>Lower light yellow, upper light yellow quickly flashing</description>
       <reference>Aspect 803</reference>
       <comment>Rychlost 40 km/h a očekávejte rychlost 60 km/h</comment>
-      <speed>40 km/h</speed>
-      <speed2>60 km/h</speed2>
+      <speed>Slow</speed>
+      <speed2>Medium</speed2>
       <route>Diverging</route>
       <dccAspect>9</dccAspect>
     </aspect>
 
     <aspect>
-      <name>60 a volno</name>
+      <name>Rychlost 60 a volno</name>
       <title>Slowly 60 km/h proceed clear</title>
       <indication>Proceed slowly 60 km/h and after last switch procced normal</indication>
       <description>Lower light yellow with yellow strip, upper light green</description>
       <reference>Aspect 779</reference>
-      <comment>Rychost 60 km/h a volno</comment>
-      <speed>60 km/h</speed>
+      <comment>Rychlost 60 km/h a volno</comment>
+      <speed>Medium</speed>
       <speed2>Normal</speed2>
       <route>Diverging</route>
       <dccAspect>11</dccAspect>
     </aspect>
 
     <aspect>
-      <name>60 a výstraha</name>
+      <name>Rychlost 60 a výstraha</name>
       <title>Slowly 60 km/h proceed preparing to stop at next signal</title>
       <indication>Proceed slowly 60 km/h and preparing to stop at next signal</indication>
       <description>Lower light yellow with yellow strip, upper light yellow</description>
       <reference>Aspect 814</reference>
-      <comment>Rychost 60 km/h a výstraha</comment>
-      <speed>60 km/h</speed>
+      <comment>Rychlost 60 km/h a výstraha</comment>
+      <speed>Medium</speed>
       <speed2>Stop</speed2>
       <route>Diverging</route>
       <dccAspect>12</dccAspect>
     </aspect>
 
     <aspect>
-      <name>60 a očekávej 40</name>
+      <name>Rychlost 60 a očekávej 40</name>
       <title>Slowly 60 km/h proceed 40 km/h</title>
       <indication>Slowly 60 km/h proceed preparing to 40 km/h at next signal</indication>
       <description>Lower light yellow with yellow strip, upper light yellow flashing</description>
       <reference>Aspect 808</reference>
       <comment>Rychlost 60 km/h a očekávejte rychlost 40 km/h</comment>
-      <speed>60 km/h</speed>
-      <speed2>40 km/h</speed2>
+      <speed>Medium</speed>
+      <speed2>Slow</speed2>
       <route>Diverging</route>
       <dccAspect>13</dccAspect>
     </aspect>
 
     <aspect>
-      <name>60 a očekávej 60</name>
+      <name>Rychlost 60 a očekávej 60</name>
       <title>Slowly 60 km/h proceed 60 km/h</title>
       <indication>Slowly 60 km/h proceed preparing to 60 km/h at next signal</indication>
       <description>Lower light yellow with yellow strip, upper light yellow quickly flashing</description>
       <reference>Aspect 802</reference>
       <comment>Rychlost 60 km/h a očekávejte rychlost 60 km/h</comment>
-      <speed>60 km/h</speed>
-      <speed2>60 km/h</speed2>
+      <speed>Medium</speed>
+      <speed2>Medium</speed2>
       <route>Diverging</route>
       <dccAspect>14</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a opakovaná výstraha</name>
+      <name>Rychlost 40 a opakovaná výstraha</name>
       <title>Slowly 40 km/h proceed caution repeated</title>
       <indication>Proceed slowly 40 km/h and preparing to stop at next signal, next signal on insufficient break distance</indication>
       <description>Lower light yellow, upper light yellow with white light</description>
       <reference>Aspect 862</reference>
       <comment>Rychlost 40 km/h a opakování návěsti Výstraha</comment>
-      <speed>40 km/h</speed>
+      <speed>Slow</speed>
       <speed2>Stop</speed2>
       <route>Diverging</route>
       <dccAspect>16</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a opakovaná očekávej 40</name>
+      <name>Rychlost 40 a opakovaná očekávej 40</name>
       <title>Slowly 40 km/h proceed expect 40 km/h repeated</title>
       <indication>Slowly 40 km/h proceed preparing to 40 km/h at next signal, next signal on insufficient break distance</indication>
       <description>Lower light yellow, upper light yellow flashing with white light</description>
       <reference>Aspect 869</reference>
       <comment>Rychlost 40 km/h a opakování návěsti Očekávejte rychlost 40 km/h</comment>
-      <speed>40 km/h</speed>
-      <speed2>40 km/h</speed2>
+      <speed>Slow</speed>
+      <speed2>Slow</speed2>
       <route>Diverging</route>
       <dccAspect>17</dccAspect>
     </aspect>
 
     <aspect>
-      <name>40 a opakovaná očekávej 60</name>
+      <name>Rychlost 40 a opakovaná očekávej 60</name>
       <title>Slowly 40 km/h proceed expect 60 km/h repeated</title>
       <indication>Slowly 40 km/h proceed preparing to 60 km/h at next signal, next signal on insufficient break distance</indication>
       <description>Lower light yellow, upper light yellow quickly flashing with white light</description>
       <reference>Aspect 868</reference>
       <comment>Rychlost 40 km/h a opakování návěsti Očekávejte rychlost 60 km/h</comment>
-      <speed>40 km/h</speed>
-      <speed2>60 km/h</speed2>
+      <speed>Slow</speed>
+      <speed2>Medium</speed2>
       <route>Diverging</route>
       <dccAspect>18</dccAspect>
     </aspect>
@@ -257,13 +275,13 @@
     </aspect>
 
     <aspect>
-      <name>40 a jízda podle rozhledových poměrů</name>
+      <name>Rychlost 40 a jízda podle rozhledových poměrů</name>
       <title>Slowly 40 km/h proceed run by outlook conditions</title>
       <indication>Proceed slowly 40 km/h and preparing to stop at next signal, train run into an already partly occupied platform</indication>
       <description>Lower light yellow, upper light yellow with white light flashing</description>
       <reference>Aspect 831</reference>
       <comment>Rychlost 40 km/h a jízda podle rozhledových poměrů</comment>
-      <speed>40 km/h</speed>
+      <speed>Slow</speed>
       <speed2>Stop</speed2>
       <route>Diverging</route>
       <dccAspect>20</dccAspect>
@@ -303,7 +321,7 @@
       <reference>Aspect 909</reference>
       <comment>Opakování návěsti Očekávejte rychlost 40 km/h</comment>
       <speed>Normal</speed>
-      <speed2>40 km/h</speed2>
+      <speed2>Slow</speed2>
       <route>Normal</route>
       <dccAspect>23</dccAspect>
     </aspect>
@@ -316,9 +334,22 @@
       <reference>Aspect 908</reference>
       <comment>Opakování návěsti Očekávejte rychlost 60 km/h</comment>
       <speed>Normal</speed>
-      <speed2>60 km/h</speed2>
+      <speed2>Medium</speed2>
       <route>Normal</route>
       <dccAspect>24</dccAspect>
+    </aspect>
+
+    <aspect>
+      <name>Zhasnuto</name>
+      <title>Unlit</title>
+      <indication>Traffic locking in opposing direction on a banalized ABS</indication>
+      <description>Unlit all lights</description>
+      <reference>Aspect 135</reference>
+      <comment>Znasnuté návěstidlo v nesprávném směru</comment>
+      <speed>Stop</speed>
+      <speed2>Stop</speed2>
+      <route>Either</route>
+      <dccAspect>25</dccAspect>
     </aspect>
 
     <aspect>
@@ -403,10 +434,34 @@
 
   <imagetypes>
 	<imagetype type="prototype"/>
-	<!--
-	<imagetype type="medium panel"/>
-	<imagetype type="small panel"/>
-	-->
+	
+        <imagetype type="AŽD z"/>
+	<imagetype type="AŽD zč"/>
+	<imagetype type="AŽD zb"/>
+	<imagetype type="AŽD zbz"/>
+	<imagetype type="AŽD b"/>
+	<imagetype type="AŽD žzčb"/>
+	<imagetype type="AŽD žzčbz"/>
+	<imagetype type="AŽD žzb"/>
+	<imagetype type="AŽD žzbz"/>
+	<imagetype type="AŽD žčb"/>
+	<imagetype type="AŽD žb"/>
+	
+        <imagetype type="ESP z"/>
+	<imagetype type="ESP zč"/>
+	<imagetype type="ESP zb"/>
+	<imagetype type="ESP zbz"/>
+	<imagetype type="ESP b"/>
+	<imagetype type="ESP žzčb"/>
+	<imagetype type="ESP žzčbz"/>
+	<imagetype type="ESP žzb"/>
+	<imagetype type="ESP žzbz"/>
+	<imagetype type="ESP žčb"/>
+	<imagetype type="ESP žb"/>
+	
+	<imagetype type="JOP hlavní"/>
+	<imagetype type="JOP seřaďovací"/>
+        
   </imagetypes>
 
   <appearancefiles>
@@ -425,6 +480,8 @@
     <appearancefile href="appearance-abs.xml"/>
     
     <appearancefile href="appearance-shunting.xml"/>
+
+    <appearancefile href="appearance-test.xml"/>
 
   </appearancefiles>
 

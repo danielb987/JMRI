@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of the Light Object for X10 receivers on Insteon 2412S
  * interfaces.
- * <P>
+ * <p>
  * Uses X10 dimming commands to set intensity unless the value is 0.0 or 1.0, in
  * which case it uses on/off commands only.
  * <p>
@@ -31,8 +31,9 @@ public class SpecificX10Light extends jmri.jmrix.powerline.SerialX10Light {
 
     /**
      * Create a Light object, with only system name.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in SerialLightManager
+     *
      * @param systemName text for systemName of light
      * @param tc         tc for connection
      */
@@ -45,8 +46,9 @@ public class SpecificX10Light extends jmri.jmrix.powerline.SerialX10Light {
 
     /**
      * Create a Light object, with both system and user names.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in SerialLightManager
+     *
      * @param systemName text for systemName of light
      * @param tc         tc for connection
      * @param userName   text for userName of light
@@ -69,7 +71,7 @@ public class SpecificX10Light extends jmri.jmrix.powerline.SerialX10Light {
     @Override
     protected void sendIntensity(double intensity) {
         if (log.isDebugEnabled()) {
-            log.debug("sendIntensity(" + intensity + ")" + " lastOutputStep: " + lastOutputStep + " maxDimStep: " + maxDimStep);
+            log.debug("sendIntensity({}) lastOutputStep: {} maxDimStep: {}", intensity, lastOutputStep, maxDimStep);
         }
 
         // if we don't know the dim count, force it to a value.
@@ -79,13 +81,13 @@ public class SpecificX10Light extends jmri.jmrix.powerline.SerialX10Light {
 
         // check for errors
         if ((newStep < 0) || (newStep > maxDimStep)) {
-            log.error("newStep wrong: " + newStep + " intensity: " + intensity);
+            log.error("newStep wrong: {} intensity: {}", newStep, intensity);
         }
 
         if (newStep == lastOutputStep) {
             // nothing to do!
             if (log.isDebugEnabled()) {
-                log.debug("intensity " + intensity + " within current step, return");
+                log.debug("intensity {} within current step, return", intensity);
             }
             return;
 
@@ -99,7 +101,7 @@ public class SpecificX10Light extends jmri.jmrix.powerline.SerialX10Light {
         lastOutputStep = newStep;
 
         if (log.isDebugEnabled()) {
-            log.debug("sendIntensity(" + intensity + ") house " + X10Sequence.houseValueToText(housecode) + " device " + devicecode + " newStep: " + newStep);
+            log.debug("sendIntensity({}) house {} device {} newStep: {}", intensity, X10Sequence.houseValueToText(housecode), devicecode, newStep);
         }
     }
 

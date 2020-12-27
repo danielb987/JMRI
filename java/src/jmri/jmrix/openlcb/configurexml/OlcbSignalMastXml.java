@@ -2,11 +2,14 @@ package jmri.jmrix.openlcb.configurexml;
 
 import java.util.List;
 import jmri.InstanceManager;
+import jmri.JmriException;
 import jmri.SignalAppearanceMap;
 import jmri.jmrix.openlcb.OlcbSignalMast;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
 
 /**
  * Handle XML configuration for OlcbSignalMast objects.
@@ -73,10 +76,16 @@ public class OlcbSignalMastXml
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(@Nonnull Element shared, Element perNode) {
         OlcbSignalMast m;
         String sys = getSystemName(shared);
-        m = new OlcbSignalMast(sys);
+        try {
+            m = (OlcbSignalMast) InstanceManager.getDefault(jmri.SignalMastManager.class)
+                    .provideCustomSignalMast(sys, OlcbSignalMast.class);
+        } catch (JmriException e) {
+            log.error("Failed to load OlcbSignalMast {}: {}", sys, e);
+            return false;
+        }
 
         if (getUserName(shared) != null) {
             m.setUserName(getUserName(shared));
@@ -101,8 +110,7 @@ public class OlcbSignalMastXml
         }
         
         List<Element> list = element.getChildren("aspect");
-        for (int i = 0; i < list.size(); i++) {
-            Element e = list.get(i);
+        for (Element e : list) {
             String aspect = e.getAttribute("defines").getValue();
             String event = e.getChild("event").getValue();
             m.setOutputForAppearance(aspect, event);
@@ -115,8 +123,6 @@ public class OlcbSignalMastXml
             }
         }
 
-        InstanceManager.getDefault(jmri.SignalMastManager.class)
-                .register(m);
         return true;
 
     }

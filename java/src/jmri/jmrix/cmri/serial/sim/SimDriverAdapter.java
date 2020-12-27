@@ -3,12 +3,11 @@ package jmri.jmrix.cmri.serial.sim;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.util.Arrays;
+import java.io.PipedInputStream;
+
 import jmri.jmrix.cmri.CMRISystemConnectionMemo;
 import jmri.jmrix.cmri.serial.SerialTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.ImmediatePipedOutputStream;
 import purejavacomm.UnsupportedCommOperationException;
 
 /**
@@ -24,9 +23,6 @@ public class SimDriverAdapter extends jmri.jmrix.cmri.serial.serialdriver.Serial
     @Override
     public String openPort(String portName, String appName) {
             // don't even try to get port
-
-        // get and save stream
-        serialStream = null;
 
         opened = true;
 
@@ -70,11 +66,10 @@ public class SimDriverAdapter extends jmri.jmrix.cmri.serial.serialdriver.Serial
     @Override
     public DataInputStream getInputStream() {
         try {
-            return new DataInputStream(new java.io.PipedInputStream(new java.io.PipedOutputStream()));
+            return new DataInputStream(new PipedInputStream(new ImmediatePipedOutputStream()));
         } catch (Exception e) {
             return null;
         }
-        //return new DataInputStream(serialStream);
     }
 
     @Override
@@ -99,36 +94,11 @@ public class SimDriverAdapter extends jmri.jmrix.cmri.serial.serialdriver.Serial
     }
 
     @Override
-    public String[] validBaudRates() {
-        return Arrays.copyOf(validSpeeds, validSpeeds.length);
-    }
-
-    /**
-     * Set the baud rate.
-     */
-    @Override
-    public void configureBaudRate(String rate) {
-        log.debug("configureBaudRate: " + rate);
-        selectedSpeed = rate;
-        super.configureBaudRate(rate);
+    public String getCurrentPortName(){
+       return "";
     }
 
     // private control members
     private boolean opened = false;
-    InputStream serialStream = null;
-
-    /**
-     * @deprecated JMRI Since 4.5.1 instance() shouldn't be used, convert to JMRI multi-system support structure
-     */
-    @Deprecated
-    static public jmri.jmrix.cmri.serial.serialdriver.SerialDriverAdapter instance() {
-        if (mInstance == null) {
-            mInstance = new SimDriverAdapter();
-        }
-        return mInstance;
-    }
-    static SimDriverAdapter mInstance;
-
-    private final static Logger log = LoggerFactory.getLogger(SimDriverAdapter.class);
 
 }

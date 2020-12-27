@@ -11,7 +11,6 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -34,13 +33,15 @@ import javax.swing.table.TableRowSorter;
 import jmri.*;
 import jmri.swing.RowSorterUtil;
 import jmri.util.AlphanumComparator;
+import jmri.util.gui.GuiLafPreferencesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provide access to the various tables via a listed pane. Based upon the
- * apps.gui3.TabbedPreferences.java by Bob Jacoben
- * <P>
+ * Provide access to the various tables in the tabbed Tables interface via a listed pane (normally to the left).
+ * <p>
+ * Based upon the {@link apps.gui3.tabbedpreferences.TabbedPreferences} by Bob Jacobsen
+ *
  * @author Kevin Dickerson Copyright 2010
  * @author Bob Jacobsen Copyright 2010
  */
@@ -61,8 +62,8 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
     JScrollPane listScroller;
     JPanel buttonpanel;
     JPanel detailpanel;
-    static boolean init = false;
     TabbedTableItem<E> itemBeingAdded = null;
+    static boolean init = false;
 
     public ListedTableFrame() {
         this(Bundle.getMessage("TitleListedTable"));
@@ -71,12 +72,12 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
     public ListedTableFrame(String s) {
         super(s);
         if (jmri.InstanceManager.getNullableDefault(jmri.jmrit.beantable.ListedTableFrame.class) == null) {
-            //We add this to the instanceManager so that other components can add to the table
+            // We add this to the InstanceManager so that other components can add to the table
             jmri.InstanceManager.store(this, jmri.jmrit.beantable.ListedTableFrame.class);
         }
         if (!init) {
             // Add the default tables to the static list array,
-            // this should only be done once when first loaded
+            // this should only be done once on first loading
             addTable("jmri.jmrit.beantable.TurnoutTableTabAction", Bundle.getMessage("MenuItemTurnoutTable"), false);
             addTable("jmri.jmrit.beantable.SensorTableTabAction", Bundle.getMessage("MenuItemSensorTable"), false);
             addTable("jmri.jmrit.beantable.LightTableTabAction", Bundle.getMessage("MenuItemLightTable"), false);
@@ -90,12 +91,15 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
             addTable("jmri.jmrit.beantable.LRouteTableAction", Bundle.getMessage("MenuItemLRouteTable"), true);
             addTable("jmri.jmrit.beantable.LogixTableAction", Bundle.getMessage("MenuItemLogixTable"), true);
             addTable("jmri.jmrit.beantable.BlockTableAction", Bundle.getMessage("MenuItemBlockTable"), true);
+            if (InstanceManager.getDefault(GuiLafPreferencesManager.class).isOblockEditTabbed()) { // select _tabbed in prefs
+                addTable("jmri.jmrit.beantable.OBlockTableAction", Bundle.getMessage("MenuItemOBlockTable"), false);
+            } // requires restart after changing the interface setting (on Display tab)
             addTable("jmri.jmrit.beantable.SectionTableAction", Bundle.getMessage("MenuItemSectionTable"), true);
             addTable("jmri.jmrit.beantable.TransitTableAction", Bundle.getMessage("MenuItemTransitTable"), true);
             addTable("jmri.jmrit.beantable.AudioTableAction", Bundle.getMessage("MenuItemAudioTable"), false);
-            addTable("jmri.jmrit.beantable.IdTagTableAction", Bundle.getMessage("MenuItemIdTagTable"), true);
+            addTable("jmri.jmrit.beantable.IdTagTableTabAction", Bundle.getMessage("MenuItemIdTagTable"), false);
             addTable("jmri.jmrit.beantable.RailComTableAction", Bundle.getMessage("MenuItemRailComTable"), true);
-            init = true;
+            ListedTableFrame.setInit(true);
         }
     }
 
@@ -110,7 +114,7 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
         for (TabbedTableItemListArray item : tabbedTableItemListArrayArray) {
             // Here we add all the tables into the panel
             try {
-                TabbedTableItem<E> itemModel = new TabbedTableItem<E>(item.getClassAsString(), item.getItemString(), item.getStandardTableModel());
+                TabbedTableItem<E> itemModel = new TabbedTableItem<>(item.getClassAsString(), item.getItemString(), item.getStandardTableModel());
                 itemBeingAdded = itemModel;
                 detailpanel.add(itemModel.getPanel(), itemModel.getClassAsString());
                 tabbedTableArray.add(itemModel);
@@ -170,7 +174,7 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
         return error;
     }
 
-    /* Method allows for the table to goto a specific list item */
+    /* Method allows for the table to go to a specific list item */
     public void gotoListItem(String selection) {
         for (int x = 0; x < tabbedTableArray.size(); x++) {
             try {
@@ -185,36 +189,35 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
     }
 
     public void addTable(String aaClass, String choice, boolean stdModel) {
-        TabbedTableItemListArray itemBeingAdded = null;
+        TabbedTableItemListArray itemToAdd = null;
         for (TabbedTableItemListArray ttila : tabbedTableItemListArrayArray) {
             if (ttila.getClassAsString().equals(aaClass)) {
                 log.info("Class {} is already added", aaClass);
-                itemBeingAdded = ttila;
+                itemToAdd = ttila;
                 break;
             }
         }
-        if (itemBeingAdded == null) {
-            itemBeingAdded = new TabbedTableItemListArray(aaClass, choice, stdModel);
-            tabbedTableItemListArrayArray.add(itemBeingAdded);
+        if (itemToAdd == null) {
+            itemToAdd = new TabbedTableItemListArray(aaClass, choice, stdModel);
+            tabbedTableItemListArrayArray.add(itemToAdd);
         }
     }
 
     @Override
     public void dispose() {
-        pref.disallowSave();
+        pref.setSaveAllowed(false);
         for (TabbedTableItem<E> tti : tabbedTableArray) {
             tti.dispose();
         }
-        if (list.getListSelectionListeners().length > 0) {
+        if (list != null && list.getListSelectionListeners().length > 0) {
             list.removeListSelectionListener(list.getListSelectionListeners()[0]);
         }
         super.dispose();
-        pref.allowSave();
+        pref.setSaveAllowed(true);
     }
 
     void buildMenus(final TabbedTableItem<E> item) {
         JMenuBar menuBar = new JMenuBar();
-        ResourceBundle rb = ResourceBundle.getBundle("apps.AppsBundle");
         JMenu fileMenu = new JMenu(Bundle.getMessage("MenuFile"));
         menuBar.add(fileMenu);
 
@@ -224,9 +227,9 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
             actionList.openNewTableWindow(list.getSelectedIndex());
         });
 
-        fileMenu.add(new jmri.configurexml.SaveMenu());
+        fileMenu.add(new jmri.configurexml.StoreMenu());
 
-        JMenuItem printItem = new JMenuItem(rb.getString("PrintTable"));
+        JMenuItem printItem = new JMenuItem(Bundle.getMessage("PrintTable"));
         fileMenu.add(printItem);
         printItem.addActionListener((ActionEvent e) -> {
             try {
@@ -309,6 +312,15 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
         }
     }
 
+    private synchronized static void setInit(boolean newVal) {
+        init = newVal;
+    }
+
+    /**
+     * One tabbed item on the ListedTable containing the table(s) for a NamedBean class.
+     *
+     * @param <E> main class of the table(s)
+     */
     static class TabbedTableItem<E extends NamedBean> {
 
         AbstractTableAction<E> tableAction;
@@ -337,7 +349,7 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
 
             try {
                 Class<?> cl = Class.forName(aaClass);
-                java.lang.reflect.Constructor<?> co = cl.getConstructor(new Class[]{String.class});
+                java.lang.reflect.Constructor<?> co = cl.getConstructor(String.class);
                 tableAction = (AbstractTableAction<E>) co.newInstance(choice);  // this cast is handled by reflection
             } catch (ClassNotFoundException | InstantiationException e1) {
                 log.error("Not a valid class : {}", aaClass);
@@ -353,19 +365,21 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
                 return;
             }
 
-            //If a panel model is used, it should really add to the bottom box
-            //but it can be done this way if required.
+            // If a panel model is used, it should really add to the bottom box
+            // but it can be done this way if required.
+            // In this case we "hijack" the TabbedTable for different (non-bean) tables to manage OBlocks.
             dataPanel.setLayout(new BorderLayout());
+
             if (stdModel) {
-                createDataModel();
+                createDataModel(); // first table of a grouped set with the primary manager, see OBlockTable
             } else {
-                addPanelModel();
+                addPanelModel(); // for any additional table using a different manager, see Audio, OBlock
             }
         }
 
         void createDataModel() {
             dataModel = tableAction.getTableDataModel();
-            TableRowSorter<BeanTableDataModel> sorter = new TableRowSorter<>(dataModel);
+            TableRowSorter<BeanTableDataModel<E>> sorter = new TableRowSorter<>(dataModel);
             dataTable = dataModel.makeJTable(dataModel.getMasterClassName() + ":" + getItemString(), dataModel, sorter);
             dataScroll = new JScrollPane(dataTable);
 

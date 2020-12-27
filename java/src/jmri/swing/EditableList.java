@@ -1,6 +1,5 @@
 package jmri.swing;
 
-import java.applet.Applet;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
@@ -25,7 +24,7 @@ import javax.swing.event.ChangeEvent;
 
 /**
  *
- * @author rhwood
+ * @author Randall Wood
  */
 public class EditableList<E> extends JList<E> implements CellEditorListener {
 
@@ -45,12 +44,12 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
     }
 
     private void init() {
-        getActionMap().put("startEditing", new StartEditingAction());                                                             //NOI18N
-        getActionMap().put("cancel", new CancelEditingAction());                                                                  //NOI18N
+        getActionMap().put("startEditing", new StartEditingAction());                                                             // NOI18N
+        getActionMap().put("cancel", new CancelEditingAction());                                                                  // NOI18N
         addMouseListener(new MouseListener());
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "startEditing");                                             //NOI18N
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");  //NOI18N
-        putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);                                                              //NOI18N
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "startEditing");                                             // NOI18N
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");  // NOI18N
+        putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);                                                              // NOI18N
     }
 
     public void setListCellEditor(ListCellEditor<E> editor) {
@@ -73,6 +72,8 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
         return editingIndex;
     }
 
+     //This uses the deprecated {@link JComponent#setNextFocusableComponent} method.
+    @SuppressWarnings( "deprecation" )
     public Component prepareEditor(int index) {
         E value = getModel().getElementAt(index);
         boolean isSelected = isSelectedIndex(index);
@@ -88,7 +89,7 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
 
     public void removeEditor() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                removePropertyChangeListener("permanentFocusOwner", editorRemover);   //NOI18N
+                removePropertyChangeListener("permanentFocusOwner", editorRemover);   // NOI18N
         editorRemover = null;
 
         if (cellEditor != null) {
@@ -123,7 +124,7 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
         if (editorRemover == null) {
             KeyboardFocusManager fm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
             editorRemover = new CellEditorRemover(fm);
-            fm.addPropertyChangeListener("permanentFocusOwner", editorRemover);    //NOI18N
+            fm.addPropertyChangeListener("permanentFocusOwner", editorRemover);    // NOI18N
         }
 
         if (cellEditor != null && cellEditor.isCellEditable(e)) {
@@ -147,7 +148,7 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
     @Override
     public void removeNotify() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                removePropertyChangeListener("permanentFocusOwner", editorRemover);   //NOI18N
+                removePropertyChangeListener("permanentFocusOwner", editorRemover);   // NOI18N
         super.removeNotify();
     }
 
@@ -165,7 +166,7 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent ev) {
-            if (!isEditing() || !getClientProperty("terminateEditOnFocusLost").equals(Boolean.TRUE) ) {   //NOI18N
+            if (!isEditing() || !getClientProperty("terminateEditOnFocusLost").equals(Boolean.TRUE) ) {   // NOI18N
                 return;
             }
 
@@ -174,8 +175,7 @@ public class EditableList<E> extends JList<E> implements CellEditorListener {
                 if (c == EditableList.this) {
                     // focus remains inside the table
                     return;
-                } else if ((c instanceof Window)
-                        || (c instanceof Applet && c.getParent() == null)) {
+                } else if (c instanceof Window) {
                     if (c == SwingUtilities.getRoot(EditableList.this)) {
                         if (!getListCellEditor().stopCellEditing()) {
                             getListCellEditor().cancelCellEditing();

@@ -1,36 +1,33 @@
 package jmri.jmrit.throttle;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of ThrottleWindow
  *
  * @author Paul Bender Copyright (C) 2016
  */
-public class ThrottleWindowTest {
+public class ThrottleWindowTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        ThrottleWindow frame = new ThrottleWindow();
-        Assert.assertNotNull("exists", frame);
-        JUnitUtil.dispose(frame);
-    }
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    @Override
+    public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        JUnitUtil.initRosterConfigManager();
+        JUnitUtil.initDebugThrottleManager();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new ThrottleWindow();
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        super.tearDown();
     }
 }

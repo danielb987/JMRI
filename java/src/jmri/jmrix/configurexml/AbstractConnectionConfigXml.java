@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base (and partial implementation) for classes persisting the status
- * of serial port adapters.
+ * of connections.
  *
  * @author Bob Jacobsen Copyright: Copyright (c) 2003
  */
@@ -19,9 +19,6 @@ abstract public class AbstractConnectionConfigXml extends AbstractXmlAdapter {
     public AbstractConnectionConfigXml() {
     }
 
-    /**
-     * get instance
-     */
     abstract protected void getInstance();
 
     abstract protected void register();
@@ -49,6 +46,10 @@ abstract public class AbstractConnectionConfigXml extends AbstractXmlAdapter {
         } else {
             e.setAttribute("disabled", "no");
         }
+        
+        e.setAttribute("reconnectMaxInterval",String.valueOf(adapter.getReconnectMaxInterval()));
+        e.setAttribute("reconnectMaxAttempts",String.valueOf(adapter.getReconnectMaxAttempts()));
+        
         saveOptions(e, adapter);
     }
 
@@ -100,6 +101,7 @@ abstract public class AbstractConnectionConfigXml extends AbstractXmlAdapter {
 
             if (shared.getAttribute("systemPrefix") != null) {
                 adapter.getSystemConnectionMemo().setSystemPrefix(shared.getAttribute("systemPrefix").getValue());
+                checkAndWarnPrefix(shared.getAttribute("systemPrefix").getValue()); // for removal after #4670 resolved
             }
         }
 
@@ -112,6 +114,64 @@ abstract public class AbstractConnectionConfigXml extends AbstractXmlAdapter {
                     adapter.setDisabled(true);
                 }
             }
+        }
+        
+        if (shared.getAttribute("reconnectMaxInterval") != null) {
+            String reconnectI = shared.getAttribute("reconnectMaxInterval").getValue();
+            if ((reconnectI!=null) && (!reconnectI.isEmpty() )) {
+                adapter.setReconnectMaxInterval(Integer.parseInt(reconnectI));
+            }
+        }
+        
+        if (shared.getAttribute("reconnectMaxAttempts") != null) {
+            String reconnectA = shared.getAttribute("reconnectMaxAttempts").getValue();
+            if ((reconnectA!=null) && (!reconnectA.isEmpty() )) {
+                adapter.setReconnectMaxAttempts(Integer.parseInt(reconnectA));
+            }
+        }
+        
+    }
+    
+    
+    /** 
+     * Check for a deprecated system prefix and warn if found
+     * @param prefix The alphanumeric prefix to test for
+     * @deprecated 4.15.3  part of #4670 migration to parsable prefixes
+     */
+    @Deprecated // part of #4670 migration to parsable prefixes
+    protected void checkAndWarnPrefix(String prefix) {
+        if (prefix.length() == 1 && ! org.apache.commons.lang3.StringUtils.isNumeric(prefix) ) return;
+        if (prefix.length() > 1 
+                && ! org.apache.commons.lang3.StringUtils.isNumeric(prefix.substring(0,1)) 
+                && org.apache.commons.lang3.StringUtils.isNumeric(prefix.substring(1)) ) return;
+        
+        // No longer checking jmri.Manager.isLegacySystemPrefix(prefix)) as this is more rigorous
+            
+            
+        // unparsable, so warn
+        log.warn("Connection is using a prefix that needs to be migrated: {}", prefix);
+        log.warn("See http://jmri.org/help/en/html/setup/MigrateSystemPrefixes.shtml for more information");
+        
+        // and show clickable dialog
+        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+            javax.swing.JLabel message = new javax.swing.JLabel("<html><body>You have a connection with prefix \""
+                                                        +prefix+"\" that needs to migrated.<br>"
+                                                        +"See <a href=\"http://jmri.org/help/en/html/setup/MigrateSystemPrefixes.shtml\">"
+                                                            +"http://jmri.org/help/en/html/setup/MigrateSystemPrefixes.shtml</a>"
+                                                        +"<br>for more information.</body></html>"                 
+                );
+            message.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            message.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    try {
+                        java.awt.Desktop.getDesktop().browse(new java.net.URI("http://jmri.org/help/en/html/setup/MigrateSystemPrefixes.shtml"));
+                    } catch (java.net.URISyntaxException | java.io.IOException ex) {
+                        log.error("couldn't open JMRI web site", ex);
+                    }
+                }
+             });
+            javax.swing.JOptionPane.showMessageDialog(null, message, "Migration Required", javax.swing.JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -162,11 +222,35 @@ abstract public class AbstractConnectionConfigXml extends AbstractXmlAdapter {
     }
 
     /**
-     * {@inheritDoc}
+     * Service routine to look through "parameter" child elements to find a
+     * particular parameter value
+     *
+     * @param e    Element containing parameters
+     * @param name name of desired parameter
+     * @return String value
      */
-    @Override
-    public void load(Element element, Object o) {
-        log.error("method with two args invoked");
+    protected String findParmValue(Element e, String name) {
+        List<Element> l = e.getChildren("parameter");
+        for (Element n : l) {
+            if (n.getAttributeValue("name").equals(name)) {
+                return n.getTextTrim();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Store the outputInterval in a connection element for persistence.
+     *
+     * @param adapter the adapter for which properties are stored
+     * @param e the "connection" element being filled
+     */
+    protected void setOutputInterval(PortAdapter adapter, Element e) {
+        if (adapter.getSystemConnectionMemo().getOutputInterval() > 0) {
+            e.setAttribute("turnoutInterval", String.valueOf(adapter.getSystemConnectionMemo().getOutputInterval()));
+        } else {
+            e.setAttribute("turnoutInterval", "0");
+        }
     }
 
     // initialize logging

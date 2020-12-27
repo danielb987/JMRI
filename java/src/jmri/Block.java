@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a particular piece of track, more informally a "Block".
- * <P>
+ * <p>
  * A Block (at least in this implementation) corresponds exactly to the track
  * covered by at most one sensor. That could be generalized in the future.
  * <p>
@@ -48,19 +48,19 @@ import org.slf4j.LoggerFactory;
  * system names like "IB201".
  * <p>
  * Issues:
- * <UL>
- * <LI>The tracking doesn't handle a train pulling in behind another well:
- * <UL>
- * <LI>When the 2nd train arrives, the Sensor is already active, so the value is
+ * <ul>
+ * <li>The tracking doesn't handle a train pulling in behind another well:
+ * <ul>
+ * <li>When the 2nd train arrives, the Sensor is already active, so the value is
  * unchanged (but the value can only be a single object anyway)
- * <LI>When the 1st train leaves, the Sensor stays active, so the value remains
+ * <li>When the 1st train leaves, the Sensor stays active, so the value remains
  * that of the 1st train
- * </UL>
- * <LI> The assumption is that a train will only go through a set turnout. For
+ * </ul>
+ * <li> The assumption is that a train will only go through a set turnout. For
  * example, a train could come into the turnout block from the main even if the
  * turnout is set to the siding. (Ignoring those layouts where this would cause
  * a short; it doesn't do so on all layouts)
- * <LI> Does not handle closely-following trains where there is only one
+ * <li> Does not handle closely-following trains where there is only one
  * electrical block per signal. To do this, it probably needs some type of
  * "assume a train doesn't back up" logic. A better solution is to have multiple
  * sensors and Block objects between each signal head.
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * b2 to b1), the block that's re-entered will get an updated direction, but the
  * direction of this block (b2 in the example) is not updated. In other words,
  * we're not noticing that the train must have reversed to go back out.
- * </UL>
+ * </ul>
  * <p>
  * Do not assume that a Block object uniquely represents a piece of track. To
  * allow independent development, it must be possible for multiple Block objects
@@ -110,11 +110,11 @@ import org.slf4j.LoggerFactory;
 public class Block extends AbstractNamedBean implements PhysicalLocationReporter {
 
     public Block(String systemName) {
-        super(systemName.toUpperCase());
+        super(systemName);
     }
 
     public Block(String systemName, String userName) {
-        super(systemName.toUpperCase(), userName);
+        super(systemName, userName);
     }
 
     static final public int OCCUPIED = Sensor.ACTIVE;
@@ -130,7 +130,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
 
     // this should only be used for debugging...
     public String toDebugString() {
-        String result = getFullyFormattedDisplayName() + " ";
+        String result = getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME) + " ";
         switch (getState()) {
             case UNDETECTED: {
                 result += "UNDETECTED";
@@ -156,7 +156,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
      * Set the sensor by name.
      *
      * @param pName the name of the Sensor to set
-     * @return true if a Sensor is set; false otherwise
+     * @return true if a Sensor is set and is not null; false otherwise
      */
     public boolean setSensor(String pName) {
         if (pName == null || pName.equals("")) {
@@ -228,7 +228,6 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
             _reporter.addPropertyChangeListener(_reporterListener = (PropertyChangeEvent e) -> {
                 handleReporterChange(e);
             });
-
         }
     }
 
@@ -300,7 +299,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
     }
 
     /**
-     * Get a copy of the list of Paths
+     * Get a copy of the list of Paths.
      *
      * @return the paths or an empty list
      */
@@ -318,7 +317,14 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         int old = _current;
         _current = v;
         // notify
-        firePropertyChange("state", old, _current);
+
+        // It is rather unpleasant that the following needs to be done in a try-catch, but exceptions have been observed
+        try {
+            firePropertyChange("state", old, _current);
+        } catch (Exception e) {
+            log.error("{} got exception during firePropertyChange({},{}) in thread {} {}: {}", getDisplayName(), old, _current,
+                    Thread.currentThread().getName(), Thread.currentThread().getId(), e);
+        }
     }
 
     /**
@@ -326,8 +332,8 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
      * gathers a value from an adjacent Block. This can be overridden in a
      * subclass if e.g. you want to keep track of Blocks elsewhere, but make
      * sure you also eventually invoke the super.setValue() here.
-     * <p>
-     * @param value The new Object resident in this block, or null if none.
+     *
+     * @param value The new Object resident in this block, or null if none
      */
     public void setValue(Object value) {
         //ignore if unchanged
@@ -454,7 +460,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         }
         try {
             return InstanceManager.getDefault(SignalSpeedMap.class).getSpeed(speed);
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException ex) {
             return -1;
         }
     }
@@ -489,7 +495,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
             } catch (NumberFormatException nx) {
                 try {
                     InstanceManager.getDefault(SignalSpeedMap.class).getSpeed(s);
-                } catch (Exception ex) {
+                } catch (IllegalArgumentException ex) {
                     throw new JmriException("Value of requested block speed is not valid");
                 }
             }
@@ -507,16 +513,18 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         return _curvature;
     }
 
-    /*
-     * Set length.  length must be in millimeters.
-     * Paths will inherit this length, if their length is not
-     * specifically set.  This length is the maximum length of
-     * any Path in the block. Path lengths will be modified to
-     * not exceed this length.
+    /**
+     * Set length in millimeters.
+     * <p>
+     * Paths will inherit this length, if their length is not specifically set.
+     * This length is the maximum length of any Path in the block. Path lengths
+     * exceeding this will be set to the default length.
+     *
+     * @param l length in millimeters
      */
     public void setLength(float l) {
         _length = l;
-        getPaths().stream().forEach((p) -> {
+        getPaths().stream().forEach(p -> {
             if (p.getLength() > l) {
                 p.setLength(0); // set to default
             }
@@ -553,12 +561,8 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
             return false;
         } else {
             Block b = (Block) obj;
-
-            if (!b.getSystemName().equals(this.getSystemName())) {
-                return false;
-            }
+            return b.getSystemName().equals(this.getSystemName());
         }
-        return true;
     }
 
     @Override
@@ -581,7 +585,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
     private PropertyChangeListener _reporterListener = null;
     private boolean _reportingCurrent = false;
 
-    private Path pListOfPossibleEntrancePaths[] = null;
+    private Path[] pListOfPossibleEntrancePaths = null;
     private int cntOfPossibleEntrancePaths = 0;
 
     void resetCandidateEntrancePaths() {
@@ -605,7 +609,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
 
     /**
      * Handle change in sensor state.
-     * <P>
+     * <p>
      * Defers real work to goingActive, goingInactive methods.
      *
      * @param e the event
@@ -658,9 +662,8 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
      */
     public void goingInactive() {
         log.debug("Block {} goes UNOCCUPIED", getDisplayName());
-        int currPathCnt = paths.size();
-        for (int i = 0; i < currPathCnt; i++) {
-            Block b = paths.get(i).getBlock();
+        for (Path path : paths) {
+            Block b = path.getBlock();
             if (b != null) {
                 b.setAsEntryBlockIfPossible(this);
             }
@@ -689,11 +692,11 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         Path next = null;
         // get statuses of everything once
         int currPathCnt = paths.size();
-        Path pList[] = new Path[currPathCnt];
-        boolean isSet[] = new boolean[currPathCnt];
-        boolean isActive[] = new boolean[currPathCnt];
-        int pDir[] = new int[currPathCnt];
-        int pFromDir[] = new int[currPathCnt];
+        Path[] pList = new Path[currPathCnt];
+        boolean[] isSet = new boolean[currPathCnt];
+        boolean[] isActive = new boolean[currPathCnt];
+        int[] pDir = new int[currPathCnt];
+        int[] pFromDir = new int[currPathCnt];
         for (int i = 0; i < currPathCnt; i++) {
             pList[i] = paths.get(i);
             isSet[i] = pList[i].checkPathSet();
@@ -728,13 +731,9 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
                         }
                     } else if (log.isDebugEnabled()) {
                         if (null != _timeLastInactive) {
-                            log.debug("not restoring previous value, block {} has been inactive for too long ("
-                                    + (tn.toEpochMilli() - _timeLastInactive.toEpochMilli()) + "ms) and layout power has not just been restored ("
-                                    + bm.timeSinceLastLayoutPowerOn() + "ms ago)", getDisplayName());
+                            log.debug("not restoring previous value, block {} has been inactive for too long ({}ms) and layout power has not just been restored ({}ms ago)", getDisplayName(), tn.toEpochMilli() - _timeLastInactive.toEpochMilli(), bm.timeSinceLastLayoutPowerOn());
                         } else {
-                            log.debug("not restoring previous value, block {} has been inactive since the start " +
-                                    "of this session and layout power has not just been restored ("
-                                    + bm.timeSinceLastLayoutPowerOn() + "ms ago)", getDisplayName());
+                            log.debug("not restoring previous value, block {} has been inactive since the start of this session and layout power has not just been restored ({}ms ago)", getDisplayName(), bm.timeSinceLastLayoutPowerOn());
                         }
                     }
                 } else {
@@ -757,7 +756,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
                             Path.decodeDirection(getDirection()));
                 } else if (next == null) {
                     log.error("unexpected next==null processing block {}", getDisplayName());
-                } else if (next.getBlock() == null) {
+                } else {
                     log.error("unexpected next.getBlock()=null processing block {}", getDisplayName());
                 }
                 break;
@@ -825,11 +824,11 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         Path next = null;
         // get statuses of everything once
         int currPathCnt = paths.size();
-        Path pList[] = new Path[currPathCnt];
-        boolean isSet[] = new boolean[currPathCnt];
-        boolean isActive[] = new boolean[currPathCnt];
-        int pDir[] = new int[currPathCnt];
-        int pFromDir[] = new int[currPathCnt];
+        Path[] pList = new Path[currPathCnt];
+        boolean[] isSet = new boolean[currPathCnt];
+        boolean[] isActive = new boolean[currPathCnt];
+        int[] pDir = new int[currPathCnt];
+        int[] pFromDir = new int[currPathCnt];
         for (int i = 0; i < currPathCnt; i++) {
             pList[i] = paths.get(i);
             isSet[i] = pList[i].checkPathSet();
@@ -921,7 +920,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
             // Assume a LocoNet-style report.  This is (nascent) support for handling of Faller cars
             // for Dave Merrill's project.
             log.debug("report string: {}", rep);
-            // NOTE: This pattern is based on the one defined in jmri.jmrix.loconet.LnReporter
+            // NOTE: This pattern is based on the one defined in LocoNet-specific LnReporter
             Pattern ln_p = Pattern.compile("(\\d+) (enter|exits|seen)\\s*(northbound|southbound)?");  // Match a number followed by the word "enter".  This is the LocoNet pattern.
             Matcher m = ln_p.matcher(rep);
             if (m.find()) {
@@ -955,7 +954,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
             return (((PhysicalLocationReporter) this.getReporter()).getDirection(rep));
         } else {
             log.debug("report string: {}", rep);
-            // NOTE: This pattern is based on the one defined in jmri.jmrix.loconet.LnReporter
+            // NOTE: This pattern is based on the one defined in LocoNet-specific LnReporter
             Pattern ln_p = Pattern.compile("(\\d+) (enter|exits|seen)\\s*(northbound|southbound)?");  // Match a number followed by the word "enter".  This is the LocoNet pattern.
             Matcher m = ln_p.matcher(rep);
             if (m.find()) {
@@ -1028,6 +1027,31 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
                 }
             }
         }
+    }
+
+    @Override
+    public List<NamedBeanUsageReport> getUsageReport(NamedBean bean) {
+        List<NamedBeanUsageReport> report = new ArrayList<>();
+        if (bean != null) {
+            if (bean.equals(getSensor())) {
+                report.add(new NamedBeanUsageReport("BlockSensor"));  // NOI18N
+            }
+            if (bean.equals(getReporter())) {
+                report.add(new NamedBeanUsageReport("BlockReporter"));  // NOI18N
+            }
+            // Block paths
+            getPaths().forEach((path) -> {
+                if (bean.equals(path.getBlock())) {
+                    report.add(new NamedBeanUsageReport("BlockPathNeighbor"));  // NOI18N
+                }
+                path.getSettings().forEach((setting) -> {
+                    if (bean.equals(setting.getBean())) {
+                        report.add(new NamedBeanUsageReport("BlockPathTurnout"));  // NOI18N
+                    }
+                });
+            });
+        }
+        return report;
     }
 
     @Override

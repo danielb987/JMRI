@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Stands in for the can.TrafficController class
  *
- * @author	Bob Jacobsen 2008
-  */
+ * @author Bob Jacobsen 2008
+ */
 public class TrafficControllerScaffold extends TrafficController {
 
     public TrafficControllerScaffold() {
@@ -76,15 +76,25 @@ public class TrafficControllerScaffold extends TrafficController {
      * record messages sent, provide access for making sure they are OK
      */
     public Vector<CanMessage> outbound = new Vector<CanMessage>();  // public OK here, so long as this is a test class
+    public Vector<CanReply> inbound = new Vector<CanReply>();  // public OK here, so long as this is a test class
 
     @Override
     public void sendCanMessage(CanMessage m, CanListener l) {
         if (log.isDebugEnabled()) {
-            log.debug("sendCanMessage [" + m + "]");
+            log.debug("sendCanMessage [{}]", m);
         }
         // save a copy
         outbound.addElement(m);
         mLastSender = l;
+    }
+
+    @Override
+    public void sendCanReply(CanReply r, CanListener l) {
+        if (log.isDebugEnabled()) {
+            log.debug("sendCanReply [{}]", r);
+        }
+        // save a copy
+        inbound.addElement(r);
     }
 
     /*

@@ -1,5 +1,6 @@
 package jmri.jmrit.catalog;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,11 +12,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import jmri.CatalogTreeManager;
 import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.util.ThreadingUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,26 +54,22 @@ public class DirectorySearcher implements InstanceManagerAutoDefault {
      *                directory so user can continue looking
      * @return chosen directory or null to cancel operation
      */
+    @SuppressFBWarnings(value = "UW_UNCOND_WAIT", justification="false postive, guarded by logic")
     private File getDirectory(String msg, boolean recurse) {
         if (_directoryChooser == null) {
             _directoryChooser = new JFileChooser(FileSystemView.getFileSystemView());
-            jmri.util.FileChooserFilter filt = new jmri.util.FileChooserFilter("Graphics Files");
-            for (int i = 0; i < CatalogTreeManager.IMAGE_FILTER.length; i++) {
-                filt.addExtension(CatalogTreeManager.IMAGE_FILTER[i]);
-            }
-            _directoryChooser.setFileFilter(filt);
+            _directoryChooser.setFileFilter(new FileNameExtensionFilter("Graphics Files", CatalogTreeManager.IMAGE_FILTER)); // NOI18N
         }
         _directoryChooser.setDialogTitle(Bundle.getMessage(msg));
         _directoryChooser.rescanCurrentDirectory();
         _directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-        File dir = _directoryChooser.getCurrentDirectory();
         while (true) {
             int retVal = _directoryChooser.showOpenDialog(null);
             if (retVal != JFileChooser.APPROVE_OPTION) {
                 return null;  // give up if no file selected
             }
-            dir = _directoryChooser.getSelectedFile();
+            File dir = _directoryChooser.getSelectedFile();
             if (dir != null) {
                 if (!recurse) {
                     return dir;
@@ -104,7 +103,7 @@ public class DirectorySearcher implements InstanceManagerAutoDefault {
         }
         int count = 0;
         for (int i = 0; i < files.length; i++) {
-            String ext = jmri.util.FileChooserFilter.getFileExtension(files[i]);
+            String ext = FilenameUtils.getExtension(files[i].getName());
             for (int k = 0; k < CatalogTreeManager.IMAGE_FILTER.length; k++) {
                 if (ext != null && ext.equalsIgnoreCase(CatalogTreeManager.IMAGE_FILTER[k])) {
                     count++; // OK directory has image files
@@ -191,7 +190,7 @@ public class DirectorySearcher implements InstanceManagerAutoDefault {
                 Bundle.getMessage("MessageTitle"), JOptionPane.INFORMATION_MESSAGE);
     }
 
-    class Seacher extends Thread implements Runnable {
+    class Seacher extends Thread {
 
         File dir;
         boolean quit = false;
@@ -217,12 +216,18 @@ public class DirectorySearcher implements InstanceManagerAutoDefault {
         }
 
         /**
-         * Find a Directory with image files
+         * Find a Directory with image files.
+         * <p>
+         * This waits on completion of the PrivateDialong (which is itself not modal)
+         * so must not be called on the Layout or GUI threads
          *
          * @param dir    directory
          * @param filter file filter for images
          */
+        @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = {"WA_NOT_IN_LOOP", "UW_UNCOND_WAIT"}, justification="Waiting for single possible event")
         private void getImageDirectory(File dir, String[] filter) {
+            if (jmri.util.ThreadingUtil.isGUIThread() || jmri.util.ThreadingUtil.isLayoutThread()) log.error("getImageDirectory called on wrong thread");
+            
             File[] files = dir.listFiles();
             if (files == null || quit) {
                 // no sub directories
@@ -243,9 +248,9 @@ public class DirectorySearcher implements InstanceManagerAutoDefault {
                     try {
                         wait();
                     } catch (InterruptedException ie) {
-                        log.error("InterruptedException at _waitForSync " + ie);
+                        log.error("InterruptedException at _waitForSync {}", ie);
                     } catch (java.lang.IllegalArgumentException iae) {
-                        log.error("IllegalArgumentException " + iae);
+                        log.error("IllegalArgumentException {}", iae);
                     }
                 }
             }

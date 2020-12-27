@@ -1,16 +1,16 @@
 package jmri.jmrit.operations.rollingstock.engines;
 
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.Track;
 import jmri.jmrit.operations.routes.Route;
 import jmri.jmrit.operations.trains.Train;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests for the Operations RollingStock Engine class Last manually
@@ -21,7 +21,7 @@ import org.junit.Test;
  * Everything Consist: Everything Import: Everything EngineManager: Engine
  * register/deregister EngineManager: Consists
  *
- * @author	Bob Coleman Copyright (C) 2008, 2009
+ * @author Bob Coleman Copyright (C) 2008, 2009
  */
 public class EngineManagerTest extends OperationsTestCase {
 
@@ -47,12 +47,12 @@ public class EngineManagerTest extends OperationsTestCase {
         List<Engine> engineList = manager.getByIdList();
 
         Assert.assertEquals("Starting Number of Engines", 0, engineList.size());
-        e1 = manager.newEngine("CP", "1");
-        e2 = manager.newEngine("ACL", "3");
-        e3 = manager.newEngine("CP", "3");
-        e4 = manager.newEngine("CP", "3-1");
-        e5 = manager.newEngine("PC", "2");
-        e6 = manager.newEngine("AA", "1");
+        e1 = manager.newRS("CP", "1");
+        e2 = manager.newRS("ACL", "3");
+        e3 = manager.newRS("CP", "3");
+        e4 = manager.newRS("CP", "3-1");
+        e5 = manager.newRS("PC", "2");
+        e6 = manager.newRS("AA", "1");
         engineList = manager.getByIdList();
         Assert.assertEquals("Finishing Number of Engines", 6, engineList.size());
         manager.dispose();
@@ -83,7 +83,7 @@ public class EngineManagerTest extends OperationsTestCase {
 
         EngineManager manager = InstanceManager.getDefault(EngineManager.class);
 
-        //setup the engines
+        // setup the engines
         e1.setBuilt("2016");
         e2.setBuilt("1212");
         e3.setBuilt("100"); // this stays 100
@@ -108,7 +108,7 @@ public class EngineManagerTest extends OperationsTestCase {
 
         EngineManager manager = InstanceManager.getDefault(EngineManager.class);
 
-        //setup the engines
+        // setup the engines
         e1.setMoves(2);
         e2.setMoves(44);
         e3.setMoves(99999);
@@ -133,7 +133,7 @@ public class EngineManagerTest extends OperationsTestCase {
 
         EngineManager manager = InstanceManager.getDefault(EngineManager.class);
 
-        //setup the engines
+        // setup the engines
         e1.setOwner("LAST");
         e2.setOwner("FOOL");
         e3.setOwner("AAA");
@@ -175,7 +175,7 @@ public class EngineManagerTest extends OperationsTestCase {
 
         EngineManager manager = InstanceManager.getDefault(EngineManager.class);
 
-        //setup the engines
+        // setup the engines
         e1.setConsist(new Consist("F"));
         e2.setConsist(new Consist("D"));
         e3.setConsist(new Consist("B"));
@@ -244,7 +244,7 @@ public class EngineManagerTest extends OperationsTestCase {
         Train t3 = new Train("id3", "E");
         t3.setRoute(r);
 
-        //setup the engines
+        // setup the engines
         e1.setTrain(t1);
         e2.setTrain(t3);
         e3.setTrain(t3);
@@ -279,7 +279,7 @@ public class EngineManagerTest extends OperationsTestCase {
         Train t3 = new Train("id3", "E");
         t3.setRoute(r);
 
-        //setup the engines
+        // setup the engines
         e1.setTrain(t1);
         e2.setTrain(t3);
         e3.setTrain(t3);
@@ -315,7 +315,7 @@ public class EngineManagerTest extends OperationsTestCase {
         Train t3 = new Train("id3", "E");
         t3.setRoute(r);
 
-        //setup the engines
+        // setup the engines
         e1.setTrain(t1);
         e2.setTrain(t3);
         e3.setTrain(t3);
@@ -352,7 +352,7 @@ public class EngineManagerTest extends OperationsTestCase {
         Train t3 = new Train("id3", "E");
         t3.setRoute(r);
 
-        //setup the engines
+        // setup the engines
         e1.setTrain(t1);
         e2.setTrain(t3);
         e3.setTrain(t3);
@@ -362,8 +362,8 @@ public class EngineManagerTest extends OperationsTestCase {
 
         // release engines from trains
         e2.setTrain(null);
-        e4.setTrain(null);	// e4 is located in the middle of the route, therefore not available
-        e6.setTrain(null);	// e6 is located at the end of the route, therefore not available
+        e4.setTrain(null); // e4 is located in the middle of the route, therefore not available
+        e6.setTrain(null); // e6 is located at the end of the route, therefore not available
 
         // there should be more engines now
         List<Engine> engineList = manager.getAvailableTrainList(t1);
@@ -425,7 +425,7 @@ public class EngineManagerTest extends OperationsTestCase {
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("93F");
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("B12");
 
-        //setup the engines
+        // setup the engines
         e1.setRfid("SQ1");
         e2.setRfid("1Ab");
         e3.setRfid("Ase");
@@ -442,6 +442,7 @@ public class EngineManagerTest extends OperationsTestCase {
         Assert.assertEquals("4th engine in list by rfid", e3, engineList.get(3));
         Assert.assertEquals("5th engine in list by rfid", e6, engineList.get(4));
         Assert.assertEquals("6th engine in list by rfid", e1, engineList.get(5));
+
     }
 
     @Test
@@ -459,7 +460,7 @@ public class EngineManagerTest extends OperationsTestCase {
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("93F");
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("B12");
 
-        //setup the engines
+        // setup the engines
         e1.setRfid("SQ1");
         e2.setRfid("1Ab");
         e3.setRfid("Ase");
@@ -468,12 +469,12 @@ public class EngineManagerTest extends OperationsTestCase {
         e6.setRfid("B12");
 
         // find engine by RFID
-        Assert.assertEquals("find e1 by rfid", e1, manager.getByRfid("SQ1"));
-        Assert.assertEquals("find e2 by rfid", e2, manager.getByRfid("1Ab"));
-        Assert.assertEquals("find e3 by rfid", e3, manager.getByRfid("Ase"));
-        Assert.assertEquals("find e4 by rfid", e4, manager.getByRfid("asd"));
-        Assert.assertEquals("find e5 by rfid", e5, manager.getByRfid("93F"));
-        Assert.assertEquals("find e6 by rfid", e6, manager.getByRfid("B12"));
+        Assert.assertEquals("find e1 by rfid", e1, manager.getByRfid("IDSQ1"));
+        Assert.assertEquals("find e2 by rfid", e2, manager.getByRfid("ID1Ab"));
+        Assert.assertEquals("find e3 by rfid", e3, manager.getByRfid("IDAse"));
+        Assert.assertEquals("find e4 by rfid", e4, manager.getByRfid("IDasd"));
+        Assert.assertEquals("find e5 by rfid", e5, manager.getByRfid("ID93F"));
+        Assert.assertEquals("find e6 by rfid", e6, manager.getByRfid("IDB12"));
 
     }
 
@@ -621,12 +622,12 @@ public class EngineManagerTest extends OperationsTestCase {
 
         EngineManager manager = InstanceManager.getDefault(EngineManager.class);
 
-        e1 = manager.newEngine("CP", "1");
-        e2 = manager.newEngine("ACL", "3");
-        e3 = manager.newEngine("CP", "3");
-        e4 = manager.newEngine("CP", "3-1");
-        e5 = manager.newEngine("PC", "2");
-        e6 = manager.newEngine("AA", "1");
+        e1 = manager.newRS("CP", "1");
+        e2 = manager.newRS("ACL", "3");
+        e3 = manager.newRS("CP", "3");
+        e4 = manager.newRS("CP", "3-1");
+        e5 = manager.newRS("PC", "2");
+        e6 = manager.newRS("AA", "1");
 
         e1.setModel("GP356");
         e2.setModel("GP354");
@@ -704,19 +705,4 @@ public class EngineManagerTest extends OperationsTestCase {
         e6.setMoves(9999);
 
     }
-
-    // from here down is testing infrastructure
-    // Ensure minimal setup for log4J
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
-    }
-
 }

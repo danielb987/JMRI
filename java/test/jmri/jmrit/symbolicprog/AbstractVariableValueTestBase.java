@@ -8,17 +8,15 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import jmri.progdebugger.ProgDebugger;
 import jmri.util.JUnitUtil;
-import junit.framework.TestCase;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.*;
 
 /**
  * Base for tests of classes inheriting from VariableValue abstract class
  *
- * @author	Bob Jacobsen, Copyright 2002
+ * @author Bob Jacobsen, Copyright 2002
  */
-public abstract class AbstractVariableValueTestBase extends TestCase {
+public abstract class AbstractVariableValueTestBase {
 
     ProgDebugger p = new ProgDebugger();
 
@@ -38,6 +36,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
 
     // start of base tests
     // check label, item from ctor
+    @Test
     public void testVariableNaming() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -50,6 +49,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // can we create one, then manipulate the variable to change the CV?
+    @Test
     public void testVariableValueCreate() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -71,6 +71,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     //  check create&manipulate for large values
+    @Test
     public void testVariableValueCreateLargeValue() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -92,6 +93,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     //  check create&manipulate for large mask values
+    @Test
     public void testVariableValueCreateLargeMaskValue() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -112,6 +114,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
         Assert.assertEquals("cv value", 2 * 8 * 256 + 32768 + 3, cv.getValue());
     }
 
+    @Test
     public void testVariableValueCreateLargeMaskValue256() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -132,6 +135,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
         Assert.assertEquals("cv value", 256 + 32768 + 3, cv.getValue());
     }
 
+    @Test
     public void testVariableValueCreateLargeMaskValue2up16() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -152,7 +156,21 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
         Assert.assertEquals("cv value", 256 * 128 + 3, cv.getValue());
     }
 
+    @Test
+    public void testVariableValueTwinMask() {
+        HashMap<String, CvValue> v = createCvMap();
+        CvValue cv = new CvValue("81", p);
+        cv.setValue(3);
+        v.put("81", cv);
+        // create a variable pointed at CV 81, check name
+        VariableValue variable = makeVar("label", "comment", "", false, false, false, false, "81", "VXXXXXXX XXXXVVVV", 0, 64, v, null, null);
+
+        Assert.assertEquals("mask at start", "VXXXXXXX", variable.getMask());
+    }
+
+
     // can we change the CV and see the result in the Variable?
+    @Test
     public void testVariableFromCV() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -160,7 +178,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
         v.put("81", cv);
         // create a variable pointed at CV 81, loaded as 5
         VariableValue variable = makeVar("label", "comment", "", false, false, false, false, "81", "XXVVVVXX", 0, 255, v, null, null);
-        Assert.assertTrue("getValue not null ", variable.getCommonRep() != null);
+        Assert.assertNotNull("getValue not null ", variable.getCommonRep());
         setValue(variable, "5");
         checkValue(variable, "variable value", "5");
 
@@ -171,6 +189,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // Do we get the right return from a readOnly == true DecVariable?
+    @Test
     public void testVariableReadOnly() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
@@ -184,6 +203,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check a read operation
+    @Test
     public void testVariableValueRead() {
         log.debug("testVariableValueRead base starts");
 
@@ -205,6 +225,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check a write operation to the variable
+    @Test
     public void testVariableValueWrite() {
         log.debug("testVariableValueWrite base starts");
 
@@ -228,6 +249,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check synch during a write operation to the CV
+    @Test
     public void testVariableCvWrite() {
         if (log.isDebugEnabled()) {
             log.debug("start testVariableCvWrite test");
@@ -257,6 +279,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check the state diagram
+    @Test
     public void testVariableValueStates() {
 
         HashMap<String, CvValue> v = createCvMap();
@@ -273,6 +296,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check the state <-> color connection for value
+    @Test
     public void testVariableValueStateColor() {
 
         HashMap<String, CvValue> v = createCvMap();
@@ -288,6 +312,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check the state <-> color connection for rep when var changes
+    @Test
     public void testVariableRepStateColor() {
 
         HashMap<String, CvValue> v = createCvMap();
@@ -315,6 +340,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
 
     // check the state <-> color connection for var when rep changes
     @SuppressWarnings("unchecked")
+    @Test
     public void testVariableVarChangeColorRep() {
 
         HashMap<String, CvValue> v = createCvMap();
@@ -343,7 +369,8 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
         }
     }
 
-    // check synchonization of value, representations
+    // check synchronization of value, representations
+    @Test
     public void testVariableSynch() {
 
         HashMap<String, CvValue> v = createCvMap();
@@ -384,6 +411,7 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     }
 
     // check synchronization of two vars during a write
+    @Test
     public void testWriteSynch2() {
         if (log.isDebugEnabled()) {
             log.debug("start testWriteSynch2 test");
@@ -415,7 +443,9 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
     // end of common tests
     // this next is just preserved here; note not being invoked.
     // test that you're not using too much space when you call for a value
-    public void XtestSpaceUsage() {  // leading X prevents test from being called
+    @Test
+    @Disabled("Disabled in JUnit 3")
+    public void testSpaceUsage() {
         HashMap<String, CvValue> v = createCvMap();
         CvValue cv = new CvValue("81", p);
         cv.setValue(3);
@@ -456,23 +486,14 @@ public abstract class AbstractVariableValueTestBase extends TestCase {
         return m;
     }
 
-    // from here down is testing infrastructure
-    public AbstractVariableValueTestBase(String s) {
-        super(s);
-    }
-
-    // abstract class has no main entry point, test suite
-    private final static Logger log = LoggerFactory.getLogger(AbstractVariableValueTestBase.class);
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() {
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
+
+    private final static  org.slf4j.Logger log =  org.slf4j.LoggerFactory.getLogger(AbstractVariableValueTestBase.class);
 
 }

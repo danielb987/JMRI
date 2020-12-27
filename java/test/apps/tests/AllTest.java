@@ -1,42 +1,75 @@
 package apps.tests;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestExecutionListener;
+import org.junit.platform.launcher.TestPlan;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.junit.platform.suite.api.SuiteDisplayName;
+
+import java.io.PrintWriter;
+
+import static org.junit.platform.engine.discovery.ClassNameFilter.excludeClassNamePatterns;
+import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 
 /**
  * Invoke all the JMRI project JUnit tests via a GUI interface.
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * @author	Bob Jacobsen
+ * @author Bob Jacobsen
  */
- 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        jmri.PackageTest.class,
-        apps.PackageTest.class,
-        // at the end, we check for logging messages again
-        jmri.util.Log4JErrorIsErrorTest.class
-})
-
+@SuiteDisplayName("AllTest")
 public class AllTest {
 
-    @Deprecated // 4.13.3  No longer needed so long as there's a call to jmri.util.JUnitUtil.setup() in the usual way
-    public static void initLogging() {
+    static public void main(String[] args) {
+        run();
+        System.exit(0);
     }
 
-   static public void main(String[] args) {
-        // launch this class via JUnit4
-       org.junit.runner.JUnitCore.main("apps.tests.AllTest");
-   }
+    /**
+     * Run tests with a compile-selected RunListener.
+     */
+    public static void run() {
+        SummaryGeneratingListener listener = new jmri.util.junit.PrintingTestListener(System.out); // test-by-test output if enabled
+        String[] includePatterns = {"Test.*", ".*Test", "IT.*", ".*IT"};
+        String[] excludePatterns = {"AllTest", "HeadLessTest", "ArchitectureTest"};
 
+        run(listener, includePatterns, excludePatterns);
+        TestExecutionSummary summary = listener.getSummary();
+        PrintWriter p = new PrintWriter(System.out);
+        summary.printTo(p);
+        summary.printFailuresTo(p);
+    }
+
+    /**
+     * Run tests with a specified RunListener.
+     *
+     * @param listener the listener for the tests
+     */
+    public static void run(TestExecutionListener listener, String[] includePatterns, String[] excludePatterns) {
+        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+                .selectors(selectPackage("jmri"))
+                .selectors(selectPackage("apps"))
+                .filters(includeClassNamePatterns(includePatterns))
+                .filters(excludeClassNamePatterns(excludePatterns))
+                .build();
+        Launcher launcher = LauncherFactory.create();
+        TestPlan testPlan = launcher.discover(request);
+        launcher.registerTestExecutionListeners(listener);
+        launcher.execute(testPlan);
+    }
 }

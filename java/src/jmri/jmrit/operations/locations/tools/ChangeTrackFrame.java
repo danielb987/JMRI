@@ -3,19 +3,17 @@ package jmri.jmrit.operations.locations.tools;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.text.MessageFormat;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+
+import javax.swing.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.locations.Track;
 import jmri.jmrit.operations.locations.TrackEditFrame;
 import jmri.jmrit.operations.setup.Control;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Action to change the type of track. Track types are Spurs, Yards,
@@ -34,8 +32,8 @@ class ChangeTrackFrame extends OperationsFrame {
     // major buttons
     JButton saveButton = new JButton(Bundle.getMessage("ButtonSave"));
 
+    private Track _track;
     private TrackEditFrame _tef;
-    String _trackType = "";
 
     public ChangeTrackFrame(TrackEditFrame tef) {
         super(Bundle.getMessage("MenuItemChangeTrackType"));
@@ -44,11 +42,12 @@ class ChangeTrackFrame extends OperationsFrame {
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         _tef = tef;
-        if (_tef._track == null) {
+        _track = tef._track;
+        if (_track == null) {
             log.debug("track is null, change track not possible");
             return;
         }
-        String trackName = _tef._track.getName();
+        String trackName = _track.getName();
 
         // load the panel
         // row 1a
@@ -63,17 +62,16 @@ class ChangeTrackFrame extends OperationsFrame {
         p2.add(saveButton);
 
         // group and set current track type
-        _trackType = tef._track.getTrackType();
         group.add(spurRadioButton);
         group.add(yardRadioButton);
         group.add(interchangeRadioButton);
 
-        spurRadioButton.setSelected(_trackType.equals(Track.SPUR));
-        yardRadioButton.setSelected(_trackType.equals(Track.YARD));
-        interchangeRadioButton.setSelected(_trackType.equals(Track.INTERCHANGE));
+        spurRadioButton.setSelected(_track.isSpur());
+        yardRadioButton.setSelected(_track.isYard());
+        interchangeRadioButton.setSelected(_track.isInterchange());
 
         // Can not change staging tracks!
-        saveButton.setEnabled(!_trackType.equals(Track.STAGING));
+        saveButton.setEnabled(!_track.isStaging());
 
         // button action
         addButtonAction(saveButton);
@@ -91,11 +89,11 @@ class ChangeTrackFrame extends OperationsFrame {
     public void buttonActionPerformed(java.awt.event.ActionEvent ae) {
         if (ae.getSource() == saveButton) {
             // check to see if button has changed
-            if (spurRadioButton.isSelected() && !_trackType.equals(Track.SPUR)) {
+            if (spurRadioButton.isSelected() && !_track.isSpur()) {
                 changeTrack(Track.SPUR);
-            } else if (yardRadioButton.isSelected() && !_trackType.equals(Track.YARD)) {
+            } else if (yardRadioButton.isSelected() && !_track.isYard()) {
                 changeTrack(Track.YARD);
-            } else if (interchangeRadioButton.isSelected() && !_trackType.equals(Track.INTERCHANGE)) {
+            } else if (interchangeRadioButton.isSelected() && !_track.isInterchange()) {
                 changeTrack(Track.INTERCHANGE);
             }
         }
@@ -103,7 +101,7 @@ class ChangeTrackFrame extends OperationsFrame {
 
     private void changeTrack(String type) {
         log.debug("change track to {}", type);
-        _tef._track.setTrackType(type);
+        _track.setTrackType(type);
         OperationsXml.save();
         _tef.dispose();
         dispose();

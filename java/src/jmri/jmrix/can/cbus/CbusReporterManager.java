@@ -1,151 +1,175 @@
 package jmri.jmrix.can.cbus;
 
-import jmri.Reporter;
-import jmri.jmrix.can.CanListener;
-import jmri.jmrix.can.CanMessage;
-import jmri.jmrix.can.CanReply;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import jmri.*;
 import jmri.jmrix.can.CanSystemConnectionMemo;
-import jmri.jmrix.can.TrafficController;
 import jmri.managers.AbstractReporterManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manage the CBUS-specific Reporter implementation.
+ * Implement ReporterManager for CAN CBUS systems.
  * <p>
- * System names are "MRnnn", where nnn is the reporter number without padding.
- * <hr>
- * This file is part of JMRI.
- * <P>
- * JMRI is free software; you can redistribute it and/or modify it under the
- * terms of version 2 of the GNU General Public License as published by the Free
- * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
- * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * System names are "MRnnnnn", where M is the user-configurable system getSystemPrefix(),
+ * nnnnn is the reporter number without padding.
+ * <p>
+ * CBUS Reporters are NOT automatically created.
  *
  * @author Mark Riddoch Copyright (C) 2015
+ * @author Steve Young Copyright (C) 2019
  */
-public class CbusReporterManager extends AbstractReporterManager implements
-        CanListener {
+public class CbusReporterManager extends AbstractReporterManager {
 
-    @SuppressWarnings("LeakingThisInConstructor")
     public CbusReporterManager(CanSystemConnectionMemo memo) {
-        this.memo = memo;
-        this.tc = memo.getTrafficController();
-        this.prefix = memo.getSystemPrefix();
-        this.memo = memo;
-        if (tc != null) {
-            tc.addCanListener(this);
-        } else {
-            log.error("CbusReporterManager: Failed to register listener");
-        }
+        super(memo);
     }
-
-    CanSystemConnectionMemo memo;
-    TrafficController tc;
-    String prefix;
-
+    
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getSystemPrefix() {
-        return prefix;
+    @Nonnull
+    public CanSystemConnectionMemo getMemo() {
+        return (CanSystemConnectionMemo) memo;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void dispose() {
-        if (tc != null) {
-            tc.removeCanListener(this);
-        }
-        super.dispose();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Reporter createNewReporter(String systemName, String userName) {
-        Reporter t;
+    protected Reporter createNewReporter(@Nonnull String systemName, String userName) {
         log.debug("ReporterManager create new CbusReporter: {}", systemName);
-        int addr = Integer.parseInt(systemName.substring(prefix.length() + 1));
-        t = new CbusReporter(addr, tc, prefix);
+        String addr = systemName.substring(getSystemNamePrefix().length());
+        Reporter t = new CbusReporter(addr, getMemo());
         t.setUserName(userName);
         t.addPropertyChangeListener(this);
-
         return t;
     }
 
     /**
      * {@inheritDoc}
+     * Checks for reporter number between 0 and 65535
      */
     @Override
-    public NameValidity validSystemNameFormat(String systemName) {
+    public NameValidity validSystemNameFormat(@Nonnull String systemName) {
         // name must be in the MSnnnnn format (M is user configurable); no + or ; or - for Reporter address
+        log.debug("Checking system name: {}", systemName);
         try {
             // try to parse the string; success returns true
-            Integer.valueOf(systemName.substring(getSystemPrefix().length() + 1, systemName.length()));
-        } catch (NumberFormatException e) {
-            log.debug("Warning: illegal character in number field of system name: {}", systemName);
+            int testnum = Integer.parseInt(systemName.substring(getSystemPrefix().length() + 1, systemName.length()));
+            if ( testnum < 0 ) {
+                log.debug("Number field cannot be negative in system name: {}", systemName);
+                return NameValidity.INVALID;
+            }
+            if ( testnum > 65535  ) {
+                log.debug("Number field cannot be greater than 65535 in system name: {}", systemName);
+                return NameValidity.INVALID;
+            }
+        }
+        catch (NumberFormatException e) {
+            log.debug("Illegal character in number field of system name: {}", systemName);
             return NameValidity.INVALID;
         }
+        catch (StringIndexOutOfBoundsException e) {
+            log.debug("Wrong length ( missing MR? ) for system name: {}", systemName);
+            return NameValidity.INVALID;
+        }
+        log.debug("Valid system name: {}", systemName);
         return NameValidity.VALID;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean allowMultipleAdditions(@Nonnull String systemName) {
+        return true;
     }
 
     /**
-     * Provide a manager-specific tool tip for the Add new item beantable pane.
-     *
-     * @return the tool tip
+     * {@inheritDoc}
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddReporterEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddReporterEntryToolTip");
     }
-
-    /**
+    
+    /** 
+     * Validates to only numeric system names.
      * {@inheritDoc}
-     *
-     * @see jmri.jmrix.can.CanListener#message(jmri.jmrix.can.CanMessage)
      */
     @Override
-    public void message(CanMessage m) {
-        // TODO Auto-generated method stub
-        log.debug("CbusReporterManager: handle message: {}", m.getOpCode());
-        if (m.getOpCode() != CbusConstants.CBUS_DDES) {
-            return;
-        }
-        // message type OK, check address
-        int addr = CbusMessage.getNodeNumber(m);
-
-        CbusReporter r = (CbusReporter) provideReporter("MR" + addr);
-        r.message(m);       // make sure it got the message
-
+    @Nonnull
+    public String validateSystemNameFormat(@Nonnull String name, @Nonnull java.util.Locale locale) throws jmri.NamedBean.BadSystemNameException {
+        return validateSystemNameFormatOnlyNumeric(name,locale);
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see jmri.jmrix.can.CanListener#reply(jmri.jmrix.can.CanReply)
-     */
+    
+    protected final static String CBUS_REPORTER_DESCRIPTOR_KEY = "CBUS Reporter Type"; // NOI18N
+    
+    protected final static String CBUS_REPORTER_TYPE_CLASSIC = "Classic RFID"; // NOI18N
+    
+    protected final static String CBUS_REPORTER_TYPE_DDES_DESCRIBING = "CANRC522 / CANRCOM"; // NOI18N
+    
+    protected final static String[] CBUS_REPORTER_TYPES = {
+        CBUS_REPORTER_TYPE_CLASSIC,CBUS_REPORTER_TYPE_DDES_DESCRIBING};
+    
+    protected final static String[] CBUS_REPORTER_TYPE_TIPS = {
+        "DDES / ACDAT 5 byte unique tag.","DDES self-describing ( Writeable CANRC522 / Railcom )"}; // NOI18N
+    
+    protected final static String CBUS_DEFAULT_REPORTER_TYPE = CBUS_REPORTER_TYPES[0];
+    
+    protected final static String CBUS_MAINTAIN_SENSOR_DESCRIPTOR_KEY = "Maintain CBUS Sensor"; // NOI18N
+    
     @Override
-    public void reply(CanReply m) {
-        // TODO Auto-generated method stub
-        log.debug("CbusReporterManager: handle reply: {} node: {}", m.getOpCode(), CbusMessage.getNodeNumber(m));
-        if (m.getOpCode() != CbusConstants.CBUS_DDES || m.getOpCode() != CbusConstants.CBUS_ACDAT) {
-            return;
-        }
-        // message type OK, check address
-        int addr = m.getElement(1) * 256 + m.getElement(2);
-
-        CbusReporter r = (CbusReporter) provideReporter("MR" + addr);
-        r.reply(m);     // make sure it got the message
-
+    @Nonnull
+    public List<NamedBeanPropertyDescriptor<?>> getKnownBeanProperties() {
+        List<NamedBeanPropertyDescriptor<?>> l = new ArrayList<>();
+        l.add(new SelectionPropertyDescriptor(
+            CBUS_REPORTER_DESCRIPTOR_KEY, CBUS_REPORTER_TYPES, CBUS_REPORTER_TYPE_TIPS, CBUS_DEFAULT_REPORTER_TYPE) {
+            @Override
+            public String getColumnHeaderText() {
+                return CBUS_REPORTER_DESCRIPTOR_KEY;
+            }
+            @Override
+            public boolean isEditable(NamedBean bean) {
+                return (bean instanceof CbusReporter);
+            }
+        });
+        l.add(new BooleanPropertyDescriptor(
+            CBUS_MAINTAIN_SENSOR_DESCRIPTOR_KEY, false) {
+            @Override
+            public String getColumnHeaderText() {
+                return CBUS_MAINTAIN_SENSOR_DESCRIPTOR_KEY;
+            }
+            @Override
+            public boolean isEditable(NamedBean bean) {
+                return (bean instanceof CbusReporter);
+            }
+        });
+        return l;
+    }
+    
+    private int _timeout=2000; // same default as TimeoutReporter
+    
+    /**
+     * Set the Reporter timeout.
+     * @param timeout time in milliseconds that CbusReporters stay at IdTag.SEEN after hearing an ID Tag.
+     */
+    public void setTimeout(int timeout){
+        _timeout = timeout;
+    }
+    
+    /**
+     * Get the Reporter Timeout.
+     * @return milliseconds for CbusReporters to return to IdTag.UNSEEN
+     */
+    public int getTimeout(){
+        return _timeout;
     }
 
     private static final Logger log = LoggerFactory.getLogger(CbusReporterManager.class);

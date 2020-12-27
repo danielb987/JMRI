@@ -1,24 +1,24 @@
 package jmri.jmrit.operations.locations;
 
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.OpsPropertyChangeListener;
 import jmri.jmrit.operations.rollingstock.cars.Car;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests for the Operations Pool class Last manually cross-checked on ?????
- *
+ * <p>
  * Still to do: ?????????????? Nees to be updated for Pool class ScheduleItem:
  * XML read/write Schedule: Register, List, XML read/write Track:
  * AcceptsDropTrain, AcceptsDropRoute Track: AcceptsPickupTrain,
  * AcceptsPickupRoute Track: CheckScheduleValid Track: XML read/write Location:
  * Track support <-- I am here Location: XML read/write
- *
+ * 
  * @author Gregory Madsen Copyright (C) 2012, based on OperationsLocationTest
  * class
  */
@@ -28,7 +28,7 @@ public class OperationsPoolTest extends OperationsTestCase {
     Track t1 = null;
     Track t2 = null;
 
-	// test Pool Class (part one)
+    // test Pool Class (part one)
     // test Pool creation in different ways
     // public void testCreateDefault()
     // {
@@ -174,7 +174,7 @@ public class OperationsPoolTest extends OperationsTestCase {
 
     @Test
     public void testLengthenTrack1() {
-		// Track 1 is 100 feet, minimum 50, available 50
+        // Track 1 is 100 feet, minimum 50, available 50
         // Track 2 is 120 feet, minimum 40, available 80
 
         // Request Track 1 to be 120 feet, which will take 20 feet from Track 2
@@ -189,7 +189,7 @@ public class OperationsPoolTest extends OperationsTestCase {
 
     @Test
     public void testLengthenTrack1Maximum() {
-		// Track 1 is 100 feet, minimum 50, available 50
+        // Track 1 is 100 feet, minimum 50, available 50
         // Track 2 is 120 feet, minimum 40, available 80
 
         // Request Track 1 to be 180 feet, which will take all available 80 feet
@@ -205,7 +205,7 @@ public class OperationsPoolTest extends OperationsTestCase {
 
     @Test
     public void testLengthenTrack1TooLong() {
-		// Track 1 is 100 feet, minimum 50, available 50
+        // Track 1 is 100 feet, minimum 50, available 50
         // Track 2 is 120 feet, minimum 40, available 80
 
         // Request Track 1 to be 181 feet, which will fail as there is only 80
@@ -221,7 +221,7 @@ public class OperationsPoolTest extends OperationsTestCase {
 
     @Test
     public void testShortenTrack1() {
-		// Track 1 is 100 feet, minimum 50, available 50
+        // Track 1 is 100 feet, minimum 50, available 50
         // Track 2 is 120 feet, minimum 40, available 80
 
         // Request Track 1 to be 80 feet, which will give 20 feet to Track 2
@@ -236,7 +236,7 @@ public class OperationsPoolTest extends OperationsTestCase {
 
     @Test
     public void testShortenTrack1BelowMinimum() {
-		// Track 1 is 100 feet, minimum 50, available 50
+        // Track 1 is 100 feet, minimum 50, available 50
         // Track 2 is 120 feet, minimum 40, available 80
 
         // Request Track 1 to be 20 feet, which will give 80 feet to Track 2
@@ -255,8 +255,8 @@ public class OperationsPoolTest extends OperationsTestCase {
         Location l = locMan.newLocation("TestTrackPoolsLocation");
         Track t1 = l.addTrack("Yard 1", Track.YARD);
         Track t2 = l.addTrack("Yard 2", Track.YARD);
-        Track t3 = l.addTrack("Siding 1", Track.SPUR);
-        Track t4 = l.addTrack("Siding 2", Track.SPUR);
+        Track t3 = l.addTrack("Spur 1", Track.SPUR);
+        Track t4 = l.addTrack("Spur 2", Track.SPUR);
         Track t5 = l.addTrack("Interchange 1", Track.INTERCHANGE);
         Track t6 = l.addTrack("Interchange 2", Track.INTERCHANGE);
         Track t7 = l.addTrack("Interchange 3", Track.INTERCHANGE);
@@ -296,36 +296,36 @@ public class OperationsPoolTest extends OperationsTestCase {
 
         // now place cars and see if track lengths adjust correctly
         Assert.assertEquals("Place c1", Track.OKAY, c1.setLocation(l, t1));
-        Assert.assertEquals("track length", 40 + Car.COUPLER, t1.getLength());
-        Assert.assertEquals("track length", 100 - (40 + Car.COUPLER), t3.getLength());
+        Assert.assertEquals("track length", 40 + Car.COUPLERS, t1.getLength());
+        Assert.assertEquals("track length", 100 - (40 + Car.COUPLERS), t3.getLength());
         Assert.assertEquals("track length", 0, t7.getLength());
 
         Assert.assertEquals("Place c2", Track.OKAY, c2.setLocation(l, t7));
-        Assert.assertEquals("track length", 40 + Car.COUPLER, t1.getLength());
-        Assert.assertEquals("track length", 25 + Car.COUPLER, t7.getLength());
-        Assert.assertEquals("track length", 100 - (40 + Car.COUPLER) - (25 + Car.COUPLER), t3.getLength());
+        Assert.assertEquals("track length", 40 + Car.COUPLERS, t1.getLength());
+        Assert.assertEquals("track length", 25 + Car.COUPLERS, t7.getLength());
+        Assert.assertEquals("track length", 100 - (40 + Car.COUPLERS) - (25 + Car.COUPLERS), t3.getLength());
 
         // not able to place c3, not enough available track length
         String status = c3.setLocation(l, t1);
         // Assert.assertEquals("Place c3", Track.LENGTH + " "+(32+Car.COUPLER)+" " +
         // Setup.getLengthUnit().toLowerCase(), c3.setLocation(l, t1));
         Assert.assertTrue("Length issue", status.startsWith(Track.LENGTH));
-        Assert.assertEquals("track length", 40 + Car.COUPLER + 100 - (40 + Car.COUPLER) - (25 + Car.COUPLER), t1
+        Assert.assertEquals("track length", 40 + Car.COUPLERS + 100 - (40 + Car.COUPLERS) - (25 + Car.COUPLERS), t1
                 .getLength());
-        Assert.assertEquals("track length", 25 + Car.COUPLER, t7.getLength());
+        Assert.assertEquals("track length", 25 + Car.COUPLERS, t7.getLength());
         Assert.assertEquals("track length", 0, t3.getLength());
 
         // now test the minimum track length pool feature
         // tracks t2 t4 t5 and t6 in the same pool
         Assert.assertEquals("Place c1", Track.OKAY, c1.setLocation(l, t2));
-        Assert.assertEquals("track length", 40 + Car.COUPLER, t2.getLength());
-        Assert.assertEquals("track length", 200 - (40 + Car.COUPLER), t5.getLength());
+        Assert.assertEquals("track length", 40 + Car.COUPLERS, t2.getLength());
+        Assert.assertEquals("track length", 200 - (40 + Car.COUPLERS), t5.getLength());
         Assert.assertEquals("track length", 0, t4.getLength());
         Assert.assertEquals("track length", 0, t6.getLength());
 
         Assert.assertEquals("Place c2", Track.OKAY, c2.setLocation(l, t2));
-        Assert.assertEquals("track length", 40 + Car.COUPLER + 25 + Car.COUPLER, t2.getLength());
-        Assert.assertEquals("track length", 200 - (40 + Car.COUPLER + 25 + Car.COUPLER), t5.getLength());
+        Assert.assertEquals("track length", 40 + Car.COUPLERS + 25 + Car.COUPLERS, t2.getLength());
+        Assert.assertEquals("track length", 200 - (40 + Car.COUPLERS + 25 + Car.COUPLERS), t5.getLength());
         Assert.assertEquals("track length", 0, t4.getLength());
         Assert.assertEquals("track length", 0, t6.getLength());
 
@@ -343,10 +343,10 @@ public class OperationsPoolTest extends OperationsTestCase {
         t6.setLength(50);
 
         Assert.assertEquals("Place c3", Track.OKAY, c3.setLocation(l, t2));
-        Assert.assertEquals("track length", 40 + Car.COUPLER + 25 + Car.COUPLER + 32 + Car.COUPLER, t2.getLength());
+        Assert.assertEquals("track length", 40 + Car.COUPLERS + 25 + Car.COUPLERS + 32 + Car.COUPLERS, t2.getLength());
         Assert.assertEquals("track length", 100, t5.getLength()); // minimum track length
         Assert.assertEquals("track length", 0, t4.getLength());
-        Assert.assertEquals("track length", 150 - (40 + Car.COUPLER + 25 + Car.COUPLER + 32 + Car.COUPLER), t6
+        Assert.assertEquals("track length", 150 - (40 + Car.COUPLERS + 25 + Car.COUPLERS + 32 + Car.COUPLERS), t6
                 .getLength());
 
         // now move the cars on t2 to t4 to test the minimum for t2
@@ -354,11 +354,11 @@ public class OperationsPoolTest extends OperationsTestCase {
         // to see if car's track was part of pool
 
         Assert.assertEquals("Place c1", Track.OKAY, c1.setLocation(l, t4));
-        Assert.assertEquals("track length", 25 + Car.COUPLER + 32 + Car.COUPLER, t2.getLength());
+        Assert.assertEquals("track length", 25 + Car.COUPLERS + 32 + Car.COUPLERS, t2.getLength());
         Assert.assertEquals("track length", 100, t5.getLength()); // minimum track length
-        Assert.assertEquals("track length", 40 + Car.COUPLER, t4.getLength());
+        Assert.assertEquals("track length", 40 + Car.COUPLERS, t4.getLength());
         // 250 feet total track length in pool, 100 minimum
-        Assert.assertEquals("track length", (250 - 100) - (40 + Car.COUPLER + 25 + Car.COUPLER + 32 + Car.COUPLER), t6
+        Assert.assertEquals("track length", (250 - 100) - (40 + Car.COUPLERS + 25 + Car.COUPLERS + 32 + Car.COUPLERS), t6
                 .getLength());
 
         c2.setLocation(null, null);
@@ -367,22 +367,15 @@ public class OperationsPoolTest extends OperationsTestCase {
         Assert.assertEquals("Place c2", Track.OKAY, c2.setLocation(l, t4));
         Assert.assertEquals("track length", 50, t2.getLength()); // minimum track length
         Assert.assertEquals("track length", 100, t5.getLength()); // minimum track length
-        Assert.assertEquals("track length", 25 + Car.COUPLER + 40 + Car.COUPLER, t4.getLength());
+        Assert.assertEquals("track length", 25 + Car.COUPLERS + 40 + Car.COUPLERS, t4.getLength());
         // 250 feet total track length in pool, 150 minimum
-        Assert.assertEquals("track length", (250 - 150) - (40 + Car.COUPLER + 25 + Car.COUPLER), t6.getLength());
+        Assert.assertEquals("track length", (250 - 150) - (40 + Car.COUPLERS + 25 + Car.COUPLERS), t6.getLength());
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         InstanceManager.getDefault(jmri.jmrit.operations.rollingstock.cars.CarTypes.class).addName("Boxcar");
-    }
-
-    // The minimal setup for log4J
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
     }
 }

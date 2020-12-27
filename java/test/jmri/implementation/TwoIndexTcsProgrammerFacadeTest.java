@@ -3,23 +3,24 @@ package jmri.implementation;
 import jmri.ProgListener;
 import jmri.Programmer;
 import jmri.progdebugger.ProgDebugger;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author	Bob Jacobsen Copyright 2014
+ * @author Bob Jacobsen Copyright 2014
  * 
  */
-public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
+ @Timeout(60)
+public class TwoIndexTcsProgrammerFacadeTest {
 
     int readValue = -2;
     boolean replied = false;
 
+    @Test
     public void testWriteReadDirect() throws jmri.ProgrammerException, InterruptedException {
 
         ProgDebugger dp = new ProgDebugger();
@@ -27,7 +28,7 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         ProgListener l = new ProgListener() {
             @Override
             public void programmingOpReply(int value, int status) {
-                log.debug("callback value=" + value + " status=" + status);
+                log.debug("callback value={} status={}", value, status);
                 replied = true;
                 readValue = value;
             }
@@ -44,6 +45,7 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         Assert.assertTrue("index not written", !dp.hasBeenWritten(81));
     }
 
+    @Test
     public void testWriteReadDoubleIndexed() throws jmri.ProgrammerException, InterruptedException {
 
         ProgDebugger dp = new ProgDebugger();
@@ -51,7 +53,7 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         ProgListener l = new ProgListener() {
             @Override
             public void programmingOpReply(int value, int status) {
-                log.debug("callback value=" + value + " status=" + status);
+                log.debug("callback value={} status={}", value, status);
                 replied = true;
                 readValue = value;
             }
@@ -83,6 +85,7 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         // and the test Programmer remembers that
     }
 
+    @Test
     public void testWriteReadTripleIndexed() throws jmri.ProgrammerException, InterruptedException {
 
         ProgDebugger dp = new ProgDebugger();
@@ -90,7 +93,7 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         ProgListener l = new ProgListener() {
             @Override
             public void programmingOpReply(int value, int status) {
-                log.debug("callback value=" + value + " status=" + status);
+                log.debug("callback value={} status={}", value, status);
                 replied = true;
                 readValue = value;
             }
@@ -118,6 +121,7 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         Assert.assertEquals("read back", 13, readValue);
     }
 
+    @Test
     public void testCvLimit() {
         ProgDebugger dp = new ProgDebugger();
         dp.setTestReadLimit(1024);
@@ -139,29 +143,12 @@ public class TwoIndexTcsProgrammerFacadeTest extends TestCase {
         replied = false;
     }
 
-    // from here down is testing infrastructure
-    public TwoIndexTcsProgrammerFacadeTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {TwoIndexTcsProgrammerFacadeTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(TwoIndexTcsProgrammerFacadeTest.class);
-        return suite;
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
     }
 
-    @Override
+    @AfterEach
     public void tearDown(){
         jmri.util.JUnitUtil.tearDown();
     }

@@ -2,12 +2,9 @@ package jmri.profile;
 
 import java.awt.GraphicsEnvironment;
 import jmri.util.JUnitUtil;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
@@ -16,7 +13,7 @@ import org.junit.Test;
 public class ProfileManagerDialogTest {
 
     @Test
-    @Ignore("works locally, causes crash on Travis")
+    @Disabled("works locally, causes crash on Travis")
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         jmri.util.JmriJFrame jf = new jmri.util.JmriJFrame();
@@ -26,13 +23,12 @@ public class ProfileManagerDialogTest {
         JUnitUtil.dispose(jf);
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

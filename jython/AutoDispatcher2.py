@@ -127,8 +127,6 @@ from thread import start_new_thread
 
 # JMRI imports
 
-from apps import Apps
-
 from jmri import Block
 from jmri import DccThrottle
 from jmri import InstanceManager
@@ -144,6 +142,7 @@ from jmri.jmrit import XmlFile
 
 from jmri.jmrit.consisttool import ConsistToolFrame
 
+# is this next import necessary?
 from jmri.implementation import AbstractShutDownTask
 
 # from jmri.jmrit.operations.locations import LocationManager
@@ -182,7 +181,7 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
     # Retrieve DOUBLE_XOVER constant, depending on JMRI Version
     # (LayoutTurnout class was moved to a new package, starting with JMRI 2.9.3)
     try :
-        DOUBLE_XOVER = jmri.jmrit.display.layoutEditor.LayoutTurnout.DOUBLE_XOVER
+        DOUBLE_XOVER = jmri.jmrit.display.layoutEditor.LayoutTurnout.TurnoutType.DOUBLE_XOVER
     except :
         DOUBLE_XOVER = jmri.jmrit.display.LayoutTurnout.DOUBLE_XOVER
 
@@ -438,37 +437,7 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
         start_new_thread(self.__setup__, ())
 
     def __setup__(self):
-    # The real setup.
-
-    #Check if we are running in simulation mode 
-    # (when running as statup script we must wait for connections 
-    # to be established)
-        for i in range(60) :
-            try :
-                if (Apps.getConnection1().upper().find("SIMULATOR") < 0 and
-                  Apps.getConnection2().upper().find("SIMULATOR") < 0 and
-                  Apps.getConnection3().upper().find("SIMULATOR") < 0 and
-                  Apps.getConnection4().upper().find("SIMULATOR") < 0) :
-                    AutoDispatcher.simulation = False
-                else :
-                    AutoDispatcher.simulation = True
-                    if (Apps.getConnection1().upper() != "XPRESSNETSIMULATOR" < 0 and
-                     Apps.getConnection2().upper() != "XPRESSNETSIMULATOR" and
-                     Apps.getConnection3().upper() != "XPRESSNETSIMULATOR" < 0 and
-                     Apps.getConnection4().upper() != "XPRESSNETSIMULATOR" < 0) :
-                        AutoDispatcher.lenzSimulation = False
-                    else :
-                        AutoDispatcher.lenzSimulation = True
-                retrieveError = False
-                break
-            except :
-                retrieveError = True
-            self.waitMsec(1000)
-        if retrieveError :
-            print ("Sorry, unable to run AutoDispatcher as startup script!" +
-              "Launch it manually.")
-            AutoDispatcher.error = True
-            return
+        # The real setup.
         
         # Now perform initialization
         # Display the main window
@@ -584,15 +553,13 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
             return
             
         # Retrieve SignalHead names from JMRI (will be used to populate menus)
-        signalHeads = InstanceManager.signalHeadManagerInstance(
-          ).getSystemNameList()
+        signalHeads = InstanceManager.getDefault(SignalHeadManager).getNamedBeanSet()
         AutoDispatcher.signalHeadNames = [""]
         for s in signalHeads :
             # Use UserName (if available), otherwise SystemName
-            signalName = InstanceManager.signalHeadManagerInstance(
-              ).getSignalHead(s).getUserName()
+            signalName = s.getUserName()
             if signalName == None or signalName.strip() == "" :
-                signalName = s
+                signalName = s.getSystemName()
             AutoDispatcher.signalHeadNames.append(signalName)
         AutoDispatcher.signalHeadNames.sort()
 
@@ -611,7 +578,8 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
               [signalIcon, signalIcon.getClickMode()])
 
         # Retrieve sections from JMRI
-        sections = InstanceManager.sectionManagerInstance().getSystemNameList()
+        # (it's unfortunate that this uses "sections" differently than the jmri_defaults style)
+        sections = InstanceManager.getDefault(jmri.SectionManager).getNamedBeanSet()
         if sections.size() < 1 :
             AutoDispatcher.chimeLog(ADsettings.ATTENTION_SOUND, 
               "Layout contains no sections, script" +
@@ -619,12 +587,11 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
             
         # Create section and block instances
         for section in sections :
-            ADsection(section)
+            ADsection(section.getSystemName())
             
         if len(ADsection.getList()) == 0 :
             AutoDispatcher.chimeLog(ADsettings.ATTENTION_SOUND, 
-              "No valid section found, script" +
-              " cannot continue!")
+              "No valid section found, script cannot continue!")
             AutoDispatcher.error = True
             return
             
@@ -892,8 +859,7 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
                 newName = "H" + s.getName() + extension[i]
                 # Check if a SignalMast or a SignalHead with such a name exists
                 newSignal = ADsignalMast.getByName(newName)
-                newHead = InstanceManager.signalHeadManagerInstance(
-                  ).getSignalHead(newName)
+                newHead = InstanceManager.getDefault(jmrix.SignalHeadManager).getSignalHead(newName)
                 # Assign a new SignalMast only if it was not yet assigned
                 # or it was automatically created in a previous call
                 # (provided we found a replacement!) Replacing signals
@@ -918,8 +884,7 @@ class AutoDispatcher(jmri.jmrit.automat.AbstractAutomaton) :
             if s.manualSensor == None :
                 sensorName = s.getName() + "man"
                 if sensorName in ADsection.sensorNames :
-                    s.manualSensor = InstanceManager.sensorManagerInstance(
-                      ).getSensor(sensorName)
+                    s.manualSensor = InstanceManager.sensorManagerInstance().getSensor(sensorName)
 
 # OPERATIONS ==============
 
@@ -1834,8 +1799,7 @@ class ADsection (PropertyChangeListener) :
                     section.manualSensor = None
                 elif sensorName.strip() != "" :
                     section.manualSensor = (
-                    InstanceManager.sensorManagerInstance(
-                    ).getSensor(sensorName))
+                    InstanceManager.sensorManagerInstance().getSensor(sensorName))
                 if len(i) > 7 :
                     section.stopAtBeginning = i[7]
                     if len(i) > 9 and ADsettings.autoRestart :
@@ -1952,7 +1916,7 @@ class ADsection (PropertyChangeListener) :
     def __init__(self, systemName):
         # Retrieve Section.java instance from JMRI
         self.jmriSection = (
-          InstanceManager.sectionManagerInstance().getBySystemName(systemName))
+          InstanceManager.getDefault(jmri.SectionManager).getBySystemName(systemName))
         # Get section name
         self.name = self.jmriSection.getUserName()
         if self.name == None or self.name.strip() == "" :
@@ -2063,19 +2027,16 @@ class ADsection (PropertyChangeListener) :
             # Remove from the list sensors associated with blocks
             # (this makes user selection easier and faster)
             # Get all blocks
-            blocks = InstanceManager.blockManagerInstance().getSystemNameList()
+            blocks = InstanceManager.getDefault(jmri.BlockManager).getNamedBeanSet()
             blockSensors = []
             for b in blocks :
-                sensor = InstanceManager.blockManagerInstance(
-                  ).getBlock(b).getSensor()
+                sensor = b.getSensor()
                 if sensor != None :
-                    blockSensors.append(sensor.getSystemName())
-            sensors = InstanceManager.sensorManagerInstance(
-              ).getSystemNameList()
+                    blockSensors.append(sensor)
+            sensors = InstanceManager.sensorManagerInstance().getNamedBeanSet()
             for s in sensors:
                 if not s in blockSensors :
-                    sensorName = InstanceManager.sensorManagerInstance(
-                      ).getSensor(s).getUserName()
+                    sensorName = s.getUserName()
                     if sensorName == None or sensorName.strip() == "" :
                         sensorName = s
                     if sensorName != "ISCLOCKRUNNING" :
@@ -4949,7 +4910,7 @@ class ADlocomotive :
     def setAddress(self, address) :
         # Change dcc address
         if self.throttle != None :
-            self.throttle.release()
+            self.throttle.release(None)
         if address <1 :
                 address = 1
         self.address = address
@@ -4993,11 +4954,11 @@ class ADlocomotive :
                   + self.name + " (" + str(self.address) + ")")
                 self.leadThrottle = self.throttle
             speedStepMode = self.throttle.getSpeedStepMode()
-            if speedStepMode == DccThrottle.SpeedStepMode128 :
+            if speedStepMode == SpeedStepMode.NMRA_DCC_128 :
                 self.stepsNumber = 126.
-            elif speedStepMode == DccThrottle.SpeedStepMode28 :
+            elif speedStepMode == SpeedStepMode.NMRA_DCC_28 :
                 self.stepsNumber = 28.
-            elif speedStepMode == DccThrottle.SpeedStepMode27 :
+            elif speedStepMode == SpeedStepMode.NMRA_DCC_27 :
                 self.stepsNumber = 27.
             else :
                 self.stepsNumber = 14.
@@ -5008,11 +4969,11 @@ class ADlocomotive :
         if self.throttle != None :
             if ADsettings.lightMode != 0 :
                 self.setFunction(0, False)
-            self.throttle.release()
+            self.throttle.release(None)
             self.throttle = None
             self.throttleAssigned = False
             if self.leadLoco != 0 :
-                self.leadThrottle.release()
+                self.leadThrottle.release(None)
                 AutoDispatcher.message("Released throttles of consist "
                   + self.name + " (" + str(self.address) + ", " + 
                   str(self.leadLoco) + ")")
@@ -5657,8 +5618,7 @@ class ADsignalHead :
         self.signalHead = None
         self.iconOnLayout = False
         if signalName.strip() != "" :
-            self.signalHead = InstanceManager.signalHeadManagerInstance(
-              ).getSignalHead(signalName)
+            self.signalHead = InstanceManager.getDefault(SignalHeadManager).getSignalHead(signalName)
             if self.signalHead != None :
                 self.setHeld(False)
                 self.iconOnLayout = signalName in AutoDispatcher.signalIcons
@@ -7005,7 +6965,7 @@ class ADpowerMonitor (PropertyChangeListener) :
     powerOffTime = -1L
     
     def __init__(self):
-        self.powerManager = InstanceManager.powerManagerInstance()
+        self.powerManager = InstanceManager.getDefault(jmri.PowerManager)
         if self.powerManager != None and not AutoDispatcher.lenzSimulation :
             ADpowerMonitor.powerOn = (self.powerManager.getPower()
               == PowerManager.ON)

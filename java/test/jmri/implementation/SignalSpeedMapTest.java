@@ -1,8 +1,6 @@
 package jmri.implementation;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
@@ -10,8 +8,9 @@ import org.junit.Assert;
  *
  * @author Bob Jacobsen Copyright (C) 2015
  */
-public class SignalSpeedMapTest extends TestCase {
+public class SignalSpeedMapTest {
 
+    @Test
     public void testLoadDefaultMap() {
         Assert.assertNotNull(jmri.InstanceManager.getDefault(SignalSpeedMap.class));
     }
@@ -30,19 +29,21 @@ public class SignalSpeedMapTest extends TestCase {
         "Stop"
     };
 
-    SignalSpeedMap map; // can't static init before class; use @BeforeClass when changing to JUnit4
+    SignalSpeedMap map;
     
     /**
      * To avoid breaking signal systems, speed definitions should
      * never be removed from the default map. Hence we check that 
      * all standard names are present.
      */
+    @Test
     public void testAllSpeedsPresent() {
         for (int i = 0; i < speeds.length; i++) {
             Assert.assertTrue(map.getSpeed(speeds[i])+" must be ge 0 to be present",0<=map.getSpeed(speeds[i]));
         }
     }
 
+    @Test
     public void testMapMonoticity() {
         
         // check for monotonic values
@@ -60,6 +61,7 @@ public class SignalSpeedMapTest extends TestCase {
      * the definition of the "speeds" array above so that it will be
      * tested for in the future.
      */
+    @Test
     public void testNoExtraSpeedsPresent() {
         java.util.Enumeration<String> e = map.getSpeedIterator();
         String name;
@@ -72,6 +74,7 @@ public class SignalSpeedMapTest extends TestCase {
         }        
     }
     
+    @Test
     public void testAppearanceSpeedsOK() {
         // check that every speed in <appearanceSpeeds> is defined
         java.util.Enumeration<String> e = map.getAppearanceIterator();
@@ -83,15 +86,8 @@ public class SignalSpeedMapTest extends TestCase {
         }        
     }
 
-    // from here down is testing infrastructure
-    public SignalSpeedMapTest(String s) {
-        super(s);
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
         jmri.util.JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetInstanceManager();
         jmri.util.JUnitUtil.initInternalTurnoutManager();
@@ -101,22 +97,9 @@ public class SignalSpeedMapTest extends TestCase {
         map = new SignalSpeedMap();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         map = null;
         jmri.util.JUnitUtil.tearDown();
     }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {SignalSpeedMapTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(SignalSpeedMapTest.class);
-        return suite;
-    }
-
 }

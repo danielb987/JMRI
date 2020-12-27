@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  * Swing action to create and register a XBeeNodeConfigFrame object
  *
  * @author Bob Jacobsen Copyright (C) 2001
-  */
+ */
 public class XBeeNodeConfigAction extends jmri.jmrix.ieee802154.swing.nodeconfig.NodeConfigAction {
 
     private jmri.jmrix.ieee802154.xbee.XBeeConnectionMemo xcm = null;
@@ -48,7 +48,7 @@ public class XBeeNodeConfigAction extends jmri.jmrix.ieee802154.swing.nodeconfig
         try {
             f.initComponents();
         } catch (Exception ex) {
-            log.error("Exception: " + ex.toString());
+            log.error("Exception: {}", ex.toString());
         }
         f.setLocation(100, 30);
         f.setVisible(true);

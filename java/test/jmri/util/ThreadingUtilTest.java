@@ -1,11 +1,12 @@
 package jmri.util;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for ThreadingUtil class
  *
- * @author	Bob Jacobsen Copyright 2015
+ * @author Bob Jacobsen Copyright 2015, 2020
  */
 public class ThreadingUtilTest {
 
@@ -20,6 +21,21 @@ public class ThreadingUtilTest {
         } );
         
         Assert.assertTrue(done);
+    }
+
+    @Test
+    public void testThreadGroup() {
+        ThreadGroup tg = ThreadingUtil.getJmriThreadGroup();
+        Assert.assertNotNull(tg);
+        Assert.assertEquals(tg.getName(), "JMRI");
+        Assert.assertEquals(tg, ThreadingUtil.getJmriThreadGroup());
+    }
+    
+    @Test
+    public void testThreadStartEnd() throws InterruptedException {
+        ThreadingUtil.getJmriThreadGroup();  // just used to create the group
+        Thread t = ThreadingUtil.newThread(() -> {});  // create and run quick
+        t.join();
     }
 
     Object testRef = null;
@@ -147,6 +163,28 @@ public class ThreadingUtilTest {
         JUnitUtil.waitFor( ()->{ return done; }, "Delayed oepration complete");
     }
 
+    @Test
+    public void testThreadingTests() {
+        ThreadingUtil.runOnLayout( ()-> { 
+            ThreadingUtil.requireLayoutThread(log);
+        } );
+        ThreadingUtil.runOnGUI( ()-> { 
+            ThreadingUtil.requireGuiThread(log);
+        } );
+        Assert.assertTrue(jmri.util.JUnitAppender.verifyNoBacklog());
+
+        ThreadingUtil.requireGuiThread(log);
+        jmri.util.JUnitAppender.assertWarnMessage("Call not on GUI thread");
+
+        ThreadingUtil.requireLayoutThread(log);
+        jmri.util.JUnitAppender.assertWarnMessage("Call not on Layout thread");
+
+        ThreadingUtil.requireGuiThread(log);
+        ThreadingUtil.requireLayoutThread(log);
+        Assert.assertTrue(jmri.util.JUnitAppender.verifyNoBacklog());
+        
+   }
+    
     /**
      * Show how to query state of _current_ thread
      */
@@ -158,15 +196,16 @@ public class ThreadingUtilTest {
         Assert.assertFalse(ThreadingUtil.isThreadWaiting(Thread.currentThread()));
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         jmri.util.JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         jmri.util.JUnitUtil.tearDown();
     }
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThreadingUtilTest.class);
 
 }

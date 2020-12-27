@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * NceLight.java
  *
  * Implementation of the Light Object for NCE
- * <P>
+ * <p>
  * Based in part on SerialLight.java
  *
  * @author Dave Duchamp Copyright (C) 2010
@@ -18,11 +18,11 @@ public class NceLight extends AbstractLight {
 
     /**
      * Create a Light object, with only system name.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in NceLightManager
      * @param systemName system name for light
      * @param tc traffic controller for connection
-     * @param mgr light manager for light
+     * @param mgr LightManager for light
      */
     public NceLight(String systemName, NceTrafficController tc, NceLightManager mgr) {
         super(systemName);
@@ -34,12 +34,12 @@ public class NceLight extends AbstractLight {
 
     /**
      * Create a Light object, with both system and user names.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in NceLightManager
      * @param systemName system name for light
      * @param userName userName for light
      * @param tc traffic controller for connection
-     * @param mgr light manager for light
+     * @param mgr LightManager for light
      */
     public NceLight(String systemName, String userName, NceTrafficController tc, NceLightManager mgr) {
         super(systemName, userName);
@@ -75,12 +75,7 @@ public class NceLight extends AbstractLight {
             byte[] bl = NceBinaryCommand.accDecoder(mBit, state);
 
             if (log.isDebugEnabled()) {
-                log.debug("Command: "
-                        + Integer.toHexString(0xFF & bl[0])
-                        + " " + Integer.toHexString(0xFF & bl[1])
-                        + " " + Integer.toHexString(0xFF & bl[2])
-                        + " " + Integer.toHexString(0xFF & bl[3])
-                        + " " + Integer.toHexString(0xFF & bl[4]));
+                log.debug("Command: {} {} {} {} {}", Integer.toHexString(0xFF & bl[0]), Integer.toHexString(0xFF & bl[1]), Integer.toHexString(0xFF & bl[2]), Integer.toHexString(0xFF & bl[3]), Integer.toHexString(0xFF & bl[4]));
             }
 
             NceMessage m = NceMessage.createBinaryMessage(tc, bl);
@@ -92,10 +87,7 @@ public class NceLight extends AbstractLight {
             byte[] bl = NmraPacket.accDecoderPkt(mBit, state);
 
             if (log.isDebugEnabled()) {
-                log.debug("packet: "
-                        + Integer.toHexString(0xFF & bl[0])
-                        + " " + Integer.toHexString(0xFF & bl[1])
-                        + " " + Integer.toHexString(0xFF & bl[2]));
+                log.debug("packet: {} {} {}", Integer.toHexString(0xFF & bl[0]), Integer.toHexString(0xFF & bl[1]), Integer.toHexString(0xFF & bl[2]));
             }
 
             NceMessage m = NceMessage.sendPacketMessage(tc, bl);

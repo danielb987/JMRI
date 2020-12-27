@@ -6,14 +6,16 @@ import jmri.util.JUnitUtil;
 import jmri.jmrix.lenz.LenzCommandStation;
 import jmri.jmrix.lenz.XNetInterfaceScaffold;
 import jmri.jmrix.lenz.XNetReply;
-import org.junit.*;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * LI100XNetProgrammerTest.java
+ * <p>
+ * Test for the jmri.jmrix.lenz.li100.LI100XNetProgrammer class
  *
- * Description:	tests for the jmri.jmrix.lenz.li100.LI100XNetProgrammer class
- *
- * @author	Paul Bender
+ * @author Paul Bender
  */
 public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest {
 
@@ -23,7 +25,7 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
     @Override
     public void testWriteCvSequence() throws JmriException {
         // and do the write
-        p.writeCV(29, 34, l);
+        p.writeCV("29", 34, l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("write message contents", "23 16 1D 22 0A", t.outbound.elementAt(0).toString());
@@ -60,8 +62,8 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         t.sendTestMessage(mr3);
 
         //failure in this test occurs with the next line.
-        jmri.util.JUnitUtil.waitFor(()->{return l.getRcvdInvoked() != 0;},"Receive Called not set");
-        Assert.assertFalse("Receive Called by Programmer", l.getRcvdInvoked() == 0);
+        jmri.util.JUnitUtil.waitFor(() -> l.getRcvdInvoked() != 0, "Receive Called not set");
+        Assert.assertNotEquals("Receive Called by Programmer", 0, l.getRcvdInvoked());
         Assert.assertEquals("Direct mode received value", 34, l.getRcvdValue());
     }
 
@@ -72,7 +74,7 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         p.setMode(ProgrammingMode.REGISTERMODE);
 
         // and do the write
-        p.writeCV(29, 12, l);
+        p.writeCV("29", 12, l);
         // check "prog mode" message sent
         Assert.assertEquals("read message sent", 1, t.outbound.size());
         Assert.assertEquals("write message contents", "23 12 05 0C 38", t.outbound.elementAt(0).toString());
@@ -111,8 +113,8 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         t.sendTestMessage(mr3);
 
         //failure in this test occurs with the next line.
-        jmri.util.JUnitUtil.waitFor(()->{return l.getRcvdInvoked() != 0;},"Receive Called not set");
-        Assert.assertFalse("Receive Called by Programmer", l.getRcvdInvoked() == 0);
+        jmri.util.JUnitUtil.waitFor(() -> l.getRcvdInvoked() != 0, "Receive Called not set");
+        Assert.assertNotEquals("Receive Called by Programmer", 0, l.getRcvdInvoked());
         Assert.assertEquals("Register mode received value", 12, l.getRcvdValue());
 
     }
@@ -121,7 +123,7 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
     @Override
     public void testReadCvSequence() throws JmriException {
         // and do the read
-        p.readCV(29, l);
+        p.readCV("29", l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("read message contents", "22 15 1D 2A", t.outbound.elementAt(0).toString());
@@ -160,8 +162,8 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         t.sendTestMessage(mr3);
 
         //failure in this test occurs with the next line.
-        jmri.util.JUnitUtil.waitFor(()->{return l.getRcvdInvoked() != 0;},"Receive Called not set");
-        Assert.assertFalse("Receive Called by Programmer", l.getRcvdInvoked() == 0);
+        jmri.util.JUnitUtil.waitFor(() -> l.getRcvdInvoked() != 0, "Receive Called not set");
+        Assert.assertNotEquals("Receive Called by Programmer", 0, l.getRcvdInvoked());
         Assert.assertEquals("Direct mode received value", 34, l.getRcvdValue());
 
     }
@@ -173,7 +175,7 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         p.setMode(ProgrammingMode.REGISTERMODE);
 
         // and do the read
-        p.readCV(29, l);
+        p.readCV("29", l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("read message contents", "22 11 05 36", t.outbound.elementAt(0).toString());
@@ -211,8 +213,8 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         t.sendTestMessage(mr3);
 
         //failure in this test occurs with the next line.
-        jmri.util.JUnitUtil.waitFor(()->{return l.getRcvdInvoked() != 0;},"Receive Called not set");
-        Assert.assertFalse("Receive Called by Programmer", l.getRcvdInvoked() == 0);
+        jmri.util.JUnitUtil.waitFor(() -> l.getRcvdInvoked() != 0, "Receive Called not set");
+        Assert.assertNotEquals("Receive Called by Programmer", 0, l.getRcvdInvoked());
         Assert.assertEquals("Register mode received value", 34, l.getRcvdValue());
     }
 
@@ -223,7 +225,7 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
     @Override
     public void testWriteHighCvSequence() throws JmriException {
         // and do the write
-        p.writeCV(300, 34, l);
+        p.writeCV("300", 34, l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("write message contents", "23 1D 2C 22 30", t.outbound.elementAt(0).toString());
@@ -260,8 +262,8 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         t.sendTestMessage(mr3);
 
         //failure in this test occurs with the next line.
-        jmri.util.JUnitUtil.waitFor(()->{return l.getRcvdInvoked() != 0;},"Receive Called not set");
-        Assert.assertFalse("Receive Called by Programmer", l.getRcvdInvoked() == 0);
+        jmri.util.JUnitUtil.waitFor(() -> l.getRcvdInvoked() != 0, "Receive Called not set");
+        Assert.assertNotEquals("Receive Called by Programmer", 0, l.getRcvdInvoked());
         Assert.assertEquals("Direct mode received value", 34, l.getRcvdValue());
     }
 
@@ -272,7 +274,7 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
     @Override
     public void testReadHighCvSequence() throws JmriException {
         // and do the read
-        p.readCV(300, l);
+        p.readCV("300", l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("read message contents", "22 19 2C 17", t.outbound.elementAt(0).toString());
@@ -311,14 +313,14 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
         t.sendTestMessage(mr3);
 
         //failure in this test occurs with the next line.
-        jmri.util.JUnitUtil.waitFor(()->{return l.getRcvdInvoked() != 0;},"Receive Called not set");
-        Assert.assertFalse("Receive Called by Programmer", l.getRcvdInvoked() == 0);
+        jmri.util.JUnitUtil.waitFor(() -> l.getRcvdInvoked() != 0, "Receive Called not set");
+        Assert.assertNotEquals("Receive Called by Programmer", 0, l.getRcvdInvoked());
         Assert.assertEquals("Direct mode received value", 34, l.getRcvdValue());
 
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
         // infrastructure objects
@@ -331,16 +333,17 @@ public class LI100XNetProgrammerTest extends jmri.jmrix.lenz.XNetProgrammerTest 
                 super.restartTimer(RESTART_TIME);
             }
         };
-	programmer = p;
+        programmer = p;
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
-         t = null;
-	 l = null;
-	 programmer = p = null;
-    	 JUnitUtil.tearDown();
+        t = null;
+        l = null;
+        programmer = p = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        JUnitUtil.tearDown();
     }
 
 }

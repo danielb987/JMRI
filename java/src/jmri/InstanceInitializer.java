@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <p>
+ *
  * @author Bob Jacobsen Copyright (C) 2010
  * @since 2.9.4
  */
@@ -39,7 +39,7 @@ public interface InstanceInitializer {
      *                                  supported by this InstanceInitalizer
      */
     @Nonnull
-    public <T> Object getDefault(@Nonnull Class<T> type) throws IllegalArgumentException;
+    public <T> Object getDefault(@Nonnull Class<T> type);
 
     /**
      * Get the set of classes for which this InstanceInitializer can provide

@@ -1,6 +1,3 @@
-/**
- * LIUSBXNetPacketizer.java
- */
 package jmri.jmrix.lenz.liusb;
 
 import jmri.jmrix.lenz.XNetPacketizer;
@@ -10,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an extention of the XNetPacketizer to handle the device specific
  * requirements of the LIUSB.
- * <P>
+ * <p>
  * In particular, LIUSBXNetPacketizer adds functions to add and remove the 0xFF
  * 0xFE or 0xFF 0xFD bytes that appear prior to any message read in.
  *
@@ -25,10 +22,7 @@ public class LIUSBXNetPacketizer extends XNetPacketizer {
     }
 
     /**
-     * Add header to the outgoing byte stream.
-     *
-     * @param msg The output byte stream
-     * @return next location in the stream to fill
+     * {@inheritDoc}
      */
     @Override
     protected int addHeaderToOutput(byte[] msg, jmri.jmrix.AbstractMRMessage m) {
@@ -39,27 +33,18 @@ public class LIUSBXNetPacketizer extends XNetPacketizer {
     }
 
     /**
-     * Determine how much many bytes the entire message will take, including
-     * space for header and trailer.
-     *
-     * @param m The message to be sent
-     * @return Number of bytes
+     * {@inheritDoc}
      */
     @Override
     protected int lengthOfByteStream(jmri.jmrix.AbstractMRMessage m) {
-        int len = m.getNumDataElements() + 2;
-        int cr = 0;
-        if (!m.isBinary()) {
-            cr = 1;  // space for return
-        }
-        return len + cr;
+        return m.getNumDataElements() + 2;
     }
 
     /**
      * Get characters from the input source, and file a message.
-     * <P>
+     * <p>
      * Returns only when the message is complete.
-     * <P>
+     * <p>
      * Only used in the Receive thread.
      *
      * @param msg     message to fill
@@ -97,6 +82,6 @@ public class LIUSBXNetPacketizer extends XNetPacketizer {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LIUSBXNetPacketizer.class);
+    private static final Logger log = LoggerFactory.getLogger(LIUSBXNetPacketizer.class);
 
 }

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handle XML persistance of symbolic programmer default values.
- * <P>
+ * <p>
  * This class is named as being the persistant form of the ProgrammerConfigPane
  * class, but there's no object of that form created when this is read back.
  * Instead, this persists static members of the symbolicprog.CombinedLocoSelPane
@@ -64,7 +64,7 @@ public class ProgrammerConfigPaneXml extends jmri.configurexml.AbstractXmlAdapte
 
         if (shared.getAttribute("defaultFile") != null) {
             if (log.isDebugEnabled()) {
-                log.debug("set programmer default file: " + shared.getAttribute("defaultFile").getValue());
+                log.debug("set programmer default file: {}", shared.getAttribute("defaultFile").getValue());
             }
             InstanceManager.getDefault(ProgrammerConfigManager.class).setDefaultFile(shared.getAttribute("defaultFile").getValue());
         }

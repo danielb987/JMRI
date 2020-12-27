@@ -2,7 +2,7 @@ package jmri.jmrix.cmri.serial;
 
 /**
  * Contains the data payload of a CMRI serial packet.
- * <P>
+ * <p>
  * Note that <i>only</i> the payload, not the header or trailer, nor the padding
  * DLE characters are included. These are added during transmission.
  *
@@ -31,6 +31,7 @@ public class SerialMessage extends jmri.jmrix.AbstractMRMessage {
      * This ctor interprets the String as the exact sequence to send,
      * byte-for-byte.
      *
+     * @param m message string.
      */
     public SerialMessage(String m) {
         super(m);

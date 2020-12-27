@@ -18,8 +18,9 @@ public class IsTrainEnRouteAction extends Action {
     }
 
     /**
-     * Used to determine if train is en-route. Returns true
-     * if train is built and hasn't reached the selected route location.
+     * Used to determine if train is en-route. Returns true if train is built
+     * and hasn't reached the selected route location. If no route location has
+     * been entered, return train's en-route status.
      */
     @Override
     public void doAction() {
@@ -29,12 +30,16 @@ public class IsTrainEnRouteAction extends Action {
                 finishAction(false);
             } else {
                 RouteLocation rl = getAutomationItem().getRouteLocation();
+                if (rl == null) {
+                    finishAction(train.isTrainEnRoute());
+                    return;
+                }
                 for (RouteLocation routeLocation : train.getRoute().getLocationsBySequenceList()) {
                     if (routeLocation == rl) {
                         finishAction(false);
                         break;
                     }
-                    if (train.getCurrentLocation() == routeLocation) {
+                    if (train.getCurrentRouteLocation() == routeLocation) {
                         finishAction(true);
                         break;
                     }

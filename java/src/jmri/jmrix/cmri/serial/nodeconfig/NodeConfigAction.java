@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Jacobsen Copyright (C) 2001
  */
-@Deprecated
+@Deprecated // replaced by jmri.jmrix.cmri.serial.nodeconfigmanager.NodeConfigManagerAction
 public class NodeConfigAction extends AbstractAction {
 
     private CMRISystemConnectionMemo _memo = null;
@@ -31,7 +31,7 @@ public class NodeConfigAction extends AbstractAction {
         try {
             f.initComponents();
         } catch (Exception ex) {
-            log.error("Exception: " + ex.toString());
+            log.error("Exception: {}", ex.toString());
         }
         f.setLocation(100, 30);
         f.setVisible(true);

@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manage the system-specific Sensor implementation.
- * <P>
+ * <p>
  * System names are "PSann", where a is the unit id, nn is the unit number
  * without padding.
- * <P>
+ * <p>
  * Sensors are numbered from 1.
- * <P>
+ *
  * @author Bob Jacobsen Copyright (C) 2003, 2006, 2007, 2008
  * @author Ken Cameron, (C) 2009, sensors from poll replies Converted to
  * multiple connection
@@ -64,34 +64,24 @@ public class SpecificSensorManager extends jmri.jmrix.powerline.SerialSensorMana
 
                     if (newHouseCode != null && (newCmdCode == X10Sequence.FUNCTION_ALL_LIGHTS_OFF || newCmdCode == X10Sequence.FUNCTION_ALL_UNITS_OFF || newCmdCode == X10Sequence.FUNCTION_ALL_LIGHTS_ON)) {
                         // some sort of 'global' command, process for all matching the house code
-                        List<String> sensors = getSystemNameList();
-                        for (int ii = 0; ii < sensors.size(); ii++) {
-                            String sName = sensors.get(ii);
+                        getNamedBeanSet().forEach(sensorInSet -> {                        
+                            String sName = sensorInSet.getSystemName();
                             if (newHouseCode.compareTo(tc.getAdapterMemo().getSerialAddress().houseCodeFromSystemName(sName)) == 0) {
                                 try {
-                                    sensor = provideSensor(sName);
-                                } catch(java.lang.IllegalArgumentException iae){
-                                    // if provideSensor fails, it will throw an IllegalArgumentException, so catch that,log it if debugging is enabled, and then re-throw it.
-                                    if (log.isDebugEnabled()) {
-                                        log.debug("Attempt access sensor " + sName + " failed");
-                                    }
-                                    throw iae;
-                                }
-                                try {
                                     if (newCmdCode == X10Sequence.FUNCTION_ALL_LIGHTS_OFF || newCmdCode == X10Sequence.FUNCTION_ALL_UNITS_OFF) {
-                                        sensor.setKnownState(Sensor.INACTIVE);
+                                        sensorInSet.setKnownState(Sensor.INACTIVE);
                                     } else {
-                                        sensor.setKnownState(Sensor.ACTIVE);
+                                        sensorInSet.setKnownState(Sensor.ACTIVE);
                                     }
                                 } catch (jmri.JmriException e) {
                                     if (newCmdCode == X10Sequence.FUNCTION_ALL_LIGHTS_OFF || newCmdCode == X10Sequence.FUNCTION_ALL_UNITS_OFF) {
-                                        log.error("Exception setting " + sName + " sensor INACTIVE: " + e);
+                                        log.error("Exception setting {} sensor INACTIVE: {}", sName, e);
                                     } else {
-                                        log.error("Exception setting " + sName + " sensor ACTIVE: " + e);
+                                        log.error("Exception setting {} sensor ACTIVE: {}", sName, e);
                                     }
                                 }
                             }
-                        }
+                        });
                     } else {
                         // was not a global command, so might be a sensor
                         if (newAddrCode > 0) {
@@ -100,23 +90,21 @@ public class SpecificSensorManager extends jmri.jmrix.powerline.SerialSensorMana
                                 sensor = provideSensor(sysName);
                             } catch(java.lang.IllegalArgumentException iae){
                                 // if provideSensor fails, it will throw an IllegalArgumentException, so catch that,log it if debugging is enabled, and then re-throw it.
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Attempt access sensor " + sysName + " failed");
-                                }
+                                log.debug("Attempt access sensor {} failed", sysName);
                                 throw iae;
                             }
                             if (newCmdCode == X10Sequence.FUNCTION_ON || newCmdCode == X10Sequence.FUNCTION_BRIGHT || newCmdCode == X10Sequence.FUNCTION_STATUS_ON) {
                                 try {
                                     sensor.setKnownState(Sensor.ACTIVE);
                                 } catch (jmri.JmriException e) {
-                                    log.error("Exception setting " + sysName + " sensor ACTIVE: " + e);
+                                    log.error("Exception setting {} sensor ACTIVE: {}", sysName, e);
                                 }
                             }
                             if (newCmdCode == X10Sequence.FUNCTION_OFF || newCmdCode == X10Sequence.FUNCTION_DIM || newCmdCode == X10Sequence.FUNCTION_STATUS_OFF) {
                                 try {
                                     sensor.setKnownState(Sensor.INACTIVE);
                                 } catch (jmri.JmriException e) {
-                                    log.error("Exception setting " + sysName + " sensor INACTIVE: " + e);
+                                    log.error("Exception setting {} sensor INACTIVE: {}", sysName, e);
                                 }
                             }
  

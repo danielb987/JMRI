@@ -6,14 +6,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Represent an EntryPoint to a Section of track. Specifies a Block within the
  * Section, and a Path of that Block.
- * <P>
+ * <p>
  * An EntryPoint can be "forward" or "reverse" type, depending on if a train
  * entering the Section at this entry point will be travelling in the forward
  * direction or the reverse direction.
- * <P>
+ * <p>
  * An EntryPoint is referenced via lists in its parent Section, and is stored on
  * disk when its parent section is stored.
- * <P>
+ * <p>
  * This module delays initialization of Blocks until first reference after an
  * Entry Point is loaded from a configuration file.
  *
@@ -57,11 +57,11 @@ public class EntryPoint {
     private void initialize() {
         mBlock = jmri.InstanceManager.getDefault(jmri.BlockManager.class).getBySystemName(blockName);
         if (mBlock == null) {
-            log.error("Missing block - " + blockName + " - when initializing entry point");
+            log.error("Missing block - {} - when initializing entry point", blockName);
         }
         mFromBlock = jmri.InstanceManager.getDefault(jmri.BlockManager.class).getBySystemName(fromBlockName);
         if (mFromBlock == null) {
-            log.error("Missing block - " + fromBlockName + " - when initializing entry point");
+            log.error("Missing block - {} - when initializing entry point", fromBlockName);
         }
         needsInitialize = false;
     }
@@ -82,13 +82,9 @@ public class EntryPoint {
         if (needsInitialize) {
             initialize();
         }
-        String s = mFromBlock.getSystemName();
-        String u = mFromBlock.getUserName();
-        if ((u != null) && (!u.equals(""))) {
-            s = s + "( " + u + " )";
-        }
+        String s = mFromBlock.getDisplayName();
         if ((mFromBlockDirection != null) && (!mFromBlockDirection.equals(""))) {
-            s = s + "( " + mFromBlockDirection + " )";
+            s = s + " ( " + mFromBlockDirection + " )";
         }
         return s;
     }

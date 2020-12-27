@@ -1,27 +1,32 @@
 package jmri.managers;
 
+import static org.junit.Assert.assertNotNull;
+
 import jmri.Conditional;
 import jmri.ConditionalManager;
 import jmri.InstanceManager;
 import jmri.Logix;
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
+import jmri.util.JUnitUtil;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the jmri.managers.DefaultConditionalManager class.
  *
- * @author	Bob Jacobsen Copyright (C) 2015
+ * @author Bob Jacobsen Copyright (C) 2015
  */
-public class DefaultConditionalManagerTest extends TestCase {
+public class DefaultConditionalManagerTest extends AbstractManagerTestBase<jmri.ConditionalManager,jmri.Conditional> {
 
+    @Test
     public void testCtor() {
-        new DefaultConditionalManager();
+        Assert.assertNotNull("exists",l);
     }
 
+    @Test
     public void testCreate() {
-        ConditionalManager m = new DefaultConditionalManager();
+        ConditionalManager m = l;
 
         Conditional c1 = m.createNewConditional("IX01C01", "");        
         Conditional c2 = m.createNewConditional("IX01C02", "");
@@ -30,8 +35,9 @@ public class DefaultConditionalManagerTest extends TestCase {
         Assert.assertFalse(c1.equals(c2));
     }
 
+    @Test
     public void testUserNameOverlap() {
-        ConditionalManager m = new DefaultConditionalManager();
+        ConditionalManager m = l;
 
         Conditional c1 = m.createNewConditional("IX02C01", "Foo");        
         Conditional c2 = m.createNewConditional("IX02C02", "Foo");
@@ -39,24 +45,27 @@ public class DefaultConditionalManagerTest extends TestCase {
         Assert.assertTrue(c1.getUserName().equals("Foo"));
         Assert.assertTrue(c2.getUserName().equals("Foo"));
     }
-
-    // from here down is testing infrastructure
-    public DefaultConditionalManagerTest(String s) {
-        super(s);
-    }
-
-    // The minimal setup for log4J
+    
+    // No manager-specific system name validation at present
+    @Test
     @Override
-    protected void setUp() throws Exception {
-        jmri.util.JUnitUtil.setUp();
-        super.setUp();
-        jmri.util.JUnitUtil.resetInstanceManager();
-        jmri.util.JUnitUtil.initInternalTurnoutManager();
-        jmri.util.JUnitUtil.initInternalLightManager();
-        jmri.util.JUnitUtil.initInternalSensorManager();
-        jmri.util.JUnitUtil.initIdTagManager();
-        jmri.util.JUnitUtil.initLogixManager();
-        jmri.util.JUnitUtil.initConditionalManager();
+    public void testMakeSystemNameWithNoPrefixNotASystemName() {}
+    
+    // No manager-specific system name validation at present
+    @Test
+    @Override
+    public void testMakeSystemNameWithPrefixNotASystemName() {}
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        JUnitUtil.setUp();
+        JUnitUtil.resetInstanceManager();
+        JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initIdTagManager();
+        JUnitUtil.initLogixManager();
+        JUnitUtil.initConditionalManager();
 
         Logix x1 = new jmri.implementation.DefaultLogix("IX01");
         assertNotNull("Logix x1 is null!", x1);
@@ -65,23 +74,13 @@ public class DefaultConditionalManagerTest extends TestCase {
         Logix x2 = new jmri.implementation.DefaultLogix("IX02");
         assertNotNull("Logix x2 is null!", x2);
         InstanceManager.getDefault(jmri.LogixManager.class).register(x2);
+        l = new DefaultConditionalManager(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        jmri.util.JUnitUtil.tearDown();
+    @AfterEach
+    public void tearDown() throws Exception {
+        l = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
+        JUnitUtil.tearDown();
     }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", DefaultConditionalManagerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(DefaultConditionalManagerTest.class);
-        return suite;
-    }
-
 }

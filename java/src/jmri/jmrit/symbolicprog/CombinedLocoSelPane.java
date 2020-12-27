@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provide GUI controls to select a known loco and/or new decoder.
- * <P>
+ * <p>
  * When the "open programmer" button is pushed, i.e. the user is ready to
  * continue, the startProgrammer method is invoked. This should be overridden
  * (e.g. in a local anonymous class) to create the programmer frame you're
@@ -39,15 +39,15 @@ import org.slf4j.LoggerFactory;
  * <p>
  * To override this class to use a different decoder-selection GUI, replace
  * members:
- * <UL>
- * <LI>layoutDecoderSelection
- * <LI>updateForDecoderTypeID
- * <LI>updateForDecoderMfgID
- * <LI>updateForDecoderNotID
- * <LI>resetDecoder
- * <LI>isDecoderSelected
- * <LI>selectedDecoderName
- * </UL>
+ * <ul>
+ * <li>layoutDecoderSelection
+ * <li>updateForDecoderTypeID
+ * <li>updateForDecoderMfgID
+ * <li>updateForDecoderNotID
+ * <li>resetDecoder
+ * <li>isDecoderSelected
+ * <li>selectedDecoderName
+ * </ul>
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2002
  */
@@ -382,17 +382,17 @@ public class CombinedLocoSelPane extends LocoSelPane implements PropertyChangeLi
         List<RosterEntry> l = Roster.getDefault().matchingList(null, null, Integer.toString(dccAddress),
                 null, null, null, null);
         if (log.isDebugEnabled()) {
-            log.debug("selectLoco found " + l.size() + " matches");
+            log.debug("selectLoco found {} matches", l.size());
         }
         if (l.size() > 0) {
             RosterEntry r = l.get(0);
             if (log.isDebugEnabled()) {
-                log.debug("Loco id is " + r.getId());
+                log.debug("Loco id is {}", r.getId());
             }
             locoBox.setSelectedItem(r);
         } else {
             log.warn("Read address {}, but no such loco in roster", dccAddress);
-            _statusLabel.setText(Bundle.getMessage("READ ADDRESS ") + dccAddress + Bundle.getMessage(", BUT NO SUCH LOCO IN ROSTER"));
+            _statusLabel.setText(Bundle.getMessage("ReadNoSuchLoco",dccAddress));
         }
     }
 
@@ -425,7 +425,7 @@ public class CombinedLocoSelPane extends LocoSelPane implements PropertyChangeLi
         if (temp == null) {  // i.e. if no match previously
             temp = InstanceManager.getDefault(DecoderIndexFile.class).matchingDecoderList(null, null, Integer.toString(mfgID), Integer.toString(modelID), null, null);
             if (log.isDebugEnabled()) {
-                log.debug("selectDecoder without productID found " + temp.size() + " matches");
+                log.debug("selectDecoder without productID found {} matches", temp.size());
             }
         }
 
@@ -515,7 +515,7 @@ public class CombinedLocoSelPane extends LocoSelPane implements PropertyChangeLi
         // try to select all decoders from that MFG
         JComboBox<String> temp = InstanceManager.getDefault(DecoderIndexFile.class).matchingComboBox(null, null, Integer.toString(pMfgID), null, null, null);
         if (log.isDebugEnabled()) {
-            log.debug("mfg-only selectDecoder found " + temp.getItemCount() + " matches");
+            log.debug("mfg-only selectDecoder found {} matches", temp.getItemCount());
         }
         // install all those in the JComboBox in place of the longer, original list
         if (temp.getItemCount() > 0) {
@@ -579,7 +579,7 @@ public class CombinedLocoSelPane extends LocoSelPane implements PropertyChangeLi
         if (locoBox.getSelectedRosterEntries().length != 0) {
             RosterEntry re = locoBox.getSelectedRosterEntries()[0];
             if (log.isDebugEnabled()) {
-                log.debug("loco file: " + re.getFileName());
+                log.debug("loco file: {}", re.getFileName());
             }
 
             startProgrammer(null, re, (String) programmerBox.getSelectedItem());
@@ -596,7 +596,7 @@ public class CombinedLocoSelPane extends LocoSelPane implements PropertyChangeLi
         // find the decoderFile object
         DecoderFile decoderFile = InstanceManager.getDefault(DecoderIndexFile.class).fileFromTitle(selectedDecoderType());
         if (log.isDebugEnabled()) {
-            log.debug("decoder file: " + decoderFile.getFileName());
+            log.debug("decoder file: {}", decoderFile.getFileName());
         }
 
         // create a dummy RosterEntry with the decoder info

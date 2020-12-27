@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Action to print a summary of the Roster contents
- * <P>
+ * <p>
  * This uses the older style printing, for compatibility with Java 1.1.8 in
  * Macintosh MRJ
  *
@@ -60,7 +60,7 @@ public class PrintNceConsistRosterAction extends AbstractAction {
         NceConsistRoster r = InstanceManager.getDefault(NceConsistRoster.class);
         List<NceConsistRosterEntry> list = r.matchingList(null, null, null, null, null, null, null, null, null, null); // take all
 
-        log.debug("Roster list size: " + list.size());
+        log.debug("Roster list size: {}", list.size());
         for (NceConsistRosterEntry entry : list) {
             entry.printEntry(writer);
         }

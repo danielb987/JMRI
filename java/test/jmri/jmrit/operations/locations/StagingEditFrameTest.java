@@ -1,20 +1,21 @@
 package jmri.jmrit.operations.locations;
 
 import java.awt.GraphicsEnvironment;
+
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.swing.JemmyUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests for the Operations Locations GUI class
  *
- * @author	Dan Boudreau Copyright (C) 2009
+ * @author Dan Boudreau Copyright (C) 2009
  */
 public class StagingEditFrameTest extends OperationsTestCase {
 
@@ -28,12 +29,10 @@ public class StagingEditFrameTest extends OperationsTestCase {
      */
     @Test
     public void testAddStagingTrackDefaults() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return; // can't use Assume in TestCase subclasses
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         StagingEditFrame f = new StagingEditFrame();
         f.setTitle("Test Staging Add Frame");
-        f.setLocation(0, 0);	// entire panel must be visible for tests to work properly
+        f.setLocation(0, 0); // entire panel must be visible for tests to work properly
         f.initComponents(l, null);
 
         // create one staging tracks
@@ -79,12 +78,10 @@ public class StagingEditFrameTest extends OperationsTestCase {
 
     @Test
     public void testSetDirectionUsingChceckbox() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return; // can't use Assume in TestCase subclasses
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         StagingEditFrame f = new StagingEditFrame();
         f.setTitle("Test Staging Add Frame");
-        f.setLocation(0, 0);	// entire panel must be visible for tests to work properly
+        f.setLocation(0, 0); // entire panel must be visible for tests to work properly
         f.initComponents(l, null);
 
         f.trackNameTextField.setText("4th staging track");
@@ -110,12 +107,10 @@ public class StagingEditFrameTest extends OperationsTestCase {
 
     @Test
     public void testAddCloseAndReload() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return; // can't use Assume in TestCase subclasses
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         StagingEditFrame f = new StagingEditFrame();
         f.setTitle("Test Staging Add Frame");
-        f.setLocation(0, 0);	// entire panel must be visible for tests to work properly
+        f.setLocation(0, 0); // entire panel must be visible for tests to work properly
         f.initComponents(l, null);
 
         // create four staging tracks
@@ -153,20 +148,20 @@ public class StagingEditFrameTest extends OperationsTestCase {
         // check location name
         Assert.assertEquals("name", "Test Loc C", fl.locationNameTextField.getText());
 
-        Assert.assertEquals("number of sidings", 0, fl.spurModel.getRowCount());
+        Assert.assertEquals("number of spurs", 0, fl.spurModel.getRowCount());
         Assert.assertEquals("number of interchanges", 0, fl.interchangeModel.getRowCount());
         Assert.assertEquals("number of yards", 0, fl.yardModel.getRowCount());
         Assert.assertEquals("number of staging tracks", 4, fl.stagingModel.getRowCount());
 
         // is the staging only button selected?
-        Assert.assertTrue("staging selected", fl.stageRadioButton.isSelected());
+        Assert.assertTrue("staging selected", fl.stagingRadioButton.isSelected());
 
         JUnitUtil.dispose(fl);
     }
 
     // Ensure minimal setup for log4J
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 
@@ -181,7 +176,7 @@ public class StagingEditFrameTest extends OperationsTestCase {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         super.tearDown();
 

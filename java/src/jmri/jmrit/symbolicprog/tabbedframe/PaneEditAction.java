@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Swing action to create and register a frame for selecting the information
  * needed to open a PaneProgFrame just for editing, without a programmer.
- * <P>
+ * <p>
  * The resulting JFrame is constructed on the fly here, and has no specific
  * type.
  *
@@ -89,6 +89,6 @@ public class PaneEditAction extends AbstractAction {
         f.setVisible(true);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(PaneOpsProgAction.class);
+    private final static Logger log = LoggerFactory.getLogger(PaneEditAction.class);
 
 }

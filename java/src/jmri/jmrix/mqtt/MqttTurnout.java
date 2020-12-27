@@ -1,93 +1,147 @@
 package jmri.jmrix.mqtt;
 
+import javax.annotation.Nonnull;
 import jmri.Turnout;
 import jmri.implementation.AbstractTurnout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * MQTT implementation of the Turnout interface.
- * <p>
- * Description: extend jmri.AbstractTurnout for MQTT layouts
+ * Implementation of the Turnout interface for MQTT layouts.
  *
- * @author Lionel Jeanson Copyright: Copyright (c) 2017
+ * @author Lionel Jeanson Copyright (c) 2017
+ * @author Bob Jacobsen   Copyright (c) 2020
  */
 public class MqttTurnout extends AbstractTurnout implements MqttEventListener {
 
     private final MqttAdapter mqttAdapter;
-    private final String mysubTopic;
-    private final int _number;   // turnout number
+    private final String sendTopic;
+    private final String rcvTopic;
 
-    private final String closedText = "CLOSED";
-    private final String thrownText = "THROWN";
-
-    MqttTurnout(MqttAdapter ma, int number) {
-        super("MT" + number);
-        _number = number;
+    /**
+     * Requires, but does not check, that the system name and topic be consistent
+     * @param ma Adapter to reference for connection
+     * @param systemName System name of turnout
+     * @param sendTopic MQTT topic to use when sending (full string, including systemName part)
+     * @param rcvTopic MQTT topic to use when receiving (full string, including systemName part)
+     */
+    MqttTurnout(MqttAdapter ma, String systemName, String sendTopic, String rcvTopic) {
+        super(systemName);
+        this.sendTopic = sendTopic;
+        this.rcvTopic  = rcvTopic;
         mqttAdapter = ma;
-        mysubTopic = "track/turnout/" + _number;
-        mqttAdapter.subscribe(mysubTopic, this);
+        mqttAdapter.subscribe(rcvTopic, this);  // only receive receive topic, not send one
+        _validFeedbackNames = new String[] {"DIRECT", "ONESENSOR", "TWOSENSOR", "DELAYED", "MONITORING"};
+        _validFeedbackModes = new int[] {DIRECT, ONESENSOR, TWOSENSOR, DELAYED, MONITORING};
+        _validFeedbackTypes = DIRECT | ONESENSOR | TWOSENSOR | DELAYED | MONITORING;
     }
 
-    public int getNumber() {
-        return _number;
+    public void setParser(MqttContentParser<Turnout> parser) {
+        this.parser = parser;
     }
+        
+    MqttContentParser<Turnout> parser = new MqttContentParser<Turnout>() {
+        // public for scripting
+        public final static String closedText = "CLOSED";
+        public final static String thrownText = "THROWN";
+        public final static String unknownText = "UNKNOWN";
+        public final static String inconsistentText = "INCONSISTENT";
 
-    // Turnouts do support inversion
+        int stateFromString(String payload) {
+            switch (payload) {
+                case closedText:                
+                    return CLOSED;
+                case thrownText:
+                    return THROWN;
+                case unknownText:
+                    return UNKNOWN;
+                case inconsistentText:
+                    return INCONSISTENT;
+                default:
+                    log.warn("Unknown state : {}, substitute UNKNOWN", payload);
+                    return UNKNOWN;
+            }
+        }
+        
+        @Override
+        public void beanFromPayload(@Nonnull Turnout bean, @Nonnull String payload, @Nonnull String topic) {
+            int state = stateFromString(payload);
+            
+            boolean couldBeSendMessage = topic.endsWith(sendTopic); // not listening for send messages, but can get them anyway
+            boolean couldBeRcvMessage = topic.endsWith(rcvTopic);
+            
+            if (couldBeSendMessage) {
+                // always accept as commadn
+                newCommandedState(state);
+                
+                // when needed, do feedback
+                if (getFeedbackMode() == DIRECT || getFeedbackMode() == MONITORING) newKnownState(state);
+                
+                return;
+            }
+            
+            if (couldBeRcvMessage) {
+
+                // if MONITORING, do feedback
+                if (getFeedbackMode() == DIRECT || getFeedbackMode() == MONITORING) newKnownState(state);
+                
+                return;
+            }
+
+            // really shouldn't have gotten here
+            log.warn("expected failure to decode topic {} {}", topic, payload);
+            return;
+        }
+        
+        @Override
+        public @Nonnull String payloadFromBean(@Nonnull Turnout bean, int newState) {
+            // calls jmri.implementation.AbstractTurnout#stateChangeCheck(int)
+            String text = "";
+            try {
+                text = (stateChangeCheck(newState) ? closedText : thrownText);
+            } catch (IllegalArgumentException ex) {
+                log.error("new state invalid, Turnout not set");
+            }
+            return text;
+        }
+    };
+
+    // MQTT Turnouts do support inversion
     @Override
     public boolean canInvert() {
         return true;
     }
 
-    // Handle a request to change state by sending a formatted DCC packet
+    /**
+     * {@inheritDoc}
+     * Sends an MQTT payload command
+     */
     @Override
     protected void forwardCommandChangeToLayout(int s) {
         // sort out states
-        if ((s & Turnout.CLOSED) != 0) {
-            // first look for the double case, which we can't handle
-            if ((s & Turnout.THROWN) != 0) {
-                // this is the disaster case!
-                LOG.error("Cannot command both CLOSED and THROWN " + s);
-                return;
-            } else {
-                // send a CLOSED command
-                sendMessage(closedText);
-            }
-        } else {
-            // send a THROWN command
-            sendMessage(thrownText);
+        String payload = parser.payloadFromBean(this, s);
+
+        // send appropriate command
+        sendMessage(payload);
+    }
+
+    private void sendMessage(String c) {
+        mqttAdapter.publish(sendTopic, c);
+    }
+
+    @Override
+    public void notifyMqttMessage(String receivedTopic, String message) {
+        if (! ( receivedTopic.endsWith(rcvTopic) || receivedTopic.endsWith(sendTopic) ) ) {
+            log.error("Got a message whose topic ({}) wasn't for me ({})", receivedTopic, rcvTopic);
+            return;
         }
+        
+        parser.beanFromPayload(this, message, receivedTopic);
     }
 
     @Override
     protected void turnoutPushbuttonLockout(boolean _pushButtonLockout) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Send command to " + (_pushButtonLockout ? "Lock" : "Unlock") + " Pushbutton BT" + _number);
-        }
+        log.warn("Send command to {} Pushbutton in {} not yet coded", (_pushButtonLockout ? "Lock" : "Unlock"), getSystemName());
     }
 
-    private void sendMessage(String c) {
-        mqttAdapter.publish(mysubTopic, c.getBytes());
-    }
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MqttTurnout.class);
 
-    @Override
-    public void notifyMqttMessage(String topic, String message) {
-        if (!topic.endsWith(mysubTopic)) {
-            LOG.error("Got a message whose topic (" + topic + ") wasn't for me (" + mysubTopic + ")");
-            return;
-        }
-        switch (message) {
-            case closedText:                
-                newKnownState(CLOSED);
-                break;
-            case thrownText:
-                newKnownState(THROWN);
-                break;
-            default:
-                LOG.warn("Unknow state : " + message + " (topic : " + topic + ")");
-                break;
-        }
-    }
-
-    private final static Logger LOG = LoggerFactory.getLogger(MqttTurnout.class);
 }

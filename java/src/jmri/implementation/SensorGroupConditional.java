@@ -12,17 +12,17 @@ import org.slf4j.LoggerFactory;
  * Conditional.java
  *
  * A Conditional type to provide runtime support for Densor Groups.
- * <P>
+ * <p>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ *
  * @author Pete Cressman Copyright (C) 2009
  */
 public class SensorGroupConditional extends DefaultConditional {
@@ -42,7 +42,7 @@ public class SensorGroupConditional extends DefaultConditional {
             return currentState;
         }
         String listener = evtSensor.getSystemName();
-        log.debug("SGConditional \"" + getUserName() + "\" (" + getSystemName() + ") has event from \"" + listener + "\"");
+        log.debug("SGConditional \"{}\" ({}) has event from \"{}\"", getUserName(), getSystemName(), listener);
         if (Sensor.INACTIVE == ((Integer) evt.getNewValue()).intValue()) {
             return currentState;
         }
@@ -50,7 +50,7 @@ public class SensorGroupConditional extends DefaultConditional {
             ConditionalAction action = _actionList.get(i);
             Sensor sn = InstanceManager.sensorManagerInstance().getSensor(action.getDeviceName());
             if (sn == null) {
-                log.error("invalid sensor name in action - " + action.getDeviceName());
+                log.error("invalid sensor name in action - {}", action.getDeviceName());
                 return currentState;
             }
             if (sn != evtSensor) { // don't change who triggered the action
@@ -59,13 +59,12 @@ public class SensorGroupConditional extends DefaultConditional {
                     try {
                         sn.setKnownState(action.getActionData());
                     } catch (JmriException e) {
-                        log.warn("Exception setting sensor " + action.getDeviceName() + " in action");
+                        log.warn("Exception setting sensor {} in action", action.getDeviceName());
                     }
                 }
             }
         }
-        log.debug("SGConditional \"" + getUserName() + "\" (" + getSystemName() + "), state= " + currentState
-                + "has set the group actions for " + listener);
+        log.debug("SGConditional \"{}\" ({}), state= {}has set the group actions for {}", getUserName(), getSystemName(), currentState, listener);
         return currentState;
     }
 

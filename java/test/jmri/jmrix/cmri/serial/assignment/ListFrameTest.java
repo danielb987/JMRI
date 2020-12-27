@@ -1,33 +1,32 @@
 package jmri.jmrix.cmri.serial.assignment;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.jmrix.cmri.CMRISystemConnectionMemo;
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of ListFrame
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class ListFrameTest {
+public class ListFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testMemoCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        ListFrame action = new ListFrame(new CMRISystemConnectionMemo()); 
-        Assert.assertNotNull("exists", action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new ListFrame(new CMRISystemConnectionMemo());
+        }
     }
 
-    @After
-    public void tearDown() {        JUnitUtil.tearDown();    }
+    @AfterEach
+    @Override
+    public void tearDown() {
+        jmri.util.JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
+    }
 }

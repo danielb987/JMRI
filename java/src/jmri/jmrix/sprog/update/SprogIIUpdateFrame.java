@@ -1,5 +1,7 @@
 package jmri.jmrix.sprog.update;
 
+import static jmri.jmrix.sprog.SprogConstants.TC_BOOT_REPLY_TIMEOUT;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javax.swing.JOptionPane;
 import jmri.jmrix.sprog.SprogConstants.SprogState;
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory;
  *
  * Extended to cover SPROG 3 which uses the same bootloader protocol Refactored
  *
- * @author	Andrew Crosland Copyright (C) 2004
+ * @author Andrew Crosland Copyright (C) 2004
  */
 public class SprogIIUpdateFrame
         extends SprogUpdateFrame
@@ -33,8 +35,24 @@ public class SprogIIUpdateFrame
         // add help menu to window
         addHelpMenu("package.jmri.jmrix.sprog.update.SprogIIUpdateFrame", true);
 
+        // Set a shorter timeout in the TC. Must be shorter than SprogUpdateFrame long timeout
+        tc.setTimeout(TC_BOOT_REPLY_TIMEOUT);
+        
         // Get the SPROG version
         _memo.getSprogVersionQuery().requestVersion(this);
+    }
+    
+    
+    /** 
+     * {@inheritDoc}
+     * Also ensures timers are no longer running
+     */
+    @Override
+    public void dispose() {
+        // kill any timers still running 
+        stopTimer();
+            
+        super.dispose();
     }
 
     int bootVer = 0;
@@ -47,34 +65,26 @@ public class SprogIIUpdateFrame
     @Override
     synchronized public void notifyVersion(SprogVersion v) {
         sv = v;
-        if (sv.sprogType.isSprog() == false) {
+        if (sv!=null && sv.sprogType.isSprog() == false) {
             // Didn't recognize a SPROG so check if it is in boot mode already
-            if (log.isDebugEnabled()) {
-                log.debug("SPROG not found - looking for bootloader");
-            }
+            log.debug("SPROG not found - looking for bootloader");
             statusBar.setText(Bundle.getMessage("StatusSprogNotFound"));
             blockLen = -1;
             requestBoot();
         } else {
             // Check that it's not a V4
-            if (sv.sprogType.sprogType > SprogType.SPROGV4) {
+            if (sv!=null && sv.sprogType.sprogType > SprogType.SPROGV4) {
                 statusBar.setText(Bundle.getMessage("StatusFoundX", sv.toString()));
                 blockLen = sv.sprogType.getBlockLen();
                 // Put SPROG in boot mode
-                if (log.isDebugEnabled()) {
-                    log.debug("Putting SPROG in boot mode");
-                }
+                log.debug("Putting SPROG in boot mode");
                 msg = new SprogMessage("b 1 1 1");
+                bootState = BootState.SETBOOTSENT;
                 tc.sendSprogMessage(msg, this);
-                // SPROG II and 3 will not reply to this so just wait a while
-                tc.setSprogState(SprogState.SIIBOOTMODE);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // retain if needed later
-                }
-                // Look for bootloader version
-                requestBoot();
+                // SPROG II and 3 will not reply to this if successfull. Will
+                // reply with error if firmware is locked. Wait a while to allow
+                // Traffic Controller to time out
+                startLongTimer();
             } else {
                 log.error("Incorrect SPROG Type detected");
                 statusBar.setText(Bundle.getMessage("StatusIncorrectSprogType"));
@@ -105,6 +115,18 @@ public class SprogIIUpdateFrame
     }
 
     @Override
+    synchronized protected void stateSetBootSent() {
+        stopTimer();
+        log.debug("reply in SETBOOTSENT state");
+        // A reply to the enter bootloader command means the firmware is locked.
+        bootState = BootState.IDLE;
+        tc.setSprogState(SprogState.NORMAL);
+        JOptionPane.showMessageDialog(this, Bundle.getMessage("ErrorFirmwareLocked"),
+                Bundle.getMessage("SprogXFirmwareUpdate"), JOptionPane.ERROR_MESSAGE);
+        statusBar.setText(Bundle.getMessage("ErrorFirmwareLocked"));
+    }
+    
+    @Override
     synchronized protected void stateBootVerReqSent() {
         stopTimer();
         if (log.isDebugEnabled()) {
@@ -114,7 +136,7 @@ public class SprogIIUpdateFrame
         if ((reply.getOpCode() == SprogMessage.RD_VER) && (reply.getElement(1) == 2)) {
             bootVer = reply.getElement(2);
             if (log.isDebugEnabled()) {
-                log.debug("Found bootloader version " + bootVer);
+                log.debug("Found bootloader version {}", bootVer);
             }
             statusBar.setText(Bundle.getMessage("StatusConnectedToBootloader", bootVer));
             // Enable the file chooser button
@@ -143,7 +165,7 @@ public class SprogIIUpdateFrame
             bootState = BootState.IDLE;
             tc.setSprogState(SprogState.NORMAL);
             JOptionPane.showMessageDialog(this, Bundle.getMessage("StatusUnableToConnectBootloader"),
-                    Bundle.getMessage("SprogXFirmwareUpdate", " II"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("SprogXFirmwareUpdate"), JOptionPane.ERROR_MESSAGE);
             statusBar.setText(Bundle.getMessage("StatusUnableToConnectBootloader"));
         }
     }
@@ -259,6 +281,10 @@ public class SprogIIUpdateFrame
             log.debug("Request bootloader version");
         }
         // allow parsing of bootloader replies
+        if (tc == null) {
+            log.warn("requestBoot with null tc, ignored");
+            return;
+        }
         tc.setSprogState(SprogState.SIIBOOTMODE);
         bootState = BootState.VERREQSENT;
         msg = SprogMessage.getReadBootVersion();
@@ -271,19 +297,19 @@ public class SprogIIUpdateFrame
         if ((hexFile.getAddressU()&0xFF) >= 0xF0) {
             // Write to EEPROM
             if (log.isDebugEnabled()) {
-                log.debug("Send write EE " + hexFile.getAddress());
+                log.debug("Send write EE {}", hexFile.getAddress());
             }
             msg = SprogMessage.getWriteEE(hexFile.getAddress(), hexFile.getData());
         } else if ((hexFile.getAddressU()&0xFF) >= 0x20) {
             // Write to user data or config data not supported
             if (log.isDebugEnabled()) {
-                log.debug("null write " + hexFile.getAddress());
+                log.debug("null write {}", hexFile.getAddress());
             }
             msg = null;
         } else if (sv.sprogType.isValidFlashAddress(hexFile.getAddress())) {
             // Program code address is above bootloader range and below debug executive
             if (log.isDebugEnabled()) {
-                log.debug("Send write Flash " + hexFile.getAddress());
+                log.debug("Send write Flash {}", hexFile.getAddress());
             }
             msg = SprogMessage.getWriteFlash(hexFile.getAddress(), hexFile.getData(), blockLen);
             if (log.isDebugEnabled()) {
@@ -292,7 +318,7 @@ public class SprogIIUpdateFrame
         } else {
             // Do nothing
             if (log.isDebugEnabled()) {
-                log.debug("null write " + hexFile.getAddress());
+                log.debug("null write {}", hexFile.getAddress());
             }
             msg = null;
         }
@@ -301,7 +327,7 @@ public class SprogIIUpdateFrame
             statusBar.setText(Bundle.getMessage("StatusWriteX", hexFile.getAddress()));
             tc.sendSprogMessage(msg, this);
             if (log.isDebugEnabled()) {
-                log.debug("Sent write command to address " + hexFile.getAddress());
+                log.debug("Sent write command to address {}", hexFile.getAddress());
             }
             startLongTimer();
         } else {
@@ -314,7 +340,7 @@ public class SprogIIUpdateFrame
 
     synchronized private void sendErase() {
         if (log.isDebugEnabled()) {
-            log.debug("Erase Flash " + eraseAddress);
+            log.debug("Erase Flash {}", eraseAddress);
         }
         int rows = 8; // 512 bytes
         msg = SprogMessage.getEraseFlash(eraseAddress, rows);
@@ -322,7 +348,7 @@ public class SprogIIUpdateFrame
         statusBar.setText(Bundle.getMessage("StatusEraseX", eraseAddress));
         tc.sendSprogMessage(msg, this);
         if (log.isDebugEnabled()) {
-            log.debug("Sent erase command to address " + eraseAddress);
+            log.debug("Sent erase command to address {}", eraseAddress);
         }
         eraseAddress += (rows * 64);
         startLongTimer();
@@ -351,7 +377,7 @@ public class SprogIIUpdateFrame
             eraseAddress = sv.sprogType.getEraseStart();
             if (eraseAddress > 0) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Start erasing @" + eraseAddress);
+                    log.debug("Start erasing @{}", eraseAddress);
                 }
                 sendErase();
             }
@@ -365,6 +391,8 @@ public class SprogIIUpdateFrame
         }
         msg = SprogMessage.getWriteEE(0xff, new int[]{0});
         bootState = BootState.SPROGMODESENT;
+        // Set TC timeout back to normal
+        tc.resetTimeout();
         tc.sendSprogMessage(msg, this);
         startLongTimer();
     }

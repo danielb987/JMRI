@@ -1,23 +1,25 @@
 package jmri.jmrit.symbolicprog;
 
 import java.util.HashMap;
+
 import javax.swing.JComboBox;
+
 import jmri.progdebugger.ProgDebugger;
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author	Bob Jacobsen Copyright 2005
-  */
-public class ComboCheckBoxTest extends TestCase {
+ * @author Bob Jacobsen Copyright 2005
+ */
+public class ComboCheckBoxTest {
 
     ProgDebugger p = new ProgDebugger();
 
+    @Test
     public void testToOriginal() {
         // create an enum variable pointed at CV 81 and connect
         HashMap<String, CvValue> v = createCvMap();
@@ -60,6 +62,7 @@ public class ComboCheckBoxTest extends TestCase {
 
     }
 
+    @Test
     public void testFromOriginal() {
         // create an enum variable pointed at CV 81 and connect
         HashMap<String, CvValue> v = createCvMap();
@@ -103,31 +106,13 @@ public class ComboCheckBoxTest extends TestCase {
         return m;
     }
 
-    // from here down is testing infrastructure
-    public ComboCheckBoxTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", ComboCheckBoxTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(ComboCheckBoxTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 

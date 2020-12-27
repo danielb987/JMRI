@@ -21,20 +21,19 @@ import jmri.jmrix.rps.Measurement;
 import jmri.jmrix.rps.PositionFile;
 import jmri.jmrix.rps.Reading;
 import jmri.jmrix.rps.ReadingListener;
-import jmri.jmrix.rps.trackingpanel.RpsTrackingPanel;
 import jmri.jmrix.rps.RpsSystemConnectionMemo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Gather RPS Readings and use them to align the detector.
- * <P>
+ * <p>
  * Note that algorithms have a bias to find transmitters with positive Z
  * coordinates. Since we're inverting the computation between receivers and
  * transmitters, we also flip the sign of Z coordinates to keep this bias
  * working for us.
  *
- * @author	Bob Jacobsen Copyright (C) 2007
+ * @author Bob Jacobsen Copyright (C) 2007
  */
 public class AlignmentPanel extends javax.swing.JPanel
         implements ReadingListener, Constants {
@@ -150,7 +149,7 @@ public class AlignmentPanel extends javax.swing.JPanel
             if (retVal == JFileChooser.APPROVE_OPTION) {
                 File file = fci.getSelectedFile();
                 if (log.isInfoEnabled()) {
-                    log.info("located file " + file + " for load");
+                    log.info("located file {} for load", file);
                 }
                 // handle the file
                 PositionFile pf = new PositionFile();
@@ -176,7 +175,7 @@ public class AlignmentPanel extends javax.swing.JPanel
                 log.info("load cancelled in open dialog");
             }
         } catch (Exception e) {
-            log.error("exception during load: " + e);
+            log.error("exception during load: {}", e);
         }
     }
 
@@ -189,7 +188,7 @@ public class AlignmentPanel extends javax.swing.JPanel
             if (retVal == JFileChooser.APPROVE_OPTION) {
                 File file = fci.getSelectedFile();
                 if (log.isInfoEnabled()) {
-                    log.info("located file " + file + " for load");
+                    log.info("located file {} for load", file);
                 }
                 // handle the file
                 PositionFile pf = new PositionFile();
@@ -210,12 +209,16 @@ public class AlignmentPanel extends javax.swing.JPanel
                 log.info("load cancelled in open dialog");
             }
         } catch (Exception e) {
-            log.error("exception during load: " + e);
+            log.error("exception during load: {}", e);
         }
     }
 
     /**
      * Service routine for finding a Point3d from input fields
+     * @param x X coordinate of resulting point
+     * @param y Y coordinate of resulting point
+     * @param z Z coordinate of resulting point
+     * @return point from coordinates
      */
     Point3d getPoint(JTextField x, JTextField y, JTextField z) {
         float xval = Float.valueOf(x.getText()).floatValue();
@@ -279,7 +282,6 @@ public class AlignmentPanel extends javax.swing.JPanel
         lines[3].s2l.setText("" + 3666.8);
         lines[3].s3l.setText("" + 1652);
         lines[3].s4l.setText("" + 1294.2);
-
     }
 
     void dummy3() {
@@ -356,7 +358,6 @@ public class AlignmentPanel extends javax.swing.JPanel
         lines[i].s2l.setText("" + 3599);
         lines[i].s3l.setText("" + 1509);
         lines[i].s4l.setText("" + 1119);
-
     }
 
     @Override
@@ -523,7 +524,6 @@ public class AlignmentPanel extends javax.swing.JPanel
 
             n = 0;
             s1 = s2 = s3 = s4 = 0.0;
-
         }
 
         double getTime(int i) {
@@ -593,6 +593,7 @@ public class AlignmentPanel extends javax.swing.JPanel
 
         /**
          * Service routine for finding a Point3d from input fields
+         * @return Point from input coordinate values
          */
         Point3d getPoint() {
             float xval = Float.valueOf(xl.getText()).floatValue();
@@ -603,6 +604,7 @@ public class AlignmentPanel extends javax.swing.JPanel
 
         /**
          * Service routine for setting the receiver input fields from a Point3d
+         * @param p Specific input point
          */
         void setPoint(Point3d p) {
             xl.setText("" + p.x);
@@ -629,5 +631,6 @@ public class AlignmentPanel extends javax.swing.JPanel
         double s1, s2, s3, s4, s5, s6;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(RpsTrackingPanel.class);
+    private final static Logger log = LoggerFactory.getLogger(AlignmentPanel.class);
+
 }

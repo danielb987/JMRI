@@ -23,6 +23,8 @@ public abstract class AbstractMRNodeTrafficController extends AbstractMRTrafficC
 
     /**
      * Initialize based on number of first and last nodes.
+     * @param minNode lowest node number, usually 0
+     * @param maxNode highest node number
      */
     protected void init(int minNode, int maxNode) {
         this.minNode = minNode;
@@ -43,7 +45,7 @@ public abstract class AbstractMRNodeTrafficController extends AbstractMRTrafficC
     /**
      * Total number of SerialNodes registered with this TrafficController.
      * Incremented as Serial Nodes are created and registered.
-     * Corresponds to the next available address in {@link nodeArray}.
+     * Corresponds to the next available address in {@link #nodeArray}.
      */
     protected volatile int numNodes = 0;
     protected AbstractNode[] nodeArray;

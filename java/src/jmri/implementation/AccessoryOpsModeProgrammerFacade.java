@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * <li>OPSACCEXTBYTEMODE
  * <li>OPSACCEXTBITMODE
  * </ul>
- * <P>
+ * <p>
  * Used through the String write/read/confirm interface. Accepts integers as
  * addresses, but then emits NMRA DCC packets through the default CommandStation
  * interface (which must be present)
@@ -75,6 +75,7 @@ public class AccessoryOpsModeProgrammerFacade extends AbstractProgrammerFacade i
     ProgrammingMode mode;
 
     @Override
+    @Nonnull
     public List<ProgrammingMode> getSupportedModes() {
         List<ProgrammingMode> ret = new ArrayList<>();
         ret.add(ProgrammingMode.OPSACCBYTEMODE);
@@ -213,7 +214,7 @@ public class AccessoryOpsModeProgrammerFacade extends AbstractProgrammerFacade i
         log.debug("useProgrammer entry: _usingProgrammer is {}", _usingProgrammer);
         if (_usingProgrammer != null && _usingProgrammer != p) {
             if (log.isInfoEnabled()) {
-                log.info("programmer already in use by " + _usingProgrammer);
+                log.info("programmer already in use by {}", _usingProgrammer);
             }
             throw new jmri.ProgrammerException("programmer in use");
         } else {
@@ -261,7 +262,7 @@ public class AccessoryOpsModeProgrammerFacade extends AbstractProgrammerFacade i
                 temp.programmingOpReply(value, status);
                 break;
             default:
-                log.error("Unexpected state on reply: " + state);
+                log.error("Unexpected state on reply: {}", state);
                 // clean up as much as possible
                 _usingProgrammer = null;
                 state = ProgState.NOTPROGRAMMING;

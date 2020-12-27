@@ -66,11 +66,11 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
     @Override
     public void message(LocoNetMessage msg) {
         // sort on opcode and ALM number
-        if (msg.getOpCode() == 0xEE && msg.getElement(2) == mNumber) {
+        if ((msg.getOpCode() == LnConstants.OPC_IMM_PACKET_2) && msg.getElement(2) == mNumber) {
             writeMsg(msg);
-        } else if (msg.getOpCode() == 0xE6 && msg.getElement(2) == mNumber) {
+        } else if ((msg.getOpCode() == LnConstants.OPC_ALM_READ) && msg.getElement(2) == mNumber) {
             readMsg(msg);
-        } else if (msg.getOpCode() == 0xB4 && msg.getElement(1) == 0x6E) {
+        } else if ((msg.getOpCode() == LnConstants.OPC_LONG_ACK) && msg.getElement(1) == 0x6E) {
             lackMsg(msg);
         }
     }
@@ -85,7 +85,7 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
      * <p>
      * If we're waiting for this, it indicates successful end of a write ALM
      * sequence.
-     *
+     * @param msg Message, which might or might not be LACK
      */
     void lackMsg(LocoNetMessage msg) {
         if (handleNextLACK) {
@@ -100,7 +100,7 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
      * If we're an image, just record information from a WRITE.
      * <p>
      * If we're not an image, reply to all commands
-     *
+     * @param msg Message to decode and fill out
      */
     void writeMsg(LocoNetMessage msg) {
         // sort out the ATASK
@@ -198,31 +198,35 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
                 }
                 return;
             default:
-                log.warn("Unexpected ATASK: " + msg.getElement(3));
+                log.warn("Unexpected ATASK: {}", msg.getElement(3));
                 return;
         }
     }
 
     /**
      * Notify possible subclass that a block has changed.
+     * @param block  something about a block
      */
     public void noteChanged(int block) {
     }
 
     /**
      * Notify possible subclass that a read cmd is being handled
+     * @param block  something about a block
      */
     public void noteReadCmd(int block) {
     }
 
     /**
      * Notify possible subclass that a read reply is being handled
+     * @param block  something about a block
      */
     public void noteReadReply(int block) {
     }
 
     /**
      * Notify possible subclass that a write operation is complete
+     * @param block  something about a block
      */
     public void noteWriteComplete(int block) {
     }
@@ -235,6 +239,7 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
      * <p>
      * If we're not an image, we just sent this, so we'll ignore it.
      *
+     * @param msg a LocoNet message
      */
     void readMsg(LocoNetMessage msg) {
         // sort out the ATASK
@@ -269,6 +274,7 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
      * Create and send the LocoNet message to read a particular block.
      * <p>
      * The results will return later.
+     * @param block Which block to read?
      */
     void sendRead(int block) {
         LocoNetMessage l = new LocoNetMessage(16);
@@ -306,6 +312,7 @@ public abstract class AbstractAlmImplementation implements LocoNetListener {
      * Hopefully this ALM writer is unique, so there won't be two writes to the
      * same ALM going on at the same time; the LocoNet is not well synchronized
      * against that.
+     * @param block within the ALM space
      */
     void sendWrite(int block) {
         int arg1 = retrieve(block, 0);

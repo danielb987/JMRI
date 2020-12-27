@@ -11,7 +11,7 @@ import jmri.jmrix.rps.RpsSystemConnectionMemo;
  * <p>
  * We only permit one, because notification is not entirely right yet.
  *
- * @author	Bob Jacobsen Copyright (C) 2008
+ * @author Bob Jacobsen Copyright (C) 2008
  */
 public class PollTableAction extends AbstractAction {
 
@@ -21,7 +21,7 @@ public class PollTableAction extends AbstractAction {
     }
 
     public PollTableAction(RpsSystemConnectionMemo _memo) {
-        this("RPS Polling Control",_memo);
+        this("RPS Polling Control", _memo);
     }
 
     PollTableFrame f = null;
@@ -40,12 +40,8 @@ public class PollTableAction extends AbstractAction {
             }
         }
         f.setVisible(true);
-
     }
 
     private final static Logger log = LoggerFactory.getLogger(PollTableAction.class);
 
 }
-
-
-

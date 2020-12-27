@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<!--#include virtual="/Header" -->
+<!--#include virtual="/Header.shtml" -->
   <div class="nomenu" id="mBody">
     <div id="mainContent">
 
@@ -56,11 +56,13 @@ Signal Mast definitions:
     <li><a href="appearance-abs4.xml">Čtyřznaký autoblok</a> &ndash; Automatic block signaling with four aspects
     
     <li><a href="appearance-shunting.xml">Seřaďovací návěstidla</a> &ndash; Shunting signals
+    
+    <li><a href="appearance-test.xml">Test</a> &ndash; Test
 </ul>
 
 
     </div>
 </div>
-<!--#include virtual="/Footer" -->
+<!--#include virtual="/Footer.shtml" -->
 </body>
 </html>

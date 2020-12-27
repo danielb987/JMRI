@@ -1,36 +1,29 @@
 package jmri.util;
 
 import java.awt.GraphicsEnvironment;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class JmriJFrameTest {
+public class JmriJFrameTest extends JmriJFrameTestBase {
 
-    @Test
-    public void testCTor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        JmriJFrame t = new JmriJFrame("JmriJFrame ConstructorTest");
-        Assert.assertNotNull("exists",t);
-        JUnitUtil.dispose(t);
-    }
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        if(!GraphicsEnvironment.isHeadless()){
+           frame = new JmriJFrame("JmriJFrame ConstructorTest");
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        super.tearDown();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(JmriJFrameTest.class);

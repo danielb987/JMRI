@@ -4,10 +4,8 @@ import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.util.JUnitUtil;
-import org.junit.After;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the Operations Setup Backup GUI class.
@@ -26,19 +24,6 @@ import org.junit.Test;
  * @author Gregory Madsen Copyright (C) 2012
  */
 public class OperationsBackupGuiTest extends OperationsTestCase {
-
-    // Ensure minimal setup for log4J
-    @Before
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
-    }
 
     @Test
     public void testCreateBackupDialog() {

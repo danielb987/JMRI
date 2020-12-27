@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 /**
  * This sample Automaton watches a Sensor, and adjusts the momentum of a
  * locomotive using ops-mode programming when the sensor state changes.
- * <P>
+ * <p>
  * The sensor and decoder are hardcoded, as this is an example of just the
  * Automaton function. Adding a GUI to configure these would be
  * straight-forward. The values could be passed via the constructor, or the
  * constructor (which can run in any required thread) could invoke a dialog.
- * <P>
+ * <p>
  * For test purposes, one of these objects can be created and invoked by a
  * SampleAutomaton2Action.
  * <p>
@@ -83,7 +83,7 @@ public class SampleAutomaton2 extends AbstractAutomaton {
 
         // get new value
         now = sensor.getKnownState();
-        log.debug("Found new state: " + now);
+        log.debug("Found new state: {}", now);
 
         // match the decoder's momentum
         setMomentum(now);
@@ -106,7 +106,7 @@ public class SampleAutomaton2 extends AbstractAutomaton {
                 programmer.writeCV("3", 0, null);
             }
         } catch (JmriException e) {
-            log.error("exception setting turnout:" + e);
+            log.error("exception setting turnout:{}", e);
         }
     }
 

@@ -18,7 +18,13 @@
 <!-- for more details.                                                      -->
  
 <xsl:stylesheet	version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-      <xsl:param name="JmriCopyrightYear"/>
+
+<!-- Define the copyright year for the output page
+     In batch work via running Ant, this is defined
+     via the build.xml file. We build it by concatenation
+     because XPath will evaluate '1997 - 2017' to '20'.
+-->
+<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2020')" />
 
 <!-- Need to instruct the XSLT processor to use HTML output rules.
      See http://www.w3.org/TR/xslt#output for more details
@@ -51,9 +57,6 @@ This page was produced by <a href="http://jmri.org">JMRI</a>.
 
 <p/>JMRI, DecoderPro, PanelPro, DispatcherPro and associated logos are our trademarks.
 <p/><A href="http://jmri.org/Copyright.html">Additional information on copyright, trademarks and licenses is linked here.</A>
-<p/>Site hosted by: <br/>
-		<a href="http://www.tagadab.com/">
-		<img src="https://www.tagadab.com/sites/default/files/logo-tagadab-nostrap.png" height="28" width="103" border="0" alt="Tagadab logo"/></a>
 	</body>
 </html>
 
@@ -62,7 +65,11 @@ This page was produced by <a href="http://jmri.org">JMRI</a>.
 <!-- Index through manufacturers -->
 <xsl:template match="decoderIndex-config/decoderIndex/mfgList/manufacturer">
 <xsl:if test="not( @mfg = 'NMRA' )" >
-<h3><xsl:value-of select="@mfg"/> CV8=<xsl:value-of select="@mfgID"/></h3>
+    <xsl:element name="a">
+        <xsl:attribute name="name"><xsl:value-of select="@mfgID"/></xsl:attribute>
+        <xsl:attribute name="id"><xsl:value-of select="@mfgID"/></xsl:attribute>
+    </xsl:element>
+    <h3><xsl:value-of select="@mfg"/> CV8=<xsl:value-of select="@mfgID"/></h3>
         <xsl:call-template name="familyTable">
                 <xsl:with-param name="mfgname" select="@mfg"/>
         </xsl:call-template>

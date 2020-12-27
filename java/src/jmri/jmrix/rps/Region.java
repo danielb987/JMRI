@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represent a region in space for the RPS system.
- * <P>
- * The region is specfied by a <em>right-handed</em>
+ * <p>
+ * The region is specified by a <em>right-handed</em>
  * set of points.
  * <p>
  * Regions are immutable once created.
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * deferring use of the 3rd (Z) dimension to a later implementation. It uses a
  * Java2D GeneralPath to handle the inside/outside calculations.
  *
- * @author	Bob Jacobsen Copyright (C) 2007, 2008
+ * @author Bob Jacobsen Copyright (C) 2007, 2008
  */
 @javax.annotation.concurrent.Immutable
 public class Region {
@@ -41,32 +41,8 @@ public class Region {
     GeneralPath path;
 
     /**
-     * Provide Java2D access to the shape of this region.
-     * <p>
-     * This should provide a copy of the GeneralPath path, to keep the
-     * underlying object immutable, but by returning a Shape type hopefully we
-     * achieve the same result with a little better performance. Please don't
-     * assume you can cast and modify this.
-     */
-    public Shape getPath() {
-        return path;
-    }
-
-    void initPath(Point3d[] points) {
-        if (points.length < 3) {
-            log.error("Region needs at least three points to have non-zero area");
-        }
-
-        path = new GeneralPath();
-        path.moveTo((float) points[0].x, (float) points[0].y);
-        for (int i = 1; i < points.length; i++) {
-            path.lineTo((float) points[i].x, (float) points[i].y);
-        }
-        path.lineTo((float) points[0].x, (float) points[0].y);
-    }
-
-    /**
-     * Ctor from a string like "(0,0,0);(1,0,0);(1,1,0);(0,1,0)"
+     * Ctor from a string like "(0,0,0);(1,0,0);(1,1,0);(0,1,0)" .
+     * @param s construction string.
      */
     public Region(String s) {
         String[] pStrings = s.split(";");
@@ -86,6 +62,32 @@ public class Region {
             points[i] = new Point3d(x, y, z);
         }
         initPath(points);
+    }
+
+    /**
+     * Provide Java2D access to the shape of this region.
+     * <p>
+     * This should provide a copy of the GeneralPath path, to keep the
+     * underlying object immutable, but by returning a Shape type hopefully we
+     * achieve the same result with a little better performance. Please don't
+     * assume you can cast and modify this.
+     * @return the path.
+     */
+    public Shape getPath() {
+        return path;
+    }
+
+    void initPath(Point3d[] points) {
+        if (points.length < 3) {
+            log.error("Region needs at least three points to have non-zero area");
+        }
+
+        path = new GeneralPath();
+        path.moveTo((float) points[0].x, (float) points[0].y);
+        for (int i = 1; i < points.length; i++) {
+            path.lineTo((float) points[i].x, (float) points[i].y);
+        }
+        path.lineTo((float) points[0].x, (float) points[0].y);
     }
 
     @Override
@@ -140,4 +142,5 @@ public class Region {
     final Point3d[] points;
 
     private final static Logger log = LoggerFactory.getLogger(Region.class);
+
 }

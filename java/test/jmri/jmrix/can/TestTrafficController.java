@@ -6,17 +6,24 @@ import org.slf4j.LoggerFactory;
 /**
  * Test scaffold to replace the TrafficController
  *
- * @author	Bob Jacobsen Copyright 2008, 2010
+ * @author Bob Jacobsen Copyright 2008, 2010
  */
 public class TestTrafficController extends TrafficController {
     private final static Logger log = LoggerFactory.getLogger(TestTrafficController.class);
 
     public CanMessage rcvMessage = null;
+    public CanReply sndMessage = null;
 
     @Override
     public void sendCanMessage(CanMessage m, CanListener l) {
         rcvMessage = m;
         log.debug("Message sent: header {} body {}", Integer.toHexString(m.getHeader()), m);
+    }
+
+    @Override
+    public void sendCanReply(CanReply r, CanListener l) {
+        sndMessage = r;
+        log.debug("Message sent: header {} body {}", Integer.toHexString(r.getHeader()), r);
     }
 
     // dummies

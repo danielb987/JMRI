@@ -1,22 +1,18 @@
 package jmri.jmrix.loconet;
 
+import java.util.Comparator;
 import java.util.ResourceBundle;
-import jmri.AddressedProgrammerManager;
-import jmri.ClockControl;
-import jmri.CommandStation;
-import jmri.ConsistManager;
-import jmri.GlobalProgrammerManager;
-import jmri.InstanceManager;
-import jmri.LightManager;
-import jmri.PowerManager;
-import jmri.ReporterManager;
-import jmri.SensorManager;
-import jmri.ThrottleManager;
-import jmri.TurnoutManager;
+import javax.annotation.Nonnull;
+
+import jmri.*;
+import jmri.jmrix.ConfiguringSystemConnectionMemo;
+import jmri.jmrix.DefaultSystemConnectionMemo;
 import jmri.jmrix.debugthrottle.DebugThrottleManager;
 import jmri.jmrix.loconet.swing.LnComponentFactory;
 import jmri.jmrix.swing.ComponentFactory;
 import jmri.managers.DefaultProgrammerManager;
+import jmri.util.NamedBeanComparator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,39 +25,61 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Jacobsen Copyright (C) 2010
  */
-public class LocoNetSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo {
+public class LocoNetSystemConnectionMemo extends DefaultSystemConnectionMemo implements ConfiguringSystemConnectionMemo {
 
+
+    /**
+     * Must manually register() after construction is complete.
+     * @param lt Traffic controller to be used
+     * @param sm Slot Manager to be used
+     */
     public LocoNetSystemConnectionMemo(LnTrafficController lt, SlotManager sm) {
         super("L", "LocoNet"); // NOI18N
         this.lt = lt;
 
         this.sm = sm; // doesn't full register, but fine for this purpose.
 
-        register(); // registers general type
-        InstanceManager.store(this, LocoNetSystemConnectionMemo.class); // also register as specific type
+        // self-registration is deferred until the command station type is set below
+                
+        // create and register the ComponentFactory for the GUI
+        InstanceManager.store(cf = new LnComponentFactory(this),
+                ComponentFactory.class);
+    }
+
+    /**
+     * Must manually register() after construction is complete.
+     */
+    public LocoNetSystemConnectionMemo() {
+        this("L", "LocoNet"); // NOI18N
+    }
+
+    public LocoNetSystemConnectionMemo(@Nonnull String prefix, @Nonnull String name) {
+        super(prefix, name); // NOI18N
 
         // create and register the ComponentFactory for the GUI
         InstanceManager.store(cf = new LnComponentFactory(this),
                 ComponentFactory.class);
     }
 
-    public LocoNetSystemConnectionMemo() {
-        super("L", "LocoNet"); // NOI18N
-        register(); // registers general type
+    /**
+     * Do both the default parent
+     * {@link jmri.SystemConnectionMemo} registration,
+     * and register this specific type.
+     */
+    @Override
+    public void register() {
+        super.register(); // registers general type
         InstanceManager.store(this, LocoNetSystemConnectionMemo.class); // also register as specific type
-
-        // create and register the ComponentFactory for the GUI
-        InstanceManager.store(cf = new LnComponentFactory(this),
-                ComponentFactory.class);
     }
 
     ComponentFactory cf = null;
     private LnTrafficController lt;
+    protected LocoNetThrottledTransmitter tm;
     private SlotManager sm;
     private LnMessageManager lnm = null;
 
     /**
-     * Provides access to the SlotManager for this particular connection.
+     * Provide access to the SlotManager for this particular connection.
      *
      * @return the slot manager or null if no valid slot manager is available
      */
@@ -97,17 +115,12 @@ public class LocoNetSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo
         return lnm;
     }
 
-    protected DefaultProgrammerManager programmerManager;
-
     public DefaultProgrammerManager getProgrammerManager() {
-        if (programmerManager == null) {
-            programmerManager = new LnProgrammerManager(getSlotManager(), this);
-        }
-        return programmerManager;
+        return (DefaultProgrammerManager) classObjectMap.computeIfAbsent(DefaultProgrammerManager.class,(Class c) -> new LnProgrammerManager(this));
     }
 
     public void setProgrammerManager(DefaultProgrammerManager p) {
-        programmerManager = p;
+        store(p,DefaultProgrammerManager.class);
     }
 
     protected boolean mTurnoutNoRetry = false;
@@ -146,106 +159,16 @@ public class LocoNetSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo
 
             // store as CommandStation object
             InstanceManager.store(sm, jmri.CommandStation.class);
+            store(sm, jmri.CommandStation.class);
         }
+
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean provides(Class<?> type) {
-        if (getDisabled()) {
-            return false;
-        }
-        if (type.equals(GlobalProgrammerManager.class)) {
-            return getProgrammerManager().isGlobalProgrammerAvailable();
-        }
-        if (type.equals(AddressedProgrammerManager.class)) {
-            return getProgrammerManager().isAddressedModePossible();
-        }
-
-        if (type.equals(ThrottleManager.class)) {
-            return true;
-        }
-        if (type.equals(PowerManager.class)) {
-            return true;
-        }
-        if (type.equals(SensorManager.class)) {
-            return true;
-        }
-        if (type.equals(TurnoutManager.class)) {
-            return true;
-        }
-        if (type.equals(LightManager.class)) {
-            return true;
-        }
-        if (type.equals(ReporterManager.class)) {
-            return true;
-        }
-        if (type.equals(ConsistManager.class)) {
-            return true;
-        }
-        if (type.equals(ClockControl.class)) {
-            return true;
-        }
-        if (type.equals(CommandStation.class)) {
-            return true;
-        }
-        return super.provides(type);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T get(Class<?> T) {
-        if (getDisabled()) {
-            return null;
-        }
-        if (T.equals(GlobalProgrammerManager.class)) {
-            return (T) getProgrammerManager();
-        }
-        if (T.equals(AddressedProgrammerManager.class)) {
-            return (T) getProgrammerManager();
-        }
-
-        if (T.equals(ThrottleManager.class)) {
-            return (T) getThrottleManager();
-        }
-        if (T.equals(PowerManager.class)) {
-            return (T) getPowerManager();
-        }
-        if (T.equals(SensorManager.class)) {
-            return (T) getSensorManager();
-        }
-        if (T.equals(TurnoutManager.class)) {
-            return (T) getTurnoutManager();
-        }
-        if (T.equals(LightManager.class)) {
-            return (T) getLightManager();
-        }
-        if (T.equals(ClockControl.class)) {
-            return (T) getClockControl();
-        }
-        if (T.equals(ReporterManager.class)) {
-            return (T) getReporterManager();
-        }
-        if (T.equals(ConsistManager.class)) {
-            return (T) getConsistManager();
-        }
-        if (T.equals(CommandStation.class)) {
-            return (T) getSlotManager();
-        }
-        return super.get(T);
-    }
-
-    protected LocoNetThrottledTransmitter tm;
 
     /**
      * Configure the common managers for LocoNet connections. This puts the
      * common manager config in one place.
      */
+    @Override
     public void configureManagers() {
 
         tm = new LocoNetThrottledTransmitter(getLnTrafficController(), mTurnoutExtraSpace);
@@ -269,36 +192,42 @@ public class LocoNetSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo
         InstanceManager.setThrottleManager(
                 getThrottleManager());
 
-        if (getProgrammerManager().isAddressedModePossible()) {
-            InstanceManager.store(getProgrammerManager(), jmri.AddressedProgrammerManager.class);
+        DefaultProgrammerManager programmerManager = getProgrammerManager();
+
+        if (programmerManager.isAddressedModePossible()) {
+            store(programmerManager, AddressedProgrammerManager.class);
+            InstanceManager.store(programmerManager, AddressedProgrammerManager.class);
         }
-        if (getProgrammerManager().isGlobalProgrammerAvailable()) {
+        if (programmerManager.isGlobalProgrammerAvailable()) {
+            store(getProgrammerManager(), GlobalProgrammerManager.class);
             InstanceManager.store(getProgrammerManager(), GlobalProgrammerManager.class);
         }
 
-        InstanceManager.setReporterManager(
-                getReporterManager());
+        InstanceManager.setReporterManager(getReporterManager());
+        
+        InstanceManager.setDefault(CabSignalManager.class,getCabSignalManager());
 
         setConsistManager(new LocoNetConsistManager(this));
 
         ClockControl cc = getClockControl();
-        // make sure InstanceManager knows about that
-        InstanceManager.setDefault(ClockControl.class, cc);
-    }
 
-    protected LnPowerManager powerManager;
+        InstanceManager.setDefault(ClockControl.class, cc);
+
+        getIdTagManager();
+
+        // register this SystemConnectionMemo to connect to rest of system
+        register();
+
+        // This must be done after the memo is registered
+        getPredefinedMeters();
+    }
 
     public LnPowerManager getPowerManager() {
         if (getDisabled()) {
             return null;
         }
-        if (powerManager == null) {
-            powerManager = new LnPowerManager(this);
-        }
-        return powerManager;
+        return (LnPowerManager) classObjectMap.computeIfAbsent(PowerManager.class,(Class c) -> new LnPowerManager(this));
     }
-
-    protected ThrottleManager throttleManager;
 
     public ThrottleManager getThrottleManager() {
         if (getSlotManager() != null) {
@@ -307,78 +236,79 @@ public class LocoNetSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo
         if (getDisabled()) {
             return null;
         }
+        ThrottleManager throttleManager = get(ThrottleManager.class);
         if (throttleManager == null && getSlotManager() != null) {
             // ask command station type for specific throttle manager
             LnCommandStationType cmdstation = getSlotManager().getCommandStationType();
             log.debug("getThrottleManager constructs for {}", cmdstation.getName());
             throttleManager = cmdstation.getThrottleManager(this);
             log.debug("result was type {}", throttleManager.getClass());
+            store(throttleManager,ThrottleManager.class);
         }
         return throttleManager;
     }
 
     public void setThrottleManager(ThrottleManager t) {
-        throttleManager = t;
+        store(t,ThrottleManager.class);
     }
-
-    protected LnTurnoutManager turnoutManager;
 
     public LnTurnoutManager getTurnoutManager() {
         if (getDisabled()) {
             return null;
         }
-        if (turnoutManager == null) {
-            turnoutManager = new LnTurnoutManager(getLnTrafficController(), tm, getSystemPrefix(), mTurnoutNoRetry);
-        }
-        return turnoutManager;
+        return (LnTurnoutManager) classObjectMap.computeIfAbsent(TurnoutManager.class,(Class c) -> new LnTurnoutManager(this, tm, mTurnoutNoRetry));
     }
-
-    protected LnClockControl clockControl;
 
     public LnClockControl getClockControl() {
         if (getDisabled()) {
             return null;
         }
-        if (clockControl == null) {
-            clockControl = new LnClockControl(this);
-        }
-        return clockControl;
+        return (LnClockControl) classObjectMap.computeIfAbsent(ClockControl.class,(Class c) -> new LnClockControl(this));
     }
-
-    protected LnReporterManager reporterManager;
 
     public LnReporterManager getReporterManager() {
         if (getDisabled()) {
             return null;
         }
-        if (reporterManager == null) {
-            reporterManager = new LnReporterManager(getLnTrafficController(), getSystemPrefix());
-        }
-        return reporterManager;
+        return (LnReporterManager) classObjectMap.computeIfAbsent(ReporterManager.class, (Class c) -> new LnReporterManager(this));
     }
-
-    protected LnSensorManager sensorManager;
 
     public LnSensorManager getSensorManager() {
         if (getDisabled()) {
             return null;
         }
-        if (sensorManager == null) {
-            sensorManager = new LnSensorManager(getLnTrafficController(), getSystemPrefix());
-        }
-        return sensorManager;
+        return (LnSensorManager) classObjectMap.computeIfAbsent(LnSensorManager.class, (Class c) -> new LnSensorManager(this));
     }
-
-    protected LnLightManager lightManager;
 
     public LnLightManager getLightManager() {
         if (getDisabled()) {
             return null;
         }
-        if (lightManager == null) {
-            lightManager = new LnLightManager(getLnTrafficController(), getSystemPrefix());
+        return (LnLightManager) classObjectMap.computeIfAbsent(LightManager.class, (Class c) -> new LnLightManager(this));
+    }
+
+    protected LnPredefinedMeters predefinedMeters;
+
+    public LnPredefinedMeters getPredefinedMeters() {
+        if (getDisabled()) {
+            log.warn("Aborting getPredefinedMeters account is disabled!");
+            return null;
         }
-        return lightManager;
+//        switch (getSlotManager().commandStationType) {
+//            case COMMAND_STATION_USB_DCS240_ALONE:
+//            case COMMAND_STATION_DCS240:
+//            case COMMAND_STATION_DCS210:
+//            case COMMAND_STATION_USB_DCS52_ALONE:
+//            case COMMAND_STATION_DCS052:
+//                break;
+//            default:
+//                // The command station does not support these meters
+//                return null;
+//        }
+        if (predefinedMeters == null) {
+            predefinedMeters = new LnPredefinedMeters(this);
+        }
+        return predefinedMeters;
     }
 
     @Override
@@ -387,40 +317,60 @@ public class LocoNetSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo
     }
 
     @Override
+    public <B extends NamedBean> Comparator<B> getNamedBeanComparator(Class<B> type) {
+        return new NamedBeanComparator<>();
+    }
+
+    // yes, tagManager is static.  Tags can move between system connections.
+    // when readers are not all on the same LocoNet
+    // this manager is loaded on demand.
+    protected static TranspondingTagManager tagManager;
+
+    static public TranspondingTagManager getIdTagManager() {
+        synchronized (LocoNetSystemConnectionMemo.class) { // since tagManager can be null, can't synch on that
+            if (tagManager == null) {
+                tagManager = new TranspondingTagManager();
+                InstanceManager.setIdTagManager(tagManager);
+            }
+            return tagManager;
+        }
+    }
+
+    public LnCabSignalManager getCabSignalManager() {
+        return (LnCabSignalManager) classObjectMap.computeIfAbsent(CabSignalManager.class,(Class c) -> new LnCabSignalManager(this));
+    }
+
+    @Override
     public void dispose() {
-        lt = null;
-        sm = null;
         InstanceManager.deregister(this, LocoNetSystemConnectionMemo.class);
         if (cf != null) {
             InstanceManager.deregister(cf, ComponentFactory.class);
+            cf = null;
         }
-        if (powerManager != null) {
-            InstanceManager.deregister(powerManager, LnPowerManager.class);
-        }
-        if (turnoutManager != null) {
-            InstanceManager.deregister(turnoutManager, LnTurnoutManager.class);
-        }
-        if (lightManager != null) {
-            InstanceManager.deregister(lightManager, LnLightManager.class);
-        }
-        if (sensorManager != null) {
-            InstanceManager.deregister(sensorManager, LnSensorManager.class);
-        }
-        if (reporterManager != null) {
-            InstanceManager.deregister(reporterManager, LnReporterManager.class);
-        }
+        ThrottleManager throttleManager = get(ThrottleManager.class);
         if (throttleManager != null) {
             if (throttleManager instanceof LnThrottleManager) {
                 InstanceManager.deregister(((LnThrottleManager) throttleManager), LnThrottleManager.class);
             } else if (throttleManager instanceof DebugThrottleManager) {
                 InstanceManager.deregister(((DebugThrottleManager) throttleManager), DebugThrottleManager.class);
             }
+            deregister(throttleManager,ThrottleManager.class);
         }
-        if (clockControl != null) {
-            InstanceManager.deregister(clockControl, LnClockControl.class);
-        }
+
         if (tm != null){
             tm.dispose();
+            tm = null;
+        }
+        if (sm != null){
+            sm.dispose();
+            sm = null;
+        }
+        if (lt != null){
+            lt.dispose();
+            lt = null;
+        }
+        if (predefinedMeters != null) {
+            predefinedMeters.dispose();
         }
         super.dispose();
     }

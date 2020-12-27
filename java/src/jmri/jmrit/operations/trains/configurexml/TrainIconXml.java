@@ -1,12 +1,10 @@
 package jmri.jmrit.operations.trains.configurexml;
 
-import jmri.jmrit.catalog.NamedIcon;
-import jmri.jmrit.display.configurexml.LocoIconXml;
-import jmri.jmrit.operations.trains.TrainIcon;
-import jmri.jmrit.roster.RosterEntry;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jmri.jmrit.display.configurexml.LocoIconXml;
 
 /**
  * Handle configuration for display.TrainIcon objects.
@@ -20,41 +18,16 @@ public class TrainIconXml extends LocoIconXml {
     }
 
     /**
-     * Default implementation for storing the contents of a TrainIcon
+     * Default implementation for storing the contents of a TrainIcon.
+     * TrainIcons are restored by the operations code.
      *
      * @param o Object to store, of type TrainIcon
      * @return Element containing the complete info
+     * 
      */
     @Override
     public Element store(Object o) {
-
-        TrainIcon p = (TrainIcon) o;
-        if (!p.isActive()) {
-            return null;  // if flagged as inactive, don't store
-        }
-        Element element = new Element(Xml.TRAINICON);
-        element.setAttribute(Xml.TRAIN, p.getTrain().getId());
-        element.setAttribute(Xml.TRAIN_NAME, p.getTrain().getName());
-        storeCommonAttributes(p, element);
-
-        // include contents
-        if (p.getUnRotatedText() != null) {
-            element.setAttribute(Xml.TEXT, p.getUnRotatedText());
-        }
-        storeTextInfo(p, element);
-        element.setAttribute(Xml.ICON, Xml.YES);
-        element.setAttribute(Xml.DOCK_X, "" + p.getDockX());
-        element.setAttribute(Xml.DOCK_Y, "" + p.getDockY());
-//  element.setAttribute("iconId", p.getIconId());
-        element.addContent(storeIcon(Xml.ICON, (NamedIcon) p.getIcon()));
-        RosterEntry entry = p.getRosterEntry();
-        if (entry != null) {
-            element.setAttribute(Xml.ROSTERENTRY, entry.getId());
-        }
-
-        element.setAttribute(Xml.CLASS, this.getClass().getName());
-
-        return element;
+        return null;
     }
 
     /**
@@ -62,6 +35,7 @@ public class TrainIconXml extends LocoIconXml {
      *
      * @param element Top level Element to unpack.
      * @param o       an Editor as an Object
+     * 
      */
     @Override
     public void load(Element element, Object o) {

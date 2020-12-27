@@ -5,26 +5,28 @@ import java.util.*;
 
 import jmri.*;
 import jmri.jmrix.internal.InternalSensorManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Test the ProxySensorManager
  *
- * @author	Bob Jacobsen 2003, 2006, 2008, 2014
-  */
-public class ProxySensorManagerTest extends TestCase implements Manager.ManagerDataListener<Sensor>, PropertyChangeListener {
+ * @author Bob Jacobsen 2003, 2006, 2008, 2014
+ */
+public class ProxySensorManagerTest implements Manager.ManagerDataListener<Sensor>, PropertyChangeListener {
 
-    protected ProxySensorManager l = null;	// holds objects under test
+    protected ProxySensorManager l = null; // holds objects under test
 
+    @Test
     public void testDispose() {
         l.dispose();  // all we're really doing here is making sure the method exists
     }
 
+    @Test
     public void testPutGetJ() {
         // create
         Sensor tj = l.newSensor("JS1", "mine");
@@ -34,23 +36,25 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertTrue("system name correct ", tj == l.getBySystemName("JS1"));
     }
 
+    @Test
     public void testSensorNameCase() {
         Assert.assertEquals(0, l.getObjectCount());
         // create
         Sensor t = l.provideSensor("IS:XYZ");
-        t = l.provideSensor("IS:xyz");  // upper canse and lower case are the same object
+        Assert.assertNotEquals(t, l.provideSensor("IS:xyz"));  // upper case and lower case are different objects
         // check
         Assert.assertTrue("real object returned ", t != null);
         Assert.assertEquals("IS:XYZ", t.getSystemName());  // we force upper
         Assert.assertTrue("system name correct ", t == l.getBySystemName("IS:XYZ"));
-        Assert.assertEquals(1, l.getObjectCount());
-        Assert.assertEquals(1, l.getSystemNameAddedOrderList().size());
-
-        t = l.provideSensor("IS:XYZ");
-        Assert.assertEquals(1, l.getObjectCount());
-        Assert.assertEquals(1, l.getSystemNameAddedOrderList().size());
+        Assert.assertEquals(2, l.getObjectCount());
+        Assert.assertEquals(2, l.getNamedBeanSet().size());
+        // test providing same name as existing sensor does not create new sensor
+        l.provideSensor("IS:XYZ");
+        Assert.assertEquals(2, l.getObjectCount());
+        Assert.assertEquals(2, l.getNamedBeanSet().size());
     }
 
+    @Test
     public void testPutGetI() {
         // create
         Sensor ti = l.newSensor("IS1", "mine");
@@ -60,6 +64,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertTrue("system name correct ", ti == l.getBySystemName("IS1"));
     }
 
+    @Test
     public void testPutGetK() {
         // create
         Sensor tk = l.newSensor("KS1", "mine");
@@ -69,6 +74,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertTrue("system name correct ", tk == l.getBySystemName("KS1"));
     }
 
+    @Test
     public void testDefaultSystemName() {
         // create
         Sensor t = l.provideSensor("9");
@@ -78,24 +84,13 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("can find by name", t, l.getBySystemName("JS9"));
     }
 
-    public void testNormalizeName() {
-        // create
-        String name = l.provideSensor("1").getSystemName();
-        // check
-        Assert.assertEquals(name, l.normalizeSystemName(name));
-    }
-
+    @Test
     public void testProvideFailure() {
-        boolean correct = false;
-        try {
-            l.provideSensor("");
-            Assert.fail("didn't throw");
-        } catch (IllegalArgumentException ex) {
-            correct = true;
-        }
-        Assert.assertTrue("Exception thrown properly", correct);
-
+        Assert.assertThrows(IllegalArgumentException.class, () -> l.provideSensor(""));
+        JUnitAppender.assertErrorMessage("Invalid system name for Sensor: System name must start with \"" + l.getSystemNamePrefix() + "\".");
     }
+
+    @Test
     public void testSingleObject() {
         // test that you always get the same representation
         Sensor t1 = l.newSensor("JS1", "mine");
@@ -109,22 +104,25 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertTrue("same new ", t1 == t2);
     }
 
+    @Test
     public void testMisses() {
         // try to get nonexistant objects
         Assert.assertTrue(null == l.getByUserName("foo"));
         Assert.assertTrue(null == l.getBySystemName("bar"));
     }
 
-    public void testUpperLower() {  // this is part of testing of (default) normalization
+    @Test
+    public void testUpperLower() {  // verify that names are case sensitive
         Sensor t = l.provideSensor("JS1ABC");  // internal will always accept that name
         String name = t.getSystemName();
         
         int prefixLength = l.getSystemPrefix().length()+1;     // 1 for type letter
         String lowerName = name.substring(0,prefixLength)+name.substring(prefixLength, name.length()).toLowerCase();
         
-        Assert.assertEquals(t, l.getSensor(lowerName));
+        Assert.assertNotEquals(t, l.getSensor(lowerName));
     }
 
+    @Test
     public void testRename() {
         // get
         Sensor t1 = l.newSensor("JS1", "before");
@@ -135,6 +133,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("no old object", null, l.getByUserName("before"));
     }
 
+    @Test
     public void testTwoNames() {
         Sensor jl212 = l.provideSensor("JS212");
         Sensor jl211 = l.provideSensor("JS211");
@@ -144,6 +143,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertTrue(jl212 != jl211);
     }
 
+    @Test
     public void testDefaultNotInternal() {
         Sensor lut = l.provideSensor("211");
 
@@ -151,6 +151,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("JS211", lut.getSystemName());
     }
 
+    @Test
     public void testProvideUser() {
         Sensor l1 = l.provideSensor("211");
         l1.setUserName("user 1");
@@ -171,12 +172,15 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
     // the following methods test code in Manager and AbstractManager,
     // but they need a concrete implementation to do it, hence are here.
     
+    @Test
+    @SuppressWarnings("deprecation") // getNamedBeanList, addDataListener references
     public void testAddTracking() {
         Sensor s1 = l.provideSensor("IS1");
         s1.setUserName("Sensor 1");
         
         l.addDataListener(this);
-        l.addPropertyChangeListener(this);
+        l.addPropertyChangeListener("length", this);
+        l.addPropertyChangeListener("DisplayListName", this);
         
         // add an item
         Sensor s2 = l.provideSensor("IS2");
@@ -214,11 +218,11 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("content at index 2", s3, l.getNamedBeanList().get(lastEvent0));
 
         // can add a manager and still get notifications
-        l.addManager(new InternalSensorManager() { {prefix = "Z";} });
+        l.addManager(new InternalSensorManager(new InternalSystemConnectionMemo("Z", "Zulu")));
         Sensor s4 = l.provideSensor("ZS2");
 
         // property listener should have been immediately invoked
-        Assert.assertEquals("propertyListenerCount", 4, propertyListenerCount);
+        Assert.assertEquals("propertyListenerCount", 5, propertyListenerCount);
         Assert.assertEquals("last call", "length", propertyListenerLast);
 
         // listener should have been immediately invoked
@@ -229,9 +233,11 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("index 3", 3, lastEvent0);
         Assert.assertEquals("content at added index", s4, l.getNamedBeanList().get(lastEvent0));
         
-        
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getNamedBeanList");
     }
 
+    @Test
+    @SuppressWarnings("deprecation") // getNamedBeanList, addDataListener references
     public void testRemoveTrackingI() {
         
         Sensor s1 = l.provideSensor("IS1");
@@ -250,9 +256,13 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("type", Manager.ManagerDataEvent.INTERVAL_REMOVED, lastType);
         Assert.assertEquals("start == end 2", lastEvent0, lastEvent1);
         Assert.assertEquals("index", 1, lastEvent0);
-        Assert.assertEquals("content at index", s2, tlist.get(lastEvent0));       
+        Assert.assertEquals("content at index", s2, tlist.get(lastEvent0));
+        
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getNamedBeanList");
     }
 
+    @Test
+    @SuppressWarnings("deprecation") // getNamedBeanList, addDataListener references
     public void testRemoveTrackingJ() {
         
         l.provideSensor("IS10");
@@ -274,9 +284,12 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("type", Manager.ManagerDataEvent.INTERVAL_REMOVED, lastType);
         Assert.assertEquals("start == end 2", lastEvent0, lastEvent1);
         Assert.assertEquals("index", 3, lastEvent0);
-        Assert.assertEquals("content at index", s2, tlist.get(lastEvent0));       
+        Assert.assertEquals("content at index", s2, tlist.get(lastEvent0));
+        
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getNamedBeanList");
     }
 
+    @Test
     public void testGetObjectCount() {
         Assert.assertEquals(0, l.getObjectCount());
 
@@ -297,6 +310,8 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals(4, l.getObjectCount());
     }
 
+    @Test
+    @SuppressWarnings("deprecation") // setDataListenerMute, addDataListener references
     public void testRemoveTrackingJMute() {
         
         l.setDataListenerMute(true);
@@ -325,6 +340,8 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("index1", 3, lastEvent1); // originally five items, deleted 1, so 4, and last index is then 3
     }
 
+    @Test
+    @SuppressWarnings("deprecation") // getSystemNameList, getNamedBeanList references
     public void testOrderVsSorted() {
         Sensor s4 = l.provideSensor("IS4");
         Sensor s2 = l.provideSensor("IS2");
@@ -332,9 +349,6 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         List<String> sortedList = l.getSystemNameList();
         List<Sensor> beanList = l.getNamedBeanList();
         SortedSet<Sensor> beanSet = l.getNamedBeanSet();
-        String[] sortedArray = l.getSystemNameArray();
-        jmri.util.JUnitAppender.suppressWarnMessage("Manager#getSystemNameArray() is deprecated");
-        List<String> orderedList = l.getSystemNameAddedOrderList();
         
         Assert.assertEquals("sorted list length", 2, sortedList.size());
         Assert.assertEquals("sorted list 1st", "IS2", sortedList.get(0));
@@ -348,24 +362,10 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Iterator<Sensor> iter = beanSet.iterator();
         Assert.assertEquals("bean set 1st", s2, iter.next());
         Assert.assertEquals("bean set 2nd", s4, iter.next());
-
-        Assert.assertEquals("sorted array length", 2, sortedArray.length);
-        Assert.assertEquals("sorted array 1st", "IS2", sortedArray[0]);
-        Assert.assertEquals("sorted array 2nd", "IS4", sortedArray[1]);
         
-        Assert.assertEquals("ordered list length", 2, orderedList.size());
-        Assert.assertEquals("ordered list 1st", "IS4", orderedList.get(0));
-        Assert.assertEquals("ordered list 2nd", "IS2", orderedList.get(1));
-
         // add and test (non) liveness
         Sensor s3 = l.provideSensor("IS3");
         Sensor s1 = l.provideSensor("IS1");
-
-        Assert.assertEquals("ordered list length", 4, orderedList.size());
-        Assert.assertEquals("ordered list 1st", "IS4", orderedList.get(0));
-        Assert.assertEquals("ordered list 2nd", "IS2", orderedList.get(1));
-        Assert.assertEquals("ordered list 3rd", "IS3", orderedList.get(2));
-        Assert.assertEquals("ordered list 4th", "IS1", orderedList.get(3));
 
         Assert.assertEquals("sorted list length", 2, sortedList.size());
         Assert.assertEquals("sorted list 1st", "IS2", sortedList.get(0));
@@ -382,24 +382,11 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("bean set 3rd", s3, iter.next());
         Assert.assertEquals("bean set 4th", s4, iter.next());
 
-        Assert.assertEquals("sorted array length", 2, sortedArray.length);
-        Assert.assertEquals("sorted array 1st", "IS2", sortedArray[0]);
-        Assert.assertEquals("sorted array 2nd", "IS4", sortedArray[1]);
-        
         // update and test update
-        orderedList = l.getSystemNameAddedOrderList();
         sortedList = l.getSystemNameList();
         beanList = l.getNamedBeanList();
         beanSet = l.getNamedBeanSet();
-        sortedArray = l.getSystemNameArray();
-        jmri.util.JUnitAppender.suppressWarnMessage("Manager#getSystemNameArray() is deprecated");
         
-        Assert.assertEquals("ordered list length", 4, orderedList.size());
-        Assert.assertEquals("ordered list 1st", "IS4", orderedList.get(0));
-        Assert.assertEquals("ordered list 2nd", "IS2", orderedList.get(1));
-        Assert.assertEquals("ordered list 3rd", "IS3", orderedList.get(2));
-        Assert.assertEquals("ordered list 4th", "IS1", orderedList.get(3));
-
         Assert.assertEquals("sorted list length", 4, sortedList.size());
         Assert.assertEquals("sorted list 1st", "IS1", sortedList.get(0));
         Assert.assertEquals("sorted list 2nd", "IS2", sortedList.get(1));
@@ -418,15 +405,14 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertEquals("bean set 2nd", s2, iter.next());
         Assert.assertEquals("bean set 3rd", s3, iter.next());
         Assert.assertEquals("bean set 4th", s4, iter.next());
-
-        Assert.assertEquals("sorted array length", 4, sortedArray.length);
-        Assert.assertEquals("sorted array 1st", "IS1", sortedArray[0]);
-        Assert.assertEquals("sorted array 2nd", "IS2", sortedArray[1]);
-        Assert.assertEquals("sorted array 3rd", "IS3", sortedArray[2]);
-        Assert.assertEquals("sorted array 4th", "IS4", sortedArray[3]);
+        
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getSystemNameList");
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getNamedBeanList");
 
     }
 
+    @Test
+    @SuppressWarnings("deprecation") // getSystemNameList, getNamedBeanList references
     public void testUnmodifiable() {
         Sensor s1 = l.provideSensor("IS1");
         l.provideSensor("IS2");
@@ -449,11 +435,14 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
             beanSet.add(s1);
             Assert.fail("beanSet should have thrown");
         } catch (UnsupportedOperationException e) { /* this is OK */}
+        
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getSystemNameList");
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("getNamedBeanList");
 
     }
 
     // check how proxy is integrated with defaults
-        
+    @Test
     public void testInstanceManagerIntegration() {
         jmri.util.JUnitUtil.resetInstanceManager();
         Assert.assertNotNull(InstanceManager.getDefault(SensorManager.class));
@@ -465,12 +454,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         Assert.assertNotNull(InstanceManager.getDefault(SensorManager.class));
         Assert.assertNotNull(InstanceManager.getDefault(SensorManager.class).provideSensor("IS1"));
 
-        InternalSensorManager m = new InternalSensorManager() {
-            @Override
-            public String getSystemPrefix() {
-                return "J";
-            }
-        };
+        InternalSensorManager m = new InternalSensorManager(new InternalSystemConnectionMemo("J", "Juliet"));
         InstanceManager.setSensorManager(m);
 
         Assert.assertNotNull(InstanceManager.getDefault(SensorManager.class).provideSensor("JS1"));
@@ -495,7 +479,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
     String lastCall;
     
     @Override
-    public void intervalAdded(Manager.ManagerDataEvent e) {
+    public void intervalAdded(Manager.ManagerDataEvent<Sensor> e) {
         events++;
         lastEvent0 = e.getIndex0();
         lastEvent1 = e.getIndex1();
@@ -503,7 +487,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         lastCall = "Added";
     }
     @Override
-    public void intervalRemoved(Manager.ManagerDataEvent e) {
+    public void intervalRemoved(Manager.ManagerDataEvent<Sensor> e) {
         events++;
         lastEvent0 = e.getIndex0();
         lastEvent1 = e.getIndex1();
@@ -511,7 +495,7 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         lastCall = "Removed";
     }
     @Override
-    public void contentsChanged(Manager.ManagerDataEvent e) {
+    public void contentsChanged(Manager.ManagerDataEvent<Sensor> e) {
         events++;
         lastEvent0 = e.getIndex0();
         lastEvent1 = e.getIndex1();
@@ -519,34 +503,15 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         lastCall = "Changed";
     }
 
-
-    // from here down is testing infrastructure
-    public ProxySensorManagerTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", ProxySensorManagerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(ProxySensorManagerTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
         // create and register the manager object
         l = new ProxySensorManager();
         // initially has three systems: IS, JS, KS
-        l.addManager(new InternalSensorManager() { {prefix = "J";} });
-        l.addManager(new InternalSensorManager() { {prefix = "I";} }); // not in alpha order to make it exciting
-        l.addManager(new InternalSensorManager() { {prefix = "K";} });
+        l.addManager(new InternalSensorManager(new InternalSystemConnectionMemo("J", "Juliet")));
+        l.addManager(new InternalSensorManager(new InternalSystemConnectionMemo("I", "India"))); // not in alpha order to make it exciting
+        l.addManager(new InternalSensorManager(new InternalSystemConnectionMemo("K", "Kilo")));
 
         jmri.InstanceManager.setSensorManager(l);
         
@@ -560,8 +525,8 @@ public class ProxySensorManagerTest extends TestCase implements Manager.ManagerD
         lastCall = null;
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 

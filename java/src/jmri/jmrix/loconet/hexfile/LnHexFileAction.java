@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Swing action to create and register a LnHexFileFrame object
  *
  * @author Bob Jacobsen Copyright (C) 2001
-  */
+ */
 public class LnHexFileAction extends AbstractAction {
 
     public LnHexFileAction(String s) {
@@ -23,7 +23,7 @@ public class LnHexFileAction extends AbstractAction {
         try {
             f.initComponents();
         } catch (Exception ex) {
-            log.error("starting HexFileFrame exception: " + ex.toString());
+            log.error("starting HexFileFrame exception: {}", ex.toString());
         }
         f.pack();
         f.setVisible(true);

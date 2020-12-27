@@ -1,12 +1,8 @@
 package jmri.jmrit.sample.swing;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.*;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerRepository;
 
 /**
  * Sample config pane; all it does is show a label.
@@ -41,7 +37,6 @@ public class SampleConfigPane extends jmri.util.swing.JmriPanel {
     /**
      * 2nd stage of initialization, invoked after the constructor is complete.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void initComponents() {
         JLabel label = new JLabel("Some GUI elements ...");

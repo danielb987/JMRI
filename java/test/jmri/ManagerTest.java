@@ -4,10 +4,8 @@ import java.util.*;
 
 import jmri.util.JUnitUtil;
 
-import org.junit.After;
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests the static methods of the interface.
@@ -15,7 +13,7 @@ import org.junit.Test;
  * Detailed tests are in jmri.managers.AbstractManagerTestBase with even more
  * detailed tests (which require beans, etc) in type-specific subclasses
  * 
- * @author Bob Jacobsen Copyright (C) 2017	
+ * @author Bob Jacobsen Copyright (C) 2017
  */
 public class ManagerTest {
 
@@ -35,23 +33,6 @@ public class ManagerTest {
         }
         Assert.fail("Should have thrown");
     }
-
-    @Test
-    public void testLegacyLog() {
-        jmri.Manager.legacyNameSet.clear(); // clean start
-
-        // start actual test
-        Assert.assertEquals("Empty at first", 0, Manager.legacyNameSet.size());
-
-        Manager.getSystemPrefix("DCCPPS01");
-        Assert.assertEquals("Didn't catch reference", 1, Manager.legacyNameSet.size());
-
-        Manager.getSystemPrefix("IS01");
-        Assert.assertEquals("Logged one in error", 1, Manager.legacyNameSet.size());
-
-        // there should be a ShutDownTask registered, remove it
-        InstanceManager.getDefault(jmri.ShutDownManager.class).deregister(Manager.legacyReportTask);
-    }
     
     @Test
     public void testGetSystemPrefixLengthThrow2() {
@@ -63,14 +44,6 @@ public class ManagerTest {
         Assert.fail("Should have thrown");
     }
 
-    // Test legacy prefixes
-    @Deprecated
-    @Test
-    public void testGetSystemPrefixLengthLegacyPrefixes() {
-        Assert.assertEquals("DCCPPT12", 5, Manager.getSystemPrefixLength("DCCPPT12"));
-        Assert.assertEquals("MRT13", 2, Manager.getSystemPrefixLength("MRT13"));
-        Assert.assertEquals("DXT512", 2, Manager.getSystemPrefixLength("DXT512"));
-    }
 
     @Test
     public void testGetSystemPrefixLengthBad() {
@@ -89,14 +62,6 @@ public class ManagerTest {
         Assert.assertEquals("L21T1", "L21", Manager.getSystemPrefix("L21T1"));
     }
 
-    // Test legacy prefixes
-    @Deprecated
-    @Test
-    public void testGetSystemPrefixLegacyPrefixes() {
-        Assert.assertEquals("DCCPPT12", "DCCPP", Manager.getSystemPrefix("DCCPPT12"));
-        Assert.assertEquals("MRT13", "MR", Manager.getSystemPrefix("MRT13"));
-        Assert.assertEquals("DXT512", "DX", Manager.getSystemPrefix("DXT512"));
-    }
 
     @Test
     public void testGetSystemPrefixBad() {
@@ -108,53 +73,6 @@ public class ManagerTest {
         Assert.fail("should have thrown");
     }
     
-    // Test legacy prefixes
-    @Deprecated
-    @Test
-    public void testIsLegacySystemPrefix() {
-        Assert.assertTrue(Manager.isLegacySystemPrefix("DX"));
-        Assert.assertTrue(Manager.isLegacySystemPrefix("DCCPP"));
-        Assert.assertTrue(Manager.isLegacySystemPrefix("DP"));
-        
-        Assert.assertFalse(Manager.isLegacySystemPrefix("C"));
-        Assert.assertFalse(Manager.isLegacySystemPrefix("C2"));
-        Assert.assertFalse(Manager.isLegacySystemPrefix("D"));
-        
-        for (String s : Manager.LEGACY_PREFIXES.toArray(new String[0])) {
-            Assert.assertTrue(Manager.isLegacySystemPrefix(s));
-        }
-    }
-    
-    // Test legacy prefixes
-    @Deprecated
-    @Test
-    public void testLegacyPrefixes() {
-        // catch if this is changed, so we remember to change
-        // rest of tests
-        Assert.assertEquals("length of legacy set", 7, Manager.LEGACY_PREFIXES.toArray().length);
-    }
-
-    // Test legacy prefixes
-    @Deprecated
-    @Test
-    public void startsWithLegacySystemPrefix() {
-        Assert.assertEquals(2, Manager.startsWithLegacySystemPrefix("DXS1"));
-        Assert.assertEquals(5, Manager.startsWithLegacySystemPrefix("DCCPPT4"));
-        Assert.assertEquals(2, Manager.startsWithLegacySystemPrefix("DPS12"));
-        
-        Assert.assertEquals(-1, Manager.startsWithLegacySystemPrefix("CT1"));
-        Assert.assertEquals(-1, Manager.startsWithLegacySystemPrefix("C2T12"));
-        Assert.assertEquals(-1, Manager.startsWithLegacySystemPrefix("DT12132"));
-
-        Assert.assertEquals(-1, Manager.startsWithLegacySystemPrefix(""));
-        Assert.assertEquals(-1, Manager.startsWithLegacySystemPrefix("X"));
-        Assert.assertEquals(-1, Manager.startsWithLegacySystemPrefix("-"));
-        
-        for (String s : Manager.LEGACY_PREFIXES.toArray(new String[0])) {
-            Assert.assertEquals("Length test of \""+s+"\"",s.length(), Manager.startsWithLegacySystemPrefix(s+"T12"));
-        }
-    }
-
     // test proper coding of constants
     @Test
     public void checkAgainstSwingConstants() {
@@ -237,12 +155,14 @@ public class ManagerTest {
         
     /**
      * Service routine
+     * 
+     * @param iter set of entries
      * @return true when all entries are in correct order, false otherwise
      */
     boolean checkOrderNamedBeans(Iterator<NamedBean> iter) {
         NamedBean first = iter.next();
         NamedBean next;
-        jmri.util.NamedBeanComparator comp = new jmri.util.NamedBeanComparator();
+        jmri.util.NamedBeanComparator<NamedBean> comp = new jmri.util.NamedBeanComparator<>();
         while (iter.hasNext()) {
             next = iter.next();
             if (comp.compare(first, next) >= 0) return false;
@@ -253,6 +173,8 @@ public class ManagerTest {
     
     /**
      * Service routine
+     * 
+     * @param iter set of entries
      * @return true when all entries are in correct order, false otherwise
      */
     boolean checkOrderStrings(Iterator<String> iter) {
@@ -268,19 +190,23 @@ public class ManagerTest {
     
     static class BogusBean extends jmri.implementation.AbstractNamedBean {
         public BogusBean(String n) { super(n); }
+        @Override
         public int getState() { return -1; }
+        @Override
         public String getBeanType() { return "";}
+        @Override
         public void setState(int i) {}
     }
     
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    public void tearDown() {        
+        JUnitUtil.clearShutDownManager();
+
         JUnitUtil.tearDown();
     }
 

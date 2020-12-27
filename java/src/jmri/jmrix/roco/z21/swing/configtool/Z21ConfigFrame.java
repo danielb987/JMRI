@@ -22,16 +22,16 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This is a utility for reading the hardware and software versions of your Z21
  * command station and along with the flags and the serial number.
- * <p>
- * @author	Paul Bender Copyright (C) 2016
+ *
+ * @author Paul Bender Copyright (C) 2016
  */
 public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener {
 
     /**
      *
      */
-    private Z21TrafficController tc = null;
-    private RocoZ21CommandStation cs = null;
+    private Z21TrafficController tc;
+    private RocoZ21CommandStation cs;
 
     /* updatable fields and field labels */
     private final JToggleButton getSystemInfoButton;
@@ -54,6 +54,8 @@ public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener 
     private JCheckBox locoNetLocomotiveMessagesCheckBox;
     private JCheckBox locoNetTurnoutMessagesCheckBox;
     private JCheckBox locoNetOccupancyMessagesCheckBox;
+    private JCheckBox railComAutomaticCheckBox;
+    private JCheckBox canDetectorCheckBox;
 
     public Z21ConfigFrame(jmri.jmrix.roco.z21.Z21SystemConnectionMemo memo) {
         super(Bundle.getMessage("Z21ConfigToolMenuItem"));
@@ -85,9 +87,7 @@ public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener 
         pack();
 
         // Add Get SystemInfo button handler
-        getSystemInfoButton.addActionListener((ActionEvent a) -> {
-            getSystemInfo();
-        });
+        getSystemInfoButton.addActionListener((ActionEvent a) -> getSystemInfo());
 
         // install close button handler
         closeButton.addActionListener((ActionEvent a) -> {
@@ -154,6 +154,10 @@ public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener 
         railComMessagesCheckBox.setToolTipText(Bundle.getMessage("RailComMessagesFlagToolTip"));
         panel.add(railComMessagesCheckBox);
 
+        railComAutomaticCheckBox = new JCheckBox(Bundle.getMessage("RailComAutomaticFlagLabel"), cs.getRailComAutomaticFlag());
+        railComMessagesCheckBox.setToolTipText(Bundle.getMessage("RailComAutomaticFlagToolTip"));
+        panel.add(railComAutomaticCheckBox);
+
         locoNetMessagesCheckBox = new JCheckBox(Bundle.getMessage("LocoNetMessagesFlagLabel"), cs.getLocoNetMessagesFlag());
         locoNetMessagesCheckBox.setToolTipText(Bundle.getMessage("LocoNetMessagesFlagToolTip"));
         panel.add(locoNetMessagesCheckBox);
@@ -170,13 +174,15 @@ public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener 
         locoNetOccupancyMessagesCheckBox.setToolTipText(Bundle.getMessage("LocoNetOccupancyMessagesFlagToolTip"));
         panel.add(locoNetOccupancyMessagesCheckBox);
 
+        canDetectorCheckBox = new JCheckBox(Bundle.getMessage("canDetectorFlagLabel"), cs.getCanDetectorFlag());
+        canDetectorCheckBox.setToolTipText(Bundle.getMessage("canDetectorFlagToolTip"));
+        panel.add(canDetectorCheckBox);
+
         setSystemInfoButton = new JToggleButton(Bundle.getMessage("SetSystemInfoButtonLabel"));
         setSystemInfoButton.setToolTipText(Bundle.getMessage("SetSystemInfoButtonToolTip"));
 
         // Add Get SystemInfo button handler
-        setSystemInfoButton.addActionListener((ActionEvent a) -> {
-            writeSystemInfo();
-        });
+        setSystemInfoButton.addActionListener((ActionEvent a) -> writeSystemInfo());
         panel.add(setSystemInfoButton);
 
         return panel;
@@ -204,11 +210,13 @@ public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener 
         cs.setRMBusMessagesFlag(rmBusMessagesCheckBox.isSelected());
         cs.setSystemStatusMessagesFlag(systemStatusMessagesCheckBox.isSelected());
         cs.setRailComMessagesFlag(railComMessagesCheckBox.isSelected());
+        cs.setRailComAutomaticFlag(railComAutomaticCheckBox.isSelected());
         cs.setXPressNetLocomotiveMessagesFlag(xPressNetLocomotiveMessagesCheckBox.isSelected());
         cs.setLocoNetMessagesFlag(locoNetMessagesCheckBox.isSelected());
         cs.setLocoNetLocomotiveMessagesFlag(locoNetLocomotiveMessagesCheckBox.isSelected());
         cs.setLocoNetTurnoutMessagesFlag(locoNetTurnoutMessagesCheckBox.isSelected());
         cs.setLocoNetOccupancyMessagesFlag(locoNetOccupancyMessagesCheckBox.isSelected());
+        cs.setCanDetectorFlag(canDetectorCheckBox.isSelected());
 
         // send the flags to the command station.
         tc.sendz21Message(Z21Message.getLanSetBroadcastFlagsRequestMessage(cs.getZ21BroadcastFlags()), this);
@@ -226,8 +234,8 @@ public class Z21ConfigFrame extends jmri.util.JmriJFrame implements Z21Listener 
             case 0x0010:
                 // the serial number is a 32 bit integer stored in little
                 // endian format starting with the 1st databyte (element 4).
-                int serialNo = zr.getElement(4) + (zr.getElement(5) << 8)
-                        + (zr.getElement(6) << 16) + (zr.getElement(7) << 24);
+                int serialNo = (zr.getElement(4)&0xff) + ((zr.getElement(5)&0xff) << 8)
+                        + ((zr.getElement(6)&0xff) << 16) + ((zr.getElement(7)&0xff) << 24);
                 cs.setSerialNumber(serialNo);
                 updateSerialNumber();
                 break;

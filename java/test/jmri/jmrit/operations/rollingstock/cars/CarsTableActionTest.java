@@ -1,33 +1,44 @@
 package jmri.jmrit.operations.rollingstock.cars;
 
-import jmri.util.JUnitUtil;
-import org.junit.After;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Assume;
+import org.junit.jupiter.api.Test;
+
+import jmri.jmrit.operations.OperationsTestCase;
+import jmri.util.JUnitOperationsUtil;
+import jmri.util.JUnitUtil;
+import jmri.util.JmriJFrame;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class CarsTableActionTest {
+public class CarsTableActionTest extends OperationsTestCase {
 
     @Test
     public void testCTor() {
         CarsTableAction t = new CarsTableAction();
         Assert.assertNotNull("exists",t);
     }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
+    
+    @Test
+    public void testAction() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        CarsTableAction a = new CarsTableAction();
+        Assert.assertNotNull("exists", a);
+        
+        a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+        
+        JmriJFrame f = JmriJFrame.getFrame(Bundle.getMessage("TitleCarsTable"));
+        Assert.assertNotNull("frame exists", f);
+        JUnitUtil.dispose(f);
+        
+        JUnitOperationsUtil.checkOperationsShutDownTask();
     }
 
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
-    }
 
     // private final static Logger log = LoggerFactory.getLogger(CarsTableActionTest.class);
 

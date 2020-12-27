@@ -3,26 +3,26 @@ package jmri.jmrit;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+
 import jmri.util.FileUtil;
 import jmri.util.JUnitUtil;
+
 import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
-import org.junit.After;
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Tests for the XmlFile class.
- * <P>
+ * <p>
  * Uses (creates, modifies, destroys) files in the local preferences directory
  * and the custom <user.home>/temp/xml directory
  *
- * @author	Bob Jacobsen Copyright 2001
+ * @author Bob Jacobsen Copyright 2001
  */
 public class XmlFileTest {
 
@@ -91,9 +91,7 @@ public class XmlFileTest {
                     boolean result = false;
 
                     try {
-                        XmlFile xf = new XmlFile() {
-                            { warned = false; }
-                        };   // odd syntax is due to XmlFile being abstract
+                        XmlFile xf = new XmlFile() {};   // odd syntax is due to XmlFile being abstract
                         xf.setValidate(validate);
                         xf.rootFromInputStream(new java.io.ByteArrayInputStream(content.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
                         result = true;
@@ -102,7 +100,7 @@ public class XmlFileTest {
                         log.debug(ex.toString());
                     }
 
-                    log.debug("DTD: "+theDTD+" SCHEMA: "+theSchema+" ("+validate+") expects "+passes+" was "+result+(passes!=result?" !!!!!!!!!!!!!!!!!!!!!!!!!":"") );
+                    log.debug("DTD: {} SCHEMA: {} ({}) expects {} was {}{}", theDTD, theSchema, validate, passes, result, passes != result ? " !!!!!!!!!!!!!!!!!!!!!!!!!" : "");
                     Assert.assertEquals("DTD: "+theDTD+" SCHEMA: "+theSchema+" ("+validate+")", passes, result);
 
                 }
@@ -254,13 +252,12 @@ public class XmlFileTest {
 
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

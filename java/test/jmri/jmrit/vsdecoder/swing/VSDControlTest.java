@@ -1,32 +1,29 @@
 package jmri.jmrit.vsdecoder.swing;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class VSDControlTest {
 
     @Test
-    @Ignore("tests causes NPE, needs more setup")
     public void testCTor() {
-        VSDControl t = new VSDControl();
+        Assume.assumeFalse(java.awt.GraphicsEnvironment.isHeadless());
+        VSDControl t = new VSDControl("Test");
         Assert.assertNotNull("exists",t);
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

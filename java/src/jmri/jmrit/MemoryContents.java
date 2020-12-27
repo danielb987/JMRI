@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * agents to access the data in the internal data structures for the purpose of
  * sending the data to the device to be updated. Supports the Intel "I8HEX" file
  * format and a derivative ".dmf" file format created by Digitrax.
- * <P>
+ * <p>
  * Support for the Intel "I8HEX" format includes support for record types "00"
  * and "01". The "I8HEX" format implements records with a LOAD OFFSET field of
  * 16 bits. To support the full 24-bit addressing range provided by the LocoNet
@@ -69,13 +69,13 @@ import org.slf4j.LoggerFactory;
  * Similarly, when writing the contents of data storage to a file, the
  * instantiating method will create a {@link File} and an associated
  * {@link Writer} and pass the {@link Writer} object to
- * {@link writeHex}. The mechanisms implemented within this class do not
+ * {@link #writeHex}. The mechanisms implemented within this class do not
  * know about or care about the filename or its extension and do not use that
  * information as part of its file interpretation or file creation.
  * <p>
  * The class is implemented with a maximum of 24 bits of address space, with up
  * to 256 pages of up to 65536 bytes per page. A "sparse" implementation of
- * memory is modeled, where only occupied pages are allocated within the JAVA
+ * memory is modeled, where only occupied pages are allocated within the Java
  * system's memory.
  * <hr>
  * The Intel "Hexadecimal Object File Format File Format Specification"
@@ -116,7 +116,7 @@ import org.slf4j.LoggerFactory;
  * Specification", Revision A, January 6, 1988.
  * <p>
  * Mnemonically, a properly formatted record would appear as:
- * </p><pre>
+ * <pre>
  *     :lloooott{dd}cc
  * where:
  *      ':'     is the RECORD MARK
@@ -126,9 +126,10 @@ import org.slf4j.LoggerFactory;
  *      "{dd}"  is the INFO or DATA field, containing zero or more pairs of 
  *                  characters of Info or Data associated with the record
  *      "cc"    is the CHKSUM
- * </pre><p>
- * and a few examples of complaint record would be:
- * </p><ul>
+ * </pre>
+ * <p>
+ * and a few examples of complaint records would be:
+ * <ul>
  *     <li>:02041000FADE07
  *     <li>:020000024010AC
  *     <li>:00000001FF
@@ -225,8 +226,7 @@ public class MemoryContents {
     private void initPage(int page) {
         if (pageArray[page] != null) {
             if (log.isDebugEnabled()) {
-                log.debug("Method initPage was previously invoked for page " // NOI18N
-                        + page);
+                log.debug("Method initPage was previously invoked for page {}", page);
             }
             return;
         }
@@ -247,7 +247,7 @@ public class MemoryContents {
      * comments for use by the invoking method.
      * <p>
      * Integrity checks include:
-     * </p><ul>
+     * <ul>
      * <li>Identification of LOAD OFFSET field type from first record
      * <li>Verification that all subsequent records use the same LOAD OFFSET
      * field type
@@ -259,7 +259,8 @@ public class MemoryContents {
      * <li>Identification of a file without any data record
      * <li>Identification of any records which have extra characters after the
      * checksum
-     * </ul><p>
+     * </ul>
+     * <p>
      * When reading the file, {@link #readHex} infers the addressing format
      * from the first record found in the file, and future records are
      * interpreted using that addressing format. It is not necessary to
@@ -275,7 +276,7 @@ public class MemoryContents {
      * information. Such Key/Value pair information is used within the .DMF
      * format to provide configuration information for firmware update
      * mechanism. This class also extracts key/value pair comments "I8HEX"
-     * format files. After successful completion of this {@link readHex},
+     * format files. After successful completion of the {@link #readHex} call,
      * then the {@link #extractValueOfKey(String keyName)} method may be used to inspect individual key values.
      * <p>
      * Key/Value pair definition comment lines are of the format:
@@ -466,8 +467,7 @@ public class MemoryContents {
                     int recordType = Integer.valueOf(line.substring(indexOfLastAddressCharacter + 1,
                             indexOfLastAddressCharacter + 3), 16).intValue();
                     if (log.isDebugEnabled()) {
-                        log.debug("RECTYP = 0x" // NOI18N
-                                + Integer.toHexString(recordType));
+                        log.debug("RECTYP = 0x{}", Integer.toHexString(recordType));
                     }
 
                     // verify record character count
@@ -486,7 +486,7 @@ public class MemoryContents {
                         throw new MemoryFileRecordLengthException(message);
                     }
 
-                    // verify the checksum now that we know the the RECTYP.
+                    // verify the checksum now that we know the RECTYP.
                     // Do this by calculating the checksum of all characters on 
                     //line (except the ':' record mark), which should result in 
                     // a computed checksum value of 0
@@ -655,7 +655,7 @@ public class MemoryContents {
                             currentPage = tempPage;
                             initPage(currentPage);
                             if (log.isDebugEnabled()) {
-                                log.debug("New page 0x" + Integer.toHexString(currentPage)); // NOI18N
+                                log.debug("New page 0x{}", Integer.toHexString(currentPage)); // NOI18N
                             } // NOI18N
                         } else {
                             String message = "Page number 0x" // NOI18N
@@ -781,7 +781,7 @@ public class MemoryContents {
      * any comment lines in its output.
      *
      * @param writer    Writer to which the character stream is sent
-     * @param blocksize is the maximum number of bytes defined in a data record
+     * @param blockSize is the maximum number of bytes defined in a data record
      * @throws IOException                         upon file access problem
      * @throws MemoryFileAddressingFormatException if unsupported addressing
      *                                             format
@@ -812,7 +812,7 @@ public class MemoryContents {
                 }
                 for (int i = 0; i < pageArray[segment].length - blocksize + 1; i += blocksize) {
                     if (log.isDebugEnabled()) {
-                        log.debug("write at 0x" + Integer.toHexString(i)); // NOI18N
+                        log.debug("write at 0x{}", Integer.toHexString(i)); // NOI18N
                     }
                     // see if need to write the current block
                     boolean write = false;
@@ -828,7 +828,7 @@ public class MemoryContents {
                             if (startOffset < 0) {
                                 startOffset = j;
                                 if (log.isDebugEnabled()) {
-                                    log.debug("startOffset = 0x" + Integer.toHexString(startOffset)); // NOI18N
+                                    log.debug("startOffset = 0x{}", Integer.toHexString(startOffset)); // NOI18N
                                 }
                             }
                         }
@@ -848,11 +848,7 @@ public class MemoryContents {
                                 count++;
                             }
                             if (log.isDebugEnabled()) {
-                                log.debug("Writing Address " + startOffset + " (" // NOI18N
-                                        + (isLoadOffsetType24Bits() ? "24" : "16") // NOI18N
-                                        + "bit Address) count " // NOI18N
-                                        + count
-                                );
+                                log.debug("Writing Address {} ({}bit Address) count {}", startOffset, isLoadOffsetType24Bits() ? "24" : "16", count);
                             }
 
                             StringBuffer output = new StringBuffer(":"); // NOI18N
@@ -944,7 +940,7 @@ public class MemoryContents {
         try {
             return pageArray[currentPage][location % PAGESIZE] != DEFAULT_MEM_VALUE;
         } catch (Exception e) {
-            log.error("error in locationInUse " + currentPage + " " + location, e); // NOI18N
+            log.error("error in locationInUse {} {}", currentPage, location, e); // NOI18N
             return false;
         }
     }
@@ -961,20 +957,13 @@ public class MemoryContents {
     public int getLocation(int location) {
         currentPage = location / PAGESIZE;
         if (pageArray[currentPage] == null) {
-            log.error("Error in getLocation(0x" // NOI18N
-                    + Integer.toHexString(location)
-                    + "): accessed uninitialized page " // NOI18N
-                    + currentPage);
+            log.error("Error in getLocation(0x{}): accessed uninitialized page {}", Integer.toHexString(location), currentPage);
             return DEFAULT_MEM_VALUE;
         }
         try {
             return pageArray[currentPage][location % PAGESIZE];
         } catch (Exception e) {
-            log.error("Error in getLocation(0x" // NOI18N
-                    + Integer.toHexString(location)
-                    + "); computed (current page 0x" // NOI18N
-                    + Integer.toHexString(currentPage)
-                    + "): exception ", e); // NOI18N
+            log.error("Error in getLocation(0x{}); computed (current page 0x{}): exception ", Integer.toHexString(location), Integer.toHexString(currentPage), e); // NOI18N
             return 0;
         }
     }
@@ -1010,9 +999,7 @@ public class MemoryContents {
      */
     private LoadOffsetFieldType inferRecordAddressType(String recordString) {
         if (recordString.charAt(0) != LEADING_CHAR_RECORD_MARK) {
-            log.error("Cannot infer record addressing type because line " // NOI18N
-                    + lineNum
-                    + " is not a record."); // NOI18N
+            log.error("Cannot infer record addressing type because line {} is not a record.", lineNum); // NOI18N
             return LoadOffsetFieldType.ADDRESSFIELDSIZEUNKNOWN;
         }
         String r = recordString.substring(CHARS_IN_RECORD_MARK);  // create a string without the leading ':'
@@ -1020,10 +1007,7 @@ public class MemoryContents {
         if (((len + 1) / 2) != (len / 2)) {
             // Not an even number of characters in the line (after removing the ':'
             // character), so must be a bad record.
-            log.error("Cannot infer record addressing type because line " // NOI18N
-                    + lineNum
-                    + " does not " // NOI18N
-                    + "have the correct number of characters."); // NOI18N
+            log.error("Cannot infer record addressing type because line {} does not have the correct number of characters.", lineNum); // NOI18N
             return LoadOffsetFieldType.ADDRESSFIELDSIZEUNKNOWN;
         }
 
@@ -1036,13 +1020,7 @@ public class MemoryContents {
 
         // Return if record checksum value does not match calculated checksum
         if (calculatedChecksum != checksumInRecord) {
-            log.error("Cannot infer record addressing type because line " // NOI18N
-                    + lineNum
-                    + " does not have the correct checksum (expect 0x" // NOI18N
-                    + Integer.toHexString(calculatedChecksum)
-                    + ", found CHKSUM = 0x" // NOI18N
-                    + Integer.toHexString(checksumInRecord)
-                    + ")"); // NOI18N
+            log.error("Cannot infer record addressing type because line {} does not have the correct checksum (expect 0x{}, found CHKSUM = 0x{})", lineNum, Integer.toHexString(calculatedChecksum), Integer.toHexString(checksumInRecord)); // NOI18N
             return LoadOffsetFieldType.ADDRESSFIELDSIZEUNKNOWN;
         }
 
@@ -1057,10 +1035,7 @@ public class MemoryContents {
             if (isSupportedRecordType(Integer.parseInt(r.substring(6, 8), 16))) {
                 return LoadOffsetFieldType.ADDRESSFIELDSIZE16BITS;
             } else {
-                log.error("Cannot infer record addressing type in line " // NOI18N
-                        + lineNum
-                        + " because record " // NOI18N
-                        + "type is an unsupported record type."); // NOI18N
+                log.error("Cannot infer record addressing type in line {} because record type is an unsupported record type.", lineNum); // NOI18N
                 return LoadOffsetFieldType.ADDRESSFIELDSIZEUNKNOWN;
             }
         }
@@ -1070,9 +1045,7 @@ public class MemoryContents {
             if (isSupportedRecordType(Integer.parseInt(r.substring(8, 10), 16))) {
                 return LoadOffsetFieldType.ADDRESSFIELDSIZE24BITS;
             } else {
-                log.error("Cannot infer record addressing type in line " // NOI18N
-                        + lineNum
-                        + " because record type is an unsupported record type."); // NOI18N
+                log.error("Cannot infer record addressing type in line {} because record type is an unsupported record type.", lineNum); // NOI18N
                 return LoadOffsetFieldType.ADDRESSFIELDSIZEUNKNOWN;
             }
         }
@@ -1135,10 +1108,7 @@ public class MemoryContents {
     private boolean addressAndCountIsOk(int addr, int count) {
         int beginPage = addr / PAGESIZE;
         int endPage = ((addr + count - 1) / PAGESIZE);
-        log.debug("Effective Record Addr = 0x" + Integer.toHexString(addr) // NOI18N
-                + " count = " + count // NOI18N
-                + " BeginPage = " + beginPage // NOI18N
-                + " endpage = " + endPage); // NOI18N
+        log.debug("Effective Record Addr = 0x{} count = {} BeginPage = {} endpage = {}", Integer.toHexString(addr), count, beginPage, endPage); // NOI18N
         return (beginPage == endPage);
     }
 
@@ -1162,13 +1132,13 @@ public class MemoryContents {
                 int f = t.indexOf(": "); // NOI18N
                 String value = t.substring(f + 2, t.length());
                 if (log.isDebugEnabled()) {
-                    log.debug("Key " + keyName + " was found in firmware image with value '" + value + "'"); // NOI18N
+                    log.debug("Key {} was found in firmware image with value '{}'", keyName, value); // NOI18N
                 }
                 return value;
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("Key " + keyName + " is not defined in firmware image"); // NOI18N
+            log.debug("Key {} is not defined in firmware image", keyName); // NOI18N
         }
         return null;
 
@@ -1191,7 +1161,7 @@ public class MemoryContents {
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("Did not find key " + keyName); // NOI18N
+            log.debug("Did not find key {}", keyName); // NOI18N
         }
         return -1;
     }
@@ -1212,7 +1182,7 @@ public class MemoryContents {
             keyValComments.add("! " + keyName + ": " + value + "\n"); // NOI18N
             return;
         }
-        log.warn("Key " + keyName + " already exists in key/value set.  Overriding previous value!"); // NOI18N
+        log.warn("Key {} already exists in key/value set.  Overriding previous value!", keyName); // NOI18N
         keyValComments.set(keyIndex, "! " + keyName + ": " + value + "\n"); // NOI18N
     }
 

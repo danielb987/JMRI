@@ -14,7 +14,6 @@ import java.util.Set;
 import jmri.InstanceInitializer;
 import jmri.InstanceManager;
 import jmri.implementation.AbstractInstanceInitializer;
-import jmri.implementation.QuietShutDownTask;
 import jmri.jmrix.dccpp.DCCppConstants;
 import jmri.util.FileUtil;
 import jmri.util.zeroconf.ZeroConfService;
@@ -23,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the DCCppOverTcp Server Protocol
+ * Implementation of the DCCppOverTcp Server Protocol.
  *
  * @author Alex Shepherd Copyright (C) 2006
  * @author Mark Underwood Copyright (C) 2015
@@ -36,7 +35,7 @@ public class Server {
     boolean settingsLoaded = false;
     ServerListner stateListner;
     boolean settingsChanged = false;
-    QuietShutDownTask shutDownTask;
+    Runnable shutDownTask;
     ZeroConfService service = null;
     static final String AUTO_START_KEY = "AutoStart";
     static final String PORT_NUMBER_KEY = "PortNumber";
@@ -49,17 +48,6 @@ public class Server {
         stateListner = l;
     }
 
-    /**
-     *
-     * @return the managed instance
-     * @deprecated since 4.9.2; use
-     * {@link jmri.InstanceManager#getDefault(java.lang.Class)} instead
-     */
-    @Deprecated
-    public static synchronized Server getInstance() {
-        return InstanceManager.getDefault(Server.class);
-    }
-
     private void loadSettings() {
         if (!settingsLoaded) {
             settingsLoaded = true;
@@ -68,7 +56,7 @@ public class Server {
             String settingsFileName = FileUtil.getUserFilesPath() + SETTINGS_FILE_NAME;
 
             try {
-                log.debug("Server: opening settings file " + settingsFileName);
+                log.debug("Server: opening settings file {}", settingsFileName);
                 java.io.InputStream settingsStream = new FileInputStream(settingsFileName);
                 try {
                     settings.load(settingsStream);
@@ -93,7 +81,7 @@ public class Server {
         // we can't use the store capabilities of java.util.Properties, as
         // they are not present in Java 1.1.8
         String settingsFileName = FileUtil.getUserFilesPath() + SETTINGS_FILE_NAME;
-        log.debug("Server: saving settings file " + settingsFileName);
+        log.debug("Server: saving settings file {}", settingsFileName);
 
         try {
             OutputStream outStream = new FileOutputStream(settingsFileName);
@@ -152,7 +140,7 @@ public class Server {
             socketListener = new Thread(new ClientListener());
             socketListener.setDaemon(true);
             socketListener.setName("DCCppOverTcpServer");
-            log.info("Starting new DCCppOverTcpServer listener on port " + portNumber);
+            log.info("Starting new DCCppOverTcpServer listener on port {}", portNumber);
             socketListener.start();
             updateServerStateListener();
             // advertise over Zeroconf/Bonjour
@@ -162,18 +150,10 @@ public class Server {
             log.info("Starting ZeroConfService _dccppovertcpserver._tcp.local for DCCppOverTCP Server");
             this.service.publish();
             if (this.shutDownTask == null) {
-                this.shutDownTask = new QuietShutDownTask("DCCppOverTcpServer") {
-                    @Override
-                    public boolean execute() {
-                        InstanceManager.getDefault(Server.class).disable();
-                        return true;
-                    }
-                };
+                this.shutDownTask = this::disable;
             }
             if (this.shutDownTask != null) {
-                InstanceManager.getOptionalDefault(jmri.ShutDownManager.class).ifPresent((sdm) -> {
-                    sdm.register(this.shutDownTask);
-                });
+                InstanceManager.getDefault(jmri.ShutDownManager.class).register(this.shutDownTask);
             }
         }
     }
@@ -202,7 +182,7 @@ public class Server {
             }
         }
         this.service.stop();
-        if (this.shutDownTask != null && InstanceManager.getNullableDefault(jmri.ShutDownManager.class) != null) {
+        if (this.shutDownTask != null) {
             InstanceManager.getDefault(jmri.ShutDownManager.class).deregister(this.shutDownTask);
         }
     }
@@ -231,7 +211,7 @@ public class Server {
                 while (!socketListener.isInterrupted()) {
                     newClientConnection = serverSocket.accept();
                     remoteAddress = newClientConnection.getRemoteSocketAddress().toString();
-                    log.info("Server: Connection from: " + remoteAddress);
+                    log.info("Server: Connection from: {}", remoteAddress);
                     addClient(new ClientRxHandler(remoteAddress, newClientConnection));
                 }
                 serverSocket.close();
@@ -263,13 +243,12 @@ public class Server {
             return clients.size();
         }
     }
-    private final static Logger log = LoggerFactory.getLogger(Server.class);
 
     @ServiceProvider(service = InstanceInitializer.class)
     public static class Initializer extends AbstractInstanceInitializer {
 
         @Override
-        public <T> Object getDefault(Class<T> type) throws IllegalArgumentException {
+        public <T> Object getDefault(Class<T> type) {
             if (type.equals(Server.class)) {
                 Server instance = new Server();
                 if (instance.getAutoStart()) {
@@ -287,4 +266,7 @@ public class Server {
             return set;
         }
     }
+
+    private final static Logger log = LoggerFactory.getLogger(Server.class);
+
 }

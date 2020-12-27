@@ -1,12 +1,12 @@
 package jmri.jmrix.loconet;
 
 import java.util.concurrent.TimeUnit;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the jmri.jmrix.loconet.LocoNetThrottledTransmitter class.
@@ -17,14 +17,14 @@ public class LocoNetThrottledTransmitterTest {
 
     @Test
     public void testCtorAndDispose() {
-        LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(null, false);
+        LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(new LocoNetInterfaceScaffold(memo), false);
         q.dispose();
         JUnitUtil.waitFor(()->{return !q.running;}, "stopped");
     }
 
     @Test
     public void testMemoCtor() {
-        LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(null, false);
+        LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(new LocoNetInterfaceScaffold(memo), false);
         new LocoNetThrottledTransmitter.Memo(null, 100, TimeUnit.MILLISECONDS);
 
         q.dispose();
@@ -55,7 +55,7 @@ public class LocoNetThrottledTransmitterTest {
 
     @Test
     public void testThreadStartStop() {
-        LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(null, false);
+        LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(new LocoNetInterfaceScaffold(memo), false);
         JUnitUtil.waitFor(()->{return q.running;}, "started");
 
         Assert.assertTrue("started", q.running);
@@ -66,7 +66,7 @@ public class LocoNetThrottledTransmitterTest {
 
     @Test
     public void testSendOneImmediate() {
-        LocoNetInterfaceScaffold s = new LocoNetInterfaceScaffold();
+        LocoNetInterfaceScaffold s = new LocoNetInterfaceScaffold(memo);
         LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(s, false);
 
         LocoNetMessage m1;
@@ -88,7 +88,8 @@ public class LocoNetThrottledTransmitterTest {
 
     @Test
     public void testSendOneNowOneLater() {
-        LocoNetInterfaceScaffold s = new LocoNetInterfaceScaffold();
+        Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
+        LocoNetInterfaceScaffold s = new LocoNetInterfaceScaffold(memo);
         LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(s, false);
 
         LocoNetMessage m1 = new LocoNetMessage(2);
@@ -117,7 +118,7 @@ public class LocoNetThrottledTransmitterTest {
 
     @Test
     public void testAfterTimeNewMessageSentImmediately() {
-        LocoNetInterfaceScaffold s = new LocoNetInterfaceScaffold();
+        LocoNetInterfaceScaffold s = new LocoNetInterfaceScaffold(memo);
         LocoNetThrottledTransmitter q = new LocoNetThrottledTransmitter(s, false);
 
         LocoNetMessage m1 = new LocoNetMessage(2);
@@ -143,14 +144,17 @@ public class LocoNetThrottledTransmitterTest {
         JUnitUtil.waitFor(()->{return !q.running;}, "stopped");
     }
 
-    // The minimal setup for log4J
-    @Before
+    LocoNetSystemConnectionMemo memo;
+
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
+        memo = new LocoNetSystemConnectionMemo();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
+        memo = null;
         JUnitUtil.tearDown();
     }
 

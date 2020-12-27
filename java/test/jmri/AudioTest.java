@@ -1,8 +1,6 @@
 package jmri;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
@@ -10,8 +8,9 @@ import org.junit.Assert;
  *
  * @author Matthew Harris Copyright (C) 2011
  */
-public class AudioTest extends TestCase {
+public class AudioTest {
 
+    @Test
     public void testStateConstants() {
 
         Assert.assertTrue("Initial and Stopped differ", (Audio.STATE_INITIAL != Audio.STATE_STOPPED));
@@ -43,6 +42,7 @@ public class AudioTest extends TestCase {
 
     }
 
+    @Test
     public void testSubTypeConstants() {
 
         Assert.assertEquals("AudioSource sub-type is 'S'", 'S', Audio.SOURCE);
@@ -51,6 +51,7 @@ public class AudioTest extends TestCase {
 
     }
 
+    @Test
     public void testCommandConstants() {
 
         Assert.assertTrue("Command Init Factory and Load Sound differ", (Audio.CMD_INIT_FACTORY != Audio.CMD_LOAD_SOUND));
@@ -174,6 +175,7 @@ public class AudioTest extends TestCase {
 
     }
 
+    @Test
     public void testFadeStateConstants() {
 
         Assert.assertTrue("Fade State None and Out differ", (Audio.FADE_NONE != Audio.FADE_OUT));
@@ -183,29 +185,12 @@ public class AudioTest extends TestCase {
 
     }
 
-    // from here down is testing infrastructure
-    public AudioTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {AudioTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(AudioTest.class);
-        return suite;
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() {
         jmri.util.JUnitUtil.tearDown();
     }

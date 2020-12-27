@@ -1,14 +1,14 @@
 package jmri.jmrix.srcp.parser;
 
 import java.io.StringReader;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
- * Tests for the {@link jmri.jmrix.srcp.parser.SRCPClientParserTokenizer} class.
+ * Tests for the jmri.jmrix.srcp.parser.SRCPClientParserTokenizer class.
  *
  * @author Paul Bender
  */
@@ -238,21 +238,20 @@ public class SRCPClientParserTokenizerTest{
     }
 
     // error condition.
-    @Test(expected=TokenMgrError.class) 
-    public void testTokenizeFailure() throws TokenMgrError {
+    @Test 
+    public void testTokenizeFailure() {
         String cmd = "this should fail";
         SimpleCharStream cs = new SimpleCharStream(new StringReader(cmd));
         SRCPClientParserTokenManager stm = new SRCPClientParserTokenManager(cs);
-        stm.getNextToken();
+        Assert.assertThrows(TokenMgrError.class, () -> stm.getNextToken());
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

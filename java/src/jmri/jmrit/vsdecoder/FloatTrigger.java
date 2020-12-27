@@ -3,28 +3,26 @@ package jmri.jmrit.vsdecoder;
 /*
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
  * @author   Mark Underwood Copyright (C) 2011
  * 
  */
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FloatTrigger extends Trigger implements PropertyChangeListener {
+class FloatTrigger extends Trigger {
 
     Float match_value;
     CompareType compare_type;
@@ -67,7 +65,7 @@ class FloatTrigger extends Trigger implements PropertyChangeListener {
             return;
         }
         if (event.getPropertyName().equals(this.getEventName()) != true) {
-            log.debug("Quit. Event name mismatch event = " + event.getPropertyName() + " this = " + this.getEventName());
+            log.debug("Quit. Event name mismatch event = {} this = {}", event.getPropertyName(), this.getEventName());
             return;
         }
         if (this.getTriggerType() == TriggerType.NONE) {
@@ -101,7 +99,7 @@ class FloatTrigger extends Trigger implements PropertyChangeListener {
                 break;
         }
 
-        log.debug("compareTrigger match_value = " + match_value + " next = " + next + " compare_val = " + compare_val + " compare = " + compare);
+        log.debug("compareTrigger match_value = {} next = {} compare_val = {} compare = {}", match_value, next, compare_val, compare);
 
         if (compare) {
             log.debug("compareTrigger taking action");

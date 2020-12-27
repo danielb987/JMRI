@@ -1,39 +1,41 @@
 package jmri.jmrix.loconet.sdfeditor;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.jmrix.loconet.sdf.SdfBuffer;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
-public class EditorFrameTest {
+public class EditorFrameTest extends jmri.util.JmriJFrameTestBase {
+           
+    private SdfBuffer b;
 
-    @Test
-    public void testCTor() throws java.io.IOException {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        SdfBuffer b = new SdfBuffer("java/test/jmri/jmrix/loconet/sdf/test2.sdf");
-        EditorFrame t = new EditorFrame(b);
-        Assert.assertNotNull("exists", t);
-        t.dispose();
-    }
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
+        try {
+           b = new SdfBuffer("java/test/jmri/jmrix/loconet/sdf/test2.sdf");
+        } catch(java.io.IOException ioe){
+           Assert.fail("Failed to initialize SdfBuffer");
+        }
+        if(!GraphicsEnvironment.isHeadless()){
+           frame = new EditorFrame(b);
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        b = null;
+        super.tearDown();
     }
 
 }

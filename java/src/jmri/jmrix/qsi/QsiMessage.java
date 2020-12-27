@@ -5,10 +5,10 @@ import jmri.util.StringUtil;
 
 /**
  * Encodes a message to an QSI command station.
- * <P>
+ * <p>
  * The {@link QsiReply} class handles the response from the command station.
  *
- * @author	Bob Jacobsen Copyright (C) 2007, 2008
+ * @author Bob Jacobsen Copyright (C) 2007, 2008
  */
 public class QsiMessage extends jmri.jmrix.AbstractMessage {
 

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Action to export the CV values to a PR1DOS data file.
- * <P>
+ * <p>
  * Note that this format is somewhat different from the PR1WIN format, and it's
  * not clear they will interoperate.
  *
@@ -56,7 +56,7 @@ public class Pr1ExportAction extends AbstractAction {
         if (retVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (log.isDebugEnabled()) {
-                log.debug("start to export to PR1 file " + file);
+                log.debug("start to export to PR1 file {}", file);
             }
 
             try {
@@ -74,7 +74,7 @@ public class Pr1ExportAction extends AbstractAction {
                 str.flush();
                 str.close();
             } catch (IOException ex) {
-                log.error("Error writing file: " + ex);
+                log.error("Error writing file: {}", ex);
             }
         }
     }

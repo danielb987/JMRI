@@ -67,21 +67,21 @@ public class NceConsistManager extends AbstractConsistManager {
         {
             return consistTable.get(locoAddress);
         }
-        log.debug("Add consist, address " + locoAddress);
+        log.debug("Add consist, address {}", locoAddress);
         NceConsist consist = new NceConsist((DccLocoAddress) locoAddress, memo);
         consistTable.put(locoAddress, consist);
         return consist;
     }
 
     private void addConsist(NceConsist consist) {
-        log.debug("Add consist " + consist.getConsistAddress());
+        log.debug("Add consist {}", consist.getConsistAddress());
         //delConsist(consist.getConsistAddress()); // remove consist if one exists
         consistTable.put(consist.getConsistAddress(), consist);
     }
 
     @Override
     public Consist getConsist(LocoAddress locoAddress) {
-        log.debug("Requesting NCE consist " + locoAddress);
+        log.debug("Requesting NCE consist {}", locoAddress);
         NceConsist consist = (NceConsist) super.getConsist(locoAddress);
         // Checking the CS memory each time a consist is requested creates lots of NCE messages!
         //consist.checkConsist();
@@ -122,7 +122,9 @@ public class NceConsistManager extends AbstractConsistManager {
         private void searchNext() {
             synchronized (this) {
                 // we need to wait for the connection to be up and running
-                while (!ConnectionStatus.instance().getConnectionState(memo.getNceTrafficController().getPortName()).equals(ConnectionStatus.CONNECTION_UP)) {
+                while (!ConnectionStatus.instance()
+                            .getConnectionState(memo.getUserName(), memo.getNceTrafficController().getPortName())
+                        .equals(ConnectionStatus.CONNECTION_UP)) {
                     log.debug("Waiting for NCE connected");
                     try {
                         wait(2000); // wait 2 seconds and try again
@@ -133,7 +135,7 @@ public class NceConsistManager extends AbstractConsistManager {
             }
             while (_consistNum >= NceConsist.CONSIST_MIN) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Reading consist from command station: " + _consistNum);
+                    log.debug("Reading consist from command station: {}", _consistNum);
                 }
                 NceConsist consist = new NceConsist(_consistNum, memo);
                 // wait until consist finishes CS read

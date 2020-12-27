@@ -48,13 +48,15 @@ abstract public class AbstractController {
      * Build list only if there are no controller listeners. This way the list
      * is not changed while in use. This should only be called by a subclass of
      * jmri.Manager *Manager can implement specifics in register().
+     * @param manager which manager to get system names for.
      *
      */
-    @SuppressWarnings("unchecked") // The systemNameList assignment is List<E extends Namedbean> to List<NamedBean>
-                                   // Make this class generic on <E extends NamedBean> (and manager) to fix this.
-    public void buildList(jmri.Manager manager) {
+    public void buildList(jmri.Manager<?> manager) {
         if (sysNameList == null) {
-            sysNameList = manager.getSystemNameList();
+            sysNameList = new ArrayList<>(manager.getNamedBeanSet().size());
+            manager.getNamedBeanSet().forEach(bean -> {
+                sysNameList.add(bean.getSystemName());
+            });
             filterList();   //  To remove unwanted objects
             register();
             canBuildList = false;
@@ -68,7 +70,7 @@ abstract public class AbstractController {
 
     /**
      * If no listeners, clear sysNameList pointer and allow list to be re-built
-     * *Manager can implement specifics in deregister().
+     *Manager can implement specifics in deregister().
      */
     public void checkCanBuildList() {
         if (listeners.isEmpty()) {

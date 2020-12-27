@@ -1,18 +1,18 @@
 package jmri.jmrix.loconet.spjfile;
 
 import jmri.jmrit.Sound;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
  * Tests for the jmri.jmrix.loconet.spjfile package
  *
- * @author	Bob Jacobsen Copyright (C) 2006
+ * @author Bob Jacobsen Copyright (C) 2006
  */
-public class SpjFileTest extends TestCase {
+public class SpjFileTest {
 
+    @Test
     public void testCreate() {
         new SpjFile(new java.io.File("ac4400.spj"));
     }
@@ -26,6 +26,7 @@ public class SpjFileTest extends TestCase {
         }
     }
     
+    @Test
     public void testPlayWav() throws java.io.IOException {
         loadFile();
 
@@ -46,6 +47,7 @@ public class SpjFileTest extends TestCase {
         Sound.playSoundBuffer(data);
     }
 
+    @Test
     public void testGetMapEntries() throws java.io.IOException {
         loadFile();
 
@@ -54,30 +56,13 @@ public class SpjFileTest extends TestCase {
         Assert.assertEquals("31", "USER_F28", testFile.getMapEntry(31));
     }
 
-    // from here down is testing infrastructure
-    public SpjFileTest(String s) {
-        super(s);
-    }
 
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {SpjFileTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(SpjFileTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() {
         jmri.util.JUnitUtil.tearDown();
     }

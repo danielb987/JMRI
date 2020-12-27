@@ -24,8 +24,8 @@ public class NetworkDriverAdapter extends jmri.jmrix.AbstractNetworkPortControll
         options.put(option1Name, new Option(Bundle.getMessage("ConnectionGateway"), new String[]{"Pass All", "Filtering"}));
         option2Name = "Protocol"; // NOI18N
         options.put(option2Name, new Option(Bundle.getMessage("ConnectionProtocol"), jmri.jmrix.can.ConfigurationManager.getSystemOptions(), false));
-        this.getSystemConnectionMemo().setUserName("OpenLCB");
         setManufacturer(jmri.jmrix.openlcb.OlcbConnectionTypeList.OPENLCB);
+        allowConnectionRecovery = true;
     }
 
     /**
@@ -41,7 +41,16 @@ public class NetworkDriverAdapter extends jmri.jmrix.AbstractNetworkPortControll
             try {
                 tc.setCanId(Integer.parseInt(getOptionState("CANID")));
             } catch (Exception e) {
-                log.error("Cannot parse CAN ID - check your preference settings " + e);
+                log.error("Cannot parse CAN ID - check your preference settings {}", e);
+                log.error("Now using default CAN ID");
+            }
+        } else if (getOptionState(option2Name).equals(ConfigurationManager.SPROGCBUS)) {
+            // Register the CAN traffic controller being used for this connection
+            tc = new MergTrafficController();
+            try {
+                tc.setCanId(Integer.parseInt(getOptionState("CANID")));
+            } catch (Exception e) {
+                log.error("Cannot parse CAN ID - check your preference settings {}", e);
                 log.error("Now using default CAN ID");
             }
         } else {
@@ -69,6 +78,17 @@ public class NetworkDriverAdapter extends jmri.jmrix.AbstractNetworkPortControll
     @Override
     public CanSystemConnectionMemo getSystemConnectionMemo() {
         return (CanSystemConnectionMemo) super.getSystemConnectionMemo();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void resetupConnection() {
+        log.info("reconnected to Network after lost connection");
+        if (opened) {
+            this.getSystemConnectionMemo().getTrafficController().connectPort(this);
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(NetworkDriverAdapter.class);

@@ -2,45 +2,66 @@ package jmri.jmrit.display;
 
 import java.awt.event.WindowListener;
 import java.awt.GraphicsEnvironment;
+
 import javax.swing.JPanel;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.swing.JFrame;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Base class for tests for Positionable objects. 
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 abstract public class PositionableTestBase {
 
     protected Editor editor = null;   // derived classes should set editor in setup;
     protected Positionable p = null;  //derived classes should set p in setUp
 
-    // Should do JUnitUtil.setUp() in subclass to make sure it's before anything
-    @Before
-    abstract public void setUp(); 
+    /**
+     * Must call first in overriding method if overridden.
+     */
+    @BeforeEach
+    @OverridingMethodsMustInvokeSuper
+    public void setUp() {
+        JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
+        JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initReporterManager();
+    }
 
-    // Should do JUnitUtil.tearDown() in subclass to make sure it's after everything
-    @After
-    @javax.annotation.OverridingMethodsMustInvokeSuper 
+    /**
+     * Must call last in overriding method if overridden.
+     */
+    @AfterEach
+    @OverridingMethodsMustInvokeSuper
     public void tearDown() {
         // now close panel window, if it exists
         if (editor != null) {
-            java.awt.event.WindowListener[] listeners = editor.getTargetFrame().getWindowListeners();
-            for (WindowListener listener : listeners) {
-                editor.getTargetFrame().removeWindowListener(listener);
+            JFrame target = editor.getTargetFrame();
+            if (target != null) {
+                java.awt.event.WindowListener[] listeners = target.getWindowListeners();
+                for (WindowListener listener : listeners) {
+                    target.removeWindowListener(listener);
+                }
+                if (!editor.equals(target)) {
+                    JUnitUtil.dispose(target);
+                }
             }
-            EditorFrameOperator jfo = new EditorFrameOperator(editor);
-            jfo.requestClose();
+            JUnitUtil.dispose(editor);
         }
         JUnitUtil.resetWindows(false, false);  // don't log here.  should be from this class.
         editor = null;
         p = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
+        JUnitUtil.tearDown();
     }
 
     @Test
@@ -124,6 +145,7 @@ abstract public class PositionableTestBase {
         Editor es = new EditorScaffold();
         p.setEditor(es);
         Assert.assertEquals("Editor",es,p.getEditor());
+        JUnitUtil.dispose(es);
     }
 
     @Test

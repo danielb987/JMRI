@@ -1,18 +1,18 @@
 package jmri.jmrix.nce;
 
 import jmri.Sensor;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
- * JUnit tests for the NceAIU class
+ * JUnit tests for the NceAIU class.
  *
- * @author	Bob Jacobsen
-  */
-public class NceAIUTest extends TestCase {
+ * @author Bob Jacobsen
+ */
+public class NceAIUTest {
 
+    @Test
     public void testMarkChanges() {
         NceAIU a = new NceAIU();
         NceSensor s1 = new NceSensor("1");
@@ -27,31 +27,14 @@ public class NceAIUTest extends TestCase {
         Assert.assertEquals("check s3", Sensor.ACTIVE, s3.getKnownState());
     }
 
-    // from here down is testing infrastructure
-    public NceAIUTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {NceAIUTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(NceAIUTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() {
         jmri.util.JUnitUtil.tearDown();
     }
+
 }

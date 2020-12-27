@@ -54,7 +54,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
      * Make connection to an existing PortController object.
      */
     @Override
-    @SuppressFBWarnings(value = {"UW_UNCOND_WAIT","WA_NOT_IN_LOOP"}, justification="The unconditional wait outside of a loop is used to allow the hardware to react to a reset request.")
+    @SuppressFBWarnings(value = {"UW_UNCOND_WAIT", "WA_NOT_IN_LOOP"}, justification="The unconditional wait outside of a loop is used to allow the hardware to react to a reset request.")
     public void connectPort(AbstractPortController p) {
         // Attach XBee to the port
         try {
@@ -89,7 +89,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
     @Override
     synchronized protected void forwardToPort(AbstractMRMessage m, AbstractMRListener reply) {
         if (log.isDebugEnabled()) {
-            log.debug("forwardToPort message: [" + m + "]");
+            log.debug("forwardToPort message: [{}]", m);
         }
         // remember who sent this
         mLastSender = reply;
@@ -106,7 +106,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
         try {
             xbee.sendPacketAsync(((XBeeMessage) m).getXBeeRequest());
         } catch (XBeeException xbe) {
-            log.error("Error Sending message to XBee: " + xbe);
+            log.error("Error Sending message to XBee: {}", xbe);
         }
     }
 
@@ -116,6 +116,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
      * should just sleep.
      */
     @Override
+    @SuppressWarnings("deprecation") // until there's a replacement for getPreferedTransmitAddress()
     protected AbstractMRMessage pollMessage() {
         if (numNodes <= 0) {
             return null;
@@ -177,6 +178,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
         }
     }
 
+    @SuppressFBWarnings(value="VO_VOLATILE_INCREMENT", justification="synchronized method provides locking")
     public synchronized void deleteNode(XBeeNode node) {
         // find the serial node
         int index = 0;
@@ -205,18 +207,18 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
 
     @Override
     public void packetReceived(XBeePacket response) {
-	// because of the XBee library architecture, we don't
-	// do anything here with the responses.
-        log.debug("packetReceived called with {}",response);
+        // because of the XBee library architecture, we don't
+        // do anything here with the responses.
+        log.debug("packetReceived called with {}", response);
     }
 
     // XBee IModemStatusReceiveListener interface methods
 
     @Override
     public void modemStatusEventReceived(ModemStatusEvent modemStatusEvent){
-	// because of the XBee library architecture, we don't
-	// do anything here with the responses.
-       log.debug("modemStatusEventReceived called with event {} ", modemStatusEvent);
+        // because of the XBee library architecture, we don't
+        // do anything here with the responses.
+        log.debug("modemStatusEventReceived called with event {} ", modemStatusEvent);
     }
 
     // XBee IDataReceiveListener interface methods
@@ -224,7 +226,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
     @Override
     public void dataReceived(com.digi.xbee.api.models.XBeeMessage xbm){
         // because of the XBee library architecture, we don't
-	// do anything here with the responses.
+        // do anything here with the responses.
         log.debug("dataReceived called with message {} ", xbm);
     }
 
@@ -262,7 +264,7 @@ public class XBeeTrafficController extends IEEE802154TrafficController implement
         msgQueue.addLast(m);
         listenerQueue.addLast(reply);
         if (m != null) {
-            log.debug("just notified transmit thread with message " + m.toString());
+            log.debug("just notified transmit thread with message {}", m.toString());
         }
     }
 

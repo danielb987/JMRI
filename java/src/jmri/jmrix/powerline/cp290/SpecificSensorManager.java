@@ -10,15 +10,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manage the system-specific Sensor implementation.
- * <P>
+ * <p>
  * System names are "PSann", where a is the unit id, nn is the unit number
  * without padding.
- * <P>
+ * <p>
  * Sensors are not created automatically as there are frequently other X10 codes
  * seen on the wire that you don't want in your panels.
- * <P>
+ * <p>
  * Created from the cm11 version
- * <P>
+ *
  * @author Bob Jacobsen Copyright (C) 2003, 2006, 2007, 2008
  * @author Ken Cameron, (C) 2009, 2010 sensors from poll replies Converted to
  * multiple connection
@@ -77,14 +77,14 @@ public class SpecificSensorManager extends SerialSensorManager {
                             try {
                                 sensor.setKnownState(Sensor.ACTIVE);
                             } catch (jmri.JmriException e) {
-                                log.error("Exception setting " + sysName + " sensor ACTIVE: " + e);
+                                log.error("Exception setting {} sensor ACTIVE: {}", sysName, e);
                             }
                         }
                         if (newCmdCode == X10Sequence.FUNCTION_OFF || newCmdCode == X10Sequence.FUNCTION_DIM || newCmdCode == X10Sequence.FUNCTION_STATUS_OFF) {
                             try {
                                 sensor.setKnownState(Sensor.INACTIVE);
                             } catch (jmri.JmriException e) {
-                                log.error("Exception setting " + sysName + " sensor INACTIVE: " + e);
+                                log.error("Exception setting {} sensor INACTIVE: {}", sysName, e);
                             }
                         }
 

@@ -10,8 +10,8 @@ import javax.swing.table.TableRowSorter;
 /**
  * Frame providing survey of DCC contents
  *
- * @author	Bob Jacobsen Copyright (C) 2005
-  */
+ * @author Bob Jacobsen Copyright (C) 2005
+ */
 public class PacketTableFrame extends jmri.util.JmriJFrame implements DataListener {
 
     PacketDataModel model = new PacketDataModel();

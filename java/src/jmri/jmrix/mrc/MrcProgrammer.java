@@ -3,6 +3,8 @@ package jmri.jmrix.mrc;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Nonnull;
+
 import jmri.ProgrammingMode;
 import jmri.jmrix.AbstractProgrammer;
 import org.slf4j.Logger;
@@ -10,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Convert the jmri.Programmer interface into commands for the MRC power house.
- * <P>
+ * <p>
  * This has two states: NOTPROGRAMMING, and COMMANDSENT. The transitions to and
  * from programming mode are now handled in the TrafficController code.
  *
@@ -20,10 +22,10 @@ import org.slf4j.LoggerFactory;
  */
 public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListener {
 
-    protected MrcTrafficController tc;
+    protected MrcSystemConnectionMemo memo;
 
-    public MrcProgrammer(MrcTrafficController tc) {
-        this.tc = tc;
+    public MrcProgrammer(MrcSystemConnectionMemo memo) {
+        this.memo = memo;
         super.SHORT_TIMEOUT = 15000;
         super.LONG_TIMEOUT = 700000;
     }
@@ -31,10 +33,13 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
     int PACKET_TIMEOUT = 5000;
     int PACKET_READTIMEOUT = 650000;
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Types implemented here.
      */
     @Override
+    @Nonnull
     public List<ProgrammingMode> getSupportedModes() {
         List<ProgrammingMode> retval = new ArrayList<ProgrammingMode>();
         retval.add(AUTOMATICMODE);
@@ -43,20 +48,28 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
 
     static final ProgrammingMode AUTOMATICMODE = new ProgrammingMode("Automatic", Bundle.getMessage("MrcAutomaticMode"));
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public boolean getCanRead() {
         return true;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public boolean getCanWrite() {
         return true;
     }
 
-    @Override
-    /**
+    /** 
+     * {@inheritDoc}
+     * 
      * CV1 to 1024 valid
      */
+    @Override
     public boolean getCanWrite(String cv) {
         if (Integer.parseInt(cv) > 1024) {
             return false;
@@ -74,11 +87,13 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
     int _val; // remember the value being read/written for confirmative reply
     int _cv; // remember the cv being read/written
 
-    // programming interface
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    public synchronized void writeCV(int CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
-        log.debug("writeCV {} listens {}", CV, p); //IN18N
+    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
+        log.debug("writeCV {} listens {}", CV, p); // NOI18N
         useProgrammer(p);
         _progRead = false;
         // set state
@@ -90,23 +105,29 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
             // start the error timer
             startShortTimer();//we get no confirmation back that the packet has been read.
             // format and send the write message
-            tc.addTrafficListener(MrcInterface.PROGRAMMING, this);
-            tc.sendMrcMessage(progTaskStart(getMode(), _val, _cv));
+            memo.getMrcTrafficController().addTrafficListener(MrcInterface.PROGRAMMING, this);
+            memo.getMrcTrafficController().sendMrcMessage(progTaskStart(getMode(), _val, _cv));
         } catch (jmri.ProgrammerException e) {
             progState = NOTPROGRAMMING;
             throw e;
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
-        readCV(CV, p);
+    public void confirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+        readCV(CVname, p);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    public synchronized void readCV(int CV, jmri.ProgListener p) throws jmri.ProgrammerException {
-        log.debug("readCV {} listens {}", CV, p); //IN18N
+    public synchronized void readCV(String CVname, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
+        log.debug("readCV {} listens {}", CV, p); // NOI18N
         useProgrammer(p);
         _progRead = true;
 
@@ -119,8 +140,8 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
             startLongTimer();
 
             // format and send the write message
-            tc.addTrafficListener(MrcInterface.PROGRAMMING, this);
-            tc.sendMrcMessage(progTaskStart(getMode(), -1, _cv));
+            memo.getMrcTrafficController().addTrafficListener(MrcInterface.PROGRAMMING, this);
+            memo.getMrcTrafficController().sendMrcMessage(progTaskStart(getMode(), -1, _cv));
         } catch (jmri.ProgrammerException e) {
             progState = NOTPROGRAMMING;
             throw e;
@@ -134,9 +155,9 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         // test for only one!
         if (_usingProgrammer != null && _usingProgrammer != p) {
             if (log.isInfoEnabled()) {
-                log.info("programmer already in use by " + _usingProgrammer); //IN18N
+                log.info("programmer already in use by {}", _usingProgrammer); // NOI18N
             }
-            throw new jmri.ProgrammerException("programmer in use"); //IN18N
+            throw new jmri.ProgrammerException("programmer in use"); // NOI18N
         } else {
             _usingProgrammer = p;
             return;
@@ -160,10 +181,16 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         return m;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void notifyXmit(Date timestamp, MrcMessage m) {
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void notifyFailedXmit(Date timestamp, MrcMessage m) {
         if (progState == NOTPROGRAMMING && m.getMessageClass() != MrcInterface.PROGRAMMING) {
@@ -172,12 +199,15 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         timeout();
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void notifyRcv(Date timestamp, MrcMessage m) {
         //public synchronized void message(MrcMessage m) {
         if (progState == NOTPROGRAMMING) {
             // we get the complete set of replies now, so ignore these
-            log.debug("reply in NOTPROGRAMMING state"); //IN18N
+            log.debug("reply in NOTPROGRAMMING state"); // NOI18N
             return;
         }
         if (m.getMessageClass() != MrcInterface.PROGRAMMING) {
@@ -190,28 +220,30 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
             progState = NOTPROGRAMMING;
             //Currently we have no way to know if the write was sucessful or not.
             if (_progRead) {
-                log.debug("prog Read " + _cv);
+                log.debug("prog Read {}", _cv);
                 // read was in progress - get return value
                 _val = m.value();
             }
             // if this was a read, we retrieved the value above.  If its a
             // write, we're to return the original write value
-            log.debug("Has value " + _val); //IN18N
+            log.debug("Has value {}", _val); // NOI18N
             notifyProgListenerEnd(_val, jmri.ProgListener.OK);
 
         } else {
-            log.debug("reply in un-decoded state cv:" + _cv + " " + m.toString()); //IN18N
+            log.debug("reply in un-decoded state cv:{} {}", _cv, m.toString()); // NOI18N
         }
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Internal routine to handle a timeout
      */
     @Override
     protected synchronized void timeout() {
         if (progState != NOTPROGRAMMING) {
             // we're programming, time to stop
-            log.debug("timeout!" + _cv);
+            log.debug("timeout!{}", _cv);
             // perhaps no loco present? Fail back to end of programming
             progState = NOTPROGRAMMING;
             cleanup();
@@ -226,10 +258,10 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
 
     // internal method to notify of the final result
     protected void notifyProgListenerEnd(int value, int status) {
-        log.debug("notifyProgListenerEnd value {} status {}", value, status); //IN18N
+        log.debug("notifyProgListenerEnd value {} status {}", value, status); // NOI18N
         // the programmingOpReply handler might send an immediate reply, so
         // clear the current listener _first_
-        tc.removeTrafficListener(MrcInterface.PROGRAMMING, this);
+        memo.getMrcTrafficController().removeTrafficListener(MrcInterface.PROGRAMMING, this);
         jmri.ProgListener temp = _usingProgrammer;
         _usingProgrammer = null;
         notifyProgListenerEnd(temp,value,status);

@@ -149,19 +149,7 @@ public class SignalHeadSection implements Section<CodeGroupThreeBits, CodeGroupT
     List<Lock> rightwardLocks;
     List<Lock> leftwardLocks;
     public void addRightwardLocks(List<Lock> locks) { this.rightwardLocks = locks; }
-    public void addLeftwardLocks(List<Lock> locks) { this.leftwardLocks = locks; }
-
-    protected boolean checkLockPermitted(List<Lock> locks) {
-        boolean permitted = true;
-        if (locks != null) {
-            for (Lock lock : locks) {
-                if ( ! lock.isLockClear()) permitted = false;
-            }
-        }
-        log.debug(" Lock check found permitted = {}", permitted); // NOI18N
-        return permitted;
-    }
-    
+    public void addLeftwardLocks(List<Lock> locks) { this.leftwardLocks = locks; }    
     
     /**
      * Start of sending code operation:
@@ -258,14 +246,14 @@ public class SignalHeadSection implements Section<CodeGroupThreeBits, CodeGroupT
         // following signal change won't drive an _immediate_ indication cycle.
         // Also, always go via stop...
         CodeGroupThreeBits  currentIndication = getCurrentIndication();
-        if (value == CODE_LEFT && checkLockPermitted(leftwardLocks)) {
+        if (value == CODE_LEFT && Lock.checkLocksClear(leftwardLocks)) {
             lastIndication = CODE_STOP;
             setListHeldState(hRightHeads, true);
             setListHeldState(hLeftHeads, true);
             lastIndication = CODE_LEFT;
             log.debug("Layout signals set LEFT"); // NOI18N
             setListHeldState(hLeftHeads, false);
-        } else if (value == CODE_RIGHT && checkLockPermitted(rightwardLocks)) {
+        } else if (value == CODE_RIGHT && Lock.checkLocksClear(rightwardLocks)) {
             lastIndication = CODE_STOP;
             setListHeldState(hRightHeads, true);
             setListHeldState(hLeftHeads, true);
@@ -282,7 +270,7 @@ public class SignalHeadSection implements Section<CodeGroupThreeBits, CodeGroupT
         // start the timer for the signals to change
         if (currentIndication != lastIndication) {
             log.debug("codeValueDelivered started timer for return indication"); // NOI18N
-            new Timer("Signal Section Timer").schedule(new TimerTask() { // NOI18N
+            jmri.util.TimerUtil.schedule(new TimerTask() { // NOI18N
                 @Override
                 public void run() {
                     jmri.util.ThreadingUtil.runOnGUI( ()->{
@@ -344,6 +332,8 @@ public class SignalHeadSection implements Section<CodeGroupThreeBits, CodeGroupT
     /**
      * Clear is defined as showing above Restricting.
      * We implement that as not Held, not RED, not Restricting.
+     * @param handle signal bean handle.
+     * @return true if clear.
      */
     public boolean headShowsClear(NamedBeanHandle<Signal> handle) { 
         return !handle.getBean().getHeld() && handle.getBean().isCleared();
@@ -351,13 +341,16 @@ public class SignalHeadSection implements Section<CodeGroupThreeBits, CodeGroupT
     
     /**
      * "Restricting" means that a signal is showing FLASHRED
+     * @param handle signal bean handle.
+     * @return true if showing restricting.
      */
     public boolean headShowsRestricting(NamedBeanHandle<Signal> handle) { 
         return handle.getBean().isShowingRestricting();
     }
     
     /**
-     * Work out current indication from layout status
+     * Work out current indication from layout status.
+     * @return code group.
      */
     public CodeGroupThreeBits getCurrentIndication() {
         boolean leftClear = false;

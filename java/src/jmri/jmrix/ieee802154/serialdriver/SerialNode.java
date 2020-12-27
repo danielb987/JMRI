@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of a serial node for IEEE 802.15.4 networks.
+ * Implementation of a Serial Node for IEEE 802.15.4 networks.
  * <p>
  * Integrated with {@link SerialTrafficController}.
  * <p>
@@ -34,8 +34,7 @@ public class SerialNode extends IEEE802154Node {
     public SerialNode(byte pan[], byte user[], byte global[]) {
         super(pan, user, global);
         if (log.isDebugEnabled()) {
-            log.debug("Created new node with panId: "
-                    + Arrays.toString(pan) + " userId: " + Arrays.toString(user) + " and GUID: " + Arrays.toString(global));
+            log.debug("Created new node with panId: {} userId: {} and GUID: {}", Arrays.toString(pan), Arrays.toString(user), Arrays.toString(global));
         }
     }
 

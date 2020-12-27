@@ -1,22 +1,24 @@
 /**
  * DCCppProgrammerTest.java
  *
- * Description:	JUnit tests for the DCCppProgrammer class
+ * JUnit tests for the DCCppProgrammer class
  *
- * @author	Bob Jacobsen
- * @author	Mark Underwood (C) 2015
+ * @author Bob Jacobsen
+ * @author Mark Underwood (C) 2015
  */
 package jmri.jmrix.dccpp;
 
 import jmri.JmriException;
 import jmri.ProgrammingMode;
 import jmri.util.JUnitUtil;
-import org.junit.*;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
 
     static final int RESTART_TIME = 20;
-        
+
     private DCCppInterfaceScaffold t = null;
     private jmri.ProgListenerScaffold l = null;
     private DCCppProgrammer p = null;
@@ -25,40 +27,39 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
     @Override
     public void testDefault() {
         Assert.assertEquals("Check Default", ProgrammingMode.DIRECTBYTEMODE,
-                programmer.getMode());        
+                programmer.getMode());
     }
 
     @Override
     @Test
     public void testDefaultViaBestMode() {
         Assert.assertEquals("Check Default", ProgrammingMode.DIRECTBITMODE,
-                ((DCCppProgrammer)programmer).getBestMode());        
+                ((DCCppProgrammer) programmer).getBestMode());
     }
- 
-    @Test(expected=java.lang.IllegalArgumentException.class)
+
+    @Test
+    @Override
     public void testSetGetMode() {
-        programmer.setMode(ProgrammingMode.REGISTERMODE);
-        Assert.assertEquals("Check mode matches set", ProgrammingMode.REGISTERMODE,
-                programmer.getMode());        
+        Assert.assertThrows(IllegalArgumentException.class, () -> programmer.setMode(ProgrammingMode.REGISTERMODE));
     }
 
     @Override
     @Test
     public void testGetCanWriteAddress() {
         Assert.assertFalse("can write address", programmer.getCanWrite("1234"));
-    }    
+    }
 
     @Override
     @Test
-    public void testGetWriteConfirmMode(){
-        Assert.assertEquals("Write Confirm Mode",jmri.Programmer.WriteConfirmMode.DecoderReply,
+    public void testGetWriteConfirmMode() {
+        Assert.assertEquals("Write Confirm Mode", jmri.Programmer.WriteConfirmMode.DecoderReply,
                 programmer.getWriteConfirmMode("1234"));
     }
 
     @Test
     public void testWriteCvSequence() throws JmriException {
         // and do the write
-        p.writeCV(29, 34, l);
+        p.writeCV("29", 34, l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("write message contents", "W 29 34 0 87", t.outbound.elementAt(0).toString());
@@ -80,7 +81,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
     }
 
     @Test
-    @Ignore("test is commented out")
+    @Disabled("test body is commented out")
     public void testWriteRegisterSequence() throws JmriException {
         /*
         // infrastructure objects
@@ -97,7 +98,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
         p.setMode(ProgrammingMode.REGISTERMODE);
 
         // and do the write
-        p.writeCV(29, 12, l);
+        p.writeCV("29", 12, l);
         // check "prog mode" message sent
         Assert.assertEquals("read message sent", 1, t.outbound.size());
         Assert.assertEquals("write message contents", "23 12 05 0C 38", t.outbound.elementAt(0).toString());
@@ -150,7 +151,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
         };
 
         // and do the read
-        p.readCV(29, l);
+        p.readCV("29", l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("read message contents", "R 29 0 82", t.outbound.elementAt(0).toString());
@@ -174,7 +175,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
     }
 
     @Test
-    @Ignore("test is commented out")
+    @Disabled("test is commented out")
     public void testReadRegisterSequence() throws JmriException {
         /*
         // infrastructure objects
@@ -191,7 +192,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
         p.setMode(ProgrammingMode.REGISTERMODE);
 
         // and do the read
-        p.readCV(29, l);
+        p.readCV("29", l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("read message contents", "22 11 05 36", t.outbound.elementAt(0).toString());
@@ -245,7 +246,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
         };
 
         // and do the write
-        p.writeCV(300, 34, l);
+        p.writeCV("300", 34, l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("write message contents", "W 300 34 0 87", t.outbound.elementAt(0).toString());
@@ -283,7 +284,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
         };
 
         // and do the read
-        p.readCV(300, l);
+        p.readCV("300", l);
         // check "prog mode" message sent
         Assert.assertEquals("mode message sent", 1, t.outbound.size());
         Assert.assertEquals("read message contents", "R 300 0 82", t.outbound.elementAt(0).toString());
@@ -309,6 +310,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
     // Test to make sure the getCanWrite(int,string) function works correctly
     // TODO: Fix test to verify exception thrown for Register and paged modes.
     @Test
+    @Override
     public void testGetCanWrite() {
         //p.setMode(ProgrammingMode.REGISTERMODE);
         //Assert.assertTrue("DCC++ Base Station can write CV3 in Register Mode", p.getCanWrite("3"));
@@ -341,13 +343,14 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
     // Test to make sure the getCanRead(int,string) function works correctly
     // TODO: Fix test to verify exception thrown for Register and paged modes.
     @Test
+    @Override
     public void testGetCanRead() {
         //p.setMode(ProgrammingMode.REGISTERMODE);
         //Assert.assertTrue("DCC++ Base Station Can Read CV3 in register mode", p.getCanRead("3"));
         //p.setMode(ProgrammingMode.PAGEMODE);
         //Assert.assertTrue("DCC++ Base Station Can Read CV3 in paged mode", p.getCanRead("3"));
 
-	p.setMode(ProgrammingMode.DIRECTBYTEMODE);
+        p.setMode(ProgrammingMode.DIRECTBYTEMODE);
         Assert.assertTrue("DCC++ Base Station Can Read CV3 in direct byte mode", p.getCanRead("3"));
 
         p.setMode(ProgrammingMode.DIRECTBITMODE);
@@ -355,11 +358,9 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
 
         //p.setMode(ProgrammingMode.REGISTERMODE);
         //Assert.assertFalse("DCC++ Base Station Can not Read CV300 in register mode", p.getCanRead("300"));
-
-	//p.setMode(ProgrammingMode.PAGEMODE);
+        //p.setMode(ProgrammingMode.PAGEMODE);
         //Assert.assertFalse("DCC++ Base Station Can not Read CV300 in paged mode", p.getCanRead("300"));
-
-	p.setMode(ProgrammingMode.DIRECTBYTEMODE);
+        p.setMode(ProgrammingMode.DIRECTBYTEMODE);
         Assert.assertTrue("DCC++ Base Station Can Read CV300 in direct byte mode", p.getCanRead("300"));
 
         p.setMode(ProgrammingMode.DIRECTBITMODE);
@@ -374,7 +375,7 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
         // infrastructure objects
@@ -387,16 +388,17 @@ public class DCCppProgrammerTest extends jmri.jmrix.AbstractProgrammerTest {
                 super.restartTimer(RESTART_TIME);
             }
         };
-	programmer = p;
+        programmer = p;
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
-	t = null;
-	l = null;
-	p = null;
-	JUnitUtil.tearDown();
+        t = null;
+        l = null;
+        p = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        JUnitUtil.tearDown();
     }
 
 }

@@ -2,22 +2,23 @@ package jmri.jmrix.maple;
 
 import jmri.Sensor;
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
- * JUnit tests for the InputBits class
+ * JUnit tests for the InputBits class.
  *
- * @author	Dave Duchamp 2009
-  */
-public class InputBitsTest extends TestCase {
+ * @author Dave Duchamp 2009
+ */
+public class InputBitsTest {
 
+    @Test
     public void testConstructor1() {
         Assert.assertNotNull("check instance", ibit);
     }
 
+    @Test
     public void testAccessors() {
         InputBits.setNumInputBits(72);
         InputBits.setTimeoutTime(1500);
@@ -25,6 +26,7 @@ public class InputBitsTest extends TestCase {
         Assert.assertEquals("check timeoutTime", 1500, InputBits.getTimeoutTime());
     }
 
+    @Test
     public void testMarkChangesInitial() {
         SerialSensor s1 = new SerialSensor("KS1", "a");
         Assert.assertEquals("check bit number", 1, SerialAddress.getBitFromSystemName("KS1", "K"));
@@ -53,6 +55,7 @@ public class InputBitsTest extends TestCase {
         Assert.assertEquals("check s6", Sensor.INACTIVE, s6.getKnownState());
     }
 
+    @Test
     public void testForceUnknown() {
         SerialSensor s1 = new SerialSensor("KS1", "a");
         SerialSensor s2 = new SerialSensor("KS2", "ab");
@@ -81,6 +84,7 @@ public class InputBitsTest extends TestCase {
         Assert.assertEquals("check unknown s6", Sensor.UNKNOWN, s6.getKnownState());
     }
 
+    @Test
     public void testMarkChangesDebounce() {
         SerialSensor s1 = new SerialSensor("KS1", "a");
         SerialSensor s2 = new SerialSensor("KS2", "ab");
@@ -165,37 +169,21 @@ public class InputBitsTest extends TestCase {
         Assert.assertEquals("poll4 s4", Sensor.INACTIVE, s4.getKnownState());
     }
 
-    // from here down is testing infrastructure
-    public InputBitsTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", InputBitsTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(InputBitsTest.class);
-        return suite;
-    }
-
     private InputBits ibit;
 
-    @Override
-    protected void setUp() {
-        // The minimal setup for log4J
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
         SerialTrafficControlScaffold tc = new SerialTrafficControlScaffold();
         ibit = new InputBits(tc);
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         ibit = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
         JUnitUtil.tearDown();
+
     }
 
 }

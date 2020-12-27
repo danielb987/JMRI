@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +20,13 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import jmri.jmrit.symbolicprog.tabbedframe.PaneProgPane;
+import jmri.util.CvUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Represent an entire speed table as a single Variable.
- * <P>
+ * <p>
  * This presents as a set of vertically oriented sliders, with numeric values
  * above them. That it turn is done using VarSlider and DecVariableValue objects
  * respectively. VarSlider is an interior class to color a JSlider by state. The
@@ -35,26 +34,27 @@ import org.slf4j.LoggerFactory;
  * underlying CV objects. Changes to CV Values are listened to by this class,
  * which updates the model objects for the VarSliders; the DecVariableValues
  * listen directly.
- * <P>
+ * <p>
  * Color (hence state) of individual sliders (hence CVs) are directly coupled to
  * the state of those CVs.
- * <P>
+ * <p>
  * The state of the entire variable has to be a composite of all the sliders,
  * hence CVs. The mapping is (in order):
- * <UL>
- * <LI>If any CVs are UNKNOWN, its UNKNOWN..
- * <LI>If not, and any are EDITED, its EDITED.
- * <LI>If not, and any are FROMFILE, its FROMFILE.
- * <LI>If not, and any are READ, its READ.
- * <LI>If not, and any are STORED, its STORED.
- * <LI>And if we get to here, something awful has happened.
- * </UL><P>
+ * <ul>
+ * <li>If any CVs are UNKNOWN, its UNKNOWN..
+ * <li>If not, and any are EDITED, its EDITED.
+ * <li>If not, and any are FROMFILE, its FROMFILE.
+ * <li>If not, and any are READ, its READ.
+ * <li>If not, and any are STORED, its STORED.
+ * <li>And if we get to here, something awful has happened.
+ * </ul>
+ * <p>
  * A similar pattern is used for a read or write request. Write writes them all;
  * Read reads any that aren't READ or WRITTEN.
- * <P>
+ * <p>
  * Speed tables can have different numbers of entries; 28 is the default, and
  * also the maximum.
- * <P>
+ * <p>
  * The NMRA specification says that speed table entries cannot be non-monotonic
  * (e.g. cannot decrease when moving from lower to higher CV numbers). In
  * earlier versions of the code, this was enforced any time a value was changed
@@ -63,17 +63,17 @@ import org.slf4j.LoggerFactory;
  * a change in their value which changed their state, so they were read again.
  * To avoid this, the class now only enforces non-monotonicity when the slider
  * is adjusted.
- * <P>
+ * <p>
  * _value is a holdover from the LongAddrVariableValue, which this was copied
  * from; it should be removed.
- * <P>
+ *
  * @author Bob Jacobsen, Alex Shepherd Copyright (C) 2001, 2004, 2013
  * @author Dave Heap Copyright (C) 2012 Added support for Marklin mfx style speed table
- * @author Dave Heap Copyright (C) 2013 Changes to fix mfx speed table issue (Vstart {@literal &} Vhigh not written)
- * @author Dave Heap - generate cvList array to incorporate Vstart {@literal &} Vhigh
+ * @author Dave Heap Copyright (C) 2013 Changes to fix mfx speed table issue (Vstart and Vhigh not written)
+ * @author Dave Heap - generate cvList array to incorporate Vstart and Vhigh
  *
  */
-public class SpeedTableVarValue extends VariableValue implements PropertyChangeListener, ChangeListener {
+public class SpeedTableVarValue extends VariableValue implements ChangeListener {
 
     int nValues;
     int numCvs;
@@ -88,6 +88,22 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Create the object with a "standard format ctor".
+     * @param name name.
+     * @param comment comment.
+     * @param cvName cv name.
+     * @param readOnly true if read only, else false.
+     * @param infoOnly true if info only, else false.
+     * @param writeOnly true if write only, else false.
+     * @param opsOnly true if ops only, else false.
+     * @param cvNum cv number.
+     * @param mask cv mask.
+     * @param minVal minimum value.
+     * @param maxVal maximum value.
+     * @param v hashmap of string and cv value.
+     * @param status status label.
+     * @param stdname std name.
+     * @param entries number entries.
+     * @param mfxFlag set mx flag true or false.
      */
     public SpeedTableVarValue(String name, String comment, String cvName,
             boolean readOnly, boolean infoOnly, boolean writeOnly, boolean opsOnly,
@@ -126,6 +142,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         }
 
         _defaultColor = (new JSlider()).getBackground();
+        // simplifyMask(); // not required as mask is ignored
     }
 
     /**
@@ -153,7 +170,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Called for new values of a slider.
-     * <P>
+     * <p>
      * Sets the CV(s) as needed.
      *
      */
@@ -220,6 +237,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * If there are fixed points specified, set linear step settings to them.
+     * @param modifiedStepIndex Index of requested break point
      *
      */
     void matchPoints(int modifiedStepIndex) {
@@ -229,14 +247,13 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
             return;
         }
         if (modifiedStepIndex < 0) {
-            log.error("matchPoints called with index too small: " + modifiedStepIndex);
+            log.error("matchPoints called with index too small: {}", modifiedStepIndex);
         }
         if (modifiedStepIndex >= stepCheckBoxes.size()) {
-            log.error("matchPoints called with index too large: " + modifiedStepIndex
-                    + " >= " + stepCheckBoxes.size());
+            log.error("matchPoints called with index too large: {} >= {}", modifiedStepIndex, stepCheckBoxes.size());
         }
         if (stepCheckBoxes.get(modifiedStepIndex) == null) {
-            log.error("matchPoints found null checkbox " + modifiedStepIndex);
+            log.error("matchPoints found null checkbox {}", modifiedStepIndex);
         }
 
         // don't do the match if this step isn't checked,
@@ -257,11 +274,11 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
                 int leftval = _cvMap.get(cvList[i]).getValue();
                 int rightval = _cvMap.get(cvList[modifiedStepIndex]).getValue();
                 int steps = modifiedStepIndex - i;
-                log.debug("left found " + leftval + " " + rightval + " " + steps);
+                log.debug("left found {} {} {}", leftval, rightval, steps);
                 // loop to set values
                 for (int j = i + 1; j < modifiedStepIndex; j++) {
                     int newValue = leftval + (rightval - leftval) * (j - i) / steps;
-                    log.debug("left set " + j + " to " + newValue);
+                    log.debug("left set {} to {}", j, newValue);
                     if (_cvMap.get(cvList[j]).getValue() != newValue) {
                         _cvMap.get(cvList[j]).setValue(newValue);
                     }
@@ -281,11 +298,11 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
                 int rightval = _cvMap.get(cvList[i]).getValue();
                 int leftval = _cvMap.get(cvList[modifiedStepIndex]).getValue();
                 int steps = i - modifiedStepIndex;
-                log.debug("right found " + leftval + " " + rightval + " " + steps);
+                log.debug("right found {} {} {}", leftval, rightval, steps);
                 // loop to set values
                 for (int j = modifiedStepIndex + 1; j < i; j++) {
                     int newValue = leftval + (rightval - leftval) * (j - modifiedStepIndex) / steps;
-                    log.debug("right set " + j + " to " + newValue);
+                    log.debug("right set {} to {}", j, newValue);
                     if (_cvMap.get(cvList[j]).getValue() != newValue) {
                         _cvMap.get(cvList[j]).setValue(newValue);
                     }
@@ -355,7 +372,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     @Override
     public void setIntValue(int i) {
-        log.warn("setIntValue doesn't make sense for a speed table: " + i);
+        log.warn("setIntValue doesn't make sense for a speed table: {}", i);
     }
 
     @Override
@@ -376,7 +393,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
     }
 
     public void setValue(int value) {
-        log.warn("setValue doesn't make sense for a speed table: " + value);
+        log.warn("setValue doesn't make sense for a speed table: {}", value);
     }
 
     Color _defaultColor;
@@ -420,7 +437,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
             Component v = decVal.getCommonRep();
             String start = ResourceBundle.getBundle("jmri.jmrit.symbolicprog.SymbolicProgBundle").getString("TextStep")
                     + " " + (i + 1);
-            ((JTextField) v).setToolTipText(PaneProgPane.addCvDescription(start, "CV " + cvList[i], null));
+            ((JTextField) v).setToolTipText(CvUtil.addCvDescription(start, "CV " + cvList[i], null));
             ((JComponent) v).setBorder(null);  // pack tighter
 
             if (mfx && (i == 0 || i == (nValues - 1))) {
@@ -431,7 +448,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
             g.setConstraints(v, cs);
 
             if (i == 0 && log.isDebugEnabled()) {
-                log.debug("Font size " + v.getFont().getSize());
+                log.debug("Font size {}", v.getFont().getSize());
             }
             float newSize = v.getFont().getSize() * 0.8f;
             v.setFont(v.getFont().deriveFont(newSize));
@@ -534,6 +551,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Set the values to a straight line from _min to _max
+     * @param e Event triggering this operation
      */
     void doForceStraight(java.awt.event.ActionEvent e) {
         _cvMap.get(cvList[0]).setValue(_min);
@@ -543,11 +561,12 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Set the values to a straight line from existing ends
+     * @param e Event triggering this operation
      */
     void doMatchEnds(java.awt.event.ActionEvent e) {
         int first = _cvMap.get(cvList[0]).getValue();
         int last = _cvMap.get(cvList[nValues - 1]).getValue();
-        log.debug(" first=" + first + " last=" + last);
+        log.debug(" first={} last={}", first, last);
         // to avoid repeatedly bumping up later values, push the first one
         // all the way up now
         _cvMap.get(cvList[0]).setValue(last);
@@ -561,6 +580,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Set a constant ratio curve
+     * @param e Event triggering this operation
      */
     void doRatioCurve(java.awt.event.ActionEvent e) {
         double first = _cvMap.get(cvList[0]).getValue();
@@ -572,7 +592,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
             last = first + 1.;
         }
         double step = Math.log(last / first) / (nValues - 1);
-        log.debug("log ratio step is " + step);
+        log.debug("log ratio step is {}", step);
         // to avoid repeatedly bumping up later values, push the first one
         // all the way up now
         _cvMap.get(cvList[0]).setValue((int) Math.round(last));
@@ -586,6 +606,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Set a log curve
+     * @param e Event triggering this operation
      */
     void doLogCurve(java.awt.event.ActionEvent e) {
         double first = _cvMap.get(cvList[0]).getValue();
@@ -610,6 +631,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Shift the curve one CV to left. The last entry is left unchanged.
+     * @param e Event triggering this operation
      */
     void doShiftLeft(java.awt.event.ActionEvent e) {
         for (int i = 0; i < nValues - 1; i++) {
@@ -621,6 +643,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /**
      * Shift the curve one CV to right. The first entry is left unchanged.
+     * @param e Event triggering this operation
      */
     void doShiftRight(java.awt.event.ActionEvent e) {
         for (int i = nValues - 1; i > 0; i--) {
@@ -685,7 +708,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         onlyChanges = true;
         setBusy(true);  // will be reset when value changes
         if (_progState != IDLE) {
-            log.warn("Programming state " + _progState + ", not IDLE, in read()");
+            log.warn("Programming state {}, not IDLE, in read()", _progState);
         }
         isReading = true;
         isWriting = false;
@@ -712,7 +735,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         setBusy(true);  // will be reset when value changes
         super.setState(STORED);
         if (_progState != IDLE) {
-            log.warn("Programming state " + _progState + ", not IDLE, in write()");
+            log.warn("Programming state {}, not IDLE, in write()", _progState);
         }
         isReading = false;
         isWriting = true;
@@ -733,7 +756,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         setToRead(false);
         setBusy(true);  // will be reset when value changes
         if (_progState != IDLE) {
-            log.warn("Programming state " + _progState + ", not IDLE, in read()");
+            log.warn("Programming state {}, not IDLE, in read()", _progState);
         }
         isReading = true;
         isWriting = false;
@@ -758,7 +781,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         setBusy(true);  // will be reset when value changes
         super.setState(STORED);
         if (_progState != IDLE) {
-            log.warn("Programming state " + _progState + ", not IDLE, in write()");
+            log.warn("Programming state {}, not IDLE, in write()", _progState);
         }
         isReading = false;
         isWriting = true;
@@ -795,7 +818,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         CvValue cv = _cvMap.get(cvList[_progState]);
         int state = cv.getState();
         if (log.isDebugEnabled()) {
-            log.debug("invoke CV read index " + _progState + " cv state " + state);
+            log.debug("invoke CV read index {} cv state {}", _progState, state);
         }
         if (!onlyChanges || considerChanged(cv)) {
             cv.read(_status);
@@ -827,7 +850,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         CvValue cv = _cvMap.get(cvList[_progState]);
         int state = cv.getState();
         if (log.isDebugEnabled()) {
-            log.debug("invoke CV write index " + _progState + " cv state " + state);
+            log.debug("invoke CV write index {} cv state {}", _progState, state);
         }
         if (!onlyChanges || considerChanged(cv)) {
             cv.write(_status);
@@ -840,8 +863,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (log.isDebugEnabled()) {
-            log.debug("property changed event - name: "
-                    + e.getPropertyName());
+            log.debug("property changed event - name: {}", e.getPropertyName());
         }
         // notification from CV; check for Value being changed
         if (e.getPropertyName().equals("Busy") && ((Boolean) e.getNewValue()).equals(Boolean.FALSE)) {
@@ -858,7 +880,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
         } else if (e.getPropertyName().equals("State")) {
             CvValue cv = _cvMap.get(cvList[0]);
             if (log.isDebugEnabled()) {
-                log.debug("CV State changed to " + cv.getState());
+                log.debug("CV State changed to {}", cv.getState());
             }
             setState(cv.getState());
         } else if (e.getPropertyName().equals("Value")) {
@@ -879,7 +901,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
     /* Internal class extends a JSlider so that its color is consistent with
      * an underlying CV; we return one of these in getNewRep.
-     *<P>
+     * <p>
      * Unlike similar cases elsewhere, this doesn't have to listen to
      * value changes.  Those are handled automagically since we're sharing the same
      * model between this object and others.  And this is listening to
@@ -902,7 +924,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
             // tooltip label
             String start = ResourceBundle.getBundle("jmri.jmrit.symbolicprog.SymbolicProgBundle").getString("TextStep")
                     + " " + step;
-            setToolTipText(PaneProgPane.addCvDescription(start, "CV " + var.number(), null));
+            setToolTipText(CvUtil.addCvDescription(start, "CV " + var.number(), null));
             // listen for changes to original state
             _var.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
                 @Override
@@ -916,7 +938,7 @@ public class SpeedTableVarValue extends VariableValue implements PropertyChangeL
 
         void originalPropertyChanged(java.beans.PropertyChangeEvent e) {
             if (log.isDebugEnabled()) {
-                log.debug("VarSlider saw property change: " + e);
+                log.debug("VarSlider saw property change: {}", e);
             }
             // update this color from original state
             if (e.getPropertyName().equals("State")) {

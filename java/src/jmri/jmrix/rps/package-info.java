@@ -1,14 +1,14 @@
 /**
  *        This package contains software specific to the RPS system from 
  *        <A HREF="http://www.nacservicesinc.com/">NAC Services, Inc</A>.
- *       <P>
+ *       <p>
  *            Tools are provided to input (and eventually output)
  *            several layers of information:
- *       <UL>
- *            <LI>Raw input (Readings)
- *            <LI>Processed values (Measurements)
- *            <LI>...
- *        </UL>
+ *       <ul>
+ *            <li>Raw input (Readings)
+ *            <li>Processed values (Measurements)
+ *            <li>...
+ *        </ul>
  *        There are several pieces that do the behind the scene operation.
  *        <dl>
  *            <dt>Distributor<dd>There's exactly one of these. It's basic 
@@ -31,8 +31,8 @@
  *
  *        <ol>
  *            <li>This provides only one computation at a time (through the Distributor),
- *                which is a bit of pain when doing comparative work.
- *            <li>The alignment contants are stored in a fixed file location in the
+ *                which is a bit of a pain when doing comparative work.
+ *            <li>The alignment constants are stored in a fixed file location in the
  *                JMRI preferences directory.
  *        </ol>
  *
@@ -44,5 +44,8 @@
  *        </ul>
  *        <!-- Put @see and @since tags down here. -->
  */
+// silence all warnings
 @edu.umd.cs.findbugs.annotations.SuppressFBWarnings({})
+// include empty DefaultAnnotation to avoid excessive recompilation
+@edu.umd.cs.findbugs.annotations.DefaultAnnotation(value={})
 package jmri.jmrix.rps;

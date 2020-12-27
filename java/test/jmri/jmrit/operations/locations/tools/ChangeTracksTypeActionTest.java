@@ -1,19 +1,22 @@
 package jmri.jmrit.operations.locations.tools;
 
 import java.awt.GraphicsEnvironment;
-import jmri.jmrit.operations.locations.LocationEditFrame;
-import jmri.util.JUnitUtil;
-import org.junit.After;
+import java.awt.event.ActionEvent;
+
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import jmri.jmrit.operations.OperationsTestCase;
+import jmri.jmrit.operations.locations.LocationEditFrame;
+import jmri.util.JUnitUtil;
+import jmri.util.JmriJFrame;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class ChangeTracksTypeActionTest {
+public class ChangeTracksTypeActionTest extends OperationsTestCase {
 
     @Test
     public void testCTor() {
@@ -23,17 +26,19 @@ public class ChangeTracksTypeActionTest {
         Assert.assertNotNull("exists",t);
         JUnitUtil.dispose(f);
     }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
-        JUnitUtil.resetProfileManager();
-    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
+    
+    @Test
+    public void testAction() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        LocationEditFrame lf = new LocationEditFrame(null);
+        ChangeTracksTypeAction a = new ChangeTracksTypeAction(lf);
+        Assert.assertNotNull("exists", a);
+        
+        a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+        
+        JmriJFrame f = JmriJFrame.getFrame(Bundle.getMessage("MenuItemChangeTrackType"));
+        Assert.assertNotNull("exists", f);
+        JUnitUtil.dispose(f);
     }
 
     // private final static Logger log = LoggerFactory.getLogger(ChangeTracksTypeActionTest.class);

@@ -2,18 +2,17 @@ package jmri.jmrit.entryexit;
 
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
-import javax.swing.JFrame;
+
 import jmri.jmrit.display.layoutEditor.LayoutEditor;
 import jmri.util.JUnitUtil;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JComboBoxOperator;
 import org.netbeans.jemmy.operators.JFrameOperator;
-import org.netbeans.jemmy.operators.JMenuBarOperator;
 import org.netbeans.jemmy.operators.JTableOperator;
 
 /**
@@ -57,13 +56,17 @@ public class AddEntryExitPairPanelTest {
         tbl.clickOnCell(3, 5);
         Assert.assertEquals("After delete row count", 6, tbl.getModel().getRowCount());  // NOI18N
 
-        // Open the Options window
-        String[] optionPath = {"Options", "Options"};  // NOI18N
-        JMenuBarOperator nxMenu = new JMenuBarOperator(nxFrame);
+        // Open the Options window - we've commented out the Jemmy approach
+        //  String[] optionPath = {"Options", "Options"};  // NOI18N
+        //  JMenuBarOperator nxMenu = new JMenuBarOperator(nxFrame);
+        //  nxMenu.getTimeouts().setTimeout("JMenuOperator.WaitBeforePopupTimeout", 30L);
+        //  nxMenu.pushMenu(optionPath);
+        // and are doing it directly; see Issue #6081
+        java.util.List<AddEntryExitPairFrame>  frames = jmri.util.JmriJFrame.getFrameList(AddEntryExitPairFrame.class);
+        Assert.assertEquals("Should be only one frame", 1, frames.size());
+        frames.get(0).nxPanel.optionWindow(null);
         
-        nxMenu.getTimeouts().setTimeout("JMenuOperator.WaitBeforePopupTimeout", 30L);
-        nxMenu.pushMenu(optionPath);
-
+        
         // Close the options window
         JFrameOperator optionFrame = new JFrameOperator(Bundle.getMessage("OptionsTitle"));  // NOI18N
         Assert.assertNotNull("optionFrame", optionFrame);  // NOI18N
@@ -73,7 +76,7 @@ public class AddEntryExitPairPanelTest {
         nxFrame.dispose();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         JUnitUtil.setUp();
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -83,10 +86,11 @@ public class AddEntryExitPairPanelTest {
         Assert.assertEquals("Get LE panels", 2, panels.size());  // NOI18N
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         panels.forEach((name, panel) -> JUnitUtil.dispose(panel));
         panels = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

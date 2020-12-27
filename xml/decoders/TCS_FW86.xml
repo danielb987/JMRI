@@ -17,10 +17,14 @@
   <version author="Simon Ginsburg" version="3" lastUpdated="20150706"/>
   <version author="Michael Mosher" version="4" lastUpdated="20170209"/>
   <version author="Alain Le Marchand" version="5" lastUpdated="20171126"/>
+  <version author="Michael Mosher" version="6" lastUpdated="20181114"/>
+  <version author="Michael Mosher" version="7" lastUpdated="20200521"/>
   <!-- V2 added new models & CV140-157 -->
   <!-- V3 added new models -->
   <!-- V4 added EU821 model -->
   <!-- V5 added TCS K7D4 model -->
+  <!-- V6 increased version to 90 & added CV 28 for V89 & added CV 178,179,181 for V90 -->
+  <!-- V7 decreased version to 88 & make new file for 89+ and fix numOuts on some models-->
   <decoder>
     <family name="Jan 2012" mfg="Train Control Systems" comment="TCS FW Starting Jan 2012">
       <model model="A4X" numOuts="4" numFns="14" maxMotorCurrent="1.3A (peak=2A)" formFactor="PnP" lowVersionID="86" highVersionID="88" productID="4">
@@ -189,7 +193,7 @@
         <output name="Brake"/>
         <size length="0.78" width="0.59" height="0.13" units="inches"/>
       </model>
-      <model model="EUN651" numOuts="4" numFns="14" maxMotorCurrent="1.3A (peak=2A)" formFactor="PnP" comment="European 6 pin connector" lowVersionID="86" highVersionID="88" productID="24">
+      <model model="EUN651" numOuts="2" numFns="14" maxMotorCurrent="1.3A (peak=2A)" formFactor="PnP" comment="European 6 pin connector" lowVersionID="86" highVersionID="88" productID="24">
         <output name="1" label="White" connection="plug" maxcurrent="100 mA"/>
         <output name="2" label="Yellow" connection="plug" maxcurrent="100 mA"/>
         <output name="Dim"/>
@@ -406,7 +410,7 @@
         <output name="Brake"/>
         <size length="1.26" width="0.43" height="0.06" units="inches"/>
       </model>
-      <model model="K4D6" numOuts="8" numFns="14" maxMotorCurrent="1.0A (peak=2A)" formFactor="PnP" comment="Drop in decoder for Kato N-scale MP36PH Metra (ref.1414)"
+      <model model="K4D6" numOuts="6" numFns="14" maxMotorCurrent="1.0A (peak=2A)" formFactor="PnP" comment="Drop in decoder for Kato N-scale MP36PH Metra (ref.1414)"
          lowVersionID="86" highVersionID="88" productID="46">
         <output name="1" label="White" connection="LED" maxcurrent="80 mA"/>
         <output name="2" label="Yellow" connection="LED" maxcurrent="80 mA"/>
@@ -423,7 +427,7 @@
         <output name="Brake"/>
         <size length="2.344" width="0.49" height="0.097" units="inches"/>
       </model>
-      <model model="K5D7" numOuts="8" numFns="14" maxMotorCurrent="1.0A (peak=2A)" formFactor="PnP" comment="Drop in decoder for Kato N-scale F40PH (ref.1489)"
+      <model model="K5D7" numOuts="7" numFns="14" maxMotorCurrent="1.0A (peak=2A)" formFactor="PnP" comment="Drop in decoder for Kato N-scale F40PH (ref.1489)"
          lowVersionID="86" highVersionID="88" productID="59">
         <output name="1" label="White" connection="LED" maxcurrent="80 mA"/>
         <output name="2" label="Yellow" connection="LED" maxcurrent="80 mA"/>
@@ -806,9 +810,9 @@
     </family>
     <programming direct="yes" paged="yes" register="yes" ops="yes"/>
     <variables>
+      <xi:include href="http://jmri.org/xml/decoders/tcs/CV249_CV252_FW86.xml"/>
       <xi:include href="http://jmri.org/xml/decoders/tcs/CV1_CV99_FW86.xml"/>
       <xi:include href="http://jmri.org/xml/decoders/tcs/CV100_CV157_FW86.xml"/>
-      <xi:include href="http://jmri.org/xml/decoders/tcs/CV249_CV252_FW86.xml"/>
     </variables>
     <resets>
       <factReset label="Reset All CVs" CV="8" default="2">
@@ -816,6 +820,7 @@
       </factReset>
     </resets>
   </decoder>
+  <xi:include href="http://jmri.org/xml/programmers/parts/BasicSpeedControlTrimPane.xml"/>
   <xi:include href="http://jmri.org/xml/decoders/tcs/Pane_Momentum.xml"/>
   <xi:include href="http://jmri.org/xml/decoders/tcs/Pane_TCS.xml"/>
 </decoder-config>

@@ -1,53 +1,48 @@
 package jmri.jmrit.display;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of SlipTurnoutTextEdit
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class SlipTurnoutTextEditTest {
-
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        SlipTurnoutTextEdit frame = new SlipTurnoutTextEdit();
-        Assert.assertNotNull("exists", frame);
-        JUnitUtil.dispose(frame);
-    }
+public class SlipTurnoutTextEditTest extends jmri.util.JmriJFrameTestBase {
 
     @Test
     public void initCheck() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        SlipTurnoutTextEdit frame = new SlipTurnoutTextEdit();
         Editor ef = new EditorScaffold();
         SlipTurnoutIcon i = new SlipTurnoutIcon(ef);
         // this test (currently) makes sure there are no exceptions
         // thrown when initComponents is called.
         try {
-            frame.initComponents(i, "foo");
+            ((SlipTurnoutTextEdit)frame).initComponents(i, "foo");
         } catch (Exception e) {
             Assert.fail("Exception " + e + " Thrown during initComponents call ");
         }
-        JUnitUtil.dispose(frame);
     }
 
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        if(!GraphicsEnvironment.isHeadless()){
+           frame = new SlipTurnoutTextEdit();
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        JUnitUtil.deregisterBlockManagerShutdownTask();
+        super.tearDown();
     }
 
 }

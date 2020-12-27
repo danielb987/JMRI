@@ -1,10 +1,8 @@
 /**
- * SRCPInterfaceScaffold.java
+ * SRCPInterfaceScaffold stands in for the SRCPTrafficController class.
  *
- * Description:	Stands in for the SRCPTrafficController class
- *
- * @author	Bob Jacobsen
-  */
+ * @author Bob Jacobsen
+ */
 package jmri.jmrix.srcp;
 
 import java.util.Vector;
@@ -30,7 +28,7 @@ public class SRCPTrafficControlScaffold extends SRCPTrafficController {
     @Override
     public void sendSRCPMessage(SRCPMessage m, SRCPListener reply) {
         if (log.isDebugEnabled()) {
-            log.debug("sendSRCPMessage [" + m + "]");
+            log.debug("sendSRCPMessage [{}]", m);
         }
         // save a copy
         outbound.addElement(m);
@@ -40,30 +38,30 @@ public class SRCPTrafficControlScaffold extends SRCPTrafficController {
 
     // test control member functions
     /**
-     * forward a message to the listeners, e.g. test receipt
+     * Forward a message to the listeners, e.g. test receipt.
      */
     protected void sendTestMessage(SRCPMessage m, SRCPListener l) {
         // forward a test message to NceListeners
         if (log.isDebugEnabled()) {
-            log.debug("sendTestMessage    [" + m + "]");
+            log.debug("sendTestMessage    [{}]", m);
         }
         notifyMessage(m, l);
         return;
     }
 
     /**
-     * forward a message to the listeners, e.g. test receipt
+     * Forward a message to the listeners, e.g. test receipt.
      */
     protected void sendTestReply(SRCPReply m) {
         // forward a test message to NceListeners
         if (log.isDebugEnabled()) {
-            log.debug("sendTestReply [" + m + "]");
+            log.debug("sendTestReply [{}]", m);
         }
         notifyReply(m,null);
         return;
     }
 
-    /*
+    /**
      * Check number of listeners, used for testing dispose()
      */
     public int numListeners() {

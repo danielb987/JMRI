@@ -2,10 +2,12 @@ package jmri.jmrit.catalog;
 
 import java.io.File;
 import java.util.HashMap;
+import jmri.CatalogTreeNode;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * TreeModel used by CatalogPanel to create a tree of resources.
- * <P>
+ * <p>
  * Source of the tree content is the file system. Only directories are included
  * in the tree. A filter can be set to extract particular file types.
  *
@@ -49,6 +51,9 @@ public class CatalogTreeFS extends AbstractCatalogTree {
         }
         return false;
     }
+    
+    int count = 0;
+    int leafcount = 0;
 
     /**
      * Recursively add nodes to the tree
@@ -80,12 +85,14 @@ public class CatalogTreeFS extends AbstractCatalogTree {
             CatalogTreeNode newElement = new CatalogTreeNode(pName);
             insertNodeInto(newElement, pParent, pParent.getChildCount());
             String[] sp = fp.list();
-            for (int i = 0; i < sp.length; i++) {
-                log.debug("Descend into resource: {}",sp[i]);
-                insertNodes(sp[i], pPath + "/" + sp[i], newElement);
+            if (sp !=null) {
+                for (int i = 0; i < sp.length; i++) {
+                    log.debug("Descend into resource: {} count {}",sp[i], count++);
+                    insertNodes(sp[i], pPath + File.separator + sp[i], newElement);
+                }
             }
         } else /* leaf */ {
-            String ext = jmri.util.FileChooserFilter.getFileExtension(fp);
+            String ext = FilenameUtils.getExtension(fp.getName());
             if (!filter(ext)) {
                 return;
             }
@@ -93,6 +100,7 @@ public class CatalogTreeFS extends AbstractCatalogTree {
             if (index > 0) {
                 filename = filename.substring(0, index);
             }
+            log.debug("add leaf: {} count {}", filename, leafcount++);
             pParent.addLeaf(filename, pPath);
         }
     }
@@ -100,7 +108,7 @@ public class CatalogTreeFS extends AbstractCatalogTree {
     @Override
     public void setProperty(String key, Object value) {
         if (parameters == null) {
-            parameters = new HashMap<String, Object>();
+            parameters = new HashMap<>();
         }
         parameters.put(key, value);
     }
@@ -108,7 +116,7 @@ public class CatalogTreeFS extends AbstractCatalogTree {
     @Override
     public Object getProperty(String key) {
         if (parameters == null) {
-            parameters = new HashMap<String, Object>();
+            parameters = new HashMap<>();
         }
         return parameters.get(key);
     }
@@ -116,14 +124,14 @@ public class CatalogTreeFS extends AbstractCatalogTree {
     @Override
     public java.util.Set<String> getPropertyKeys() {
         if (parameters == null) {
-            parameters = new HashMap<String, Object>();
+            parameters = new HashMap<>();
         }
         return parameters.keySet();
     }
 
     @Override
     public void removeProperty(String key) {
-        if (parameters == null || key == null) {
+        if (parameters == null) {
             return;
         }
         parameters.remove(key);

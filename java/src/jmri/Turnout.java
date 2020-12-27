@@ -1,12 +1,12 @@
 package jmri;
 
-import javax.annotation.CheckForNull;
+import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 /**
  * Represent a Turnout on the layout.
- * <P>
+ * <p>
  * A Turnout has two states:
  * <ul>
  * <li>The "commandedState" records the state that's been commanded in the
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * <li>The "knownState" is the program's best idea of the actual state on the
  * the layout.
  * </ul>
- * <P>
+ * <p>
  * There are a number of reasons that commandedState and knownState differ:
  * <ul>
  * <li>A change has been commanded, but it hasn't had time to happen yet
@@ -27,24 +27,24 @@ import javax.annotation.Nullable;
  * <li>For a bus-like system, e.g. LocoNet or XpressNet, some other device might
  * have sent a command to change the turnout.
  * </ul>
- * <P>
+ * <p>
  * Turnout feedback is involved in the connection between these two states; for
  * more information see the
  * <a href="http://jmri.org/help/en/html/doc/Technical/TurnoutFeedback.shtml">feedback
  * page</a>.
- * <P>
+ * <p>
  * The AbstractTurnout class contains a basic implementation of the state and
  * messaging code, and forms a useful start for a system-specific
- * implementation. Specific implementations in the jmrix package, e.g. for
+ * implementation. Specific implementations, e.g. for
  * LocoNet and NCE, will convert to and from the layout commands.
- * <P>
+ * <p>
  * The states and names are Java Bean parameters, so that listeners can be
  * registered to be notified of any changes.
- * <P>
+ * <p>
  * A sample use of the Turnout interface can be seen in the
  * jmri.jmrit.simpleturnoutctrl.SimpleTurnoutCtrlFrame class, which provides a
  * simple GUI for controlling a single turnout.
- * <P>
+ * <p>
  * Each Turnout object has a two names. The "user" name is entirely free form,
  * and can be used for any purpose. The "system" name is provided by the
  * system-specific implementations, and provides a unique mapping to the layout
@@ -56,38 +56,37 @@ import javax.annotation.Nullable;
  * the advanced behaviors with the setBinaryOutput(true) method. This is a
  * configuration property; changing it on the fly may give unexpected results.
  * It's value is not persisted.
- * <P>
+ * <p>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Bob Jacobsen Copyright (C) 2001
  * @see jmri.TurnoutManager
  * @see jmri.InstanceManager
  * @see jmri.jmrit.simpleturnoutctrl.SimpleTurnoutCtrlFrame
  */
-public interface Turnout extends NamedBean {
+public interface Turnout extends DigitalIO {
 
     /**
      * Constant representing an "closed" state, either in readback or as a
      * commanded state. Note that it's possible to be both CLOSED and THROWN at
      * the same time on some systems, which should be called INCONSISTENT
      */
-    public static final int CLOSED = 0x02;
+    public static final int CLOSED = DigitalIO.ON;
 
     /**
      * Constant representing an "thrown" state, either in readback or as a
      * commanded state. Note that it's possible to be both CLOSED and THROWN at
      * the same time on some systems, which should be called INCONSISTENT
      */
-    public static final int THROWN = 0x04;
+    public static final int THROWN = DigitalIO.OFF;
 
     /**
      * Constant representing "direct feedback method". In this case, the
@@ -163,39 +162,12 @@ public interface Turnout extends NamedBean {
     public static final int LOCKED = 1;
 
     /**
-     * Query the known state. This is a bound parameter, so you can also
-     * register a listener to be informed of changes. A result is always
-     * returned; if no other feedback method is available, the commanded state
-     * will be used.
+     * Get a list of valid feedback types. The valid types depend on the
+     * implemented system.
      *
-     * @return the known state
+     * @return array of feedback types
      */
-    public int getKnownState();
-
-    /**
-     * Change the commanded state, which results in the relevant command(s)
-     * being sent to the hardware. The exception is thrown if there are problems
-     * communicating with the layout hardware.
-     *
-     * @param s the desired state
-     */
-    public void setCommandedState(int s);
-
-    /**
-     * Query the commanded state. This is a bound parameter, so you can also
-     * register a listener to be informed of changes.
-     *
-     * @return the commanded state
-     */
-    public int getCommandedState();
-
-    /**
-     * Show whether state is one you can safely run trains over
-     *
-     * @return true iff state is valid and the known state is the same as
-     *         commanded
-     */
-    public boolean isConsistentState();
+    public Set<Integer> getValidFeedbackModes();
 
     /**
      * Get a representation of the feedback type. This is the OR of possible
@@ -223,6 +195,7 @@ public interface Turnout extends NamedBean {
      * @param mode the feedback type name
      * @throws IllegalArgumentException if mode is not valid
      */
+    @InvokeOnLayoutThread
     public void setFeedbackMode(@Nonnull String mode) throws IllegalArgumentException;
 
     /**
@@ -233,6 +206,7 @@ public interface Turnout extends NamedBean {
      * @param mode the feedback type to set
      * @throws IllegalArgumentException if mode is not valid
      */
+    @InvokeOnLayoutThread
     public void setFeedbackMode(int mode) throws IllegalArgumentException;
 
     /**
@@ -251,12 +225,6 @@ public interface Turnout extends NamedBean {
      * @return the feedback type
      */
     public int getFeedbackMode();
-
-    /**
-     * Request an update from the layout soft/hardware. May not even happen, and
-     * if it does it will happen later; listen for the result.
-     */
-    public void requestUpdateFromLayout();
 
     /**
      * Get if automatically retrying an operation is blocked for this turnout.
@@ -283,17 +251,23 @@ public interface Turnout extends NamedBean {
      *
      * @param toper TurnoutOperation subclass instance
      */
-    public void setTurnoutOperation(@Nullable TurnoutOperation toper);
+    @InvokeOnLayoutThread
+    public void setTurnoutOperation(@CheckForNull TurnoutOperation toper);
 
     /**
-     * return the inverted state of the specified state
+     * Return the inverted state of the specified state
+     * Does NOT invert INCONSISTENT
      * @param inState the specified state
      * @return the inverted state
      */
     public static int invertTurnoutState(int inState) {
-        int result = CLOSED;
-        if (result == inState) {
+        int result = UNKNOWN;
+        if (inState == CLOSED) {
             result = THROWN;
+        } else if (inState == THROWN){
+            result = CLOSED;
+        } else if (inState == INCONSISTENT){
+            result = INCONSISTENT;
         }
         return result;
     }
@@ -303,18 +277,32 @@ public interface Turnout extends NamedBean {
      *
      * Since we defined two feedback methods that require monitoring, we provide
      * these methods to define those sensors to the Turnout.
-     * <P>
+     * <p>
      * The second sensor can be null if needed.
-     * <P>
+     * <p>
      * Sensor-based feedback will not function until these sensors have been
      * provided.
      *
-     * @param pName the user or system name of the sensor
+     * @param name the user or system name of the sensor
+     * @param number the feedback number of the sensor, indexed from 0
      * @throws jmri.JmriException if unable to assign the feedback sensor
      */
-    public void provideFirstFeedbackSensor(@Nullable String pName) throws JmriException;
+    public default void provideFeedbackSensor(@CheckForNull String name, int number) throws JmriException {
+        switch (number) {
+            case 0:
+                provideFirstFeedbackSensor(name);
+                break;
+            case 1:
+                provideSecondFeedbackSensor(name);
+                break;
+            default:
+                throw new IllegalArgumentException("Turnouts have no more than two sensors");
+        }
+    }
 
-    public void provideSecondFeedbackSensor(@Nullable String pName) throws JmriException;
+    public void provideFirstFeedbackSensor(@CheckForNull String pName) throws JmriException;
+
+    public void provideSecondFeedbackSensor(@CheckForNull String pName) throws JmriException;
 
     /**
      * Get the first feedback sensor.
@@ -351,15 +339,16 @@ public interface Turnout extends NamedBean {
     /**
      * Sets the initial known state (CLOSED,THROWN,UNKNOWN) from feedback
      * information, if appropriate.
-     * <P>
+     * <p>
      * This method is designed to be called only when Turnouts are loaded and
      * when a new Turnout is defined in the Turnout table.
-     * <P>
+     * <p>
      * No change to known state is made if feedback information is not
      * available. If feedback information is inconsistent, or if sensor
      * definition is missing in ONESENSOR and TWOSENSOR feedback, turnout state
      * is set to UNKNOWN.
      */
+    @InvokeOnLayoutThread
     public void setInitialKnownStateFromFeedback();
 
     /**
@@ -374,6 +363,7 @@ public interface Turnout extends NamedBean {
      *
      * @param num the size of the output, currently 1 or 2
      */
+    @InvokeOnLayoutThread
     public void setNumberOutputBits(int num);
 
     /**
@@ -389,6 +379,7 @@ public interface Turnout extends NamedBean {
      * @param num 0 for steady state or the number of time units the control
      *            pulses
      */
+    @InvokeOnLayoutThread
     public void setControlType(int num);
 
     /**
@@ -434,6 +425,7 @@ public interface Turnout extends NamedBean {
      * @param locked         true if locking is enabled for the given type;
      *                       false otherwise
      */
+    @InvokeOnLayoutThread
     public void enableLockOperation(int turnoutLockout, boolean locked);
 
     /**
@@ -467,6 +459,7 @@ public interface Turnout extends NamedBean {
      * @param locked         true if turnout is locked using specified lock
      *                       method; false otherwise
      */
+    @InvokeOnLayoutThread
     public void setLocked(int turnoutLockout, boolean locked);
 
     /**
@@ -481,6 +474,7 @@ public interface Turnout extends NamedBean {
      *
      * @param reportLocked true to report; false otherwise
      */
+    @InvokeOnLayoutThread
     public void setReportLocked(boolean reportLocked);
 
     /**
@@ -504,7 +498,7 @@ public interface Turnout extends NamedBean {
      *
      * @param decoderName the name of the decoder type
      */
-    public void setDecoderName(@Nullable String decoderName);
+    public void setDecoderName(@CheckForNull String decoderName);
 
     /**
      * Use a binary output for sending commands. This appears to expose a
@@ -512,6 +506,7 @@ public interface Turnout extends NamedBean {
      *
      * @param state true if the outputs are binary; false otherwise
      */
+    @InvokeOnLayoutThread
     public void setBinaryOutput(boolean state);
 
     public float getDivergingLimit();
@@ -525,5 +520,98 @@ public interface Turnout extends NamedBean {
     public String getStraightSpeed();
 
     public void setStraightSpeed(String s) throws JmriException;
+
+    /**
+     * Check if this Turnout can follow the state of another Turnout.
+     *
+     * @return true if this Turnout is capable of following; false otherwise
+     */
+    // Note: not `canFollow()` to allow JavaBeans introspection to find
+    // the property "canFollow"
+    public boolean isCanFollow();
+
+    /**
+     * Get the Turnout this Turnout is following.
+     *
+     * @return the leading Turnout or null if none; null if
+     *         {@link #isCanFollow()} is false
+     */
+    @CheckForNull
+    public Turnout getLeadingTurnout();
+
+    /**
+     * Set the Turnout this Turnout will follow.
+     * <p>
+     * It is valid for two or more turnouts to follow each other in a circular
+     * pattern.
+     * <p>
+     * It is recommended that a following turnout's feedback mode be
+     * {@link #DIRECT}.
+     * <p>
+     * It is recommended to explicitly call
+     * {@link #setFollowingCommandedState(boolean)} after calling this method or
+     * to use {@link #setLeadingTurnout(jmri.Turnout, boolean)} to ensure this
+     * Turnout follows the leading Turnout in the expected manner.
+     *
+     * @param turnout the leading Turnout or null if this Turnout should not
+     *                follow another Turnout; silently ignored if
+     *                {@link #isCanFollow()} is false
+     */
+    public void setLeadingTurnout(@CheckForNull Turnout turnout);
+
+    /**
+     * Set both the leading Turnout and if the commanded state of the leading
+     * Turnout is followed. This is a convenience method for calling both
+     * {@link #setLeadingTurnout(jmri.Turnout)} and
+     * {@link #setFollowingCommandedState(boolean)}.
+     *
+     * @param turnout                 the leading Turnout or null if this
+     *                                Turnout should not follow another Turnout;
+     *                                silently ignored if {@link #isCanFollow()}
+     *                                is false
+     * @param followingCommandedState true to have all states match leading
+     *                                turnout; false to only have non-commanded
+     *                                states match
+     */
+    public void setLeadingTurnout(@CheckForNull Turnout turnout, boolean followingCommandedState);
+
+    /**
+     * Check if this Turnout is following all states or only the non-commanded
+     * states of the leading Turnout.
+     *
+     * @return true if following all states; false otherwise
+     */
+    public boolean isFollowingCommandedState();
+
+    /**
+     * Set if this Turnout follows all states or only the non-commanded states
+     * of the leading Turnout.
+     * <p>
+     * A Turnout can be commanded to be {@link #THROWN} or {@link #CLOSED}, but
+     * can also have additional states {@link #INCONSISTENT} and
+     * {@link #UNKNOWN}. There are some use cases where a following Turnout
+     * should match all states of the leading Turnout, in which case this should
+     * be true, but there are also use cases where the following Turnout should
+     * only match the INCONSISTENT and UNKNOWN states of the leading Turnout,
+     * but should otherwise be independently commanded, in which case this
+     * should be false.
+     *
+     * @param following true to have all states match leading turnout; false to
+     *                  only have non-commanded states match
+     */
+    public void setFollowingCommandedState(boolean following);
+
+    /**
+     * Before setting commanded state, if required by manager, apply wait interval until
+     * outputIntervalEnds() to put less pressure on the connection.
+     * <p>
+     * Used to insert a delay before calling {@link #setCommandedState(int)} to spread out a series of
+     * output commands, as in {@link jmri.implementation.MatrixSignalMast#updateOutputs(char[])} and
+     * {@link jmri.implementation.DefaultRoute} class SetRouteThread#run().
+     * Interval value is kept in the Memo per hardware connection, default = 0
+     *
+     * @param s turnout state to forward
+     */
+    public void setCommandedStateAtInterval(int s);
 
 }

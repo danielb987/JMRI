@@ -1,25 +1,30 @@
 package jmri.managers;
 
+import jmri.InstanceManager;
+import jmri.util.JUnitUtil;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
+
 import jmri.Logix;
 import jmri.LogixManager;
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 /**
  * Tests for the jmri.managers.DefaultLogixManager class.
  *
- * @author	Bob Jacobsen Copyright (C) 2015
+ * @author Bob Jacobsen Copyright (C) 2015
  */
-public class DefaultLogixManagerTest extends TestCase {
+public class DefaultLogixManagerTest extends AbstractManagerTestBase<jmri.LogixManager,jmri.Logix> {
 
+    @Test
     public void testCtor() {
-        new DefaultLogixManager();
+       Assert.assertNotNull("exists",l);
     }
 
+    @Test
     public void testCreateForms() {
-        LogixManager m = new DefaultLogixManager();
+        LogixManager m = l;
         
         Logix l1 = m.createNewLogix("User name 1");
         Logix l2 = m.createNewLogix("User name 2");
@@ -45,8 +50,9 @@ public class DefaultLogixManagerTest extends TestCase {
         Assert.assertNull(m.createNewLogix(l1.getSystemName(),""));  
     }
 
+    @Test
     public void testEmptyUserName() {
-        LogixManager m = new DefaultLogixManager();
+        LogixManager m = l;
         
         Logix l1 = m.createNewLogix("IX01", "");
         Logix l2 = m.createNewLogix("IX02", "");
@@ -63,38 +69,31 @@ public class DefaultLogixManagerTest extends TestCase {
         Assert.assertNull(m.createNewLogix(l1.getSystemName(),""));      
     }
 
-    // from here down is testing infrastructure
-    public DefaultLogixManagerTest(String s) {
-        super(s);
-    }
-
-    // The minimal setup for log4J
+    // No manager-specific system name validation at present
+    @Test
     @Override
-    protected void setUp() throws Exception {
-        jmri.util.JUnitUtil.setUp();
-        super.setUp();
-        jmri.util.JUnitUtil.resetInstanceManager();
-        jmri.util.JUnitUtil.initInternalTurnoutManager();
-        jmri.util.JUnitUtil.initInternalLightManager();
-        jmri.util.JUnitUtil.initInternalSensorManager();
-        jmri.util.JUnitUtil.initIdTagManager();
-    }
-
+    public void testMakeSystemNameWithNoPrefixNotASystemName() {}
+    
+    // No manager-specific system name validation at present
+    @Test
     @Override
-    protected void tearDown() throws Exception {
-        jmri.util.JUnitUtil.tearDown();
+    public void testMakeSystemNameWithPrefixNotASystemName() {}
+
+    @BeforeEach
+    public void setUp() {
+        JUnitUtil.setUp();
+        JUnitUtil.resetInstanceManager();
+        JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initIdTagManager();
+        l = new DefaultLogixManager(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
     }
 
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", DefaultLogixManagerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
+    @AfterEach
+    public void tearDown() {
+        l = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
+        JUnitUtil.tearDown();
     }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(DefaultLogixManagerTest.class);
-        return suite;
-    }
-
 }

@@ -20,10 +20,11 @@
 </head>
 
 <body>
-  <!--#include virtual="/Header" -->
-
-  <div class="nomenu" id="mBody">
+  <!--#include virtual="/Header.shtml" -->
+  <div id="mBody">
+    <!--#include virtual="../SidebarUp.shtml" -->
     <div id="mainContent">
+
     <p>The DCC4PC hardware is a combined block occupancy detector and RailComm reader built into one. 
     each board allows for up to 16 blocks to be detected with RailComm feedback on each.
     <p>To get the full potential of RailCom this must be used with a system that generates a RailComm cutout in 
@@ -45,7 +46,7 @@
     means sensor, "1" is the board address, and "01" is the port on that board.</p>
 
       <h3>Reporters</h3>
-      <p>Reporters are automatically created when sensors are added as the two are tide together, there is no
+      <p>Reporters are automatically created when sensors are added as the two are tied together, there is no
       requirement to manually create these.
       
       <h3>Programming</h3>
@@ -72,7 +73,7 @@
         </li>
       </ul>
 
-      <!--#include virtual="/Footer" -->
+      <!--#include virtual="/Footer.shtml" -->
     </div><!-- closes #mainContent-->
   </div><!-- closes #mBody-->
 </body>

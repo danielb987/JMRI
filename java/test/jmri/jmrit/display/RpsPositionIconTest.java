@@ -7,12 +7,14 @@ import jmri.jmrix.rps.Measurement;
 import jmri.jmrix.rps.Reading;
 import jmri.util.JUnitUtil;
 import jmri.util.JmriJFrame;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the RpsIcon class.
  *
- * @author	Bob Jacobsen Copyright 2008
+ * @author Bob Jacobsen Copyright 2008
  */
 public class RpsPositionIconTest extends PositionableTestBase {
 
@@ -80,11 +82,10 @@ public class RpsPositionIconTest extends PositionableTestBase {
         id = newID;
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
-        JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetProfileManager();
+        super.setUp();
         JUnitUtil.initDefaultUserMessagePreferences();
         if (!GraphicsEnvironment.isHeadless()) {
             editor = new jmri.jmrit.display.panelEditor.PanelEditor("Test RpsPositionIcon Panel");
@@ -93,11 +94,10 @@ public class RpsPositionIconTest extends PositionableTestBase {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
-        super.tearDown();
         rpsIcon = null;
-        JUnitUtil.tearDown();
+        super.tearDown();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(RpsPositionIconTest.class);

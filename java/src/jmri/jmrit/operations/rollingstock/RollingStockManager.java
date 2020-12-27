@@ -1,14 +1,22 @@
 package jmri.jmrit.operations.rollingstock;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jmri.beans.PropertyChangeSupport;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.Track;
 import jmri.jmrit.operations.trains.Train;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.jmrit.operations.trains.TrainCommon;
 
 /**
  * Base class for rolling stock managers car and engine.
@@ -16,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Boudreau Copyright (C) 2010, 2011
  * @param <T> the type of RollingStock managed by this manager
  */
-public class RollingStockManager<T extends RollingStock> {
+public abstract class RollingStockManager<T extends RollingStock> extends PropertyChangeSupport implements PropertyChangeListener {
 
     public static final String NONE = "";
 
@@ -24,6 +32,8 @@ public class RollingStockManager<T extends RollingStock> {
     protected Hashtable<String, T> _hashTable = new Hashtable<>();
 
     public static final String LISTLENGTH_CHANGED_PROPERTY = "RollingStockListLength"; // NOI18N
+    
+    abstract public RollingStock newRS(String road, String number);
 
     public RollingStockManager() {
     }
@@ -106,9 +116,12 @@ public class RollingStockManager<T extends RollingStock> {
      * @param rs The RollingStock to load.
      */
     public void register(T rs) {
-        int oldSize = _hashTable.size();
-        _hashTable.put(rs.getId(), rs);
-        firePropertyChange(LISTLENGTH_CHANGED_PROPERTY, oldSize, _hashTable.size());
+        if (!_hashTable.contains(rs)) {
+            int oldSize = _hashTable.size();
+            rs.addPropertyChangeListener(this);
+            _hashTable.put(rs.getId(), rs);
+            firePropertyChange(LISTLENGTH_CHANGED_PROPERTY, oldSize, _hashTable.size());
+        }
     }
 
     /**
@@ -117,16 +130,11 @@ public class RollingStockManager<T extends RollingStock> {
      * @param rs The RollingStock to delete.
      */
     public void deregister(T rs) {
+        rs.removePropertyChangeListener(this);
         rs.dispose();
         int oldSize = _hashTable.size();
         _hashTable.remove(rs.getId());
         firePropertyChange(LISTLENGTH_CHANGED_PROPERTY, oldSize, _hashTable.size());
-    }
-
-    public void changeId(T rs, String road, String number) {
-        _hashTable.remove(rs.getId());
-        rs._id = RollingStock.createId(road, number);
-        register(rs);
     }
 
     /**
@@ -216,7 +224,7 @@ public class RollingStockManager<T extends RollingStock> {
             } catch (NumberFormatException e) {
                 // maybe rolling stock number in the format nnnn-N
                 try {
-                    String[] number = rs.getNumber().split("-");
+                    String[] number = rs.getNumber().split(TrainCommon.HYPHEN);
                     rsNumber = Integer.parseInt(number[0]);
                     rs.number = rsNumber;
                 } catch (NumberFormatException e2) {
@@ -268,7 +276,7 @@ public class RollingStockManager<T extends RollingStock> {
                         outRsNumber = Integer.parseInt(out.get(j).getNumber());
                     } catch (NumberFormatException e) {
                         try {
-                            String[] number = out.get(j).getNumber().split("-");
+                            String[] number = out.get(j).getNumber().split(TrainCommon.HYPHEN);
                             outRsNumber = Integer.parseInt(number[0]);
                         } catch (NumberFormatException e2) {
                             // force add
@@ -494,7 +502,11 @@ public class RollingStockManager<T extends RollingStock> {
         }
     }
 
-    private String convertBuildDate(String date) {
+    /*
+     * Converts build date into consistent String. Three build date formats; Two
+     * digits YY becomes 19YY. MM-YY becomes 19YY. MM-YYYY becomes YYYY.
+     */
+    public static String convertBuildDate(String date) {
         String[] built = date.split("-");
         if (built.length == 2) {
             try {
@@ -580,18 +592,17 @@ public class RollingStockManager<T extends RollingStock> {
         return out;
     }
 
-    java.beans.PropertyChangeSupport pcs = new java.beans.PropertyChangeSupport(this);
-
-    public synchronized void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
-        pcs.addPropertyChangeListener(l);
-    }
-
-    public synchronized void removePropertyChangeListener(java.beans.PropertyChangeListener l) {
-        pcs.removePropertyChangeListener(l);
-    }
-
-    protected void firePropertyChange(String p, Object old, Object n) {
-        pcs.firePropertyChange(p, old, n);
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(Xml.ID)) {
+            @SuppressWarnings("unchecked")
+            T rs = (T) evt.getSource(); // unchecked cast to T  
+            _hashTable.remove(evt.getOldValue());
+            _hashTable.put(rs.getId(), rs);
+            // fire so listeners that rebuild internal lists get signal of change in id, even without change in size
+            firePropertyChange(LISTLENGTH_CHANGED_PROPERTY, _hashTable.size(), _hashTable.size());
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(RollingStockManager.class);

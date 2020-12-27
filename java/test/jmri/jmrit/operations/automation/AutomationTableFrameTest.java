@@ -5,11 +5,9 @@ import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.util.JUnitUtil;
 import jmri.util.swing.JemmyUtil;
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 public class AutomationTableFrameTest extends OperationsTestCase {
 
@@ -213,21 +211,5 @@ public class AutomationTableFrameTest extends OperationsTestCase {
         Assert.assertEquals(1, InstanceManager.getDefault(AutomationManager.class).getSize());
 
         JUnitUtil.dispose(f);
-    }
-
-    // Ensure minimal setup for log4J
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    // The minimal setup for log4J
-    @Override
-    @After
-    public void tearDown() {
-        // jmri.util.JUnitUtil.tearDown();
-
-        super.tearDown();
     }
 }

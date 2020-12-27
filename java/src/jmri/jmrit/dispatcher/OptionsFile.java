@@ -1,11 +1,11 @@
 package jmri.jmrit.dispatcher;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Set;
 import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
-import jmri.Scale;
-import jmri.jmrit.display.PanelMenu;
+import jmri.ScaleManager;
+import jmri.jmrit.display.EditorManager;
 import jmri.jmrit.display.layoutEditor.LayoutEditor;
 import jmri.util.FileUtil;
 import org.jdom2.Document;
@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
  * and options set accordingly
  * <p>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is open source software; you can redistribute it and/or modify it under
  * the terms of version 2 of the GNU General Public License as published by the
  * Free Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -44,6 +44,8 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
     // operational variables
     protected DispatcherFrame dispatcher = null;
     private static String defaultFileName = FileUtil.getUserFilesPath() + "dispatcheroptions.xml";
+    public static final int SIGNALHEAD = 0x00;
+    public static final int SIGNALMAST = 0x01;
 
     public static void setDefaultFileName(String testLocation) {
         defaultFileName = testLocation;
@@ -74,15 +76,15 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                         // there is a layout editor name selected
                         String leName = options.getAttribute("lename").getValue();
                         // get list of Layout Editor panels
-                        ArrayList<LayoutEditor> layoutEditorList = InstanceManager.getDefault(PanelMenu.class).getLayoutEditorPanelList();
+                        Set<LayoutEditor> layoutEditorList = InstanceManager.getDefault(EditorManager.class).getAll(LayoutEditor.class);
                         if (layoutEditorList.isEmpty()) {
                             log.warn("Dispatcher options specify a Layout Editor panel that is not present.");
                         } else {
                             boolean found = false;
-                            for (int i = 0; i < layoutEditorList.size(); i++) {
-                                if (leName.equals(layoutEditorList.get(i).getTitle())) {
+                            for (LayoutEditor editor : layoutEditorList) {
+                                if (leName.equals(editor.getTitle())) {
                                     found = true;
-                                    dispatcher.setLayoutEditor(layoutEditorList.get(i));
+                                    dispatcher.setLayoutEditor(editor);
                                 }
                             }
                             if (!found) {
@@ -91,9 +93,9 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                         }
                     }
                     if (options.getAttribute("usesignaltype") != null) {
-                        dispatcher.setSignalType(0x00);
+                        dispatcher.setSignalType(SIGNALHEAD);
                         if (options.getAttribute("usesignaltype").getValue().equals("signalmast")) {
-                            dispatcher.setSignalType(0x01);
+                            dispatcher.setSignalType(SIGNALMAST);
                         }
                     }
                     if (options.getAttribute("useconnectivity") != null) {
@@ -152,6 +154,12 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                             dispatcher.setHasOccupancyDetection(false);
                         }
                     }
+                    if (options.getAttribute("sslcheckdirectionsensors") != null) {
+                        dispatcher.setSetSSLDirectionalSensors(true);
+                        if (options.getAttribute("sslcheckdirectionsensors").getValue().equals("no")) {
+                            dispatcher.setSetSSLDirectionalSensors(false);
+                        }
+                    }
                     if (options.getAttribute("shortactivetrainnames") != null) {
                         dispatcher.setShortActiveTrainNames(true);
                         if (options.getAttribute("shortactivetrainnames").getValue().equals("no")) {
@@ -184,11 +192,7 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                     }
                     if (options.getAttribute("layoutscale") != null) {
                         String s = (options.getAttribute("layoutscale")).getValue();
-                        for (int i = 1; i <= Scale.NUM_SCALES; i++) {
-                            if (Scale.getShortScaleID(i).equals(s)) {
-                                dispatcher.setScale(i);
-                            }
-                        }
+                        dispatcher.setScale(ScaleManager.getScale(s));
                     }
                     if (options.getAttribute("usescalemeters") != null) {
                         dispatcher.setUseScaleMeters(true);
@@ -202,6 +206,15 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                             dispatcher.setRosterEntryInBlock(true);
                         }
                     }
+                    if (options.getAttribute("stoppingspeedname") != null) {
+                        dispatcher.setStoppingSpeedName((options.getAttribute("stoppingspeedname")).getValue());
+                    }
+                    log.debug("  Options: {}, Detection={}, AutoAllocate={}, AutoTurnouts={}, SetSSLDirectionSensors={}", 
+                            (dispatcher.getSignalType()==SIGNALHEAD?"SignalHeads/SSL":"SignalMasts"),
+                            (dispatcher.getHasOccupancyDetection()?"yes":"no"),
+                            (dispatcher.getAutoAllocate()?"yes":"no"),
+                            (dispatcher.getAutoTurnouts()?"yes":"no"),
+                            (dispatcher.getSetSSLDirectionalSensors()?"yes":"no"));
                 }
             }
         } else {
@@ -243,15 +256,17 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
         options.setAttribute("minthrottleinterval", "" + (dispatcher.getMinThrottleInterval()));
         options.setAttribute("fullramptime", "" + (dispatcher.getFullRampTime()));
         options.setAttribute("hasoccupancydetection", "" + (dispatcher.getHasOccupancyDetection() ? "yes" : "no"));
+        options.setAttribute("sslcheckdirectionsensors", "" + (dispatcher.getSetSSLDirectionalSensors() ? "yes" : "no"));
         options.setAttribute("shortactivetrainnames", "" + (dispatcher.getShortActiveTrainNames() ? "yes" : "no"));
         options.setAttribute("shortnameinblock", "" + (dispatcher.getShortNameInBlock() ? "yes" : "no"));
         options.setAttribute("extracolorforallocated", "" + (dispatcher.getExtraColorForAllocated() ? "yes" : "no"));
         options.setAttribute("nameinallocatedblock", "" + (dispatcher.getNameInAllocatedBlock() ? "yes" : "no"));
         options.setAttribute("supportvsdecoder", "" + (dispatcher.getSupportVSDecoder() ? "yes" : "no"));
-        options.setAttribute("layoutscale", Scale.getShortScaleID(dispatcher.getScale()));
+        options.setAttribute("layoutscale", dispatcher.getScale().getScaleName());
         options.setAttribute("usescalemeters", "" + (dispatcher.getUseScaleMeters() ? "yes" : "no"));
         options.setAttribute("userosterentryinblock", "" + (dispatcher.getRosterEntryInBlock() ? "yes" : "no"));
-        if (dispatcher.getSignalType() == 0x00) {
+        options.setAttribute("stoppingspeedname", dispatcher.getStoppingSpeedName());
+        if (dispatcher.getSignalType() == SIGNALHEAD) {
             options.setAttribute("usesignaltype", "signalhead");
         } else {
             options.setAttribute("usesignaltype", "signalmast");
@@ -274,17 +289,6 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
             log.error("IO Exception {}", ioe.getMessage());
             throw (ioe);
         }
-    }
-
-    /**
-     *
-     * @return the managed instance
-     * @deprecated since 4.9.2; use
-     * {@link jmri.InstanceManager#getDefault(java.lang.Class)} instead
-     */
-    @Deprecated
-    public static OptionsFile instance() {
-        return InstanceManager.getDefault(OptionsFile.class);
     }
 
     private final static Logger log = LoggerFactory.getLogger(OptionsFile.class);

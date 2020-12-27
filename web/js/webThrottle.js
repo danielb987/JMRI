@@ -22,6 +22,7 @@
 
 //----------------------------------------- Global vars
 
+var log = new Logger();
 var $debug = true;
 var $vScrollbarWidth;
 var $showScrollBar = false;
@@ -172,7 +173,7 @@ $(document).ready(function() {
 	* $jmri.getRosterGroups()
 	* . Returns array of strings: rosterGroup
 	* $jmri.getObjectList(listType) {
-	* . Possible values for string 'listType' (get): roster, panels, lights, reporters, sensors, turnouts, signalHeads, signalMasts, routes, memories
+	* . Possible values for string 'listType' (get): roster, panels, lights, reporters, sensors, turnouts, signalHeads, signalMasts, routes, memories, blocks, oblocks
 	* . Returns array of objects: list
 	* $jmri.closeSocket()
 	* . To stop communication with JMRI (usually, before exit and before blocking code: alert(), ...)
@@ -191,6 +192,8 @@ $(document).ready(function() {
 	* Possible 'args' for 'route': {"userName":userName,"comment":comment,"state":state}
 	* Possible 'args' for 'memory': {"userName":userName,"comment":comment,"value":value}
 	* Possible 'args' for 'power': {"state":state}
+	* block
+	* oblock
 	* >>> Other values for 'type' and new 'args' may be available
 	********************************************/
 	var debug = loadLocalInfo('webThrottle.debug');
@@ -330,8 +333,8 @@ $(document).ready(function() {
 var startJMRI = function() {
 	$jmri = $.JMRI({
 		//*** Callback Functions available in '$jmri' object
-		toSend: function(data) {$debug && window.console && console.log(new Date() + ' - ' + document.title + '\n' + 'JSONtoSend: ' + data);},	//Nothing to do
-		fullData: function(data) {$debug && window.console && console.log(new Date() + ' - ' + document.title + '\n' + 'JSONreceived: ' + data);},	//Nothing to do
+		toSend: function(data) {$debug && log.log(new Date() + ' - ' + document.title + '\n' + 'JSONtoSend: ' + data);},	//Nothing to do
+		fullData: function(data) {$debug && log.log(new Date() + ' - ' + document.title + '\n' + 'JSONreceived: ' + data);},	//Nothing to do
                 error: function (code, message) {
                     if (code === 0)
                         jmriLostComm(message);
@@ -508,10 +511,10 @@ var jmriReady = function(jsonVersion, jmriVersion, railroadName) {
 				if (roster.length) {
 					roster.forEach(function(loco) {
 						var rosterCell = $('<div>');
-						rosterCell.on('click', function(event) {throttleShow(event, loco.id);});
+						rosterCell.on('click', function(event) {throttleShow(event, loco.name);});
 						rosterCell.addClass('rosterCell');
 						bodyFrameInner.append(rosterCell);
-						rosterCell.append($('<div>').text(loco.id + ' (' + loco.dccAddress + ')').addClass('locoName'));
+						rosterCell.append($('<div>').text(loco.name + ' (' + loco.dccAddress + ')').addClass('locoName'));
 						rosterCell.append($('<div>').text(loco.roadName + ((loco.roadNumber !== '') ? ' (' + loco.roadNumber + ')' : '')).addClass('locoRoad'));
 						rosterCell.append($('<div>').text(loco.mfg + ((loco.model !== '') ? ' (' + loco.model + ')' : '') + ((loco.owner !== '') ? ' [' + loco.owner + ']' : '')).addClass('locoMfg'));
 						var icon = loco.iconFilePath.length > 0;
@@ -526,7 +529,7 @@ var jmriReady = function(jsonVersion, jmriVersion, railroadName) {
 								o.attr('originalWidth', o.width());
 								resizeImage(o);
 							};
-							img.attr('src', '/roster/' + encodeURIComponent(loco.id) + '/' + (icon ? 'icon' : 'image') + '?maxHeight=' + $cellHeightRef);
+							img.attr('src', '/roster/' + encodeURIComponent(loco.name) + '/' + (icon ? 'icon' : 'image') + '?maxHeight=' + $cellHeightRef);
 						}
 					});
 				}
@@ -615,7 +618,7 @@ var jmriReady = function(jsonVersion, jmriVersion, railroadName) {
 				var functionsInner = $('<div>');
 				functionsInner.addClass('functionsInner');
 				functionsOuter.append(functionsInner);
-				functionsInner.append($('<div>').text(loco.id + ' (' + loco.dccAddress + ')').addClass('locoName').attr('id', 'locoName').on('click', function(event) {changeLoco(event);}));
+				functionsInner.append($('<div>').text(loco.name + ' (' + loco.dccAddress + ')').addClass('locoName').attr('id', 'locoName').on('click', function(event) {changeLoco(event);}));
 				var noFs = true;
 				for (var i = 0; i < 29; i++) if (loco.f[i]) noFs = false;
 				for (var i = 0; i < 29; i++) {
@@ -659,10 +662,10 @@ var jmriReady = function(jsonVersion, jmriVersion, railroadName) {
 						o.attr('originalWidth', o.width());
 						resizeImage(o);
 					};
-					img.attr('src', '/roster/' + encodeURIComponent(loco.id) + '/' + (icon ? 'icon' : 'image') + '?maxHeight=' + $cellHeightRef);
+					img.attr('src', '/roster/' + encodeURIComponent(loco.name) + '/' + (icon ? 'icon' : 'image') + '?maxHeight=' + $cellHeightRef);
 				}
 				$locoAddress = '' + loco.dccAddress;
-				$jmri.setJMRI('throttle', $locoAddress, {"address":loco.dccAddress});
+                $jmri.setJMRI('throttle', $locoAddress, {"rosterEntry":loco.name});
 			} else smoothAlert('Loco \'' + $paramLocoName + '\' doesn\'t exist.\nReopen the web page with a valid loco name.');
 			break;
 		case 'turnouts':
@@ -1735,7 +1738,7 @@ var openPanel = function(e, name, URL) {
 	e.preventDefault();
 	e.stopImmediatePropagation();
 	// URL not used for now
-	var url = document.URL.split('?')[0] + '?panelname=' + encodeURI(name);
+	var url = document.URL.split('?')[0] + '?panelname=' + encodeURIComponent(name);
 	if ($toFrame) {
 		if (addToFrameList(url + '&inframe')) window.open(document.URL.split('?')[0], $pageInFrame ? '_top' : '_self');
 	} else window.open(url, url);
@@ -1899,9 +1902,9 @@ var changeLoco = function(e) {
 	if (rg || rg == '') $rosterGroup = rg; else saveLocalInfo('webThrottle.rosterGroup', $rosterGroup);
 	if ($rosterGroup == '[Panels]') $rosterGroup = '';
 	var roster = $jmri.getRoster($rosterGroup);
-	if (roster.length) roster.forEach(function(loco) {$locoList.push(loco.id + ' (' + loco.dccAddress + ')');});
+	if (roster.length) roster.forEach(function(loco) {$locoList.push(loco.name + ' (' + loco.dccAddress + ')');});
 	var f = function(i) {
-		var url = document.URL.split('?')[0] + '?loconame=' + encodeURI($locoList[i].substring(0, $locoList[i].lastIndexOf(' ')));
+		var url = document.URL.split('?')[0] + '?loconame=' + encodeURIComponent($locoList[i].substring(0, $locoList[i].lastIndexOf(' ')));
 		if ($inFrame) {
 			if (replaceInFrameList(document.URL, url + '&inframe')) window.parent.$('#' + encodeId(document.URL)).attr('src', url + '&inframe').attr('id', encodeId(url + '&inframe'));
 		}
@@ -2189,7 +2192,7 @@ var getUrlParameters = function() {			//Item 'undefined' if index not found
 		hash = hashes[i].split('=');
 		key = hash[0].toLowerCase();
 		vars.push(decodeURIComponent(key));
-		vars[key] = decodeURIComponent(hash[1]);
+		vars[key] = decodeURIComponent(hash[1]).replace(/\+/g, " "); //undo server query string space replacements
 	}
 	return vars;
 };

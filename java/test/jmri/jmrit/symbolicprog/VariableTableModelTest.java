@@ -3,28 +3,30 @@ package jmri.jmrit.symbolicprog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
 import javax.swing.JLabel;
+
 import jmri.jmrit.XmlFile;
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.progdebugger.ProgDebugger;
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
 import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Test VariableTableModel table methods.
  *
- * @author	Bob Jacobsen Copyright 2005
+ * @author Bob Jacobsen Copyright 2005
  */
-public class VariableTableModelTest extends TestCase {
+public class VariableTableModelTest {
 
     ProgDebugger p = new ProgDebugger();
 
+    @Test
     public void testStart() {
         // create one with some dummy arguments
         new VariableTableModel(
@@ -35,6 +37,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Can we create a table?
+    @Test
     public void testVarTableCreate() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, null);  // CvTableModel ref is null for this test
@@ -42,6 +45,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check column count member fn, column names
+    @Test
     public void testVarTableColumnCount() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, null);
@@ -50,6 +54,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check loading two columns, three rows
+    @Test
     public void testVarTableLoad_2_3() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
@@ -94,7 +99,7 @@ public class VariableTableModelTest extends TestCase {
         //fmt.setNewlines(true);   // pretty printing
         //fmt.setIndent(true);
         //try {
-        //	 fmt.output(doc, o);
+        // fmt.output(doc, o);
         //} catch (Exception e) { System.out.println("error writing XML: "+e);}
         // and test reading this
         t.setRow(0, el0);
@@ -118,6 +123,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating a longaddr type, walk through its programming
+    @Test
     public void testVarTableLoadLongAddr() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
@@ -149,7 +155,7 @@ public class VariableTableModelTest extends TestCase {
         //fmt.setNewlines(true);   // pretty printing
         //fmt.setIndent(true);
         //try {
-        //	 fmt.output(doc, o);
+        // fmt.output(doc, o);
         //} catch (Exception e) { System.out.println("error writing XML: "+e);}
         // and test reading this
         t.setRow(0, el0);
@@ -161,6 +167,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating a speed table, then finding it by name
+    @Test
     public void testVarSpeedTable() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
@@ -197,7 +204,121 @@ public class VariableTableModelTest extends TestCase {
 
     }
 
+    // Check creating a splitVal variable with no default value
+    @Test
+    public void testVarSplitValnoDefault() {
+        String[] args = {"CV", "Name"};
+        VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
+
+        // create a JDOM tree with just some elements
+        Element root = new Element("decoder-config");
+        Document doc = new Document(root);
+        doc.setDocType(new DocType("decoder-config", "decoder-config.dtd"));
+
+        // add some elements
+        Element el0;
+        root.addContent(new Element("decoder") // the sites information here lists all relevant
+                .addContent(new Element("variables")
+                        .addContent(el0 = new Element("variable")
+                                .setAttribute("CV", "1,9")
+                                .setAttribute("label", "SplitVal no default")
+                                .addContent(new Element("splitVal")
+                                )
+                        )
+                ) // variables element
+        ) // decoder element
+                ; // end of adding contents
+
+        // and test reading this
+        t.setRow(0, el0);
+
+        // check finding
+        Assert.assertEquals("length of variable list ", 1, t.getRowCount());
+        Assert.assertEquals("name of 1st variable ", "SplitVal no default", t.getLabel(0));
+        Assert.assertEquals("find variable by name ", 0, t.findVarIndex("SplitVal no default"));
+        Assert.assertEquals("find nonexistant variable ", -1, t.findVarIndex("not there, eh?"));
+
+    }
+
+    // Check creating a splitVal variable with default value
+    @Test
+    public void testVarSplitValwithDefault() {
+        String[] args = {"CV", "Name"};
+        VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
+
+        // create a JDOM tree with just some elements
+        Element root = new Element("decoder-config");
+        Document doc = new Document(root);
+        doc.setDocType(new DocType("decoder-config", "decoder-config.dtd"));
+
+        // add some elements
+        Element el0;
+        root.addContent(new Element("decoder") // the sites information here lists all relevant
+                .addContent(new Element("variables")
+                        .addContent(el0 = new Element("variable")
+                                .setAttribute("CV", "1,9")
+                                .setAttribute("label", "SplitVal with default")
+                                .setAttribute("default", "32700")
+                                .addContent(new Element("splitVal")
+                                )
+                        )
+                ) // variables element
+        ) // decoder element
+                ; // end of adding contents
+
+        // and test reading this
+        t.setRow(0, el0);
+
+        // check finding
+        Assert.assertEquals("length of variable list ", 1, t.getRowCount());
+        Assert.assertEquals("name of 1st variable ", "SplitVal with default", t.getLabel(0));
+        Assert.assertEquals("find variable by name ", 0, t.findVarIndex("SplitVal with default"));
+        SplitVariableValue sv = (SplitVariableValue) t.getVariable(t.findVarIndex("SplitVal with default"));
+        Assert.assertEquals("find value of variable ", 32700, sv.getLongValue());
+        
+
+    }
+
+    // Check creating a splitVal variable with big default value
+    @Test
+    public void testVarSplitValwithBigDefault() {
+        String[] args = {"CV", "Name"};
+        VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
+
+        // create a JDOM tree with just some elements
+        Element root = new Element("decoder-config");
+        Document doc = new Document(root);
+        doc.setDocType(new DocType("decoder-config", "decoder-config.dtd"));
+
+        // add some elements
+        Element el0;
+        root.addContent(new Element("decoder") // the sites information here lists all relevant
+                .addContent(new Element("variables")
+                        .addContent(el0 = new Element("variable")
+                                .setAttribute("CV", "1:8")
+                                .setAttribute("label", "SplitVal with big default")
+                                .setAttribute("default", "35184372088832")
+                                .addContent(new Element("splitVal")
+                                )
+                        )
+                ) // variables element
+        ) // decoder element
+                ; // end of adding contents
+
+        // and test reading this
+        t.setRow(0, el0);
+
+        // check finding
+        Assert.assertEquals("length of variable list ", 1, t.getRowCount());
+        Assert.assertEquals("name of 1st variable ", "SplitVal with big default", t.getLabel(0));
+        Assert.assertEquals("find variable by name ", 0, t.findVarIndex("SplitVal with big default"));
+        SplitVariableValue sv = (SplitVariableValue) t.getVariable(t.findVarIndex("SplitVal with big default"));
+        Assert.assertEquals("find value of variable ", 35184372088832L, sv.getLongValue());
+
+    }
+
     // Check creating an enumvar with various groupings
+    @Test
     public void testVarEnumVar() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
@@ -257,6 +378,7 @@ public class VariableTableModelTest extends TestCase {
 
     }
 
+    @Test
     public void testSetDefault() {
         // set up a decoder to match against
         DecoderFile df = createDecoderFile("p", "m", "f");
@@ -296,6 +418,7 @@ public class VariableTableModelTest extends TestCase {
     }
     
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude0() {
         //set up the test
         int itemCount = 30;
@@ -318,6 +441,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude1() {
         //set up the test
         int itemCount = 30;
@@ -341,6 +465,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude2() {
         //set up the test
         int itemCount = 30;
@@ -364,6 +489,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude3() {
         //set up the test
         int itemCount = 30;
@@ -387,6 +513,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude4() {
         //set up the test
         int itemCount = 30;
@@ -412,6 +539,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude5() {
         //set up the test
         int itemCount = 30;
@@ -434,6 +562,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check creating an enumvar with various groupings and element-based includes/excludes
+    @Test
     public void testVarEnumVarIncludeExclude6() {
         //set up the test
         int itemCount = 30;
@@ -632,6 +761,7 @@ public class VariableTableModelTest extends TestCase {
     // End commom setup routines for testVarEnumVarIncludeExclude tests
 
     // Check creating bogus XML (unknown variable type)
+    @Test
     public void testVarTableLoadBogus() {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p)) {
@@ -667,7 +797,7 @@ public class VariableTableModelTest extends TestCase {
         //fmt.setNewlines(true);   // pretty printing
         //fmt.setIndent(true);
         //try {
-        //	 fmt.output(doc, o);
+        // fmt.output(doc, o);
         //} catch (Exception e) { System.out.println("error writing XML: "+e);}
         // and test reading this
         t.setRow(0, el0);
@@ -676,6 +806,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check can read simple file
+    @Test
     public void testVarTableLoadFileSimple() throws Exception {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
@@ -696,6 +827,7 @@ public class VariableTableModelTest extends TestCase {
     }
 
     // Check can read complex file
+    @Test
     public void testVarTableLoadFileComplex() throws Exception {
         String[] args = {"CV", "Name"};
         VariableTableModel t = new VariableTableModel(null, args, new CvTableModel(null, p));
@@ -715,31 +847,13 @@ public class VariableTableModelTest extends TestCase {
 
     }
 
-    // from here down is testing infrastructure
-    public VariableTableModelTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", VariableTableModelTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(VariableTableModelTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 

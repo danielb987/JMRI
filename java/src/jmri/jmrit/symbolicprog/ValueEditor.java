@@ -18,15 +18,15 @@ import org.slf4j.LoggerFactory;
 /**
  * JTable editor for cells representing CV values. This is a somewhat
  * unconventional thing in several ways:
- * <UL>
- * <LI>The returned value is not the String edited into the cell, but an Integer
+ * <ul>
+ * <li>The returned value is not the String edited into the cell, but an Integer
  * value. It is not clear how that arose, and it should probably be changed at
  * some point.
- * <LI>This is also a focus listener. People are not used to having to hit
+ * <li>This is also a focus listener. People are not used to having to hit
  * return/enter to "set" their value in place, and are rather expecting that the
  * value they typed will be in effect as soon as they type it. We use a
  * focusListener to do that.
- * </UL>
+ * </ul>
  *
  * @author Bob Jacobsen Copyright (C) 2001
  */
@@ -47,9 +47,7 @@ public class ValueEditor extends JComboBox<Object> implements TableCellEditor, F
             int row, int column) {
         mValue = value;
         if (log.isDebugEnabled()) {
-            log.debug("getTableCellEditorComponent " + row + " "
-                    + column + " " + isSelected + " "
-                    + value.getClass());
+            log.debug("getTableCellEditorComponent {} {} {} {}", row, column, isSelected, value.getClass());
         }
         table.setRowSelectionInterval(row, row);
         table.setColumnSelectionInterval(column, column);
@@ -115,7 +113,7 @@ public class ValueEditor extends JComboBox<Object> implements TableCellEditor, F
     @Override
     public Object getCellEditorValue() {
         if (log.isDebugEnabled()) {
-            log.debug("getCellEditorValue with 'value' object of type " + mValue.getClass());
+            log.debug("getCellEditorValue with 'value' object of type {}", mValue.getClass());
         }
         if (mValue instanceof JTextField) {
             // extract the string from the JTextField and return it
@@ -124,8 +122,7 @@ public class ValueEditor extends JComboBox<Object> implements TableCellEditor, F
             // extract the string from the JTextField and return it
             return mValue;
         } else {
-            log.error("getCellEditorValue unable to return a value from unknown type "
-                    + mValue.getClass());
+            log.error("getCellEditorValue unable to return a value from unknown type {}", mValue.getClass());
             return null;
         }
     }

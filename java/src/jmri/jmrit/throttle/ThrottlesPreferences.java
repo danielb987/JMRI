@@ -25,6 +25,7 @@ public class ThrottlesPreferences {
     private boolean _ignoreThrottlePosition = true;
     private boolean _saveThrottleOnLayoutSave = true;
     private boolean _isSilentSteal = false;
+    private boolean _isSilentShare = false;
     protected boolean dirty = false;
 
     private Dimension _winDim = new Dimension(800, 600);
@@ -44,7 +45,7 @@ public class ThrottlesPreferences {
             log.info("Did not find throttle preferences file.  This is normal if you haven't save the preferences before");
             root = null;
         } catch (Exception e) {
-            log.error("Exception while loading throttles preferences: " + e);
+            log.error("Exception while loading throttles preferences: {}", e);
             root = null;
         }
         if (root != null) {
@@ -94,6 +95,9 @@ public class ThrottlesPreferences {
         if ((a = e.getAttribute("isSilentSteal")) != null) {
             setSilentSteal(a.getValue().compareTo("true") == 0);
         }
+        if ((a = e.getAttribute("isSilentShare")) != null) {
+            setSilentShare(a.getValue().compareTo("true") == 0);
+        }
         this.dirty = false;
     }
 
@@ -126,6 +130,7 @@ public class ThrottlesPreferences {
         e.setAttribute("isHidingUndefinedFunctionButtons", "" + isHidingUndefinedFuncButt());
         e.setAttribute("isIgnoringThrottlePosition", "" + isIgnoringThrottlePosition());
         e.setAttribute("isSilentSteal", "" + isSilentSteal());
+        e.setAttribute("isSilentShare", "" + isSilentShare());
         return e;
     }
 
@@ -133,7 +138,7 @@ public class ThrottlesPreferences {
         setWindowDimension(tp.getWindowDimension());
         setUseExThrottle(tp.isUsingExThrottle());
         setUsingToolBar(tp.isUsingToolBar());
-        setUsingFunctionIcon(tp.isUsingFunctionIcon());
+        setUsingFunctionIcon(tp._useFunctionIcon);
         setResizeWindow(tp.isResizingWindow());
         setSaveThrottleOnLayoutSave(tp.isSavingThrottleOnLayoutSave());
         setUseRosterImage(tp.isUsingRosterImage());
@@ -142,6 +147,7 @@ public class ThrottlesPreferences {
         setHideUndefinedFuncButt(tp.isHidingUndefinedFuncButt());
         setIgnoreThrottlePosition(tp.isIgnoringThrottlePosition());
         setSilentSteal(tp.isSilentSteal());
+        setSilentShare(tp.isSilentShare());
 
         if (listeners != null) {
             for (int i = 0; i < listeners.size(); i++) {
@@ -162,8 +168,9 @@ public class ThrottlesPreferences {
                 || isUsingRosterImage() != tp.isUsingRosterImage()
                 || isEnablingRosterSearch() != tp.isEnablingRosterSearch()
                 || isAutoLoading() != tp.isAutoLoading()
-                || isHidingUndefinedFuncButt() != tp.isHidingUndefinedFuncButt())
-                || isSilentSteal() != tp.isSilentSteal();
+                || isHidingUndefinedFuncButt() != tp.isHidingUndefinedFuncButt()
+                || isSilentSteal() != tp.isSilentSteal()
+                || isSilentShare() != tp.isSilentShare());
     }
 
     public void save() {
@@ -188,7 +195,7 @@ public class ThrottlesPreferences {
                 log.error("createNewFile failed");
             }
         } catch (Exception exp) {
-            log.error("Exception while writing the new throttles preferences file, may not be complete: " + exp);
+            log.error("Exception while writing the new throttles preferences file, may not be complete: {}", exp);
         }
 
         try {
@@ -204,7 +211,7 @@ public class ThrottlesPreferences {
             root.setContent(store());
             xf.writeXML(file, doc);
         } catch (java.io.IOException ex) {
-            log.warn("Exception in storing throttles preferences xml: " + ex);
+            log.warn("Exception in storing throttles preferences xml: {}", ex);
         }
         this.dirty = false;
     }
@@ -236,6 +243,11 @@ public class ThrottlesPreferences {
         this.dirty = true;
     }
 
+    /**
+     * Check if function icons are in use.
+     * 
+     * @return user preference to use function icons.
+     */
     public boolean isUsingFunctionIcon() {
         return _useFunctionIcon;
     }
@@ -243,6 +255,16 @@ public class ThrottlesPreferences {
     public void setUsingFunctionIcon(boolean useFunctionIcon) {
         _useFunctionIcon = useFunctionIcon;
         this.dirty = true;
+    }
+
+    /**
+     * Retrun true if throttle icons should be shown; this returns
+     * isUsingExThrottle() &quot;&quot; isUsingFunctionIcon()
+     * 
+     * @return true if throttle icons should be used.
+     */
+    public boolean isUsingIcons() {
+        return (isUsingExThrottle() && isUsingFunctionIcon());
     }
 
     public boolean isResizingWindow() {
@@ -312,15 +334,25 @@ public class ThrottlesPreferences {
         return _isSilentSteal;
     }
     
+    public boolean isSilentShare() {
+        return _isSilentShare;
+    }
     
     public void setSilentSteal(boolean b) {
         _isSilentSteal = b;
         this.dirty = true;
     }
     
+    public void setSilentShare(boolean b) {
+        _isSilentShare = b;
+        this.dirty = true;
+    }
+    
     /**
-     * Add an AddressListener. AddressListeners are notified when the user
-     * selects a new address and when a Throttle is acquired for that address
+     * Add an AddressListener. 
+     * AddressListeners are notified when the user
+     * selects a new address and when a Throttle is acquired for that address.
+     * @param l listener to add.
      *
      */
     public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -334,7 +366,7 @@ public class ThrottlesPreferences {
 
     /**
      * Remove an AddressListener.
-     *
+     * @param l listener to remove.
      */
     public void removePropertyChangeListener(PropertyChangeListener l) {
         if (listeners == null) {

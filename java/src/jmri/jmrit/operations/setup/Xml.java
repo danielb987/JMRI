@@ -9,6 +9,10 @@ package jmri.jmrit.operations.setup;
  */
 public class Xml {
 
+    private Xml(){
+        // class of constants
+    }
+
     // Common to operation xml files
     static final String ID = "id"; // NOI18N
     static final String NAME = "name"; // NOI18N
@@ -41,6 +45,9 @@ public class Xml {
     
     static final String ACTIONS = "actions"; // NOI18N
     static final String EXCEL_WAIT_TIME = "excelWaitTime"; // NOI18N
+    
+    static final String PRINT_OPTIONS = "printOptions"; // NOI18N
+    static final String DISABLE_PRINT_IF_CUSTOM = "disablePrintIfCustom"; // NOI18N
 
     // Setup.java
     static final String OPERATIONS = "operations"; // NOI18N
@@ -84,7 +91,7 @@ public class Xml {
     static final String PRINT_LOC_COMMENTS = "printLocComments"; // NOI18N
     static final String PRINT_ROUTE_COMMENTS = "printRouteComments"; // NOI18N
     static final String PRINT_LOADS_EMPTIES = "printLoadsEmpties"; // NOI18N
-    static final String PRINT_TIMETABLE = "printTimetable"; // NOI18N
+    static final String PRINT_TRAIN_SCHEDULE = "printTimetable"; // NOI18N
     static final String USE12HR_FORMAT = "use12hrFormat"; // NOI18N
     static final String PRINT_VALID = "printValid"; // NOI18N
     static final String SORT_BY_TRACK = "sortByTrack"; // NOI18N
@@ -162,14 +169,17 @@ public class Xml {
     static final String NUMBER_PASSES = "numberPasses";  // NOI18N
 
     static final String ALLOW_LOCAL_INTERCHANGE = "allowLocalInterchange"; // NOI18N
-    static final String ALLOW_LOCAL_SPUR = "allowLocalSiding"; // NOI18N
+    static final String ALLOW_LOCAL_SPUR = "allowLocalSpur"; // NOI18N
     static final String ALLOW_LOCAL_YARD = "allowLocalYard"; // NOI18N
+    // next for backward compatibility
+    static final String ALLOW_LOCAL_SIDING = "allowLocalSiding"; // NOI18N
 
     static final String STAGING_RESTRICTION_ENABLED = "stagingRestrictionEnabled"; // NOI18N
     static final String STAGING_TRACK_AVAIL = "stagingTrackAvail"; // NOI18N
     static final String ALLOW_RETURN_STAGING = "allowReturnStaging"; // NOI18N
     static final String PROMPT_STAGING_ENABLED = "promptStagingEnabled"; // NOI18N
     static final String PROMPT_TO_STAGING_ENABLED = "promptToStagingEnabled"; // NOI18N
+    static final String STAGING_TRY_NORMAL = "stagingTryNormal"; // NOI18N
 
     static final String GENERATE_CSV_MANIFEST = "generateCsvManifest"; // NOI18N
     static final String GENERATE_CSV_SWITCH_LIST = "generateCsvSwitchList"; // NOI18N

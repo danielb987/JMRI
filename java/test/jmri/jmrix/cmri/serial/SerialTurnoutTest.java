@@ -1,14 +1,20 @@
 package jmri.jmrix.cmri.serial;
 
-import jmri.implementation.AbstractTurnoutTestBase;
-import jmri.*;
+import java.util.Iterator;
+import java.util.TreeSet;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
+
+import jmri.Turnout;
+import jmri.implementation.AbstractTurnoutTestBase;
+import jmri.util.JUnitUtil;
+import jmri.util.NamedBeanComparator;
 
 /**
  * Tests for the jmri.jmrix.cmri.serial.SerialTurnout class
  *
- * @author	Bob Jacobsen
+ * @author Bob Jacobsen
  */
 public class SerialTurnoutTest extends AbstractTurnoutTestBase {
 
@@ -22,10 +28,10 @@ public class SerialTurnoutTest extends AbstractTurnoutTestBase {
     }
     
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
-        jmri.util.JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetInstanceManager();
+        JUnitUtil.setUp();
+        JUnitUtil.resetInstanceManager();
         
         // prepare an interface
         tcis = new SerialTrafficControlScaffold();
@@ -39,9 +45,13 @@ public class SerialTurnoutTest extends AbstractTurnoutTestBase {
         Assert.assertNotNull("turnout exists", t);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
-        jmri.util.JUnitUtil.tearDown();
+        if (tcis != null) tcis.terminateThreads();
+        tcis = null;
+        memo = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        JUnitUtil.tearDown();
     }
 
     int startingNumListeners; // number at creation, before tests start allocating them.
@@ -53,22 +63,21 @@ public class SerialTurnoutTest extends AbstractTurnoutTestBase {
 
     @Override
     public void checkThrownMsgSent() {
-
-//                tcis.sendSerialMessage(tcis.nextWrite(), null); // force outbound message; normally done by poll loop
-//		Assert.assertTrue("message sent", tcis.outbound.size()>0);
-//		Assert.assertEquals("content", "41 54 08", tcis.outbound.elementAt(tcis.outbound.size()-1).toString());  // THROWN message
+//      tcis.sendSerialMessage(tcis.nextWrite(), null); // force outbound message; normally done by poll loop
+//      Assert.assertTrue("message sent", tcis.outbound.size() > 0);
+//      Assert.assertEquals("content", "41 54 08", tcis.outbound.elementAt(tcis.outbound.size() - 1).toString());  // THROWN message
     }
 
     @Override
     public void checkClosedMsgSent() {
-//                tcis.sendSerialMessage(tcis.nextWrite(), null); // force outbound message; normally done by poll loop
-//		Assert.assertTrue("message sent", tcis.outbound.size()>0);
-//		Assert.assertEquals("content", "41 54 00", tcis.outbound.elementAt(tcis.outbound.size()-1).toString());  // CLOSED message
+//      tcis.sendSerialMessage(tcis.nextWrite(), null); // force outbound message; normally done by poll loop
+//      Assert.assertTrue("message sent", tcis.outbound.size() > 0);
+//      Assert.assertEquals("content", "41 54 00", tcis.outbound.elementAt(tcis.outbound.size() - 1).toString());  // CLOSED message
     }
 
     @Test
     public void testSystemSpecificComparisonOfStandardNames() {
-        jmri.util.NamedBeanComparator t = new jmri.util.NamedBeanComparator();
+        NamedBeanComparator<Turnout> t = new NamedBeanComparator<>();
         
         Turnout t1 = new SerialTurnout("CT1", "to1", memo);
         Turnout t2 = new SerialTurnout("CT2", "to2", memo);
@@ -86,7 +95,7 @@ public class SerialTurnoutTest extends AbstractTurnoutTestBase {
     @Test
     public void testSystemSpecificComparisonOfSpecificFormats() {
         // test by putting into a tree set, then extracting and checking order
-        java.util.TreeSet<Turnout> set = new java.util.TreeSet<>(new jmri.util.NamedBeanComparator());
+        TreeSet<Turnout> set = new TreeSet<>(new NamedBeanComparator<>());
         
         set.add(new SerialTurnout("CT3B4",    "to3004", memo));
         set.add(new SerialTurnout("CT3003",    "to3003", memo));
@@ -106,7 +115,7 @@ public class SerialTurnoutTest extends AbstractTurnoutTestBase {
         set.add(new SerialTurnout("CT1",    "to1", memo));
         
         
-        java.util.Iterator<Turnout> it = set.iterator();
+        Iterator<Turnout> it = set.iterator();
         
         Assert.assertEquals("CT1", it.next().getSystemName());
         Assert.assertEquals("CT2", it.next().getSystemName());

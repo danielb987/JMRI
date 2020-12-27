@@ -100,7 +100,7 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
                     }
                     try {
                         log.debug("Creating connection {}:{} ({}) class {}", userName, systemName, manufacturer, className);
-                        XmlAdapter adapter = (XmlAdapter) Class.forName(className).newInstance();
+                        XmlAdapter adapter = (XmlAdapter) Class.forName(className).getDeclaredConstructor().newInstance();
                         ConnectionConfigManagerErrorHandler handler = new ConnectionConfigManagerErrorHandler();
                         adapter.setExceptionHandler(handler);
                         if (!adapter.load(shared, perNode)) {
@@ -112,7 +112,7 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
                         handler.exceptions.forEach((exception) -> {
                             this.addInitializationException(profile, exception);
                         });
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | java.lang.reflect.InvocationTargetException ex) {
                         log.error("Unable to create {} for {}", className, shared, ex);
                         String english = Bundle.getMessage(Locale.ENGLISH, "ErrorSingleConnection", userName, systemName); // NOI18N
                         String localized = Bundle.getMessage("ErrorSingleConnection", userName, systemName); // NOI18N
@@ -143,6 +143,7 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
     }
 
     @Override
+    @Nonnull
     public Set<Class<? extends PreferencesManager>> getRequires() {
         return new HashSet<>();
     }
@@ -326,6 +327,7 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
                 for (String manufacturer : ctl.getManufacturers()) {
                     if (!connectionTypeLists.containsKey(manufacturer)) {
                         connectionTypeLists.put(manufacturer, ctl);
+                        log.debug("Added {} connectionTypeList", manufacturer);
                     } else {
                         log.debug("Need a proxy for {} from {} in {}", manufacturer, ctl.getClass().getName(), this);
                         ProxyConnectionTypeList proxy;
@@ -375,6 +377,7 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
         }
 
         @Override
+        @Nonnull
         public String[] getAvailableProtocolClasses() {
             TreeSet<String> classes = new TreeSet<>();
             this.connectionTypeLists.stream().forEach((connectionTypeList) -> {
@@ -384,6 +387,7 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
         }
 
         @Override
+        @Nonnull
         public String[] getManufacturers() {
             TreeSet<String> manufacturers = new TreeSet<>();
             this.connectionTypeLists.stream().forEach((connectionTypeList) -> {
@@ -433,4 +437,5 @@ public class ConnectionConfigManager extends AbstractPreferencesManager implemen
             }
         }
     }
+
 }

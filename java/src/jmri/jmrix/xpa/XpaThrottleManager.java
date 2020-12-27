@@ -1,17 +1,19 @@
 package jmri.jmrix.xpa;
 
+import java.util.EnumSet;
+
 import jmri.LocoAddress;
-import jmri.ThrottleManager;
+import jmri.SpeedStepMode;
 import jmri.jmrix.AbstractThrottleManager;
 
 /**
- * XPA implementation of a ThrottleManager
+ * XPA implementation of a ThrottleManager.
  *
  * @author Paul Bender Copyright (C) 2004
  */
-public class XpaThrottleManager extends AbstractThrottleManager implements ThrottleManager {
+public class XpaThrottleManager extends AbstractThrottleManager {
 
-    private XpaTrafficController tc = null;
+    private final XpaTrafficController tc;
 
     /**
      * Create a throttle manager.
@@ -65,18 +67,28 @@ public class XpaThrottleManager extends AbstractThrottleManager implements Throt
     /**
      * {@inheritDoc }
      *
-     * @return true
+     * @return true because this type of throttle has no long/short overlap
      */
     @Override
     public boolean addressTypeUnique() {
         return true;
     }
 
-    /*
-     * Local method for deciding short/long address
+    /**
+     * Local method for deciding short/long address.
+     * @param num address to check
+     * @return true if valid as long address
      */
     static boolean isLongAddress(int num) {
         return (num >= 100);
     }
 
+    /**
+     * What speed modes are supported by this system? value should be xor of
+     * possible modes specifed by the DccThrottle interface
+     */
+    @Override
+    public EnumSet<SpeedStepMode> supportedSpeedModes() {
+        return EnumSet.of(SpeedStepMode.INCREMENTAL);
+    }
 }

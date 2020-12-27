@@ -21,8 +21,20 @@
     <revision>
         <revnumber>1</revnumber>
         <date>2016-07-02</date>
-        <authorinitials>PS</authorinitials>
+        <authorinitials>PŠ</authorinitials>
         <revremark>Initial version</revremark>
+    </revision>    
+    <revision>
+        <revnumber>2</revnumber>
+        <date>2018-09-19</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Panel indicators</revremark>
+    </revision>    
+    <revision>
+        <revnumber>3</revnumber>
+        <date>2020-08-26</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Speed map</revremark>
     </revision>    
   </revhistory>
 
@@ -35,51 +47,135 @@
     <appearance>
       <aspectname>Volno</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/001_volno_p.gif</imagelink>
+      <imagelink type="AŽD z">../../../resources/icons/smallschematics/aspects/CSD/AZD/01_g.png</imagelink>
+      <imagelink type="ESP z">../../../resources/icons/smallschematics/aspects/CSD/ESP/01_g.png</imagelink>
     </appearance>
 
     <appearance>
       <aspectname>Výstraha</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/002_vystraha_p.gif</imagelink>
+      <imagelink type="AŽD z">../../../resources/icons/smallschematics/aspects/CSD/AZD/02_g.png</imagelink>
+      <imagelink type="ESP z">../../../resources/icons/smallschematics/aspects/CSD/ESP/02_g.png</imagelink>
     </appearance>
 
     <appearance>
       <aspectname>Očekávej 40</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/003_o40_p.gif</imagelink>
+      <imagelink type="AŽD z">../../../resources/icons/smallschematics/aspects/CSD/AZD/01_g.png</imagelink>
+      <imagelink type="ESP z">../../../resources/icons/smallschematics/aspects/CSD/ESP/01_g.png</imagelink>
     </appearance>
 
     <appearance>
       <aspectname>Očekávej 60</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/004_o60_p.gif</imagelink>
+      <imagelink type="AŽD z">../../../resources/icons/smallschematics/aspects/CSD/AZD/01_g.png</imagelink>
+      <imagelink type="ESP z">../../../resources/icons/smallschematics/aspects/CSD/ESP/01_g.png</imagelink>
     </appearance>
 
     <appearance>
       <aspectname>Očekávej 80</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/005_o80_p.gif</imagelink>
+      <imagelink type="AŽD z">../../../resources/icons/smallschematics/aspects/CSD/AZD/01_g.png</imagelink>
+      <imagelink type="ESP z">../../../resources/icons/smallschematics/aspects/CSD/ESP/01_g.png</imagelink>
     </appearance>
 
   </appearances>
   
   <aspectMappings>
+  
+    <aspectMapping>
+      <advancedAspect>Volno</advancedAspect>
+      <ourAspect>Volno</ourAspect>
+    </aspectMapping>
     <aspectMapping>
       <advancedAspect>Výstraha</advancedAspect>
       <ourAspect>Volno</ourAspect>
     </aspectMapping>
     <aspectMapping>
+      <advancedAspect>Očekávej 40</advancedAspect>
+      <ourAspect>Volno</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Očekávej 60</advancedAspect>
+      <ourAspect>Volno</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Očekávej 80</advancedAspect>
+      <ourAspect>Volno</ourAspect>
+    </aspectMapping>
+    
+    <aspectMapping>
       <advancedAspect>Stůj</advancedAspect>
       <ourAspect>Výstraha</ourAspect>
     </aspectMapping>
     <aspectMapping>
-      <advancedAspect>40 a výstraha</advancedAspect>
+      <advancedAspect>Opatrně na přivolávací návěst</advancedAspect>
+      <ourAspect>Výstraha</ourAspect>
+    </aspectMapping>
+    
+    <aspectMapping>
+      <advancedAspect>Rychlost 40 a volno</advancedAspect>
       <ourAspect>Očekávej 40</ourAspect>
     </aspectMapping>
     <aspectMapping>
-      <advancedAspect>60 a výstraha</advancedAspect>
+      <advancedAspect>Rychlost 40 a výstraha</advancedAspect>
+      <ourAspect>Očekávej 40</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 40 a očekávej 40</advancedAspect>
+      <ourAspect>Očekávej 40</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 40 a očekávej 60</advancedAspect>
+      <ourAspect>Očekávej 40</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 40 a očekávej 80</advancedAspect>
+      <ourAspect>Očekávej 40</ourAspect>
+    </aspectMapping>
+    
+    <aspectMapping>
+      <advancedAspect>Rychlost 60 a volno</advancedAspect>
       <ourAspect>Očekávej 60</ourAspect>
     </aspectMapping>
     <aspectMapping>
-      <advancedAspect>80 a výstraha</advancedAspect>
+      <advancedAspect>Rychlost 60 a výstraha</advancedAspect>
+      <ourAspect>Očekávej 60</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 60 a očekávej 40</advancedAspect>
+      <ourAspect>Očekávej 60</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 60 a očekávej 60</advancedAspect>
+      <ourAspect>Očekávej 60</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 60 a očekávej 80</advancedAspect>
+      <ourAspect>Očekávej 60</ourAspect>
+    </aspectMapping>
+    
+    <aspectMapping>
+      <advancedAspect>Rychlost 80 a volno</advancedAspect>
       <ourAspect>Očekávej 80</ourAspect>
     </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 80 a výstraha</advancedAspect>
+      <ourAspect>Očekávej 80</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 80 a očekávej 40</advancedAspect>
+      <ourAspect>Očekávej 80</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 80 a očekávej 60</advancedAspect>
+      <ourAspect>Očekávej 80</ourAspect>
+    </aspectMapping>
+    <aspectMapping>
+      <advancedAspect>Rychlost 80 a očekávej 80</advancedAspect>
+      <ourAspect>Očekávej 80</ourAspect>
+    </aspectMapping>
+    
   </aspectMappings>
-  
+    
 </appearancetable>  

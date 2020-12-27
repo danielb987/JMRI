@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * User interface frame for creating and editing "OS Indicator" logic on USS CTC
  * machines.
- * <P>
+ *
  * @author Bob Jacobsen Copyright (C) 2007
  */
 public class OsIndicatorPanel extends BasePanel {
@@ -92,7 +92,7 @@ public class OsIndicatorPanel extends BasePanel {
         // validate
         ok &= validateTurnout(outputName.getText());
         ok &= validateSensor(sensorName.getText());
-        if (!lockName.getText().equals("")) {
+        if (!lockName.getText().isEmpty()) {
             ok &= validateMemory(lockName.getText());
         }
 
@@ -111,7 +111,7 @@ public class OsIndicatorPanel extends BasePanel {
             sensorName.setText(o.getOsSensorName());
             lockName.setText(o.getLockName());
         } catch (jmri.JmriException e) {
-            log.error("Exception trying to find existing OS Indicator: " + e);  // NOI18N
+            log.error("Exception trying to find existing OS Indicator: {}", e);  // NOI18N
         }
     }
 

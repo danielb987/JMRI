@@ -9,13 +9,17 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2008
  * @author Paul Bender Copyright (C) 2004,2010,2014
-  */
+ */
 public class XNetStreamPortController extends jmri.jmrix.AbstractStreamPortController implements XNetPortController {
 
     private boolean timeSlot = true;
 
     public XNetStreamPortController(DataInputStream in, DataOutputStream out, String pname) {
         super(new XNetSystemConnectionMemo(), in, out, pname);
+    }
+
+    public XNetStreamPortController() {
+        super(new XNetSystemConnectionMemo());
     }
 
     @Override
@@ -26,7 +30,12 @@ public class XNetStreamPortController extends jmri.jmrix.AbstractStreamPortContr
 
         this.getSystemConnectionMemo().setXNetTrafficController(packets);
 
-        new XNetInitializationManager(this.getSystemConnectionMemo());
+        new XNetInitializationManager()
+                .memo(this.getSystemConnectionMemo())
+                .setDefaults()
+                .setTimeout(30000)
+                .versionCheck()
+                .init();
     }
 
     @Override
@@ -40,7 +49,7 @@ public class XNetStreamPortController extends jmri.jmrix.AbstractStreamPortContr
      */
     @Override
     public boolean status() {
-        return true;
+        return (getInputStream()!=null && getOutputStream()!=null);
     }
 
     /**

@@ -1,51 +1,38 @@
 package jmri.jmris.simpleserver;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the jmri.jmris.simpleserver.SimpleServerManager class 
  *
  * @author Paul Bender
  */
-public class SimpleServerManagerTest extends TestCase {
+public class SimpleServerManagerTest {
 
+    @Test
     public void testGetInstance() {
         SimpleServerManager a = SimpleServerManager.getInstance();
-        Assert.assertNotNull(a);
+        assertThat(a).isNotNull();
     }
 
-    // from here down is testing infrastructure
-    public SimpleServerManagerTest(String s) {
-        super(s);
+    @Test
+    public void testGetPreferences(){
+        SimpleServerManager a = SimpleServerManager.getInstance();
+        assertThat(a.getPreferences()).withFailMessage("preferences not created").isNotNull();
     }
 
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {SimpleServerManagerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(jmri.jmris.simpleserver.SimpleServerManagerTest.class);
-
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         jmri.util.JUnitUtil.setUp();
-        super.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() {
         jmri.util.JUnitUtil.tearDown();
 
     }

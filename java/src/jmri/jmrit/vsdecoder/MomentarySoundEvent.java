@@ -3,29 +3,26 @@ package jmri.jmrit.vsdecoder;
 /*
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
  * @author   Mark Underwood Copyright (C) 2011
- * 
  */
-import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MomentarySoundEvent extends SoundEvent implements PropertyChangeListener {
+public class MomentarySoundEvent extends SoundEvent {
 
     JButton button;
 
@@ -79,7 +76,7 @@ public class MomentarySoundEvent extends SoundEvent implements PropertyChangeLis
     protected ButtonTrigger setupButtonAction(Element te) {
         bt = new ButtonTrigger(te.getAttributeValue("name"));
         button_trigger_list.put(bt.getName(), bt);
-        log.debug("new ButtonTrigger " + bt.getName() + " type " + buttontype.toString());
+        log.debug("new ButtonTrigger {} type {}", bt.getName(), buttontype.toString());
         button.addMouseListener(bt);
         return (bt);  // cast OK since we just instantiated it up above.
     }

@@ -18,8 +18,7 @@ import javax.swing.JPopupMenu;
  *
  * public void doMouseClicked(MouseEvent event);
  *
- *
- ** Positionable object may use the following call to edit the "url" string
+ * Positionable object may use the following call to edit the "url" string
  *
  * public boolean setLinkMenu(JPopupMenu popup) { // perhaps check if "url" is
  * OK or just this popup.add(CoordinateEdit.getLinkEditAction(this,
@@ -29,12 +28,12 @@ import javax.swing.JPopupMenu;
  */
 public interface LinkingObject extends Cloneable {
 
-    public String getURL();
+    String getURL();
 
-    public void setULRL(String u);
+    void setULRL(String u);
 
-    public void updateSize();
+    void updateSize();
 
-    public boolean setLinkMenu(JPopupMenu popup);
+    boolean setLinkMenu(JPopupMenu popup);
 //    public void doMouseClicked(MouseEvent event);   
 }

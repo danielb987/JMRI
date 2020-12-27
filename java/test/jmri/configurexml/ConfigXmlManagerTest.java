@@ -6,28 +6,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+
 import jmri.util.FileUtil;
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
  * Tests for ConfigXmlManager.
- * <P>
+ * <p>
  * Uses the local preferences for test files.
  *
  * @author Bob Jacobsen Copyright 2003
  */
-public class ConfigXmlManagerTest extends TestCase {
-
-    public ConfigXmlManagerTest(String s) {
-        super(s);
-    }
+public class ConfigXmlManagerTest {
 
     private boolean innerFlag;
 
+    @Test
     public void testRegisterOK() {
         ConfigXmlManager configxmlmanager = new ConfigXmlManager() {
             @SuppressWarnings("unused")
@@ -42,6 +39,7 @@ public class ConfigXmlManagerTest extends TestCase {
         Assert.assertTrue("removed from clist", configxmlmanager.clist.isEmpty());
     }
 
+    @Test
     public void testLogErrorOnStore() {
         ConfigXmlManager configxmlmanager = new ConfigXmlManager();
         innerFlag = false;
@@ -64,6 +62,7 @@ public class ConfigXmlManagerTest extends TestCase {
         }
     }
 
+    @Test
     public void testFind() throws ClassNotFoundException {
         ConfigXmlManager configxmlmanager = new ConfigXmlManager() {
             @SuppressWarnings("unused")
@@ -91,15 +90,18 @@ public class ConfigXmlManagerTest extends TestCase {
 
     }
 
+    @Test
     public void testDeregister() {
     }
 
+    @Test
     public void testAdapterName() {
         //ConfigXmlManager c = new ConfigXmlManager();
         Assert.assertEquals("String class adapter", "java.lang.configurexml.StringXml",
                 ConfigXmlManager.adapterName(""));
     }
 
+    @Test
     public void testCurrentClassName() {
         Assert.assertEquals("unmigrated", "jmri.managers.configurexml.DccSignalHeadXml",
                 ConfigXmlManager.currentClassName("jmri.managers.configurexml.DccSignalHeadXml"));
@@ -107,6 +109,7 @@ public class ConfigXmlManagerTest extends TestCase {
                 ConfigXmlManager.currentClassName("jmri.configurexml.DccSignalHeadXml"));
     }
 
+    @Test
     public void testFindFile() throws FileNotFoundException, IOException {
         ConfigXmlManager configxmlmanager = new ConfigXmlManager() {
             @Override
@@ -163,27 +166,14 @@ public class ConfigXmlManagerTest extends TestCase {
         f.delete();  // make sure it's gone again
     }
 
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", ConfigXmlManagerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(ConfigXmlManagerTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 }

@@ -6,11 +6,14 @@ package jmri.jmrix.ecos.utilities;
  * two given character positions.
  *
  * @author Kevin Dickerson Copyright (C) 2009
-  */
+ */
 public class GetEcosObjectNumber {
 
     /**
-     * @param s Name of this action, e.g. in menus
+     * @param s Name of this action, e.g. in menus.
+     * @param start start string.
+     * @param finish finish string.
+     * @return object number.
      */
     static public int getEcosObjectNumber(String s, String start, String finish) {
         int intStart = 0;

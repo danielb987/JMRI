@@ -16,7 +16,6 @@ import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import jmri.InstanceManager;
 import jmri.swing.PreferencesPanel;
-import jmri.util.swing.FontComboUtil;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -69,8 +68,6 @@ public class SystemConsoleConfigPanel extends JPanel implements PreferencesPanel
 
     private static final JComboBox<Scheme> schemes = new JComboBox<>(SystemConsole.getInstance().getSchemes());
 
-    private static final JComboBox<String> fontFamily = FontComboUtil.getFontCombo(FontComboUtil.MONOSPACED, 14);
-
     private static final JComboBox<Integer> fontSize = new JComboBox<>(fontSizes);
 
     public SystemConsoleConfigPanel() {
@@ -113,17 +110,6 @@ public class SystemConsoleConfigPanel extends JPanel implements PreferencesPanel
         add(p);
 
         p = new JPanel(new FlowLayout());
-        fontFamily.addActionListener((ActionEvent e) -> {
-            this.getPreferencesManager().setFontFamily((String) fontFamily.getSelectedItem());
-            schemes.repaint();
-        });
-        fontFamily.setSelectedItem(this.getPreferencesManager().getFontFamily());
-
-        JLabel fontFamilyLabel = new JLabel(rbc.getString("ConsoleFontStyle"));
-        fontFamilyLabel.setLabelFor(fontFamily);
-
-        p.add(fontFamilyLabel);
-        p.add(fontFamily);
 
         fontSize.addActionListener((ActionEvent e) -> {
             this.getPreferencesManager().setFontSize((int) fontSize.getSelectedItem());
@@ -220,7 +206,7 @@ public class SystemConsoleConfigPanel extends JPanel implements PreferencesPanel
     public boolean isDirty() {
         // console preferences take effect immediately, but are not saved
         // immediately, so we can't tell without rereading the preferences.xml,
-        // but it's to expensive to read that file to determine if it matches
+        // but it's too expensive to read that file to determine if it matches
         // the in memory preferences for this console, so simply return false
         return false;
     }

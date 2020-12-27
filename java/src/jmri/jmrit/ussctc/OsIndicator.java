@@ -13,7 +13,7 @@ import jmri.implementation.DefaultConditionalAction;
 /**
  * Provide bean-like access to the collection of Logix, Routes, Memories, etc
  * that make up a OsIndicator.
- * <P>
+ * <p>
  * An OS Indicator drives the lamp on the panel for a particular OS. Honors a
  * separate lock/unlocked indication by showing occupied if the associated
  * turnout has been unlocked.
@@ -22,7 +22,8 @@ import jmri.implementation.DefaultConditionalAction;
  */
 public class OsIndicator implements Constants {
 
-    final static String namePrefix = commonNamePrefix + "OsIndicator" + commonNameSuffix; //NOI18N
+    static String logixPrefix = InstanceManager.getDefault(jmri.LogixManager.class).getSystemNamePrefix();
+    final static String namePrefix = logixPrefix + ":" + commonNamePrefix + "OsIndicator" + commonNameSuffix; // NOI18N
 
     /**
      * Nobody can build anonymous object
@@ -51,37 +52,37 @@ public class OsIndicator implements Constants {
                 getLogix(nameP);
         if (l == null) {
             l = InstanceManager.getDefault(jmri.LogixManager.class).
-                    createNewLogix(nameP, ""); //NOI18N
+                    createNewLogix(nameP, ""); // NOI18N
         }
         l.deActivateLogix();
         // Find/create conditional and add
         Conditional c = InstanceManager.getDefault(jmri.ConditionalManager.class)
-                .getConditional(l, nameP + "C1"); //NOI18N
+                .getConditional(l, nameP + "C1"); // NOI18N
         if (c == null) {
             c = InstanceManager.getDefault(jmri.ConditionalManager.class)
-                    .createNewConditional(nameP + "C1", ""); //NOI18N
-            l.addConditional(nameP + "C1", -1); //NOI18N
+                    .createNewConditional(nameP + "C1", ""); // NOI18N
+            l.addConditional(nameP + "C1", -1); // NOI18N
         }
 
         // Load variable into the Conditional
         List<ConditionalVariable> variableList = c.getCopyOfStateVariables();
         variableList.add(new ConditionalVariable(false, Conditional.Operator.NONE,
-                Conditional.TYPE_SENSOR_INACTIVE,
+                Conditional.Type.SENSOR_INACTIVE,
                 osSensor, true));
-        if (!lock.equals("")) {
+        if (!lock.isEmpty()) {
             variableList.add(new ConditionalVariable(false, Conditional.Operator.AND,
-                    Conditional.TYPE_SENSOR_INACTIVE,
+                    Conditional.Type.SENSOR_INACTIVE,
                     lock, true));
         }
         c.setStateVariables(variableList);
 
         List<ConditionalAction> actionList = c.getCopyOfActions();
         actionList.add(new DefaultConditionalAction(Conditional.ACTION_OPTION_ON_CHANGE_TO_TRUE,
-                Conditional.ACTION_SET_TURNOUT, output,
-                Turnout.CLOSED, " ")); //NOI18N
+                Conditional.Action.SET_TURNOUT, output,
+                Turnout.CLOSED, " ")); // NOI18N
         actionList.add(new DefaultConditionalAction(Conditional.ACTION_OPTION_ON_CHANGE_TO_FALSE,
-                Conditional.ACTION_SET_TURNOUT, output,
-                Turnout.THROWN, " ")); //NOI18N
+                Conditional.Action.SET_TURNOUT, output,
+                Turnout.THROWN, " ")); // NOI18N
         c.setAction(actionList);          // string data
 
         // and put it back in operation
@@ -104,14 +105,14 @@ public class OsIndicator implements Constants {
         Logix l = InstanceManager.getDefault(jmri.LogixManager.class).
                 getLogix(nameP);
         if (l == null) {
-            throw new jmri.JmriException("Logix does not exist"); //NOI18N
+            throw new jmri.JmriException("Logix does not exist"); // NOI18N
         }
 
         // Find/create conditional and add
         Conditional c = InstanceManager.getDefault(jmri.ConditionalManager.class)
-                .getConditional(l, nameP + "C1"); //NOI18N
+                .getConditional(l, nameP + "C1"); // NOI18N
         if (c == null) {
-            throw new jmri.JmriException("Conditional does not exist"); //NOI18N
+            throw new jmri.JmriException("Conditional does not exist"); // NOI18N
         }
 
         // Load variables from the Conditional

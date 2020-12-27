@@ -107,20 +107,23 @@ public class RosterSpeedProfile {
      * @param mms MilliMetres per second
      * @return a string with scale speed and units
      */
-    public String convertMMSToScaleSpeedWithUnits(float mms) {
+    static public String convertMMSToScaleSpeedWithUnits(float mms) {
         int interp = jmri.InstanceManager.getDefault(SignalSpeedMap.class).getInterpretation();
         float scale = jmri.InstanceManager.getDefault(SignalSpeedMap.class).getLayoutScale();
         String formattedWithUnits;
         switch (interp) {
             case SignalSpeedMap.SPEED_MPH:
-                formattedWithUnits = String.format("%.2f mph", mms * scale * MMS_TO_MPH);
+                String unitsMph = Bundle.getMessage("mph");
+                formattedWithUnits = String.format("%.2f %s", mms * scale * MMS_TO_MPH, unitsMph);
                 break;
             case SignalSpeedMap.SPEED_KMPH:
-                formattedWithUnits = String.format("%.2f kph", mms * scale * MMS_TO_KPH);
+                String unitsKph = Bundle.getMessage("kph");
+                formattedWithUnits = String.format("%.2f %s", mms * scale * MMS_TO_KPH, unitsKph);
                 break;
             case SignalSpeedMap.PERCENT_THROTTLE:
             case SignalSpeedMap.PERCENT_NORMAL:
-                formattedWithUnits = String.format("%.2f mms", mms);
+                String unitsMms = Bundle.getMessage("mmps");
+                formattedWithUnits = String.format("%.2f %s", mms, unitsMms);
                 break;
             default:
                 log.warn("ScaleSpeedToMMS: Signal Speed Map has no interp, not modifing.");
@@ -213,6 +216,11 @@ public class RosterSpeedProfile {
         if (reverse > 0.0f) {
             _hasReverseSpeeds = true;
         }
+    }
+
+    public SpeedStep getSpeedStep(float speed) {
+        int iSpeedStep = Math.round(speed * 1000);
+        return speeds.get(iSpeedStep);
     }
 
     public void setForwardSpeed(float speedStep, float forward) {
@@ -432,7 +440,7 @@ public class RosterSpeedProfile {
 
     javax.swing.Timer stopTimer = null;
 
-    long lastTimeTimerStarted = 0l;
+    long lastTimeTimerStarted = 0L;
 
     /**
      * reset everything back to default once the change has finished.
@@ -1000,8 +1008,8 @@ public class RosterSpeedProfile {
     /**
      * Get track speed in millimeters per second from throttle setting
      *
-     * @param speedStep - throttle setting
-     * @param isForward - direction
+     * @param speedStep  throttle setting
+     * @param isForward  direction
      * @return track speed
      */
     public float getSpeed(float speedStep, boolean isForward) {

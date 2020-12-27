@@ -1,21 +1,19 @@
 package jmri.util;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import jmri.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class NamedBeanComparatorTest {
 
     @Test
     public void testOneLetterCases() {
-        NamedBeanComparator t = new NamedBeanComparator();
+        NamedBeanComparator<Turnout> t = new NamedBeanComparator<>();
 
         Turnout it1 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("IT1");
         Turnout it10 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("IT10");
@@ -32,7 +30,7 @@ public class NamedBeanComparatorTest {
 
     @Test
     public void testTwoLetterCases() {
-        NamedBeanComparator t = new NamedBeanComparator();
+        NamedBeanComparator<Turnout> t = new NamedBeanComparator<>();
 
         Turnout i2t1 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("I2T1");
         Turnout i2t10 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("I2T10");
@@ -49,7 +47,7 @@ public class NamedBeanComparatorTest {
 
     @Test
     public void testThreeLetterCases() {
-        NamedBeanComparator t = new NamedBeanComparator();
+        NamedBeanComparator<Turnout> t = new NamedBeanComparator<>();
 
         Turnout i23t1 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("I23T1");
         Turnout i23t10 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("I23T10");
@@ -68,11 +66,11 @@ public class NamedBeanComparatorTest {
     
     @Test
     public void testSystemSpecificCase() {
-        NamedBeanComparator t = new NamedBeanComparator();
+        NamedBeanComparator<Turnout> t = new NamedBeanComparator<>();
 
         // this just checks that the local sort is called
         Turnout it1 = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("IT1");
-        Turnout it2 = new jmri.implementation.AbstractTurnout("it2") {
+        Turnout it2 = new jmri.implementation.AbstractTurnout("IT2") {
 
             @Override
             protected void forwardCommandChangeToLayout(int s) {
@@ -82,6 +80,7 @@ public class NamedBeanComparatorTest {
             protected void turnoutPushbuttonLockout(boolean b) {
             }
 
+            @Override
             public int compareSystemNameSuffix(String suffix1, String suffix2, jmri.NamedBean n) {
                 hit = true;
                 return super.compareSystemNameSuffix(suffix1, suffix2, n);
@@ -97,13 +96,12 @@ public class NamedBeanComparatorTest {
         Assert.assertTrue(hit);
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

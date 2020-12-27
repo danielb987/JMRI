@@ -1,46 +1,43 @@
 package jmri.jmrix.lenz.swing.lz100;
 
 import java.awt.GraphicsEnvironment;
-import jmri.jmrix.lenz.LenzCommandStation;
-import jmri.jmrix.lenz.XNetInterfaceScaffold;
-import jmri.jmrix.lenz.XNetSystemConnectionMemo;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * LZ100FrameTest.java
  *
- * Description:	tests for the jmri.jmrix.lenz.swing.lz100.LZ100Frame class
+ * Test for the jmri.jmrix.lenz.swing.lz100.LZ100Frame class
  *
- * @author	Paul Bender
+ * @author Paul Bender
  */
-public class LZ100FrameTest {
+public class LZ100FrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        // infrastructure objects
-        XNetInterfaceScaffold tc = new XNetInterfaceScaffold(new LenzCommandStation());
+    private jmri.jmrix.lenz.XNetInterfaceScaffold t = null;
+    private jmri.jmrix.lenz.XNetSystemConnectionMemo memo = null;
 
-        LZ100Frame f = new LZ100Frame(new XNetSystemConnectionMemo(tc));
-        Assert.assertNotNull(f);
-        f.dispose();
-    }
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
+        t = new jmri.jmrix.lenz.XNetInterfaceScaffold(new jmri.jmrix.lenz.LenzCommandStation());
+        memo = new jmri.jmrix.lenz.XNetSystemConnectionMemo(t);
+        if(!GraphicsEnvironment.isHeadless()){
+           frame = new LZ100Frame(memo);
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        memo = null;
+        t = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
     }
+
 
 }

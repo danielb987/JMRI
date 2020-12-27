@@ -105,7 +105,7 @@ public class LocoMonPane extends jmri.jmrix.AbstractMonPane implements LocoNetLi
      */
     @Override
     protected String getOpCodeForFilter(String raw) {
-        // note: Loconet raw is formatted like "BB 01 00 45", so extract the correct bytes from it (BB) for comparison
+        // note: LocoNet raw is formatted like "BB 01 00 45", so extract the correct bytes from it (BB) for comparison
         if (raw != null && raw.length() >= 2) {
             return raw.substring(0, 2);
         } else {
@@ -115,7 +115,9 @@ public class LocoMonPane extends jmri.jmrix.AbstractMonPane implements LocoNetLi
 
     /**
      * Nested class to create one of these using old-style defaults.
+     * @deprecated since 4.19.7; use {@link LocoMonPaneAction} instead
      */
+    @Deprecated
     static public class Default extends jmri.jmrix.loconet.swing.LnNamedPaneAction {
 
         public Default() {

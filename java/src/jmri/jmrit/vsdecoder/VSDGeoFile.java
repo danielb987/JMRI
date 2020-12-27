@@ -1,12 +1,11 @@
 package jmri.jmrit.vsdecoder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import jmri.jmrit.XmlFile;
-import jmri.PhysicalLocationReporter;
+import jmri.Scale;
 import jmri.Reporter;
 import jmri.util.FileUtil;
 import jmri.util.PhysicalLocation;
@@ -15,25 +14,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Load parameter from XML for the Advanced Location Following.
+ *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
- * @author Klaus Killinger Copyright (C) 2018
+ * @author Klaus Killinger Copyright (C) 2018-2020
  */
 public class VSDGeoFile extends XmlFile {
 
-    static final String VSDGeoDataFileName = "VSDGeoData.xml"; //NOI18N
+    static final String VSDGeoDataFileName = "VSDGeoData.xml"; // NOI18N
     protected Element root;
     private float blockParameter[][][];
     private List<List<PhysicalLocation>> blockPositionlists; // Two-dimensional ArrayList
@@ -43,6 +43,7 @@ public class VSDGeoFile extends XmlFile {
     private int num_issues;
     boolean geofile_ok;
     int num_setups;
+    Scale _layout_scale;
     float layout_scale;
     int check_time; // Time interval in ms for track following updates
 
@@ -52,20 +53,17 @@ public class VSDGeoFile extends XmlFile {
     @SuppressWarnings("unchecked") // ArrayList[n] is not detected as the coded generics
     public VSDGeoFile() {
 
+        // Setup lists for Reporters and Positions
         reporterlists = new ArrayList<>();
         List<Integer>[] reporterlist = new ArrayList[VSDecoderManager.max_decoder]; // Limit number of supported VSDecoders
-        reporterlist[0] = new ArrayList<>();
-        reporterlist[1] = new ArrayList<>();
-        reporterlist[2] = new ArrayList<>();
-        reporterlist[3] = new ArrayList<>();
-
         blockPositionlists = new ArrayList<>();
         List<PhysicalLocation>[] blockPositionlist = new ArrayList[VSDecoderManager.max_decoder];
-        blockPositionlist[0] = new ArrayList<>();
-        blockPositionlist[1] = new ArrayList<>();
-        blockPositionlist[2] = new ArrayList<>();
-        blockPositionlist[3] = new ArrayList<>();
+        for (int i = 0; i < VSDecoderManager.max_decoder; i++) {
+            reporterlist[i] = new ArrayList<>();
+            blockPositionlist[i] = new ArrayList<>();
+        }
 
+        // Another list to provide a flag for circling or non-circling routes
         circlelist = new ArrayList<>();
 
         File file = new File(FileUtil.getUserFilesPath() + VSDGeoDataFileName);
@@ -92,12 +90,17 @@ public class VSDGeoFile extends XmlFile {
         // Get some layout parameters and route geometric data
         n = root.getChildText("layout-scale");
         if (n != null) {
-            layout_scale = Float.parseFloat(n);
+            _layout_scale = jmri.ScaleManager.getScale(n);
+            if (_layout_scale == null) {
+                _layout_scale = jmri.ScaleManager.getScale("N"); // default
+                log.info("{}: Element layout-scale '{}' unknown, defaulting to N", VSDGeoDataFileName, n);
+            }
         } else {
-            layout_scale = 160.0f; // default
-            log.info("{}: Element layout-scale missing. Default value {} used", VSDGeoDataFileName, layout_scale);
+            _layout_scale = jmri.ScaleManager.getScale("N"); // default
+            log.info("{}: Element layout-scale missing, defaulting to N", VSDGeoDataFileName);
         }
-        log.debug("layout-scale: {}", layout_scale);
+        layout_scale = (float) _layout_scale.getScaleRatio(); // Take this for further calculations
+        log.debug("layout-scale: {}, used for further calculations: {}", _layout_scale.toString(), layout_scale);
 
         n = root.getChildText("check-time");
         if (n != null) {
@@ -105,12 +108,13 @@ public class VSDGeoFile extends XmlFile {
             // Process some limitations; values in milliseconds
             if (check_time < 500 || check_time > 5000) {
                 check_time = 2000; // default
+                log.info("{}: Element check-time not in range, defaulting to {} ms", VSDGeoDataFileName, check_time);
             }
         } else {
             check_time = 2000; // default
-            log.info("{}: Element check-time missing. Default value {} used", VSDGeoDataFileName, check_time);
+            log.info("{}: Element check-time missing, defaulting to {} ms", VSDGeoDataFileName, check_time);
         }
-        log.debug("check-time: {}", check_time);
+        log.debug("check-time: {} ms", check_time);
 
         // Detect number of "setup" tags and maximal number of "geodataset" tags
         num_setups = 0; // # setup
@@ -170,7 +174,7 @@ public class VSDGeoFile extends XmlFile {
                             PhysicalLocation.setBeanPhysicalLocation(pl, rep);
                             log.debug("Reporter: {}, position set to: {}", rep, pl);
                         } else {
-                            log.warn("{}: Element position not found", VSDGeoDataFileName); // NOI18N
+                            log.warn("{}: Element position not found", VSDGeoDataFileName);
                             num_issues++;
                         }
                         n = c1.getChildText("radius");
@@ -178,7 +182,7 @@ public class VSDGeoFile extends XmlFile {
                             blockParameter[setup_index][j][0] = Float.parseFloat(n);
                             log.debug(" radius: {}", n); 
                         } else {
-                            log.warn("{}: Element radius not found", VSDGeoDataFileName); // NOI18N
+                            log.warn("{}: Element radius not found", VSDGeoDataFileName);
                             num_issues++;
                         }
                         n = c1.getChildText("slope");
@@ -219,7 +223,7 @@ public class VSDGeoFile extends XmlFile {
                             blockParameter[setup_index][j][4] = Float.parseFloat(n);
                             log.debug(" length: {}", n); 
                         } else {
-                            log.warn("{}: Element length not found", VSDGeoDataFileName); // NOI18N
+                            log.warn("{}: Element length not found", VSDGeoDataFileName);
                             num_issues++;
                         }
                         n = c1.getChildText("end-position");
@@ -239,7 +243,7 @@ public class VSDGeoFile extends XmlFile {
                         num_issues++;
                     }
                 } else {
-                    log.warn("{}: Reporter system name missing", VSDGeoDataFileName); // NOI18N
+                    log.warn("{}: Reporter system name missing", VSDGeoDataFileName);
                     num_issues++;
                 }
                 j++;
@@ -310,7 +314,7 @@ public class VSDGeoFile extends XmlFile {
         return blockParameter;
     }
 
-    // Block Position lists
+    // Reporter (Block) Position lists
     public List<List<PhysicalLocation>> getBlockPosition() {
         return blockPositionlists;
     }

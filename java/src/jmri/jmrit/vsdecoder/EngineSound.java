@@ -8,31 +8,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Superclass for Steam, Diesel and Electric Sound.
+ *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
  * @author Mark Underwood Copyright (C) 2011
  * @author Klaus Killinger Copyright (C) 2018
  */
-// Usage:
-// EngineSound() : constructor
-// play() : plays short horn pop
-// loop() : starts extended sustain horn
-// stop() : ends extended sustain horn (plays end sound)
 class EngineSound extends VSDSound {
 
-    // Engine Sounds
     boolean initialized = false;
     boolean engine_started = false;
     boolean auto_start_engine = false;
@@ -42,6 +37,11 @@ class EngineSound extends VSDSound {
     int fade_length = 100;
     int fade_in_time = 100;
     int fade_out_time = 100;
+
+    float engine_rd;
+    float engine_gain;
+    int sleep_interval;
+    private int default_sleep_interval = 50; // time in ms
 
     EnginePane engine_pane;
 
@@ -61,22 +61,17 @@ class EngineSound extends VSDSound {
     @Override
     public void play() {
         log.debug("EngineSound Play");
-        //if (engine_started || auto_start_engine) {
-        //    is_playing = true;
-        //}
     }
 
     // Note:  Play and Loop do the same thing, since all of the notch sounds are set to loop.
     @Override
     public void loop() {
         log.debug("EngineSound Loop");
-        //if (engine_started || auto_start_engine) {
-        //    is_playing = true;
-        //}
     }
 
     @Override
     public void stop() {
+        log.info("Emergency Stop called!");
         is_playing = false;
     }
 
@@ -147,7 +142,6 @@ class EngineSound extends VSDSound {
         if (notch < 1) {
             notch = 1;
         }
-        //log.warn("Throttle: {}, Notch: {}", throttle, notch);
         return notch;
     }
 
@@ -184,6 +178,9 @@ class EngineSound extends VSDSound {
     public void functionKey(String e, boolean v, String n) {
     }
 
+    public void changeLocoDirection(int d) {
+    }
+
     @Override
     public void shutdown() {
         // do nothing.
@@ -205,6 +202,7 @@ class EngineSound extends VSDSound {
         if (auto_start_engine || is_auto_start) {
             SwingUtilities.invokeLater(() -> {
                 t = newTimer(40, false, new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         if (engine_pane != null && getFirstSpeed()) {
                             engine_pane.startButtonClick();
@@ -246,6 +244,31 @@ class EngineSound extends VSDSound {
         }
     }
 
+    protected float setXMLEngineReferenceDistance(Element e) {
+        String a = e.getChildText("engine-reference-distance");
+        if ((a != null) && (!a.isEmpty())) {
+            return Float.parseFloat(a);
+        } else {
+            return default_reference_distance;
+        }
+    }
+
+    protected int setXMLSleepInterval(Element e) {
+        String a = e.getChildText("sleep-interval");
+        if ((a != null) && (!a.isEmpty())) {
+            // Make some restrictions, since the variable is used for calculations later
+            int sleep_interval = Integer.parseInt(a);
+            if ((sleep_interval < 38) || (sleep_interval > 55)) {
+                log.info("Invalid sleep-interval {} was set to default {}", sleep_interval, default_sleep_interval);
+                return default_sleep_interval;
+            } else {
+                return sleep_interval;
+            }
+        } else {
+            return default_sleep_interval;
+        }
+    }
+
     @Override
     public Element getXml() {
         Element me = new Element("sound");
@@ -260,7 +283,6 @@ class EngineSound extends VSDSound {
         if (this.getName() == null) {
             this.setName(e.getAttributeValue("name"));
         }
-        //log.debug("EngineSound: " + this.getName());
         this.setFadeInTime(e.getChildText("fade-in-time"));
         this.setFadeOutTime(e.getChildText("fade-out-time"));
         log.debug("Name: {}, Fade-In-Time: {}, Fade-Out-Time: {}", this.getName(),

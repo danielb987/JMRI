@@ -11,13 +11,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -32,8 +34,13 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @SuppressWarnings("deprecation") // until DCC4PC is migrated to multiple systems
     protected void setInstance() {
         adapter = SerialDriverAdapter.instance();
     }
+
 }

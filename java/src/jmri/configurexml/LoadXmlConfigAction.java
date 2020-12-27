@@ -1,6 +1,7 @@
 package jmri.configurexml;
 
 import java.awt.event.ActionEvent;
+
 import javax.swing.JFileChooser;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
@@ -10,9 +11,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Load configuration information from an XML file.
- * <P>
+ * <p>
  * The file context for this is the "config" file chooser.
- * <P>
+ * <p>
  * This will load whatever information types are present in the file. See
  * {@link jmri.ConfigureManager} for information on the various types of
  * information stored in configuration files.
@@ -54,11 +55,10 @@ public class LoadXmlConfigAction extends LoadStoreBaseAction {
                         // insure logix etc fire up
                         InstanceManager.getDefault(jmri.LogixManager.class).activateAllLogixs();
                         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).initializeLayoutBlockPaths();
-                        new jmri.jmrit.catalog.configurexml.DefaultCatalogTreeManagerXml().readCatalogTrees();
                     }
                 }
             } catch (JmriException e) {
-                log.error("Unhandled problem in loadFile: " + e);
+                log.error("Unhandled problem in loadFile: {}", e);
             }
         } else {
             results = true;   // We assume that as the file is null then the user has clicked cancel.
@@ -73,12 +73,12 @@ public class LoadXmlConfigAction extends LoadStoreBaseAction {
 
     static public java.io.File getFileCustom(JFileChooser fileChooser) {
         fileChooser.rescanCurrentDirectory();
-        int retVal = fileChooser.showDialog(null, null);
+        int retVal = fileChooser.showDialog(null, Bundle.getMessage("MenuItemLoad"));
         if (retVal != JFileChooser.APPROVE_OPTION) {
             return null;  // give up if no file selected
         }
         if (log.isDebugEnabled()) {
-            log.debug("Open file: " + fileChooser.getSelectedFile().getPath());
+            log.debug("Open file: {}", fileChooser.getSelectedFile().getPath());
         }
         return fileChooser.getSelectedFile();
     }

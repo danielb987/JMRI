@@ -4,11 +4,11 @@ import javax.swing.JPanel;
 
 /**
  * Handle configuring an XpressNet layout connection via a LIUSBEthernet.
- * <P>
+ * <p>
  * This uses the {@link LIUSBEthernetAdapter} class to do the actual connection.
  *
  * @author Paul Bender Copyright (C) 2011
-  *
+ *
  * @see LIUSBEthernetAdapter
  */
 public class ConnectionConfig extends jmri.jmrix.AbstractNetworkConnectionConfig {
@@ -16,13 +16,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractNetworkConnectionConfig
     /**
      * Ctor for an object being created during load process.
      * Swing init is deferred.
+     * @param p network port adapter.
      */
     public ConnectionConfig(jmri.jmrix.NetworkPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter.
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -34,8 +36,7 @@ public class ConnectionConfig extends jmri.jmrix.AbstractNetworkConnectionConfig
     }
 
     /**
-     * Load the adapter with an appropriate object
-     * <i>unless</i> it has already been set.
+     * {@inheritDoc}
      */
     @Override
     protected void setInstance() {
@@ -44,6 +45,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractNetworkConnectionConfig
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
         super.loadDetails(details);

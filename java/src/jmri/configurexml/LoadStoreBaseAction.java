@@ -2,10 +2,10 @@ package jmri.configurexml;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.implementation.JmriConfigurationManager;
-import jmri.util.FileChooserFilter;
 import jmri.util.FileUtil;
 
 /**
@@ -13,7 +13,7 @@ import jmri.util.FileUtil;
  * 
  * Primarily provides file checking services to the specific subclasses that
  * load/store particular types of data.
- * <P>
+ * <p>
  * Also used to hold common information, specifically common instances of the
  * JFileChooser. These bring the user back to the same place in the file system
  * each time an action is invoked.
@@ -41,10 +41,8 @@ abstract public class LoadStoreBaseAction extends AbstractAction {
     static private JFileChooser userFileChooser = null;
 
     static private JFileChooser getXmlFileChooser(String path) {
-        FileChooserFilter xmlFilter = new FileChooserFilter("XML files");
-        xmlFilter.addExtension("xml"); // NOI18N
         JFileChooser chooser = new JFileChooser(path);
-        chooser.setFileFilter(xmlFilter);
+        chooser.setFileFilter(new FileNameExtensionFilter("XML files", "xml")); // NOI18N
         return chooser;
     }
 
@@ -63,7 +61,7 @@ abstract public class LoadStoreBaseAction extends AbstractAction {
     }
 
     // Made public so JmriConfigurationManager.java can set the
-    // "Save Panels..." default file (to the panel file being loaded)
+    // "Store Panels..." default file (to the panel file being loaded)
     static public JFileChooser getUserFileChooser() {
         if (userFileChooser == null) {
             userFileChooser = getXmlFileChooser(FileUtil.getUserFilesPath());

@@ -1,36 +1,37 @@
 package jmri.jmrix.secsi.serialmon;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
+
 import jmri.jmrix.secsi.SecsiSystemConnectionMemo;
 
 /**
  * Test simple functioning of SerialMonFrame
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class SerialMonFrameTest {
+public class SerialMonFrameTest extends jmri.util.JmriJFrameTestBase {
 
     private SecsiSystemConnectionMemo memo = null;
 
-    @Test
-    public void testMemoCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        SerialMonFrame action = new SerialMonFrame(memo);
-        Assert.assertNotNull("exists", action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         memo = new SecsiSystemConnectionMemo();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new SerialMonFrame(memo);
+        }
     }
 
-    @After
-    public void tearDown() {        JUnitUtil.tearDown();    }
+    @AfterEach
+    @Override
+    public void tearDown() {
+        memo.getTrafficController().terminateThreads();
+        memo = null;
+        super.tearDown();
+    }
 }

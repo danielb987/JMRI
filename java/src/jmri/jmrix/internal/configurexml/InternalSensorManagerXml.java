@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides load and store functionality for configuring InternalSensorManagers.
- * <P>
+ * <p>
  * Uses the store method from the abstract base class, but provides a load
  * method here.
  *
@@ -22,11 +22,6 @@ public class InternalSensorManagerXml extends jmri.managers.configurexml.Abstrac
     @Override
     public void setStoreElementClass(Element sensors) {
         sensors.setAttribute("class", this.getClass().getName());
-    }
-
-    @Override
-    public void load(Element element, Object o) {
-        log.error("Invalid method called");
     }
 
     @Override
@@ -74,5 +69,5 @@ public class InternalSensorManagerXml extends jmri.managers.configurexml.Abstrac
         return load;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(InternalSensorManagerXml.class);
+//    private final static Logger log = LoggerFactory.getLogger(InternalSensorManagerXml.class);
 }

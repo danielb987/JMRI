@@ -1,35 +1,33 @@
 package jmri.jmrit.display.controlPanelEditor.shape;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.jmrit.display.EditorScaffold;
-import jmri.util.JUnitUtil;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class PositionablePolygonTest extends PositionableShapeTest {
 
     @Test
+    @Override
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assert.assertNotNull("exists",p);
+        Assert.assertNotNull("exists", p);
     }
 
-    // The minimal setup for log4J
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
-        JUnitUtil.setUp();
-        JUnitUtil.resetProfileManager();
-
-        if(!GraphicsEnvironment.isHeadless()){
-           editor = new EditorScaffold();
-           p = new PositionablePolygon(editor,new java.awt.Polygon());
+        super.setUp();
+        if (!GraphicsEnvironment.isHeadless()) {
+            editor = new EditorScaffold();
+            p = new PositionablePolygon(editor, new java.awt.Polygon());
         }
     }
 

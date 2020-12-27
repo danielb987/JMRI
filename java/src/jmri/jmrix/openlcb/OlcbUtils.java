@@ -7,11 +7,16 @@ import jmri.NamedBean;
 /**
  * Helper functions used by multiple implementations but specific to JMRI to not go to the
  * OpenLCB.jar.
- * <p>
+ *
  * @author Balazs Racz Copyright (C) 2018
  */
 
 public final class OlcbUtils {
+
+    private OlcbUtils(){
+        //class of constants and static methods.
+    }
+
     public static final String PROPERTY_IS_AUTHORITATIVE = "IsAuthoritative";
     public static final String PROPERTY_IS_PRODUCER = "IsProducer";
     public static final String PROPERTY_IS_CONSUMER = "IsConsumer";
@@ -34,7 +39,7 @@ public final class OlcbUtils {
         Object propValue = parent.getProperty(propertyKey);
         if (propValue == null) return flags;
         if (!(propValue instanceof Boolean)) {
-            boolean v = Boolean.valueOf((String)propValue);
+            boolean v = Boolean.parseBoolean((String)propValue);
             parent.setProperty(propertyKey, v);
             propValue = v;
         }

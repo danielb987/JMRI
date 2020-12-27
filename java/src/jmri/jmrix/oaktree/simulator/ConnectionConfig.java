@@ -1,6 +1,5 @@
 package jmri.jmrix.oaktree.simulator;
 
-import java.util.ResourceBundle;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import jmri.jmrix.oaktree.OakTreeSystemConnectionMemo;
@@ -25,13 +24,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p Serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -39,12 +40,16 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
 
     JButton b = new JButton(Bundle.getMessage("ConfigNodesTitle"));
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
         setInstance();
 
         // have to embed the usual one in a new JPanel
-        b.addActionListener(new NodeConfigAction((OakTreeSystemConnectionMemo)adapter.getSystemConnectionMemo()));
+        b.addActionListener(new NodeConfigAction((OakTreeSystemConnectionMemo) adapter.getSystemConnectionMemo()));
+        // add another button
         if (!additionalItems.contains(b)) {
             additionalItems.add(b);
         }

@@ -1,6 +1,5 @@
 package jmri.jmrix.grapevine.simulator;
 
-import java.util.ResourceBundle;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import jmri.jmrix.grapevine.GrapevineSystemConnectionMemo;
@@ -25,13 +24,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -39,6 +40,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
 
     JButton b = new JButton(Bundle.getMessage("ConfigNodesTitle"));
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
         setInstance();
@@ -68,6 +72,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
         manufacturerName = manu;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         if (adapter == null) {

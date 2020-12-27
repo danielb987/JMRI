@@ -1,7 +1,8 @@
 package jmri.jmrix.ecos;
 
 import jmri.JmriException;
-import jmri.PowerManager;
+import jmri.managers.AbstractPowerManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,10 +10,13 @@ import org.slf4j.LoggerFactory;
  * PowerManager implementation for controlling ECoS layout power.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2008
-  */
-public class EcosPowerManager implements PowerManager, EcosListener {
+ */
+public class EcosPowerManager extends AbstractPowerManager<EcosSystemConnectionMemo> implements EcosListener {
+
+    EcosTrafficController tc;
 
     public EcosPowerManager(EcosTrafficController etc) {
+        super(etc.adaptermemo);
         // connect to the TrafficManager
         tc = etc;
         tc.addEcosListener(this);
@@ -27,17 +31,9 @@ public class EcosPowerManager implements PowerManager, EcosListener {
 
     }
 
-    EcosTrafficController tc;
-
-    @Override
-    public String getUserName() {
-        return "ECoS";
-    }
-
-    int power = UNKNOWN;
-
     @Override
     public void setPower(int v) throws JmriException {
+        int old = power;
         power = UNKNOWN; // while waiting for reply
         checkTC();
         if (v == ON) {
@@ -49,12 +45,7 @@ public class EcosPowerManager implements PowerManager, EcosListener {
             EcosMessage l = new EcosMessage("set(1, stop)");
             tc.sendEcosMessage(l, this);
         }
-        firePropertyChange("Power", null, null);
-    }
-
-    @Override
-    public int getPower() {
-        return power;
+        firePowerPropertyChange(old, power);
     }
 
     // to free resources when no longer used
@@ -70,38 +61,21 @@ public class EcosPowerManager implements PowerManager, EcosListener {
         }
     }
 
-    // to hear of changes
-    java.beans.PropertyChangeSupport pcs = new java.beans.PropertyChangeSupport(this);
-
-    @Override
-    public synchronized void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
-        pcs.addPropertyChangeListener(l);
-    }
-
-    protected void firePropertyChange(String p, Object old, Object n) {
-        pcs.firePropertyChange(p, old, n);
-    }
-
-    @Override
-    public synchronized void removePropertyChangeListener(java.beans.PropertyChangeListener l) {
-        pcs.removePropertyChangeListener(l);
-    }
-
     // to listen for status changes from Ecos system
     @Override
     public void reply(EcosReply m) {
         // power message?
         String msg = m.toString();
         if (msg.contains("<EVENT 1>") || msg.contains("REPLY get(1,") || msg.contains("REPLY set(1,")) {
+            int old = power;
             if (msg.contains("status[GO]") || msg.contains("et(1, go)")) {
                 log.debug("POWER ON DETECTED");
                 power = ON;
-                firePropertyChange("Power", null, null);
             } else if (msg.contains("status[STOP]") || msg.contains("et(1, stop)")) {
                 log.debug("POWER OFF DETECTED");
                 power = OFF;
-                firePropertyChange("Power", null, null);
             }
+            firePowerPropertyChange(old, power);
         }
     }
 

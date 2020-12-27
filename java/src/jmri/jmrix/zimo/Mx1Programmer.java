@@ -2,22 +2,25 @@ package jmri.jmrix.zimo;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
+
 import jmri.ProgrammingMode;
 import jmri.jmrix.AbstractProgrammer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Programmer support for Zimo Mx-1. Currently paged mode is implemented.
- * <P>
+ * <p>
  * The read operation state sequence is:
- * <UL>
- * <LI>Reset Mx-1
- * <LI>Send paged mode read/write request
- * <LI>Wait for results reply, interpret
- * <LI>Send Resume Operations request
- * <LI>Wait for Normal Operations Resumed broadcast
- * </UL>
+ * <ul>
+ * <li>Reset Mx-1
+ * <li>Send paged mode read/write request
+ * <li>Wait for results reply, interpret
+ * <li>Send Resume Operations request
+ * <li>Wait for Normal Operations Resumed broadcast
+ * </ul>
  *
  * @author Bob Jacobsen Copyright (c) 2002
  *
@@ -32,15 +35,18 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
         this.tc = _tc;
         SHORT_TIMEOUT = 4000; // length default timeout
         // connect to listen
-        log.info("" + this.tc);
+        log.info("{}", this.tc);
         if(this.tc!=null)
             this.tc.addMx1Listener(~0, this);
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Types implemented here.
      */
     @Override
+    @Nonnull
     public List<ProgrammingMode> getSupportedModes() {
         List<ProgrammingMode> ret = new ArrayList<ProgrammingMode>();
         ret.add(ProgrammingMode.PAGEMODE);
@@ -53,15 +59,17 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
     static final int NOTPROGRAMMING = 0; // is notProgramming
     static final int INQUIRESENT = 2; // read/write command sent, waiting reply
     boolean _progRead = false;
-    int _val;	// remember the value being read/written for confirmative reply
-    int _cv;	// remember the cv being read/written
+    int _val; // remember the value being read/written for confirmative reply
+    int _cv;  // remember the cv being read/written
 
-    // programming interface
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void writeCV(int CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
-            log.debug("writeCV " + CV + " listens " + p);
+            log.debug("writeCV {} listens {}", CV, p);
         }
         useProgrammer(p);
         _progRead = false;
@@ -85,16 +93,22 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void readCV(int CV, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void readCV(String CVname, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
-            log.debug("readCV " + CV + " listens " + p);
+            log.debug("readCV {} listens {}", CV, p);
         }
         useProgrammer(p);
         _progRead = true;
@@ -124,7 +138,7 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
         // test for only one!
         if (_usingProgrammer != null && _usingProgrammer != p) {
             if (log.isInfoEnabled()) {
-                log.info("programmer already in use by " + _usingProgrammer);
+                log.info("programmer already in use by {}", _usingProgrammer);
             }
             throw new jmri.ProgrammerException("programmer in use");
         } else {
@@ -133,6 +147,9 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     synchronized public void message(Mx1Message m) {
         if (progState == NOTPROGRAMMING) {
@@ -189,7 +206,9 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
         }
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Internal routine to handle a timeout
      */
     @Override
@@ -212,7 +231,7 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
     // internal method to notify of the final result
     protected void notifyProgListenerEnd(int value, int status) {
         if (log.isDebugEnabled()) {
-            log.debug("notifyProgListenerEnd value " + value + " status " + status);
+            log.debug("notifyProgListenerEnd value {} status {}", value, status);
         }
         // the programmingOpReply handler might send an immediate reply, so
         // clear the current listener _first_

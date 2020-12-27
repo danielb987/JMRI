@@ -1,18 +1,18 @@
 package jmri.jmrix.rps;
 
 import javax.vecmath.Point3d;
+
 import jmri.Sensor;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * JUnit tests for the RPS Sensor class.
  *
- * @author	Bob Jacobsen Copyright 2007
-  */
+ * @author Bob Jacobsen Copyright 2007
+ */
 public class RpsSensorTest extends jmri.implementation.AbstractSensorTestBase {
 
     @Override
@@ -36,14 +36,14 @@ public class RpsSensorTest extends jmri.implementation.AbstractSensorTestBase {
             new Point3d(0., 1., 0.)}
         );
 
-        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)");
+        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)", "R");
 
         Assert.assertTrue("sensor matches region", r1.equals(s.getRegion()));
     }
 
     @Test
     public void testOperation() {
-        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)");
+        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)", "R");
 
         Assert.assertTrue("1: not active", s.getKnownState() == Sensor.UNKNOWN);
 
@@ -59,7 +59,7 @@ public class RpsSensorTest extends jmri.implementation.AbstractSensorTestBase {
 
     @Test
     public void testTwoLocos() {
-        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)");
+        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)", "R");
 
         Assert.assertTrue("1: not active", s.getKnownState() == Sensor.UNKNOWN);
 
@@ -94,7 +94,7 @@ public class RpsSensorTest extends jmri.implementation.AbstractSensorTestBase {
             }
         }.reset();
         // create sensor
-        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)");
+        RpsSensor s = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)", "R");
         // check for Region
         Assert.assertNotNull("exists", s);
         Assert.assertTrue("1 region", Model.instance().getRegions().size() == 1);
@@ -105,14 +105,14 @@ public class RpsSensorTest extends jmri.implementation.AbstractSensorTestBase {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp(){
-        JUnitUtil.setUp();	
-        t = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)");
+        JUnitUtil.setUp();
+        t = new RpsSensor("RS(0,0,0);(1,0,0);(1,1,0);(0,1,0)", "R");
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown(){
         t.dispose();
         JUnitUtil.tearDown();

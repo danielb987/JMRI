@@ -11,6 +11,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -32,36 +33,45 @@ import org.slf4j.LoggerFactory;
  * @author George Warner Copyright (c) 2017-2018
  */
 abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConfig {
+
+    /**
+     * Create a connection configuration with a preexisting adapter. This is
+     * used principally when loading a configuration that defines this
+     * connection.
+     *
+     * @param p the adapter to create a connection configuration for
+     */
+    public AbstractUsbConnectionConfig(UsbPortAdapter p) {
+        adapter = p;
+        //addToActionList();
+        log.debug("*   AbstractUSBConnectionConfig({})", p);
+    }
+
     /**
      * Ctor for a functional object with no preexisting adapter. Expect that the
      * subclass setInstance() will fill the adapter member.
      */
     public AbstractUsbConnectionConfig() {
         this(null);
-        log.debug("*	AbstractUSBConnectionConfig()");
-    }
-
-    public AbstractUsbConnectionConfig(UsbPortAdapter p) {
-        adapter = p;
-        //addToActionList();
-        log.debug("*	AbstractUSBConnectionConfig({})", p);
+        log.debug("*   AbstractUSBConnectionConfig()");
     }
 
     protected UsbPortAdapter adapter = null;
 
     @Override
     public UsbPortAdapter getAdapter() {
-        log.debug("*	getAdapter()");
+        log.debug("*   getAdapter()");
         return adapter;
     }
 
     protected boolean init = false;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void checkInitDone() {
-        if (log.isDebugEnabled()) {
-            log.debug("init called for " + name());
-        }
+        log.debug("init called for {}", name());
         if (!init) {
             if (adapter.getSystemConnectionMemo() != null) {
                 systemPrefixField.addActionListener(new ActionListener() {
@@ -121,21 +131,22 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
 
             });
 
-            for (String i : options.keySet()) {
-                final String item = i;
-                if (options.get(i).getComponent() instanceof JComboBox) {
-                    ((JComboBox<?>) options.get(i).getComponent()).addActionListener((ActionEvent e) -> {
+            for (Map.Entry<String, Option> entry : options.entrySet()) {
+                final String item = entry.getKey();
+                if (entry.getValue().getComponent() instanceof JComboBox) {
+                    ((JComboBox<?>) entry.getValue().getComponent()).addActionListener((ActionEvent e) -> {
                         adapter.setOptionState(item, options.get(item).getItem());
                     });
                 }
             }
+
             init = true;
         }
     }
 
     @Override
     public void updateAdapter() {
-        log.debug("*	updateAdapter()");
+        log.debug("*   updateAdapter()");
     }
 
     protected UserPreferencesManager p = InstanceManager.getDefault(UserPreferencesManager.class);
@@ -144,7 +155,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
 
     @Override
     public String getInfo() {
-        log.debug("*	getInfo()");
+        log.debug("*   getInfo()");
         String t = (String) portBox.getSelectedItem();
         if (t != null) {
             return t;
@@ -160,7 +171,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
     String invalidPort = null;
 
     public void refreshPortBox() {
-        log.debug("*	refreshPortBox()");
+        log.debug("*   refreshPortBox()");
         if (!init) {
             newList = getPortNames();
             portBox.setRenderer(new ComboBoxRenderer());
@@ -253,7 +264,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
      */
     @Override
     public void loadDetails(final JPanel details) {
-        log.debug("*	loadDetails()");
+        log.debug("*   loadDetails()");
         _details = details;
         setInstance();
         if (!init) {
@@ -287,9 +298,10 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
                     log.debug("Zero-length port List");
                 }
             }
-        } catch (UnsatisfiedLinkError e1) {
+        }
+        catch (UnsatisfiedLinkError e1) {
             log.error("UnsatisfiedLinkError - the serial library has not been installed properly");
-            log.error("java.library.path=" + System.getProperty("java.library.path", "<unknown>"));
+            log.error("java.library.path={}", System.getProperty("java.library.path", "<unknown>"));
             JOptionPane.showMessageDialog(null, Bundle.getMessage("ErrorComLibLoad"));
             return;
         }
@@ -317,8 +329,10 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
     }
 
     @Override
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE",
+            justification = "Type is checked before casting")
     protected void showAdvancedItems() {
-        log.debug("*	showAdvancedItems()");
+        log.debug("*   showAdvancedItems()");
         _details.removeAll();
         cL.anchor = GridBagConstraints.WEST;
         cL.insets = new Insets(2, 5, 0, 5);
@@ -331,8 +345,8 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
         boolean incAdvancedOptions = isPortAdvanced();
 
         if (!incAdvancedOptions) {
-            for (String item : options.keySet()) {
-                if (options.get(item).isAdvanced()) {
+            for (Map.Entry<String, Option> entry : options.entrySet()) {
+                if (entry.getValue().isAdvanced()) {
                     incAdvancedOptions = true;
                     break;
                 }
@@ -358,14 +372,14 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
                 i++;
             }
 
-            for (String item : options.keySet()) {
-                if (options.get(item).isAdvanced()) {
+            for (Map.Entry<String, Option> entry : options.entrySet()) {
+                if (entry.getValue().isAdvanced()) {
                     cR.gridy = i;
                     cL.gridy = i;
-                    gbLayout.setConstraints(options.get(item).getLabel(), cL);
-                    gbLayout.setConstraints(options.get(item).getComponent(), cR);
-                    _details.add(options.get(item).getLabel());
-                    _details.add(options.get(item).getComponent());
+                    gbLayout.setConstraints(entry.getValue().getLabel(), cL);
+                    gbLayout.setConstraints(entry.getValue().getComponent(), cR);
+                    _details.add(entry.getValue().getLabel());
+                    _details.add(entry.getValue().getComponent());
                     i++;
                 }
             }
@@ -379,8 +393,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
         }
         cL.gridwidth = 1;
 
-        if ((_details.getParent() != null)
-                && (_details.getParent() instanceof JViewport)) {
+        if ((_details.getParent() != null) && (_details.getParent() instanceof JViewport)) {
             JViewport vp = (JViewport) _details.getParent();
             vp.revalidate();
             vp.repaint();
@@ -388,7 +401,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
     }
 
     protected int addStandardDetails(boolean incAdvanced, int i) {
-        log.debug("*	addStandardDetails()");
+        log.debug("*   addStandardDetails()");
         if (!isPortAdvanced()) {
             cR.gridy = i;
             cL.gridy = i;
@@ -403,27 +416,26 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
     }
 
     public boolean isPortAdvanced() {
-        log.debug("*	isPortAdvanced()");
+        log.debug("*   isPortAdvanced()");
         return false;
     }
 
     @Override
     public String getManufacturer() {
-        log.debug("*	getManufacturer()");
+        log.debug("*   getManufacturer()");
         return adapter.getManufacturer();
     }
 
     @Override
     public void setManufacturer(String manufacturer) {
-        log.debug("*	setManufacturer('{}')", manufacturer);
-        if (adapter != null) {
-            adapter.setManufacturer(manufacturer);
-        }
+        setInstance();
+        log.debug("*   setManufacturer('{}')", manufacturer);
+        adapter.setManufacturer(manufacturer);
     }
 
     @Override
     public boolean getDisabled() {
-        log.debug("*	getDisabled()");
+        log.debug("*   getDisabled()");
         if (adapter == null) {
             return true;
         }
@@ -432,7 +444,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
 
     @Override
     public void setDisabled(boolean disabled) {
-        log.debug("*	setDisabled({})", disabled ? "True" : "False");
+        log.debug("*   setDisabled({})", disabled ? "True" : "False");
         if (adapter != null) {
             adapter.setDisabled(disabled);
         }
@@ -440,7 +452,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
 
     @Override
     public String getConnectionName() {
-        log.debug("*	getConnectionName()");
+        log.debug("*   getConnectionName()");
         if ((adapter != null) && (adapter.getSystemConnectionMemo() != null)) {
             return adapter.getSystemConnectionMemo().getUserName();
         } else {
@@ -450,7 +462,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
 
     @Override
     public void dispose() {
-        log.debug("*	dispose()");
+        log.debug("*   dispose()");
         if (adapter != null) {
             adapter.dispose();
             adapter = null;
@@ -481,7 +493,6 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
                 boolean isSelected,
                 boolean cellHasFocus) {
 
-            String displayName = name;
             setOpaque(index > -1);
             setForeground(Color.black);
             list.setSelectionForeground(Color.black);
@@ -491,14 +502,13 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
                 setBackground(list.getBackground());
             }
             if (invalidPort != null) {
-                String port = displayName;
-                if ((port == null) || port.isEmpty() || port.equals(invalidPort)) {
+                if ((name == null) || name.isEmpty() || name.equals(invalidPort)) {
                     list.setSelectionForeground(Color.red);
                     setForeground(Color.red);
                 }
             }
 
-            setText(displayName);
+            setText(name);
 
             return this;
         }

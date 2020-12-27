@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<!--#include virtual="/Header" -->
+<!--#include virtual="/Header.shtml" -->
   <div class="nomenu" id="mBody">
     <div id="mainContent">
 
@@ -62,11 +62,13 @@ Signal Mast definitions:
     <li><a href="appearance-embedded.xml">Vložená návěstidla</a> &ndash; Embedded signals
 
     <li><a href="appearance-protection.xml">Uzávěry koleje</a> &ndash; Protection signals        
+    
+    <li><a href="appearance-test.xml">Test</a> &ndash; Test
 </ul>
 
 
     </div>
 </div>
-<!--#include virtual="/Footer" -->
+<!--#include virtual="/Footer.shtml" -->
 </body>
 </html>

@@ -1,23 +1,25 @@
 package jmri.jmrit.operations.trains;
 
 import java.awt.GraphicsEnvironment;
+
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
+
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.locations.LocationManager;
 import jmri.jmrit.operations.routes.Route;
 import jmri.jmrit.operations.routes.RouteManager;
+import jmri.jmrit.operations.setup.Setup;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.swing.JemmyUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
 
@@ -46,6 +48,9 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         TrainEditFrame trainEditFrame = new TrainEditFrame(t);
         trainEditFrame.setLocation(0, 0); // entire panel must be visible for tests to work properly
         trainEditFrame.setTitle("Test Build Options Train Frame");
+        
+        // Normal build option is only enabled when building aggressive
+        Setup.setBuildAggressive(true);
 
         TrainEditBuildOptionsFrame f = new TrainEditBuildOptionsFrame();
         f.setLocation(0, 0); // entire panel must be visible for tests to work properly
@@ -152,7 +157,7 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(f.saveTrainButton);
 
         // clear dialogue box
-        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), "OK");
+        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("ButtonOK"));
 
         Assert.assertEquals("loco 1 change", Train.CHANGE_ENGINES, t.getSecondLegOptions());
         Assert.assertEquals("loco 1 departure name", "", t.getSecondLegStartLocationName());
@@ -179,7 +184,7 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(f.saveTrainButton);
 
         // clear dialogue box
-        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), "OK");
+        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("ButtonOK"));
 
         Assert.assertEquals("caboose 1 change", Train.ADD_CABOOSE, t.getSecondLegOptions());
 
@@ -194,7 +199,7 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(f.saveTrainButton);
 
         // clear dialogue box
-        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), "OK");
+        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("ButtonOK"));
 
         Assert.assertEquals("helper 1 change", Train.HELPER_ENGINES, t.getSecondLegOptions());
 
@@ -217,7 +222,7 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(f.saveTrainButton);
 
         // clear dialogue box
-        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), "OK");
+        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("ButtonOK"));
 
         Assert.assertEquals("loco 2 change", Train.CHANGE_ENGINES, t.getThirdLegOptions());
         Assert.assertEquals("loco 2 departure name", "", t.getThirdLegStartLocationName());
@@ -243,7 +248,7 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(f.saveTrainButton);
 
         // clear dialogue box
-        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("OK"));
+        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("ButtonOK"));
 
         Assert.assertEquals("caboose 2 change", Train.ADD_CABOOSE, t.getThirdLegOptions());
 
@@ -258,7 +263,7 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(f.saveTrainButton);
 
         // clear dialogue box
-        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), "OK");
+        JemmyUtil.pressDialogButton(f, Bundle.getMessage("CanNotSave"), Bundle.getMessage("ButtonOK"));
 
         Assert.assertEquals("helper 2 change", Train.HELPER_ENGINES, t.getThirdLegOptions());
 
@@ -280,16 +285,15 @@ public class TrainEditBuildOptionsFrameTest extends OperationsTestCase {
         JUnitUtil.dispose(f);
     }
 
-    // The minimal setup for log4J
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         JUnitOperationsUtil.loadTrains();
      }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         super.tearDown();
     }

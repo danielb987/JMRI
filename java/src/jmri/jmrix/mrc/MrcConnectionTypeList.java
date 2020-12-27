@@ -5,7 +5,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Returns a list of valid MRC Connection Types
- * <P>
+ *
  * @author Bob Jacobsen Copyright (C) 2010
  * @author Kevin Dickerson Copyright (C) 2014
  *
@@ -19,7 +19,7 @@ public class MrcConnectionTypeList implements jmri.jmrix.ConnectionTypeList {
     public String[] getAvailableProtocolClasses() {
         return new String[]{
             "jmri.jmrix.mrc.serialdriver.ConnectionConfig",
-            "jmri.jmrix.mrc.simulator.ConnectionConfig",}; //IN18N
+            "jmri.jmrix.mrc.simulator.ConnectionConfig",}; // NOI18N
     }
 
     @Override

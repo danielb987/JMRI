@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides load and store functionality for configuring SerialSensorManagers.
- * <P>
+ * <p>
  * Uses the store method from the abstract base class, but provides a load
  * method here.
  *
@@ -25,15 +25,10 @@ public class SerialSensorManagerXml extends jmri.managers.configurexml.AbstractS
     }
 
     @Override
-    public void load(Element element, Object o) {
-        log.error("Invalid method called");
-    }
-
-    @Override
     public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
         // load individual sensors
         return loadSensors(shared);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SerialSensorManagerXml.class);
+//    private final static Logger log = LoggerFactory.getLogger(SerialSensorManagerXml.class);
 }

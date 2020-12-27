@@ -2,8 +2,9 @@ package jmri.jmrit.withrottle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +37,11 @@ public class MultiThrottle {
     private ThrottleControllerListener parentTCL = null;
     private ControllerInterface parentController = null;
     char whichThrottle;
-    HashMap<String, MultiThrottleController> throttles;
+    ConcurrentHashMap<String, MultiThrottleController> throttles;
 
     public MultiThrottle(char id, ThrottleControllerListener tcl, ControllerInterface ci) {
         if (log.isDebugEnabled()) {
-            log.debug("Creating new MultiThrottle for id: " + id);
+            log.debug("Creating new MultiThrottle for id: {}", id);
         }
         whichThrottle = id;
         parentTCL = tcl;
@@ -85,28 +86,40 @@ public class MultiThrottle {
 
     }
 
-    protected boolean addThrottleController(String key, String action) {   //  key is address format L#### or S##
+    private MultiThrottleController createThrottleController(String key) {
         if (!isValidAddr(key) ) { //make sure address is acceptable before proceeding
-            return false;
+            return null;
         }
         if (throttles == null) {
-            throttles = new HashMap<>(1);
+            throttles = new ConcurrentHashMap<>(1);
         }
 
         if (throttles.containsKey(key)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Throttle: " + key + " already in MultiThrottle consist.");
-            }
-            return false;
+            log.debug("Throttle: {} already in MultiThrottle consist.", key);
+            return null;
         }
         MultiThrottleController mtc = new MultiThrottleController(whichThrottle, key, parentTCL, parentController);
         throttles.put(key, mtc);
         log.debug("Throttle: {} added to MultiThrottle consist.", key);
-
-        //  This will request the loco as a DccTrottle
-        mtc.sort(action);
-
-        return true;
+        return mtc;
+    }
+    
+    protected void addThrottleController(String key, String action) {   //  key is address format L#### or S##
+        MultiThrottleController mtc = createThrottleController(key);
+        if (mtc != null) {
+            //  This will request the loco as a DccTrottle
+            mtc.sort(action);
+        }
+    }
+    
+    protected void stealThrottleController(String key, String action) {
+        MultiThrottleController mtc = createThrottleController(key);
+        if (mtc != null) {
+            //  This will request the loco as a DccTrottle
+            mtc.isStealAddress = true;
+            mtc.sort(action);
+        }
+        log.debug("Throttle: {} stolen to MultiThrottle consist.", key);
     }
 
     /**
@@ -116,22 +129,44 @@ public class MultiThrottle {
      * @param key address to be validated, of form Lnnnn or Snnn
      */
     private boolean isValidAddr(String key) {
-        int addr = Integer.parseInt(key.substring(1));
-        if ((key.charAt(0) == 'L') && 
-                !jmri.InstanceManager.throttleManagerInstance().canBeLongAddress(addr)) {
-            String msg = Bundle.getMessage("ErrorLongAddress", key);
+        if (key.length() < 2) {
+            String msg = Bundle.getMessage("ErrorInvalidAddressFormat", key);
             log.warn(msg);
             parentController.sendAlertMessage(msg);
             return false;
-        } else if ((key.charAt(0) == 'S') && 
-                !jmri.InstanceManager.throttleManagerInstance().canBeShortAddress(addr)) {
-            String msg = Bundle.getMessage("ErrorShortAddress", key);
-            log.warn(msg);
-            parentController.sendAlertMessage(msg);
-            return false;            
         }
-        return true;
-}
+        try {
+            int addr = Integer.parseInt(key.substring(1));
+            if (key.charAt(0) == 'L') {
+                if (jmri.InstanceManager.throttleManagerInstance().canBeLongAddress(addr)) {
+                    return true;
+                } else {
+                    String msg = Bundle.getMessage("ErrorLongAddress", key);
+                    log.warn(msg);
+                    parentController.sendAlertMessage(msg);
+                    return false;
+                }
+            } else if (key.charAt(0) == 'S') {
+                if (jmri.InstanceManager.throttleManagerInstance().canBeShortAddress(addr)) {
+                    return true;
+                } else {
+                    String msg = Bundle.getMessage("ErrorShortAddress", key);
+                    log.warn(msg);
+                    parentController.sendAlertMessage(msg);
+                    return false;
+                }
+            }
+            String msg = Bundle.getMessage("ErrorInvalidAddressFormat", key);
+            parentController.sendAlertMessage(msg);
+            log.warn(msg);
+            return false;
+        } catch (NumberFormatException e) {
+            String msg = Bundle.getMessage("ErrorInvalidAddressFormat", key);
+            parentController.sendAlertMessage(msg);
+            log.warn(msg);
+            return false;
+        }
+    }
 
     protected boolean removeThrottleController(String key, String action) {
 
@@ -149,7 +184,7 @@ public class MultiThrottle {
         }
         if (!throttles.containsKey(key)) {
             if (log.isDebugEnabled()) {
-                log.debug("Throttle: " + key + " not in MultiThrottle.");
+                log.debug("Throttle: {} not in MultiThrottle.", key);
             }
             return false;
         }
@@ -160,7 +195,7 @@ public class MultiThrottle {
         mtc.removeThrottleControllerListener(parentTCL);
         throttles.remove(key);
         if (log.isDebugEnabled()) {
-            log.debug("Throttle: " + key + " removed from MultiThrottle.");
+            log.debug("Throttle: {} removed from MultiThrottle.", key);
         }
         return true;
     }
@@ -171,7 +206,7 @@ public class MultiThrottle {
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug("MultiThrottle key: " + key + ", action: " + action);
+            log.debug("MultiThrottle key: {}, action: {}", key, action);
         }
 
         if (key.equals("*")) {
@@ -184,28 +219,6 @@ public class MultiThrottle {
         }
         if (throttles.containsKey(key)) {
             throttles.get(key).sort(action);
-        }
-    }
-
-    protected void stealThrottleController(String key, String action) {
-        if (throttles == null) {
-            throttles = new HashMap<>(1);
-        }
-
-        if (throttles.containsKey(key)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Throttle: " + key + " already in MultiThrottle consist.");
-            }
-            return;
-        }
-        MultiThrottleController mtc = new MultiThrottleController(whichThrottle, key, parentTCL, parentController);
-        throttles.put(key, mtc);
-
-        //  This will request the loco as a DccTrottle
-        mtc.requestStealAddress(action);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Throttle: " + key + " stolen to MultiThrottle consist.");
         }
     }
 
@@ -231,7 +244,8 @@ public class MultiThrottle {
 
     /**
      * A request for a this address has been cancelled, clean up the waiting
-     * ThrottleController
+     * MultiThrottleController. If the MTC is marked as a steal, this cancel needs 
+     * to not happen.
      *
      * @param key The string to use as a key to remove the proper
      *            MultiThrottleController
@@ -248,9 +262,9 @@ public class MultiThrottle {
             return;
         }
         MultiThrottleController mtc = throttles.get(key);
-        mtc.removeControllerListener(parentController);
-        throttles.remove(key);
-        if (log.isDebugEnabled()) {
+        if (!mtc.isStealAddress) {
+            mtc.removeControllerListener(parentController);
+            throttles.remove(key);
             log.debug("Throttle: {} cancelled from MultiThrottle.", key);
         }
     }

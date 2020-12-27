@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * or {@link jmri.util.swing.JmriAbstractAction#makePanel()} must be overridden
  * by extending classes.
  *
- * @author	Bob Jacobsen Copyright (C) 2010
+ * @author Bob Jacobsen Copyright (C) 2010
  */
 abstract public class JmriAbstractAction extends javax.swing.AbstractAction {
 
@@ -94,7 +94,7 @@ abstract public class JmriAbstractAction extends javax.swing.AbstractAction {
             try {
                 cache = makePanel();
             } catch (Exception ex) {
-                log.error("Exception creating panel: " + ex);
+                log.error("Exception creating panel: {}", ex);
                 return;
             }
             if (cache == null) {
@@ -118,7 +118,7 @@ abstract public class JmriAbstractAction extends javax.swing.AbstractAction {
     public void setParameter(String parameter, String value) {
     }
 
-    // A method to allow named parameters to be passed in
+    // A method to allow named parameters to be passed in.
     // Note that if value is a String, setParameter(String, String) needs to be
     // implemented (for reasons I do not understand jmri.util.swing.GuiUtilBase
     // will not call this method with a String parameter for value)
@@ -130,4 +130,5 @@ abstract public class JmriAbstractAction extends javax.swing.AbstractAction {
         log.error("makePanel must be overridden", new Exception());
         return null;
     } */
+
 }

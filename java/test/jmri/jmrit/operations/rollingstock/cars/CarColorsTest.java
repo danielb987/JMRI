@@ -3,10 +3,8 @@ package jmri.jmrit.operations.rollingstock.cars;
 import javax.swing.JComboBox;
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the Operations RollingStock CarColors class Last manually
@@ -14,14 +12,14 @@ import org.junit.Test;
  * <p>
  * Still to do: Everything
  *
- * @author	Bob Coleman Copyright (C) 2008, 2009
+ * @author Bob Coleman Copyright (C) 2008, 2009
  */
 public class CarColorsTest extends OperationsTestCase {
 
     @Test
     public void testDefaultCarColors() {
         CarColors cc1 = InstanceManager.getDefault(CarColors.class);
-        cc1.getNames();	// load predefined colors
+        cc1.getNames(); // load predefined colors
 
         Assert.assertTrue("Car Color Predefined Red", cc1.containsName("Red"));
         Assert.assertTrue("Car Color Predefined Blue", cc1.containsName("Blue"));
@@ -30,7 +28,7 @@ public class CarColorsTest extends OperationsTestCase {
     @Test
     public void testAddAndDeleteCarColors() {
         CarColors cc1 = InstanceManager.getDefault(CarColors.class);
-        cc1.getNames();	// load predefined colors
+        cc1.getNames(); // load predefined colors
         cc1.addName("BoxCar Red");
         Assert.assertTrue("Car Color Add", cc1.containsName("BoxCar Red"));
         Assert.assertFalse("Car Color Never Added Dirty Blue", cc1.containsName("Dirty Blue"));
@@ -47,18 +45,5 @@ public class CarColorsTest extends OperationsTestCase {
         Assert.assertFalse("Car Color Delete Ugly Brown", cc1.containsName("Ugly Brown"));
         cc1.deleteName("BoxCar Red");
         Assert.assertFalse("Car Color Delete BoxCar Red", cc1.containsName("BoxCar Red"));
-    }
-
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    // The minimal setup for log4J
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
     }
 }

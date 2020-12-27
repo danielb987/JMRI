@@ -2,27 +2,29 @@ package apps;
 
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
-import jmri.implementation.JmriConfigurationManager;
-import jmri.util.Log4JUtil;
+import jmri.util.prefs.JmriPreferencesActionFactory;
 import jmri.web.server.WebServer;
 import jmri.web.server.WebServerPreferences;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import apps.util.Log4JUtil;
 
 /**
  * A simple example of a "Faceless" (no gui) application
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ *
  * @author Bob Jacobsen Copyright 2003, 2005, 2007, 2010
  */
 public class SampleMinimalProgram {
@@ -72,7 +74,7 @@ public class SampleMinimalProgram {
                 org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ERROR);
             }
         } catch (java.lang.NoSuchMethodError e) {
-            log.error("Exception starting logging: " + e);
+            log.error("Exception starting logging: {}", e);
         }
         // install default exception handler
         Thread.setDefaultUncaughtExceptionHandler(new jmri.util.exceptionhandler.UncaughtExceptionHandler());
@@ -95,6 +97,7 @@ public class SampleMinimalProgram {
         // and here we're up and running!
     }
 
+    @SuppressWarnings("deprecation") // _Simple_Miniman_Program doesn't need multi-connection support
     protected void codeConfig(String[] args) {
         jmri.jmrix.SerialPortAdapter adapter = jmri.jmrix.lenz.li100.LI100Adapter.instance();
         //jmri.jmrix.SerialPortAdapter adapter =  jmri.jmrix.nce.serialdriver.SerialDriverAdapter.instance();
@@ -112,7 +115,10 @@ public class SampleMinimalProgram {
         adapter.openPort(portName, "JMRI app");
         adapter.configure();
 
-        ConfigureManager cm = new JmriConfigurationManager();
+        // install a Preferences Action Factory.
+        InstanceManager.store(new AppsPreferencesActionFactory(), JmriPreferencesActionFactory.class);
+
+        ConfigureManager cm = new AppsConfigurationManager();
 
         // not setting preference file location!
         InstanceManager.setDefault(ConfigureManager.class, cm);

@@ -6,6 +6,7 @@ import jmri.jmrix.AbstractMRListener;
 import jmri.jmrix.AbstractMRMessage;
 import jmri.jmrix.AbstractMRReply;
 import jmri.jmrix.AbstractMRTrafficController;
+import net.jcip.annotations.GuardedBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class XNetTrafficController extends AbstractMRTrafficController implements XNetInterface {
 
-    protected HashMap<XNetListener, Integer> mListenerMasks;
+    @GuardedBy("this")
+    // PENDING: the field should be probably made private w/ accessor to force proper synchronization for reading.
+    protected final HashMap<XNetListener, Integer> mListenerMasks;
 
     /**
      * Create a new XNetTrafficController.
@@ -40,14 +43,6 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
     static XNetTrafficController self = null;
 
     // Abstract methods for the XNetInterface
-
-    /**
-     * Forward a preformatted XNetMessage to the actual interface.
-     *
-     * @param m Message to send; will be updated with CRC
-     */
-    @Override
-    abstract public void sendXNetMessage(XNetMessage m, XNetListener reply);
 
     /**
      * Make connection to existing PortController object.
@@ -90,50 +85,48 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
         if (!((XNetReply) m).checkParity()) {
             log.warn("Ignore packet with bad checksum: {}", (m));
         } else {
-            try {
-                int mask = (mListenerMasks.get(client));
-                if (mask == XNetInterface.ALL) {
-                    ((XNetListener) client).message((XNetReply) m);
-                } else if ((mask & XNetInterface.COMMINFO)
-                        == XNetInterface.COMMINFO
-                        && (((XNetReply) m).getElement(0)
-                        == XNetConstants.LI_MESSAGE_RESPONSE_HEADER)) {
-                    ((XNetListener) client).message((XNetReply) m);
-                } else if ((mask & XNetInterface.CS_INFO)
-                        == XNetInterface.CS_INFO
-                        && (((XNetReply) m).getElement(0)
-                        == XNetConstants.CS_INFO
-                        || ((XNetReply) m).getElement(0)
-                        == XNetConstants.CS_SERVICE_MODE_RESPONSE
-                        || ((XNetReply) m).getElement(0)
-                        == XNetConstants.CS_REQUEST_RESPONSE
-                        || ((XNetReply) m).getElement(0)
-                        == XNetConstants.BC_EMERGENCY_STOP)) {
-                    ((XNetListener) client).message((XNetReply) m);
-                } else if ((mask & XNetInterface.FEEDBACK)
-                        == XNetInterface.FEEDBACK
-                        && (((XNetReply) m).isFeedbackMessage()
-                        || ((XNetReply) m).isFeedbackBroadcastMessage())) {
-                    ((XNetListener) client).message((XNetReply) m);
-                } else if ((mask & XNetInterface.THROTTLE)
-                        == XNetInterface.THROTTLE
-                        && ((XNetReply) m).isThrottleMessage()) {
-                    ((XNetListener) client).message((XNetReply) m);
-                } else if ((mask & XNetInterface.CONSIST)
-                        == XNetInterface.CONSIST
-                        && ((XNetReply) m).isConsistMessage()) {
-                    ((XNetListener) client).message((XNetReply) m);
-                } else if ((mask & XNetInterface.INTERFACE)
-                        == XNetInterface.INTERFACE
-                        && (((XNetReply) m).getElement(0)
-                        == XNetConstants.LI_VERSION_RESPONSE
-                        || ((XNetReply) m).getElement(0)
-                        == XNetConstants.LI101_REQUEST)) {
-                    ((XNetListener) client).message((XNetReply) m);
-                }
-            } catch (NullPointerException e) {
-                // catch null pointer exceptions, caused by a client
-                // that sent a message without being a registered listener
+            int mask;
+            synchronized (this) {
+                mask = mListenerMasks.getOrDefault(client, XNetInterface.ALL);
+            }
+            if (mask == XNetInterface.ALL) {
+                // Note: also executing this branch, if the client is not registered at all.
+                ((XNetListener) client).message((XNetReply) m);
+            } else if ((mask & XNetInterface.COMMINFO)
+                    == XNetInterface.COMMINFO
+                    && (m.getElement(0)
+                    == XNetConstants.LI_MESSAGE_RESPONSE_HEADER)) {
+                ((XNetListener) client).message((XNetReply) m);
+            } else if ((mask & XNetInterface.CS_INFO)
+                    == XNetInterface.CS_INFO
+                    && (m.getElement(0)
+                    == XNetConstants.CS_INFO
+                    || m.getElement(0)
+                    == XNetConstants.CS_SERVICE_MODE_RESPONSE
+                    || m.getElement(0)
+                    == XNetConstants.CS_REQUEST_RESPONSE
+                    || m.getElement(0)
+                    == XNetConstants.BC_EMERGENCY_STOP)) {
+                ((XNetListener) client).message((XNetReply) m);
+            } else if ((mask & XNetInterface.FEEDBACK)
+                    == XNetInterface.FEEDBACK
+                    && (((XNetReply) m).isFeedbackMessage()
+                    || ((XNetReply) m).isFeedbackBroadcastMessage())) {
+                ((XNetListener) client).message((XNetReply) m);
+            } else if ((mask & XNetInterface.THROTTLE)
+                    == XNetInterface.THROTTLE
+                    && ((XNetReply) m).isThrottleMessage()) {
+                ((XNetListener) client).message((XNetReply) m);
+            } else if ((mask & XNetInterface.CONSIST)
+                    == XNetInterface.CONSIST
+                    && ((XNetReply) m).isConsistMessage()) {
+                ((XNetListener) client).message((XNetReply) m);
+            } else if ((mask & XNetInterface.INTERFACE)
+                    == XNetInterface.INTERFACE
+                    && (m.getElement(0)
+                    == XNetConstants.LI_VERSION_RESPONSE
+                    || m.getElement(0)
+                    == XNetConstants.LI101_REQUEST)) {
                 ((XNetListener) client).message((XNetReply) m);
             }
         }
@@ -141,16 +134,16 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
 
     // We use the pollMessage routines for high priority messages.
     // This means responses to time critical messages (turnout off messages).
-    LinkedBlockingQueue<XNetMessage> highPriorityQueue = null;
-    LinkedBlockingQueue<XNetListener> highPriorityListeners = null;
+    // PENDING: these fields should be probably made private w/ accessor to force proper synchronization for reading.
+    final LinkedBlockingQueue<XNetMessage> highPriorityQueue;
+    final LinkedBlockingQueue<XNetListener> highPriorityListeners;
 
-    public void sendHighPriorityXNetMessage(XNetMessage m, XNetListener reply) {
-        try {
-            highPriorityQueue.put(m);
-            highPriorityListeners.put(reply);
-        } catch (java.lang.InterruptedException ie) {
-            log.error("Interupted while adding High Priority Message to Queue");
-        }
+    public synchronized void sendHighPriorityXNetMessage(XNetMessage m, XNetListener reply) {
+        // using offer as the queue is unbounded and should never block on write.
+        // Note: the message should be inserted LAST, as the message is tested/acquired first
+        // by the reader; serves a a guard for next item processing.
+        highPriorityListeners.add(reply);
+        highPriorityQueue.add(m);
     }
 
     @Override
@@ -162,7 +155,7 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
                 return highPriorityQueue.take();
             }
         } catch (java.lang.InterruptedException ie) {
-            log.error("Interupted while removing High Priority Message from Queue");
+            log.error("Interrupted while removing High Priority Message from Queue");
         }
         return null;
     }
@@ -176,7 +169,7 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
                 return highPriorityListeners.take();
             }
         } catch (java.lang.InterruptedException ie) {
-            log.error("Interupted while removing High Priority Message Listener from Queue");
+            log.error("Interrupted while removing High Priority Message Listener from Queue");
         }
         return null;
     }
@@ -236,7 +229,7 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
 
     @Override
     protected boolean endOfMessage(AbstractMRReply msg) {
-        int len = (((XNetReply) msg).getElement(0) & 0x0f) + 2;  // opCode+Nbytes+ECC
+        int len = (msg.getElement(0) & 0x0f) + 2;  // opCode+Nbytes+ECC
         log.debug("Message Length {} Current Size {}", len, msg.getNumDataElements());
         return msg.getNumDataElements() >= len;
     }
@@ -248,9 +241,9 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
 
     /**
      * Get characters from the input source, and file a message.
-     * <P>
+     * <p>
      * Returns only when the message is complete.
-     * <P>
+     * <p>
      * Only used in the Receive thread.
      *
      * @param msg     message to fill
@@ -280,10 +273,18 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
         }
     }
 
+    @Override
+    protected void notifyMessage(AbstractMRMessage m, AbstractMRListener notMe) {
+        super.notifyMessage(m, notMe);
+        if(notMe!=null) {
+            forwardMessage(notMe, m);
+        }
+    }
+
     /**
      * Reference to the command station in communication here.
      */
-    LenzCommandStation mCommandStation;
+    final LenzCommandStation mCommandStation;
 
     /**
      * Get access to communicating command station object.
@@ -323,6 +324,7 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
     /**
      * Return an XNetFeedbackMessageCache object associated with this traffic
      * controller.
+     * @return the feedback message cache. One is provided if null.
      */
     public XNetFeedbackMessageCache getFeedbackMessageCache() {
         if (_FeedbackCache == null) {
@@ -338,6 +340,6 @@ public abstract class XNetTrafficController extends AbstractMRTrafficController 
        return ((XNetPortController)controller).hasTimeSlot();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(XNetTrafficController.class);
+    private static final Logger log = LoggerFactory.getLogger(XNetTrafficController.class);
 
 }

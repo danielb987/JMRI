@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Common utility methods for working with JMenus.
- * <P>
+ * <p>
  * Chief among these is the loadMenu method, for creating a set of menus from an
  * XML definition
  *
@@ -42,7 +42,7 @@ public class JMenuUtil extends GuiUtilBase {
             if (((Element) child).getChild("mnemonic") != null) {
                 int mnemonic = convertStringToKeyEvent(((Element) child).getChild("mnemonic").getText());
                 if (mnemonicList.contains(mnemonic)) {
-                    log.error("Menu item '" + menuItem.getText() + "' Mnemonic '" + ((Element) child).getChild("mnemonic").getText() + "' has already been assigned");
+                    log.error("Menu item '{}' Mnemonic '{}' has already been assigned", menuItem.getText(), ((Element) child).getChild("mnemonic").getText());
                 } else {
                     menuItem.setMnemonic(mnemonic);
                     mnemonicList.add(mnemonic);
@@ -79,7 +79,7 @@ public class JMenuUtil extends GuiUtilBase {
                     if (!(SystemType.isMacOSX()
                             && UIManager.getLookAndFeel().isNativeLookAndFeel()
                             && ((child.getChild("adapter") != null
-                            && child.getChild("adapter").getText().equals("apps.gui3.TabbedPreferencesAction"))
+                            && child.getChild("adapter").getText().equals("apps.gui3.tabbedpreferences.TabbedPreferencesAction"))
                             || (child.getChild("current") != null
                             && child.getChild("current").getText().equals("quit"))))) {
                         if (addSep) {
@@ -108,7 +108,7 @@ public class JMenuUtil extends GuiUtilBase {
             if (menuItem != null && child.getChild("mnemonic") != null) {
                 int mnemonic = convertStringToKeyEvent(child.getChild("mnemonic").getText());
                 if (mnemonicList.contains(mnemonic)) {
-                    log.error("Menu Item '" + menuItem.getText() + "' Mnemonic '" + child.getChild("mnemonic").getText() + "' has already been assigned");
+                    log.error("Menu Item '{}' Mnemonic '{}' has already been assigned", menuItem.getText(), child.getChild("mnemonic").getText());
                 } else {
                     menuItem.setMnemonic(mnemonic);
                     mnemonicList.add(mnemonic);
@@ -156,10 +156,10 @@ public class JMenuUtil extends GuiUtilBase {
             log.error("Null object passed");
             return;
         } catch (SecurityException e) {
-            log.error("security exception unable to find remoteCalls for " + context.getClass().getName());
+            log.error("security exception unable to find remoteCalls for {}", context.getClass().getName());
             return;
         } catch (NoSuchMethodException e) {
-            log.error("No such method remoteCalls for " + context.getClass().getName());
+            log.error("No such method remoteCalls for {}", context.getClass().getName());
             return;
         }
 

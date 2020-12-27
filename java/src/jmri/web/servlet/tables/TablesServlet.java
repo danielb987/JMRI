@@ -3,6 +3,8 @@ package jmri.web.servlet.tables;
 import static jmri.web.servlet.ServletUtil.UTF8_TEXT_HTML;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,18 +12,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import jmri.InstanceManager;
 import jmri.util.FileUtil;
-import jmri.util.StringUtil;
 import jmri.web.servlet.ServletUtil;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- * Provide web UI for data, such as turnouts, sensors, etc.
+ * Provide web UI for data, such as turnouts, sensors, etc. displayed in tables
  *
  * Each method of this Servlet responds to a unique URL pattern.
  *
  * @author mstevetodd
- * 
- *  */
+ */
+
 /*
  *
  */
@@ -35,7 +36,7 @@ public class TablesServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String[] path = request.getRequestURI().split("/"); // NOI18N
-        String tableType = java.net.URLDecoder.decode(path[path.length - 1]);
+        String tableType = URLDecoder.decode(path[path.length - 1], StandardCharsets.UTF_8.name());
 
         //print the html, using the replacement values listed to fill in the calculated stuff
         response.setHeader("Connection", "Keep-Alive"); // NOI18N

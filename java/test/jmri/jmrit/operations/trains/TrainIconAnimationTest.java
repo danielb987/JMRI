@@ -2,8 +2,14 @@ package jmri.jmrit.operations.trains;
 
 import java.awt.GraphicsEnvironment;
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
+import org.junit.Assume;
+
 import jmri.InstanceManager;
-import jmri.jmrit.display.PanelMenu;
+import jmri.jmrit.display.EditorManager;
+import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.LocationManager;
 import jmri.jmrit.operations.locations.Track;
@@ -15,19 +21,15 @@ import jmri.jmrit.operations.routes.Route;
 import jmri.jmrit.operations.routes.RouteLocation;
 import jmri.jmrit.operations.routes.RouteManager;
 import jmri.jmrit.operations.setup.Setup;
+import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.JmriJFrame;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
-public class TrainIconAnimationTest {
+public class TrainIconAnimationTest extends OperationsTestCase {
 
     private final int DIRECTION_ALL = Location.EAST + Location.WEST + Location.NORTH + Location.SOUTH;
 
@@ -59,7 +61,7 @@ public class TrainIconAnimationTest {
         // create and register a panel
         jmri.jmrit.display.panelEditor.PanelEditor editor = new jmri.jmrit.display.panelEditor.PanelEditor(
                 "Train Test Panel");
-        InstanceManager.getDefault(PanelMenu.class).addEditorPanel(editor);
+        InstanceManager.getDefault(EditorManager.class).add(editor);
 
         // confirm panel creation
         JmriJFrame f = JmriJFrame.getFrame("Train Test Panel");
@@ -147,7 +149,7 @@ public class TrainIconAnimationTest {
 
         l1.addTrack("North End 1", Track.STAGING);
         l1.addTrack("North End 2", Track.STAGING);
-        List<Track> templist1 = l1.getTrackByNameList(null);
+        List<Track> templist1 = l1.getTracksByNameList(null);
         for (int i = 0; i < templist1.size(); i++) {
             if (i == 0) {
                 Assert.assertEquals("RL 1 Staging 1 Name", "North End 1", templist1.get(i).getName());
@@ -162,17 +164,17 @@ public class TrainIconAnimationTest {
 
         Assert.assertEquals("Location 1 Length", 700, l1.getLength());
 
-        Location l2 = new Location("2", "North Industries");
-        Assert.assertEquals("Location 2 Id", "2", l2.getId());
+        Location l2 = new Location("20", "North Industries");
+        Assert.assertEquals("Location 2 Id", "20", l2.getId());
         Assert.assertEquals("Location 2 Name", "North Industries", l2.getName());
         l2.setLocationOps(Location.NORMAL);
         l2.setTrainDirections(DIRECTION_ALL);
         l2.setSwitchListEnabled(true);
         lmanager.register(l2);
 
-        Track l2s1 = new Track("2s1", "NI Yard", Track.YARD, l2);
+        Track l2s1 = new Track("20s1", "NI Yard", Track.YARD, l2);
         l2s1.setLength(432);
-        Assert.assertEquals("Location 2s1 Id", "2s1", l2s1.getId());
+        Assert.assertEquals("Location 2s1 Id", "20s1", l2s1.getId());
         Assert.assertEquals("Location 2s1 Name", "NI Yard", l2s1.getName());
         Assert.assertEquals("Location 2s1 LocType", Track.YARD, l2s1.getTrackType());
         Assert.assertEquals("Location 2s1 Length", 432, l2s1.getLength());
@@ -214,7 +216,7 @@ public class TrainIconAnimationTest {
 
         l3.addTrack("South End 1", Track.STAGING);
         l3.addTrack("South End 2", Track.STAGING);
-        List<Track> templist3 = l3.getTrackByNameList(null);
+        List<Track> templist3 = l3.getTracksByNameList(null);
         for (int i = 0; i < templist3.size(); i++) {
             if (i == 0) {
                 Assert.assertEquals("RL 3 Staging 1 Name", "South End 1", templist3.get(i).getName());
@@ -371,22 +373,11 @@ public class TrainIconAnimationTest {
         Assert.assertEquals("Train 2 icon X", 125, ti2.getX());
         Assert.assertEquals("Train 2 icon Y", 35, ti2.getY());
 
-        editor.getTargetFrame().dispose();
+        JUnitUtil.dispose(editor.getTargetFrame());
+        JUnitUtil.dispose(editor);
+        JUnitOperationsUtil.checkOperationsShutDownTask();
     }
 
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
-        JUnitUtil.resetProfileManager();
-        jmri.util.JUnitOperationsUtil.resetOperationsManager();
-    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
-    }
-
-//    private final static Logger log = LoggerFactory.getLogger(TrainIconAnimationTest.class);
+    //    private final static Logger log = LoggerFactory.getLogger(TrainIconAnimationTest.class);
 
 }

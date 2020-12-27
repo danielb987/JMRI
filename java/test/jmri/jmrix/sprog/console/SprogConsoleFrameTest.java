@@ -1,34 +1,44 @@
 package jmri.jmrix.sprog.console;
 
 import java.awt.GraphicsEnvironment;
+
+import jmri.jmrix.sprog.SprogSystemConnectionMemo;
+import jmri.jmrix.sprog.SprogTrafficControlScaffold;
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of SprogConsoleFrame.
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class SprogConsoleFrameTest {
+public class SprogConsoleFrameTest extends jmri.util.JmriJFrameTestBase {
 
+    private SprogTrafficControlScaffold stcs = null;
+    private SprogSystemConnectionMemo m = null;
 
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless()); 
-        SprogConsoleFrame action = new SprogConsoleFrame(new jmri.jmrix.sprog.SprogSystemConnectionMemo());
-        Assert.assertNotNull("exists", action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
+        m = new SprogSystemConnectionMemo(jmri.jmrix.sprog.SprogConstants.SprogMode.OPS);
+        stcs = new SprogTrafficControlScaffold(m);
+        m.setSprogTrafficController(stcs);
+        m.configureCommandStation();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new SprogConsoleFrame(m);
+        }
     }
 
-    @After
-    public void tearDown() {        JUnitUtil.tearDown();    }
+    @AfterEach
+    @Override
+    public void tearDown() {
+        m.getSlotThread().interrupt();
+        JUnitUtil.waitFor(() -> {return m.getSlotThread().getState() == Thread.State.TERMINATED;}, "Slot thread failed to stop");
+        stcs.dispose();
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
+    }
 
 }

@@ -3,22 +3,21 @@ package jmri.jmrit.catalog;
 import java.io.File;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.util.FileUtil;
 
 /**
  * TreeModel used by CatalogPane to create a tree of resources.
- * <P>
+ * <p>
  * Accessed via the instance() member, as we expect to have only one of these
  * models.
- * <P>
+ * <p>
  * The tree has two top-level visible nodes. One, "icons", represents the
  * contents of the icons directory in the resources tree in the .jar file. The
  * other, "files", is all files found in the "resources" filetree in the
  * preferences directory. Note that this means that files in the distribution
  * directory are _not_ included.
- * <P>
+ * <p>
  * As a special case "simplification", the catalog tree will not contain CVS
  * directories, or files whose name starts with a "."
  *
@@ -33,8 +32,8 @@ public class CatalogTreeModel extends DefaultTreeModel implements InstanceManage
 
         // we manually create the first node, rather than use
         // the routine, so we can name it.
-        CatalogTreeModel.this.insertResourceNodes("resources", resourceRoot, dRoot);
-        FileUtil.createDirectory(FileUtil.getUserFilesPath() + "resources");
+        CatalogTreeModel.this.insertResourceNodes(resourceRoot, resourceRoot, dRoot);
+        FileUtil.createDirectory(FileUtil.getUserResourcePath());
         CatalogTreeModel.this.insertFileNodes("files", fileRoot, dRoot);
 
     }
@@ -112,9 +111,11 @@ public class CatalogTreeModel extends DefaultTreeModel implements InstanceManage
         if (fp.isDirectory()) {
             // work on the kids
             String[] sp = fp.list();
-            for (String sp1 : sp) {
-                //if (log.isDebugEnabled()) log.debug("Descend into file: "+sp[i]);
-                insertFileNodes(sp1, path + "/" + sp1, newElement);
+            if (sp!=null) {
+                for (String sp1 : sp) {
+                    log.debug("Descend into file: {}",sp1);
+                    insertFileNodes(sp1, path + "/" + sp1, newElement);
+                }
             }
         }
     }
@@ -122,22 +123,11 @@ public class CatalogTreeModel extends DefaultTreeModel implements InstanceManage
     DefaultMutableTreeNode dRoot;
 
     /**
-     *
-     * @return the managed instance
-     * @deprecated since 4.9.2; use
-     * {@link jmri.InstanceManager#getDefault(java.lang.Class)} instead
-     */
-    @Deprecated
-    static public CatalogTreeModel instance() {
-        return InstanceManager.getDefault(CatalogTreeModel.class);
-    }
-
-    /**
      * Starting point in the .jar file for the "icons" part of the tree
      */
     static final String resourceRoot = "resources";
-    static final String fileRoot = FileUtil.getUserFilesPath() + "resources";
+    static final String fileRoot = FileUtil.getUserResourcePath();
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogTreeModel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogTreeModel.class);
 
 }

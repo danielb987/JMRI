@@ -1,12 +1,12 @@
 package jmri.jmrix.oaktree;
 
-import jmri.jmrix.SystemConnectionMemo;
+import jmri.SystemConnectionMemo;
 
 /**
- * Abstract base for classes representing a communications port
+ * Abstract base for classes representing a communications port.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2006
-  */
+ */
 public abstract class SerialPortController extends jmri.jmrix.AbstractSerialPortController {
 
     // base class. Implementations will provide InputStream and OutputStream
@@ -14,7 +14,5 @@ public abstract class SerialPortController extends jmri.jmrix.AbstractSerialPort
     protected SerialPortController(SystemConnectionMemo connectionMemo) {
         super(connectionMemo);
     }
+
 }
-
-
-

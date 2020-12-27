@@ -1,37 +1,31 @@
 package jmri.jmrit.automat.monitor;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
-public class AutomatTableFrameTest {
+public class AutomatTableFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testCTor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        AutomatTableFrame t = new AutomatTableFrame(new AutomatTableDataModel());
-        Assert.assertNotNull("exists", t);
-        JUnitUtil.dispose(t);
-    }
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new AutomatTableFrame(new AutomatTableDataModel());
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        super.tearDown();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(AutomatTableFrameTest.class);

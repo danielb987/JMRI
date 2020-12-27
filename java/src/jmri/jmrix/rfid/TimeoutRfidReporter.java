@@ -15,19 +15,20 @@ import org.slf4j.LoggerFactory;
  * the Reporter value is nullified and state reverts to {@link IdTag#UNSEEN}.
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Matthew Harris Copyright (C) 2014
  * @since 3.9.2
+ * @deprecated since 4.19.4.  Use jmri.implementation.decorators.TimeoutReporter as a replacement.
  */
+@Deprecated
 public class TimeoutRfidReporter extends RfidReporter {
 
     /**
@@ -66,7 +67,7 @@ public class TimeoutRfidReporter extends RfidReporter {
 
     private void cleanUpTimeout() {
         if (logDebug) {
-            log.debug("Cleanup timeout thread for " + mSystemName);
+            log.debug("Cleanup timeout thread for {}", mSystemName);
         }
         timeoutThread = null;
     }
@@ -89,7 +90,7 @@ public class TimeoutRfidReporter extends RfidReporter {
             }
             TimeoutRfidReporter.super.notify(null);
             if (logDebug) {
-                log.debug("Timeout-" + mSystemName);
+                log.debug("Timeout-{}", mSystemName);
             }
             cleanUpTimeout();
         }

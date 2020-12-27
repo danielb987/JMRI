@@ -28,6 +28,24 @@
         <authorinitials>PŠ</authorinitials>
         <revremark>Initial version</revremark>
     </revision>    
+    <revision>
+        <revnumber>2</revnumber>
+        <date>2018-09-22</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Panel indicators</revremark>
+    </revision>    
+    <revision>
+        <revnumber>3</revnumber>
+        <date>2019-02-21</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Test set</revremark>
+    </revision>    
+    <revision>
+        <revnumber>4</revnumber>
+        <date>2020-07-15</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Image types</revremark>
+    </revision>    
   </revhistory>
 
   <aspects>
@@ -114,7 +132,7 @@
       <description>Two red arm raised</description>
       <description>Two green lights</description>
       <reference>Aspect 23</reference>
-      <comment>Vjezd odbočkou, rychost 40 km/h</comment>
+      <comment>Vjezd odbočkou, rychlost 40 km/h</comment>
       <speed>40 km/h</speed>
       <speed2>Stop</speed2>
       <route>Diverging</route>
@@ -192,10 +210,22 @@
 
   <imagetypes>
 	<imagetype type="prototype"/>
-	<!--
-	<imagetype type="medium panel"/>
-	<imagetype type="small panel"/>
-	-->
+	<imagetype type="prototype-night"/>
+        
+	<imagetype type="hlavní-1R"/>
+	<imagetype type="hlavní-2R"/>
+	<imagetype type="hlavní-2RP"/>
+	<imagetype type="předvěst"/>
+	<imagetype type="předvěst-P"/>
+	<imagetype type="seřaďovací"/>
+	<imagetype type="vložená"/>
+	<imagetype type="uzávěry"/>
+	<imagetype type="vyčkávací"/>
+	
+        <imagetype type="AŽD b"/>
+	
+        <imagetype type="ESP b"/>
+	
   </imagetypes>
 
   <appearancefiles>
@@ -220,6 +250,8 @@
     
     <appearancefile href="appearance-protection.xml"/>
       
+    <appearancefile href="appearance-test.xml"/>
+
   </appearancefiles>
 
 </aspecttable>

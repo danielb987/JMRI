@@ -12,13 +12,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p Serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -34,10 +36,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return ResourceBundle.getBundle("jmri.jmrix.rps.RpsActionListBundle");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("deprecation") // updated to multi-connection though RPS hardware obsolete
     @Override
     protected void setInstance() {
-        if(adapter == null ) {
+        if (adapter == null ) {
            adapter = SerialAdapter.instance();
         }
     }
+
 }

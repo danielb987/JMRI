@@ -10,20 +10,18 @@ package jmri.jmrit.vsdecoder.listener;
 /*
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
  * @author   Mark Underwood Copyright (C) 2012
- * 
  */
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -257,24 +255,24 @@ public class ListeningSpot {
             Pattern p = Pattern.compile(syntax);
             Matcher m = p.matcher(pos);
             if (!m.matches()) {
-                log.error("String does not match a valid position pattern. syntax= " + syntax + " string = " + pos);
+                log.error("String does not match a valid position pattern. syntax= {} string = {}", syntax, pos);
                 return (null);
             }
             // ++debug
             String xs = m.group(1);
             String ys = m.group(2);
             String zs = m.group(3);
-            log.debug("Loading Vector3d: x = " + xs + " y = " + ys + " z = " + zs);
+            log.debug("Loading Vector3d: x = {} y = {} z = {}", xs, ys, zs);
             // --debug
             return (new Vector3d(Double.parseDouble(m.group(1)), Double.parseDouble(m.group(2)), Double.parseDouble(m.group(3))));
         } catch (PatternSyntaxException e) {
-            log.error("Malformed Vector3d syntax! " + syntax);
+            log.error("Malformed Vector3d syntax! {}", syntax);
             return (null);
         } catch (IllegalStateException e) {
-            log.error("Group called before match operation executed syntax=" + syntax + " string= " + pos + " " + e.toString());
+            log.error("Group called before match operation executed syntax={} string= {} {}", syntax, pos, e.toString());
             return (null);
         } catch (IndexOutOfBoundsException e) {
-            log.error("Index out of bounds " + syntax + " string= " + pos + " " + e.toString());
+            log.error("Index out of bounds {} string= {} {}", syntax, pos, e.toString());
             return (null);
         }
     }
@@ -299,7 +297,7 @@ public class ListeningSpot {
 
     public void setXml(Element e) {
         if (e != null) {
-            log.debug("ListeningSpot: " + e.getAttributeValue("name"));
+            log.debug("ListeningSpot: {}", e.getAttributeValue("name"));
             _name = e.getAttributeValue("name");
             _location = parseVector3d(e.getAttributeValue("location"));
             _up = parseVector3d(e.getAttributeValue("up"));

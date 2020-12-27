@@ -3,7 +3,7 @@ package jmri.jmrix.nce;
 
 /**
  * Carries the reply to an NceMessage.
- * <P>
+ * <p>
  * Some rudimentary support is provided for the "binary" option.
  *
  * @author Bob Jacobsen Copyright (C) 2001
@@ -12,7 +12,7 @@ package jmri.jmrix.nce;
 public class NceReply extends jmri.jmrix.AbstractMRReply {
 
     NceTrafficController tc;
-    protected static final jmri.jmrix.nce.ncemon.NceMonBinary nceMon = new jmri.jmrix.nce.ncemon.NceMonBinary();
+    private static final jmri.jmrix.nce.ncemon.NceMonBinary nceMon = new jmri.jmrix.nce.ncemon.NceMonBinary();
 
     // create a new one
     public NceReply(NceTrafficController tc) {
@@ -99,8 +99,8 @@ public class NceReply extends jmri.jmrix.AbstractMRReply {
      * {@inheritDoc}
      */
     @Override
-    public String toMonitorString(){
-	    return nceMon.displayReply(this);
+    public String toMonitorString() {
+        return nceMon.displayReply(this);
     }
 
 }

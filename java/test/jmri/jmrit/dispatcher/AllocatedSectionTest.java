@@ -1,13 +1,13 @@
 package jmri.jmrit.dispatcher;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.InstanceManager;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *
@@ -18,24 +18,26 @@ public class AllocatedSectionTest {
     @Test
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        OptionsFile.setDefaultFileName("java/test/jmri/jmrit/dispatcher/dispatcheroptions.xml");  // exist?
+        DispatcherFrame d = InstanceManager.getDefault(DispatcherFrame.class);
         jmri.Transit transit = new jmri.Transit("TT1");
         ActiveTrain at = new ActiveTrain(transit, "Train", ActiveTrain.USER);
         jmri.Section section1 = new jmri.Section("TS1");
         jmri.Section section2 = new jmri.Section("TS2");
         AllocatedSection t = new AllocatedSection(section1, at, 1, section2, 2);
         Assert.assertNotNull("exists", t);
-        JUnitUtil.dispose(InstanceManager.getDefault(DispatcherFrame.class));
+        JUnitUtil.dispose(d);
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

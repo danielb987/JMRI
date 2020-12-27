@@ -4,7 +4,7 @@ package jmri.jmrix.lenz;
  * Interface for XNetPortController objects.
  *
  * @author Paul Bender Copyright (C) 2010
-  */
+ */
 public interface XNetPortController extends jmri.jmrix.PortAdapter {
 
     /**
@@ -12,26 +12,30 @@ public interface XNetPortController extends jmri.jmrix.PortAdapter {
      * configuration, not transient hardware status.
      */
     @Override
-    public boolean status();
+    boolean status();
 
     /**
-     * Can the port accept additional characters? This might go false for short
+     * Can the port accept additional characters?
+     * <p>
+     * This might go false for short
      * intervals, but it might also stick off if something goes wrong.
+     * @return true if OK to send, else false.
      */
-    public boolean okToSend();
+    boolean okToSend();
 
     /**
      * We need a way to say if the output buffer is empty or not.
+     * @param s true to set buffer empty, else false.
      */
-    public void setOutputBufferEmpty(boolean s);
+    void setOutputBufferEmpty(boolean s);
 
     /**
-     * Indiciate the command station is currently providing a timeslot to this
+     * Indicate the command station is currently providing a timeslot to this
      * port controller. 
      *
      * @return true if the command station is currently providing a timeslot.
      */
-    public boolean hasTimeSlot();
+    boolean hasTimeSlot();
 
     /**
      * Set a variable indicating whether or not the command station is 
@@ -47,6 +51,6 @@ public interface XNetPortController extends jmri.jmrix.PortAdapter {
      * 
      * @param timeslot true if a timeslot is being sent, false otherwise.
      */
-    public void setTimeSlot(boolean timeslot);
+    void setTimeSlot(boolean timeslot);
 
 }

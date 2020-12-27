@@ -4,22 +4,23 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.UIManager;
 import jmri.util.JUnitUtil;
 import jmri.util.SystemType;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 import org.netbeans.jemmy.operators.JMenuOperator;
 
 /**
  * A Base set of tests for Editor objects.
  *
+ * @param <T> specific subclass of Editor to test
  * @author Paul Bender Copyright (C) 2016
  */
-abstract public class AbstractEditorTestBase {
+abstract public class AbstractEditorTestBase<T extends Editor> {
 
-    protected Editor e = null;
+    /**
+     * The instance of the Editor to test.
+     */
+    protected T e = null;
 
     @Test
     public void checkFileMenuExists() {
@@ -31,7 +32,7 @@ abstract public class AbstractEditorTestBase {
     }
 
     @Test
-    @Ignore("The test sometimes has trouble finding the file menu")
+    @Disabled("The test sometimes has trouble finding the file menu")
     public void checkFileDeleteMenuItem() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         e.setVisible(true);
@@ -66,7 +67,7 @@ abstract public class AbstractEditorTestBase {
     }
 
     @Test
-    @Ignore("This test seems to be reliable on Linux, but fails on Windows (appveyor)")
+    @Disabled("This test seems to be reliable on Linux, but fails on Windows (appveyor)")
     public void testSetSize() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         java.awt.Dimension d0 = e.getSize();
@@ -90,25 +91,24 @@ abstract public class AbstractEditorTestBase {
         e.putItem(to);
 
         Editor newEditor = e.changeView("jmri.jmrit.display.EditorScaffold");
-        Assert.assertNotNull("changeView Result Not Null",newEditor);
+        Assert.assertNotNull("changeView Result Not Null", newEditor);
 
         // verify the editor object on to was changed to newEditor.
-        Assert.assertEquals("to moved to new editor",newEditor,to.getEditor());
+        Assert.assertEquals("to moved to new editor", newEditor, to.getEditor());
 
         // and that the object is now in the new editor's list of objects.
 
-        Assert.assertTrue("new editor includes to", newEditor.getContents().contains(to)); 
+        Assert.assertTrue("new editor includes to", newEditor.getContents().contains(to));
         newEditor.dispose();
     }
 
+    /**
+     * Subclasses must instantiate {@link #e} in the setUp method.
+     */
+    @BeforeEach
+    abstract public void setUp();
 
-
-
-    // from here down is testing infrastructure
-    @Before
-    abstract public void setUp(); // must set Editor e
-
-    @After
+    @AfterEach
     abstract public void tearDown();
 
 }

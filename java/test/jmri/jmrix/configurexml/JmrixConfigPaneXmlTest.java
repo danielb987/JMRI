@@ -1,15 +1,12 @@
 package jmri.jmrix.configurexml;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
- * JmrixConfigPaneXmlTest.java
- *
- * Description: tests for the JmrixConfigPaneXml class
+ * Tests for the JmrixConfigPaneXml class.
  *
  * @author   Paul Bender  Copyright (C) 2016
  */
@@ -17,19 +14,17 @@ public class JmrixConfigPaneXmlTest {
 
     @Test
     public void testCtor(){
-      Assert.assertNotNull("JmrixConfigPaneXml constructor",new JmrixConfigPaneXml());
+      Assert.assertNotNull("JmrixConfigPaneXml constructor", new JmrixConfigPaneXml());
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }
 
 }
-

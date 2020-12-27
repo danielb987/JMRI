@@ -2,6 +2,7 @@ package jmri.jmrix;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import jmri.SystemConnectionMemo;
 
 /**
  * Provide an abstract implementation of a *StreamPortController for stream
@@ -23,6 +24,10 @@ public abstract class AbstractStreamPortController extends AbstractPortControlle
         _name = pname;
         input = in;
         output = out;
+    }
+
+    public AbstractStreamPortController(SystemConnectionMemo connectionMemo) {
+        super(connectionMemo);
     }
 
     // return the InputStream from the port
@@ -50,6 +55,12 @@ public abstract class AbstractStreamPortController extends AbstractPortControlle
     // connection shouldn't require any action.
     @Override
     public void connect() {
+    }
+
+    public void connect(AbstractPortController port) {
+        _name = port.getCurrentPortName();
+        input = port.getInputStream();
+        output = port.getOutputStream();
     }
 
     @Override

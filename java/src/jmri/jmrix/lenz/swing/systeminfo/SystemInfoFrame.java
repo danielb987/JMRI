@@ -1,8 +1,6 @@
 package jmri.jmrix.lenz.swing.systeminfo;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,11 +18,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Frame displaying Version information for XpressNet hardware.
- * <P>
+ * <p>
  * This is a utility for reading the software version and type of the command
  * station, and, the Hardware and software versions of your XpressNet Computer
  * Interface.
- * <P>
+ * <p>
  * Some of this code may be moved to facilitate automatic enabling of features
  * that are not available on all XpressNet Command Stations (as an example, the
  * fact that you can't program using the computer on a Commander or Compact)
@@ -34,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SystemInfoFrame extends jmri.util.JmriJFrame implements XNetListener {
 
-    protected XNetTrafficController tc = null;
+    protected XNetTrafficController tc;
 
     public SystemInfoFrame(jmri.jmrix.lenz.XNetSystemConnectionMemo memo) {
         super(Bundle.getMessage("MenuItemXNetSystemInformation"));
@@ -81,23 +79,13 @@ public class SystemInfoFrame extends jmri.util.JmriJFrame implements XNetListene
         setCSVersionDisplay();
 
         // Add Get SystemInfo button handler
-        getSystemInfoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent a) {
-                getSystemInfo();
-            }
-        }
-        );
+        getSystemInfoButton.addActionListener(a -> getSystemInfo());
 
         // install close button handler
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent a) {
-                setVisible(false);
-                dispose();
-            }
-        }
-        );
+        closeButton.addActionListener(a -> {
+            setVisible(false);
+            dispose();
+        });
 
         if (tc != null) {
             tc.addXNetListener(~0, this);
@@ -109,15 +97,15 @@ public class SystemInfoFrame extends jmri.util.JmriJFrame implements XNetListene
 
     boolean read = false;
 
-    JLabel CSType = new JLabel("                ");
-    JLabel CSSoftwareVersion = new JLabel("");
-    JLabel CSStatus = new JLabel(Bundle.getMessage("BeanStateUnknown"));
-    JLabel LIType = new JLabel("       ");
-    JLabel LIHardwareVersion = new JLabel("");
-    JLabel LISoftwareVersion = new JLabel("");
+    final JLabel CSType = new JLabel("                ");
+    final JLabel CSSoftwareVersion = new JLabel("");
+    final JLabel CSStatus = new JLabel(Bundle.getMessage("BeanStateUnknown"));
+    final JLabel LIType = new JLabel("       ");
+    final JLabel LIHardwareVersion = new JLabel("");
+    final JLabel LISoftwareVersion = new JLabel("");
 
-    JToggleButton getSystemInfoButton = new JToggleButton(Bundle.getMessage("GetSystemInfoButtonLabel"));
-    JButton closeButton = new JButton(Bundle.getMessage("ButtonClose"));
+    final JToggleButton getSystemInfoButton = new JToggleButton(Bundle.getMessage("GetSystemInfoButtonLabel"));
+    final JButton closeButton = new JButton(Bundle.getMessage("ButtonClose"));
 
     /**
      * Send Information request to LI100/LI101.
@@ -202,7 +190,7 @@ public class SystemInfoFrame extends jmri.util.JmriJFrame implements XNetListene
     @Override
     public void notifyTimeout(XNetMessage msg) {
         if (log.isDebugEnabled()) {
-            log.debug("Notified of timeout on message" + msg.toString());
+            log.debug("Notified of timeout on message{}", msg.toString());
         }
     }
 
@@ -224,17 +212,13 @@ public class SystemInfoFrame extends jmri.util.JmriJFrame implements XNetListene
             CSType.setText(Bundle.getMessage("CSTypeMultiMaus"));
         } else if (cs_type == jmri.jmrix.lenz.XNetConstants.CS_TYPE_Z21) {
             CSType.setText(Bundle.getMessage("CSTypeZ21"));
+        } else if (cs_type == jmri.jmrix.lenz.XNetConstants.CS_TYPE_LOKMAUSII) {
+            CSType.setText(Bundle.getMessage("CSTypeLokMaus"));
         } else {
             CSType.setText(Bundle.getMessage("StateUnknown")); // use shared key
         }
     }
 
-    @Override
-    public void dispose() {
-        // take apart the JFrame
-        super.dispose();
-    }
-
-    private final static Logger log = LoggerFactory.getLogger(SystemInfoFrame.class);
+    private static final Logger log = LoggerFactory.getLogger(SystemInfoFrame.class);
 
 }

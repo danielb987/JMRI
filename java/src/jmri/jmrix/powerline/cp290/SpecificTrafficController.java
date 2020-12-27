@@ -14,17 +14,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts Stream-based I/O to/from messages. The "SerialInterface" side
  * sends/receives message objects.
- * <P>
+ * <p>
  * The connection to a SerialPortController is via a pair of *Streams, which
  * then carry sequences of characters for transmission. Note that this
  * processing is handled in an independent thread.
- * <P>
+ * <p>
  * This maintains a list of nodes, but doesn't currently do anything with it.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2003, 2005, 2006, 2008 Converted to
  * multiple connection
  * @author kcameron Copyright (C) 2011
-  */
+ */
 public class SpecificTrafficController extends SerialTrafficController {
 
     private boolean cmdOutstanding;
@@ -63,7 +63,7 @@ public class SpecificTrafficController extends SerialTrafficController {
         // loop through other addresses, if any
         while (((c = s.getCommand()) != null) && (c.isAddress())) {
             if (housecode != ((X10Sequence.Address) c).getHouseCode()) {
-                log.error("multiple housecodes found: " + housecode + ", " + c.getHouseCode());
+                log.error("multiple housecodes found: {}, {}", housecode, c.getHouseCode());
                 return;
             }
             devicemask = setDeviceBit(devicemask, ((X10Sequence.Address) c).getAddress());
@@ -79,7 +79,7 @@ public class SpecificTrafficController extends SerialTrafficController {
         // loop through other functions, if any
         while (((c = s.getCommand()) != null) && (c.isFunction())) {
             if (housecode != ((X10Sequence.Function) c).getHouseCode()) {
-                log.error("multiple housecodes found: " + housecode + ", " + c.getHouseCode());
+                log.error("multiple housecodes found: {}, {}", housecode, c.getHouseCode());
                 return;
             }
             formatAndSend(housecode, devicemask, (X10Sequence.Function) c, l);
@@ -115,7 +115,7 @@ public class SpecificTrafficController extends SerialTrafficController {
             level = 16;
         }
         if (logDebug) {
-            log.debug("dim level: " + level);
+            log.debug("dim level: {}", level);
         }
         level = 16 - level;
         int function = c.getFunction();
@@ -153,7 +153,7 @@ public class SpecificTrafficController extends SerialTrafficController {
     @Override
     protected void forwardToPort(AbstractMRMessage m, AbstractMRListener reply) {
         if (logDebug) {
-            log.debug("forward " + m);
+            log.debug("forward {}", m);
         }
         super.forwardToPort(m, reply);
     }
@@ -207,6 +207,3 @@ public class SpecificTrafficController extends SerialTrafficController {
 
     private final static Logger log = LoggerFactory.getLogger(SpecificTrafficController.class);
 }
-
-
-

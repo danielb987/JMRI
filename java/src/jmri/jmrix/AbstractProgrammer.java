@@ -1,15 +1,12 @@
 package jmri.jmrix;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.List;
 import javax.annotation.Nonnull;
 import jmri.ProgListener;
 import jmri.Programmer;
 import jmri.ProgrammerException;
 import jmri.ProgrammingMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.beans.PropertyChangeSupport;
 
 /**
  * Common implementations for the Programmer interface.
@@ -23,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2012, 2013
  */
-public abstract class AbstractProgrammer implements Programmer {
+public abstract class AbstractProgrammer extends PropertyChangeSupport implements Programmer {
 
     /** {@inheritDoc} */
     @Override
@@ -31,40 +28,40 @@ public abstract class AbstractProgrammer implements Programmer {
         if (code == ProgListener.OK) {
             return Bundle.getMessage("StatusOK");
         }
-        StringBuffer sbuf = new StringBuffer("");
+        StringBuilder sbuf = new StringBuilder("");
         // add each code; terminate each string with ";" please.
         if ((code & ProgListener.NoLocoDetected) != 0) {
-            sbuf.append(Bundle.getMessage("NoLocoDetected") + " ");
+            sbuf.append(Bundle.getMessage("NoLocoDetected")).append(" ");
         }
         if ((code & ProgListener.ProgrammerBusy) != 0) {
-            sbuf.append(Bundle.getMessage("ProgrammerBusy") + " ");
+            sbuf.append(Bundle.getMessage("ProgrammerBusy")).append(" ");
         }
         if ((code & ProgListener.NotImplemented) != 0) {
-            sbuf.append(Bundle.getMessage("NotImplemented") + " ");
+            sbuf.append(Bundle.getMessage("NotImplemented")).append(" ");
         }
         if ((code & ProgListener.UserAborted) != 0) {
-            sbuf.append(Bundle.getMessage("UserAborted") + " ");
+            sbuf.append(Bundle.getMessage("UserAborted")).append(" ");
         }
         if ((code & ProgListener.ConfirmFailed) != 0) {
-            sbuf.append(Bundle.getMessage("ConfirmFailed") + " ");
+            sbuf.append(Bundle.getMessage("ConfirmFailed")).append(" ");
         }
         if ((code & ProgListener.FailedTimeout) != 0) {
-            sbuf.append(Bundle.getMessage("FailedTimeout") + " ");
+            sbuf.append(Bundle.getMessage("FailedTimeout")).append(" ");
         }
         if ((code & ProgListener.UnknownError) != 0) {
-            sbuf.append(Bundle.getMessage("UnknownError") + " ");
+            sbuf.append(Bundle.getMessage("UnknownError")).append(" ");
         }
         if ((code & ProgListener.NoAck) != 0) {
-            sbuf.append(Bundle.getMessage("NoAck") + " ");
+            sbuf.append(Bundle.getMessage("NoAck")).append(" ");
         }
         if ((code & ProgListener.ProgrammingShort) != 0) {
-            sbuf.append(Bundle.getMessage("ProgrammingShort") + " ");
+            sbuf.append(Bundle.getMessage("ProgrammingShort")).append(" ");
         }
         if ((code & ProgListener.SequenceError) != 0) {
-            sbuf.append(Bundle.getMessage("SequenceError") + " ");
+            sbuf.append(Bundle.getMessage("SequenceError")).append(" ");
         }
         if ((code & ProgListener.CommError) != 0) {
-            sbuf.append(Bundle.getMessage("CommError") + " ");
+            sbuf.append(Bundle.getMessage("CommError")).append(" ");
         }
 
         // remove trailing separators
@@ -81,46 +78,30 @@ public abstract class AbstractProgrammer implements Programmer {
     }
 
     /**
-     * Provide a {@link java.beans.PropertyChangeSupport} helper.
+     * Notify listeners of a property change.
+     * 
+     * @param key property name
+     * @param oldValue old value of property
+     * @param value new value of property
+     * @deprecated since 4.19.5; use {@link #firePropertyChange(java.lang.String, java.lang.Object, java.lang.Object)} instead
      */
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-    /** {@inheritDoc} */
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-
+    @Deprecated
     protected void notifyPropertyChange(String key, Object oldValue, Object value) {
-        propertyChangeSupport.firePropertyChange(key, oldValue, value);
+        firePropertyChange(key, oldValue, value);
     }
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("deprecation") // this is a migration call, to be removed when writeCV(int, int, ProgListener) is removed
-    public void writeCV(String CV, int val, ProgListener p) throws ProgrammerException {
-        writeCV(Integer.parseInt(CV), val, p);
-    }
+    abstract public void writeCV(String CV, int val, ProgListener p) throws ProgrammerException;
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("deprecation") // this is a migration call, to be removed when readCV(int, ProgListener) is removed
-    public void readCV(String CV, ProgListener p) throws ProgrammerException {
-        readCV(Integer.parseInt(CV), p);
-    }
+    abstract public void readCV(String CV, ProgListener p) throws ProgrammerException;
 
     /** {@inheritDoc} */
     @Override
-    @Deprecated // 4.1.1
-    public final void confirmCV(int CV, int val, ProgListener p) throws ProgrammerException {
-        confirmCV(""+CV, val, p);
-    }
+    abstract public void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException;
+
 
     /** {@inheritDoc} 
      * Basic implementation. Override this to turn reading on and off globally.
@@ -161,7 +142,7 @@ public abstract class AbstractProgrammer implements Programmer {
         if (validModes.contains(m)) {
             ProgrammingMode oldMode = mode;
             mode = m;
-            notifyPropertyChange("Mode", oldMode, m);
+            firePropertyChange("Mode", oldMode, m);
         } else {
             throw new IllegalArgumentException("Invalid requested mode: " + m);
         }
@@ -249,18 +230,15 @@ public abstract class AbstractProgrammer implements Programmer {
     }
 
     /**
-     * Internal routine to handle timer starts {@literal &} restarts
+     * Internal routine to handle timer starts and restarts.
+     * 
+     * @param delay the initial delay, in milliseconds
      */
     protected synchronized void restartTimer(int delay) {
         log.debug("(re)start timer with delay {}", delay);
 
         if (timer == null) {
-            timer = new javax.swing.Timer(delay, new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    timeout();
-                }
-            });
+            timer = new javax.swing.Timer(delay, e -> timeout());
         }
         timer.stop();
         timer.setInitialDelay(delay);
@@ -271,10 +249,10 @@ public abstract class AbstractProgrammer implements Programmer {
     /**
      * Find the register number that corresponds to a specific CV number.
      *
-     * @throws ProgrammerException if the requested CV does not correspond to a
-     *                             register
      * @param cv CV number (1 through 512) for which equivalent register is
      *           desired
+     * @throws ProgrammerException if the requested CV does not correspond to a
+     *                             register
      * @return register number corresponding to cv
      */
     public int registerFromCV(int cv) throws ProgrammerException {
@@ -305,6 +283,6 @@ public abstract class AbstractProgrammer implements Programmer {
 
     javax.swing.Timer timer = null;
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractProgrammer.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractProgrammer.class);
 
 }

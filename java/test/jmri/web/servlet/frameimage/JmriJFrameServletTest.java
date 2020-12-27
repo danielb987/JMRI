@@ -1,25 +1,34 @@
 package jmri.web.servlet.frameimage;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
- * Invokes complete set of tests for the jmri.web.xmlio.JmriJFrameServlet class
+ * Invokes complete set of tests for the jmri.web.servlet.frameimage.JmriJFrameServlet class
  *
- * @author	Bob Jacobsen Copyright 2013
+ * @author Bob Jacobsen Copyright 2013
  */
-public class JmriJFrameServletTest extends TestCase {
+public class JmriJFrameServletTest {
 
+    @Test
     public void testAccess() {
         JmriJFrameServlet_ut out = new JmriJFrameServlet_ut();
         Assert.assertNotNull(out.populateParameterMap(new HashMap<>()));
     }
 
+    @Test
     public void testOneParameter() {
         Map<String, String[]> map = new java.util.HashMap<>();
         map.put("key1", new String[]{"value1-0"});
@@ -35,6 +44,7 @@ public class JmriJFrameServletTest extends TestCase {
 
     }
 
+    @Test
     public void testTwoParameters() {
         Map<String, String[]> map = new java.util.HashMap<>();
         map.put("key1", new String[]{"value1-0"});
@@ -53,6 +63,50 @@ public class JmriJFrameServletTest extends TestCase {
 
     }
 
+    @Test
+    public void testExceptionHandling() {
+        Throwable thrown;
+        
+        // create testable object that runs clean
+        JmriJFrameServlet_ut out1 = new JmriJFrameServlet_ut() {
+            protected void doGetOnSwing(HttpServletRequest request, HttpServletResponse response) 
+                    throws ServletException, IOException {
+            }
+        };
+        // should not throw, so just invoke
+        try {
+            out1.test_doGet();
+        } catch (Exception ex) {
+            Assert.fail(ex.toString());
+        }
+        
+        // create testable object that throws IOException
+        JmriJFrameServlet_ut out2 = new JmriJFrameServlet_ut() {
+            protected void doGetOnSwing(HttpServletRequest request, HttpServletResponse response) 
+                    throws ServletException, IOException {
+                throw new IOException("on purpose");
+            }
+        };
+        // invoke and check
+        thrown = catchThrowable(() -> { out2.test_doGet(); });
+        assertThat(thrown).isInstanceOf(IOException.class)
+                            .hasNoCause();
+
+        
+        // create testable object that throws ServletException
+        JmriJFrameServlet_ut out3 = new JmriJFrameServlet_ut() {
+            protected void doGetOnSwing(HttpServletRequest request, HttpServletResponse response) 
+                    throws ServletException, IOException {
+                throw new ServletException("on purpose");
+            }
+        };
+        // invoke and check
+        thrown = catchThrowable(() -> { out3.test_doGet(); });
+        assertThat(thrown).isInstanceOf(ServletException.class)
+                            .hasNoCause();
+    }
+    
+    
     // local variant class to make access to private members
     private class JmriJFrameServlet_ut extends JmriJFrameServlet {
 
@@ -60,33 +114,19 @@ public class JmriJFrameServletTest extends TestCase {
         public Map<String, String[]> populateParameterMap(Map<String, String[]> map) {
             return super.populateParameterMap(map);
         }
+
+        public void test_doGet() throws ServletException, IOException {
+            doGet(null, null);
+        }
     }
 
-    // from here down is testing infrastructure
-    public JmriJFrameServletTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {JmriJFrameServletTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(JmriJFrameServletTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 }

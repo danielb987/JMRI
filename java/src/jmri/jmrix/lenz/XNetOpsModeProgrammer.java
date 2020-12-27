@@ -2,12 +2,12 @@ package jmri.jmrix.lenz;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
+
 import jmri.AddressedProgrammer;
 import jmri.ProgListener;
 import jmri.ProgrammerException;
 import jmri.ProgrammingMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides an Ops mode programming interface for XpressNet Currently only Byte
@@ -19,9 +19,9 @@ import org.slf4j.LoggerFactory;
  */
 public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implements XNetListener, AddressedProgrammer {
 
-    protected int mAddressHigh;
-    protected int mAddressLow;
-    protected int mAddress;
+    protected final int mAddressHigh;
+    protected final int mAddressLow;
+    protected final int mAddress;
     protected int progState = NOTPROGRAMMING;
     protected int value;
     protected jmri.ProgListener progListener = null;
@@ -30,29 +30,31 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
     static protected final int NOTPROGRAMMING = 0; // is notProgramming
     static protected final int REQUESTSENT = 1; // read/write command sent, waiting reply
 
-    protected XNetTrafficController tc = null;
+    protected XNetTrafficController tc;
 
     public XNetOpsModeProgrammer(int pAddress, XNetTrafficController controller) {
         tc = controller;
         if (log.isDebugEnabled()) {
-            log.debug("Creating Ops Mode Programmer for Address " + pAddress);
+            log.debug("Creating Ops Mode Programmer for Address {}", pAddress);
         }
         mAddressLow = LenzCommandStation.getDCCAddressLow(pAddress);
         mAddressHigh = LenzCommandStation.getDCCAddressHigh(pAddress);
         mAddress = pAddress;
         if (log.isDebugEnabled()) {
-            log.debug("High Address: " + mAddressHigh + " Low Address: " + mAddressLow);
+            log.debug("High Address: {} Low Address: {}", mAddressHigh, mAddressLow);
         }
         // register as a listener
         tc.addXNetListener(XNetInterface.COMMINFO | XNetInterface.CS_INFO, this);
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Send an ops-mode write request to the Xpressnet.
      */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void writeCV(int CV, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         XNetMessage msg = XNetMessage.getWriteOpsModeCVMsg(mAddressHigh, mAddressLow, CV, val);
         tc.sendXNetMessage(msg, this);
         /* we need to save the programer and value so we can send messages 
@@ -64,9 +66,12 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
         restartTimer(msg.getTimeout());
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void readCV(int CV, ProgListener p) throws ProgrammerException {
+    synchronized public void readCV(String CVname, ProgListener p) throws ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         XNetMessage msg = XNetMessage.getVerifyOpsModeCVMsg(mAddressHigh, mAddressLow, CV, value);
         tc.sendXNetMessage(msg, this);
         /* We can trigger a read to an LRC120, but the information is not
@@ -74,6 +79,9 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
         notifyProgListenerEnd(p,CV,jmri.ProgListener.NotImplemented);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public void confirmCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         int CV = Integer.parseInt(CVname);
@@ -84,17 +92,22 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
         notifyProgListenerEnd(p,val,jmri.ProgListener.NotImplemented);
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Types implemented here.
      */
     @Override
+    @Nonnull
     public List<ProgrammingMode> getSupportedModes() {
-        List<ProgrammingMode> ret = new ArrayList<ProgrammingMode>();
+        List<ProgrammingMode> ret = new ArrayList<>();
         ret.add(ProgrammingMode.OPSBYTEMODE);
         return ret;
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Can this ops-mode programmer read back values?
      * Indirectly we can, though this requires an external display 
      * (a Lenz LRC120) and enabling railcom.
@@ -119,12 +132,14 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
     }
 
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     synchronized public void message(XNetReply l) {
         if (progState == NOTPROGRAMMING) {
             // We really don't care about any messages unless we send a 
             // request, so just ignore anything that comes in
-            return;
         } else if (progState == REQUESTSENT) {
             if (l.isOkMessage()) {
                 // Before we set the programmer state to not programming, 
@@ -137,7 +152,7 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
             } else {
                 /* this is an error */
                 if (l.isRetransmittableErrorMsg()) {
-                    return;  // just ignore this, since we are retransmitting 
+                    // just ignore this, since we are retransmitting
                     // the message.
                 } else if (l.getElement(0) == XNetConstants.CS_INFO
                         && l.getElement(1) == XNetConstants.CS_NOT_SUPPORTED) {
@@ -154,36 +169,52 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public boolean getLongAddress() {
         return true;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public int getAddressNumber() {
         return mAddress;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public String getAddress() {
         return "" + getAddressNumber() + " " + getLongAddress();
     }
 
-    // listen for the messages to the LI100/LI101
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void message(XNetMessage l) {
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Handle a timeout notification
      */
     @Override
     public void notifyTimeout(XNetMessage msg) {
         if (log.isDebugEnabled()) {
-            log.debug("Notified of timeout on message" + msg.toString());
+            log.debug("Notified of timeout on message{}", msg.toString());
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     synchronized protected void timeout() {
         if (progState != NOTPROGRAMMING) {
@@ -202,6 +233,6 @@ public class XNetOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer impleme
     }
 
     // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(XNetOpsModeProgrammer.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XNetOpsModeProgrammer.class);
 
 }

@@ -1,9 +1,8 @@
 package jmri.configurexml;
 
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
@@ -11,13 +10,15 @@ import org.junit.Assert;
  *
  * @author Bob Jacobsen Copyright 2009
  */
-public class DefaultJavaBeanConfigXMLTest extends TestCase {
+public class DefaultJavaBeanConfigXMLTest {
 
+    @Test
     public void testStoreBean() {
         DefaultJavaBeanConfigXML x = new DefaultJavaBeanConfigXML();
         x.store(new TestBean1());
     }
 
+    @Test
     public void testTestBean() {
         TestBean1 tb1 = new TestBean1();
         Assert.assertTrue(tb1.equals(tb1));
@@ -36,6 +37,7 @@ public class DefaultJavaBeanConfigXMLTest extends TestCase {
         Assert.assertFalse(tb3.equals(tb4));
     }
 
+    @Test
     public void testLoadBeanDefault() throws Exception {
         DefaultJavaBeanConfigXML x = new DefaultJavaBeanConfigXML();
         TestBean1 start = new TestBean1();
@@ -45,6 +47,7 @@ public class DefaultJavaBeanConfigXMLTest extends TestCase {
         Assert.assertTrue(start.equals(end));
     }
 
+    @Test
     public void testLoadBeanValue() throws Exception {
         DefaultJavaBeanConfigXML x = new DefaultJavaBeanConfigXML();
         TestBean1 start = new TestBean1();
@@ -56,32 +59,14 @@ public class DefaultJavaBeanConfigXMLTest extends TestCase {
         Assert.assertTrue(start.equals(end));
     }
 
-    // from here down is testing infrastructure
-    public DefaultJavaBeanConfigXMLTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", DefaultJavaBeanConfigXMLTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(DefaultJavaBeanConfigXMLTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 }

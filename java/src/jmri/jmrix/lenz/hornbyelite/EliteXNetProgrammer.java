@@ -2,47 +2,45 @@ package jmri.jmrix.lenz.hornbyelite;
 
 import jmri.ProgrammingMode;
 import jmri.jmrix.lenz.XNetConstants;
-import jmri.jmrix.lenz.XNetListener;
 import jmri.jmrix.lenz.XNetMessage;
 import jmri.jmrix.lenz.XNetProgrammer;
 import jmri.jmrix.lenz.XNetReply;
 import jmri.jmrix.lenz.XNetTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Programmer support for Hornby Elite implementationn of XpressNet.
- * <P>
+ * <p>
  * The read operation state sequence is:
- * <UL>
- * <LI>Send Register Mode / Paged mode /Direct Mode read request
- * <LI>Wait for Broadcast Service Mode Entry message -- not happening on elite
- * <LI>Send Request for Service Mode Results request
- * <LI>Wait for results reply, interpret
- * <LI>Send Resume Operations request -- The Elite does not seem to require this
+ * <ul>
+ * <li>Send Register Mode / Paged mode /Direct Mode read request
+ * <li>Wait for Broadcast Service Mode Entry message -- not happening on elite
+ * <li>Send Request for Service Mode Results request
+ * <li>Wait for results reply, interpret
+ * <li>Send Resume Operations request -- The Elite does not seem to require this
  * step.
- * <LI>Wait for Normal Operations Resumed broadcast -- The Elite does not seem
+ * <li>Wait for Normal Operations Resumed broadcast -- The Elite does not seem
  * to require this step.
- * </UL>
+ * </ul>
  *
  * @author Paul Bender Copyright (c) 2008
  */
-public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener {
+public class EliteXNetProgrammer extends XNetProgrammer {
 
-    static private final int RETURNSENT = 3;
     // Message timeout lengths.  These have been determined by
     // experimentation, and may need to be adjusted
-    static private final int ELITEMESSAGETIMEOUT = 10000;
-    static private final int EliteXNetProgrammerTimeout = 20000;
+    private static final int ELITEMESSAGETIMEOUT = 10000;
+    private static final int EliteXNetProgrammerTimeout = 20000;
 
     public EliteXNetProgrammer(XNetTrafficController tc) {
         super(tc);
     }
 
-    // programming interface
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void writeCV(int CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listens {}", CV, p);
         useProgrammer(p);
         _progRead = false;
@@ -77,26 +75,22 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
             throw e;
         }
 
-        // On the Elite, we're not getting a broadcast message
-        // saying we're in service mode, so go ahead and request
-        // the results.
-        progState = INQUIRESENT;
-        //start the error timer
-        restartTimer(EliteXNetProgrammerTimeout);
-        XNetMessage resultMsg = XNetMessage.getServiceModeResultsMsg();
-        resultMsg.setNeededMode(jmri.jmrix.AbstractMRTrafficController.NORMALMODE);
-        resultMsg.setTimeout(ELITEMESSAGETIMEOUT);
-        controller().sendXNetMessage(resultMsg, this);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    synchronized public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void readCV(int CV, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void readCV(String CVname, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         log.debug("readCV {} listens {}", CV, p);
 
         if (!getCanRead()) {
@@ -136,23 +130,16 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
             throw e;
         }
 
-        // On the Elite, we're not getting a broadcast message
-        // saying we're in service mode, so go ahead and request
-        // the results.
-        progState = INQUIRESENT;
-        //start the error timer
-        restartTimer(EliteXNetProgrammerTimeout);
-        XNetMessage resultMsg = XNetMessage.getServiceModeResultsMsg();
-        resultMsg.setNeededMode(jmri.jmrix.AbstractMRTrafficController.NORMALMODE);
-        resultMsg.setTimeout(ELITEMESSAGETIMEOUT);
-        controller().sendXNetMessage(resultMsg, this);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    synchronized public void message(XNetReply m) {
+    public synchronized void message(XNetReply m) {
         if (m.getElement(0) == XNetConstants.CS_INFO
                 && m.getElement(1) == XNetConstants.BC_SERVICE_MODE_ENTRY) {
-            if (_service_mode == false) {
+            if (!_service_mode ) {
                 // the command station is in service mode.  An "OK"
                 // message can trigger a request for service mode
                 // results if progrstate is REQUESTSENT.
@@ -166,7 +153,7 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
         }
         if (m.getElement(0) == XNetConstants.CS_INFO
                 && m.getElement(1) == XNetConstants.BC_NORMAL_OPERATIONS) {
-            if (_service_mode == true) {
+            if (_service_mode) {
                 // the command station is not in service mode.  An
                 // "OK" message can not trigger a request for service
                 // mode results if progrstate is REQUESTSENT.
@@ -181,8 +168,6 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
 
         if (progState == NOTPROGRAMMING) {
             // we get the complete set of replies now, so ignore these
-            return;
-
         } else if (progState == REQUESTSENT) {
             log.debug("reply in REQUESTSENT state");
             // see if reply is the acknowledge of program mode; if not, wait for next
@@ -197,32 +182,23 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
                     log.debug("CV reading not supported, exiting REQUESTSENT state");
                     stopTimer();
                     notifyProgListenerEnd(_val, jmri.ProgListener.OK);
-                    return;
                 }
-
-                // here ready to request the results
-                progState = INQUIRESENT;
-                //start the error timer
-                restartTimer(EliteXNetProgrammerTimeout);
-                XNetMessage resultMsg = XNetMessage.getServiceModeResultsMsg();
-
-                resultMsg.setNeededMode(jmri.jmrix.AbstractMRTrafficController.NORMALMODE);
-                resultMsg.setTimeout(ELITEMESSAGETIMEOUT);
-                controller().sendXNetMessage(resultMsg, this);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.CS_NOT_SUPPORTED) {
                 // programming operation not supported by this command station
                 progState = NOTPROGRAMMING;
                 notifyProgListenerEnd(_val, jmri.ProgListener.NotImplemented);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.BC_NORMAL_OPERATIONS) {
-                // We Exited Programming Mode early
-                log.error("Service mode exited before sequence complete.");
-                progState = NOTPROGRAMMING;
-                stopTimer();
-                notifyProgListenerEnd(_val, jmri.ProgListener.SequenceError);
+                    // On the Elite, the broadcast exit service mode message
+                    // needs to triger the request for results.
+                    progState = INQUIRESENT;
+                    //start the error timer
+                    restartTimer(EliteXNetProgrammerTimeout);
+                    XNetMessage resultMsg = XNetMessage.getServiceModeResultsMsg();
+                    resultMsg.setNeededMode(jmri.jmrix.AbstractMRTrafficController.NORMALMODE);
+                    resultMsg.setTimeout(ELITEMESSAGETIMEOUT);
+                    controller().sendXNetMessage(resultMsg, this);
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.PROG_SHORT_CIRCUIT) {
                 // We experienced a short Circuit on the Programming Track
@@ -237,7 +213,7 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
                 if (m.getElement(1) == XNetConstants.LI_MESSAGE_RESPONSE_TIMESLOT_ERROR) {
                     return;
                 }
-                log.error("Communications error in REQUESTSENT state while programming.  Error: " + m.toString());
+                log.error("Communications error in REQUESTSENT state while programming.  Error: {}", m);
                 progState = NOTPROGRAMMING;
                 stopTimer();
                 notifyProgListenerEnd(_val, jmri.ProgListener.CommError);
@@ -272,7 +248,6 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
                 // if this was a read, we cached the value earlier.
                 // If its a write, we're to return the original write value
                 notifyProgListenerEnd(_val, jmri.ProgListener.OK);
-                return;
             } else if (m.isDirectModeResponse()) {
                 // valid operation response, but does it belong to us?
                 if (m.getServiceModeCVNumber() != _cv) {
@@ -289,14 +264,12 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
                 // if this was a read, we cached the value earlier.  If its a
                 // write, we're to return the original write value
                 notifyProgListenerEnd(_val, jmri.ProgListener.OK);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.PROG_BYTE_NOT_FOUND) {
                 // "data byte not found", e.g. no reply
                 progState = NOTPROGRAMMING;
                 stopTimer();
                 notifyProgListenerEnd(_val, jmri.ProgListener.NoLocoDetected);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.PROG_SHORT_CIRCUIT) {
                 // We experienced a short Circuit on the Programming Track
@@ -311,34 +284,26 @@ public class EliteXNetProgrammer extends XNetProgrammer implements XNetListener 
                 if (m.getElement(1) == XNetConstants.LI_MESSAGE_RESPONSE_TIMESLOT_ERROR) {
                     return;
                 }
-                log.error("Communications error in INQUIRESENT state while programming.  Error: " + m.toString());
+                log.error("Communications error in INQUIRESENT state while programming.  Error: {}", m);
                 progState = NOTPROGRAMMING;
                 stopTimer();
                 notifyProgListenerEnd(_val, jmri.ProgListener.CommError);
             } else {
                 // nothing important, ignore
-                return;
-            }
-
-        } else if (progState == RETURNSENT) {
-            log.debug("reply in RETURNSENT state");
-            if (m.getElement(0) == XNetConstants.CS_INFO
-                    && m.getElement(1) == XNetConstants.BC_NORMAL_OPERATIONS) {
-                progState = NOTPROGRAMMING;
-                stopTimer();
-                //notifyProgListenerEnd(_val, jmri.ProgListener.UnknownError);
-                return;
             }
         } else {
             log.debug("reply in un-decoded state");
         }
     }
 
-    // listen for the messages to the Elite
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    synchronized public void message(XNetMessage l) {
+    public synchronized void message(XNetMessage l) {
+        // this class is not interested in messages to the command station.
     }
 
-    private final static Logger log = LoggerFactory.getLogger(EliteXNetProgrammer.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EliteXNetProgrammer.class);
 
 }

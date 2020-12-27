@@ -1,49 +1,30 @@
 package jmri.jmrit.withrottle;
 
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of TurnoutController
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class TurnoutControllerTest extends TestCase {
+public class TurnoutControllerTest {
 
+    @Test
     public void testCtor() {
         TurnoutController panel = new TurnoutController();
         Assert.assertNotNull("exists", panel );
     }
 
-    // from here down is testing infrastructure
-    public TurnoutControllerTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", TurnoutControllerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(TurnoutControllerTest.class);
-        return suite;
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        jmri.util.JUnitUtil.setUp();
+    @BeforeEach
+    public void setUp() {
+        JUnitUtil.setUp();
     }
     
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 }

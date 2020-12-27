@@ -1,10 +1,8 @@
 package jmri.jmrix.roco.z21.simulator;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for Z21SimulatorZ21SimulatorConnectionConfig class.
@@ -12,22 +10,21 @@ import org.junit.Test;
  * @author Paul Bender Copyright (C) 2016
  **/
 
-public class Z21SimulatorConnectionConfigTest {
+public class Z21SimulatorConnectionConfigTest extends jmri.jmrix.AbstractSimulatorConnectionConfigTestBase {
 
-   @Test
-   public void ConstructorTest(){
-      Assert.assertNotNull("Z21SimulatorConnectionConfig constructor",new Z21SimulatorConnectionConfig());
-   }
-
-   @Before
+   @BeforeEach
+   @Override
    public void setUp() {
         JUnitUtil.setUp();
 
-        jmri.util.JUnitUtil.initDefaultUserMessagePreferences();
+        JUnitUtil.initDefaultUserMessagePreferences();
+        cc = new Z21SimulatorConnectionConfig();
    }
 
-   @After
+   @AfterEach
+   @Override
    public void tearDown(){
+        cc = null;
         JUnitUtil.tearDown();
    }
 

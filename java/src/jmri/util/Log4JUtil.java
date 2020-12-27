@@ -1,24 +1,13 @@
 package jmri.util;
 
-import apps.SystemConsole;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
-import jmri.util.exceptionhandler.UncaughtExceptionHandler;
-import org.apache.log4j.Appender;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.RollingFileAppender;
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Common utility methods for working with Log4J.
- * <P>
+ * <p>
  * Two system properties influence how logging is configured in JMRI:
  * <dl>
  * <dt>jmri.log</dt><dd>The logging control file. If this file is not an
@@ -35,47 +24,107 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Jacobsen Copyright 2009, 2010
  * @author Randall Wood Copyright 2014
+ * @deprecated since 4.22.1; split into {@link LoggingUtil},
+ * {@link apps.util.Log4JUtil}, and jmri.util.JUnitLoggingUtil (for tests only)
  */
+@Deprecated
 public class Log4JUtil {
 
-    private static boolean log4JSetUp = false;
-    private static final String jmriLog = "****** JMRI log *******";
     private static final Logger log = LoggerFactory.getLogger(Log4JUtil.class);
 
     /**
      * Emit a particular WARNING-level message just once.
+     * <p>
+     * Goal is to be lightweight and fast; this will only be used in a few
+     * places, and only those should appear in data structure.
+     *
+     * @param logger The Logger to warn.
+     * @param msg    Message.
+     * @param args   Message Arguments.
      * @return true if the log was emitted this time
+     * @deprecated since 4.22.1; use {@link LoggingUtil#warnedOnce} instead
      */
-    // Goal is to be lightweight and fast; this will only be used in a few places,
-    // and only those should appear in data structure.
-    static public boolean warnOnce(Logger log, String msg, Object... args) {
-        // the  Map<String, Boolean> is just being checked for existence; it's never False
-        Map<String, Boolean> loggerMap = warnedOnce.get(log);
-        if (loggerMap == null) {
-            loggerMap = new HashMap<>();
-            warnedOnce.put(log, loggerMap);
-        } else {
-            if (Boolean.TRUE.equals(loggerMap.get(msg))) return false;
-        }
-        loggerMap.put(msg, Boolean.TRUE);
-        log.warn(msg, args);
+    @Deprecated
+    static public boolean warnOnce(@Nonnull Logger logger, @Nonnull String msg, Object... args) {
+        LoggingUtil.deprecationWarning(log, "warnOnce");
+        return LoggingUtil.warnOnce(logger, msg, args);
+    }
+
+    /**
+     * Restart the "once" part of {@link #warnOnce} so that the nextInvocation
+     * will log, even if it already has.
+     * <p>
+     * Should only be used by test code.
+     *
+     * @deprecated since 4.22.1; use jmri.util.JUnitLoggingUtil#restartWarnOnce
+     */
+    @Deprecated
+    static public void restartWarnOnce() {
+        LoggingUtil.deprecationWarning(log, "restartWarnOnce");
+        LoggingUtil.warnOnce(log, "restartWarnOnce has no effect");
+    }
+
+    /**
+     * Warn that a deprecated method has been invoked.
+     * <p>
+     * Can also be used to warn of some deprecated condition, i.e.
+     * obsolete-format input data.
+     * <p>
+     * The logging is turned off by default during testing to simplify updating
+     * tests when warnings are added.
+     *
+     * @param logger     The Logger to warn.
+     * @param methodName method name.
+     * @deprecated since 4.22.1; use
+     * {@link LoggingUtil#deprecationWarning(Logger, String)} instead
+     */
+    @Deprecated
+    static public void deprecationWarning(@Nonnull Logger logger, @Nonnull String methodName) {
+        LoggingUtil.deprecationWarning(log, "deprecationWarning");
+        LoggingUtil.deprecationWarning(logger, methodName);
+    }
+
+    /**
+     * Control logging of deprecation warnings.
+     * <p>
+     * Should only be used by test code.
+     *
+     * @param log true to log deprecations, else false.
+     * @deprecated since 4.22.1; use
+     * jmri.util.JUnitLoggingUtil#setDeprecatedLogging instead
+     */
+    @Deprecated
+    public static void setDeprecatedLogging(boolean log) {
+        LoggingUtil.deprecationWarning(Log4JUtil.log, "setDeprecatedLogging");
+        LoggingUtil.warnOnce(Log4JUtil.log, "setDeprecatedLogging has no effect");
+    }
+
+    /**
+     * Determine whether deprecation warnings are logged.
+     * <p>
+     * Should only be used by test code.
+     *
+     * @return true if deprecation warnings are logged.
+     * @deprecated since 4.22.1; use
+     * jmri.util.JUnitLoggingUtil#getDeprecatedLogging instead
+     */
+    @Deprecated
+    public static boolean getDeprecatedLogging() {
+        LoggingUtil.deprecationWarning(log, "getDeprecatedLogging");
+        LoggingUtil.warnOnce(log, "getDeprecatedLogging always returns true");
         return true;
     }
-    static private Map<Logger, Map<String, Boolean>> warnedOnce = new HashMap<>();
-    
+
     /**
      * Initialize logging from a default control file.
-     * <p>
-     * Primary functions:
-     * <ul>
-     * <li>Initialize the JMRI system console
-     * <li>Set up the slf4j j.u.logging to log4J bridge
-     * <li>Start log4j
-     * <li>Initialize some default exception handlers (to feed the logs?)
-     * </ul>
+     *
+     * @deprecated since 4.22.1; use {@link apps.util.Log4JUtil#initLogging()}
+     * instead
      */
+    @Deprecated
     static public void initLogging() {
-        initLogging(System.getProperty("jmri.log", "default.lcf"));
+        LoggingUtil.deprecationWarning(log, "initLogging");
+        LoggingUtil.warnOnce(log, "initLogging has no effect");
     }
 
     /**
@@ -85,80 +134,28 @@ public class Log4JUtil {
      * class to find the control file using a set of conventions.
      *
      * @param controlfile the logging control file
+     * @deprecated since 4.22.1; use
+     * {@link apps.util.Log4JUtil#initLogging(String)} instead
      */
-    static public void initLogging(String controlfile) {
-        initLog4J(controlfile);
+    @Deprecated
+    static public void initLogging(@Nonnull String controlfile) {
+        LoggingUtil.deprecationWarning(log, "initLogging");
+        LoggingUtil.warnOnce(log, "initLogging has no effect");
     }
 
     /**
-     * Initialize Log4J.
-     * <p>
-     * Use the logging control file specified in the <i>jmri.log</i> property
-     * or, if none, the default.lcf file. If the file is absolute and cannot be
-     * found, look for the file first in the settings directory and then in the
-     * installation directory.
+     * Return a block of OS and JVM information with the JMRI application
+     * version.
      *
-     * @param logFile the logging control file
-     * @see jmri.util.FileUtil#getPreferencesPath()
-     * @see jmri.util.FileUtil#getProgramPath()
+     * @param program name to be included
+     * @return the information block
+     * @deprecated since 4.22.1; use
+     * {@link apps.util.Log4JUtil#startupInfo(String)} instead
      */
-    static void initLog4J(String logFile) {
-        if (log4JSetUp) {
-            log.debug("initLog4J already initialized!");
-            return;
-        }
-        // Initialise JMRI System Console
-        // Need to do this before initialising log4j so that the new
-        // stdout and stderr streams are set-up and usable by the ConsoleAppender
-        SystemConsole.create();
-        log4JSetUp = true;
-
-        // initialize the java.util.logging to log4j bridge
-        initializeJavaUtilLogging();
-
-        // initialize log4j - from logging control file (lcf) only
-        try {
-            if (new File(logFile).isAbsolute() && new File(logFile).canRead()) {
-                configureLogging(logFile);
-            } else if (new File(FileUtil.getPreferencesPath() + logFile).canRead()) {
-                configureLogging(FileUtil.getPreferencesPath() + logFile);
-            } else if (new File(FileUtil.getProgramPath() + logFile).canRead()) {
-                configureLogging(FileUtil.getProgramPath() + logFile);
-            } else {
-                BasicConfigurator.configure();
-                org.apache.log4j.Logger.getRootLogger().setLevel(Level.WARN);
-            }
-        } catch (java.lang.NoSuchMethodError e) {
-            log.error("Exception starting logging", e);
-        } catch (IOException ex) {
-            BasicConfigurator.configure();
-            org.apache.log4j.Logger.getRootLogger().setLevel(Level.WARN);
-        }
-        // install default exception handler so uncaught exceptions are logged, not printed
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
-    }
-
-    static void initializeJavaUtilLogging() {
-        // Optionally remove existing handlers attached to j.u.l root logger
-        org.slf4j.bridge.SLF4JBridgeHandler.removeHandlersForRootLogger();  // (since SLF4J 1.6.5)
-
-        // add SLF4JBridgeHandler to j.u.l's root logger, should be done once during
-        // the initialization phase of your application
-        org.slf4j.bridge.SLF4JBridgeHandler.install();
-    }
-
-    @SuppressWarnings("unchecked")
-    static public String startupInfo(String program) {
-        log.info(jmriLog);
-        Enumeration<org.apache.log4j.Logger> e = org.apache.log4j.Logger.getRootLogger().getAllAppenders();
-        while (e.hasMoreElements()) {
-            Appender a = (Appender) e.nextElement();
-            if (a instanceof RollingFileAppender) {
-                log.info("This log is appended to file: " + ((RollingFileAppender) a).getFile());
-            } else if (a instanceof FileAppender) {
-                log.info("This log is stored in file: " + ((FileAppender) a).getFile());
-            }
-        }
+    @Deprecated
+    @Nonnull
+    static public String startupInfo(@Nonnull String program) {
+        LoggingUtil.deprecationWarning(log, "startupInfo");
         return (program + " version " + jmri.Version.name()
                 + " starts under Java " + System.getProperty("java.version", "<unknown>")
                 + " on " + System.getProperty("os.name", "<unknown>")
@@ -168,32 +165,40 @@ public class Log4JUtil {
     }
 
     /**
-     * Configure Log4J using the specified properties file.
+     * Shorten this stack trace in a Throwable to start with the first JMRI
+     * method.
      * <p>
-     * This method sets the system property <i>jmri.log.path</i> to the JMRI
-     * preferences directory if not specified.
+     * If you then pass it to Log4J for logging, it'll take up less space.
      *
-     * @see jmri.util.FileUtil#getPreferencesPath()
+     * @param <T> Throwable generic
+     * @param t   The Throwable to truncate and return
+     * @return The original object with truncated stack trace
+     * @deprecated since 4.22.1; use
+     * {@link LoggingUtil#shortenStacktrace(Throwable)} instead
      */
-    static private void configureLogging(String config) throws IOException {
-        Properties p = new Properties();
-        try (FileInputStream f = new FileInputStream(config)) {
-            p.load(f);
-        }
-
-        if (System.getProperty("jmri.log.path") == null || p.getProperty("jmri.log.path") == null) {
-            System.setProperty("jmri.log.path", FileUtil.getPreferencesPath() + "log" + File.separator);
-            p.put("jmri.log.path", System.getProperty("jmri.log.path"));
-        }
-        File logDir = new File(p.getProperty("jmri.log.path"));
-        // ensure the logging directory exists
-        // if it's not writable, the console will get the error from log4j, so
-        // we don't need to explictly test for that here, just make sure the
-        // directory is created if need be.
-        if (!logDir.exists()) {
-            Files.createDirectories(logDir.toPath());
-        }
-        PropertyConfigurator.configure(p);
+    @Deprecated
+    public @Nonnull
+    static <T extends Throwable> T shortenStacktrace(@Nonnull T t) {
+        LoggingUtil.deprecationWarning(log, "shortenStackTrace");
+        return LoggingUtil.shortenStacktrace(t);
     }
 
+    /**
+     * Shorten this stack trace in a Throwable to a fixed length.
+     * <p>
+     * If you then pass it to Log4J for logging, it'll take up less space.
+     *
+     * @param <T> Throwable generic
+     * @param t   The Throwable to truncate and return
+     * @param len The number of stack trace entries to keep.
+     * @return The original object with truncated stack trace
+     * @deprecated since 4.22.1; use
+     * {@link LoggingUtil#shortenStacktrace(Throwable, int)} instead
+     */
+    @Deprecated
+    @Nonnull
+    public static <T extends Throwable> T shortenStacktrace(@Nonnull T t, int len) {
+        LoggingUtil.deprecationWarning(log, "shortenStackTrace");
+        return LoggingUtil.shortenStacktrace(t, len);
+    }
 }

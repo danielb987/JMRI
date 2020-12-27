@@ -1,14 +1,11 @@
 package jmri.jmrix.ieee802154.xbee;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
- * <P>
- * Tests for XBeeNodeManager
- * </P>
+ * Tests for XBeeNodeManager.
+ *
  * @author Paul Bender Copyright (C) 2016
  */
 public class XBeeNodeManagerTest {
@@ -26,18 +23,18 @@ public class XBeeNodeManagerTest {
        Assert.assertNotNull(a);
    }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
         tc = new XBeeInterfaceScaffold();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         tc = null;
+        jmri.util.JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
         jmri.util.JUnitUtil.tearDown();
-    }
 
+    }
 
 }

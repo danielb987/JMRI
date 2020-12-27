@@ -40,7 +40,7 @@ abstract public class AbstractNetworkConnectionConfigXml extends AbstractConnect
 
         storeCommon(e, adapter);
 
-        if (adapter.getMdnsConfigure() == true) {
+        if (adapter.getMdnsConfigure()) {
             // if we are using mDNS for configuration, only save
             // the hostname if it was specified.
             if (adapter.getHostName() != null && !adapter.getHostName().equals("")) {
@@ -73,6 +73,8 @@ abstract public class AbstractNetworkConnectionConfigXml extends AbstractConnect
             }
         }
 
+        setOutputInterval(adapter, e);
+
         e.setAttribute("class", this.getClass().getName());
 
         extendElement(e);
@@ -81,7 +83,7 @@ abstract public class AbstractNetworkConnectionConfigXml extends AbstractConnect
     }
 
     /**
-     * Customizable method if you need to add anything more
+     * Customizable method if you need to add anything more.
      *
      * @param e Element being created, update as needed
      */
@@ -146,7 +148,7 @@ abstract public class AbstractNetworkConnectionConfigXml extends AbstractConnect
                 int port = shared.getAttribute("port").getIntValue();
                 adapter.setPort(port);
             } catch (org.jdom2.DataConversionException ex) {
-                log.warn("Could not parse port attribute");
+                log.warn("Could not parse port attribute: {}", shared.getAttribute("port"));
             } catch (NullPointerException ex) {  // considered normal if the attributes are not present
             }
         }
@@ -160,23 +162,32 @@ abstract public class AbstractNetworkConnectionConfigXml extends AbstractConnect
             return result;
         }
         try {
+            log.trace("start adapter.connect()");
             adapter.connect();
         } catch (Exception ex) {
+            log.debug("Caught exception in adapter.connect", ex);
             handleException(ex.getMessage(), "opening connection", null, null, ex);
             return false;
         }
 
         // if successful so far, go ahead and configure
+        log.trace("start adapter.configure()");
         adapter.configure();
 
         // once all the configure processing has happened, do any
         // extra config
+        log.trace("start unpackElement");
+
+        if (perNode.getAttribute("turnoutInterval") != null) { // migrate existing profile, defaults to 250 ms in memo
+            adapter.getSystemConnectionMemo().setOutputInterval(Integer.parseInt(perNode.getAttribute("turnoutInterval").getValue()));
+        }
+
         unpackElement(shared, perNode);
         return result;
     }
 
     /**
-     * Update static data from XML file
+     * Update static data from XML file.
      *
      * @param element Top level Element to unpack.
      */

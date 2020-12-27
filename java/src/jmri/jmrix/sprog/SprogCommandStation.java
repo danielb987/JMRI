@@ -1,5 +1,6 @@
 package jmri.jmrix.sprog;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
@@ -145,6 +146,7 @@ public class SprogCommandStation implements CommandStation, SprogListener, Runna
      * Clear all slots.
      */
     @SuppressWarnings("unused")
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification="was previously marked with @SuppressWarnings, reason unknown")
     private void clearAllSlots() {
         slots.stream().forEach((s) -> {
             s.clear();
@@ -171,8 +173,8 @@ public class SprogCommandStation implements CommandStation, SprogListener, Runna
     /**
      * Find a queue entry matching the address.
      *
-     * @param a int
-     * @return the slot or null if the address is not in the queue
+     * @param address The address to locate
+     * @return The slot or null if the address is not in the queue
      */
     private SprogSlot findAddress(DccLocoAddress address) {
         for (SprogSlot s : slots) {
@@ -295,15 +297,21 @@ public class SprogCommandStation implements CommandStation, SprogListener, Runna
     }
 
     /**
-     * Handle speed changes from throttle. As well as updating an existing slot,
+     * Handle speed changes from throttle.
+     * <p>
+     * As well as updating an existing slot,
      * or creating a new on where necessary, the speed command is added to the
-     * queue of packets to be sent immediately. This ensures minimum latency
+     * queue of packets to be sent immediately.This ensures minimum latency
      * between the user adjusting the throttle and a loco responding, rather
      * than possibly waiting for a complete traversal of all slots before the
      * new speed is actually sent to the hardware.
      *
+     * @param mode speed step mode.
+     * @param address loco address.
+     * @param spd speed to send.
+     * @param isForward true if forward, else false.
      */
-    public void setSpeed(int mode, DccLocoAddress address, int spd, boolean isForward) {
+    public void setSpeed(jmri.SpeedStepMode mode, DccLocoAddress address, int spd, boolean isForward) {
         SprogSlot s = this.findAddressSpeedPacket(address);
         if (s != null) { // May need an error here - if all slots are full!
             s.setSpeed(mode, address.getNumber(), address.isLongAddress(), spd, isForward);
@@ -355,17 +363,6 @@ public class SprogCommandStation implements CommandStation, SprogListener, Runna
         log.debug("Estop slot: {} for address: {}", s.getSlotNumber(), s.getAddr());
         s.eStop();
         notifySlotListeners(s);
-    }
-
-    /**
-     * Method to find the existing SlotManager object, if need be creating one.
-     *
-     * @return the SlotManager object
-     * @deprecated JMRI Since 4.4 instance() shouldn't be used, convert to JMRI multi-system support structure
-     */
-    @Deprecated
-    public final SprogCommandStation instance() {
-        return null;
     }
 
     // data members to hold contact with the slot listeners
@@ -497,6 +494,8 @@ public class SprogCommandStation implements CommandStation, SprogListener, Runna
      *
      * @return byte[] null if no packet
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS",
+        justification = "API defined by Sprog docs")
     private byte[] getNextPacket() {
         SprogSlot s;
 
@@ -566,13 +565,9 @@ public class SprogCommandStation implements CommandStation, SprogListener, Runna
      */
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
-        log.debug("propertyChange " + evt.getPropertyName() + " = " + evt.getNewValue());
-        if (evt.getPropertyName().equals("Power")) {
-            try {
-                powerState = powerMgr.getPower();
-            } catch (JmriException ex) {
-                log.error("Exception getting power state {}", ex);
-            }
+        log.debug("propertyChange {} = {}", evt.getPropertyName(), evt.getNewValue());
+        if (evt.getPropertyName().equals(PowerManager.POWER)) {
+            powerState = powerMgr.getPower();
             powerChanged = true;
         }
     }

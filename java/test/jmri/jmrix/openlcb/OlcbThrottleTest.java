@@ -2,23 +2,23 @@ package jmri.jmrix.openlcb;
 
 import jmri.DccLocoAddress;
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import jmri.jmrix.can.TestTrafficController;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
+import org.openlcb.*;
 
 /**
  * Tests for the jmri.jmrix.openlcb.OlcbThrottle class.
  *
- * @author	Bob Jacobsen Copyright 2008, 2010, 2011
+ * @author Bob Jacobsen Copyright 2008, 2010, 2011
  */
 public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         
-    private static OlcbSystemConnectionMemo m;
-    private static OlcbConfigurationManager ocm;
+    private static OlcbSystemConnectionMemo memo;
+    static Connection connection;
+    static NodeID nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
+    static java.util.ArrayList<Message> messages;
 
     /**
      * Test of getIsForward method, of class AbstractThrottle.
@@ -29,6 +29,16 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         boolean expResult = true;
         boolean result = instance.getIsForward();
         Assert.assertEquals(expResult, result);
+    }
+    
+    @Test
+    @Override
+    public void testOutOfRangeSetFunction(){
+        instance.setFunction(-1, true);
+        jmri.util.JUnitAppender.assertWarnMessageStartingWith("Unhandled update function number: -1");
+        
+        instance.setFunction(29, true);
+        jmri.util.JUnitAppender.assertWarnMessageStartingWith("Unhandled update function number: 29");
     }
 
     /**
@@ -349,6 +359,7 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
      * Test of sendFunctionGroup4 method, of class AbstractThrottle.
      */
     @Test
+    @Override
     public void testSendFunctionGroup4() {
     }
 
@@ -356,40 +367,62 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
      * Test of sendFunctionGroup5 method, of class AbstractThrottle.
      */
     @Test
+    @Override
     public void testSendFunctionGroup5() {
     }
 
 
-    // The minimal setup for log4J
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
-        instance = new OlcbThrottle(new DccLocoAddress(100,true),m,ocm);
+        instance = new OlcbThrottle(new DccLocoAddress(100,true), memo);
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         instance = null;
     }
 
-    @BeforeClass
-    public static void preClassInit() {
+    @BeforeAll
+    static public void preClassInit() {
         JUnitUtil.setUp();
-        m = new OlcbSystemConnectionMemo();
-        TestTrafficController tc = new TestTrafficController();
-        m.setTrafficController(tc);
-        ocm = new OlcbConfigurationManagerScaffold(m);
-        ocm.configureManagers();
+        JUnitUtil.initInternalTurnoutManager();
+        nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
+
+        messages = new java.util.ArrayList<>();
+        connection = new AbstractConnection() {
+            @Override
+            public void put(Message msg, Connection sender) {
+                messages.add(msg);
+            }
+        };
+
+        memo = new OlcbSystemConnectionMemo(); // this self-registers as 'M'
+        memo.setProtocol(jmri.jmrix.can.ConfigurationManager.OPENLCB);
+        memo.setInterface(new OlcbInterface(nodeID, connection) {
+            @Override
+            public Connection getOutputConnection() {
+                return connection;
+            }
+        });
+        memo.setTrafficController(new TestTrafficController());
+        memo.configureManagers();
+    
+        jmri.util.JUnitUtil.waitFor(()-> (messages.size()>0),"Initialization Complete message");
     }
 
-    @AfterClass
+    @AfterAll
     public static void postClassTearDown() {
-        if(m != null && m.getInterface() !=null ) {
-           m.getInterface().dispose();
+        if(memo != null && memo.getInterface() !=null ) {
+            memo.getTrafficController().terminateThreads();
+            memo.getInterface().dispose();
         }
-        m = null;
-        ocm = null;
+        memo = null;
+        connection = null;
+        nodeID = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
+
     }
 }

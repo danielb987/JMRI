@@ -41,8 +41,14 @@ public class MergTrafficController extends GcTrafficController {
     @Override
     public CanReply decodeFromHardware(AbstractMRReply m) {
         log.debug("Decoding from hardware");
-        MergReply gc = (MergReply) m;
+        MergReply gc = new MergReply();
+        try {
+            gc = (MergReply) m;
+        } catch(java.lang.ClassCastException cce){
+            log.error("{} is not a MergReply",m);
+        }
         CanReply ret = gc.createReply();
+        log.debug("CanReply created {} from MergReply {}", ret, gc);
         return ret;
     }
 

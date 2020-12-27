@@ -31,8 +31,7 @@ public class ConsistFunctionController implements ThrottleListener {
     @Override
     public void notifyThrottleFound(DccThrottle t) {
         if (log.isDebugEnabled()) {
-            log.debug("Lead Loco throttle found: " + t
-                    + ", for consist: " + throttleController.getCurrentAddressString());
+            log.debug("Lead Loco throttle found: {}, for consist: {}", t, throttleController.getCurrentAddressString());
         }
         throttle = t;
 
@@ -48,13 +47,14 @@ public class ConsistFunctionController implements ThrottleListener {
 
     @Override
     public void notifyFailedThrottleRequest(LocoAddress address, String reason) {
-        log.error("Throttle request failed for " + address + " because " + reason);
+        log.error("Throttle request failed for {} because {}", address, reason);
     }
 
+    /**
+     * No steal or share decisions made locally
+     */
     @Override
-    public void notifyStealThrottleRequired(LocoAddress address){
-        // this is an automatically stealing impelementation.
-        InstanceManager.throttleManagerInstance().stealThrottleRequest(address, this, true);
+    public void notifyDecisionRequired(jmri.LocoAddress address, DecisionType question) {
     }
 
     public void dispose() {
@@ -66,7 +66,7 @@ public class ConsistFunctionController implements ThrottleListener {
     }
 
     boolean requestThrottle(DccLocoAddress loco) {
-        return jmri.InstanceManager.throttleManagerInstance().requestThrottle(loco.getNumber(), loco.isLongAddress(), this);
+        return jmri.InstanceManager.throttleManagerInstance().requestThrottle(loco, this, true);
     }
 
     private final static Logger log = LoggerFactory.getLogger(ConsistFunctionController.class);

@@ -5,8 +5,7 @@ import java.util.NoSuchElementException;
 import jmri.jmrix.loconet.LnPacketizer;
 import jmri.jmrix.loconet.LocoNetMessage;
 import jmri.jmrix.loconet.LocoNetMessageException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 
 /**
  * Converts Stream-based I/O to/from LocoNet messages. The "LocoNetInterface"
@@ -36,8 +35,8 @@ public class IBLnPacketizer extends LnPacketizer {
     @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
             justification = "Only used during system initialization")
     public IBLnPacketizer() {
+        super(new LocoNetSystemConnectionMemo());
         echo = true;
-        //self = this;
     }
 
     /**
@@ -93,10 +92,7 @@ public class IBLnPacketizer extends LnPacketizer {
                             int byte2 = readNextByteFromUSB() & 0xFF;
                             //log.debug("Byte2: "+Integer.toHexString(byte2));
                             if ((byte2 & 0x80) != 0) {
-                                log.warn("LocoNet message with opCode: "
-                                        + Integer.toHexString(opCode)
-                                        + " ended early. Byte2 is also an opcode: "
-                                        + Integer.toHexString(byte2));
+                                log.warn("LocoNet message with opCode: {} ended early. Byte2 is also an opcode: {}", Integer.toHexString(opCode), Integer.toHexString(byte2));
                                 opCode = byte2;
                                 throw new LocoNetMessageException();
                             }
@@ -124,8 +120,7 @@ public class IBLnPacketizer extends LnPacketizer {
                                     /* N byte message */
 
                                     if (byte2 < 2) {
-                                        log.error("LocoNet message length invalid: " + byte2
-                                                + " opcode: " + Integer.toHexString(opCode));
+                                        log.error("LocoNet message length invalid: {} opcode: {}", byte2, Integer.toHexString(opCode));
                                     }
                                     msg = new LocoNetMessage(byte2);
                                     break;
@@ -142,12 +137,7 @@ public class IBLnPacketizer extends LnPacketizer {
                                 int b = readNextByteFromUSB() & 0xFF;
                                 //log.debug("char "+i+" is: "+Integer.toHexString(b));
                                 if ((b & 0x80) != 0) {
-                                    log.warn("LocoNet message with opCode: "
-                                            + Integer.toHexString(opCode)
-                                            + " ended early. Expected length: " + len
-                                            + " seen length: " + i
-                                            + " unexpected byte: "
-                                            + Integer.toHexString(b));
+                                    log.warn("LocoNet message with opCode: {} ended early. Expected length: {} seen length: {} unexpected byte: {}", Integer.toHexString(opCode), len, i, Integer.toHexString(b));
                                     opCode = b;
                                     throw new LocoNetMessageException();
                                 }
@@ -162,7 +152,7 @@ public class IBLnPacketizer extends LnPacketizer {
                     }
                     // check parity
                     if (!msg.checkParity()) {
-                        log.warn("Ignore Loconet packet with bad checksum: " + msg.toString());
+                        log.warn("Ignore LocoNet packet with bad checksum: {}", msg.toString());
                         throw new LocoNetMessageException();
                     }
                     // message is complete, dispatch it !!
@@ -188,11 +178,11 @@ public class IBLnPacketizer extends LnPacketizer {
                     // done with this one
                 } catch (LocoNetMessageException e) {
                     // just let it ride for now
-                    log.warn("run: unexpected LocoNetMessageException: " + e);
+                    log.warn("run: unexpected LocoNetMessageException: {}", e);
                 } // normally, we don't catch the unnamed Exception, but in this
                 // permanently running loop it seems wise.
                 catch (Exception e) {
-                    log.warn("run: unexpected Exception: " + e);
+                    log.warn("run: unexpected Exception: {}", e);
                 }
             } // end of permanent loop
         }
@@ -245,7 +235,7 @@ public class IBLnPacketizer extends LnPacketizer {
                             log.warn("sendLocoNetMessage: no connection established");
                         }
                     } catch (java.io.IOException e) {
-                        log.warn("sendLocoNetMessage: IOException: " + e.toString());
+                        log.warn("sendLocoNetMessage: IOException: {}", e.toString());
                     }
                 } catch (NoSuchElementException e) {
                     // message queue was empty, wait for input
@@ -265,10 +255,7 @@ public class IBLnPacketizer extends LnPacketizer {
     @Override
     public void startThreads() {
         int priority = Thread.currentThread().getPriority();
-        log.debug("startThreads current priority = " + priority
-                + " max available = " + Thread.MAX_PRIORITY
-                + " default = " + Thread.NORM_PRIORITY
-                + " min available = " + Thread.MIN_PRIORITY);
+        log.debug("startThreads current priority = {} max available = " + Thread.MAX_PRIORITY + " default = " + Thread.NORM_PRIORITY + " min available = " + Thread.MIN_PRIORITY, priority);
 
         // make sure that the xmt priority is no lower than the current priority
         int xmtpriority = (Thread.MAX_PRIORITY - 1 > priority ? Thread.MAX_PRIORITY - 1 : Thread.MAX_PRIORITY);
@@ -277,7 +264,7 @@ public class IBLnPacketizer extends LnPacketizer {
             xmtHandler = new XmtHandler();
         }
         Thread xmtThread = new Thread(xmtHandler, "LocoNet Intellibox transmit handler");
-        log.debug("Xmt thread starts at priority " + xmtpriority);
+        log.debug("Xmt thread starts at priority {}", xmtpriority);
         xmtThread.setDaemon(true);
         xmtThread.setPriority(Thread.MAX_PRIORITY - 1);
         xmtThread.start();
@@ -293,5 +280,5 @@ public class IBLnPacketizer extends LnPacketizer {
 
     }
 
-    private final static Logger log = LoggerFactory.getLogger(IBLnPacketizer.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IBLnPacketizer.class);
 }

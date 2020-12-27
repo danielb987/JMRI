@@ -2,18 +2,18 @@ package jmri.jmrit.display;
 
 import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import jmri.util.JUnitUtil;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * TurnoutIconTest.java
  *
- * @author	Bob Jacobsen
+ * @author Bob Jacobsen
  */
 public class TurnoutIconTest extends PositionableIconTest {
 
@@ -127,12 +127,10 @@ public class TurnoutIconTest extends PositionableIconTest {
         to.propertyChange(e);
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
-        JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetProfileManager();
+        super.setUp();
         if (!GraphicsEnvironment.isHeadless()) {
            editor = new jmri.jmrit.display.panelEditor.PanelEditor("Test TurnoutIcon Panel");
            Editor e = new EditorScaffold();

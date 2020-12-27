@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * object
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2002
-  */
+ */
 public class PacketGenAction extends AbstractAction {
 
     jmri.jmrix.ieee802154.IEEE802154SystemConnectionMemo _memo = null;
@@ -43,15 +43,14 @@ public class PacketGenAction extends AbstractAction {
         try {
             f.initComponents();
         } catch (Exception ex) {
-            log.error("Exception: " + ex.toString());
+            log.error("Exception: {}", ex.toString());
         }
         f.setVisible(true);
 
         // connect to the TrafficController
         f.connect(_memo.getTrafficController());
     }
+
     private final static Logger log = LoggerFactory.getLogger(PacketGenAction.class);
+
 }
-
-
-

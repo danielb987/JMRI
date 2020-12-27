@@ -110,12 +110,16 @@ public class LnSensorAddress {
     }
 
     void reportParseError(String s) {
-        log.error("Can't parse sensor address string: " + s);
+        log.error("Can't parse sensor address string: {}", s);
     }
 
     /**
      * Update a LocoNet message to have this address.
+     * 
+     * It is assumed that the sensor address may be encoded into bytes 1 and 2 of the 
+     * message.
      *
+     * @param m a LocoNetmessage to be updated to contain this object's sensor address
      */
     public void insertAddress(LocoNetMessage m) {
         m.setElement(1, getLowBits());
@@ -219,7 +223,7 @@ public class LnSensorAddress {
                 break;
             default:
                 digit = "X";
-                log.error("Unexpected digit value: " + asInt());
+                log.error("Unexpected digit value: {}", asInt());
         }
         switch ((asInt() & 0x0C) / 4) {
             case 0:
@@ -236,7 +240,7 @@ public class LnSensorAddress {
                 break;
             default:
                 letter = "X";
-                log.error("Unexpected letter value: " + asInt());
+                log.error("Unexpected letter value: {}", asInt());
         }
         return prefix + "S" + (asInt() / 16) + letter + digit;
     }

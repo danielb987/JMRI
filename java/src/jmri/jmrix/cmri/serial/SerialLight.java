@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * SerialLight.java
  *
  * Implementation of the Light Object for C/MRI
- * <P>
+ * <p>
  * Based in part on SerialTurnout.java
  *
  * @author Dave Duchamp Copyright (C) 2004
@@ -23,8 +23,10 @@ public class SerialLight extends AbstractLight {
 
     /**
      * Create a Light object, with only system name.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in SerialLightManager
+     * @param systemName light system name.
+     * @param memo system connection.
      */
     public SerialLight(String systemName,CMRISystemConnectionMemo memo) {
         super(systemName);
@@ -35,8 +37,11 @@ public class SerialLight extends AbstractLight {
 
     /**
      * Create a Light object, with both system and user names.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in SerialLightManager
+     * @param systemName light system name.
+     * @param userName light username.
+     * @param memo system connection.
      */
     public SerialLight(String systemName, String userName,CMRISystemConnectionMemo memo) {
         super(systemName, userName);
@@ -76,7 +81,7 @@ public class SerialLight extends AbstractLight {
             } else if (newState == OFF) {
                 mNode.setOutputBit(mBit, true);
             } else {
-                log.warn("illegal state requested for Light: " + getSystemName());
+                log.warn("illegal state requested for Light: {}", getSystemName());
             }
         }
     }

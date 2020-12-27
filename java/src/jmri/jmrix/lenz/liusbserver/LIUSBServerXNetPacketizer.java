@@ -1,6 +1,7 @@
 package jmri.jmrix.lenz.liusbserver;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.nio.charset.StandardCharsets;
 import jmri.jmrix.AbstractMRListener;
 import jmri.jmrix.AbstractMRMessage;
 import jmri.jmrix.lenz.XNetPacketizer;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an extension of the XNetPacketizer to handle the device specific
  * requirements of the LIUSB Server.
- * <P>
+ * <p>
  * In particular, LIUSBServerXNetPacketizer counts the number of commands
  * received.
  *
@@ -47,7 +48,7 @@ public class LIUSBServerXNetPacketizer extends XNetPacketizer {
             if (ostream != null) {
                 while (m.getRetries() >= 0) {
                     if (portReadyToSend(controller)) {
-                        ostream.write((m + "\n\r").getBytes(java.nio.charset.Charset.forName("UTF-8")));
+                        ostream.write((m + "\n\r").getBytes(StandardCharsets.UTF_8));
                         ostream.flush();
                         log.debug("written");
                         break;
@@ -62,7 +63,7 @@ public class LIUSBServerXNetPacketizer extends XNetPacketizer {
                             }
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt(); // retain if needed later
-                            log.error("retry wait interupted");
+                            log.error("retry wait interrupted");
                         }
                     } else {
                         log.warn("sendMessage: port not ready for data sending: {}", m.toString());
@@ -79,6 +80,6 @@ public class LIUSBServerXNetPacketizer extends XNetPacketizer {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LIUSBServerXNetPacketizer.class);
+    private static final Logger log = LoggerFactory.getLogger(LIUSBServerXNetPacketizer.class);
 
 }

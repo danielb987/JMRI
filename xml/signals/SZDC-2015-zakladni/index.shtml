@@ -3,7 +3,7 @@
 <head>
 <!-- Copyright ($Author: jacobsen $) 2009 -->
 <!-- $Id: index.shtml 25755 2014-05-03 21:25:55Z jacobsen $ -->
-<title>JMRI: Czechoslovakia ČSD signal definition</title>
+<title>JMRI: Czech SŽDC signal definition</title>
 
 <!-- Style -->
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" >
@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<!--#include virtual="/Header" -->
+<!--#include virtual="/Header.shtml" -->
   <div class="nomenu" id="mBody">
     <div id="mainContent">
 
@@ -57,11 +57,13 @@ Signal Mast definitions:
     <li><a href="appearance-abs.xml">Autoblok</a> &ndash; Automatic block signaling
     
     <li><a href="appearance-shunting.xml">Seřaďovací návěstidla</a> &ndash; Shunting signals
+    
+    <li><a href="appearance-test.xml">Test</a> &ndash; Test
 </ul>
 
 
     </div>
 </div>
-<!--#include virtual="/Footer" -->
+<!--#include virtual="/Footer.shtml" -->
 </body>
 </html>

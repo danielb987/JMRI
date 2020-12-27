@@ -31,16 +31,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import jmri.UserPreferencesManager;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.TextAreaFIFO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to direct standard output and standard error to a JTextArea. This
- * allows for easier clipboard operations etc.
+ * Class to direct standard output and standard error to a ( JTextArea ) TextAreaFIFO . 
+ * This allows for easier clipboard operations etc.
  * <hr>
  * This file is part of JMRI.
  * <p>
@@ -62,7 +61,7 @@ public final class SystemConsole extends JTextArea {
     private static final int STD_ERR = 1;
     private static final int STD_OUT = 2;
 
-    private final JTextArea console;
+    private final TextAreaFIFO console;
 
     private final PrintStream originalOut;
     private final PrintStream originalErr;
@@ -90,7 +89,7 @@ public final class SystemConsole extends JTextArea {
 
     private int fontStyle = Font.PLAIN;
 
-    private String fontFamily = "Monospaced";  //NOI18N
+    private final String fontFamily = "Monospaced";  // NOI18N
 
     public static final int WRAP_STYLE_NONE = 0x00;
     public static final int WRAP_STYLE_LINE = 0x01;
@@ -105,13 +104,16 @@ public final class SystemConsole extends JTextArea {
     private JCheckBox autoScroll;
     private JCheckBox alwaysOnTop;
 
-    private final String alwaysScrollCheck = this.getClass().getName() + ".alwaysScroll"; //NOI18N
-    private final String alwaysOnTopCheck = this.getClass().getName() + ".alwaysOnTop";   //NOI18N
+    private final String alwaysScrollCheck = this.getClass().getName() + ".alwaysScroll"; // NOI18N
+    private final String alwaysOnTopCheck = this.getClass().getName() + ".alwaysOnTop";   // NOI18N
+
+    final public int MAX_CONSOLE_LINES = 5000;  // public, not static so can be modified via a script
 
     /**
      * Initialise the system console ensuring both System.out and System.err
      * streams are re-directed to the consoles JTextArea
      */
+    
     public static void create() {
 
         if (instance == null) {
@@ -132,7 +134,7 @@ public final class SystemConsole extends JTextArea {
         originalErr = System.err;
 
         // Create the console text area
-        console = new JTextArea();
+        console = new TextAreaFIFO(MAX_CONSOLE_LINES);
 
         // Setup the console text area
         console.setRows(20);
@@ -146,7 +148,7 @@ public final class SystemConsole extends JTextArea {
         this.errorStream = new PrintStream(outStream(STD_ERR), true);
 
         // Then redirect to it
-        redirectSystemStreams();
+        redirectSystemStreams(outputStream, errorStream);
     }
 
     /**
@@ -159,6 +161,15 @@ public final class SystemConsole extends JTextArea {
             SystemConsole.create();
         }
         return instance;
+    }
+
+    /**
+     * Test if the default instance exists.
+     * 
+     * @return true if default instance exists; false otherwise
+     */
+    public static boolean isCreated() {
+        return instance != null;
     }
 
     /**
@@ -185,7 +196,7 @@ public final class SystemConsole extends JTextArea {
                     // return until the frame layout is completed
                     SwingUtilities.invokeAndWait(this::createFrame);
                 } catch (InterruptedException | InvocationTargetException ex) {
-                    log.error("Exception creating system console frame: " + ex);
+                    log.error("Exception creating system console frame: {}", ex);
                 }
             }
             log.debug("Frame created");
@@ -236,6 +247,7 @@ public final class SystemConsole extends JTextArea {
         JButton close = new JButton(Bundle.getMessage("ButtonClose"));
         close.addActionListener((ActionEvent event) -> {
             frame.setVisible(false);
+            console.dispose();
             frame.dispose();
         });
         p.add(close);
@@ -250,8 +262,9 @@ public final class SystemConsole extends JTextArea {
         // Use the inverted SimplePreferenceState to default as enabled
         p.add(autoScroll = new JCheckBox(Bundle.getMessage("CheckBoxAutoScroll"),
                 !pref.getSimplePreferenceState(alwaysScrollCheck)));
+        console.setAutoScroll(autoScroll.isSelected());
         autoScroll.addActionListener((ActionEvent event) -> {
-            doAutoScroll(console, autoScroll.isSelected());
+            console.setAutoScroll(autoScroll.isSelected());
             pref.setSimplePreferenceState(alwaysScrollCheck, !autoScroll.isSelected());
         });
 
@@ -334,30 +347,6 @@ public final class SystemConsole extends JTextArea {
         console.addMouseListener(popupListener);
         frame.addMouseListener(popupListener);
 
-        // Add document listener to scroll to end when modified if required
-        console.getDocument().addDocumentListener(new DocumentListener() {
-
-            // References to the JTextArea and JCheckBox
-            // of this instantiation
-            JTextArea ta = console;
-            JCheckBox chk = autoScroll;
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                doAutoScroll(ta, chk.isSelected());
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                doAutoScroll(ta, chk.isSelected());
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                doAutoScroll(ta, chk.isSelected());
-            }
-        });
-
         // Add the button panel to the frame & then arrange everything
         frame.add(p, BorderLayout.SOUTH);
         frame.pack();
@@ -381,26 +370,6 @@ public final class SystemConsole extends JTextArea {
         // As append method is thread safe, we don't need to run this on
         // the Swing dispatch thread
         console.append(text);
-        
-        // but we do have to run this on the Swing thread
-        jmri.util.ThreadingUtil.runOnGUIEventually( ()->{ truncateTextArea(); } );
-    }
-
-    /**
-     * Method to position caret at end of JTextArea ta when scroll true.
-     *
-     * @param ta     Reference to JTextArea
-     * @param scroll True to move to end
-     */
-    private void doAutoScroll(final JTextArea ta, final boolean scroll) {
-        SwingUtilities.invokeLater(() -> {
-            int len = ta.getText().length();
-            if (scroll) {
-                ta.setCaretPosition(len);
-            } else if (ta.getCaretPosition() == len && len > 0) {
-                ta.setCaretPosition(len - 1);
-            }
-        });
     }
 
     /**
@@ -435,25 +404,11 @@ public final class SystemConsole extends JTextArea {
      */
     @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING",
             justification = "Can only be called from the same instance so default encoding OK")
-    private void redirectSystemStreams() {
-        System.setOut(this.getOutputStream());
-        System.setErr(this.getErrorStream());
+    private void redirectSystemStreams(PrintStream out, PrintStream err) {
+        System.setOut(out);
+        System.setErr(err);
     }
 
-    final public int MAX_CONSOLE_LINES = 5000;  // public, not static so can be modified via a script
-    public void truncateTextArea() {
-        int numLinesToRemove = console.getLineCount() -1 - MAX_CONSOLE_LINES; // There's a blank at the end
-        if(numLinesToRemove > 0) {
-            try {
-                int posOfLastLineToRemove = console.getLineEndOffset(numLinesToRemove - 1);
-                console.replaceRange("",0,posOfLastLineToRemove);
-            }
-            catch (javax.swing.text.BadLocationException ex) {
-                log.error("trouble truncating SystemConsole window", ex);
-            }
-        }
-    }
-    
     /**
      * Set the console wrapping style to one of the following:
      *
@@ -523,10 +478,22 @@ public final class SystemConsole extends JTextArea {
         updateFont(fontFamily, fontStyle, fontSize);
     }
 
+    /**
+     * 
+     * @param family the new font family
+     * @deprecated since 4.19.6 without replacement
+     */
+    @Deprecated
     public void setFontFamily(String family) {
-        updateFont((fontFamily = family), fontStyle, fontSize);
+        // does nothing
     }
 
+    /**
+     * 
+     * @return the current font family
+     * @deprecated since 4.19.6 without replacement
+     */
+    @Deprecated
     public String getFontFamily() {
         return fontFamily;
     }
@@ -622,7 +589,21 @@ public final class SystemConsole extends JTextArea {
     public PrintStream getErrorStream() {
         return this.errorStream;
     }
-    
+
+    /**
+     * Stop logging System output and error streams to the console.
+     */
+    public void close() {
+        redirectSystemStreams(originalOut, originalErr);
+    }
+
+    /**
+     * Start logging System output and error streams to the console.
+     */
+    public void open() {
+        redirectSystemStreams(getOutputStream(), getErrorStream());
+    }
+
     /**
      * Retrieve the current console colour scheme
      *

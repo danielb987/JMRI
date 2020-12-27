@@ -3,19 +3,18 @@ package jmri.util;
 /*
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
- * @author			Mark Underwood Copyright (C) 2011
+ * @author Mark Underwood Copyright (C) 2011
  */
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -140,7 +139,7 @@ public class PhysicalLocation extends Vector3f {
             Pattern p = Pattern.compile(syntax);
             Matcher m = p.matcher(pos);
             if (!m.matches()) {
-                log.error("String does not match a valid position pattern. syntax= " + syntax + " string = " + pos);
+                log.error("String does not match a valid position pattern. syntax= {} string = {}", syntax, pos);
                 return (null);
             }
             // ++debug
@@ -162,13 +161,13 @@ public class PhysicalLocation extends Vector3f {
                     Float.parseFloat(zs),
                     is_tunnel));
         } catch (PatternSyntaxException e) {
-            log.error("Malformed listener position syntax! " + syntax);
+            log.error("Malformed listener position syntax! {}", syntax);
             return (null);
         } catch (IllegalStateException e) {
-            log.error("Group called before match operation executed syntax=" + syntax + " string= " + pos + " " + e.toString());
+            log.error("Group called before match operation executed syntax={} string= {} {}", syntax, pos, e.toString());
             return (null);
         } catch (IndexOutOfBoundsException e) {
-            log.error("Index out of bounds " + syntax + " string= " + pos + " " + e.toString());
+            log.error("Index out of bounds {} string= {} {}", syntax, pos, e.toString());
             return (null);
         }
     }

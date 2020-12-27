@@ -1,20 +1,17 @@
 package jmri.jmrit.operations.rollingstock;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+
+import javax.swing.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.locations.Location;
@@ -27,8 +24,6 @@ import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Frame for user to place RollingStock on the layout
@@ -36,16 +31,12 @@ import org.slf4j.LoggerFactory;
  * @author Dan Boudreau Copyright (C) 2010, 2011, 2012, 2013
  * @param <T> the type of RollingStock supported by this frame
  */
-public class RollingStockSetFrame<T extends RollingStock> extends OperationsFrame implements java.beans.PropertyChangeListener {
-
-    protected static final ResourceBundle rb = ResourceBundle
-            .getBundle("jmri.jmrit.operations.rollingstock.cars.JmritOperationsCarsBundle");
+public abstract class RollingStockSetFrame<T extends RollingStock> extends OperationsFrame implements java.beans.PropertyChangeListener {
 
     protected LocationManager locationManager = InstanceManager.getDefault(LocationManager.class);
     protected TrainManager trainManager = InstanceManager.getDefault(TrainManager.class);
 
     RollingStock _rs;
-    protected boolean _disableComboBoxUpdate = false;
 
     // labels
     JLabel textRoad = new JLabel();
@@ -56,13 +47,13 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
     protected JButton ignoreAllButton = new JButton(Bundle.getMessage("IgnoreAll"));
 
     // combo boxes
-    protected JComboBox<Location> locationBox = InstanceManager.getDefault(LocationManager.class).getComboBox();
+    protected JComboBox<Location> locationBox = locationManager.getComboBox();
     protected JComboBox<Track> trackLocationBox = new JComboBox<>();
-    protected JComboBox<Location> destinationBox = InstanceManager.getDefault(LocationManager.class).getComboBox();
+    protected JComboBox<Location> destinationBox = locationManager.getComboBox();
     protected JComboBox<Track> trackDestinationBox = new JComboBox<>();
-    protected JComboBox<Location> finalDestinationBox = InstanceManager.getDefault(LocationManager.class).getComboBox();
+    protected JComboBox<Location> finalDestinationBox = locationManager.getComboBox();
     protected JComboBox<Track> finalDestTrackBox = new JComboBox<>();
-    protected JComboBox<Train> trainBox = InstanceManager.getDefault(TrainManager.class).getTrainComboBox();
+    protected JComboBox<Train> trainBox = trainManager.getTrainComboBox();
 
     // check boxes
     protected JCheckBox autoTrackCheckBox = new JCheckBox(Bundle.getMessage("Auto"));
@@ -89,10 +80,6 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
     private static boolean autoDestinationTrackCheckBoxSelected = false;
     private static boolean autoFinalDestTrackCheckBoxSelected = false;
     private static boolean autoTrainCheckBoxSelected = false;
-
-    public RollingStockSetFrame() {
-        super();
-    }
 
     public RollingStockSetFrame(String title) {
         super(title);
@@ -245,7 +232,7 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
         ignoreTrainCheckBox.setToolTipText(Bundle.getMessage("TipIgnore"));
 
         // get notified if combo box gets modified
-        InstanceManager.getDefault(LocationManager.class).addPropertyChangeListener(this);
+        locationManager.addPropertyChangeListener(this);
         // get notified if train combo box gets modified
         trainManager.addPropertyChangeListener(this);
 
@@ -258,7 +245,7 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
         textType.setText(_rs.getTypeName());
         locationUnknownCheckBox.setSelected(_rs.isLocationUnknown());
         outOfServiceCheckBox.setSelected(_rs.isOutOfService());
-        updateComboBoxes();  // load the location, destination, and final destination combo boxes
+        updateComboBoxes(); // load the location, destination, and final destination combo boxes
         updateTrainComboBox(); // load the train combo box
         enableComponents(!locationUnknownCheckBox.isSelected());
         // has the program generated a pick up and set out for this rolling stock?
@@ -284,18 +271,14 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
     @Override
     public void buttonActionPerformed(java.awt.event.ActionEvent ae) {
         if (ae.getSource() == saveButton) {
-            _disableComboBoxUpdate = true; // need to stop property changes while we update
             save();
-            _disableComboBoxUpdate = false;
             if (Setup.isCloseWindowOnSaveEnabled()) {
                 dispose();
             }
         }
     }
 
-    protected ResourceBundle getRb() {
-        return rb;
-    }
+    abstract protected ResourceBundle getRb();
 
     protected boolean save() {
         return change(_rs);
@@ -324,8 +307,7 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
             return false;
         }
         // check to see if rolling stock is in staging and out of service (also location unknown)
-        if (outOfServiceCheckBox.isSelected() && rs.getTrack() != null
-                && rs.getTrack().isStaging()) {
+        if (outOfServiceCheckBox.isSelected() && rs.getTrack() != null && rs.getTrack().isStaging()) {
             JOptionPane.showMessageDialog(this, getRb().getString("rsNeedToRemoveStaging"), getRb()
                     .getString("rsInStaging"), JOptionPane.WARNING_MESSAGE);
             // clear the rolling stock's location
@@ -339,35 +321,50 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
             return false;
         }
 
+        updateTrainComboBox();
+
+        // check if train can service this rolling stock
         if (!ignoreTrainCheckBox.isSelected()) {
             Train train = rs.getTrain();
             if (train != null) {
                 // determine if train services this rs's type
-                if (!train.acceptsTypeName(rs.getTypeName())) {
+                if (!train.isTypeNameAccepted(rs.getTypeName())) {
                     JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                             "rsTrainNotServType"), new Object[]{rs.getTypeName(), train.getName()}), getRb()
-                            .getString("rsNotMove"), JOptionPane.ERROR_MESSAGE);
+                                    .getString("rsNotMove"),
+                            JOptionPane.ERROR_MESSAGE);
+                    // prevent rs from being picked up and delivered
+                    setRouteLocationAndDestination(rs, train, null, null);
                     return false;
                 }
                 // determine if train services this rs's road
-                if (!train.acceptsRoadName(rs.getRoadName())) {
+                if (!train.isRoadNameAccepted(rs.getRoadName())) {
                     JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                             "rsTrainNotServRoad"), new Object[]{rs.getRoadName(), train.getName()}), getRb()
-                            .getString("rsNotMove"), JOptionPane.ERROR_MESSAGE);
+                                    .getString("rsNotMove"),
+                            JOptionPane.ERROR_MESSAGE);
+                    // prevent rs from being picked up and delivered
+                    setRouteLocationAndDestination(rs, train, null, null);
                     return false;
                 }
                 // determine if train services this rs's built date
-                if (!train.acceptsBuiltDate(rs.getBuilt())) {
+                if (!train.isBuiltDateAccepted(rs.getBuilt())) {
                     JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                             "rsTrainNotServBuilt"), new Object[]{rs.getBuilt(), train.getName()}), getRb()
-                            .getString("rsNotMove"), JOptionPane.ERROR_MESSAGE);
+                                    .getString("rsNotMove"),
+                            JOptionPane.ERROR_MESSAGE);
+                    // prevent rs from being picked up and delivered
+                    setRouteLocationAndDestination(rs, train, null, null);
                     return false;
                 }
-                // determine if train services this rs's built date
-                if (!train.acceptsOwnerName(rs.getOwner())) {
+                // determine if train services this rs's owner
+                if (!train.isOwnerNameAccepted(rs.getOwner())) {
                     JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                             "rsTrainNotServOwner"), new Object[]{rs.getOwner(), train.getName()}), getRb()
-                            .getString("rsNotMove"), JOptionPane.ERROR_MESSAGE);
+                                    .getString("rsNotMove"),
+                            JOptionPane.ERROR_MESSAGE);
+                    // prevent rs from being picked up and delivered
+                    setRouteLocationAndDestination(rs, train, null, null);
                     return false;
                 }
                 // determine if train services the location and destination selected by user
@@ -384,12 +381,16 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                         JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                                 "rsLocNotServ"), new Object[]{rs.getLocationName(), train.getName()}),
                                 getRb().getString("rsNotMove"), JOptionPane.ERROR_MESSAGE);
+                        // prevent rs from being picked up and delivered
+                        setRouteLocationAndDestination(rs, train, null, null);
                         return false;
                     }
                     if (rd == null && !rs.getDestinationName().equals(RollingStock.NONE)) {
                         JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                                 "rsDestNotServ"), new Object[]{rs.getDestinationName(), train.getName()}),
                                 getRb().getString("rsNotMove"), JOptionPane.ERROR_MESSAGE);
+                        // prevent rs from being picked up and delivered
+                        setRouteLocationAndDestination(rs, train, null, null);
                         return false;
                     }
                     if (rd != null && route != null) {
@@ -400,21 +401,21 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                         boolean foundDes = false;
                         for (RouteLocation rlocation : routeSequence) {
                             if (train.isTrainEnRoute() && !foundTrainLoc) {
-                                if (train.getCurrentLocation() == rlocation) {
-                                    foundTrainLoc = true;
-                                } else {
+                                if (train.getCurrentRouteLocation() != rlocation) {
                                     continue;
                                 }
+                                foundTrainLoc = true;
                             }
                             if (rs.getLocationName().equals(rlocation.getName())) {
                                 rl = rlocation;
                                 foundLoc = true;
                             }
-                            if (rs.getDestinationName().equals(rlocation.getName())
-                                    && foundLoc) {
+                            if (rs.getDestinationName().equals(rlocation.getName()) && foundLoc) {
                                 rd = rlocation;
                                 foundDes = true;
-                                if (rs.getDestinationTrack() != null && (rlocation.getTrainDirection() & rs.getDestinationTrack().getTrainDirections()) == 0) {
+                                if (rs.getDestinationTrack() != null &&
+                                        (rlocation.getTrainDirection() &
+                                                rs.getDestinationTrack().getTrainDirections()) == 0) {
                                     continue; // destination track isn't serviced by the train's direction
                                 }
                                 break;
@@ -422,16 +423,24 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                         }
                         if (!foundLoc) {
                             JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
-                                    "rsTrainEnRoute"), new Object[]{rs.toString(), train.getName(),
-                                        rs.getLocationName()}), getRb().getString("rsNotMove"),
+                                    "rsTrainEnRoute"),
+                                    new Object[]{rs.toString(), train.getName(),
+                                            rs.getLocationName()}),
+                                    getRb().getString("rsNotMove"),
                                     JOptionPane.ERROR_MESSAGE);
+                            // prevent rs from being picked up and delivered
+                            setRouteLocationAndDestination(rs, train, null, null);
                             return false;
                         }
                         if (!foundDes) {
                             JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
-                                    "rsLocOrder"), new Object[]{rs.getDestinationName(),
-                                        rs.getLocationName(), train.getName()}), getRb().getString("rsNotMove"),
+                                    "rsLocOrder"),
+                                    new Object[]{rs.getDestinationName(),
+                                            rs.getLocationName(), train.getName()}),
+                                    getRb().getString("rsNotMove"),
                                     JOptionPane.ERROR_MESSAGE);
+                            // prevent rs from being picked up and delivered
+                            setRouteLocationAndDestination(rs, train, null, null);
                             return false;
                         }
                     }
@@ -452,8 +461,10 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                     return false;
                 }
                 // update location only if it has changed
-                if (rs.getLocation() == null || !rs.getLocation().equals(locationBox.getSelectedItem())
-                        || rs.getTrack() == null || !rs.getTrack().equals(trackLocationBox.getSelectedItem())) {
+                if (rs.getLocation() == null ||
+                        !rs.getLocation().equals(locationBox.getSelectedItem()) ||
+                        rs.getTrack() == null ||
+                        !rs.getTrack().equals(trackLocationBox.getSelectedItem())) {
                     String status = rs.setLocation((Location) locationBox.getSelectedItem(),
                             (Track) trackLocationBox.getSelectedItem());
                     rs.setLastRouteId(RollingStock.NONE); // clear last route id
@@ -461,11 +472,14 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                         log.debug("Can't set rs's location because of {}", status);
                         JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                                 "rsCanNotLocMsg"), new Object[]{rs.toString(), status}), getRb()
-                                .getString("rsCanNotLoc"), JOptionPane.ERROR_MESSAGE);
+                                        .getString("rsCanNotLoc"),
+                                JOptionPane.ERROR_MESSAGE);
                         // does the user want to force the rolling stock to this track?
                         int results = JOptionPane.showOptionDialog(this, MessageFormat.format(getRb()
-                                .getString("rsForce"), new Object[]{rs.toString(),
-                                    (Track) trackLocationBox.getSelectedItem()}), MessageFormat.format(getRb()
+                                .getString("rsForce"),
+                                new Object[]{rs.toString(),
+                                        (Track) trackLocationBox.getSelectedItem()}),
+                                MessageFormat.format(getRb()
                                         .getString("rsOverride"), new Object[]{status}),
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
                         if (results == JOptionPane.YES_OPTION) {
@@ -475,8 +489,6 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                         } else {
                             return false;
                         }
-                    } else {
-                        updateTrainComboBox();
                     }
                 }
             }
@@ -514,17 +526,21 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                 }
                 log.debug("changeDestination: {}, ({})", destinationBox.getSelectedItem(),
                         destTrack);
-                if (destTrack != null && rs.getDestinationTrack() != destTrack
-                        && destTrack.isStaging()
-                        && (rs.getTrain() == null || !rs.getTrain().isBuilt())) {
+                if (destTrack != null &&
+                        rs.getDestinationTrack() != destTrack &&
+                        destTrack.isStaging() &&
+                        (rs.getTrain() == null || !rs.getTrain().isBuilt())) {
                     log.debug("Destination track ({}) is staging", destTrack.getName());
                     JOptionPane.showMessageDialog(this, getRb().getString("rsDoNotSelectStaging"), getRb()
                             .getString("rsCanNotDest"), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 // determine is user changed the destination track and is part of train
-                if (destTrack != null && rs.getDestinationTrack() != destTrack && rs.getTrain() != null
-                        && rs.getTrain().isBuilt() && rs.getRouteLocation() != null) {
+                if (destTrack != null &&
+                        rs.getDestinationTrack() != destTrack &&
+                        rs.getTrain() != null &&
+                        rs.getTrain().isBuilt() &&
+                        rs.getRouteLocation() != null) {
                     log.debug("Rolling stock ({}) has new track destination in built train ({})",
                             rs.toString(), rs.getTrainName());
                     rs.getTrain().setModified(true);
@@ -534,47 +550,53 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
                     log.debug("Can't set rs's destination because of {}", status);
                     JOptionPane.showMessageDialog(this, MessageFormat.format(getRb().getString(
                             "rsCanNotDestMsg"), new Object[]{rs.toString(), status}), getRb().getString(
-                                    "rsCanNotDest"), JOptionPane.ERROR_MESSAGE);
+                                    "rsCanNotDest"),
+                            JOptionPane.ERROR_MESSAGE);
                     return false;
-                } else {
-                    updateTrainComboBox();
                 }
             }
         }
         return true;
     }
 
+    /*
+     * Checks to see if rolling stock's location or destination has changed, and
+     * if so, removes the rolling stock from the train. Also allows user to add or
+     * remove rolling stock to or from train.
+     */
     protected void checkTrain(RollingStock rs) {
-        // determine if train is built and car is part of train or wants to be part of the train
         Train train = rs.getTrain();
         if (train != null && train.isBuilt()) {
-            if (rs.getRouteLocation() != null
-                    && rs.getRouteDestination() != null
-                    && rl != null
-                    && rd != null
-                    && (!rs.getRouteLocation().getName().equals(rl.getName())
-                    || !rs.getRouteDestination().getName().equals(rd.getName()) || rs
-                    .getDestinationTrack() == null)) {
+            if (rs.getRouteLocation() != null &&
+                    rs.getRouteDestination() != null &&
+                    rl != null &&
+                    rd != null &&
+                    (!rs.getRouteLocation().getName().equals(rl.getName()) ||
+                            !rs.getRouteDestination().getName().equals(rd.getName()) ||
+                            rs.getDestinationTrack() == null)) {
                 // user changed rolling stock location or destination or no destination track
                 setRouteLocationAndDestination(rs, train, null, null);
             }
             if (rs.getRouteLocation() != null || rs.getRouteDestination() != null) {
                 if (JOptionPane.showConfirmDialog(this, MessageFormat.format(getRb().getString(
                         "rsRemoveRsFromTrain"), new Object[]{rs.toString(), train.getName()}), getRb()
-                        .getString("rsInRoute"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                                .getString("rsInRoute"),
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     // prevent rs from being picked up and delivered
                     setRouteLocationAndDestination(rs, train, null, null);
                 }
             } else if (rl != null && rd != null && rs.getDestinationTrack() != null) {
-                if (rs.getDestinationTrack().getLocation().isStaging()
-                        && !rs.getDestinationTrack().equals(train.getTerminationTrack())) {
+                if (rs.getDestinationTrack().getLocation().isStaging() &&
+                        !rs.getDestinationTrack().equals(train.getTerminationTrack())) {
                     log.debug("Rolling stock destination track is staging and not the same as train");
                     JOptionPane.showMessageDialog(this, MessageFormat.format(
                             Bundle.getMessage("rsMustSelectSameTrack"), new Object[]{train.getTerminationTrack()
-                                .getName()}), Bundle.getMessage("rsStagingTrackError"), JOptionPane.ERROR_MESSAGE);
+                                    .getName()}),
+                            Bundle.getMessage("rsStagingTrackError"), JOptionPane.ERROR_MESSAGE);
                 } else if (JOptionPane.showConfirmDialog(this, MessageFormat.format(
-                        getRb().getString("rsAddRsToTrain"), new Object[]{rs.toString(), train.getName()}), getRb()
-                        .getString("rsAddManuallyToTrain"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        getRb().getString("rsAddRsToTrain"), new Object[]{rs.toString(), train.getName()}),
+                        getRb().getString("rsAddManuallyToTrain"),
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     // set new pick up and set out locations
                     setRouteLocationAndDestination(rs, train, rl, rd);
                     log.debug("Add rolling stock ({}) to train ({}) route pick up {} drop {}", rs.toString(), train
@@ -590,7 +612,10 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
             train.setModified(true);
         }
         // check destination track is staging
-        if (rl == null && rd == null && rs.getDestinationTrack() != null && rs.getDestinationTrack().getLocation().isStaging()) {
+        if (rl == null &&
+                rd == null &&
+                rs.getDestinationTrack() != null &&
+                rs.getDestinationTrack().getLocation().isStaging()) {
             log.debug("Rolling stock destination track is staging");
             rs.setDestination(null, null);
         }
@@ -730,8 +755,7 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
             log.debug("RollingStockFrame sees location: {}", locationBox.getSelectedItem());
             Location l = (Location) locationBox.getSelectedItem();
             l.updateComboBox(trackLocationBox, _rs, autoTrackCheckBox.isSelected(), false);
-            if (_rs != null && _rs.getLocation() != null && _rs.getLocation().equals(l)
-                    && _rs.getTrack() != null) {
+            if (_rs != null && _rs.getLocation() != null && _rs.getLocation().equals(l) && _rs.getTrack() != null) {
                 trackLocationBox.setSelectedItem(_rs.getTrack());
             }
         }
@@ -762,18 +786,20 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
             // check for staging, add track if train is built and terminates into staging
             if (autoDestinationTrackCheckBox.isSelected() && trainBox.getSelectedItem() != null) {
                 Train train = (Train) trainBox.getSelectedItem();
-                if (train.isBuilt() && train.getTerminationTrack() != null
-                        && train.getTerminationTrack().getLocation() == destination) {
+                if (train.isBuilt() &&
+                        train.getTerminationTrack() != null &&
+                        train.getTerminationTrack().getLocation() == destination) {
                     trackDestinationBox.addItem(train.getTerminationTrack());
                     trackDestinationBox.setSelectedItem(track);
                 }
             }
-            if (_rs != null && _rs.getDestination() != null && _rs.getDestination().equals(destination)) {
-                if (_rs.getDestinationTrack() != null) {
-                    trackDestinationBox.setSelectedItem(_rs.getDestinationTrack());
-                } else if (track != null) {
-                    trackDestinationBox.setSelectedItem(track);
-                }
+            if (_rs != null &&
+                    _rs.getDestination() != null &&
+                    _rs.getDestination().equals(destination) &&
+                    _rs.getDestinationTrack() != null) {
+                trackDestinationBox.setSelectedItem(_rs.getDestinationTrack());
+            } else if (track != null) {
+                trackDestinationBox.setSelectedItem(track);
             }
         }
     }
@@ -796,7 +822,7 @@ public class RollingStockSetFrame<T extends RollingStock> extends OperationsFram
         if (_rs != null) {
             _rs.removePropertyChangeListener(this);
         }
-        InstanceManager.getDefault(LocationManager.class).removePropertyChangeListener(this);
+        locationManager.removePropertyChangeListener(this);
         trainManager.removePropertyChangeListener(this);
         super.dispose();
     }

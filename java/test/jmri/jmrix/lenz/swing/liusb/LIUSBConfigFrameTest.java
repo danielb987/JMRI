@@ -1,43 +1,43 @@
 package jmri.jmrix.lenz.swing.liusb;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * LIUSBConfigFrameTest.java
  *
- * Description:	tests for the jmri.jmrix.lenz.swing.liusb.LIUSBConfigFrame class
+ * Test for the jmri.jmrix.lenz.swing.liusb.LIUSBConfigFrame class
  *
- * @author	Paul Bender
+ * @author Paul Bender
  */
-public class LIUSBConfigFrameTest {
+public class LIUSBConfigFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        jmri.jmrix.lenz.XNetInterfaceScaffold t = new jmri.jmrix.lenz.XNetInterfaceScaffold(new jmri.jmrix.lenz.LenzCommandStation());
-        jmri.jmrix.lenz.XNetSystemConnectionMemo memo = new jmri.jmrix.lenz.XNetSystemConnectionMemo(t);
+    private jmri.jmrix.lenz.XNetInterfaceScaffold t = null;
+    private jmri.jmrix.lenz.XNetSystemConnectionMemo memo = null;
 
-        LIUSBConfigFrame f = new LIUSBConfigFrame(memo);
-        Assert.assertNotNull(f);
-        f.dispose();
-    }
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
+        t = new jmri.jmrix.lenz.XNetInterfaceScaffold(new jmri.jmrix.lenz.LenzCommandStation());
+        memo = new jmri.jmrix.lenz.XNetSystemConnectionMemo(t);
+        if(!GraphicsEnvironment.isHeadless()){
+           frame = new LIUSBConfigFrame(memo);
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        memo = null;
+        t = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
     }
+
 
 }

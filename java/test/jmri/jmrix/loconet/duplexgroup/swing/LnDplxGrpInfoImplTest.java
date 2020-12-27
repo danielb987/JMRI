@@ -1,23 +1,18 @@
 package jmri.jmrix.loconet.duplexgroup.swing;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import org.junit.jupiter.api.*;
+
+import jmri.jmrix.loconet.LocoNetListener;
 import jmri.jmrix.loconet.LocoNetMessage;
-import jmri.jmrix.loconet.LnConstants;
 import jmri.jmrix.loconet.duplexgroup.DuplexGroupMessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.beans.PropertyChangeListener;
 
 /**
  * Test simple functioning of LnDplxGrpInfoImpl
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  * @author      B. Milhaupt Copyright (C) 2018
  */
 public class LnDplxGrpInfoImplTest {
@@ -59,17 +54,10 @@ public class LnDplxGrpInfoImplTest {
         Assert.assertFalse("Duplex Group Info Query timer is not running", dpxGrpInfoImpl.isDuplexGroupQueryRunning());
 
         dpxGrpInfoImpl.dispose();
-        PropertyChangeListener[] listeners= memo.getPropertyChangeListeners();
 
-        for (int i = 0; i < listeners.length; ++i) {
-            if (listeners[i].equals(this)) {
-                Assert.fail("Property change listener still registered after dispose()");
-            }
+        for (LocoNetListener listener : lnis.getListeners()) {
+            if (listener == dpxGrpInfoImpl) Assert.fail("dispose did not remove");
         }
-
-
-        memo.dispose();
-
     }
 
     @Test
@@ -2165,14 +2153,14 @@ public class LnDplxGrpInfoImplTest {
 //    public void connect(jmri.jmrix.loconet.LnTrafficController t) {
 //    public void dispose() {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
 
         JUnitUtil.resetProfileManager();
 
-        lnis = new jmri.jmrix.loconet.LocoNetInterfaceScaffold();
         memo = new jmri.jmrix.loconet.LocoNetSystemConnectionMemo();
+        lnis = new jmri.jmrix.loconet.LocoNetInterfaceScaffold(memo);
         memo.setLnTrafficController(lnis);
 
         memo.configureCommandStation(jmri.jmrix.loconet.LnCommandStationType.COMMAND_STATION_DCS100,false,false,false);
@@ -2183,8 +2171,16 @@ public class LnDplxGrpInfoImplTest {
 
     }
 
-    @After
-    public void tearDown() {        JUnitUtil.tearDown();    }
+    @AfterEach
+    public void tearDown() {
+        dpxGrpInfoImpl.dispose();
+        dpxGrpInfoImpl = null;
+        lnis = null;
+        memo.dispose();
+        memo=null;
+        
+        JUnitUtil.tearDown();
+    }
 
 //    private final static Logger log = LoggerFactory.getLogger(LnDplxGrpInfoImplTest.class);
 }

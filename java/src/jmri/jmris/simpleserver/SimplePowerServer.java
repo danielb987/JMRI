@@ -10,6 +10,7 @@ import jmri.jmris.simpleserver.parser.JmriServerParser;
 import jmri.jmris.simpleserver.parser.ParseException;
 import jmri.jmris.simpleserver.parser.SimpleNode;
 import jmri.jmris.simpleserver.parser.SimpleVisitor;
+import jmri.jmris.simpleserver.parser.TokenMgrError;
 
 /**
  * Simple Server interface between the JMRI power manager and a network
@@ -36,12 +37,16 @@ public class SimplePowerServer extends AbstractPowerServer {
      */
     @Override
     public void sendStatus(int Status) throws IOException {
-        if (Status == PowerManager.ON) {
-            this.sendStatus("POWER ON\n");
-        } else if (Status == PowerManager.OFF) {
-            this.sendStatus("POWER OFF\n");
-        } else {
-            this.sendStatus("POWER UNKNOWN\n");
+        switch (Status) {
+            case PowerManager.ON:
+                this.sendStatus("POWER ON\n");
+                break;
+            case PowerManager.OFF:
+                this.sendStatus("POWER OFF\n");
+                break;
+            default:
+                this.sendStatus("POWER UNKNOWN\n");
+                break;
         }
     }
 
@@ -61,7 +66,7 @@ public class SimplePowerServer extends AbstractPowerServer {
               if(v.getOutputString() != null ){
                  sendStatus(v.getOutputString());
               } 
-           } catch(ParseException pe){
+           } catch(ParseException | TokenMgrError pe){
               sendErrorStatus();
            }
         } catch(IOException ioe) {

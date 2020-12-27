@@ -1,34 +1,43 @@
 package jmri.jmrit.operations.trains.excel;
 
-import jmri.util.JUnitUtil;
-import org.junit.After;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Assume;
+import org.junit.jupiter.api.Test;
+
+import jmri.jmrit.operations.OperationsTestCase;
+import jmri.util.JUnitOperationsUtil;
+import jmri.util.JUnitUtil;
+import jmri.util.JmriJFrame;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class SetupExcelProgramSwitchListFrameActionTest {
+public class SetupExcelProgramSwitchListFrameActionTest extends OperationsTestCase {
 
     @Test
     public void testCTor() {
-        SetupExcelProgramSwitchListFrameAction t = new SetupExcelProgramSwitchListFrameAction("test action");
+        SetupExcelProgramSwitchListFrameAction t = new SetupExcelProgramSwitchListFrameAction();
         Assert.assertNotNull("exists",t);
     }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
+    
+    @Test
+    public void testAction() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        SetupExcelProgramSwitchListFrameAction sepfa = new SetupExcelProgramSwitchListFrameAction();
+        Assert.assertNotNull("exists", sepfa);
+        
+        sepfa.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+        
+        JmriJFrame excelFrame = JmriJFrame.getFrame(Bundle.getMessage("MenuItemSetupExcelProgramSwitchList"));
+        Assert.assertNotNull("frame exists", excelFrame);
+        JUnitUtil.dispose(excelFrame);
+        JUnitOperationsUtil.checkOperationsShutDownTask();
     }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
-    }
-
+    
     // private final static Logger log = LoggerFactory.getLogger(SetupExcelProgramSwitchListFrameActionTest.class);
 
 }

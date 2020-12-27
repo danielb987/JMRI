@@ -18,7 +18,7 @@ public class VirtualSignalHeadXml extends jmri.managers.configurexml.AbstractNam
     }
 
     /**
-     * Default implementation for storing the contents of a VirtualSignalHead
+     * Default implementation for storing the contents of a VirtualSignalHead.
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
      * @return Element containing the complete info
@@ -52,14 +52,19 @@ public class VirtualSignalHeadXml extends jmri.managers.configurexml.AbstractNam
 
         loadCommon(h, shared);
 
-        InstanceManager.getDefault(jmri.SignalHeadManager.class).register(h);
+        SignalHead existingBean =
+                InstanceManager.getDefault(jmri.SignalHeadManager.class)
+                        .getBySystemName(sys);
+
+        if ((existingBean != null) && (existingBean != h)) {
+            log.error("systemName is already registered: {}", sys);
+        } else {
+            InstanceManager.getDefault(jmri.SignalHeadManager.class).register(h);
+        }
+
         return true;
     }
 
-    @Override
-    public void load(Element element, Object o) {
-        log.error("Invalid method called");
-    }
-
     private final static Logger log = LoggerFactory.getLogger(VirtualSignalHeadXml.class);
+
 }

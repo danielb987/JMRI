@@ -1,36 +1,38 @@
 package jmri.jmrix.rps.aligntable;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
+
 import jmri.jmrix.rps.RpsSystemConnectionMemo;
 
 /**
  * Test simple functioning of AlignTableFrame
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class AlignTableFrameTest {
+public class AlignTableFrameTest extends jmri.util.JmriJFrameTestBase {
 
     private RpsSystemConnectionMemo memo = null;
 
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless()); 
-        AlignTableFrame action = new AlignTableFrame(memo);
-        Assert.assertNotNull("exists", action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.initRosterConfigManager();
         memo = new RpsSystemConnectionMemo();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new AlignTableFrame(memo);
+        }
     }
 
-    @After
-    public void tearDown() {        JUnitUtil.tearDown();    }
+    @AfterEach
+    @Override
+    public void tearDown() {
+        memo = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
+    }
 }

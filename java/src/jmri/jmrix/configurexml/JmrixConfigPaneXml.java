@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handle XML persistance of layout connections.
- * <P>
+ * <p>
  * This class is named as being the persistant form of the JmrixConfigPane
  * class, but there's no object of that form created or used. Instead, this
  * interacts forwards to a similar class in one of the protocol-specific
@@ -36,11 +36,11 @@ public class JmrixConfigPaneXml extends AbstractXmlAdapter {
             return null;
         }
         String adapter = ConfigXmlManager.adapterName(oprime);
-        log.debug("forward to " + adapter);
+        log.debug("forward to {}", adapter);
         try {
-            XmlAdapter x = (XmlAdapter) Class.forName(adapter).newInstance();
+            XmlAdapter x = (XmlAdapter) Class.forName(adapter).getDeclaredConstructor().newInstance();
             return x.store(oprime);
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | java.lang.reflect.InvocationTargetException e) {
             log.error("Exception: ", e);
             return null;
         }
@@ -61,18 +61,18 @@ public class JmrixConfigPaneXml extends AbstractXmlAdapter {
         }
         String name = shared.getAttribute("LAFclass").getValue();
         String className = installedLAFs.get(name);
-        log.debug("GUI selection: " + name + " class name: " + className);
+        log.debug("GUI selection: {} class name: {}", name, className);
         // set the GUI
         if (className != null) {
             try {
                 if (!className.equals(UIManager.getLookAndFeel().getClass().getName())) {
-                    log.debug("set GUI to " + name + "," + className);
+                    log.debug("set GUI to {},{}", name, className);
                     updateLookAndFeel(name, className);
                 } else {
-                    log.debug("skip updateLAF as already has className==" + className);
+                    log.debug("skip updateLAF as already has className=={}", className);
                 }
             } catch (Exception ex) {
-                log.error("Exception while setting GUI look & feel: " + ex);
+                log.error("Exception while setting GUI look & feel: {}", ex);
                 result = false;
             }
         }

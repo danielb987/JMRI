@@ -3,6 +3,11 @@ package jmri.jmrit.operations;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jmri.InstanceManager;
 import jmri.jmrit.XmlFile;
 import jmri.jmrit.operations.locations.LocationManagerXml;
@@ -12,9 +17,6 @@ import jmri.jmrit.operations.routes.RouteManagerXml;
 import jmri.jmrit.operations.setup.OperationsSetupXml;
 import jmri.jmrit.operations.trains.TrainManagerXml;
 import jmri.util.FileUtil;
-import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Loads and stores the operation setup using xml files.
@@ -125,7 +127,7 @@ public abstract class OperationsXml extends XmlFile {
 
     /**
      * Absolute path to location of Operations files.
-     * <P>
+     * <p>
      * Default is in the user's files path, but can be set to anything.
      *
      * @return The string path name.
@@ -138,7 +140,7 @@ public abstract class OperationsXml extends XmlFile {
 
     /**
      * Set path to location of Operations files.
-     * <P>
+     * <p>
      * Default is in the user's files path, but can be set to anything.
      *
      * @param location path to file, including trailing file separator.
@@ -149,25 +151,6 @@ public abstract class OperationsXml extends XmlFile {
 
     private static String fileLocation = FileUtil.getUserFilesPath();
 
-    /**
-     * Convert standard string to xml string one character at a time expect when
-     * a \n is found. In that case, insert a {@literal "<?p?>"}.
-     *
-     * @param comment standard string
-     * @return string converted to xml format.
-     */
-    @Deprecated
-    public static String convertToXmlComment(String comment) {
-        StringBuilder buf = new StringBuilder();
-        for (int k = 0; k < comment.length(); k++) {
-            if (comment.startsWith("\n", k)) { // NOI18N
-                buf.append("<?p?>"); // NOI18N
-            } else {
-                buf.append(comment.substring(k, k + 1));
-            }
-        }
-        return buf.toString();
-    }
 
     /**
      * Convert xml string comment to standard string format one character at a

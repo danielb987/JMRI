@@ -1,32 +1,20 @@
 package jmri.jmrit.operations.setup;
 
-import jmri.util.JUnitUtil;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+
+import jmri.jmrit.operations.OperationsTestCase;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class LoadDemoActionTest {
+public class LoadDemoActionTest extends OperationsTestCase {
 
     @Test
     public void testCTor() {
-        LoadDemoAction t = new LoadDemoAction("Test");
+        LoadDemoAction t = new LoadDemoAction();
         Assert.assertNotNull("exists",t);
-    }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
-    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(LoadDemoActionTest.class);

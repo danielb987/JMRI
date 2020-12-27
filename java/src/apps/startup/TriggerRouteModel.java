@@ -1,11 +1,15 @@
 package apps.startup;
 
+import jmri.util.startup.AbstractStartupModel;
+
 import java.util.Locale;
+
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.Route;
 import jmri.RouteManager;
 import jmri.util.prefs.InitializationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +57,7 @@ public class TriggerRouteModel extends AbstractStartupModel {
         try {
             this.getRoute().setRoute();
         } catch (NullPointerException ex) {
-            log.error("Unable to set route \"{}\"; it has not been defined. Is it's panel loaded?", this.getUserName());
+            log.error("Unable to set route \"{}\"; it has not been defined. Is its panel loaded?", this.getUserName());
             // it would be better to use a RouteNotFoundException if one existed
             InitializationException exception = new InitializationException(Bundle.getMessage(Locale.ENGLISH, "TriggerRouteModel.RouteNotDefined", this.getUserName()),
                     Bundle.getMessage("TriggerRouteModel.RouteNotDefined", this.getUserName()), ex);

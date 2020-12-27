@@ -1,7 +1,24 @@
 package jmri.jmrit.vsdecoder;
 
+import com.jogamp.openal.AL;
+import com.jogamp.openal.ALException;
+import com.jogamp.openal.util.ALut;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import jmri.Audio;
+import jmri.AudioException;
+import jmri.jmrit.audio.AudioFactory;
+import jmri.jmrit.audio.AudioBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Utility class for doing "VSD-special" things with the JMRI Audio classes.
+ *
  * <hr>
  * This file is part of JMRI.
  * <p>
@@ -16,21 +33,6 @@ package jmri.jmrit.vsdecoder;
  *
  * @author Mark Underwood copyright (c) 2009, 2013
  */
-import com.jogamp.openal.AL;
-import com.jogamp.openal.ALException;
-import com.jogamp.openal.util.ALut;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import jmri.Audio;
-import jmri.AudioException;
-import jmri.jmrit.audio.AudioBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class AudioUtil {
     //------------------------
     // New Methods to allow creating a set of (sub)Buffers built off a single
@@ -73,7 +75,7 @@ public class AudioUtil {
         try {
             ALut.alutLoadWAVFile(stream, format, data, size, freq, loop);
         } catch (ALException e) {
-            log.warn("Error loading JoalAudioBuffer: {}", e.getMessage());
+            log.warn("Error loading JoalAudioBuffer", e);
             return null;
         }
 
@@ -98,7 +100,6 @@ public class AudioUtil {
         return rlist;
     }
 
-    // steam1 helper 1
     static public ByteBuffer getWavData(InputStream stream) {
         int[] format = new int[1];
         int[] size = new int[1];
@@ -117,29 +118,41 @@ public class AudioUtil {
         return data[0];
     }
 
-    // steam1 helper 2
-    static public int getWavFormat(InputStream stream) {
+    static public int[] getWavFormats(InputStream stream) {
         int[] format = new int[1];
         int[] size = new int[1];
         ByteBuffer[] data = new ByteBuffer[1];
         int[] freq = new int[1];
         int[] loop = new int[1];
 
+        int[] formats = new int[3];
+
         // Pull the WAV data into the "data" buffer.
         try {
             ALut.alutLoadWAVFile(stream, format, data, size, freq, loop);
         } catch (ALException e) {
             log.warn("Error loading JoalAudioBuffer from stream", e);
-            return 0;
+            return formats;
         }
         // OK, for now, we're only going to support 8-bit and 16-bit Mono data.
         // I'll have to figure out later how to extend this to multiple data formats.
         if ((format[0] != AL.AL_FORMAT_MONO8) && (format[0] != AL.AL_FORMAT_MONO16)) {
             log.warn("Invalid Format! Failing out.{}", parseFormat(format[0]));
-            return 0;
+            return formats;
         }
-        log.debug("WAV format: {}", parseFormat(format[0]));
-        return format[0];
+        formats[0] = format[0];
+        formats[1] = freq[0];
+        formats[2] = frameSize(format[0]);
+        return formats;
+    }
+
+    static public boolean isAudioRunning() {
+        AudioFactory af = jmri.InstanceManager.getDefault(jmri.AudioManager.class).getActiveAudioFactory();
+        if (af == null) {
+            return false;
+        } else {
+            return ((jmri.jmrit.audio.AudioThread) af.getCommandThread()).alive();
+        }
     }
 
     /**
@@ -165,22 +178,18 @@ public class AudioUtil {
             try {
                 AudioBuffer buf = (AudioBuffer) jmri.InstanceManager.getDefault(jmri.AudioManager.class).provideAudio(prefix + "_sbuf" + i);
                 i++;
-                if (buf.getState() == Audio.STATE_LOADED) {
-                    log.debug("provideAudio found already-built buffer: {} ... skipping load.", buf.getSystemName());
-                } else {
-                    buf.loadBuffer(b.data, b.format, b.frequency);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Loaded buffer: {}", buf.getSystemName());
-                        log.debug(" from file: {}", buf.getURL());
-                        log.debug(" format: {}, {} Hz", parseFormat(b.format), b.frequency);
-                        log.debug(" length: {}", b.data.limit());
-                    }
+                buf.loadBuffer(b.data, b.format, b.frequency);
+                if (log.isDebugEnabled()) {
+                    log.debug("Loaded buffer: {}", buf.getSystemName());
+                    log.debug(" from file: {}", buf.getURL());
+                    log.debug(" format: {}, {} Hz", parseFormat(b.format), b.frequency);
+                    log.debug(" length: {}", b.data.limit());
                 }
                 rlist.add(buf);
             } catch (AudioException | IllegalArgumentException e) {
-                log.warn("Error on provideAudio! {}", (Object) e);
+                log.warn("Error on provideAudio", e);
                 if (log.isDebugEnabled()) {
-                    jmri.InstanceManager.getDefault(jmri.AudioManager.class).getSystemNameList(Audio.BUFFER).stream().forEach((s) -> {
+                    jmri.InstanceManager.getDefault(jmri.AudioManager.class).getNamedBeanSet(Audio.BUFFER).stream().forEach((s) -> {
                         log.debug("\tBuffer: {}", s);
                     });
                 }

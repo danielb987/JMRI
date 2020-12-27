@@ -1,71 +1,66 @@
 package jmri.jmrix.ztc.ztc611;
 
-import jmri.jmrix.lenz.LenzCommandStation;
-import jmri.jmrix.lenz.XNetInterfaceScaffold;
-import jmri.jmrix.lenz.XNetListenerScaffold;
-import jmri.jmrix.lenz.XNetSystemConnectionMemo;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.junit.Assert;
+import jmri.jmrix.lenz.*;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * ZTC611XNetInitializationManagerTest.java
  *
- * Description:	tests for the jmri.jmrix.ztc.ztc611.ZTC611XNetInitializationManager
- * class
+ * Test for the
+ * jmri.jmrix.ztc.ztc611.ZTC611XNetInitializationManager class
  *
- * @author	Paul Bender
+ * @author Paul Bender
  */
-public class ZTC611XNetInitializationManagerTest extends TestCase {
+public class ZTC611XNetInitializationManagerTest {
 
+    private XNetTrafficController tc;
+    private XNetSystemConnectionMemo memo;
+    private LenzCommandStation cs;
+
+    @Test
     public void testCtor() {
-
-// infrastructure objects
-        XNetInterfaceScaffold t = new XNetInterfaceScaffold(new LenzCommandStation());
-        XNetListenerScaffold l = new XNetListenerScaffold();
-
-        XNetSystemConnectionMemo memo = new XNetSystemConnectionMemo(t);
-
         ZTC611XNetInitializationManager m = new ZTC611XNetInitializationManager(memo) {
             @Override
             protected int getInitTimeout() {
-                return 50;   // shorten, because this will fail & delay test
+                return 50; // shorten, because this will fail & delay test
             }
         };
-        Assert.assertNotNull("exists", t);
-        Assert.assertNotNull("exists", l);
-        Assert.assertNotNull("exists", m);
-        Assert.assertNotNull("exists", memo);
+        assertThat(m).withFailMessage("exists").isNotNull();
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(memo.getCommandStation()).isEqualTo(cs);
+        softly.assertThat(memo.getPowerManager()).isExactlyInstanceOf((XNetPowerManager.class));
+        softly.assertThat(memo.getThrottleManager()).isExactlyInstanceOf(XNetThrottleManager.class);
+        softly.assertThat(memo.getProgrammerManager()).isExactlyInstanceOf(XNetProgrammerManager.class);
+        softly.assertThat(memo.getProgrammerManager().getGlobalProgrammer()).isExactlyInstanceOf(XNetProgrammer.class);
+        softly.assertThat(memo.getProgrammerManager().getAddressedProgrammer(false,42)).isExactlyInstanceOf(XNetOpsModeProgrammer.class);
+        softly.assertThat(memo.getTurnoutManager()).isExactlyInstanceOf(ZTC611XNetTurnoutManager.class);
+        softly.assertThat(memo.getSensorManager()).isExactlyInstanceOf(XNetSensorManager.class);
+        softly.assertThat(memo.getLightManager()).isExactlyInstanceOf(XNetLightManager.class);
+        softly.assertThat(memo.getConsistManager()).isExactlyInstanceOf(XNetConsistManager.class);
+        softly.assertAll();
     }
 
-    // from here down is testing infrastructure
-    public ZTC611XNetInitializationManagerTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", ZTC611XNetInitializationManagerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(ZTC611XNetInitializationManagerTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         jmri.util.JUnitUtil.setUp();
-        super.setUp();
+        tc = Mockito.mock(XNetTrafficController.class);
+        cs = Mockito.mock(LenzCommandStation.class);
+        Mockito.when(cs.isOpsModePossible()).thenReturn(true);
+        Mockito.when(tc.getCommandStation()).thenReturn(cs);
+        memo = new XNetSystemConnectionMemo(tc);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() throws Exception {
+        memo = null;
+        tc = null;
+        cs = null;
         jmri.util.JUnitUtil.tearDown();
     }
 

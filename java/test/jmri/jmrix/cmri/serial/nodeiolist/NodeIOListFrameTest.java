@@ -1,34 +1,33 @@
 package jmri.jmrix.cmri.serial.nodeiolist;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.jmrix.cmri.CMRISystemConnectionMemo;
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of NodeIOListFrame
  *
- * @author	Paul Bender Copyright (C) 2016
- * @author	Bob Jacobsen Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
+ * @author Bob Jacobsen Copyright (C) 2016
  */
-public class NodeIOListFrameTest {
+public class NodeIOListFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testMemoCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        NodeIOListFrame action = new NodeIOListFrame(new CMRISystemConnectionMemo()); 
-        Assert.assertNotNull("exists", action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new NodeIOListFrame(new CMRISystemConnectionMemo());
+        }
     }
 
-    @After
-    public void tearDown() {        JUnitUtil.tearDown();    }
+    @AfterEach
+    @Override
+    public void tearDown() {
+        jmri.util.JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
+    }
 }

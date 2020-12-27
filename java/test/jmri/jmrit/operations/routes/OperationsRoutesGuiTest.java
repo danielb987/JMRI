@@ -2,6 +2,11 @@ package jmri.jmrit.operations.routes;
 
 import java.awt.GraphicsEnvironment;
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
+import org.junit.Assume;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.locations.LocationManager;
@@ -9,16 +14,11 @@ import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.JmriJFrame;
 import jmri.util.swing.JemmyUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests for the Operations Routes GUI class
  *
- * @author	Dan Boudreau Copyright (C) 2009
+ * @author Dan Boudreau Copyright (C) 2009
  */
 public class OperationsRoutesGuiTest extends OperationsTestCase {
 
@@ -51,6 +51,7 @@ public class OperationsRoutesGuiTest extends OperationsTestCase {
 
         JUnitUtil.dispose(ref);
         JUnitUtil.dispose(f);
+        JUnitOperationsUtil.checkOperationsShutDownTask();
     }
 
     @Test
@@ -135,17 +136,5 @@ public class OperationsRoutesGuiTest extends OperationsTestCase {
         Assert.assertEquals("route comment", "Comment test route C", f.commentTextField.getText());
 
         JUnitUtil.dispose(f);
-    }
-
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
     }
 }

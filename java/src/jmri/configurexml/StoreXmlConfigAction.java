@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Store the JMRI configuration information as XML.
- * <P>
+ * <p>
  * Note that this does not store preferences, tools or user information in the
  * file. This is not a complete store! See {@link jmri.ConfigureManager} for
  * information on the various types of information stored in configuration
@@ -27,7 +27,7 @@ public class StoreXmlConfigAction extends LoadStoreBaseAction {
     static final ResourceBundle rb = ResourceBundle.getBundle("jmri.jmrit.display.DisplayBundle");
 
     public StoreXmlConfigAction() {
-        this("Store configuration ...");
+        this("Store configuration...");
     }
 
     public StoreXmlConfigAction(String s) {
@@ -41,12 +41,12 @@ public class StoreXmlConfigAction extends LoadStoreBaseAction {
 
     /**
      * Do the filename handling:
-     * <OL>
-     * <LI>rescan directory to see any new files
-     * <LI>Prompt user to select a file
-     * <LI>adds .xml extension if needed
-     * <LI>if that file exists, check with user
-     * </OL>
+     * <ol>
+     * <li>rescan directory to see any new files
+     * <li>Prompt user to select a file
+     * <li>adds .xml extension if needed
+     * <li>if that file exists, check with user
+     * </ol>
      *
      * @param fileChooser the file chooser to use
      * @return the file to store or null if the user declined to store a file
@@ -54,7 +54,7 @@ public class StoreXmlConfigAction extends LoadStoreBaseAction {
     @CheckForNull
     public static File getFileCustom(JFileChooser fileChooser) {
         fileChooser.rescanCurrentDirectory();
-        int retVal = fileChooser.showDialog(null, null);
+        int retVal = fileChooser.showDialog(null, Bundle.getMessage("MenuItemStore"));
         if (retVal != JFileChooser.APPROVE_OPTION) {
             return null;  // give up if no file selected
         }
@@ -69,7 +69,7 @@ public class StoreXmlConfigAction extends LoadStoreBaseAction {
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("Save file: " + file.getPath());
+            log.debug("Save file: {}", file.getPath());
         }
         // check for possible overwrite
         if (file.exists()) {
@@ -97,7 +97,6 @@ public class StoreXmlConfigAction extends LoadStoreBaseAction {
             log.error("Failed to get default configure manager");
         } else {
             boolean results = cm.storeConfig(file);
-            System.out.println(results);
             log.debug(results ? "store was successful" : "store failed");
             if (!results) {
                 JOptionPane.showMessageDialog(null,
@@ -111,4 +110,5 @@ public class StoreXmlConfigAction extends LoadStoreBaseAction {
 
     // initialize logging
     private final static Logger log = LoggerFactory.getLogger(StoreXmlConfigAction.class);
+
 }

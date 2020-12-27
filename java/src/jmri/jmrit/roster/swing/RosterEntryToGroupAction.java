@@ -17,15 +17,15 @@ import org.slf4j.LoggerFactory;
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ *
  * @author Kevin Dickerson Copyright (C) 2009
  */
 public class RosterEntryToGroupAction extends AbstractAction {
@@ -68,8 +68,7 @@ public class RosterEntryToGroupAction extends AbstractAction {
                 Bundle.getMessage("AddEntryToGroupDialog"), Bundle.getMessage("AddEntryToGroupTitle"),
                 0, JOptionPane.INFORMATION_MESSAGE, null,
                 new Object[]{Bundle.getMessage("ButtonDone"), Bundle.getMessage("ButtonOK"), selections, rosterEntry}, null);
-        log.debug("Dialog value " + retval + " selected " + selections.getSelectedIndex() + ":"
-                + selections.getSelectedItem() + ", " + rosterEntry.getSelectedIndex() + ":" + rosterEntry.getSelectedItem());
+        log.debug("Dialog value {} selected {}:{}, {}:{}", retval, selections.getSelectedIndex(), selections.getSelectedItem(), rosterEntry.getSelectedIndex(), rosterEntry.getSelectedItem());
         if (retval != 1) {
             return;
         }

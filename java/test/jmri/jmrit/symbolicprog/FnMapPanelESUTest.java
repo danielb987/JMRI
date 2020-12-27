@@ -2,13 +2,14 @@ package jmri.jmrit.symbolicprog;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JLabel;
+
 import jmri.jmrit.roster.RosterEntry;
+
 import org.jdom2.Element;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
@@ -17,22 +18,34 @@ import org.junit.Test;
 public class FnMapPanelESUTest {
 
     @Test
-    public void testCTor() {
+    public void testV4() {
         List<Integer> varsUsed = new ArrayList<>();
         RosterEntry re = new RosterEntry();
         Element model = new Element("model");
+        model.setAttribute("extFnsESU", "V4");
 
         FnMapPanelESU t = new FnMapPanelESU(tableModel, varsUsed, model,re,cvtm);
         Assert.assertNotNull("exists",t);
         t.dispose();
     }
 
-    // The minimal setup for log4J
+    @Test
+    public void testV5() {
+        List<Integer> varsUsed = new ArrayList<>();
+        RosterEntry re = new RosterEntry();
+        Element model = new Element("model");
+        model.setAttribute("extFnsESU", "V5");
+
+        FnMapPanelESU t = new FnMapPanelESU(tableModel, varsUsed, model,re,cvtm);
+        Assert.assertNotNull("exists",t);
+        t.dispose();
+    }
+
     jmri.Programmer p;
     CvTableModel cvtm;
     VariableTableModel tableModel;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
         jmri.util.JUnitUtil.initDebugProgrammerManager();
@@ -46,7 +59,7 @@ public class FnMapPanelESUTest {
         );
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         p = null;
         tableModel.dispose();

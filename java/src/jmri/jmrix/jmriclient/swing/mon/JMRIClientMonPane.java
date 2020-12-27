@@ -7,10 +7,10 @@ import jmri.jmrix.jmriclient.JMRIClientTrafficController;
 import jmri.jmrix.jmriclient.JMRIClientSystemConnectionMemo;
 
 /**
- * Pane displaying (and logging) JMRIClient command messages
+ * Pane displaying (and logging) JMRIClient command messages.
  *
  * @author Bob Jacobsen Copyright (C) 2008
-  */
+ */
 public class JMRIClientMonPane extends jmri.jmrix.AbstractMonPane implements JMRIClientListener {
 
     protected JMRIClientTrafficController tc = null;
@@ -35,14 +35,14 @@ public class JMRIClientMonPane extends jmri.jmrix.AbstractMonPane implements JMR
             // connect to TrafficController
             tc = memo.getJMRIClientTrafficController();
             tc.addJMRIClientListener(this);
-	}
+        }
     }
 
     @Override
     public void dispose() {
         tc.removeJMRIClientListener(this);
         tc = null;
-	super.dispose();
+        super.dispose();
     }
 
     @Override

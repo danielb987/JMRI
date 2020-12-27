@@ -1,8 +1,8 @@
 package jmri.implementation;
 
 import jmri.*;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 
 /**
@@ -20,14 +20,17 @@ public class DefaultLogixTest extends NamedBeanTest {
         return new DefaultLogix("IX 0");
     }
 
+    @Test
     public void testCtorDouble() {
         new DefaultLogix("IX 1", "IX 1 user name");
     }
 
+    @Test
     public void testCtorSingle() {
         new DefaultLogix("IX 2");
     }
 
+    @Test
     public void testBasicBeanOperations() {
         Logix ix1 = new DefaultLogix("IX 3", "IX 3 user name");
 
@@ -40,36 +43,16 @@ public class DefaultLogixTest extends NamedBeanTest {
 
     }
 
-    // from here down is testing infrastructure
-    public DefaultLogixTest(String s) {
-        super(s);
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         jmri.util.JUnitUtil.setUp();
-        super.setUp();
         jmri.util.JUnitUtil.resetInstanceManager();
         jmri.util.JUnitUtil.initInternalTurnoutManager();
         jmri.util.JUnitUtil.initInternalSensorManager();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         jmri.util.JUnitUtil.tearDown();
     }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {DefaultLogixTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(DefaultLogixTest.class);
-        return suite;
-    }
-
 }

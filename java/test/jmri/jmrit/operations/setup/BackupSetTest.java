@@ -1,40 +1,23 @@
 package jmri.jmrit.operations.setup;
 
-import org.junit.After;
+import java.io.File;
+
+import jmri.jmrit.operations.OperationsTestCase;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class BackupSetTest {
-
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+public class BackupSetTest extends OperationsTestCase {
 
     @Test
-    public void testCTor() {
-        BackupSet t = new BackupSet(folder.getRoot());
+    public void testCTor(@TempDir File folder) {
+        BackupSet t = new BackupSet(folder);
         Assert.assertNotNull("exists",t);
-    }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        jmri.util.JUnitUtil.setUp();
-
-        jmri.util.JUnitUtil.resetInstanceManager();
-    }
-
-    @After
-    public void tearDown() {
-        jmri.util.JUnitUtil.resetInstanceManager();
-        jmri.util.JUnitUtil.tearDown();
-
     }
 
     // private final static Logger log = LoggerFactory.getLogger(BackupSetTest.class.getName());

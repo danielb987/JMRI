@@ -6,12 +6,15 @@
 package jmri.jmrix.openlcb;
 
 import jmri.Light;
+import jmri.LightControl;
 import jmri.implementation.AbstractLight;
 import org.openlcb.OlcbInterface;
 import org.openlcb.implementations.BitProducerConsumer;
 import org.openlcb.implementations.VersionedValueListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -23,6 +26,7 @@ public class OlcbLight extends AbstractLight {
             (~BitProducerConsumer.LISTEN_INVALID_STATE);
     static final boolean DEFAULT_IS_AUTHORITATIVE = true;
     static final boolean DEFAULT_LISTEN = true;
+    private boolean _finishedLoad = false;
     
     OlcbAddress addrOn;    // go to On state
     OlcbAddress addrOff;  // go to Off state
@@ -41,17 +45,14 @@ public class OlcbLight extends AbstractLight {
         OlcbAddress a = new OlcbAddress(address);
         OlcbAddress[] v = a.split();
         if (v == null) {
-            log.error("Did not find usable system name: " + address);
+            log.error("Did not find usable system name: {}", address);
             return;
         }
-        switch (v.length) {
-            case 2:
-                addrOn = v[0];
-                addrOff = v[1];
-                break;
-            default:
-                log.error("Can't parse OpenLCB Light system name: " + address);
-                return;
+        if (v.length == 2) {
+            addrOn = v[0];
+            addrOff = v[1];
+        } else {
+            log.error("Can't parse OpenLCB Light system name: {}", address);
         }
     }
     
@@ -72,9 +73,36 @@ public class OlcbLight extends AbstractLight {
                 setState(value ? Light.ON : Light.OFF);
             }
         };
-
+        // A Light Control will have failed to set its state during xml load
+        // as the LightListener is not present, so we re-activate any Light Controls
+        activateLight();
     }
     
+    /**
+     * Activate a light activating all its LightControl objects.
+     */
+    @Override
+    public void activateLight() {
+        // during xml load any Light Controls may attempt to set the Light before the
+        // lightListener has been set
+        if (lightListener==null){
+            return;
+        }
+        lightControlList.stream().forEach(LightControl::activateLightControl);
+        mActive = true; // set flag for control listeners
+        _finishedLoad = true;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void setState(int newState) {
+        if (_finishedLoad){
+            super.setState(newState);
+        }
+        else {
+            log.debug("Light {} status being set while still Activating",this);
+        }
+    }
     
     /**
      * Set the current state of this Light This routine requests the hardware to
@@ -100,24 +128,23 @@ public class OlcbLight extends AbstractLight {
         }
     }
     
+    /** {@inheritDoc} */
     @Override
-    public void setProperty(String key, Object value) {
+    public void setProperty(@Nonnull String key, Object value) {
         Object old = getProperty(key);
         super.setProperty(key, value);
-        if (old != null && value.equals(old)) return;
+        if (value.equals(old)) return;
         if (pc == null) return;
         finishLoad();
     }
     
+    /** {@inheritDoc} */
     @Override
     public void dispose() {
         if (lightListener != null) lightListener.release();
         if (pc != null) pc.release();
         super.dispose();
     }
-
-    
-    
     
     private final static Logger log = LoggerFactory.getLogger(OlcbLight.class);
 

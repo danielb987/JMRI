@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of a node for XBee networks.
+ * Implementation of a Node for XBee networks.
  * <p>
  * Integrated with {@link XBeeTrafficController}.
  * <p>
@@ -87,6 +87,7 @@ public class XBeeNode extends IEEE802154Node {
 
     /**
      * Set the Traffic Controller associated with this node.
+     * @param controller system connection traffic controller.
      */
     public void setTrafficController(XBeeTrafficController controller) {
         tc = controller;
@@ -130,6 +131,7 @@ public class XBeeNode extends IEEE802154Node {
 
     /**
      * Set the isPolled attribute.
+     * @param poll true to set flag polled, else false.
      */
     public void setPoll(boolean poll) {
         isPolled = poll;
@@ -137,6 +139,7 @@ public class XBeeNode extends IEEE802154Node {
 
     /**
      * Get the isPolled attribute.
+     * @return true if isPolled flag set, else false.
      */
     public boolean getPoll() {
         return isPolled;
@@ -156,6 +159,8 @@ public class XBeeNode extends IEEE802154Node {
 
     /**
      * A reply was received, so there was not timeout; do any needed processing.
+     * Implementation does nothing.
+     * @param m message to process.
      */
     @Override
     public void resetTimeout(AbstractMRMessage m) {
@@ -164,6 +169,7 @@ public class XBeeNode extends IEEE802154Node {
 
     /**
      * Convert the 16 bit user address to an XBee16BitAddress object.
+     * @return converted address object.
      */
     public XBee16BitAddress getXBeeAddress16() {
         if(device!=null) {
@@ -175,6 +181,7 @@ public class XBeeNode extends IEEE802154Node {
 
     /**
      * Convert the 64 bit address to an XBee64BitAddress object.
+     * @return converted address object.
      */
     public XBee64BitAddress getXBeeAddress64() {
         if(device!=null) {
@@ -321,13 +328,13 @@ public class XBeeNode extends IEEE802154Node {
     }
 
     /**
-     * Get the stream object associated with this node. Create it if it does
-     * not exist.
+     * Get the stream object associated with this node.
+     * @return stream object, created if does not exist.
      */
     public XBeeIOStream getIOStream() {
         if (mStream == null) {
             mStream = new XBeeIOStream(this, tc);
-	        mStream.configure(); // start the threads for the stream.
+            mStream.configure(); // start the threads for the stream.
         }
         return mStream;
     }
@@ -335,27 +342,24 @@ public class XBeeNode extends IEEE802154Node {
     private XBeeIOStream mStream = null;
 
     /**
-     * Connect a StreamPortController object to the XBeeIOStream
+     * Connect and configure a StreamPortController object to the XBeeIOStream
      * associated with this node.
      *
      * @param cont AbstractSTreamPortController object to connect
      */
     public void connectPortController(jmri.jmrix.AbstractStreamPortController cont) {
         connectedController = cont;
+        connectedController.configure();
     }
 
     /**
-     * Create a new object derived from AbstractStreamPortController and
-     * connect it to the IOStream associated with this object.
+     * Connect a StreamPortController object to the XBeeIOStream
+     * associated with this node.
+     *
+     * @param cont AbstractSTreamPortController object to connect
      */
-    public void connectPortController(Class<jmri.jmrix.AbstractStreamPortController> T) {
-        try {
-            java.lang.reflect.Constructor<?> ctor = T.getConstructor(java.io.DataInputStream.class, java.io.DataOutputStream.class, String.class);
-            connectedController = (jmri.jmrix.AbstractStreamPortController) ctor.newInstance(getIOStream().getInputStream(), getIOStream().getOutputStream(), "XBee Node " + getPreferedName());
-            connectedController.configure();
-        } catch (java.lang.InstantiationException | java.lang.NoSuchMethodException | java.lang.IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
-            log.error("Unable to construct Stream Port Controller for node.", ex);
-        }
+    public void setPortController(jmri.jmrix.AbstractStreamPortController cont) {
+        connectedController = cont;
     }
 
     /**
@@ -371,7 +375,7 @@ public class XBeeNode extends IEEE802154Node {
     private jmri.jmrix.AbstractStreamPortController connectedController = null;
 
     /**
-     * Connect a StreamConnectionConfig object to the XBeeIOStream
+     * Connect and configure a StreamConnectionConfig object to the XBeeIOStream
      * associated with this node.
      *
      * @param cfg AbstractStreamConnectionConfig object to connect
@@ -379,6 +383,17 @@ public class XBeeNode extends IEEE802154Node {
     public void connectPortController(jmri.jmrix.AbstractStreamConnectionConfig cfg) {
         connectedConfig = cfg;
         connectPortController(cfg.getAdapter());
+    }
+
+    /**
+     * Connect a StreamConnectionConfig object to the XBeeIOStream
+     * associated with this node.
+     *
+     * @param cfg AbstractStreamConnectionConfig object to connect
+     */
+    public void setPortController(jmri.jmrix.AbstractStreamConnectionConfig cfg) {
+        connectedConfig = cfg;
+        setPortController(cfg.getAdapter());
     }
 
     /**

@@ -1,13 +1,15 @@
 package jmri.jmrit.catalog;
 
 import java.util.HashMap;
+import jmri.CatalogTreeNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * TreeModel used by CatalogPanel to create a tree of resources. This model is
  * for trees that can be permanently stored to and reloaded from an XML file.
- * <P>
+ * <p>
  * Source of the tree content is an XML file.
  *
  * @author Pete Cressman Copyright 2009
@@ -38,8 +40,7 @@ public class CatalogTreeIndex extends AbstractCatalogTree {
             newNode = new CatalogTreeNode(pName);
         }
         if (log.isDebugEnabled()) {
-            log.debug("insertNodeInto: newNode= " + newNode.getUserObject()
-                    + ", into parent= " + pParent.getUserObject());
+            log.debug("insertNodeInto: newNode= {}, into parent= {}", newNode.getUserObject(), pParent.getUserObject());
         }
         insertNodeInto(newNode, pParent, pParent.getChildCount());
     }

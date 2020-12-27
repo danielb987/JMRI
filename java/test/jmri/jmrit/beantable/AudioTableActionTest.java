@@ -1,17 +1,17 @@
 package jmri.jmrit.beantable;
 
+import jmri.Audio;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+import jmri.util.junit.annotations.*;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class AudioTableActionTest extends AbstractTableActionBase {
+public class AudioTableActionTest extends AbstractTableActionBase<Audio> {
 
     @Test
     public void testCTor() {
@@ -25,7 +25,8 @@ public class AudioTableActionTest extends AbstractTableActionBase {
 
     @Test
     @Override
-    @Ignore("Audio table will only be init if an audio manageris available")
+    @Disabled("Audio table will only be init if an audio manager is available")
+    @ToDo("Complete Test Initialization, then remove overriden test so parent class can execute")
     public void testGetTableDataModel(){
     }
 
@@ -54,21 +55,44 @@ public class AudioTableActionTest extends AbstractTableActionBase {
          Assert.assertTrue("Default include add button",a.includeAddButton());
     }
 
-    // The minimal setup for log4J
-    @Before
+    @Test
+    @Disabled("Audio table does not have Add... button")
+    @Override
+    public void testAddButton() {
+    }
+
+    @Override
+    public String getAddFrameName(){
+        return "";
+    }
+
+    @Test
+    @Override
+    @Disabled("Audio table does not have Add... button")
+    public void testAddThroughDialog() {
+    }
+
+    @Test
+    @Override
+    @Disabled("Audio table does not have Add... button, so test needs re-written")
+    @ToDo("Re-write parent class test to use the right name, or add without dialog")
+    public void testEditButton() {
+    }
+
+    @BeforeEach
     @Override
     public void setUp() {
         JUnitUtil.setUp();
         jmri.util.JUnitUtil.resetProfileManager();
         jmri.util.JUnitUtil.initDefaultUserMessagePreferences();
         helpTarget = "package.jmri.jmrit.beantable.AudioTable";
-	    a = new AudioTableAction();
+        a = new AudioTableAction();
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() {
-        jmri.util.JUnitAppender.suppressWarnMessage("Initialised Null audio system - no sounds will be available.");
+        JUnitUtil.clearShutDownManager(); // should be converted to check of scheduled ShutDownActions
         JUnitUtil.tearDown();
         a = null;
     }

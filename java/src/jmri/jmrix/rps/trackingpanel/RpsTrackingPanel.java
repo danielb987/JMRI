@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * Pane to show a 2D representation of the RPS Model and Measurements.
- * <p>
+ *
  * @see jmri.jmrix.rps.Model
  * @see jmri.jmrix.rps.Measurement
  *
- * @author	Bob Jacobsen Copyright (C) 2006, 2008
+ * @author Bob Jacobsen Copyright (C) 2006, 2008
  */
 public class RpsTrackingPanel extends javax.swing.JPanel
         implements MeasurementListener {
@@ -91,8 +91,10 @@ public class RpsTrackingPanel extends javax.swing.JPanel
     }
 
     /**
-     * Sets the coordinates of the lower left corner of the screen/paper. Note
-     * this is different from the usual Swing coordinate system!
+     * Sets the coordinates of the lower left corner of the screen/paper.
+     * Note this is different from the usual Swing coordinate system!
+     * @param x distance from left.
+     * @param y distance from bottom.
      */
     public void setOrigin(double x, double y) {
         xorigin = x;
@@ -116,8 +118,10 @@ public class RpsTrackingPanel extends javax.swing.JPanel
     boolean showRegions = false;
 
     /**
-     * Sets the coordinates of the upper-right corner of the screen/paper. Note
-     * this is different from the usual Swing coordinate system!
+     * Sets the coordinates of the upper-right corner of the screen/paper.
+     * Note this is different from the usual Swing coordinate system!
+     * @param x distance from right.
+     * @param y distance from top.
      */
     public void setCoordMax(double x, double y) {
         xmax = x;
@@ -203,6 +207,7 @@ public class RpsTrackingPanel extends javax.swing.JPanel
 
     /**
      * Pick a color for the next set of measurement lines to draw
+     * @return Color for next line chosen via algorithm
      */
     Color nextColor() {
         int red = Math.min(255, ((measurementColor >> 2) & 0x1) * 255 / 1);
@@ -218,13 +223,11 @@ public class RpsTrackingPanel extends javax.swing.JPanel
         TransmitterStatus transmitter = transmitters.get(id);
         double xend = m.getX();
         double yend = m.getY();
-        if (log.isDebugEnabled()) {
-            log.debug("notify " + xend + "," + yend);
-        }
+        log.debug("notify {},{}", xend, yend);
         if (transmitter == null) {
             // create Transmitter status with current measurement
             // so we can draw line next time
-            log.debug("create new TransmitterStatus for " + m.getId());
+            log.debug("create new TransmitterStatus for {}", m.getId());
             transmitter = new TransmitterStatus();
             transmitter.measurement = m;
             transmitter.color = nextColor();
@@ -319,5 +322,7 @@ public class RpsTrackingPanel extends javax.swing.JPanel
         Shape rep2;
         Measurement measurement;
     }
+
     private final static Logger log = LoggerFactory.getLogger(RpsTrackingPanel.class);
+
 }

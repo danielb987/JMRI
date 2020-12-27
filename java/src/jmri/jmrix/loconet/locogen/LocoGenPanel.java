@@ -46,7 +46,7 @@ public class LocoGenPanel extends jmri.jmrix.loconet.swing.LnPanel
     JTextField mPacketField[] = new JTextField[MAXSEQUENCE];
     JCheckBox mUseField[] = new JCheckBox[MAXSEQUENCE];
     JTextField mDelayField[] = new JTextField[MAXSEQUENCE];
-    JToggleButton mRunButton = new JToggleButton(Bundle.getMessage("ButtonGo"));
+    JToggleButton mRunButton = new JToggleButton(Bundle.getMessage("ButtonRun"));
 
     /**
      * {@inheritDoc}
@@ -152,8 +152,8 @@ public class LocoGenPanel extends jmri.jmrix.loconet.swing.LnPanel
     javax.swing.Timer timer = null;
 
     /**
-     * Internal routine to handle timer starts {@literal &} restarts
-     * <p>
+     * Internal routine to handle timer starts and restarts
+     *
      * @param delay in mSec
      */
     protected void restartTimer(int delay) {
@@ -172,9 +172,9 @@ public class LocoGenPanel extends jmri.jmrix.loconet.swing.LnPanel
     }
 
     /**
-     * Run button pressed down, start the sequence operation
-     *<p>
-     * @param e - a {@link java.awt.event.ActionEvent} to be triggered
+     * Run button pressed down, start the sequence operation.
+     *
+     * @param e  a {@link java.awt.event.ActionEvent} to be triggered
      */
     public void runButtonActionPerformed(java.awt.event.ActionEvent e) {
         if (!mRunButton.isSelected()) {
@@ -263,8 +263,8 @@ public class LocoGenPanel extends jmri.jmrix.loconet.swing.LnPanel
      * Well-formed generally means a space-separated string of hex values of
      * two characters each, as defined in
      * {@link jmri.util.StringUtil#bytesFromHexString(String s)} .
-     * <p>
-     * @param s - a string containing raw hex data of good form
+     *
+     * @param s  a string containing raw hex data of good form
      * @return The packet, with contents filled-in
      */
     LocoNetMessage createPacket(String s) {

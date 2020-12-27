@@ -12,7 +12,7 @@ import jmri.swing.RowSorterUtil;
 
 /**
  * Provide a JPanel to display a table of NamedBeans.
- * <P>
+ * <p>
  * This frame includes the table itself at the top, plus a "bottom area" for
  * things like an Add... button and checkboxes that control display options.
  * <p>
@@ -37,7 +37,7 @@ public class BeanTablePane<E extends NamedBean> extends jmri.util.swing.JmriPane
 
         dataModel = model;
 
-        TableRowSorter<BeanTableDataModel> sorter = new TableRowSorter<>(dataModel);
+        TableRowSorter<BeanTableDataModel<E>> sorter = new TableRowSorter<>(dataModel);
         dataTable = dataModel.makeJTable(dataModel.getMasterClassName(), dataModel, sorter);
         dataScroll = new JScrollPane(dataTable);
 

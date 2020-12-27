@@ -2,7 +2,9 @@ package jmri.jmrit.operations.trains.tools;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+
 import javax.swing.AbstractAction;
+
 import jmri.jmrit.operations.trains.Train;
 
 /**
@@ -15,16 +17,15 @@ public class ShowCarsInTrainAction extends AbstractAction {
 
     Train _train;
 
-    public ShowCarsInTrainAction(String s, Train train) {
-        super(s);
-        this._train = train;
+    public ShowCarsInTrainAction(Train train) {
+        super(Bundle.getMessage("MenuItemShowCarsInTrain"));
+        _train = train;
     }
 
     ShowCarsInTrainFrame f = null;
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // create a copy train frame
         if (f == null || !f.isVisible()) {
             f = new ShowCarsInTrainFrame();
             f.initComponents(_train);

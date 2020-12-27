@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2008
  * @author Paul Bender Copyright (C) 2004,2010,2011
-  */
+ */
 public abstract class XNetNetworkPortController extends jmri.jmrix.AbstractNetworkPortController implements XNetPortController {
 
     private boolean timeSlot = true;
@@ -94,6 +94,6 @@ public abstract class XNetNetworkPortController extends jmri.jmrix.AbstractNetwo
         this.getSystemConnectionMemo().getXNetTrafficController().connectPort(this);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(XNetNetworkPortController.class);
+    private static final Logger log = LoggerFactory.getLogger(XNetNetworkPortController.class);
 
 }

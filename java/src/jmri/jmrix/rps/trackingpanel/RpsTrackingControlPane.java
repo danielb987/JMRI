@@ -11,9 +11,9 @@ import javax.swing.JTextField;
 
 /**
  *
- * Panel to control the scaling of a RpsTrackingPane
+ * Panel to control the scaling of a RpsTrackingPane.
  *
- * @author	Bob Jacobsen Copyright (C) 2008
+ * @author Bob Jacobsen Copyright (C) 2008
  */
 public class RpsTrackingControlPane extends JPanel {
 
@@ -81,4 +81,5 @@ public class RpsTrackingControlPane extends JPanel {
     public JTextField blXf;
     public JTextField blYf;
     double trX, trY, blX, blY;
+
 }

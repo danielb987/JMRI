@@ -1,15 +1,14 @@
 package jmri.jmrix.loconet;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
+import jmri.SpeedStepMode;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class Ib2ThrottleTest extends jmri.jmrix.AbstractThrottleTest {
 
@@ -37,8 +36,8 @@ public class Ib2ThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     @Test
     @Override
     public void testGetSpeedStepMode() {
-        int expResult = 2;
-        int result = instance.getSpeedStepMode();
+        SpeedStepMode expResult = SpeedStepMode.NMRA_DCC_28;
+        SpeedStepMode result = instance.getSpeedStepMode();
         Assert.assertEquals(expResult, result);
     }
 
@@ -58,8 +57,9 @@ public class Ib2ThrottleTest extends jmri.jmrix.AbstractThrottleTest {
      */
     @Test
     @Override
-    @Ignore("Speed steps on LocoNet are off. 1.0F reports back as speed step 124, not 127 as expected.  Speed step for 0.007874016f reports as speed step 12, not 2 as expected.")
     public void testGetSpeed_float() {
+        // set speed step mode to 128.
+        instance.setSpeedStepMode(jmri.SpeedStepMode.NMRA_DCC_128);
         Assert.assertEquals("Full Speed", 127, ((LocoNetThrottle)instance).intSpeed(1.0F));
         float incre = 0.007874016f;
         float speed = incre;
@@ -413,8 +413,7 @@ public class Ib2ThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         Assert.assertEquals(expResult, result);
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         JUnitUtil.setUp();
@@ -426,7 +425,7 @@ public class Ib2ThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         instance = new Ib2Throttle(memo,new LocoNetSlot(5));
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() {
         ((Ib2ThrottleManager)jmri.InstanceManager.getDefault(jmri.ThrottleManager.class)).dispose();

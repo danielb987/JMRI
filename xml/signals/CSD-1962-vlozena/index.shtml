@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<!--#include virtual="/Header" -->
+<!--#include virtual="/Header.shtml" -->
   <div class="nomenu" id="mBody">
     <div id="mainContent">
 
@@ -55,11 +55,13 @@ Signal Mast definitions:
     <li><a href="appearance-shunting_repeater.xml">Opakovací seřaďovací návěstidla</a> &ndash; Shunting signals repeater
     <li><a href="appearance-hump.xml">Spádovištní návěstidla</a> &ndash; Hump yard signals
     <li><a href="appearance-hump_repeater.xml">Opakovací spádovištní návěstidla</a> &ndash; Hump yard signals repeater
+    
+    <li><a href="appearance-test.xml">Test</a> &ndash; Test
 </ul>
 
 
     </div>
 </div>
-<!--#include virtual="/Footer" -->
+<!--#include virtual="/Footer.shtml" -->
 </body>
 </html>

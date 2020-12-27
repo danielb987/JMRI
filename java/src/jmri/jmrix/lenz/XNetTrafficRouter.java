@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implements an XNetInterface by doing a scatter-gather to another, simpler
  * implementation.
- * <P>
+ * <p>
  * This is intended for remote operation, where only one copy of each message
  * should go to/from another node. By putting a LnTrafficRouter implementation
  * at the remote node, all of the routing of messages to multiple consumers can
@@ -68,7 +68,7 @@ public class XNetTrafficRouter extends XNetTrafficController implements XNetList
     @Override
     public void notifyTimeout(XNetMessage msg) {
         if (log.isDebugEnabled()) {
-            log.debug("Notified of timeout on message" + msg.toString());
+            log.debug("Notified of timeout on message{}", msg.toString());
         }
     }
 
@@ -112,6 +112,6 @@ public class XNetTrafficRouter extends XNetTrafficController implements XNetList
         lastSender = null;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(XNetTrafficRouter.class);
+    private static final Logger log = LoggerFactory.getLogger(XNetTrafficRouter.class);
 
 }

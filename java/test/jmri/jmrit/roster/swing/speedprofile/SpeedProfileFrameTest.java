@@ -1,37 +1,33 @@
 package jmri.jmrit.roster.swing.speedprofile;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
-public class SpeedProfileFrameTest {
+public class SpeedProfileFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testCTor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        SpeedProfileFrame t = new SpeedProfileFrame();
-        Assert.assertNotNull("exists", t);
-        JUnitUtil.dispose(t);
-    }
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        JUnitUtil.initRosterConfigManager();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new SpeedProfileFrame();
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        JUnitUtil.deregisterBlockManagerShutdownTask();
+        super.tearDown();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(SpeedProfileFrameTest.class);

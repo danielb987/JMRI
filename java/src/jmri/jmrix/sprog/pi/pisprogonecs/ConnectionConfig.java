@@ -7,19 +7,21 @@ import jmri.util.SystemType;
  * SerialDriverAdapter object.
  *
  * @author Andrew Crosland Copyright (C) 2016
-  */
+ */
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
 
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p Serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -31,26 +33,6 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     }
 
     @Override
-    public String getManufacturer() {
-        return adapter.getManufacturer();
-    }
-
-    @Override
-    public void setManufacturer(String manu) {
-        adapter.setManufacturer(manu);
-    }
-    /*@Override
-     protected Vector<String> getPortFriendlyNames() {
-     System.out.println("Port names called");
-     Vector<String> portNameVector = new Vector<String>();
-     if(System.getProperty("os.name").toLowerCase().contains("windows")){
-     portNameVector.add("SPROG");
-     }
-     System.out.println("Port names called" + portNameVector);
-     return portNameVector;
-     }*/
-
-    @Override
     protected String[] getPortFriendlyNames() {
         if (SystemType.isWindows()) {
             return new String[]{"SPROG"};
@@ -58,10 +40,14 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return new String[]{};
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         if(adapter == null) {
            adapter = new PiSprogOneCSSerialDriverAdapter();
         }
     }
+
 }

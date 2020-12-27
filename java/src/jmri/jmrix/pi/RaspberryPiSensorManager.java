@@ -1,41 +1,38 @@
-
 package jmri.jmrix.pi;
 
+import javax.annotation.Nonnull;
 import jmri.Sensor;
 
 /**
  * Manage the RaspberryPi specific Sensor implementation.
  *
- * System names are "PSnnn", where nnn is the sensor number without padding.
+ * System names are "PSnnn", where P is the user configurable system prefix,
+ * nnn is the sensor number without padding.
  *
  * @author   Paul Bender Copyright (C) 2015
- * 
  */
 public class RaspberryPiSensorManager extends jmri.managers.AbstractSensorManager {
 
     // ctor has to register for RaspberryPi events
-    public RaspberryPiSensorManager(String prefix) {
-        super();
-        this.prefix=prefix.toUpperCase();
+    public RaspberryPiSensorManager(RaspberryPiSystemConnectionMemo memo) {
+        super(memo);
     }
 
     /**
-     * Provides access to the system prefix string.
-     * This was previously called the "System letter"
+     * {@inheritDoc}
      */
     @Override
-    public String getSystemPrefix(){ return prefix; }
-
-    private String prefix = null;
-
-    // to free resources when no longer used
-    @Override
-    public void dispose() {
-        super.dispose();
+    @Nonnull
+    public RaspberryPiSystemConnectionMemo getMemo() {
+        return (RaspberryPiSystemConnectionMemo) memo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Sensor createNewSensor(String systemName, String userName) {
+    @Nonnull
+    public Sensor createNewSensor(@Nonnull String systemName, String userName) {
         return new RaspberryPiSensor(systemName, userName);
     }
 
@@ -51,6 +48,17 @@ public class RaspberryPiSensorManager extends jmri.managers.AbstractSensorManage
     @Override
     public boolean isPullResistanceConfigurable(){
        return true;
+    }
+    
+    /**
+     * Validates to Integer Format 0-999 with valid prefix.
+     * eg. PS0 to PS999
+     * {@inheritDoc}
+     */
+    @Override
+    @Nonnull
+    public String validateSystemNameFormat(@Nonnull String name, @Nonnull java.util.Locale locale) throws jmri.NamedBean.BadSystemNameException {
+        return this.validateIntegerSystemNameFormat(name, 0, 999, locale);
     }
 
 }

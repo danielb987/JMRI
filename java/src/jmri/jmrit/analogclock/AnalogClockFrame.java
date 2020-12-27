@@ -21,7 +21,6 @@ import jmri.util.JmriJFrame;
 
 /**
  * Creates a JFrame containing an analog clockface and hands.
- *
  * <p>
  * Time code copied from code for the Nixie clock by Bob Jacobsen
  *
@@ -55,9 +54,7 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         // Without it, the button does not center properly
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(b = new JButton(Bundle.getMessage("ButtonPauseClock")));
-        if (!clock.getRun()) {
-            b.setText(Bundle.getMessage("ButtonRunClock"));
-        }
+        updateButtonText();
         b.addActionListener(new ButtonListener());
         b.setOpaque(true);
         b.setVisible(true);
@@ -69,11 +66,8 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         update();  // set proper time
 
         // request callback to update time
-        clock.addMinuteChangeListener(new java.beans.PropertyChangeListener() {
-            @Override
-            public void propertyChange(java.beans.PropertyChangeEvent e) {
-                update();
-            }
+        clock.addMinuteChangeListener((java.beans.PropertyChangeEvent e) -> {
+            update();
         });
 
     }
@@ -297,37 +291,29 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         repaint();
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-    }
-
     /**
-     * Handle a change to clock properties
+     * Handle a change to clock properties.
+     * @param e unused.
      */
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
-        boolean now = clock.getRun();
-        if (now) {
-            b.setText(Bundle.getMessage("ButtonPauseClock"));
-        } else {
-            b.setText(Bundle.getMessage("ButtonRunClock"));
-        }
+        updateButtonText();
+    }
+    
+    /**
+     * Update clock button text.
+     */
+    private void updateButtonText(){
+        b.setText( Bundle.getMessage( clock.getRun() ? "ButtonPauseClock" : "ButtonRunClock") );
     }
 
     JButton b;
 
     private class ButtonListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent a) {
-            boolean next = !clock.getRun();
-            clock.setRun(next);
-            if (next) {
-                b.setText(Bundle.getMessage("ButtonPauseClock"));
-            } else {
-                b.setText(Bundle.getMessage("ButtonRunClock"));
-            }
+            clock.setRun(!clock.getRun());
+            updateButtonText();
         }
     }
 

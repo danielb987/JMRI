@@ -1,10 +1,8 @@
 package jmri.jmrit.operations.rollingstock.engines;
 
 import jmri.jmrit.operations.OperationsTestCase;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the Operations RollingStock Engine class Last manually
@@ -15,7 +13,7 @@ import org.junit.Test;
  * Everything Consist: Everything Import: Everything EngineManager: Engine
  * register/deregister EngineManager: Consists
  *
- * @author	Bob Coleman Copyright (C) 2008, 2009
+ * @author Bob Coleman Copyright (C) 2008, 2009
  */
 public class EngineLengthsTest extends OperationsTestCase {
 
@@ -57,17 +55,4 @@ public class EngineLengthsTest extends OperationsTestCase {
     }
 
     // TODO: Add test for import
-    // from here down is testing infrastructure
-    // Ensure minimal setup for log4J
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-       super.tearDown();
-    }
 }

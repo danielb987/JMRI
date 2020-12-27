@@ -1,62 +1,45 @@
 package jmri.jmris;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the jmri.jmris.JmriServer class 
  *
  * @author Paul Bender
  */
-public class JmriServerTest extends TestCase {
+public class JmriServerTest {
 
+    @Test
     public void testCtorDefault() {
         JmriServer a = new JmriServer();
-        Assert.assertNotNull(a);
+        assertThat(a).isNotNull();
     }
 
+    @Test
     public void testCtorPort() {
         JmriServer a = new JmriServer(25520);
-        Assert.assertNotNull(a);
+        assertThat(a).isNotNull();
         jmri.util.JUnitAppender.suppressErrorMessage("Failed to connect to port 25520");
     }
 
+    @Test
     public void testCtorPortAndTimeout() {
         JmriServer a = new JmriServer(25520,100);
-        Assert.assertNotNull(a);
+        assertThat(a).isNotNull();
         jmri.util.JUnitAppender.suppressErrorMessage("Failed to connect to port 25520");
     }
 
-    // from here down is testing infrastructure
-    public JmriServerTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {JmriServerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(jmri.jmris.JmriServerTest.class);
-
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         jmri.util.JUnitUtil.setUp();
-        super.setUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() {
         jmri.util.JUnitUtil.tearDown();
 
     }

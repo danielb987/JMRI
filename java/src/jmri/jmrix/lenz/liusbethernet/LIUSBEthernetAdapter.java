@@ -22,14 +22,6 @@ public class LIUSBEthernetAdapter extends XNetNetworkPortController {
     static final int COMMUNICATION_TCP_PORT = 5550;
     static final String DEFAULT_IP_ADDRESS = "192.168.0.200";
 
-    private java.util.TimerTask keepAliveTimer; // Timer used to periodically
-    // send a message to both
-    // ports to keep the ports 
-    // open
-    private static final int keepAliveTimeoutValue = 30000; // Interval 
-    // to send a message
-    // Must be < 60s.
-
     public LIUSBEthernetAdapter() {
         super();
         log.debug("Constructor Called");
@@ -74,38 +66,13 @@ public class LIUSBEthernetAdapter extends XNetNetworkPortController {
         // packets.startThreads();
         this.getSystemConnectionMemo().setXNetTrafficController(packets);
 
-        new XNetInitializationManager(this.getSystemConnectionMemo());
-        keepAliveTimer();
-    }
-
-    /**
-     * Set up the keepAliveTimer, and start it.
-     */
-    private void keepAliveTimer() {
-        if (keepAliveTimer == null) {
-            keepAliveTimer = new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    // If the timer times out, and we are not currently 
-                    // programming, send a request for status
-                    jmri.jmrix.lenz.XNetSystemConnectionMemo m = LIUSBEthernetAdapter.this
-                            .getSystemConnectionMemo();
-                    XNetTrafficController t = m.getXNetTrafficController();
-                    jmri.jmrix.lenz.XNetProgrammer p = null;
-                    if(m.provides(jmri.GlobalProgrammerManager.class)){
-                        p = (jmri.jmrix.lenz.XNetProgrammer) (m.getProgrammerManager().getGlobalProgrammer());
-                    }
-                    if (p == null || !(p.programmerBusy())) {
-                       t.sendXNetMessage(
-                        jmri.jmrix.lenz.XNetMessage.getCSStatusRequestMessage(),
-                        null);
-                    }
-                }
-            };
-        } else {
-            keepAliveTimer.cancel();
-        }
-        new java.util.Timer("LIUSB Ethernet Keepalive timer").schedule(keepAliveTimer, keepAliveTimeoutValue, keepAliveTimeoutValue);
+        new XNetInitializationManager()
+                .memo(this.getSystemConnectionMemo())
+                .setDefaults()
+                .versionCheck()
+                .setTimeout(30000)
+                .init();
+        new jmri.jmrix.lenz.XNetHeartBeat(this.getSystemConnectionMemo());
     }
 
     private boolean mDNSConfigure = false;
@@ -203,6 +170,6 @@ public class LIUSBEthernetAdapter extends XNetNetworkPortController {
         return Bundle.getMessage("defaultMDNSServiceType");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LIUSBEthernetAdapter.class);
+    private static final Logger log = LoggerFactory.getLogger(LIUSBEthernetAdapter.class);
 
 }

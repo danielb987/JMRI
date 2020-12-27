@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
  * JMRI profile is not acceptable.
  * <p>
  * This class deliberately overrides all methods of {@link jmri.profile.Profile}
- * that access the {@link #name} and {@link #id} fields to remove protections
+ * that access the {@code name} and {@code id} fields to remove protections
  * and restrictions on those fields.
  *
  * @author Randall Wood Copyright (C) 2014
@@ -59,8 +59,9 @@ public class NullProfile extends Profile {
      *             will be used to generate the id.
      * @param path The path where the profile is stored.
      * @throws java.io.IOException If path is not readable.
+     * @throws IllegalArgumentException If a profile already exists at or within path
      */
-    public NullProfile(String name, String id, @Nonnull File path) throws IOException, IllegalArgumentException {
+    public NullProfile(String name, String id, @Nonnull File path) throws IOException {
         this(path, (null != id) ? id : ProfileManager.createUniqueId());
         this.setNameInConstructor(name);
     }
@@ -106,6 +107,6 @@ public class NullProfile extends Profile {
      */
     @Override
     public String getUniqueId() {
-        return this.getId(); // NOI18N
+        return this.getId();
     }
 }

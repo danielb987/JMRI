@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Persist RPS configuration information
- * <P>
+ * Persist RPS configuration information.
+ *
  * @author Bob Jacobsen Copyright 2007, 2008
  */
 public class PositionFile extends XmlFile {
@@ -25,8 +25,8 @@ public class PositionFile extends XmlFile {
 
     /**
      * Initialize for writing information.
-     * <P>
-     * This is followed by multiple "set" calls, then a "store"
+     * <p>
+     * This is followed by multiple "set" calls, then a "store".
      */
     public void prepare() {
         root = new Element("rpsfile");
@@ -147,7 +147,10 @@ public class PositionFile extends XmlFile {
     }
 
     /**
-     * Read in the file, and make available for examination
+     * Read in the file, and make available for examination.
+     * @param f file to load.
+     * @throws org.jdom2.JDOMException other errors
+     * @throws java.io.IOException error accessing file
      */
     public void loadFile(File f)
             throws org.jdom2.JDOMException, java.io.IOException {
@@ -172,6 +175,7 @@ public class PositionFile extends XmlFile {
 
     /**
      * FInd the highest numbered receiver in the file
+     * @return highest numbered receiver.
      */
     public int maxReceiver() {
         List<Element> kids = root.getChildren("receiver");
@@ -195,6 +199,7 @@ public class PositionFile extends XmlFile {
     /**
      * Get the nth receiver position in the file.
      *
+     * @param n receiver index.
      * @return null if not present
      */
     public Point3d getReceiverPosition(int n) {
@@ -221,6 +226,7 @@ public class PositionFile extends XmlFile {
     /**
      * Get the nth receiver active state in the file.
      *
+     * @param n receiver index.
      * @return true if not present
      */
     public boolean getReceiverActive(int n) {
@@ -255,6 +261,7 @@ public class PositionFile extends XmlFile {
     /**
      * Get the nth receiver min time.
      *
+     * @param n receiver index.
      * @return 0 if not present
      */
     public int getReceiverMin(int n) {
@@ -290,6 +297,7 @@ public class PositionFile extends XmlFile {
     /**
      * Get the nth receiver max time.
      *
+     * @param n receiver index.
      * @return 0 if not present
      */
     public int getReceiverMax(int n) {
@@ -325,6 +333,7 @@ public class PositionFile extends XmlFile {
     /**
      * Get the nth calibration position in the file.
      *
+     * @param n calibration index.
      * @return null if not present
      */
     public Point3d getCalibrationPosition(int n) {
@@ -339,6 +348,7 @@ public class PositionFile extends XmlFile {
     /**
      * Get the nth calibration reading in the file.
      *
+     * @param n reading index.
      * @return null if not present
      */
     public Reading getCalibrationReading(int n) {
@@ -362,4 +372,5 @@ public class PositionFile extends XmlFile {
 
     // initialize logging
     private final static Logger log = LoggerFactory.getLogger(PositionFile.class);
+
 }

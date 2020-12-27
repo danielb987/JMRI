@@ -41,7 +41,9 @@ public class RosterFrameAction extends JmriAbstractAction {
     }
 
     /**
-     * Method for opening a new window via the classic JMRI interface
+     * Method for opening a new window via the classic JMRI interface.
+     * @param pName action name.
+     * @param allowQuit Set state to either close JMRI or just the roster window.
      */
     public RosterFrameAction(String pName, boolean allowQuit) {
         super(pName);
@@ -54,7 +56,7 @@ public class RosterFrameAction extends JmriAbstractAction {
     public void actionPerformed(ActionEvent event) {
         RosterFrame mainFrame = new RosterFrame();
         UserPreferencesManager p = InstanceManager.getDefault(jmri.UserPreferencesManager.class);
-        if (!p.isWindowPositionSaved(mainFrame.getWindowFrameRef())) {
+        if (!p.hasProperties(mainFrame.getWindowFrameRef())) {
             mainFrame.setSize(new Dimension(1024, 600));
             mainFrame.setPreferredSize(new Dimension(1024, 600));
         }

@@ -1,7 +1,5 @@
 package jmri.jmrix.lenz.swing.lv102;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -13,7 +11,7 @@ import javax.swing.JPanel;
  * is defined in {@link LV102InternalFrame}
  *
  * @author Paul Bender Copyright (C) 2004,2005
-  */
+ */
 public class LV102Frame extends jmri.util.JmriJFrame {
 
     public LV102Frame() {
@@ -40,22 +38,12 @@ public class LV102Frame extends jmri.util.JmriJFrame {
         pack();
 
         // install close button handler
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent a) {
-                setVisible(false);
-                dispose();
-            }
-        }
-        );
+        closeButton.addActionListener(a -> {
+            setVisible(false);
+            dispose();
+        });
     }
 
-    JButton closeButton = new JButton(Bundle.getMessage("ButtonClose"));
-
-    @Override
-    public void dispose() {
-        // take apart the JFrame
-        super.dispose();
-    }
+    final JButton closeButton = new JButton(Bundle.getMessage("ButtonClose"));
 
 }

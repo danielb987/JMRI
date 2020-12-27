@@ -21,7 +21,7 @@ public abstract class BeanTableModel extends AbstractTableModel {
         }
     }
 
-    public abstract Manager getManager();
+    public abstract Manager<?> getManager();
 
     @Override
     public int getColumnCount() {
@@ -30,7 +30,7 @@ public abstract class BeanTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return getManager().getSystemNameList().size();
+        return getManager().getNamedBeanSet().size();
     }
 
     @Override
@@ -46,26 +46,35 @@ public abstract class BeanTableModel extends AbstractTableModel {
     public String getColumnName(int c) {
         switch (c) {
             case SNAME_COLUMN:
-                return "System Name";
+                return Bundle.getMessage("ColumnSystemName");
             case UNAME_COLUMN:
-                return "User Name";
+                return Bundle.getMessage("ColumnUserName");
             case INCLUDE_COLUMN:
-                return "Included";
+                return Bundle.getMessage("ColumnIncluded");
             default:
                 return "";
         }
     }
 
     /**
-     * User name column must be handled by subclass
+     * User name column must be handled by subclass.
+     * {@inheritDoc}
      */
     @Override
     public Object getValueAt(int r, int c) {
         switch (c) {
-            case SNAME_COLUMN:  // slot number
-                return getManager().getSystemNameList().get(r);
+            case SNAME_COLUMN:  // system name
+                int i=0;
+                for (jmri.NamedBean bean : getManager().getNamedBeanSet()) {
+                    if ( i==r ){
+                        return bean.getSystemName();
+                    }
+                    i++;
+                }
+                log.error("No system name for row {}",r);
+                return "";
             default:
-                log.warn("getValueAt should not have been asked about c=" + c);
+                log.warn("getValueAt should not have been asked about c={}", c);
                 return null;
         }
     }

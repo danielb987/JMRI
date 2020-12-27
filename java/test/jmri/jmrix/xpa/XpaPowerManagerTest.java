@@ -1,14 +1,13 @@
 package jmri.jmrix.xpa;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+
+import jmri.util.junit.annotations.NotApplicable;
 
 /**
- * Description:	tests for the jmri.jmrix.xpa.XpaPowerManager class
- * <P>
- * @author	Paul Bender
+ * Tests for the jmri.jmrix.xpa.XpaPowerManager class.
+ *
+ * @author Paul Bender
  */
 public class XpaPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBase {
 
@@ -69,26 +68,27 @@ public class XpaPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBase
 
     @Test
     @Override
-    @Ignore("unsolicited state changes are currently ignored")
+    @NotApplicable("no unsolicited changes")
     public void testStateOn() {
     }
 
     @Test
     @Override
-    @Ignore("unsolicited state changes are currently ignored")
+    @NotApplicable("no unsolicited changes")
     public void testStateOff() {
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         jmri.util.JUnitUtil.setUp();
         tc = new XpaTrafficControlScaffold();
-        p = new XpaPowerManager(tc);
+        XpaSystemConnectionMemo memo = new XpaSystemConnectionMemo();
+        memo.setXpaTrafficController(tc);
+        p = new XpaPowerManager(memo);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         jmri.util.JUnitUtil.tearDown();
         tc = null;

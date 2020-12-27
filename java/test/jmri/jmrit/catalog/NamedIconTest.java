@@ -3,17 +3,19 @@ package jmri.jmrit.catalog;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.PixelGrabber;
+
 import javax.swing.JLabel;
+
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
- * @author Joe Comuzzi Copyright (C) 2018	
+ * @author Joe Comuzzi Copyright (C) 2018
  */
 public class NamedIconTest {
 
@@ -23,6 +25,42 @@ public class NamedIconTest {
     @Test
     public void testCTor() {
         NamedIcon t = new NamedIcon("program:resources/logo.gif","logo");
+        Assert.assertNotNull("exists",t);
+    }
+
+    /**
+     * Test bad prefix on file name
+     */
+    @Test
+    public void testBadPrefix() {
+        NamedIcon t = new NamedIcon("foof:biff.gif","logo");
+        JUnitAppender.assertErrorMessageStartsWith("Did not find \"foof:biff.gif\" for NamedIcon");
+        JUnitAppender.assertWarnMessage("Could not load image from foof:biff.gif (file does not exist)");
+        JUnitAppender.assertWarnMessage("NamedIcon can't scan foof:biff.gif for animated status");
+        Assert.assertNotNull("exists",t);
+    }
+
+    /**
+     * Test no file at prefixed URL
+     */
+    @Test
+    public void testNoFileBehindPrefix() {
+        NamedIcon t = new NamedIcon("program:resources/foo/foo/foo/foo.gif","logo");
+        JUnitAppender.assertErrorMessageStartsWith("Did not find \"program:resources/foo/foo/foo/foo.gif\" for NamedIcon");
+        JUnitAppender.assertWarnMessage("Could not load image from program:resources/foo/foo/foo/foo.gif (file does not exist)");
+        JUnitAppender.assertWarnMessage("NamedIcon can't scan program:resources/foo/foo/foo/foo.gif for animated status");
+        Assert.assertNotNull("exists",t);
+    }
+
+    /**
+     * Test no file at relative URL
+     */
+    @Test
+    public void testNoFileRelative() {
+        NamedIcon t = new NamedIcon("resources/foo/foo/foo/foo.gif","logo");
+        JUnitAppender.assertErrorMessageStartsWith("Did not find \"resources/foo/foo/foo/foo.gif\" for NamedIcon");
+        JUnitAppender.assertWarnMessage("Could not load image from resources/foo/foo/foo/foo.gif (file does not exist)");
+        JUnitAppender.assertWarnMessage("NamedIcon can't scan resources/foo/foo/foo/foo.gif for animated status");
         Assert.assertNotNull("exists",t);
     }
 
@@ -115,9 +153,9 @@ public class NamedIconTest {
         // Be wary of numerical instability in these tests. e.g. because of rounding in NamedIcon, sometimes
         // cos(30) is not exactly 0.5 and the ceil operation gives different answers!
         double sqrt3 = Math.sqrt(3);
-        int expectedHeight = (int) (Math.ceil(h * sqrt3 * scale / 2.0) + Math.ceil(w * scale / 2.0));
+        int expectedHeight = (int) (Math.ceil(h * sqrt3 * scale / 2.0 + w * scale / 2.0));
         Assert.assertEquals(expectedHeight, ni.getIconHeight());
-        int expectedWidth = (int) (Math.ceil(h * scale / 2.0) + Math.ceil(w * sqrt3 * scale / 2.0));
+        int expectedWidth = (int) (Math.ceil(h * scale / 2.0 + w * sqrt3 * scale / 2.0));
         Assert.assertEquals(expectedWidth, ni.getIconWidth());
     }
     
@@ -232,6 +270,27 @@ public class NamedIconTest {
             }
         }
     }
+    
+    /**
+     * Test rotate and scale with blinking GIF. This will use the animated GIF codepath.
+     */
+    @Test
+    public void testAnimatedGif() {
+        NamedIcon ni = new NamedIcon("program:resources/icons/largeschematics/aspects/CSD-1962/003_o40_p.gif", "blink");
+        int h = ni.getIconHeight();
+        int w = ni.getIconWidth();
+        JLabel comp = new JLabel();
+        
+        double scale = 2.0;
+        
+        ni.scale(scale, comp);
+        ni.rotate(270, comp);
+        // The +1 in the below is a bit of a crock, but it's because the argument of
+        // Math.ceil(Math.abs(w*Math.cos(rad))) is slightly more than zero, so it
+        // rounds up!
+        Assert.assertEquals((int) Math.ceil(w * scale) + 1, ni.getIconHeight());
+        Assert.assertEquals((int) Math.ceil(h * scale), ni.getIconWidth());       
+    }
 
     /**
      * Helper routine to grab the pixels from an Image
@@ -250,13 +309,12 @@ public class NamedIconTest {
         return pixels;
     }
      
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

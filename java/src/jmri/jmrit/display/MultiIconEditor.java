@@ -1,7 +1,5 @@
 package jmri.jmrit.display;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -13,7 +11,7 @@ import jmri.jmrit.catalog.NamedIcon;
 /**
  * Provides a simple editor for selecting N NamedIcons, perhaps for use in
  * creating a panel icon.
- * <P>
+ * <p>
  * See {@link SensorIcon} for an item that might want to have that type of
  * information, and {@link jmri.jmrit.display.panelEditor.PanelEditor} for an
  * example of how to use this.
@@ -72,13 +70,7 @@ public class MultiIconEditor extends JPanel {
         IconButton(int index, Icon init) {  // init icon passed to avoid ref before ctor complete
             super(init);
             savedIndex = index;
-            addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent a) {
-                    pickIcon();
-                }
-            }
-            );
+            addActionListener(a -> pickIcon());
         }
 
         int savedIndex;

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an extention of the XNetPacketizer to handle the device specific
  * requirements of the LI100.
- * <P>
+ * <p>
  * In particular, LI100XNetPacketizer overrides the automatic exit from service
  * mode in the AbstractMRTrafficController.
  *
@@ -29,6 +29,6 @@ public class LI100XNetPacketizer extends XNetPacketizer {
         return null;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LI100XNetPacketizer.class);
+    private static final Logger log = LoggerFactory.getLogger(LI100XNetPacketizer.class);
 
 }

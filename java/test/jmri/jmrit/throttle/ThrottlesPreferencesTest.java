@@ -1,49 +1,94 @@
 package jmri.jmrit.throttle;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
+import org.junit.Assume;
+
+import java.awt.Dimension;
 
 /**
  * Test simple functioning of ThrottlesPreferences
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class ThrottlesPreferencesTest extends TestCase {
+public class ThrottlesPreferencesTest {
+    private ThrottlesPreferences preferences;
 
+    @Test
     public void testCtor() {
-        ThrottlesPreferences panel = new ThrottlesPreferences();
-        Assert.assertNotNull("exists", panel );
+        Assert.assertNotNull("exists", preferences);
+        Assert.assertFalse("default preferences not dirty", preferences.isDirty());
     }
 
-    // from here down is testing infrastructure
-    public ThrottlesPreferencesTest(String s) {
-        super(s);
+    @Test
+    public void testIsUsingIcons() {
+        Assume.assumeNotNull(preferences);
+        Assume.assumeFalse(preferences.isDirty());
+
+        Assert.assertTrue("default using extended throttle", preferences.isUsingExThrottle());
+        Assert.assertFalse("default not using icons", preferences.isUsingIcons());
+
+        preferences.setUsingFunctionIcon(true);
+        Assert.assertTrue("preferences dirty after setting icons", preferences.isDirty());
+        Assert.assertTrue("use icons after setting setUsingFunctionIcon", preferences.isUsingIcons());
+
+        preferences.setUseExThrottle(false);
+        Assert.assertFalse("don't use icons after disabled extended throttle", preferences.isUsingIcons());
     }
 
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", ThrottlesPreferencesTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
+    @Test
+    public void testWindowDimension() {
+        Assume.assumeNotNull(preferences);
+        Assume.assumeFalse(preferences.isDirty());
+
+        Dimension d = new Dimension(800, 600);
+        Assert.assertEquals("default window dimensions", preferences.getWindowDimension(), d);
+
+        d.width = 640;
+        d.height = 480;
+        preferences.setWindowDimension(d);
+        Assert.assertTrue("preferences dirty after setting window dimensions",
+            preferences.isDirty());
+
+        Dimension d2 = new Dimension(640, 480);
+        Assert.assertEquals("test sanity", d, d2);
+        Assert.assertEquals("new window dimensions", preferences.getWindowDimension(), d2);
     }
 
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(ThrottlesPreferencesTest.class);
-        return suite;
+    @Test
+    public void testUseExThrottle() {
+        Assume.assumeNotNull(preferences);
+        Assume.assumeFalse(preferences.isDirty());
+
+        Assert.assertTrue("default extended throttle to true", preferences.isUsingExThrottle());
+
+        preferences.setUseExThrottle(false);
+
+        Assert.assertFalse("ex throttle setting was updated", preferences.isUsingExThrottle());
+        Assert.assertTrue("preferences dirty after changing extened throttle setting", preferences.isDirty());
     }
 
-    @Override
+    @Test
+    public void testUsingToolbar() {
+        Assume.assumeNotNull(preferences);
+        Assume.assumeFalse(preferences.isDirty());
+
+        Assert.assertTrue("default is using toolbar to true", preferences.isUsingToolBar());
+
+        preferences.setUsingToolBar(false);
+
+        Assert.assertFalse("using toolbar setting was updated", preferences.isUsingToolBar());
+        Assert.assertTrue("preferences dirty after toolbar setting update", preferences.isDirty());
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         jmri.util.JUnitUtil.setUp();
-
+        preferences = new ThrottlesPreferences();
     }
-    
-    @Override
+
+    @AfterEach
     public void tearDown() throws Exception {
-        super.tearDown();
         jmri.util.JUnitUtil.tearDown();
 
     }

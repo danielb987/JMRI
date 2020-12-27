@@ -21,8 +21,14 @@
     <revision>
         <revnumber>1</revnumber>
         <date>2016-12-28</date>
-        <authorinitials>PS</authorinitials>
+        <authorinitials>PŠ</authorinitials>
         <revremark>Initial version</revremark>
+    </revision>    
+    <revision>
+        <revnumber>2</revnumber>
+        <date>2020-07-15</date>
+        <authorinitials>PŠ</authorinitials>
+        <revremark>Image types</revremark>
     </revision>    
   </revhistory>
 
@@ -35,13 +41,15 @@
     <appearance>
       <aspectname>Volno</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/401_volno_p.gif</imagelink>
-      <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/401_volno_p_n.gif</imagelink>
+      <imagelink type="prototype-night">../../../resources/icons/largeschematics/aspects/CSD-1962/401_volno_p_n.gif</imagelink>
+      <imagelink type="předvěst">../../../resources/icons/largeschematics/aspects/CSD-1962/401_volno_p.gif</imagelink>
     </appearance>
 
     <appearance>
       <aspectname>Výstraha</aspectname>
       <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/402_vystraha_p.gif</imagelink>
-      <imagelink type="prototype">../../../resources/icons/largeschematics/aspects/CSD-1962/402_vystraha_p_n.gif</imagelink>
+      <imagelink type="prototype-night">../../../resources/icons/largeschematics/aspects/CSD-1962/402_vystraha_p_n.gif</imagelink>
+      <imagelink type="předvěst">../../../resources/icons/largeschematics/aspects/CSD-1962/402_vystraha_p.gif</imagelink>
     </appearance>
 
   </appearances>

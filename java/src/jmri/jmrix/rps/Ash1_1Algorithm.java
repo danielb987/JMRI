@@ -8,39 +8,39 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of version 1.1 algorithm for reducing Readings
- * <P>
+ * <p>
  * This algorithm was provided by Robert Ashenfelter based in part on the work
  * of Ralph Bucher in his paper "Exact Solution for Three Dimensional Hyperbolic
  * Positioning Algorithm and Synthesizable VHDL Model for Hardware
  * Implementation".
- * <P>
+ * <p>
  * Neither Ashenfelter nor Bucher provide any guarantee as to the intellectual
  * property status of this algorithm. Use it at your own risk.
  *
  *
  * The following is a summary of this version from Robert Ashenfelter:
- * <P>
+ * <p>
  * When the receivers are in a plane or nearly so there is a spurious solution
  * on the other side of the plane from the correct solution and in certain
  * situations the version 1.0 program may choose the wrong solution.
- * <P>
+ * <p>
  * It turns out that those situations are when the receiver configuration is not
  * sufficiently non-planar for the size of the measurement errors. The greater
  * the errors, the greater the non-planarity must be to avoid he bug.
- * <P>
+ * <p>
  * I had hoped to be able to devise some measure of the non-planarity of the
  * receiver configuration and to set some threshold below which the program
  * would switch to a different algorithm but this didn't seem to be working out
  * very well. After trying several things, I have chosen to use an iterative
  * procedure to determine an approximate solution.
- * <P>
+ * <p>
  * Here is a description of the new program.
- * <P>
+ * <p>
  * As before the first thing it does is sort the receivers in order of
  * increasing time delay, discarding those that failed or are too far or too
  * near, and using the closest ones. There is a maximum that are used, still set
  * at 15.
- * <P>
+ * <p>
  * Next it computes a preliminary transmitter position which is used to
  * discriminate against spurious solutions and to compute weights. This is the
  * part of the program that has been changed to fix the bug. The new algorithm
@@ -54,28 +54,28 @@ import org.slf4j.LoggerFactory;
  * repetitive fixed order. Rather than start with the origin as the initial
  * position, it now starts from a position far, far below. This removes the
  * restriction that the origin must be below the receivers.
- * <P>
+ * <p>
  * Finally, as before, the transmitter position is computed as a weighted
  * average of the GPS solutions for all possible sets of three receivers. (For
  * 15 receivers, that's 455 solutions.) The weights are the same as before.
  * Unless one of them chooses a spurious solution, both versions of the program
  * produce the same computed position.
- * <P>
+ * <p>
  * Restrictions:
- * <OL>
- * <LI>The origin can be anywhere, but the z-axis must be vertical with positive
+ * <ol>
+ * <li>The origin can be anywhere, but the z-axis must be vertical with positive
  * z upward.
  *
- * <LI>In general, the transmitter should be below some or all of the receivers.
+ * <li>In general, the transmitter should be below some or all of the receivers.
  * How much below depends on the receiver configuration.
  *
- * <LI>If the receivers are in a plane, or nearly so, the transmitter must
+ * <li>If the receivers are in a plane, or nearly so, the transmitter must
  * absolutely be below the plane. As it approaches the plane (such that the
  * lines-of-sight to the receivers make shallow angles with respect to the
  * plane), the accuracy degrades and ultimately the program may report failure.
  * If above the plane, the program reports incorrect positions.
  *
- * <LI>If the receivers are not in a plane, it may be possible to move the
+ * <li>If the receivers are not in a plane, it may be possible to move the
  * transmitter up among them. In general it should remain inside or below the
  * volume of space contained by the receivers. However if the configuration is
  * sufficiently non-planar the transmitter can go farther. But the limits are
@@ -85,8 +85,8 @@ import org.slf4j.LoggerFactory;
  * corners of a cube, which is about as non-planar as it gets. In this case the
  * transmitter can go outside the cube by several times the width of the cube,
  * both laterally and vertically, before the program gets into trouble.
- * </OL>
- * <P>
+ * </ol>
+ * <p>
  * I have tested the program with nearly 20 different receiver configurations
  * having from 3 to 100 receivers. Most were tested at 60 or more transmitter
  * locations and with infinitesimal, nominal (+/-0.25 inches--Walter's spec.),
@@ -100,7 +100,7 @@ import org.slf4j.LoggerFactory;
  * 10 x 5-foot space with receivers arranged in 4 rows of 25, one row on each
  * long wall and two rows on the ceiling. Performance (i.e. accuracy of the
  * measured transmitter position) is excellent throughout this latter space.
- * <P>
+ * <p>
  * Two other configurations are 20-foot-diameter geodesic domes with receivers
  * located at the vertices of the triangular faces of the domes, one with 16
  * receivers and one with 46. Performance is good throughout the interior of
@@ -109,18 +109,18 @@ import org.slf4j.LoggerFactory;
  * number of closest receivers used by the position program. In order to do
  * justice to this, or any other configuration with closely-spaced receivers,
  * the program needs to use data from more than the 15 receivers currently used.
- * <P>
+ * <p>
  * As a result of all this testing, I feel pretty confident that version 1.1
  * works reliably if used within the restrictions listed above. But the
  * disclaimer about "usability and correctness" stays.
- * <P>
+ * <p>
  * The execution time is increased a little by all those iterations. It now
  * ranges from 0.5 millisecond with 3 receivers to 1.9 millisecond with 15 or
  * more receivers (1.0 GHz Pentium III).
- * <P>
- * @author	Robert Ashenfelter Copyright (C) 2006
- * @author	Bob Jacobsen Copyright (C) 2006
-  */
+ *
+ * @author Robert Ashenfelter Copyright (C) 2006
+ * @author Bob Jacobsen Copyright (C) 2006
+ */
 public class Ash1_1Algorithm implements Calculator {
 
     public Ash1_1Algorithm(Point3d[] sensors, double vsound) {
@@ -132,20 +132,11 @@ public class Ash1_1Algorithm implements Calculator {
     }
 
     public Ash1_1Algorithm(Point3d sensor1, Point3d sensor2, Point3d sensor3, double vsound) {
-        this(null, vsound);
-        sensors = new Point3d[3];
-        sensors[0] = sensor1;
-        sensors[1] = sensor2;
-        sensors[2] = sensor3;
+        this(new Point3d[]{sensor1, sensor2, sensor3}, vsound);
     }
 
     public Ash1_1Algorithm(Point3d sensor1, Point3d sensor2, Point3d sensor3, Point3d sensor4, double vsound) {
-        this(null, vsound);
-        sensors = new Point3d[4];
-        sensors[0] = sensor1;
-        sensors[1] = sensor2;
-        sensors[2] = sensor3;
-        sensors[3] = sensor4;
+        this(new Point3d[]{sensor1, sensor2, sensor3, sensor4}, vsound);
     }
 
     double Vs;
@@ -158,7 +149,7 @@ public class Ash1_1Algorithm implements Calculator {
 
         int nr = r.getNValues();
         if (nr != sensors.length) {
-            log.error("Mismatch: " + nr + " readings, " + sensors.length + " receivers");
+            log.error("Mismatch: {} readings, {} receivers", nr, sensors.length);
         }
         nr = Math.min(nr, sensors.length); // accept the shortest
 
@@ -179,7 +170,7 @@ public class Ash1_1Algorithm implements Calculator {
         Zt = result.z;
         Vs = result.vs;
 
-        log.debug("x = " + Xt + " y = " + Yt + " z0 = " + Zt + " code = " + result.code);
+        log.debug("x = {} y = {} z0 = {} code = {}", Xt, Yt, Zt, result.code);
         return new Measurement(r, Xt, Yt, Zt, Vs, result.code, "Ash1_1Algorithm");
     }
 
@@ -227,18 +218,18 @@ public class Ash1_1Algorithm implements Calculator {
      * The following is the original algorithm, as provided by Ash as a C
      * routine
      */
-//	RPS  POSITION  SOLVER	Version 1.1	by R. C. Ashenfelter   12-02-06
+//    RPS POSITION SOLVER Version 1.1 by R. C. Ashenfelter 12-02-06
 
-    /*							*
-     *  This algorithm was provided by Robert Ashenfelter	*
-     *  who provides no guarantee as to its usability,	*
-     *  correctness nor intellectual property status.	*
-     *  Use it at your own risk.				*
-     *							*/
-    static final int OFFSET = 0;    		//  Offset (usec), add to delay
-    static final int TMAX = 35000;		//  Max. allowable delay (usec)
-    static final int TMIN = 150;  		//  Min. allowable delay (usec)
-    static final int NMAX = 15;			//  Max. no. of receivers used
+    /*
+     * This algorithm was provided by Robert Ashenfelter
+     * who provides no guarantee as to its usability,
+     * correctness nor intellectual property status.
+     * Use it at your own risk.
+     */
+    static final int OFFSET = 0;   //  Offset (usec), add to delay
+    static final int TMAX = 35000; //  Max. allowable delay (usec)
+    static final int TMIN = 150;   //  Min. allowable delay (usec)
+    static final int NMAX = 15;    //  Max. no. of receivers used
 
     double x, y, z, x0, y0, z0, Rmax;
     double xi, yi, zi, ri, xj, yj, zj, rj, xk, yk, zk, rk;
@@ -368,14 +359,14 @@ public class Ash1_1Algorithm implements Calculator {
     double wgt() {// Weighting Function
         double w;
 
-        w = (1 - ri / Rmax) * (1 - rj / Rmax) * (1 - rk / Rmax);//			 Ranges
-        w *= 1.0 - Math.pow(((x - xi) * (x - xj) + (y - yi) * (y - yj) + (z - zi) * (z - zj)) / ri / rj, 2.);//Angles
+        w = (1 - ri / Rmax) * (1 - rj / Rmax) * (1 - rk / Rmax); // Ranges
+        w *= 1.0 - Math.pow(((x - xi) * (x - xj) + (y - yi) * (y - yj) + (z - zi) * (z - zj)) / ri / rj, 2.); // Angles
         w *= 1.0 - Math.pow(((x - xi) * (x - xk) + (y - yi) * (y - yk) + (z - zi) * (z - zk)) / ri / rk, 2.);
         w *= 1.0 - Math.pow(((x - xj) * (x - xk) + (y - yj) * (y - yk) + (z - zj) * (z - zk)) / rj / rk, 2.);
-        w *= 0.05 + Math.abs((zi + zj + zk - 3 * z) / (ri + rj + rk));//		    Verticality
+        w *= 0.05 + Math.abs((zi + zj + zk - 3 * z) / (ri + rj + rk)); // Verticality
         w *= (((yk - yi) * (zj - zi) - (yj - yi) * (zk - zi)) * (x - xi)
                 + ((zk - zi) * (xj - xi) - (zj - zi) * (xk - xi)) * (y - yi)
-                + ((xk - xi) * (yj - yi) - (xj - xi) * (yk - yi)) * (z - zi)) / (ri * rj * rk);//	 Volume
+                + ((xk - xi) * (yj - yi) - (xj - xi) * (yk - yi)) * (z - zi)) / (ri * rj * rk); // Volume
         w = Math.abs(w);
         if ((w > 0.5) || (w < .0000005)) {
             w = 0.0;
@@ -388,10 +379,10 @@ public class Ash1_1Algorithm implements Calculator {
         double xij, yij, zij, rij, xik, yik, zik, rik;// Inputs (global variables)
         @SuppressWarnings("unused")
         double xjk, yjk, zjk, rjk;//     sat. position, range:
-        double Ax, Ay, Az, Bx, By, Bz, Dx, Dy, Dz;//        xi, yi, zi, ri
+        double Ax, Ay, Az, Bx, By, Bz, Dx, Dy, Dz; //        xi, yi, zi, ri
         @SuppressWarnings("unused")
-        double Ca, Cb, Cc, Cd, Ce, Cf, Ci, Cj, Cx, Cy, Cz;//  xj, yj, zj, rj
-        double x1, y1, z1, x2, y2, z2, e1, e2;//	   xk, yk, zk, rk
+        double Ca, Cb, Cc, Cd, Ce, Cf, Ci, Cj, Cx, Cy, Cz; // xj, yj, zj, rj
+        double x1, y1, z1, x2, y2, z2, e1, e2; // xk, yk, zk, rk
 
         xik = xi - xk;
         yik = yi - yk;
@@ -501,6 +492,5 @@ public class Ash1_1Algorithm implements Calculator {
         int code;
         double x, y, z, t, vs;
     }
+
 }
-
-

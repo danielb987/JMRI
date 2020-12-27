@@ -8,12 +8,9 @@ import jmri.managers.TurnoutManagerScaffold;
 import jmri.progdebugger.DebugProgrammerManager;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test InstanceManager
@@ -46,7 +43,7 @@ public class InstanceManagerTest {
     public void testDefaultProgrammerManagers() {
         DebugProgrammerManager m = new DebugProgrammerManager();
 
-        InstanceManager.setAddressedProgrammerManager(m);
+        InstanceManager.store(m, AddressedProgrammerManager.class);
         InstanceManager.store(m, GlobalProgrammerManager.class);
 
         Assert.assertTrue("global programmer manager was set", InstanceManager.getDefault(GlobalProgrammerManager.class) == m);
@@ -58,15 +55,30 @@ public class InstanceManagerTest {
         DebugProgrammerManager m1 = new DebugProgrammerManager();
         DebugProgrammerManager m2 = new DebugProgrammerManager();
 
-        InstanceManager.setAddressedProgrammerManager(m1);
+        InstanceManager.store(m1, AddressedProgrammerManager.class);
         InstanceManager.store(m1, GlobalProgrammerManager.class);
-        InstanceManager.setAddressedProgrammerManager(m2);
+        InstanceManager.store(m2, AddressedProgrammerManager.class);
         InstanceManager.store(m2, GlobalProgrammerManager.class);
 
         Assert.assertTrue("2nd global programmer manager is default", InstanceManager.getDefault(GlobalProgrammerManager.class) == m2);
         Assert.assertTrue("2nd addressed programmer manager is default", InstanceManager.getDefault(AddressedProgrammerManager.class) == m2);
     }
 
+    @Test
+    public void testIsInitialized() {
+        // counts on the following test class to be loaded
+        Assert.assertFalse(InstanceManager.isInitialized(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
+        Assert.assertFalse(InstanceManager.isInitialized(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
+        
+        Assert.assertNotNull(InstanceManager.getDefault(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
+        
+        Assert.assertTrue(InstanceManager.isInitialized(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
+    }
+    
+    static public class InstanceManagerInitCheck implements jmri.InstanceManagerAutoDefault {
+        public InstanceManagerInitCheck() {}
+    }
+    
     // the following test was moved from jmri.jmrit.symbolicprog.PackageTet when
     // it was converted to JUnit4 format.  It seemed out of place there.
     // check configuring the programmer
@@ -364,16 +376,17 @@ public class InstanceManagerTest {
         Assert.assertFalse("Should be empty", InstanceManager.containsDefault(OkAutoCreate.class));
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
         OkToDispose.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(InstanceManagerTest.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InstanceManagerTest.class);
 }

@@ -1,36 +1,31 @@
 package jmri.jmrit.simplelightctrl;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of SimpleLightCtrlFrame
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class SimpleLightCtrlFrameTest {
+public class SimpleLightCtrlFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        SimpleLightCtrlFrame action = new SimpleLightCtrlFrame();
-        Assert.assertNotNull("exists", action);
-        JUnitUtil.dispose(action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new SimpleLightCtrlFrame();
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        super.tearDown();
     }
 }

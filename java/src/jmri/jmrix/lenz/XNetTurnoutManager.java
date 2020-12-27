@@ -1,5 +1,7 @@
 package jmri.jmrix.lenz;
 
+import java.util.Locale;
+import javax.annotation.Nonnull;
 import jmri.Turnout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +9,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implement turnout manager for Lenz (XpresssNet) connections.
  * <p>
- * System names are "XTnnn", where nnn is the turnout number without padding.
+ * System names are "XTnnn", where X is the user configurable system prefix,
+ * nnn is the turnout number without padding.
  *
  * @author Bob Jacobsen Copyright (C) 2001
  * @author Paul Bender Copyright (C) 2003-2010
@@ -16,22 +19,24 @@ import org.slf4j.LoggerFactory;
 public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager implements XNetListener {
 
     // ctor has to register for XNet events
-    public XNetTurnoutManager(XNetTrafficController controller, String prefix) {
-        super();
-        tc = controller;
-        this.prefix = prefix;
+    public XNetTurnoutManager(XNetSystemConnectionMemo memo) {
+        super(memo);
+        tc = memo.getXNetTrafficController();
+        // Force initialization, so it registers first and receives feedbacks before
+        // TurnoutManager autocreates turnout.
+        tc.getFeedbackMessageCache();
         tc.addXNetListener(XNetInterface.FEEDBACK, this);
     }
 
-    protected XNetTrafficController tc = null;
-    protected String prefix = null;
+    protected XNetTrafficController tc;
 
     /**
-     * Return the system letter for XpressNet.
+     * {@inheritDoc}
      */
     @Override
-    public String getSystemPrefix() {
-        return prefix;
+    @Nonnull
+    public XNetSystemConnectionMemo getMemo() {
+        return (XNetSystemConnectionMemo) memo;
     }
 
     // XNet-specific methods
@@ -44,14 +49,14 @@ public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager imp
      * @return null if the system name is not in a valid format
      */
     @Override
-    public Turnout createNewTurnout(String systemName, String userName) {
+    public Turnout createNewTurnout(@Nonnull String systemName, String userName) {
         // check if the output bit is available
-        int bitNum = XNetAddress.getBitFromSystemName(systemName, prefix);
+        int bitNum = XNetAddress.getBitFromSystemName(systemName, getSystemPrefix());
         if (bitNum == -1) {
             return (null);
         }
         // create the new Turnout object
-        Turnout t = new XNetTurnout(prefix, bitNum, tc);
+        Turnout t = new XNetTurnout(getSystemPrefix(), bitNum, tc);
         t.setUserName(userName);
         return t;
     }
@@ -62,7 +67,7 @@ public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager imp
     @Override
     public void message(XNetReply l) {
         if (log.isDebugEnabled()) {
-            log.debug("received message: " + l);
+            log.debug("received message: {}",l);
         }
         if (l.isFeedbackBroadcastMessage()) {
             int numDataBytes = l.getElement(0) & 0x0f;
@@ -70,28 +75,15 @@ public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager imp
                 // parse message type
                 int addr = l.getTurnoutMsgAddr(i);
                 if (addr >= 0) {
-                    // check to see if the address has been operated before
-                    // continuing.
-                    int a2 = l.getElement(i + 1);
-                    if ((a2 & 0x03) != 0) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("message has address: " + addr);
-                        }
-                        // reach here for switch command; make sure we know 
-                        // about this one
-                        String s = prefix + typeLetter() + addr;
-                        forwardMessageToTurnout(s,l);
-                    }
+                    log.debug("message has address: {}", addr);
+                    // forward to the specified turnout.
+                    String s = getSystemNamePrefix() + addr;
+                    forwardMessageToTurnout(s, l);
                     if (addr % 2 != 0) {
-                        // If the address we got was odd, we need to check to 
-                        // see if the even address should be added as well.
-                        a2 = l.getElement(i + 1);
-                        if ((a2 & 0x0c) != 0) {
-                            // reach here for switch command; make sure we know 
-                            // about this one
-                            String s = prefix + typeLetter() + (addr + 1);
-                            forwardMessageToTurnout(s,l);
-                        }
+                        // if the address is odd, also send the feedback
+                        // message to the even turnout.
+                        s = getSystemNamePrefix() + (addr + 1);
+                        forwardMessageToTurnout(s, l);
                     }
                 }
             }
@@ -117,6 +109,7 @@ public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager imp
      * represent the Turnout.CLOSED state.
      */
     @Override
+    @Nonnull
     public String getClosedText() {
         return Bundle.getMessage("TurnoutStateClosed");
     }
@@ -127,6 +120,7 @@ public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager imp
      * represent the Turnout.THROWN state.
      */
     @Override
+    @Nonnull
     public String getThrownText() {
         return Bundle.getMessage("TurnoutStateThrown");
     }
@@ -134,47 +128,48 @@ public class XNetTurnoutManager extends jmri.managers.AbstractTurnoutManager imp
     // listen for the messages to the LI100/LI101
     @Override
     public void message(XNetMessage l) {
+        //this class does not currently use outgoing messages.
     }
 
     // Handle a timeout notification
     @Override
     public void notifyTimeout(XNetMessage msg) {
-        if (log.isDebugEnabled()) {
-            log.debug("Notified of timeout on message" + msg.toString());
-        }
+        log.debug("Notified of timeout on message {}",msg);
     }
 
     /**
-     * Validate Turnout system name format.
-     * Logging of handled cases no higher than WARN.
-     *
-     * @return VALID if system name has a valid format, else return INVALID
+     * {@inheritDoc}
      */
-    public NameValidity validSystemNameFormat(String systemName) {
+    @Override
+    @Nonnull
+    public String validateSystemNameFormat(@Nonnull String name, @Nonnull Locale locale) {
+        return validateIntegerSystemNameFormat(name,
+                XNetAddress.MINSENSORADDRESS,
+                XNetAddress.MAXSENSORADDRESS,
+                locale);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NameValidity validSystemNameFormat(@Nonnull String systemName) {
         return (XNetAddress.validSystemNameFormat(systemName, 'T', getSystemPrefix()));
     }
 
     @Override
-    public boolean allowMultipleAdditions(String systemName) {
+    public boolean allowMultipleAdditions(@Nonnull String systemName) {
         return true;
     }
 
     /**
-     * Provide a manager-specific tooltip for the Add new item beantable pane.
+     * {@inheritDoc}
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddOutputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddOutputEntryToolTip");
     }
 
-    @Deprecated
-    static public XNetTurnoutManager instance() {
-        //if (_instance == null) _instance = new XNetTurnoutManager();
-        return _instance;
-    }
-    static XNetTurnoutManager _instance = null;
-
-    private final static Logger log = LoggerFactory.getLogger(XNetTurnoutManager.class);
+    private static final Logger log = LoggerFactory.getLogger(XNetTurnoutManager.class);
 
 }

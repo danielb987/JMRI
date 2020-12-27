@@ -2,34 +2,31 @@ package jmri.jmrix.lenz.li100;
 
 import jmri.ProgrammingMode;
 import jmri.jmrix.lenz.XNetConstants;
-import jmri.jmrix.lenz.XNetListener;
 import jmri.jmrix.lenz.XNetMessage;
 import jmri.jmrix.lenz.XNetProgrammer;
 import jmri.jmrix.lenz.XNetReply;
 import jmri.jmrix.lenz.XNetTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Programmer support for Lenz XpressNet.
- * <P>
+ * <p>
  * The read operation state sequence is:
- * <UL>
- * <LI>Send Register Mode / Paged mode /Direct Mode read request
- * <LI>Wait for Broadcast Service Mode Entry message
- * <LI>Send Request for Service Mode Results request
- * <LI>Wait for results reply, interpret
- * <LI>Send Resume Operations request
- * <LI>Wait for Normal Operations Resumed broadcast
- * </UL>
+ * <ul>
+ * <li>Send Register Mode / Paged mode /Direct Mode read request
+ * <li>Wait for Broadcast Service Mode Entry message
+ * <li>Send Request for Service Mode Results request
+ * <li>Wait for results reply, interpret
+ * <li>Send Resume Operations request
+ * <li>Wait for Normal Operations Resumed broadcast
+ * </ul>
  *
  * @author Bob Jacobsen Copyright (c) 2002, 2007
  * @author Paul Bender Copyright (c) 2003, 2004, 2005, 2009
  * @author Giorgio Terdina Copyright (c) 2007
  */
-public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener {
+public class LI100XNetProgrammer extends XNetProgrammer {
 
-    static private final int RETURNSENT = 3;
+    private static final int RETURNSENT = 3;
 
     // save the last XpressNet message for retransmission after a
     // communication error..
@@ -41,10 +38,12 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
         super(tc);
     }
 
-    // programming interface
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void writeCV(int CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listens {}", CV, p);
         useProgrammer(p);
         _progRead = false;
@@ -80,14 +79,20 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    synchronized public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void readCV(int CV, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void readCV(String CVname, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         log.debug("readCV {} listens {}", CV, p);
 
         if (!getCanRead()) {
@@ -128,11 +133,14 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    synchronized public void message(XNetReply m) {
+    public synchronized void message(XNetReply m) {
         if (m.getElement(0) == XNetConstants.CS_INFO
                 && m.getElement(1) == XNetConstants.BC_SERVICE_MODE_ENTRY) {
-            if (_service_mode == false) {
+            if (!_service_mode) {
                 // the command station is in service mode.  An "OK"
                 // message can trigger a request for service mode
                 // results if progrstate is REQUESTSENT.
@@ -148,7 +156,7 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
         }
         if (m.getElement(0) == XNetConstants.CS_INFO
                 && m.getElement(1) == XNetConstants.BC_NORMAL_OPERATIONS) {
-            if (_service_mode == true) {
+            if (_service_mode) {
                 // the command station is not in service mode.  An
                 // "OK" message can not trigger a request for service
                 // mode results if progrstate is REQUESTSENT.
@@ -165,8 +173,6 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
 
         if (progState == NOTPROGRAMMING) {
             // we get the complete set of replies now, so ignore these
-            return;
-
         } else if (progState == REQUESTSENT) {
             log.debug("reply in REQUESTSENT state");
             // see if reply is the acknowledge of program mode; if not, wait for next
@@ -193,7 +199,6 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
 
                 controller().sendXNetMessage(XNetMessage.getServiceModeResultsMsg(),
                         this);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.CS_NOT_SUPPORTED) {
                 // programming operation not supported by this command station
@@ -203,11 +208,10 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 // send the message to the command station
                 controller().sendXNetMessage(XNetMessage.getExitProgModeMsg(),
                         this);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.BC_NORMAL_OPERATIONS) {
                 // We Exited Programming Mode early
-                //log.error("Service mode exited before sequence complete.");
+                log.debug("Service mode exited before sequence complete.");
                 progState = NOTPROGRAMMING;
                 stopTimer();
                 notifyProgListenerEnd(_val, jmri.ProgListener.SequenceError);
@@ -221,18 +225,16 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 // send the message to the command station
                 controller().sendXNetMessage(XNetMessage.getExitProgModeMsg(),
                         this);
-                //notifyProgListenerEnd(_val, jmri.ProgListener.ProgrammingShort);
             } else if (m.isCommErrorMessage()) {
                 // We experienced a communicatiosn error
-                // If this is a Timeslot error, ignore it,
-                //otherwise report it as an error
                 if (m.getElement(1) == XNetConstants.LI_MESSAGE_RESPONSE_TIMESLOT_ERROR) {
-                    return;
+                    // If this is a Timeslot error, ignore it,
+                    // otherwise report it as an error
                 } else if (!_service_mode) {
-                    log.error("Communications error in REQUESTSENT state before entering service mode.  Error: " + m.toString());
+                    log.error("Communications error in REQUESTSENT state before entering service mode.  Error: {}",m);
                     controller().sendXNetMessage(lastRequestMessage, this);
                 } else {
-                    log.error("Communications error in REQUESTSENT state after entering service mode.  Error: " + m.toString());
+                    log.error("Communications error in REQUESTSENT state after entering service mode.  Error: {}",m);
                     progState = RETURNSENT;
                     _error = jmri.ProgListener.CommError;
                     // create a request to exit service mode and
@@ -271,7 +273,6 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 // send the message to the command station
                 controller().sendXNetMessage(XNetMessage.getExitProgModeMsg(),
                         this);
-                return;
             } else if (m.isDirectModeResponse()) {
                 // valid operation response, but does it belong to us?
                 if (m.getServiceModeCVNumber() != _cv) {
@@ -291,7 +292,6 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 // send the message to the command station
                 controller().sendXNetMessage(XNetMessage.getExitProgModeMsg(),
                         this);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.PROG_BYTE_NOT_FOUND) {
                 // "data byte not found", e.g. no reply
@@ -301,7 +301,6 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 // send the message to the command station
                 controller().sendXNetMessage(XNetMessage.getExitProgModeMsg(),
                         this);
-                return;
             } else if (m.getElement(0) == XNetConstants.CS_INFO
                     && m.getElement(1) == XNetConstants.PROG_SHORT_CIRCUIT) {
                 // We experienced a short Circuit on the Programming Track
@@ -321,30 +320,26 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 notifyProgListenerEnd(_val, jmri.ProgListener.SequenceError);
             } else if (m.isCommErrorMessage()) {
                 // We experienced a communicatiosn error
-                // If this is a Timeslot error, ignore it
                 if (m.getElement(1) == XNetConstants.LI_MESSAGE_RESPONSE_TIMESLOT_ERROR) {
-                    return;
+                    // If this is a Timeslot error, ignore it
                 } else if (_service_mode) {
                     // If we're in service mode, retry sending the
                     // result request.
-                    log.error("Communications error in INQUIRESENT state while in service mode.  Error: {}", m.toString());
+                    log.error("Communications error in INQUIRESENT state while in service mode.  Error: {}", m);
                     controller().sendXNetMessage(XNetMessage.getServiceModeResultsMsg(),
                             this);
-                    return;
                 } else {
                     //otherwise report it as an error
-                    log.error("Communications error in INQUIRESENT state after exiting service mode.  Error: {}", m.toString());
+                    log.error("Communications error in INQUIRESENT state after exiting service mode.  Error: {}", m);
                     progState = RETURNSENT;
                     _error = jmri.ProgListener.CommError;
                     // create a request to exit service mode and
                     // send the message to the command station
                     controller().sendXNetMessage(XNetMessage.getExitProgModeMsg(),
                             this);
-                    return;
                 }
             } else {
-                // nothing important, ignore
-                return;
+                // nothing related to programming, ignore
             }
 
         } else if (progState == RETURNSENT) {
@@ -358,23 +353,25 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
                 // the results.
                 notifyProgListenerEnd(_val, _error);
 
-                return;
             }
         } else {
             log.debug("reply in un-decoded state");
         }
     }
 
-    // listen for the messages to the LI100/LI101
-    @Override
-    synchronized public void message(XNetMessage l) {
+    /** 
+     * {@inheritDoc}
+     */
+     @Override
+    public synchronized void message(XNetMessage l) {
+         // this class does not use outbound messages.
     }
 
-    /**
-     * Internal routine to handle a timeout
+    /** 
+     * {@inheritDoc}
      */
     @Override
-    synchronized protected void timeout() {
+    protected synchronized void timeout() {
         // if a timeout occurs, and we are not
         // finished programming, we need to exit
         // service mode.
@@ -395,6 +392,6 @@ public class LI100XNetProgrammer extends XNetProgrammer implements XNetListener 
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LI100XNetProgrammer.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LI100XNetProgrammer.class);
 
 }

@@ -1,13 +1,11 @@
 package jmri.server.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jmri.util.JUnitUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.*;
 
 /**
  *
@@ -15,12 +13,12 @@ import org.slf4j.LoggerFactory;
  */
 public class JsonHttpServiceTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }
@@ -36,7 +34,7 @@ public class JsonHttpServiceTest {
 
     /**
      * Test
-     * {@link JsonHttpService#doSchema(java.lang.String, boolean, java.lang.String, java.lang.String)}.
+     * {@link JsonHttpService#doSchema(java.lang.String, boolean, java.lang.String, java.lang.String, int)}.
      */
     @Test
     public void testDoSchema4Param() {
@@ -47,7 +45,8 @@ public class JsonHttpServiceTest {
             instance.doSchema(JsonTestServiceFactory.TEST,
                     true,
                     "jmri/server/json/schema/not-jmri-client-schema",
-                    "jmri/server/json/schema/not-jmri-server-schema");
+                    "jmri/server/json/schema/not-jmri-server-schema",
+                    0);
             Assert.fail("Expected exception to be thrown");
         } catch (JsonException ex) {
             Assert.assertEquals("Exception is coded 500", 500, ex.getCode());
@@ -56,7 +55,8 @@ public class JsonHttpServiceTest {
             instance.doSchema(JsonTestServiceFactory.TEST,
                     false,
                     "jmri/server/json/schema/not-jmri-client-schema",
-                    "jmri/server/json/schema/not-jmri-server-schema");
+                    "jmri/server/json/schema/not-jmri-server-schema",
+                    0);
             Assert.fail("Expected exception to be thrown");
         } catch (JsonException ex) {
             Assert.assertEquals("Exception is coded 500", 500, ex.getCode());
@@ -66,11 +66,13 @@ public class JsonHttpServiceTest {
             instance.doSchema(JsonTestServiceFactory.TEST,
                     true,
                     "jmri/server/json/schema/json-client.json",
-                    "jmri/server/json/schema/json-server.json");
+                    "jmri/server/json/schema/json-server.json",
+                    0);
             instance.doSchema(JsonTestServiceFactory.TEST,
                     false,
                     "jmri/server/json/schema/json-client.json",
-                    "jmri/server/json/schema/json-server.json");
+                    "jmri/server/json/schema/json-server.json",
+                    0);
         } catch (JsonException ex) {
             Assert.fail("Should not have thrown exception");
         }

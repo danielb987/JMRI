@@ -1,31 +1,35 @@
 package jmri.jmrit.symbolicprog.tabbedframe;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrit.roster.RosterEntry;
+import jmri.jmrit.symbolicprog.CvTableModel;
+import jmri.jmrit.symbolicprog.VariableTableModel;
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
 import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
+import org.junit.Assume;
 
 /**
- * Test PaneProgFrame
+ * Tests for PaneProgFrame.
  *
- * @author	Bob Jacobsen
-  */
-public class PaneProgFrameTest extends TestCase {
+ * @author Bob Jacobsen
+ */
+public class PaneProgFrameTest {
 
     // test creating a pane in config file
+    @Test
     public void testPane() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return;
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         setupDoc();
 
         // create test object
@@ -34,12 +38,12 @@ public class PaneProgFrameTest extends TestCase {
         PaneProgFrame p = new PaneProgFrame(null, new RosterEntry(),
                 "test frame", "programmers/Basic.xml",
                 new jmri.progdebugger.ProgDebugger(), false) {
-                    // dummy implementations
-                    @Override
-                    protected JPanel getModePane() {
-                        return new JPanel();
-                    }
-                };
+            // dummy implementations
+            @Override
+            protected JPanel getModePane() {
+                return new JPanel();
+            }
+        };
 
         // invoke
         result = null;
@@ -49,27 +53,26 @@ public class PaneProgFrameTest extends TestCase {
 
         JFrame f = jmri.util.JmriJFrame.getFrame("test frame");
         Assert.assertTrue("found frame", f != null);
-        JUnitUtil.dispose(f);
+        p.dispatchEvent(new WindowEvent(p, WindowEvent.WINDOW_CLOSING));
     }
 
     // show me the specially-created frame
+    @Test
     public void testFrame() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return;
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         setupDoc();
         PaneProgFrame p = new PaneProgFrame(null, new RosterEntry(),
                 "test frame", "programmers/Basic.xml",
                 new jmri.progdebugger.ProgDebugger(), false) {
-                    // dummy implementations
-                    @Override
-                    protected JPanel getModePane() {
-                        return null;
-                    }
-                };
+            // dummy implementations
+            @Override
+            protected JPanel getModePane() {
+                return null;
+            }
+        };
 
         // ugly, temporary way to load the decoder info
-        jmri.jmrit.decoderdefn.DecoderFileTest t = new jmri.jmrit.decoderdefn.DecoderFileTest("");
+        jmri.jmrit.decoderdefn.DecoderFileTest t = new jmri.jmrit.decoderdefn.DecoderFileTest();
         t.setupDecoder();
         DecoderFile df = new DecoderFile();  // used as a temporary
         df.loadVariableModel(t.decoder, p.variableModel);
@@ -80,7 +83,106 @@ public class PaneProgFrameTest extends TestCase {
 
         JFrame f = jmri.util.JmriJFrame.getFrame("test frame");
         Assert.assertTrue("found frame", f != null);
-        JUnitUtil.dispose(f);
+        p.dispatchEvent(new WindowEvent(p, WindowEvent.WINDOW_CLOSING));
+    }
+
+    @Test
+    public void testLoadDecoderFileUpdateMaxFnNum() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        // create test Element
+        org.jdom2.Element e = new org.jdom2.Element("locomotive")
+                .setAttribute("id", "our id 4")
+                .setAttribute("fileName", "file here")
+                .setAttribute("roadNumber", "431")
+                .setAttribute("roadName", "SP")
+                .setAttribute("mfg", "Athearn")
+                .setAttribute("dccAddress", "1234")
+                .addContent(new org.jdom2.Element("decoder")
+                        .setAttribute("family", "91")
+                        .setAttribute("model", "33")
+                        .setAttribute("comment", "decoder comment")
+                ); // end create element
+
+        RosterEntry r = new RosterEntry(e) { // a temporary storage, need to override some methods
+            @Override
+            protected void warnShortLong(String s) {
+            }
+
+            @Override
+            public void loadFunctions(Element e3, String source) {
+            }
+
+            @Override
+            public void loadSounds(Element e3, String source) {
+            }
+
+            @Override
+            public void updateFile() {
+            }
+
+            @Override
+            public void writeFile(CvTableModel cvModel, VariableTableModel variableModel) {
+            }
+        };
+
+        org.jdom2.Element o = r.store();
+
+        // check test attributes are loaded
+        Assert.assertEquals("XML Element ", e.toString(), o.toString());
+        Assert.assertEquals("family ", "91", o.getChild("decoder").getAttribute("family").getValue());
+        Assert.assertEquals("model ", "33", o.getChild("decoder").getAttribute("model").getValue());
+        Assert.assertEquals("comment", "decoder comment", o.getChild("decoder").getAttribute("comment").getValue());
+        Assert.assertEquals("default maxFnNum is loaded", "28", o.getChild("decoder").getAttribute("maxFnNum").getValue());
+
+        // ugly, temporary way to load the decoder info
+        jmri.jmrit.decoderdefn.DecoderFileTest t = new jmri.jmrit.decoderdefn.DecoderFileTest();
+        t.setupDecoder();
+        DecoderFile df = new DecoderFile() { // a temporary storage, need to override some methods
+            @Override
+            public String getFileName() {
+                return "0NMRA_test.xml";
+            }
+
+            @Override
+            public String getProductID() {
+                return getModelElement().getAttributeValue("productID");
+            }
+
+            @Override
+            public Element getModelElement() {
+                return t.model;
+            }
+        };
+
+        setupDoc();
+        PaneProgFrame p = new PaneProgFrame(null, new RosterEntry(),
+                "test frame", "programmers/Basic.xml",
+                new jmri.progdebugger.ProgDebugger(), false) {
+            // dummy implementations
+            @Override
+            protected JPanel getModePane() {
+                return null;
+            }
+
+            @Override
+            protected boolean checkDirtyDecoder() {
+                return false;
+            }
+
+            @Override
+            protected boolean checkDirtyFile() {
+                return false;
+            }
+        };
+
+        df.loadVariableModel(t.decoder, p.variableModel);
+        p.loadDecoderFile(df, r);
+        o = r.store();
+
+        Assert.assertEquals("model maxFnNum ", "31", t.model.getAttribute("maxFnNum").getValue());
+        Assert.assertEquals("roster entry maxFnNum ", "31", o.getChild("decoder").getAttribute("maxFnNum").getValue());
+
+        p.dispatchEvent(new WindowEvent(p, WindowEvent.WINDOW_CLOSING));
     }
 
     // static variables for internal classes to report their interpretations
@@ -151,36 +253,17 @@ public class PaneProgFrameTest extends TestCase {
                         )
                 )
         ); // end of adding contents
-
-        return;
     }
 
-    // from here down is testing infrastructure
-    public PaneProgFrameTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", PaneProgFrameTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(PaneProgFrameTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetProfileManager();
+        JUnitUtil.resetProfileManager();
+        JUnitUtil.initRosterConfigManager();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 

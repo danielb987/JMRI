@@ -18,18 +18,23 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no preexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
 
@@ -49,15 +54,16 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
         details.add(b);
 
         b.addActionListener(new NodeConfigManagerAction((CMRISystemConnectionMemo)adapter.getSystemConnectionMemo()));
-        // b.addActionListener(new NodeConfigAction((CMRISystemConnectionMemo)adapter.getSystemConnectionMemo()));
-
     }
 
     @Override
     public String name() {
-        return "Simulator";
+        return "C/MRI Simulator";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         if(adapter == null ) {
@@ -67,4 +73,5 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
                                 // saved.
         }
     }
+
 }

@@ -3,10 +3,12 @@ package jmri.jmrit.display.controlPanelEditor;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Point;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import javax.swing.AbstractListModel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,12 +20,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import jmri.BeanSetting;
 import jmri.Path;
+import jmri.Sensor;
 import jmri.Turnout;
 import jmri.jmrit.display.IndicatorTrack;
 import jmri.jmrit.display.IndicatorTurnoutIcon;
@@ -31,6 +33,7 @@ import jmri.jmrit.display.Positionable;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OPath;
 import jmri.jmrit.logix.Portal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,115 +41,59 @@ import org.slf4j.LoggerFactory;
  * @author Pete Cressman Copyright: Copyright (c) 2011
  *
  */
-public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelectionListener {
+public class EditCircuitPaths extends EditFrame implements ListSelectionListener {
 
-    private final OBlock _block;
-    private final CircuitBuilder _parent;
     // mouse selections of track icons that define the path
     private ArrayList<Positionable> _pathGroup = new ArrayList<>();
+    private ArrayList<Positionable> _savePathGroup = new ArrayList<>();
 
-    private final JTextField _pathName = new JTextField();
+    private JTextField _pathName;
     private JList<OPath> _pathList;
     private PathListModel _pathListModel;
+    private OPath _currentPath;
 
-    private boolean _pathChange = false;
-    private final JTextField _length = new JTextField();
-    private JToggleButton _units;
-
-    static int STRUT_SIZE = 10;
-    static Point _loc = new Point(-1, -1);
-    static Dimension _dim = null;
+    private LengthPanel _lengthPanel;
     public static final String TEST_PATH = "TEST_PATH";
 
     public EditCircuitPaths(String title, CircuitBuilder parent, OBlock block) {
-        _block = block;
-        setTitle(java.text.MessageFormat.format(title, _block.getDisplayName()));
-        _parent = parent;
-
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                closingEvent();
-            }
-        });
-        addHelpMenu("package.jmri.jmrit.display.CircuitBuilder", true);
-
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-
-        contentPane.add(Box.createVerticalStrut(STRUT_SIZE));
-        contentPane.add(makeContentPanel());
-        contentPane.add(Box.createVerticalStrut(STRUT_SIZE));
-
-        JPanel border = new JPanel();
-        border.setLayout(new java.awt.BorderLayout(10, 10));
-        border.add(contentPane);
-        setContentPane(new JScrollPane(border));
-        _pathList.setPreferredSize(new java.awt.Dimension(_pathList.getFixedCellWidth(), _pathList.getFixedCellHeight() * 4));
+        super(title, parent, block);
+        checkCircuitIcons("BlockPaths");
         pack();
-        if (_loc.x < 0) {
-            setLocation(jmri.util.PlaceWindow. nextTo(_parent._editor, null, this));
-        } else {
-            setLocation(_loc);
-            setSize(_dim);
-        }
-        setVisible(true);
     }
 
-    private JPanel makeButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-
-        JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
-        doneButton.addActionListener((ActionEvent a) -> {
-            if (!findErrors()) {
-                closingEvent();
-            }
-        });
-        panel.add(doneButton);
-
-        buttonPanel.add(panel);
-
-        panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.add(buttonPanel);
-
-        return panel;
-    }
-
-    private JPanel makeContentPanel() {
+    @Override
+    protected JPanel makeContentPanel() {
         JPanel pathPanel = new JPanel();
         pathPanel.setLayout(new BoxLayout(pathPanel, BoxLayout.Y_AXIS));
 
         pathPanel.add(Box.createVerticalStrut(STRUT_SIZE));
         JPanel panel = new JPanel();
-        panel.add(new JLabel(Bundle.getMessage("PathTitle", _block.getDisplayName())));
+        panel.add(new JLabel(Bundle.getMessage("PathTitle", _homeBlock.getDisplayName())));
         pathPanel.add(panel);
 
-        _pathListModel = new PathListModel();
+        _pathListModel = new PathListModel(this);
         _pathList = new JList<>();
         _pathList.setModel(_pathListModel);
         _pathList.addListSelectionListener(this);
+        _homeBlock.addPropertyChangeListener(_pathListModel);
+        
         _pathList.setCellRenderer(new PathCellRenderer());
-        JScrollPane pane = new JScrollPane(_pathList);
-        pathPanel.add(pane);
+        _pathList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        pathPanel.add(new JScrollPane(_pathList));
         pathPanel.add(Box.createVerticalStrut(STRUT_SIZE));
 
         panel = new JPanel();
         panel.setLayout(new FlowLayout());
 
         JButton clearButton = new JButton(Bundle.getMessage("buttonClearSelection"));
-        clearButton.addActionListener((ActionEvent a) -> {
-            clearListSelection();
-        });
+        clearButton.addActionListener((ActionEvent a) -> clearListSelection());
         clearButton.setToolTipText(Bundle.getMessage("ToolTipClearList"));
         panel.add(clearButton);
         pathPanel.add(panel);
         pathPanel.add(Box.createVerticalStrut(STRUT_SIZE));
 
         panel = new JPanel();
+        _pathName = new JTextField();
         panel.add(CircuitBuilder.makeTextBoxPanel(
                 false, _pathName, "pathName", true, "TooltipPathName"));
         _pathName.setPreferredSize(new Dimension(300, _pathName.getPreferredSize().height));
@@ -154,45 +101,25 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
 
         panel = new JPanel();
         JButton addButton = new JButton(Bundle.getMessage("buttonAddPath"));
-        addButton.addActionListener((ActionEvent a) -> {
-            addPath();
-        });
+        addButton.addActionListener((ActionEvent a) -> addNewPath(true));
         addButton.setToolTipText(Bundle.getMessage("ToolTipAddPath"));
         panel.add(addButton);
 
         JButton changeButton = new JButton(Bundle.getMessage("buttonChangeName"));
-        changeButton.addActionListener((ActionEvent a) -> {
-            changePathName();
-        });
+        changeButton.addActionListener((ActionEvent a) -> changePathName());
         changeButton.setToolTipText(Bundle.getMessage("ToolTipChangeName"));
         panel.add(changeButton);
 
         JButton deleteButton = new JButton(Bundle.getMessage("buttonDeletePath"));
-        deleteButton.addActionListener((ActionEvent a) -> {
-            deletePath();
-        });
+        deleteButton.addActionListener((ActionEvent a) -> deletePath());
         deleteButton.setToolTipText(Bundle.getMessage("ToolTipDeletePath"));
         panel.add(deleteButton);
 
         pathPanel.add(panel);
         pathPanel.add(Box.createVerticalStrut(STRUT_SIZE));
 
-        JPanel pp = new JPanel();
-//      pp.setLayout(new BoxLayout(pp, BoxLayout.X_AXIS));
-        _length.setText("0.0");
-        pp.add(CircuitBuilder.makeTextBoxPanel(
-                false, _length, "Length", true, "TooltipPathLength"));
-        _length.setPreferredSize(new Dimension(100, _length.getPreferredSize().height));
-        _length.addActionListener((ActionEvent event) -> {
-            _pathChange = true;
-        });
-        _units = new JToggleButton("", !_block.isMetric());
-        _units.setToolTipText(Bundle.getMessage("TooltipPathUnitButton"));
-        _units.addActionListener((ActionEvent event) -> {
-            changeUnits();
-        });
-        pp.add(_units);
-        pathPanel.add(pp);
+        _lengthPanel = new LengthPanel(_homeBlock, LengthPanel.PATH_LENGTH);
+        pathPanel.add(_lengthPanel);
         pathPanel.add(Box.createVerticalStrut(STRUT_SIZE));
 
         panel = new JPanel();
@@ -225,34 +152,9 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
         pathPanel.add(p);
 
         pathPanel.add(Box.createVerticalStrut(STRUT_SIZE));
-        pathPanel.add(makeButtonPanel());
-        changeUnits();
+        pathPanel.add(makeDoneButtonPanel());
+        _lengthPanel.changeUnits();
         return pathPanel;
-    }
-
-    private void changeUnits() {
-        String len = _length.getText();
-        if (len == null || len.length() == 0) {
-            if (_block.isMetric()) {
-                _units.setText("cm");
-            } else {
-                _units.setText("in");
-            }
-            return;
-        }
-        try {
-            float f = Float.parseFloat(len);
-            if (_units.isSelected()) {
-                _length.setText(Float.toString(f / 2.54f));
-                _units.setText("in");
-            } else {
-                _length.setText(Float.toString(f * 2.54f));
-                _units.setText("cm");
-            }
-        } catch (NumberFormatException nfe) {
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("MustBeFloat", len),
-                    Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 
     private static class PathCellRenderer extends JLabel implements ListCellRenderer<OPath> {
@@ -281,48 +183,82 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
         }
     }
 
-    class PathListModel extends AbstractListModel<OPath> {
+    class PathListModel extends AbstractListModel<OPath> implements PropertyChangeListener {
+
+        EditFrame _parent;
+
+        PathListModel(EditFrame parent) {
+            _parent = parent;
+        }
 
         @Override
         public int getSize() {
-            return _block.getPaths().size();
+            return _homeBlock.getPaths().size();
         }
 
         @Override
         public OPath getElementAt(int index) {
-            return (OPath) _block.getPaths().get(index);
+            return (OPath) _homeBlock.getPaths().get(index);
         }
 
         public void dataChange() {
+            fireContentsChanged(this, 0, 0);
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent e) {
+            if (e.getPropertyName().equals("deleted")) {
+                _parent.closingEvent(true);
+            }
             fireContentsChanged(this, 0, 0);
         }
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        clearPath();
         OPath path = _pathList.getSelectedValue();
+        if (log.isDebugEnabled()) {
+            log.debug("valueChanged from _currentPath \"{}\" to path \"{}\"",
+                    (_currentPath==null?"null":_currentPath.getName()), (path==null?"null":path.getName()));
+        }
+        String msg = checkForSavePath();
+        if (msg.length() > 0) {
+            StringBuilder  sb = new StringBuilder (msg);
+            sb.append("\n");
+            sb.append(Bundle.getMessage("saveChanges"));
+            int answer = JOptionPane.showConfirmDialog(this, sb.toString(), Bundle.getMessage("makePath"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (answer == JOptionPane.YES_OPTION) {
+                addNewPath(false);
+            }
+        }
+        clearPath(false);
+        _currentPath = path;
         if (path != null) {
             _pathName.setText(path.getName());
-            if (_units.isSelected()) {
-                _length.setText(Float.toString(path.getLengthIn()));
-            } else {
-                _length.setText(Float.toString(path.getLengthCm()));
-            }
-            showPath(path);
+            _lengthPanel.setLength(path.getLengthMm());
+            _pathGroup = showPath(path);
+            updatePath();
         } else {
-            checkForSavePath();
             _pathName.setText(null);
-            _length.setText("");
+            _lengthPanel.setLength(0);
         }
-        int state = _block.getState() | OBlock.ALLOCATED;
-        _block.pseudoPropertyChange("state", 0, state);
+        int oldState = _homeBlock.getState();
+        int newState = oldState | OBlock.ALLOCATED;
+        _homeBlock.pseudoPropertyChange("state", oldState, newState);
     }
 
-    private void showPath(OPath path) {
+    private ArrayList<Positionable> showPath(OPath path) {
+        if (log.isDebugEnabled()) {
+            log.debug("showPath  \"{}\"", path.getName());
+        }
         path.setTurnouts(0, true, 0, false);
-        _pathGroup = makePathGroup(path);
-        updatePath(false);
+        ArrayList<Positionable> pathGp = makePathGroup(path);
+        _savePathGroup = new ArrayList<>();
+        for (Positionable pos :pathGp) {
+            _savePathGroup.add(pos);
+        }
+        return pathGp;
     }
 
     /**
@@ -334,24 +270,20 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
         Portal toPortal = path.getToPortal();
         String name = path.getName();
 
-        java.util.List<Positionable> list = _parent.getCircuitGroup();
-        if (log.isDebugEnabled()) {
-            log.debug("makePathGroup for " + name + " CircuitGroup size= " + list.size());
-        }
+        java.util.List<Positionable> list = _parent.getCircuitIcons(_homeBlock);
         ArrayList<Positionable> pathGroup = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            Positionable pos = list.get(i);
+        for (Positionable pos : list) {
             if (pos instanceof IndicatorTrack) {
                 ArrayList<String> paths = ((IndicatorTrack) pos).getPaths();
                 if (paths != null) {
-                    for (int j = 0; j < paths.size(); j++) {
-                        if (name.equals(paths.get(j))) {
+                    for (String s : paths) {
+                        if (name.equals(s)) {
                             ((IndicatorTrack) pos).setControlling(true);
                             pathGroup.add(pos);
                         }
                     }
                 }
-            } else {
+            } else if (pos instanceof PortalIcon) {
                 PortalIcon icon = (PortalIcon) pos;
                 Portal portal = icon.getPortal();
                 if (portal.equals(fromPortal)) {
@@ -361,153 +293,193 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
                 }
             }
         }
+        if (log.isDebugEnabled()) {
+            log.debug("makePathGroup for path \"{}\" from CircuitGroup size {} pathGroup size {}", name, list.size(), pathGroup.size());
+        }
         return pathGroup;
     }
 
     /**
-     * Set the path icons for display.
-     *
-     * @param pathChanged true if path has changed; false otherwise
+     * Can a path in this circuit be drawn through this icon?
      */
-    protected void updatePath(boolean pathChanged) {
+    private boolean okPath(Positionable pos) {
+        if (pos instanceof PortalIcon) {
+            Portal portal = ((PortalIcon) pos).getPortal();
+            if (portal != null) {
+                if (_homeBlock.equals(portal.getFromBlock()) || _homeBlock.equals(portal.getToBlock())) {
+                    ((PortalIcon) pos).setStatus(PortalIcon.PATH);
+                    return true;
+                }
+            }
+            JOptionPane.showMessageDialog(this, java.text.MessageFormat.format(
+                    Bundle.getMessage("portalNotInCircuit"), _homeBlock.getDisplayName()),
+                    Bundle.getMessage("badPath"), JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        java.util.List<Positionable> icons = _parent.getCircuitIcons(_homeBlock);
+        if (!icons.contains(pos)) {
+            JOptionPane.showMessageDialog(this, java.text.MessageFormat.format(
+                    Bundle.getMessage("iconNotInCircuit"), _homeBlock.getDisplayName()),
+                    Bundle.getMessage("badPath"), JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    /*
+     * CircuitBuilder calls from handleSelection to update icon display
+     */
+    protected void updateSelections(boolean noShift, Positionable selection) {
+        // A temporary path "TEST_PATH" is used to display the icons representing a path
+        // the OBlock has allocated TEST_PATH
+        // pathGroup collects the icons and the actual path is edited or
+        // created with a save in _editPathsFrame
+        if (!canEdit()) {
+            return;
+        }
+        if (noShift) {
+            if (_pathGroup.contains(selection)) {
+                _pathGroup.remove(selection);
+                if (selection instanceof PortalIcon) {
+                    ((PortalIcon) selection).setStatus(PortalIcon.VISIBLE);
+                } else {
+                    ((IndicatorTrack) selection).setStatus(Sensor.INACTIVE);
+                    ((IndicatorTrack) selection).removePath(TEST_PATH);
+                    log.debug("removePath TEST_PATH");
+                }
+            } else if (okPath(selection)) {
+                _pathGroup.add(selection);
+                // okPath() sets PortalIcons to status PortalIcon.PATH
+                if (selection instanceof IndicatorTrack) {
+                    ((IndicatorTrack) selection).addPath(TEST_PATH);
+                }
+            } else {
+                return;
+            }
+        } else {
+            if (selection instanceof PortalIcon) {
+                ((PortalIcon) selection).setStatus(PortalIcon.VISIBLE);
+            }
+        }
+        int oldState = _homeBlock.getState();
+        int newState = oldState | OBlock.ALLOCATED;
+        _homeBlock.pseudoPropertyChange("state", oldState, newState);
+        log.debug("updateSelections ALLOCATED _homeBlock");
+    }
+    /**
+     * Set the path icons for display.
+     */
+    private void updatePath() {
         // to avoid ConcurrentModificationException now set data
-        Iterator<Positionable> iter = _pathGroup.iterator();
-        while (iter.hasNext()) {
-            Positionable pos = iter.next();
+        for (Positionable pos : _pathGroup) {
             if (pos instanceof IndicatorTrack) {
                 ((IndicatorTrack) pos).addPath(TEST_PATH);
             } else {
                 ((PortalIcon) pos).setStatus(PortalIcon.PATH);
             }
         }
-        _pathChange = pathChanged;
         String name = _pathName.getText();
-        if (name == null || name.length() == 0) {
+        if (!_pathGroup.isEmpty() && (name == null || name.length() == 0)) {
             JOptionPane.showMessageDialog(this, Bundle.getMessage("needPathName"),
                     Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-        } else {
         }
     }
 
-    private boolean findErrors() {
-        boolean error = false;
-        if (checkForSavePath()) {
-            return true;
-        }
-        java.util.List<Path> list = _block.getPaths();
+    private String findErrors() {
+        StringBuilder  sb = new StringBuilder();
+        java.util.List<Path> list = _homeBlock.getPaths();
         if (list.isEmpty()) {
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("noPaths", _block.getDisplayName()),
-                    Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
+            sb.append(Bundle.getMessage("noPaths", _homeBlock.getDisplayName()));
+        } else {
+            list.stream().filter(o -> o instanceof OPath)
+                    .map(o->(OPath) o).forEach( path -> {
+                ArrayList<Positionable> pathGp = makePathGroup(path);
+                if (pathGp.isEmpty()) {
+                    sb.append(Bundle.getMessage("noPathIcons", path.getName()));
+                    sb.append("\n");
+                } else {
+                    String msg = checkIcons(path.getName(), pathGp);
+                    if (msg != null) {
+                        sb.append(msg);
+                        sb.append("\n");
+                    }
+                }
+            });
         }
-        for (int i = 0; i < list.size(); i++) {
-            OPath path = (OPath) list.get(i);
-            ArrayList<Positionable> pathGp = makePathGroup(path);
-            if (pathGp.isEmpty()) {
-                error = true;
-                break;
-            }
-            OPath p = makeOPath(path.getName(), pathGp, false);
-            if (p == null) {
-                error = true;
-                break;
-            }
-        }
-        if (error) {
-            int result = JOptionPane.showConfirmDialog(this, Bundle.getMessage("hasPathErrors"),
-                    Bundle.getMessage("makePath"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (result == JOptionPane.YES_OPTION) {
-                error = false;
-            }
-
-        }
-        return error;
+        return sb.toString();
     }
 
-    private boolean checkForSavePath() {
-        String name = _pathName.getText();
-        if (!_pathChange || name.trim().length() == 0) {
+    private boolean pathIconsEqual(ArrayList<Positionable> pathGp1, ArrayList<Positionable> pathGp2) {
+        if (pathGp1.size() != pathGp2.size()) {
             return false;
         }
-        int result = JOptionPane.showConfirmDialog(this, Bundle.getMessage("savePath",
-                name), Bundle.getMessage("makePath"), JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-        if (result == JOptionPane.YES_OPTION) {
-            addPath();
-            return true;
-        }
-        _pathChange = false;
-        return false;
-    }
-
-    private static boolean pathsEqual(OPath p1, OPath p2) {
-        Portal toPortal1 = p1.getToPortal();
-        Portal fromPortal1 = p1.getFromPortal();
-        Portal toPortal2 = p2.getToPortal();
-        Portal fromPortal2 = p2.getFromPortal();
-        boolean testSettings = false;
-        if (toPortal1 != null) {
-            if ((toPortal1.equals(toPortal2) || toPortal1.equals(fromPortal2))) {
-                if (fromPortal1 != null) {
-                    if (fromPortal1.equals(fromPortal2) || fromPortal1.equals(toPortal2)) {
-                        testSettings = true;
-                    }
-                } else {
-                    if (toPortal2 == null || fromPortal2 == null) {
-                        testSettings = true;
-                    }
-                }
-            }
-        } else if (toPortal2 == null) { //i.e. toPortal2 matches toPortal1==null
-            if (fromPortal1 != null && fromPortal1.equals(fromPortal2)) {
-                testSettings = true;
-            }
-        } else if (fromPortal2 == null) { //i.e. fromPortal2 matches toPortal1==null
-            if (fromPortal1 != null && fromPortal1.equals(toPortal2)) {
-                testSettings = true;
-            }
-        }
-
-        if (testSettings) {
-            java.util.List<BeanSetting> setting1 = p1.getSettings();
-            java.util.List<BeanSetting> setting2 = p2.getSettings();
-            if (setting1.size() != setting2.size()) {
+        for (Positionable pos : pathGp1) {
+            if (!pathGp2.contains(pos)) {
                 return false;
             }
-            if (setting1.isEmpty()) {  // no turnouts in paths, but portals the same
-                return true;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if icons of path are different
+     */
+    private String checkForSavePath() {
+        String name = _pathName.getText();
+        StringBuilder  sb = new StringBuilder();
+        if (_currentPath != null) {
+            String curName = _currentPath.getName();
+            if (!pathIconsEqual(_pathGroup, _savePathGroup)) {
+                sb.append(Bundle.getMessage("pathIconsChanged", curName));
+                sb.append("\n");
             }
-            Iterator<BeanSetting> it = setting1.iterator();
-            while (it.hasNext()) {
-                BeanSetting bs1 = it.next();
-                Iterator<BeanSetting> iter = setting2.iterator();
-                while (iter.hasNext()) {
-                    BeanSetting bs2 = iter.next();
-                    if (bs1.getBean().equals(bs2.getBean()) && bs1.getSetting() == bs2.getSetting()) {
-                        return true;
-                    }
-                }
+            if (_lengthPanel.isChanged(_currentPath.getLengthMm())) {
+                sb.append(Bundle.getMessage("pathlengthChanged", curName));
+                sb.append("\n");
+            }
+            if (name.length() > 0 && !name.equals(_currentPath.getName())) {
+                sb.append(Bundle.getMessage("changeName", name, curName));
+                sb.append("\n");
             }
         }
-        return false;
+        return sb.toString();
     }
 
     //////////////////////////// end setup ////////////////////////////
-    private void clearListSelection() {
+    @Override
+    protected void clearListSelection() {
         _pathList.clearSelection();
-        int state = _block.getState() & ~OBlock.ALLOCATED;
-        _block.pseudoPropertyChange("state", 0, state);
-        _length.setText("");
+        _lengthPanel.setLength(0);
+        _pathName.setText(null);
+    }
+
+    private String checkIcons(String name, ArrayList<Positionable> pathGp) {
+        Iterator<Positionable> it = pathGp.iterator();
+        boolean hasTrack = false;
+        boolean hasPortal = false;
+        while (it.hasNext()) {
+            Positionable pos = it.next();
+            if (pos instanceof IndicatorTrack) {
+                hasTrack = true;
+            } else if (pos instanceof PortalIcon) {
+                hasPortal = true;
+            }
+        }
+        if (!hasTrack) {
+            return Bundle.getMessage("noTrackIconsForPath", name);
+        } else if (!hasPortal) {
+            return Bundle.getMessage("noPortalIconsForPath", name);
+        }
+        return null;
     }
 
     /**
      * Make the OPath from the icons in the Iterator
      */
-    private OPath makeOPath(String name, ArrayList<Positionable> pathGp, boolean showMsg) {
+    private OPath makeOPath(String name, ArrayList<Positionable> pathGp) {
         if (pathGp.isEmpty()) {
-            if (showMsg) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("noPathIcons"),
-                        Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(this, Bundle.getMessage("noPathIcons", name),
+                    Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
         Iterator<Positionable> it = pathGp.iterator();
@@ -516,21 +488,22 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
         Portal toPortal = null;
         boolean hasTrack = false;
         int portalIconCount = 0;
+        StringBuilder  sb = new StringBuilder ();
         while (it.hasNext()) {
             Positionable pos = it.next();
             if (pos instanceof IndicatorTurnoutIcon) {
                 jmri.Turnout t = ((IndicatorTurnoutIcon) pos).getTurnout();
-                String turnoutName = ((IndicatorTurnoutIcon) pos).getNamedTurnout().getName();
+                String turnoutName = t.getDisplayName();
                 int state = t.getKnownState();
                 if (state != Turnout.CLOSED && state != Turnout.THROWN) {
-                    if (showMsg) {
-                        JOptionPane.showMessageDialog(this, Bundle.getMessage("turnoutNotSet", t.getDisplayName()),
-                                Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
+                    if (sb.length() > 0) {
+                        sb.append("\n");
                     }
-                    return null;
+                    sb.append(Bundle.getMessage("turnoutNotSet", turnoutName));
+                } else {
+                    settings.add(new BeanSetting(t, turnoutName, state));
+                    hasTrack = true;
                 }
-                settings.add(new BeanSetting(t, turnoutName, state));
-                hasTrack = true;
             } else if (pos instanceof PortalIcon) {
                 if (toPortal == null) {
                     toPortal = ((PortalIcon) pos).getPortal();
@@ -542,267 +515,252 @@ public class EditCircuitPaths extends jmri.util.JmriJFrame implements ListSelect
                 hasTrack = true;
             }
         }
-        if (showMsg) {
-            if (!hasTrack) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("noPathIcons"),
-                        Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-                return null;
+        if (!hasTrack) {
+            if (sb.length() > 0) {
+                sb.append("\n");
             }
-            if (toPortal == null && fromPortal == null) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("tooFewPortals"),
-                        Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-                return null;
+            sb.append(Bundle.getMessage("noTrackIconsForPath", name));
+        }
+        if (toPortal == null && fromPortal == null) {
+            if (sb.length() > 0) {
+                sb.append("\n");
             }
-            if (portalIconCount == 0) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("noPortalIcons"),
-                        Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
+            sb.append(Bundle.getMessage("tooFewPortals"));
+        }
+        if (portalIconCount == 0) {
+            if (sb.length() > 0) {
+                sb.append("\n");
             }
-            if (portalIconCount > 2) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("tooManyPortals"),
-                        Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-                return null;
+            sb.append(Bundle.getMessage("noPortalIconsForPath", name));
+        }
+        if (portalIconCount > 2) {
+            if (sb.length() > 0) {
+                sb.append("\n");
             }
+            sb.append(Bundle.getMessage("tooManyPortals"));
+        }
+        if (sb.length() > 0) {
+            JOptionPane.showMessageDialog(this, sb.toString(),
+                    Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
+            return null;
         }
 
-        if (hasTrack && portalIconCount > 0 && portalIconCount < 3) {
-            return new OPath(name, _block, fromPortal, toPortal, settings);
+        if (log.isDebugEnabled()) {
+            log.debug("makeOPath for path \"{}\" from {} icons", name, pathGp.size());
         }
-        return null;
-    }
-
-    private void changePathNameInIcons(String name, OPath path) {
-        // add or remove path name from IndicatorTrack icons
-        Iterator<Positionable> iter = _parent.getCircuitGroup().iterator();
-        while (iter.hasNext()) {
-            Positionable pos = iter.next();
-            if (_pathGroup.contains(pos)) {
-                if (pos instanceof IndicatorTrack) {
-                    ((IndicatorTrack) pos).addPath(name);
-                }
-            } else {
-                if (pos instanceof IndicatorTrack) {
-                    ((IndicatorTrack) pos).removePath(name);
-                } else {
-                    PortalIcon pi = (PortalIcon) pos;
-                    //                   pi.setStatus(PortalIcon.VISIBLE);
-                    Portal p = pi.getPortal();
-                    p.removePath(path);
-                }
-            }
-        }
-
+        return new OPath(name, _homeBlock, fromPortal, toPortal, settings);
     }
 
     /**
      * Create or update the selected path named in the text field Checks that
      * icons have been selected for the path
      */
-    private void addPath() {
+    private void addNewPath(boolean prompt) {
         String name = _pathName.getText();
+        if (log.isDebugEnabled()) {
+            log.debug("addPath({}) for path \"{}\"", prompt, name);
+        }
         if (name == null || name.trim().length() == 0) {
             JOptionPane.showMessageDialog(this, Bundle.getMessage("TooltipPathName"),
                     Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        OPath otherPath = _block.getPathByName(name);
-        boolean sameName = false;
-        if (otherPath != null) {
-            _pathList.setSelectedValue(otherPath, true);
-            sameName = true;
-            if (!_pathChange) {
-                // check portals OK
-                Portal p = otherPath.getFromPortal();
-                if (p != null && !p.isValidPath(otherPath)) {
-                    p.addPath(otherPath);
+        OPath otherPath = null; 
+        OPath newPath = makeOPath(name, _pathGroup);
+        if (newPath == null) {
+            return;
+        }
+        // is this path already defined? OPath equality is equal turnout settings and portals, not icons
+        for (OPath loopPath : _homeBlock.getPaths().stream()
+                .filter(o -> o instanceof OPath).map(o -> (OPath)o)
+                .collect(Collectors.toList())) {
+            if (newPath.equals(loopPath)) {
+                otherPath = loopPath;
+                break;
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("newPath= {}", newPath.toString());
+            log.debug("otherPath= {}", (otherPath==null?"null":otherPath.toString()));
+            log.debug("_currentPath= {}", (_currentPath==null?"null":_currentPath.toString()));
+            log.debug("current path {} changed", (pathIconsEqual(_pathGroup, _savePathGroup)? "not" : "IS"));
+        }
+
+        if (otherPath != null && !otherPath.equals(_currentPath)) {
+            ArrayList<Positionable> otherPathGrp = makePathGroup(otherPath);
+            String otherName = otherPath.getName();
+            StringBuilder  sb = new StringBuilder (Bundle.getMessage("pathDefined", otherName));
+            sb.append("\n");
+            if (name.length() > 0 && !name.equals(otherName)) {
+                sb.append(Bundle.getMessage("changeName", name, otherName));
+                sb.append("\n");
+            }
+            if (!pathIconsEqual(_pathGroup, otherPathGrp)) {
+                sb.append(Bundle.getMessage("pathIconsChanged", otherName));
+                sb.append("\n");
+            }
+            if (_lengthPanel.isChanged(otherPath.getLengthMm())) {
+                sb.append(Bundle.getMessage("pathlengthChanged", otherName));
+                sb.append("\n");
+            }
+            if (sb.length() > 0 && prompt) {
+                sb.append(Bundle.getMessage("saveChanges"));
+                int result = JOptionPane.showConfirmDialog(this, sb.toString(),
+                        Bundle.getMessage("makePath"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    _currentPath = otherPath;
                 }
-                p = otherPath.getToPortal();
-                if (p != null && !p.isValidPath(otherPath)) {
-                    p.addPath(otherPath);
-                }
-                setPathLength(otherPath);
+            } else {
                 return;
             }
         }
-        OPath path = makeOPath(name, _pathGroup, true);
-        if (path == null) {
-            return;  // proper OPath cannot be made
-        }
-        if (otherPath == null) {
-            // is this path already defined?
-            Iterator<Path> iter = _block.getPaths().iterator();
-            while (iter.hasNext()) {
-                OPath p = (OPath) iter.next();
-                if (pathsEqual(path, p)) {
-                    otherPath = p;
-                    break;
-                }
-            }
-        }
+        
         // match icons to current selections
-        changePathNameInIcons(name, path);
+        changePathNameInIcons(name, _pathGroup);
 
-        if (otherPath != null) {  // same path
-            if (!sameName) {
-                int result = JOptionPane.showConfirmDialog(this, Bundle.getMessage("samePath",
-                        otherPath.getName(), name), Bundle.getMessage("makePath"), JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
-                if (result == JOptionPane.YES_OPTION) {
-                    changePathName();
-                }
-            }
-            _pathList.setSelectedValue(otherPath, true);
-        }
-        Portal toPortal = path.getToPortal();
-        Portal fromPortal = path.getFromPortal();
-        if (fromPortal != null && fromPortal.equals(toPortal)) {
-            int result = JOptionPane.showConfirmDialog(this, Bundle.getMessage("balloonTrack",
-                    name, fromPortal.getDescription()),
-                    Bundle.getMessage("makePath"), JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
-            if (result == JOptionPane.NO_OPTION) {
-                fromPortal = null;
-            }
-        }
-        _pathChange = false;
-        // If the name is the same as a Path already in the block, don't add.
-        // Just update OPath changes
-        if (sameName) {
-            OPath oldPath = _block.getPathByName(name);
-            oldPath.setToPortal(toPortal);
-            oldPath.setFromPortal(fromPortal);
-            setPathLength(oldPath);
-            oldPath.clearSettings();
-            Iterator<BeanSetting> it = path.getSettings().iterator();
-            while (it.hasNext()) {
-                oldPath.addSetting(it.next());
-            }
-            toPortal.addPath(oldPath);
+        if (_currentPath != null) {
+            _currentPath.setName(name);
+            Portal toPortal = newPath.getToPortal();
+            toPortal.addPath(_currentPath);
+            Portal fromPortal = newPath.getFromPortal();
             if (fromPortal != null) {
-                fromPortal.addPath(oldPath);
+                fromPortal.addPath(_currentPath);
             }
+            _currentPath.setToPortal(toPortal);
+            _currentPath.setFromPortal(fromPortal);
+            _currentPath.setLength(_lengthPanel.getLength());
+            _currentPath.clearSettings();
+            for (BeanSetting beanSetting : newPath.getSettings()) {
+                _currentPath.addSetting(beanSetting);
+            }
+            _savePathGroup = _pathGroup;
+            log.debug("update _currentPath");
         } else {
-            _block.addPath(path);  // OBlock adds path to portals and checks for duplicate path names
-            setPathLength(path);
+            newPath.setLength(_lengthPanel.getLength());
+            _homeBlock.addPath(newPath);  // OBlock adds path to portals and checks for duplicate path names
+            log.debug("add newPath");
         }
-        _pathList.setSelectedValue(path, true);
-        _pathListModel.dataChange();
-    }
-
-    private boolean setPathLength(OPath path) {
-        float f;
-        try {
-            String num = _length.getText();
-            if (num == null || num.length() == 0) {
-                num = "0.0";
-            }
-            f = Float.parseFloat(num);
-            if (_units.isSelected()) {
-                path.setLength(f * 25.4f);
-            } else {
-                path.setLength(f * 10f);
-            }
-        } catch (NumberFormatException nfe) {
-            f = -1.0f;
-        }
-        if (f < 0.0f) {
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("MustBeFloat", _length.getText()),
-                    Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
-            return false;
-        }
-
-        return true;
     }
 
     private void changePathName() {
         String name = _pathName.getText();
-        OPath path = _pathList.getSelectedValue();
-        if (name == null || name.trim().length() == 0 || path == null) {
+        if (name == null || name.trim().length() == 0 || _currentPath == null) {
             JOptionPane.showMessageDialog(this, Bundle.getMessage("changePathName", Bundle.getMessage("buttonChangeName")),
                     Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String oldName = path.getName();
-        OPath oldPath = _block.getPathByName(name);
-        if (oldPath != null) {
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("duplicatePathName",
-                    name, _block.getDisplayName()),
+        OPath aPath = _homeBlock.getPathByName(name);
+        if (aPath != null) {
+            if (name.equals(_currentPath.getName())) {
+                _pathList.setSelectedValue(aPath, true);
+                return;
+            }
+            JOptionPane.showMessageDialog(this, 
+                    Bundle.getMessage("duplicatePathName", name, _homeBlock.getDisplayName()),
                     Bundle.getMessage("makePath"), JOptionPane.INFORMATION_MESSAGE);
+            clearPath(false);
+            _pathName.setText(null);
             return;
         }
-        path.setName(name);
+        _currentPath.setName(name);     // sends propertyChange to track icons
+        if (!pathIconsEqual(_pathGroup, _savePathGroup)) {
+            StringBuilder  sb = new StringBuilder ();
+            sb.append(Bundle.getMessage("pathIconsChanged", name));
+            sb.append("\n");
+            sb.append(Bundle.getMessage("saveIcons"));
+            int result = JOptionPane.showConfirmDialog(this, sb.toString(),
+                    Bundle.getMessage("makePath"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                changePathNameInIcons(name, _pathGroup);
+                _savePathGroup = _pathGroup;
+            } else {
+                changePathNameInIcons(name, _savePathGroup);
+                clearPath(false);
+                _pathGroup = _savePathGroup;
+                updatePath();
+            }
+        } else {
+            changePathNameInIcons(name, _pathGroup);
+        }
+        _pathList.setSelectedValue(_currentPath, true);
+    }
 
-        // Change the path name in the track icons
-        java.util.List<Positionable> list = _parent.getCircuitGroup();
-        // cannot do remove/add path on the fly due to conncurrent access with Iterator
-        ArrayList<IndicatorTrack> changeGroup = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof IndicatorTrack) {
-                IndicatorTrack icon = (IndicatorTrack) list.get(i);
-                ArrayList<String> paths = icon.getPaths();
-                if (paths != null) {
-                    for (int j = 0; j < paths.size(); j++) {
-                        if (oldName.equals(paths.get(j))) {
-                            changeGroup.add(icon);
-                        }
-                    }
+    private void changePathNameInIcons(String name, ArrayList<Positionable> pathGp) {
+        log.debug("changePathNameInIcons for {}.  {} icons", name, pathGp.size());
+        // add or remove path name from IndicatorTrack icons
+        for (Positionable pos : _parent.getCircuitIcons(_homeBlock)) {
+            if (pathGp.contains(pos)) {
+                if (pos instanceof IndicatorTrack) {
+                    ((IndicatorTrack) pos).addPath(name);
+                }
+            } else {
+                if (pos instanceof IndicatorTrack) {
+                    ((IndicatorTrack) pos).removePath(name);
                 }
             }
         }
-        for (int i = 0; i < changeGroup.size(); i++) {
-            IndicatorTrack track = changeGroup.get(i);
-            track.removePath(oldName);
-            track.addPath(name);
-        }
-        _pathChange = false;
-        _pathListModel.dataChange();
     }
 
     private void deletePath() {
         OPath path = _pathList.getSelectedValue();
         if (path == null) {
             // check that name was typed in and not selected
-            path = _block.getPathByName(_pathName.getText());
+            path = _homeBlock.getPathByName(_pathName.getText());
         }
         if (path == null) {
             return;
         }
-        _pathChange = false;
-        _block.removePath(path);
-        _pathListModel.dataChange();
-        // Get icons for path
-        _pathGroup = makePathGroup(path);
-        clearPath();
-    }
-
-    private void closingEvent() {
-        clearPath();
-        _parent.closePathFrame(_block);
-        _loc = getLocation(_loc);
-        _dim = getSize(_dim);
-        dispose();
-    }
-
-    private void clearPath() {
-        for (int i = 0; i < _pathGroup.size(); i++) {
-            Positionable pos = _pathGroup.get(i);
-            if (pos instanceof PortalIcon) {
-                ((PortalIcon) pos).setStatus(PortalIcon.VISIBLE);
-            } else {
-                ((IndicatorTrack) pos).removePath(TEST_PATH);
-            }
+        if (_homeBlock.removeOPath(path)) {
+            clearListSelection();
+            _pathListModel.dataChange();
         }
-        int state = _block.getState() & ~OBlock.ALLOCATED;
-        _pathGroup = new ArrayList<>();
-        _block.pseudoPropertyChange("state", 0, state);
     }
 
-    //////////////////////// callbacks from main frame ////////////////////////
-    protected java.util.List<Positionable> getPathGroup() {
-        return _pathGroup;
+    @Override
+    protected void closingEvent(boolean close) {
+        StringBuilder  sb = new StringBuilder ();
+        String msg = checkForSavePath();
+        if(msg.length() > 0) {
+            sb.append(msg);
+            sb.append("\n");
+        }
+        msg = findErrors();
+        if (msg.length() > 0) {
+            sb.append(msg);
+        }
+        if (closingEvent(close, sb.toString())) {
+            _pathName.setText(null);
+            clearPath(true);
+            int oldState = _homeBlock.getState();
+            int newState = oldState | OBlock.ALLOCATED;
+            _homeBlock.pseudoPropertyChange("state", oldState, newState);
+            _homeBlock.removePropertyChangeListener(_pathListModel);
+        }// else...  Don't clear current selections, if continuing to edit
     }
 
-    protected OBlock getBlock() {
-        return _block;
+    private void clearPath(boolean hidePortals) {
+        if (_pathGroup != null) {
+            log.debug("clearPath deAllocate _pathGroup with {} icons", _pathGroup.size());
+            for (Positionable pos : _pathGroup) {
+                if (pos instanceof PortalIcon) {
+                    PortalIcon pi = (PortalIcon) pos;
+                    if (hidePortals) {
+                        pi.setStatus(PortalIcon.HIDDEN);
+                    } else {
+                        pi.setStatus(PortalIcon.VISIBLE);
+                    }
+                } else if (pos instanceof IndicatorTrack) {
+                    ((IndicatorTrack)pos).removePath(TEST_PATH);
+                }
+            }
+            _pathGroup.clear();
+            int oldState = _homeBlock.getState();
+            int newState = oldState & ~OBlock.ALLOCATED;
+            _homeBlock.pseudoPropertyChange("state", oldState, newState);
+            _currentPath = null;
+        } else {
+            log.debug("clearPath pathGroup null");
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(EditCircuitPaths.class);

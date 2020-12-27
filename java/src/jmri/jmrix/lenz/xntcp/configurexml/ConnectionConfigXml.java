@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * Handle XML persistence of layout connections by persisting the XnTcpAdapter
  * (and connections). Note this is named as the XML version of a
  * ConnectionConfig object, but it's actually persisting the XnTcpAdapter.
- * <P>
+ * <p>
  * This class is invoked from jmrix.JmrixConfigPaneXml on write, as that class
  * is the one actually registered. Reads are brought here directly via the class
  * attribute in the XML.
@@ -43,7 +43,7 @@ public class ConnectionConfigXml extends AbstractNetworkConnectionConfigXml {
         try {
             result = super.load(shared, perNode);
             if (log.isDebugEnabled()) {
-                log.debug("result " + result);
+                log.debug("result {}", result);
             }
         } catch (NullPointerException ex) {
             // If the standard configuration fails, try the original 
@@ -141,6 +141,6 @@ public class ConnectionConfigXml extends AbstractNetworkConnectionConfigXml {
     }
 
     // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(ConnectionConfigXml.class);
+    private static final Logger log = LoggerFactory.getLogger(ConnectionConfigXml.class);
 
 }

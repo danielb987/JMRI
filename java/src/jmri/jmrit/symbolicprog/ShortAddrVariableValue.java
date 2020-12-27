@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Representation of a short address (CV1).
- * <P>
+ * <p>
  * This is a decimal value, extended to modify the other CVs when written. The
  * CVs to be modified and their new values are stored in two arrays for
  * simplicity.
- * <P>
+ * <p>
  *
  * The NMRA has decided that writing CV1 causes other CVs to update within the
  * decoder (CV19 for consisting, CV29 for short/long address). We want DP to
@@ -38,7 +38,8 @@ public class ShortAddrVariableValue extends DecVariableValue {
     }
 
     /**
-     * Register a CV to be modified regardless of current value
+     * Register a CV to be modified regardless of current value.
+     * @param cvNum cv number string.
      */
     public void setModifiedCV(String cvNum) {
         if (firstFreeSpace >= maxCVs) {
@@ -60,13 +61,12 @@ public class ShortAddrVariableValue extends DecVariableValue {
                 continue;  // if CV not present this decoder...
             }
             if (!cvNumbers[i].equals(cv.number())) {
-                log.error("CV numbers don't match: "
-                        + cvNumbers[i] + " " + cv.number());
+                log.error("CV numbers don't match: {} {}", cvNumbers[i], cv.number());
             }
             cv.setToWrite(true);
             cv.setState(EDITED);
             if (log.isDebugEnabled()) {
-                log.debug("Mark to write " + cv.number());
+                log.debug("Mark to write {}", cv.number());
             }
         }
     }

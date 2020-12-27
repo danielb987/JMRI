@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author rhwood
+ * @author Randall Wood
  */
 public class ZeroConfServiceEvent extends EventObject {
 
@@ -28,13 +28,6 @@ public class ZeroConfServiceEvent extends EventObject {
      */
     public ZeroConfService getService() {
         return this.service;
-    }
-
-    /**
-     * @return the JmDNS server
-     */
-    public JmDNS getDNS() {
-        return this.dns;
     }
 
     /**

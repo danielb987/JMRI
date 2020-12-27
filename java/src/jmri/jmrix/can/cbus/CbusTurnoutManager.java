@@ -1,5 +1,8 @@
 package jmri.jmrix.can.cbus;
 
+import java.beans.PropertyChangeEvent;
+import java.util.Locale;
+import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.Turnout;
 import jmri.jmrix.can.CanSystemConnectionMemo;
@@ -8,137 +11,127 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CAN CBUS implementation of a TurnoutManager.
+ * Implement TurnoutManager for CAN CBUS systems.
  * <p>
- * Turnouts must be manually created.
+ * System names are "MT+n;-m", where M is the user configurable system prefix,
+ * n and m are the events (signed for on/off, separated by ;).
+ * <p>
+ * Turnouts must be explicitly created, they are not polled.
  *
  * @author Bob Jacobsen Copyright (C) 2008
  * @since 2.3.1
  */
 public class CbusTurnoutManager extends AbstractTurnoutManager {
 
+    /**
+     * Ctor using a given system connection memo
+     * @param memo System Connection
+     */
     public CbusTurnoutManager(CanSystemConnectionMemo memo) {
-        this.memo = memo;
-        prefix = memo.getSystemPrefix();
+        super(memo);
     }
 
-    CanSystemConnectionMemo memo;
-
-    String prefix = "M";
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getSystemPrefix() {
-        return prefix;
-    }
-
-    @Override
-    protected Turnout createNewTurnout(String systemName, String userName) {
+    protected Turnout createNewTurnout(@Nonnull String systemName, String userName) {
         String addr = systemName.substring(getSystemPrefix().length() + 1);
         // first, check validity
+        String newAddress;
         try {
-            validateSystemNameFormat(addr);
+            newAddress = CbusAddress.validateSysName(addr);
         } catch (IllegalArgumentException e) {
-            log.error(e.toString());
+            log.error(e.getMessage());
             throw e;
         }
-        try {
-            if (Integer.parseInt(addr) > 0 && !addr.startsWith("+")) {
-                // accept unsigned positive integer, prefix "+"
-                addr = "+" + addr;
-            }
-        } catch (NumberFormatException ex) {
-            log.debug("Unable to convert {} into Cbus format +nn", addr);
-        }
-        Turnout t = new CbusTurnout(getSystemPrefix(), addr, memo.getTrafficController());
+        // OK, make
+        Turnout t = new CbusTurnout(getSystemPrefix(), newAddress, ((CanSystemConnectionMemo)getMemo()).getTrafficController());
         t.setUserName(userName);
         return t;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean allowMultipleAdditions(String systemName) {
-        return false;
+    public boolean allowMultipleAdditions(@Nonnull String systemName) {
+        return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String createSystemName(String curAddress, String prefix) throws JmriException {
+    public String createSystemName(@Nonnull String curAddress, @Nonnull String prefix) {
         // first, check validity
+        String newAddress;
         try {
-            validateSystemNameFormat(curAddress);
-        } catch (IllegalArgumentException e) {
-            throw new JmriException(e.toString());
+            newAddress = CbusAddress.validateSysName(curAddress);
+         } catch (IllegalArgumentException e) {
+            newAddress = curAddress;
         }
-        // prefix + as service to user
-        int unsigned = 0;
-        try {
-            unsigned = Integer.parseInt(curAddress); // on unsigned integer, will add "+" next
-        } catch (NumberFormatException ex) {
-            // already warned
-        }
-        if (unsigned > 0 && !curAddress.startsWith("+")) {
-            curAddress = "+" + curAddress;
-        }
-        return getSystemPrefix() + typeLetter() + curAddress;
+        return prefix + typeLetter() + newAddress;
+    }
+    
+    /**
+     * Only increments by 1, which is fine for CBUS Turnouts.
+     * {@inheritDoc}
+     */
+    @Nonnull
+    @Override
+    protected String getIncrement(String curAddress, int increment) throws JmriException {
+        return CbusAddress.getIncrement(curAddress);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getNextValidAddress(String curAddress, String prefix) throws JmriException {
-        // always return this (the current) name without change
+    @Nonnull
+    public String validateSystemNameFormat(@Nonnull String name, @Nonnull Locale locale) {
+        validateSystemNamePrefix(name, locale);
         try {
-            validateSystemNameFormat(curAddress);
-        } catch (IllegalArgumentException e) {
-            throw new JmriException(e.toString());
+            CbusAddress.validateSysName(name.substring(getSystemNamePrefix().length()));
+        } catch (IllegalArgumentException ex) {
+            throw new jmri.NamedBean.BadSystemNameException(locale, "InvalidSystemNameCustom", ex.getMessage());
         }
-        return curAddress;
+        return name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public NameValidity validSystemNameFormat(String systemName) {
-        String addr = systemName.substring(getSystemPrefix().length() + 1); // get only the address part
+    public NameValidity validSystemNameFormat(@Nonnull String systemName) {
+        String addr;
         try {
-            validateSystemNameFormat(addr);
+            addr = systemName.substring(getSystemPrefix().length() + 1); // get only the address part
+        } catch (StringIndexOutOfBoundsException e){
+            return NameValidity.INVALID;
+        }
+        try {
+            CbusAddress.validateSysName(addr);
         } catch (IllegalArgumentException e){
-            log.debug("Warning: {}", e.getMessage());
             return NameValidity.INVALID;
         }
         return NameValidity.VALID;
     }
 
     /**
-     * Work out the details for Cbus hardware address validation
-     * Logging of handled cases no higher than WARN.
-     *
-     * @param address the hardware address to check
-     * @throws IllegalArgumentException when delimiter is not found
+     * {@inheritDoc}
      */
-    void validateSystemNameFormat(String address) throws IllegalArgumentException {
-        CbusAddress a = new CbusAddress(address);
-        CbusAddress[] v = a.split();
-        if (v == null) {
-            throw new IllegalArgumentException("Did not find usable hardware address: " + address + " for a valid Cbus turnout address");
-        }
-        switch (v.length) {
-            case 1:
-                int unsigned = 0;
-                try {
-                    unsigned = Integer.parseInt(address); // accept unsigned integer, will add "+" upon creation
-                } catch (NumberFormatException ex) {
-                    log.debug("Unable to convert {} into Cbus format +nn", address);
-                }
-                if (address.startsWith("+") || address.startsWith("-") || unsigned > 0) {
-                    break;
-                }
-                throw new IllegalArgumentException("can't make 2nd event from address " + address);
-            case 2:
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong number of events in address: " + address);
-        }
-    }
-
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddOutputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddOutputEntryToolTip");
+    }
+    
+    @Override
+    public void propertyChange(PropertyChangeEvent e) {
+        super.propertyChange(e);
+        if (e.getPropertyName().equals("inverted")) {
+            firePropertyChange("beaninverted", null, null); //IN18N
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger(CbusTurnoutManager.class);

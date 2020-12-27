@@ -5,9 +5,9 @@ import javax.swing.AbstractAction;
 import jmri.jmrix.rps.RpsSystemConnectionMemo;
 
 /**
- * Swing action to create and register a RpsTrackingFrame object
+ * Swing action to create and register a RpsTrackingFrame object.
  *
- * @author	Bob Jacobsen Copyright (C) 2006, 2008
+ * @author Bob Jacobsen Copyright (C) 2006, 2008
  */
 public class RpsTrackingFrameAction extends AbstractAction {
 
@@ -19,7 +19,7 @@ public class RpsTrackingFrameAction extends AbstractAction {
     }
 
     public RpsTrackingFrameAction(RpsSystemConnectionMemo _memo) {
-        this("RPS Tracking Display",_memo);
+        this("RPS Tracking Display", _memo);
     }
 
     @Override
@@ -29,4 +29,5 @@ public class RpsTrackingFrameAction extends AbstractAction {
         f.initComponents();
         f.setVisible(true);
     }
+
 }

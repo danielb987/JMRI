@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An icon to display a status of a Block Object.<P>
- *
+ * An icon to display a status of a Block Object.
+ * <p>
  * This is the same name as display.BlockContentsIcon, it follows
  * on from the MemoryIcon
  */
@@ -17,18 +17,14 @@ import org.slf4j.LoggerFactory;
 public class BlockContentsIcon extends jmri.jmrit.display.BlockContentsIcon {
 
     //TODO: unused - dead-code strip
-    //@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED")
-    //private final transient String defaultText = " ";
+    //private final String defaultText = " ";
 
-    /**
-     * {@inheritDoc}
-     */
     public BlockContentsIcon(String s, LayoutEditor panel) {
         super(s, panel);
         log.debug("BlockContentsIcon ctor= {}", BlockContentsIcon.class.getName());
     }
 
-    private transient LayoutBlock lBlock = null;
+    private LayoutBlock lBlock = null;
 
     /**
      * {@inheritDoc}
@@ -102,5 +98,5 @@ public class BlockContentsIcon extends jmri.jmrit.display.BlockContentsIcon {
         }
     }
 
-    private transient final static Logger log = LoggerFactory.getLogger(BlockContentsIcon.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BlockContentsIcon.class);
 }

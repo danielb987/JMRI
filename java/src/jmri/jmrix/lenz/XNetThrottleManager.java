@@ -1,8 +1,9 @@
 package jmri.jmrix.lenz;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import jmri.LocoAddress;
-import jmri.ThrottleManager;
+import jmri.SpeedStepMode;
 import jmri.jmrix.AbstractThrottleManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +11,19 @@ import org.slf4j.LoggerFactory;
 /**
  * XNet implementation of a ThrottleManager based on the
  * AbstractThrottleManager.
- * <P>
+ *
  * @author Paul Bender Copyright (C) 2002-2004
  * @navassoc 1 - * jmri.jmrix.lenz.XNetThrottle
  */
-public class XNetThrottleManager extends AbstractThrottleManager implements ThrottleManager, XNetListener {
+public class XNetThrottleManager extends AbstractThrottleManager implements XNetListener {
 
-    protected HashMap<LocoAddress, XNetThrottle> throttles = new HashMap<LocoAddress, XNetThrottle>(5);
+    protected final HashMap<LocoAddress, XNetThrottle> throttles = new HashMap<>(5);
 
-    protected XNetTrafficController tc = null;
+    protected XNetTrafficController tc;
 
     /**
      * Constructor.
+     * @param memo system connection.
      */
     public XNetThrottleManager(XNetSystemConnectionMemo memo) {
         super(memo);
@@ -40,7 +42,16 @@ public class XNetThrottleManager extends AbstractThrottleManager implements Thro
     public void requestThrottleSetup(LocoAddress address, boolean control) {
         XNetThrottle throttle;
         if (log.isDebugEnabled()) {
-            log.debug("Requesting Throttle: " + address);
+            log.debug("Requesting Throttle: {}", address);
+        }
+        // range check for LH200 and Compact/Commander
+        if (tc.getCommandStation().getCommandStationType() == 0x01 ||
+            tc.getCommandStation().getCommandStationType() == 0x02 ) {
+            if(address.getNumber()>=100) {
+               String typeString = Bundle.getMessage(tc.getCommandStation().getCommandStationType() == 0x01?"CSTypeLH200":"CSTypeCompact");
+               failedThrottleRequest(address,Bundle.getMessage("ThrottleErrorCSTwoDigit",typeString));
+               return;
+            }
         }
         if (throttles.containsKey(address)) {
             notifyThrottleKnown(throttles.get(address), address);
@@ -62,6 +73,8 @@ public class XNetThrottleManager extends AbstractThrottleManager implements Thro
     /**
      * XpressNet based systems can have multiple throttles for the same
      * device.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     protected boolean singleUse() {
@@ -94,6 +107,8 @@ public class XNetThrottleManager extends AbstractThrottleManager implements Thro
 
     /**
      * Local method for deciding short/long address
+     * @param num address to examine
+     * @return true if can be long address
      */
     static protected boolean isLongAddress(int num) {
         return (num >= 100);
@@ -105,11 +120,11 @@ public class XNetThrottleManager extends AbstractThrottleManager implements Thro
      * 14,27,28 and 128 speed step modes
      */
     @Override
-    public int supportedSpeedModes() {
-        return (jmri.DccThrottle.SpeedStepMode128
-                | jmri.DccThrottle.SpeedStepMode28
-                | jmri.DccThrottle.SpeedStepMode27
-                | jmri.DccThrottle.SpeedStepMode14);
+    public EnumSet<SpeedStepMode> supportedSpeedModes() {
+        return EnumSet.of(SpeedStepMode.NMRA_DCC_128
+                , SpeedStepMode.NMRA_DCC_28
+                , SpeedStepMode.NMRA_DCC_27
+                , SpeedStepMode.NMRA_DCC_14);
     }
 
     /**
@@ -163,6 +178,6 @@ public class XNetThrottleManager extends AbstractThrottleManager implements Thro
         return false;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(XNetThrottleManager.class);
+    private static final Logger log = LoggerFactory.getLogger(XNetThrottleManager.class);
 
 }

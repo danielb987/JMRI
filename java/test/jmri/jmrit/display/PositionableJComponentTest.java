@@ -1,19 +1,21 @@
 package jmri.jmrit.display;
 
 import java.awt.GraphicsEnvironment;
-import jmri.util.JUnitUtil;
-import org.junit.*;
+import jmri.util.junit.annotations.*;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
 public class PositionableJComponentTest extends PositionableTestBase {
 
     @Test
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assert.assertNotNull("exists",p);
+        Assert.assertNotNull("exists", p);
     }
 
     @Override
@@ -29,26 +31,21 @@ public class PositionableJComponentTest extends PositionableTestBase {
 
     @Test
     @Override
-    @Ignore("PositionableJComponent does not support rotate")
-    public void testGetAndSetRotationDegrees(){
+    @Disabled("PositionableJComponent does not support rotate")
+    @ToDo("implement rotate in PositionableJComponent, then remove overriden test so parent class test can execute")
+    public void testGetAndSetRotationDegrees() {
+        Assert.fail("Should support rotation but doesn't");
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
-        JUnitUtil.setUp();
-        JUnitUtil.resetProfileManager();
-
-        if(!GraphicsEnvironment.isHeadless()){
-           editor = new EditorScaffold();
-           p = new PositionableJComponent(editor);
-           ((PositionableJComponent)p).setName("PositionableJComponent");
+        super.setUp();
+        if (!GraphicsEnvironment.isHeadless()) {
+            editor = new EditorScaffold();
+            p = new PositionableJComponent(editor);
+            ((PositionableJComponent) p).setName("PositionableJComponent");
         }
-    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
     }
 
 }

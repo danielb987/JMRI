@@ -30,6 +30,7 @@ public class ActiveSystemsMenu extends JMenu {
 
     /**
      * Add menus for active systems to the menu bar.
+     * @param m the menu bar to add the system menu to.
      */
     static public void addItems(JMenuBar m) {
 
@@ -38,15 +39,20 @@ public class ActiveSystemsMenu extends JMenu {
                 = jmri.InstanceManager.getList(ComponentFactory.class);
 
         for (ComponentFactory memo : list) {
-            JMenu menu = memo.getMenu();
-            if (menu != null) {
-                m.add(menu);
+            try {
+                JMenu menu = memo.getMenu();
+                if (menu != null) {
+                    m.add(menu);
+                }
+            } catch (RuntimeException ex) {
+                log.error("Proceeding after error while trying to create menu for {}", memo.getClass(), ex);
             }
         }
     }
 
     /**
      * Add active systems as submenus inside a single menu entry.
+     * @param m menu to add the sub menus to.
      */
     static public void addItems(JMenu m) {
 
@@ -64,8 +70,8 @@ public class ActiveSystemsMenu extends JMenu {
 
     static JMenu getMenu(String className) {
         try {
-            return (JMenu) Class.forName(className).newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            return (JMenu) Class.forName(className).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | java.lang.reflect.InvocationTargetException e) {
             log.error("Could not load class {}", className, e);
             return null;
         }

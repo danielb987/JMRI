@@ -24,15 +24,15 @@ import org.slf4j.LoggerFactory;
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ * <p>
  *
  * @author Bob Jacobsen Copyright (C) 2003
  * @author Matthew Harris copyright (c) 2009
@@ -127,7 +127,6 @@ public class AudioTablePanel extends JPanel {
         bufferDataScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         sourceDataScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         sourceDataScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
     }
 
     /**
@@ -141,8 +140,7 @@ public class AudioTablePanel extends JPanel {
     }
 
     public JMenuItem getPrintItem() {
-        ResourceBundle rbapps = ResourceBundle.getBundle("apps.AppsBundle");
-        JMenuItem printItem = new JMenuItem(rbapps.getString("PrintTable"));
+        JMenuItem printItem = new JMenuItem(Bundle.getMessage("PrintTable"));
 
         printItem.addActionListener(new ActionListener() {
             @Override
@@ -153,7 +151,7 @@ public class AudioTablePanel extends JPanel {
                     bufferDataTable.print(JTable.PrintMode.FIT_WIDTH, new MessageFormat("Buffer Table"), footerFormat);
                     sourceDataTable.print(JTable.PrintMode.FIT_WIDTH, new MessageFormat("Source Table"), footerFormat);
                 } catch (java.awt.print.PrinterException e1) {
-                    log.warn("error printing: " + e1, e1);
+                    log.warn("error printing: {}", e1, e1);
                 }
             }
         });

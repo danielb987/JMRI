@@ -30,7 +30,10 @@ import org.apache.log4j.spi.LoggingEvent;
  * minimal impact on performance if not used.
  *
  * @author bender heri See 4/15/2009 Log4J email
+ * @deprecated since 4.22.1 without direct replacement; this duplicates the
+ * {@link apps.SystemConsole} functionality
  */
+@Deprecated
 public class JLogoutputFrame {
 
     private static final Logger myLog = Logger.getLogger(JLogoutputFrame.class);
@@ -68,7 +71,7 @@ public class JLogoutputFrame {
 
     /**
      * Constructor
-     *
+     * <p>
      */
     private JLogoutputFrame() {
         super();
@@ -146,7 +149,7 @@ public class JLogoutputFrame {
         JTextPaneAppender result = new JTextPaneAppender(myLayout, "Debug", myFilters.toArray(new Filter[0]), aTextPane);
 
         // TODO: This a simple approach to add the new appender to all yet known Loggers. 
-        // If Loggers are created dynamically later on or the the additivity flag of
+        // If Loggers are created dynamically later on or the additivity flag of
         // a logger changes, these Loggers probably wouldn't log to this appender. Solution is to
         // override the DefaultLoggerFactory and the Logger's setAdditivity().
         // Better solution is: Derivation of HierarchyEventListener (see mail on log4j user list "logging relative to webapp context path in tomcat" from Mi 19.03.2008 12:04)

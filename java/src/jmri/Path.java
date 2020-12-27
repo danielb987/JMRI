@@ -10,15 +10,15 @@ import jmri.util.MathUtil;
 /**
  * Represents a particular set of NamedBean (usually turnout) settings to put a
  * path through trackwork to a Block.
- * <P>
+ * <p>
  * Directions are defined for traffic along this path "to" the block, and "from"
  * the block. Being more specific:
- * <UL>
- * <LI>The "to" direction is the direction that a train is going when it
- * traverses this path "to" the final block.
- * <LI>The "from" direction is the direction that a train is going when it
- * traverses this path "from" the final block.
- * </UL>
+ * <ul>
+ *   <li>The "to" direction is the direction that a train is going when it
+ *   traverses this path "to" the final block.
+ *   <li>The "from" direction is the direction that a train is going when it
+ *   traverses this path "from" the final block.
+ * </ul>
  * Although useful constants are defined, you don't have to restrict to those,
  * and there's no assumption that they have to be opposites; NORTH for "to" does
  * not imply SOUTH for "from". This allows you to e.g. handle a piece of curved
@@ -26,10 +26,10 @@ import jmri.util.MathUtil;
  * constants are defined as bits, so you can use more than one at a time, for
  * example a direction can simultanously be EAST and RIGHT if desired. What that
  * means needs to be defined by whatever object is using this Path.
- * <P>
+ * <p>
  * This implementation handles paths with a list of bean settings. This has been
  * extended from the initial implementation.
- * <P>
+ * <p>
  * The length of the path may also optionally be entered if desired. This
  * attribute is for use in automatic running of trains. Length should be the
  * actual length of model railroad track in the path. It is always stored here
@@ -40,7 +40,7 @@ import jmri.util.MathUtil;
  *
  * @author Bob Jacobsen Copyright (C) 2006, 2008
  */
-public class Path {
+public class Path implements Comparable<Path> {
 
     /**
      * Create an object with default directions of NONE, and no setting element.
@@ -133,8 +133,8 @@ public class Path {
             return true;
         }
         // check the status of all BeanSettings
-        for (int i = 0; i < _beans.size(); i++) {
-            if (!(_beans.get(i)).check()) {
+        for (BeanSetting bean : _beans) {
+            if (!bean.check()) {
                 return false;
             }
         }
@@ -206,47 +206,59 @@ public class Path {
     public static final int DOWN = 0x02000;
 
     /**
-     * Decode the direction constants into a human-readable form. This should
-     * eventually be internationalized.
+     * Decode the direction constants into a human-readable form.
      *
      * @param d the direction
      * @return the direction description
      */
     static public String decodeDirection(int d) {
         if (d == NONE) {
-            return "None";
+            return Bundle.getMessage("None"); // UI strings i18n using NamedBeanBundle.properties
         }
-
         StringBuffer b = new StringBuffer();
-        if ((d & NORTH) != 0) {
-            appendOne(b, "North");
+        if (((d & NORTH) != 0) && ((d & EAST) != 0) ) {
+            appendOne(b, Bundle.getMessage("NorthEast"));
         }
-        if ((d & SOUTH) != 0) {
-            appendOne(b, "South");
+        else if (((d & NORTH) != 0) && ((d & WEST) != 0) ) {
+            appendOne(b, Bundle.getMessage("NorthWest"));
         }
-        if ((d & EAST) != 0) {
-            appendOne(b, "East");
+        else if (((d & SOUTH) != 0) && ((d & EAST) != 0) ) {
+            appendOne(b, Bundle.getMessage("SouthEast"));
         }
-        if ((d & WEST) != 0) {
-            appendOne(b, "West");
+        else if (((d & SOUTH) != 0) && ((d & WEST) != 0) ) {
+            appendOne(b, Bundle.getMessage("SouthWest"));
+        }
+        else {
+            if ((d & NORTH) != 0) {
+                appendOne(b, Bundle.getMessage("North"));
+            }
+            if ((d & SOUTH) != 0) {
+                appendOne(b, Bundle.getMessage("South"));
+            }
+            if ((d & EAST) != 0) {
+                appendOne(b, Bundle.getMessage("East"));
+            }
+            if ((d & WEST) != 0) {
+                appendOne(b, Bundle.getMessage("West"));
+            }
         }
         if ((d & CW) != 0) {
-            appendOne(b, "CW");
+            appendOne(b, Bundle.getMessage("Clockwise"));
         }
         if ((d & CCW) != 0) {
-            appendOne(b, "CCW");
+            appendOne(b, Bundle.getMessage("CounterClockwise"));
         }
         if ((d & LEFT) != 0) {
-            appendOne(b, "Left");
+            appendOne(b, Bundle.getMessage("Leftward"));
         }
         if ((d & RIGHT) != 0) {
-            appendOne(b, "Right");
+            appendOne(b, Bundle.getMessage("Rightward"));
         }
         if ((d & UP) != 0) {
-            appendOne(b, "Up");
+            appendOne(b, Bundle.getMessage("ButtonUp")); // reuse "Up" in NBB
         }
         if ((d & DOWN) != 0) {
-            appendOne(b, "Down");
+            appendOne(b, Bundle.getMessage("ButtonDown")); // reuse "Down" in NBB
         }
         final int mask = NORTH | SOUTH | EAST | WEST | CW | CCW | LEFT | RIGHT | UP | DOWN;
         if ((d & ~mask) != 0) {
@@ -257,20 +269,16 @@ public class Path {
 
     /**
      * Set path length.
+     * Length may override the block length default.
      *
      * @param l length in millimeters
      */
     public void setLength(float l) {
         _length = l;
-        if (_block != null) {
-            if (l > _block.getLengthMm()) {
-                _length = _block.getLengthMm();
-            }
-        }
     }
 
     /**
-     * Return actual stored length.
+     * Get actual stored length.
      *
      * @return length in millimeters or 0
      */
@@ -279,7 +287,7 @@ public class Path {
     }
 
     /**
-     * Return length in millimeters.
+     * Get length in millimeters.
      *
      * @return the stored length if greater than 0 or the block length
      */
@@ -291,7 +299,7 @@ public class Path {
     }
 
     /**
-     * Return length in centimeters.
+     * Get length in centimeters.
      *
      * @return the stored length if greater than 0 or the block length
      */
@@ -303,7 +311,7 @@ public class Path {
     }
 
     /**
-     * Return length in inches.
+     * Get length in inches.
      *
      * @return the stored length if greater than 0 or the block length
      */
@@ -377,9 +385,60 @@ public class Path {
             result.append(separator).append(MessageFormat.format("{0} with state {1}", beanSetting.getBean().getDisplayName(), beanSetting.getBean().describeState(beanSetting.getSetting()))); // NOI18N
             separator = ", "; // NOI18N
         }
-        return MessageFormat.format("Path: \"{0}\" ({1}): {2}", getBlock().getDisplayName(), decodeDirection(getToBlockDirection()), result); // NOI18N
+        if (getBlock() != null)
+            return MessageFormat.format("Path: \"{0}\" ({1}): {2}", getBlock().getDisplayName(), decodeDirection(getToBlockDirection()), result); // NOI18N
+        else
+            return MessageFormat.format("Path: <no block>: {0}", result); // NOI18N
     }
 
+    public int compareTo(Path obj) {
+        if (obj == this) {
+            return 0;
+        }
+        if (obj == null) {
+            throw new NullPointerException("null argument to compareTo");
+        }
+
+        if (!(getClass() == obj.getClass())) {
+            throw new IllegalArgumentException("argument of improper type");
+        } else {
+
+            int retval;
+            
+            if (obj.getBlock() != null && getBlock() != null) {
+                retval = getBlock().compareTo(obj.getBlock());
+                if (retval != 0) return retval;
+            }
+            
+            if ( (int)this._length - (int)obj._length != 0.) return (int)this._length - (int)obj._length;
+
+            if (this._toBlockDirection != obj._toBlockDirection) 
+                return this._toBlockDirection - obj._toBlockDirection;
+
+            if (this._fromBlockDirection != obj._fromBlockDirection) 
+                return this._fromBlockDirection - obj._fromBlockDirection;
+
+            
+            if (this._beans.size() != obj._beans.size()) {
+                return this._beans.size() - obj._beans.size();
+            }
+            
+            for (int i = 0; i < obj._beans.size(); i++) {
+                BeanSetting bs1 = this._beans.get(i);
+                BeanSetting bs2 = obj._beans.get(i);
+                if (bs1.getBean() != null && bs2.getBean() != null) {
+                    retval = bs1.getBean().compareTo(bs2.getBean());
+                    if (retval != 0) return retval;
+                }
+                
+                if ( bs1.getSetting() != bs2.getSetting() ) {
+                    return bs1.getSetting() - bs2.getSetting();
+                }
+            }
+        }
+        return this.hashCode()- obj.hashCode();  // this is truly an act of desparation
+    }
+    
     // Can't include _toBlockDirection, _fromBlockDirection, or block information as they can change
     @Override
     public int hashCode() {
@@ -399,7 +458,7 @@ public class Path {
     private float _length = 0.0f;  // always stored in millimeters
 
     /**
-     * compute octagonal direction of vector from p1 to p2
+     * Compute octagonal direction of vector from p1 to p2.
      * <p>
      * Note: the octagonal (8) directions are: North, North-East, East,
      * South-East, South, South-West, West and North-West
@@ -409,6 +468,8 @@ public class Path {
      * @return the octagonal direction from p1 to p2
      */
     public static int computeDirection(Point2D p1, Point2D p2) {
+        log.trace("Path.computeDirection({}, {})", p1, p2);
+        
         double angleDEG = MathUtil.computeAngleDEG(p2, p1);
         angleDEG = MathUtil.wrap360(angleDEG);  // don't want to deal with negative numbers here...
 
@@ -419,13 +480,16 @@ public class Path {
         int octant = (int) Math.round(angleDEG / 45.0);
 
         // use the octant index to lookup its direction
-        int dirs[] = {SOUTH, SOUTH_EAST, EAST, NORTH_EAST,
+        final int dirs[] = {SOUTH, SOUTH_EAST, EAST, NORTH_EAST,
             NORTH, NORTH_WEST, WEST, SOUTH_WEST, SOUTH};
+            
+        if (log.isTraceEnabled()) log.trace("   returns {} ({})", dirs[octant], decodeDirection(dirs[octant]));
+        
         return dirs[octant];
     }   // computeOctagonalDirection
 
     /**
-     * return the reverse octagonal direction
+     * Get the reverse octagonal direction.
      *
      * @param inDir the direction
      * @return the reverse direction or {@value #NONE} if inDir is not a
@@ -453,4 +517,6 @@ public class Path {
                 return NONE;
         }
     }
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Path.class);
 }

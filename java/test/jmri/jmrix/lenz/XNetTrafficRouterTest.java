@@ -1,25 +1,17 @@
 package jmri.jmrix.lenz;
 
 import jmri.util.JUnitUtil;
-import junit.framework.TestCase;
+
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
- * <p>
- * Title: XNetTrafficRouterTest </p>
- * <p>
- * Description: </p>
- * <p>
- * Copyright: Copyright (c) 2002</p>
  *
- * @author Bob Jacobsen
+ * @author Bob Jacobsen Copyright 2002
  */
-public class XNetTrafficRouterTest extends TestCase {
+public class XNetTrafficRouterTest {
 
-    public XNetTrafficRouterTest(String s) {
-        super(s);
-    }
-
+    @Test
     public void testConnectAndSend() {
         // scaffold for upstream
         XNetInterfaceScaffold upstream = new XNetInterfaceScaffold(new LenzCommandStation());
@@ -53,7 +45,7 @@ public class XNetTrafficRouterTest extends TestCase {
 
         // check receipt
         Assert.assertEquals("one message sent", 1, upstream.outbound.size());
-        Assert.assertTrue(upstream.outbound.elementAt(0) == m);
+        Assert.assertSame(upstream.outbound.elementAt(0), m);
     }
 
     static int count = 0;
@@ -66,6 +58,7 @@ public class XNetTrafficRouterTest extends TestCase {
         count++;
     }
 
+    @Test
     public void testReceiveAndForward() {
         // create object
         XNetTrafficRouter router = new XNetTrafficRouter(new LenzCommandStation()) {
@@ -111,6 +104,7 @@ public class XNetTrafficRouterTest extends TestCase {
         Assert.assertEquals("one message sent", 1, count);
     }
 
+    @Test
     public void testConnectAndDisconnect() {
         // scaffold for upstream
         XNetInterfaceScaffold upstream = new XNetInterfaceScaffold(new LenzCommandStation()) {
@@ -137,23 +131,17 @@ public class XNetTrafficRouterTest extends TestCase {
 
         // disconnect
         router.disconnectPort(upstream);
-        Assert.assertTrue("not connected", !router.status());
+        Assert.assertFalse(router.status());
     }
 
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", XNetTrafficRouterTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
         JUnitUtil.tearDown();
     }
 

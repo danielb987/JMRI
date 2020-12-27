@@ -1,20 +1,21 @@
 package jmri.jmrit.operations.locations;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.swing.JemmyUtil;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+import org.junit.Assume;
 
 /**
  * Tests for the Operations Locations GUI class
  *
- * @author	Dan Boudreau Copyright (C) 2009
+ * @author Dan Boudreau Copyright (C) 2009
  */
 public class YardEditFrameTest extends OperationsTestCase {
 
@@ -24,9 +25,7 @@ public class YardEditFrameTest extends OperationsTestCase {
 
     @Test
     public void testCreateYardTrackDefault() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return; // can't use Assume in TestCase subclasses
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         YardEditFrame f = new YardEditFrame();
         f.setTitle("Test Yard Add Frame");
         f.initComponents(l, null);
@@ -74,9 +73,7 @@ public class YardEditFrameTest extends OperationsTestCase {
 
     @Test
     public void testSetDirectionUsingCheckbox() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return; // can't use Assume in TestCase subclasses
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         YardEditFrame f = new YardEditFrame();
         f.setTitle("Test Yard Direction Set Frame");
         f.initComponents(l, null);
@@ -107,9 +104,7 @@ public class YardEditFrameTest extends OperationsTestCase {
 
     @Test
     public void testCreateTracksAndReloadFrame() {
-        if (GraphicsEnvironment.isHeadless()) {
-            return; // can't use Assume in TestCase subclasses
-        }
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         YardEditFrame f = new YardEditFrame();
         f.setTitle("Test Yard Create Frame");
         f.initComponents(l, null);
@@ -162,7 +157,7 @@ public class YardEditFrameTest extends OperationsTestCase {
 
     // Ensure minimal setup for log4J
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 
@@ -172,11 +167,5 @@ public class YardEditFrameTest extends OperationsTestCase {
         l = lManager.getLocationByName("Test Loc C");
         
         JUnitOperationsUtil.loadTrain(l);
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
     }
 }

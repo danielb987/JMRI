@@ -6,7 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.net.URI;
 import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -22,15 +22,14 @@ import jmri.jmrix.ConnectionConfigManager;
 import jmri.jmrix.ConnectionStatus;
 import jmri.jmrix.JmrixConfigPane;
 import jmri.util.FileUtil;
-import jmri.util.iharder.dnd.FileDrop;
-import jmri.util.iharder.dnd.FileDrop.Listener;
+import jmri.util.iharder.dnd.URIDrop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Base class for pane filling main frame (window) of traditional-style JMRI
  * applications
- * <P>
+ * <p>
  * This is for launching after the system is initialized, so it does none of
  * that.
  *
@@ -83,12 +82,9 @@ public abstract class AppsLaunchPane extends JPanel implements PropertyChangeLis
     protected void setJynstrumentSpace() {
         _jynstrumentSpace = new JPanel();
         _jynstrumentSpace.setLayout(new FlowLayout());
-        new FileDrop(_jynstrumentSpace, new Listener() {
-            @Override
-            public void filesDropped(File[] files) {
-                for (int i = 0; i < files.length; i++) {
-                    ynstrument(files[i].getPath());
-                }
+        new URIDrop(_jynstrumentSpace, (java.net.URI[] uris) -> {
+            for (URI uri : uris) {
+                ynstrument(uri.getPath());
             }
         });
     }
@@ -168,14 +164,13 @@ public abstract class AppsLaunchPane extends JPanel implements PropertyChangeLis
         if (name == null) {
             name = conn.getManufacturer();
         }
-        if (ConnectionStatus.instance().isConnectionOk(conn.getInfo())) {
+        if (ConnectionStatus.instance().isConnectionOk(null, conn.getInfo())) {
             cs.setForeground(Color.black);
             String cf = Bundle.getMessage("ConnectionSucceeded", name, conn.name(), conn.getInfo());
             cs.setText(cf);
         } else {
             cs.setForeground(Color.red);
             String cf = Bundle.getMessage("ConnectionFailed", name, conn.name(), conn.getInfo());
-            cf = cf.toUpperCase();
             cs.setText(cf);
         }
 
@@ -268,17 +263,17 @@ public abstract class AppsLaunchPane extends JPanel implements PropertyChangeLis
 
     /**
      * Set up the configuration file name at startup.
-     * <P>
+     * <p>
      * The Configuration File name variable holds the name used to load the
      * configuration file during later startup processing. Applications invoke
      * this method to handle the usual startup hierarchy:
-     * <UL>
-     * <LI>If an absolute filename was provided on the command line, use it
-     * <LI>If a filename was provided that's not absolute, consider it to be in
+     * <ul>
+     * <li>If an absolute filename was provided on the command line, use it
+     * <li>If a filename was provided that's not absolute, consider it to be in
      * the preferences directory
-     * <LI>If no filename provided, use a default name (that's application
+     * <li>If no filename provided, use a default name (that's application
      * specific)
-     * </UL>
+     * </ul>
      * This name will be used for reading and writing the preferences. It need
      * not exist when the program first starts up. This name may be proceeded
      * with <em>config=</em> and may not contain the equals sign (=).

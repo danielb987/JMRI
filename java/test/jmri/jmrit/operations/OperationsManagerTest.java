@@ -1,32 +1,22 @@
 package jmri.jmrit.operations;
 
-import jmri.InstanceManager;
-import jmri.util.JUnitUtil;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+
+import jmri.InstanceManager;
+import jmri.util.JUnitOperationsUtil;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class OperationsManagerTest {
+public class OperationsManagerTest extends OperationsTestCase {
 
     @Test
     public void testGetInstance() {
         OperationsManager t = InstanceManager.getDefault(OperationsManager.class);
-        Assert.assertNotNull("exists",t);
-    }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
+        Assert.assertNotNull("exists", t);
+        JUnitOperationsUtil.checkOperationsShutDownTask();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(OperationsManagerTest.class);

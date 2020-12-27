@@ -1,21 +1,23 @@
 package jmri.implementation;
 
 import jmri.Reporter;
-import org.junit.*;
+
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the Reporter class
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ * <p>
  *
  * @author Matthew Harris Copyright (C) 2011
  */
@@ -84,7 +86,7 @@ public class ReporterTest {
         Assert.assertSame("After null report, LastReport Object is identical to otr", otr, r.getLastReport());
     }
 
-    @Before
+    @BeforeEach
     public void setUp(){
        jmri.util.JUnitUtil.setUp();
        r = new AbstractReporter("SYS", "usr") {
@@ -101,7 +103,7 @@ public class ReporterTest {
         };
     }
 
-    @After
+    @AfterEach
     public void tearDown(){
        r = null;
        jmri.util.JUnitUtil.tearDown();

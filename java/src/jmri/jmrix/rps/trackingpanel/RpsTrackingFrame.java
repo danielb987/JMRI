@@ -12,9 +12,9 @@ import javax.swing.JSeparator;
 import jmri.jmrix.rps.RpsSystemConnectionMemo;
 
 /**
- * Frame containing the entire display tool
+ * Frame containing the entire display tool.
  *
- * @author	Bob Jacobsen Copyright (C) 2006, 2008
+ * @author Bob Jacobsen Copyright (C) 2006, 2008
  */
 public class RpsTrackingFrame extends jmri.util.JmriJFrame {
 
@@ -26,7 +26,7 @@ public class RpsTrackingFrame extends jmri.util.JmriJFrame {
     }
 
     public RpsTrackingFrame(RpsSystemConnectionMemo _memo) {
-        this("RPS Tracking Display",_memo);
+        this("RPS Tracking Display", _memo);
     }
 
     @Override
@@ -121,7 +121,6 @@ public class RpsTrackingFrame extends jmri.util.JmriJFrame {
         controls.setMinimumSize(d);
         controls.setPreferredSize(d);
         controls.setMaximumSize(d);
-
     }
 
     JButton clearButton;
@@ -148,4 +147,5 @@ public class RpsTrackingFrame extends jmri.util.JmriJFrame {
     void clearButtonChanged() {
         panel.clear();
     }
+
 }

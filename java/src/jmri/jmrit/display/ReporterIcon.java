@@ -1,15 +1,16 @@
 package jmri.jmrit.display;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JPopupMenu;
 import jmri.InstanceManager;
 import jmri.Reporter;
+import jmri.NamedBean.DisplayOptions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An icon to display info from a Reporter, e.g. transponder or RFID reader.<P>
+ * An icon to display info from a Reporter, e.g. transponder or RFID reader.
  *
  * @author Bob Jacobsen Copyright (c) 2004
  */
@@ -67,7 +68,7 @@ public class ReporterIcon extends PositionableLabel implements java.beans.Proper
                     provideReporter(pName);
                 setReporter(reporter);
             } catch (IllegalArgumentException e) {
-                log.error("Reporter '" + pName + "' not available, icon won't see changes");
+                log.error("Reporter '{}' not available, icon won't see changes", pName);
             }
         } else {
             log.error("No ReporterManager for this protocol, icon won't see changes");
@@ -93,9 +94,7 @@ public class ReporterIcon extends PositionableLabel implements java.beans.Proper
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (log.isDebugEnabled()) {
-            log.debug("property change: "
-                    + e.getPropertyName()
-                    + " is now " + e.getNewValue());
+            log.debug("property change: {} is now {}", e.getPropertyName(), e.getNewValue());
         }
         displayState();
     }
@@ -105,10 +104,8 @@ public class ReporterIcon extends PositionableLabel implements java.beans.Proper
         String name;
         if (reporter == null) {
             name = Bundle.getMessage("NotConnected");
-        } else if (reporter.getUserName() != null) {
-            name = reporter.getUserName() + " (" + reporter.getSystemName() + ")";
         } else {
-            name = reporter.getSystemName();
+            name = reporter.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME);
         }
         return name;
     }
@@ -117,29 +114,30 @@ public class ReporterIcon extends PositionableLabel implements java.beans.Proper
      * Drive the current state of the display from the state of the Reporter.
      */
     void displayState() {
-        if (reporter.getCurrentReport() != null) {
-            if (reporter.getCurrentReport().equals("")) {
+        Object currentReport = reporter.getCurrentReport();
+        if ( currentReport != null) {
+            String reportString = null;
+            if(currentReport instanceof jmri.Reportable) {
+              reportString = ((jmri.Reportable)currentReport).toReportString();
+            } else {
+              reportString = currentReport.toString();
+            }
+            if (currentReport.equals("")) {
                 setText(Bundle.getMessage("Blank"));
             } else {
-                setText(reporter.getCurrentReport().toString());
+                setText(reportString);
             }
         } else {
             setText(Bundle.getMessage("NoReport"));
         }
         updateSize();
-        return;
     }
 
     @Override
     protected void edit() {
         makeIconEditorFrame(this, "Reporter", true, null);
         _iconEditor.setPickList(jmri.jmrit.picker.PickListModel.reporterPickModelInstance());
-        ActionListener addIconAction = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent a) {
-                editReporter();
-            }
-        };
+        ActionListener addIconAction = a -> editReporter();
         _iconEditor.complete(addIconAction, false, true, true);
         _iconEditor.setSelection(reporter);
 

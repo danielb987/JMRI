@@ -1,51 +1,27 @@
 package jmri.jmrix.dcc4pc;
 
 import java.util.Hashtable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import jmri.DccLocoAddress;
-import jmri.LocoAddress;
-import jmri.PhysicalLocationReporter;
+import java.util.Map;
 import jmri.RailCom;
 import jmri.Sensor;
-import jmri.implementation.AbstractReporter;
-import jmri.util.PhysicalLocation;
+import jmri.implementation.AbstractRailComReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extend jmri.AbstractReporter for Dcc4Pc Reporters Implemenation for providing
+ * Extend jmri.AbstractRailComReporter for Dcc4Pc Reporters Implemenation for providing
  * status of rail com decoders at this reporter location.
  * <p>
  * The reporter will decode the rail com packets and add the information to the
  * rail com tag.
- * <P>
+ *
  * @author Kevin Dickerson Copyright (C) 2012
  */
-public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocationReporter {
+public class Dcc4PcReporter extends AbstractRailComReporter {
 
     public Dcc4PcReporter(String systemName, String userName) {  // a human-readable Reporter number must be specified!
         super(systemName, userName);  // can't use prefix here, as still in construction
     }
-
-    /**
-     * Provide an int value for use in scripts, etc. This will be the numeric
-     * locomotive address last seen, unless the last message said the loco was
-     * exiting. Note that there may still some other locomotive in the
-     * transponding zone!
-     *
-     * @return -1 if the last message specified exiting
-     */
-    @Override
-    public int getState() {
-        return lastLoco;
-    }
-
-    @Override
-    public void setState(int s) {
-        lastLoco = s;
-    }
-    int lastLoco = -1;
 
     @Override
     public void dispose() {
@@ -57,7 +33,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
 
     void setPacket(int[] arraytemp, int dcc_addr_type, int dcc_addr, int cvNumber, int speed, int packetTypeCmd) {
         if (log.isDebugEnabled()) {
-            log.debug(getDisplayName() + " dcc_addr " + dcc_addr + " " + cvNumber + " " + speed);
+            log.debug("{} dcc_addr {} {} {}", getDisplayName(), dcc_addr, cvNumber, speed);
         }
         RailComPacket rc = new RailComPacket(arraytemp, dcc_addr_type, dcc_addr, cvNumber, speed);
         decodeRailComInfo(rc, packetTypeCmd);
@@ -65,7 +41,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
         rcPacket[1] = rcPacket[0];
         rcPacket[0] = rc;
         if (log.isDebugEnabled()) {
-            log.debug("Packets Seen " + packetseen + " in error " + packetsinerror);
+            log.debug("Packets Seen {} in error {}", packetseen, packetsinerror);
         }
     }
 
@@ -216,12 +192,12 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
 
     synchronized void decodeRailComInfo(RailComPacket rc, int packetTypeCmd) {
         if (log.isDebugEnabled()) {
-            log.debug(getDisplayName() + " " + packetTypeCmd);
+            log.debug("{} {}", getDisplayName(), packetTypeCmd);
         }
         addressp1found++;
         RailCom rcTag = null;
         if (log.isDebugEnabled()) {
-            log.debug(this.getDisplayName() + " " + super.getCurrentReport());
+            log.debug("{} {}", this.getDisplayName(), super.getCurrentReport());
         }
         if (super.getCurrentReport() instanceof RailCom) {
             rcTag = (RailCom) super.getCurrentReport();
@@ -236,7 +212,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                 buf.append(packet[i]);
             }
             String s = buf.toString();
-            log.debug("Rail Comm Packets " + s);
+            log.debug("Rail Comm Packets {}", s);
 
         }
         int i = 0;
@@ -246,7 +222,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
             chbyte = decode[chbyte];
             if (chbyte == ERROR) {
                 if (log.isDebugEnabled()) {
-                    log.debug(this.getDisplayName() + " Error packet stage 1: " + Integer.toHexString(packet[i]));
+                    log.debug("{} Error packet stage 1: {}", this.getDisplayName(), Integer.toHexString(packet[i]));
                 }
                 packetsinerror++;
                 return;
@@ -258,7 +234,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                 chbyte = decode[chbyte];
                 if (chbyte == ERROR) {
                     if (log.isDebugEnabled()) {
-                        log.debug(this.getDisplayName() + " Error packet stage 2");
+                        log.debug("{} Error packet stage 2", this.getDisplayName());
                     }
                     packetsinerror++;
                     return;
@@ -281,7 +257,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
             chbyte = decode[chbyte];
             if ((chbyte == ERROR) || ((chbyte & ACK) == ACK)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(this.getDisplayName() + " Error packet stage 3 " + Integer.toHexString(packet[i]) + "\n" + rc.toHexString());
+                    log.debug("{} Error packet stage 3 {}\n{}", this.getDisplayName(), Integer.toHexString(packet[i]), rc.toHexString());
                 }
                 i++;
                 packetsinerror++;
@@ -294,7 +270,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
             switch (type) {
                 case 0:
                     if (log.isDebugEnabled()) {
-                        log.debug(this.getDisplayName() + " CV Value " + ((int) chbyte) + rcTag);
+                        log.debug("{} CV Value {}{}", this.getDisplayName(), (int) chbyte, rcTag);
                     }
                     cvvalue = chbyte;
                     if (rcTag != null) {
@@ -308,7 +284,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                     break;
                 case 4:
                     if (log.isDebugEnabled()) {
-                        log.debug(this.getDisplayName() + " Create/Get id tag for " + rc.getDccAddress());
+                        log.debug("{} Create/Get id tag for {}", this.getDisplayName(), rc.getDccAddress());
                     }
                     addr = rc.getDccAddress();
                     addr_type = rc.getAddressType();
@@ -322,7 +298,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                     break;
                 case 2: //Address byte 2
                     if (log.isDebugEnabled()) {
-                        log.debug(this.getDisplayName() + " Address part 2:");
+                        log.debug("{} Address part 2:", this.getDisplayName());
                     }
                     address_part_2 = chbyte;
                     if (packetTypeCmd == 0x03) {
@@ -332,7 +308,7 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                         // break;
                     }
                     if (!((address_part_1 & 0x100) == 0x100)) {
-                        log.debug(this.getDisplayName() + " Break at Address part 1, part one not complete");
+                        log.debug("{} Break at Address part 1, part one not complete", this.getDisplayName());
                         break;
                     }
                     rcTag = decodeAddress();
@@ -340,10 +316,10 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                 case 3: //Actual Speed / load
                     if ((chbyte & 0x80) == 0x80) {
                         actual_speed = (chbyte & 0x7f);
-                        log.debug(this.getDisplayName() + " Actual Speed: " + actual_speed);
+                        log.debug("{} Actual Speed: {}", this.getDisplayName(), actual_speed);
                     } else {
                         actual_load = (chbyte & 0x7f);
-                        log.debug(this.getDisplayName() + " Actual Load: " + actual_load);
+                        log.debug("{} Actual Load: {}", this.getDisplayName(), actual_load);
                     }
                     if (rcTag != null) {
                         rcTag.setActualLoad(actual_load);
@@ -388,12 +364,12 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
                     }
                     break;
                 case 15: //CV Address  Value
-                    log.debug(this.getDisplayName() + " CV Address and value:");
+                    log.debug("{} CV Address and value:", this.getDisplayName());
                     i = i + 2;
                     //len = 4;
                     break;
                 default:
-                    log.info("unknown railcom type packet " + type);
+                    log.info("unknown railcom type packet {}", type);
                     break;
             }
             i++;
@@ -403,25 +379,10 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
 
     RailCom decodeAddress() {
         RailCom rcTag;
-        if ((address_part_1 & 0x80) == 0x80) {
-            addr_type = Dcc4PcSensorManager.LONG_ADDRESS;
-            addr = (address_part_1 & 0x3f) << 8;
-            addr |= address_part_2;
-        } else if ((address_part_1 & 0x20) == 0x20) {
-            addr_type = Dcc4PcSensorManager.CONSIST_ADDRESS;
-            addr = address_part_2;
-        } else {
-            addr_type = Dcc4PcSensorManager.SHORT_ADDRESS;
-            addr = address_part_2 & 0x7F;
-        }
         if (log.isDebugEnabled()) {
-            log.debug(this.getDisplayName() + " Address part 2 " + addr_type + " " + addr);
-            log.debug(this.getDisplayName() + " Create/Get id tag for " + addr);
+            log.debug("{} Create/Get id tag for {}", this.getDisplayName(), addr);
         }
-        rcTag = jmri.InstanceManager.getDefault(jmri.RailComManager.class).provideIdTag("" + addr);
-        rcTag.setWhereLastSeen(this);
-
-        rcTag.setAddressType(addr_type);
+        rcTag = (RailCom)jmri.InstanceManager.getDefault(jmri.RailComManager.class).provideIdTag("" + addr);
 
         if ((fuelLevel != -1)) {
             rcTag.setFuelLevel(fuelLevel);
@@ -444,8 +405,8 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
         if ((actual_speed != -1)) {
             rcTag.setActualSpeed(actual_speed);
         }
-        for (Integer cv : cvValues.keySet()) {
-            rcTag.setCV(cv, cvValues.get(cv));
+        for (Map.Entry<Integer, Integer> entry : cvValues.entrySet()) {
+            rcTag.setCV(entry.getKey(), entry.getValue());
             if (cvvalue != -1) {
                 rcTag.setCvValue(cvvalue);
             }
@@ -453,83 +414,15 @@ public class Dcc4PcReporter extends AbstractReporter implements PhysicalLocation
 
         address_part_1 = 0;
         address_part_2 = -1;
-        setReport(rcTag);
+        notify(rcTag);
         return rcTag;
     }
 
     RailCom provideTag(int address, int addr_type) {
         log.debug("provide Tag");
-        RailCom rcTag = jmri.InstanceManager.getDefault(jmri.RailComManager.class).provideIdTag("" + address);
-        rcTag.setWhereLastSeen(this);
-        rcTag.setAddressType(addr_type);
-        setReport(rcTag);
-        lastLoco = address;
-        synchronized (this) {
-            addr = address;
-        }
+        RailCom rcTag = (RailCom) jmri.InstanceManager.getDefault(jmri.RailComManager.class).provideIdTag("" + address);
+        notify(rcTag);
         return rcTag;
-    }
-
-    // Methods to support PhysicalLocationReporter interface
-    /**
-     * getLocoAddress()
-     *
-     * Parses out a (possibly old) LnReporter-generated report string to extract
-     * the address from the front. Assumes the LocoReporter format is "NNNN
-     * [enter|exit]"
-     */
-    @Override
-    public LocoAddress getLocoAddress(String rep) {
-        // Matcher stops at the DCC loco address.
-        // m.group(1) is the orientation
-        // m.group(2) is the loco address number
-        // m.group(3) is the loco address protocol postfix
-        Pattern ln_p = Pattern.compile("(Orient A|Orient B|Unknown state)\\s+Address\\s+(\\d+)\\((S|L|SX|MM|M4|MFX|OpenLCB|D)\\)");
-        Matcher m = ln_p.matcher(rep);
-        if (m.find()) {
-            log.debug("Parsed address: " + m.group(2));
-            // right now, the DefaultRailCom object always returns a DCC (long or short) address.
-            // Canonically we should  catch Integer parse failures, but the regex above should ensure
-            // m.group(2) is always only a valid integer.
-            return (new DccLocoAddress(Integer.parseInt(m.group(2)), LocoAddress.Protocol.DCC));
-        } else {
-            return (null);
-        }
-    }
-
-    /**
-     * getDirection()
-     *
-     * Parses out a (possibly old) LnReporter-generated report string to extract
-     * the direction from the end. Assumes the LocoReporter format is "NNNN
-     * [enter|exit]"
-     */
-    @Override
-    public PhysicalLocationReporter.Direction getDirection(String rep) {
-        // TEMPORARY:  Assume we're always Entering, if asked.
-        return (PhysicalLocationReporter.Direction.ENTER);
-    }
-
-    /**
-     * getPhysicalLocation()
-     *
-     * Returns the PhysicalLocation of this Reporter. Assumed to be the location
-     * of the locomotive being reported about
-     */
-    @Override
-    public PhysicalLocation getPhysicalLocation() {
-        return (getPhysicalLocation(null));
-    }
-
-    /**
-     * getPhysicalLocation(String s)
-     *
-     * Returns the PhysicalLocation of this Reporter. Assumed to be the location
-     * of the locomotive being reported about. Does not use the parameter s.
-     */
-    @Override
-    public PhysicalLocation getPhysicalLocation(String s) {
-        return (PhysicalLocation.getBeanPhysicalLocation(this));
     }
 
     public final static char ACK = 0x80;

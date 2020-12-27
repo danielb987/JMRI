@@ -7,25 +7,25 @@ import org.slf4j.LoggerFactory;
 /**
  * A LayoutConnectivity object represents a junction between two LayoutBlocks on
  * a LayoutEditor panel.
- * <P>
+ * <p>
  * LayoutConnectivity objects do not persist (are not saved when panels are
  * saved). Instead they are initialized when a panel is loaded and changed
  * dynamically as a panel is edited.
- * <P>
+ * <p>
  * The direction stored here is the direction for proceeding across the block
  * boundary from block1 to block2. The directions represent directions on the
  * LayoutEditor panel. Allowed values (using Path object definitions) are:
  * Path.NORTH (up on panel) Path.SOUTH (down on panel) Path.EAST (right on
  * panel) Path.WEST (left on panel) and points in between: Path.NORTH +
  * Path.EAST Path.NORTH_WEST, Path.SOUTH_EAST Path.SOUTH + Path.WEST
- * <P>
+ * <p>
  * The connected object in the first block is usually a track segment. This
  * track segment is connected to an object in the second block. The connection
  * point in the second block can be either one end of a track segment, or one of
  * the connection points on a turnout, or one of the connection points on a
  * level crossing. The allowed values for the connection points at the second
  * block are defined in LayoutEditor.
- * <P>
+ * <p>
  * The exception to the above is when a crossover turnout has multiple blocks.
  * If so, at least one block boundary is internal to the crossover turnout. Such
  * cases are handled differently, as "crossover block boundary types", see
@@ -34,19 +34,21 @@ import org.slf4j.LoggerFactory;
  * second block. All four block boundaries are possible for the double
  * crossover. One of the crossed over boundaries is not possible with each
  * single crossover.
- * <P>
+ * <p>
  * Note that each LayoutEditor panel has its own list of LayoutConnectivity
  * objects, nominally called its "block connectivity". In contrast, there is
  * only one set of LayoutBlocks, Blocks, and Paths, which are used by all
  * LayoutEditor panels.
- * <P>
+ *
  * @author Dave Duchamp Copyright (c) 2007-2008
  * @author George Warner Copyright (c) 2017-2018
  */
 public class LayoutConnectivity {
 
     /**
-     * Constructor
+     * Constructor.
+     * @param b1 layout block 1.
+     * @param b2 layout block 2.
      */
     public LayoutConnectivity(LayoutBlock b1, LayoutBlock b2) {
         block1 = b1;
@@ -76,7 +78,7 @@ public class LayoutConnectivity {
     private TrackSegment track1 = null;
 
     private LayoutTrack connect2 = null;
-    private int typeConnect2 = 0;
+    private HitPointType typeConnect2 = HitPointType.NONE;
 
     private LayoutTurnout xover = null;
     private int xoverBoundaryType = NONE;
@@ -86,7 +88,7 @@ public class LayoutConnectivity {
     // this should only be used for debugging...
     @Override
     public String toString() {
-        String result = "between " + block1 + " and " + block2 + " in direction " + Path.decodeDirection(direction);
+        String result = "between " + block1.getDisplayName() + " and " + block2.getDisplayName() + " in direction " + Path.decodeDirection(direction);
         if (track1 != null) {
             result = result + ", track: " + track1.getId();
         }
@@ -100,7 +102,8 @@ public class LayoutConnectivity {
     }
 
     /**
-     * Accessor routines
+     * Get Block 1.
+     * @return block 1, may be null.
      */
     public LayoutBlock getBlock1() {
         return block1;
@@ -131,7 +134,7 @@ public class LayoutConnectivity {
         return (false);
     }
 
-    public void setConnections(TrackSegment t, LayoutTrack o, int type, PositionablePoint p) {
+    public void setConnections(TrackSegment t, LayoutTrack o, HitPointType type, PositionablePoint p) {
         track1 = t;
         if (t == null) {
             log.error("null track1 when setting up LayoutConnectivity");
@@ -160,7 +163,7 @@ public class LayoutConnectivity {
         return connect2;
     }
 
-    public int getConnectedType() {
+    public HitPointType getConnectedType() {
         return typeConnect2;
     }
 
@@ -179,7 +182,7 @@ public class LayoutConnectivity {
     @Override
     public boolean equals(Object o) {
         boolean result = false; // assume failure (pessimist!)
-        if ((o != null) && o instanceof LayoutConnectivity) {
+        if (o instanceof LayoutConnectivity) {
             LayoutConnectivity lc = (LayoutConnectivity) o;
             do {    // poor mans throw block
                 if (((block1 == null) != (lc.getBlock1() == null))
@@ -226,7 +229,7 @@ public class LayoutConnectivity {
         hash = 37 * hash + direction;
         hash = 37 * hash + (this.track1 != null ? this.track1.hashCode() : 0);
         hash = 37 * hash + (this.connect2 != null ? this.connect2.hashCode() : 0);
-        hash = 37 * hash + typeConnect2;
+        hash = 37 * hash + typeConnect2.hashCode();
         hash = 37 * hash + (this.xover != null ? this.xover.hashCode() : 0);
         hash = 37 * hash + (this.anchor != null ? this.anchor.hashCode() : 0);
         return hash;

@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.locations.Track;
 import jmri.jmrit.operations.rollingstock.RollingStock;
@@ -19,14 +24,11 @@ import jmri.jmrit.operations.routes.RouteLocation;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainCommon;
-import jmri.jmrit.operations.trains.timetable.TrainScheduleManager;
-import org.apache.commons.text.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.jmrit.operations.trains.schedules.TrainScheduleManager;
 
 /**
  *
- * @author rhwood
+ * @author Randall Wood
  */
 public class HtmlTrainCommon extends TrainCommon {
 
@@ -50,7 +52,8 @@ public class HtmlTrainCommon extends TrainCommon {
             is = new FileInputStream(Bundle.getMessage(locale, "ManifestStrings.properties"));
             strings.load(is);
             is.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             if (is != null) {
                 is.close();
             }
@@ -58,7 +61,7 @@ public class HtmlTrainCommon extends TrainCommon {
         }
     }
 
-    public String pickupUtilityCars(List<Car> carList, Car car, boolean isManifest) {
+    public String pickupUtilityCars(List<Car> cars, Car car, boolean isManifest) {
         // list utility cars by type, track, length, and load
         String[] messageFormat;
         if (isManifest) {
@@ -66,15 +69,15 @@ public class HtmlTrainCommon extends TrainCommon {
         } else {
             messageFormat = Setup.getPickupUtilitySwitchListMessageFormat();
         }
-        int count = countUtilityCars(messageFormat, carList, car, PICKUP);
+        int count = countUtilityCars(messageFormat, cars, car, PICKUP);
         if (count == 0) {
             return ""; // already printed out this car type
         }
         return pickUpCar(car, count, messageFormat);
     }
 
-    protected String setoutUtilityCars(List<Car> carList, Car car, boolean isManifest) {
-        boolean isLocal = isLocalMove(car);
+    protected String setoutUtilityCars(List<Car> cars, Car car, boolean isManifest) {
+        boolean isLocal = car.isLocalMove();
         if (Setup.isSwitchListFormatSameAsManifest()) {
             isManifest = true;
         }
@@ -86,7 +89,7 @@ public class HtmlTrainCommon extends TrainCommon {
         } else if (!isLocal && !isManifest) {
             messageFormat = Setup.getDropUtilitySwitchListMessageFormat();
         }
-        int count = countUtilityCars(messageFormat, carList, car, !PICKUP);
+        int count = countUtilityCars(messageFormat, cars, car, !PICKUP);
         if (count == 0) {
             return ""; // already printed out this car type
         }
@@ -98,7 +101,7 @@ public class HtmlTrainCommon extends TrainCommon {
     }
 
     protected String pickUpCar(Car car, int count, String[] format) {
-        if (isLocalMove(car)) {
+        if (car.isLocalMove()) {
             return ""; // print nothing local move, see dropCar
         }
         StringBuilder builder = new StringBuilder();
@@ -109,7 +112,7 @@ public class HtmlTrainCommon extends TrainCommon {
         for (String attribute : format) {
             builder.append(
                     String.format(locale, strings.getProperty("Attribute"), getCarAttribute(car, attribute, PICKUP,
-                                    !LOCAL), attribute.toLowerCase())).append(" "); // NOI18N
+                            !LOCAL), attribute.toLowerCase())).append(" "); // NOI18N
         }
         log.debug("Picking up car {}", builder);
         return String.format(locale, strings.getProperty(this.resourcePrefix + "PickUpCar"), builder.toString()); // NOI18N
@@ -128,7 +131,7 @@ public class HtmlTrainCommon extends TrainCommon {
         for (String attribute : format) {
             builder.append(
                     String.format(locale, strings.getProperty("Attribute"), getCarAttribute(car, attribute, !PICKUP,
-                                    isLocal), attribute.toLowerCase())).append(" "); // NOI18N
+                            isLocal), attribute.toLowerCase())).append(" "); // NOI18N
         }
         log.debug("Dropping {}car {}", (isLocal) ? "local " : "", builder);
         if (!isLocal) {
@@ -178,7 +181,7 @@ public class HtmlTrainCommon extends TrainCommon {
     protected String pickupEngines(List<Engine> engines, RouteLocation location) {
         StringBuilder builder = new StringBuilder();
         for (Engine engine : engines) {
-            if (engine.getRouteLocation().equals(location) && !engine.getTrackName().equals("")) {
+            if (engine.getRouteLocation().equals(location) && !engine.getTrackName().isEmpty()) {
                 builder.append(pickupEngine(engine));
             }
         }
@@ -209,20 +212,20 @@ public class HtmlTrainCommon extends TrainCommon {
         } else if (attribute.equals(Setup.KERNEL)) {
             return car.getKernelName();
         } else if (attribute.equals(Setup.RWE)) {
-            if (!car.getReturnWhenEmptyDestName().equals("")) {
+            if (!car.getReturnWhenEmptyDestName().isEmpty()) {
                 return String.format(locale, strings.getProperty("RWELocationAndTrack"), StringEscapeUtils
                         .escapeHtml4(splitString(car.getReturnWhenEmptyDestinationName())), StringEscapeUtils
                         .escapeHtml4(splitString(car.getReturnWhenEmptyDestTrackName())));
             }
             return ""; // NOI18N
         } else if (attribute.equals(Setup.FINAL_DEST)) {
-            if (!car.getFinalDestinationName().equals("")) {
+            if (!car.getFinalDestinationName().isEmpty()) {
                 return String.format(locale, strings.getProperty("FinalDestinationLocation"), StringEscapeUtils
                         .escapeHtml4(splitString(car.getFinalDestinationName())));
             }
             return "";
         } else if (attribute.equals(Setup.FINAL_DEST_TRACK)) {
-            if (!car.getFinalDestinationName().equals("")) {
+            if (!car.getFinalDestinationName().isEmpty()) {
                 return String.format(locale, strings.getProperty("FinalDestinationLocationAndTrack"), StringEscapeUtils
                         .escapeHtml4(splitString(car.getFinalDestinationName())), StringEscapeUtils
                         .escapeHtml4(splitString(car.getFinalDestinationTrackName())));
@@ -246,11 +249,9 @@ public class HtmlTrainCommon extends TrainCommon {
         if (attribute.equals(Setup.NUMBER)) {
             return splitString(rs.getNumber());
         } else if (attribute.equals(Setup.ROAD)) {
-            return StringEscapeUtils.escapeHtml4(rs.getRoadName());
+            return StringEscapeUtils.escapeHtml4(rs.getRoadName().split("-")[0]);
         } else if (attribute.equals(Setup.TYPE)) {
-            String[] type = rs.getTypeName().split("-"); // second half of string
-            // can be anything
-            return type[0];
+            return rs.getTypeName().split("-")[0];
         } else if (attribute.equals(Setup.LENGTH)) {
             return rs.getLength();
         } else if (attribute.equals(Setup.COLOR)) {
@@ -258,15 +259,15 @@ public class HtmlTrainCommon extends TrainCommon {
         } else if (attribute.equals(Setup.LOCATION) && (isPickup || isLocal)
                 || (attribute.equals(Setup.TRACK) && isPickup)) {
             if (rs.getTrack() != null) {
-                return String.format(locale, strings.getProperty("FromTrack"), StringEscapeUtils.escapeHtml4(rs
-                        .getTrackName()));
+                return String.format(locale, strings.getProperty("FromTrack"), StringEscapeUtils.escapeHtml4(splitString(rs
+                        .getTrackName())));
             }
             return "";
         } else if (attribute.equals(Setup.LOCATION) && !isPickup && !isLocal) {
             return ""; // we don't have the car's origin, so nothing to return
-// Note that the JSON database does have the car's origin, so this could be fixed.
-//			return String.format(locale, strings.getProperty("FromLocation"), StringEscapeUtils.escapeHtml4(rs
-//					.getLocationName()));
+            // Note that the JSON database does have the car's origin, so this could be fixed.
+//            return String.format(locale, strings.getProperty("FromLocation"), StringEscapeUtils.escapeHtml4(rs
+//                    .getLocationName()));
         } else if (attribute.equals(Setup.DESTINATION) && isPickup) {
             return String.format(locale, strings.getProperty("ToLocation"), StringEscapeUtils
                     .escapeHtml4(splitString(rs.getDestinationName())));
@@ -276,7 +277,7 @@ public class HtmlTrainCommon extends TrainCommon {
         } else if (attribute.equals(Setup.DEST_TRACK)) {
             return String.format(locale, strings.getProperty("ToLocationAndTrack"), StringEscapeUtils
                     .escapeHtml4(splitString(rs.getDestinationName())), StringEscapeUtils.escapeHtml4(splitString(rs
-                                    .getDestinationTrackName())));
+                    .getDestinationTrackName())));
         } else if (attribute.equals(Setup.OWNER)) {
             return StringEscapeUtils.escapeHtml4(rs.getOwner());
         } else if (attribute.equals(Setup.COMMENT)) {
@@ -295,7 +296,7 @@ public class HtmlTrainCommon extends TrainCommon {
     protected String getTrackComments(RouteLocation location, List<Car> cars) {
         StringBuilder builder = new StringBuilder();
         if (location.getLocation() != null) {
-            List<Track> tracks = location.getLocation().getTrackByNameList(null);
+            List<Track> tracks = location.getLocation().getTracksByNameList(null);
             for (Track track : tracks) {
                 // any pick ups or set outs to this track?
                 boolean pickup = false;
@@ -310,13 +311,13 @@ public class HtmlTrainCommon extends TrainCommon {
                     }
                 }
                 // print the appropriate comment if there's one
-                if (pickup && setout && !track.getCommentBoth().equals("")) {
+                if (pickup && setout && !track.getCommentBoth().isEmpty()) {
                     builder.append(String.format(locale, strings.getProperty("TrackComments"), StringEscapeUtils
                             .escapeHtml4(track.getCommentBoth())));
-                } else if (pickup && !setout && !track.getCommentPickup().equals("")) {
+                } else if (pickup && !setout && !track.getCommentPickup().isEmpty()) {
                     builder.append(String.format(locale, strings.getProperty("TrackComments"), StringEscapeUtils
                             .escapeHtml4(track.getCommentPickup())));
-                } else if (!pickup && setout && !track.getCommentSetout().equals("")) {
+                } else if (!pickup && setout && !track.getCommentSetout().isEmpty()) {
                     builder.append(String.format(locale, strings.getProperty("TrackComments"), StringEscapeUtils
                             .escapeHtml4(track.getCommentSetout())));
                 }
@@ -326,7 +327,7 @@ public class HtmlTrainCommon extends TrainCommon {
     }
 
     public String getValidity() {
-        if (Setup.isPrintTimetableNameEnabled()) {
+        if (Setup.isPrintTrainScheduleNameEnabled()) {
             return String.format(locale, strings.getProperty("ManifestValidityWithSchedule"), getDate(true),
                     InstanceManager.getDefault(TrainScheduleManager.class).getScheduleById(train.getId()));
         } else {

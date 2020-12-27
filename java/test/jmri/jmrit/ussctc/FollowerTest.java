@@ -1,19 +1,18 @@
 package jmri.jmrit.ussctc;
 
-import jmri.util.JUnitUtil;
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.framework.Assert;
+import jmri.util.JUnitUtil;
 
 /**
  * Tests for Follower classes in the jmri.jmrit.ussctc package
  *
- * @author	Bob Jacobsen Copyright 2007
-  */
-public class FollowerTest extends TestCase {
+ * @author Bob Jacobsen Copyright 2007
+ */
+public class FollowerTest {
 
+    @Test
     public void testCreate() {
         Follower f = new Follower("12", "34", false, "56");
         
@@ -23,11 +22,13 @@ public class FollowerTest extends TestCase {
         Assert.assertEquals("56", f.getVetoName());
     }
 
+    @Test
     public void testInstantiate() {
         Follower f = new Follower("12", "34", false, "56");
         f.instantiate();        
     }
 
+    @Test
     public void testCreateRep() throws jmri.JmriException {
         JUnitUtil.initRouteManager();
         Follower f = new Follower("12", "34", false, "56");
@@ -35,30 +36,14 @@ public class FollowerTest extends TestCase {
         new Follower("12");
     }
 
-    // from here down is testing infrastructure
-    public FollowerTest(String s) {
-        super(s);
-    }
-
-    // The minimal setup for log4J
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {FollowerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(FollowerTest.class);
-        return suite;
     }
 
 }

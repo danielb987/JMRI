@@ -82,7 +82,9 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
                 removeTab(null, i);
             } else if (evt.getOldValue() == null) {
                 for (JmrixConfigPane pane : this.configPanes) {
-                    if (pane.getCurrentObject().equals(evt.getNewValue())) {
+                    if (pane.getCurrentObject() == null ) {
+                        log.error("did not expect pane.getCurrentObject()==null here for {} {} {}", i, evt.getNewValue(), configPanes);
+                    } else if (pane.getCurrentObject().equals(evt.getNewValue())) {
                         return; // don't add the connection again
                     }
                 }
@@ -193,7 +195,7 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
 
         this.setToolTipTextAt(tabPosition, title);
 
-        if (ConnectionStatus.instance().isConnectionOk(
+        if (ConnectionStatus.instance().isConnectionOk(null, 
                 configPane.getCurrentProtocolInfo())) {
             tabLabel.setForeground(Color.black);
         } else {
@@ -219,7 +221,7 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
     private void removeTab(ActionEvent e, int x) {
         int i;
 
-        i = x;
+        i = x; // copy x for handling
 
         if (i != -1) {
             // only prompt if triggered by action event
@@ -235,14 +237,15 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
             }
 
             JmrixConfigPane configPane = this.configPanes.get(i);
-
             this.removeChangeListener(addTabListener);
-            this.remove(i); // was x
+            this.remove(i);
+            log.debug("start of connection #{} disposal", i);
             try {
                 JmrixConfigPane.dispose(configPane);
             } catch (NullPointerException ex) {
                 log.error("Caught Null Pointer Exception while removing connection tab");
             }
+            log.debug("connection #{} successfully disposed", i);
             this.configPanes.remove(i);
             if (this.getTabCount() == 1) {
                 addConnectionTab();

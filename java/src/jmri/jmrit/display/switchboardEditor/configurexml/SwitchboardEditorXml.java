@@ -9,8 +9,10 @@ import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.configurexml.AbstractXmlAdapter;
 import jmri.configurexml.XmlAdapter;
-import jmri.jmrit.display.PanelMenu;
+import jmri.jmrit.display.EditorManager;
 import jmri.jmrit.display.switchboardEditor.SwitchboardEditor;
+import jmri.util.ColorUtil;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -20,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * Handle configuration for {@link SwitchboardEditor} panes.
  *
  * @author Bob Jacobsen Copyright (c) 2002
- * @author Egbert Broerse Copyright (c) 2017
+ * @author Egbert Broerse Copyright (c) 2017, 2020
  */
 public class SwitchboardEditorXml extends AbstractXmlAdapter {
 
@@ -41,15 +43,15 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         Element panel = new Element("switchboardeditor");
 
         JFrame frame = p.getTargetFrame();
-        Dimension size = frame.getSize();
-        Point posn = frame.getLocation();
+        //Dimension size = frame.getSize();
+        //Point posn = frame.getLocation();
 
         panel.setAttribute("class", "jmri.jmrit.display.switchboardEditor.configurexml.SwitchboardEditorXml");
         panel.setAttribute("name", "" + frame.getTitle());
-        panel.setAttribute("x", "" + posn.x);
-        panel.setAttribute("y", "" + posn.y);
-        panel.setAttribute("height", "" + size.height);
-        panel.setAttribute("width", "" + size.width);
+        //panel.setAttribute("x", "" + posn.x); // managed vie Prefsmanager
+        //panel.setAttribute("y", "" + posn.y);
+        //panel.setAttribute("height", "" + size.height);
+        //panel.setAttribute("width", "" + size.width);
         panel.setAttribute("editable", "" + (p.isEditable() ? "yes" : "no"));
         panel.setAttribute("showtooltips", "" + (p.showToolTip() ? "yes" : "no"));
         panel.setAttribute("controlling", "" + (p.allControlling() ? "yes" : "no"));
@@ -57,13 +59,18 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         panel.setAttribute("panelmenu", p.isPanelMenuVisible() ? "yes" : "no");
         panel.setAttribute("scrollable", p.getScrollable());
         panel.setAttribute("hideunconnected", "" + (p.hideUnconnected() ? "yes" : "no"));
+        panel.setAttribute("autoitemrange", "" + (p.autoItemRange() ? "yes" : "no"));
         panel.setAttribute("rangemin", "" + p.getPanelMenuRangeMin());
         panel.setAttribute("rangemax", "" + p.getPanelMenuRangeMax());
         panel.setAttribute("type", p.getSwitchType());
         panel.setAttribute("connection", p.getSwitchManu());
         panel.setAttribute("shape", p.getSwitchShape());
-        panel.setAttribute("columns", "" + p.getColumns());
+        panel.setAttribute("rows", "" + p.getRows());
+        panel.setAttribute("total", "" + p.getTotal()); // total number of items displayed
+        panel.setAttribute("showusername", "" + p.showUserName());
         panel.setAttribute("defaulttextcolor", p.getDefaultTextColor());
+//        panel.setAttribute("activecolor", p.getActiveSwitchColor()); not needed, fetched directly from Editor by Servlet
+//        panel.setAttribute("inactivecolor", p.getInactiveSwitchColor()); / not user-settable
         if (p.getBackgroundColor() != null) {
             panel.setAttribute("redBackground", "" + p.getBackgroundColor().getRed());
             panel.setAttribute("greenBackground", "" + p.getBackgroundColor().getGreen());
@@ -90,6 +97,7 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
     @Override
     public boolean load(Element shared, Element perNode) {
         boolean result = true;
+        Attribute a;
         // find coordinates
         int x = 0;
         int y = 0;
@@ -97,17 +105,25 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         int width = 300;
         int rangemin = 1;
         int rangemax = 32;
-        int columns = 4;
-        String type = "T";
-        String connection = "I";
-        String shape = "key";
+        int rows = 4;
+        String type;
+        String connection;
+        String shape;
         String name;
 
         try {
-            x = shared.getAttribute("x").getIntValue();
-            y = shared.getAttribute("y").getIntValue();
-            height = shared.getAttribute("height").getIntValue();
-            width = shared.getAttribute("width").getIntValue();
+            if ((a = shared.getAttribute("x")) != null) {
+                x = a.getIntValue();
+            }
+            if ((a = shared.getAttribute("y")) != null) {
+                y = a.getIntValue();
+            }
+            if ((a = shared.getAttribute("height")) != null) {
+                height = a.getIntValue();
+            }
+            if ((a = shared.getAttribute("width")) != null) {
+                width = a.getIntValue();
+            }
         } catch (org.jdom2.DataConversionException e) {
             log.error("failed to convert Switchboard's attribute");
             result = false;
@@ -118,13 +134,33 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
             name = shared.getAttribute("name").getValue();
         }
         // confirm that panel hasn't already been loaded
-        if (InstanceManager.getDefault(PanelMenu.class).isPanelNameUsed(name)) {
-            log.warn("File contains a panel with the same name (" + name + ") as an existing panel");
+        if (InstanceManager.getDefault(EditorManager.class).contains(name)) {
+            log.warn("File contains a panel with the same name ({}) as an existing panel", name);
             result = false;
         }
+
+        // If available, override location and size with machine dependent values
+        if (!InstanceManager.getDefault(jmri.util.gui.GuiLafPreferencesManager.class).isEditorUseOldLocSize()) {
+            jmri.UserPreferencesManager prefsMgr = InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class);
+            if (prefsMgr != null) {
+
+                java.awt.Point prefsWindowLocation = prefsMgr.getWindowLocation(name);
+                if (prefsWindowLocation != null) {
+                    x = (int) prefsWindowLocation.getX();
+                    y = (int) prefsWindowLocation.getY();
+                }
+
+                java.awt.Dimension prefsWindowSize = prefsMgr.getWindowSize(name);
+                if (prefsWindowSize != null && prefsWindowSize.getHeight() != 0 && prefsWindowSize.getWidth() != 0) {
+                    height = (int) prefsWindowSize.getHeight();
+                    width = (int) prefsWindowSize.getWidth();
+                }
+            }
+        }
+
         SwitchboardEditor panel = new SwitchboardEditor(name);
         //panel.makeFrame(name);
-        InstanceManager.getDefault(PanelMenu.class).addEditorPanel(panel);
+        InstanceManager.getDefault(EditorManager.class).add(panel);
         panel.getTargetFrame().setLocation(x, y);
         panel.getTargetFrame().setSize(width, height);
 
@@ -132,7 +168,6 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
 
         // Load editor option flags. This has to be done before the content
         // items are loaded, to preserve the individual item settings.
-        Attribute a;
         boolean value = true;
 
         if ((a = shared.getAttribute("editable")) != null && a.getValue().equals("no")) {
@@ -176,6 +211,12 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         }
         panel.setHideUnconnected(value);
 
+        value = true;
+        if ((a = shared.getAttribute("autoitemrange")) != null && a.getValue().equals("no")) {
+            value = false;
+        }
+        panel.setAutoItemRange(value);
+
         try {
             rangemin = shared.getAttribute("rangemin").getIntValue();
             rangemax = shared.getAttribute("rangemax").getIntValue();
@@ -191,21 +232,43 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
 
         connection = shared.getAttribute("connection").getValue();
         panel.setSwitchManu(connection);
+        log.debug("SwitchBoard connection choice set to {}", connection);
 
         shape = shared.getAttribute("shape").getValue();
         panel.setSwitchShape(shape);
 
-        try {
-            columns = shared.getAttribute("columns").getIntValue();
-        } catch (org.jdom2.DataConversionException e) {
-            log.error("failed to convert Switchboard's column count");
-            result = false;
+        if ((a = shared.getAttribute("columns")) != null) {
+            try { // migration of old naming, dropped since 4.21.2
+                rows = shared.getAttribute("columns").getIntValue();
+            } catch (org.jdom2.DataConversionException e) {
+                log.error("failed to convert Switchboard's row (formerly column) count");
+                result = false;
+            }
         }
-        panel.setColumns(columns);
+        if ((a = shared.getAttribute("rows")) != null) {
+            try {
+                rows = shared.getAttribute("rows").getIntValue();
+            } catch (org.jdom2.DataConversionException e) {
+                log.error("failed to convert Switchboard's row count");
+                result = false;
+            }
+        }
+        panel.setRows(rows); // if 0, autoRows is selected (handled in Editor)
 
-        String defaultTextColor = "black";
+        value = true;
+        if ((a = shared.getAttribute("showusername")) != null && a.getValue().equals("no")) {
+            value = false;
+        }
+        panel.setShowUserName(value);
+
+        Color defaultTextColor = Color.BLACK;
         if (shared.getAttribute("defaulttextcolor") != null) {
-            defaultTextColor = shared.getAttribute("defaulttextcolor").getValue();
+            String color = shared.getAttribute("defaulttextcolor").getValue();
+            try {
+                defaultTextColor = ColorUtil.stringToColor(color);
+            } catch (IllegalArgumentException ex) {
+                log.error("Invalid defaulttextcolor {} using black", color);
+            }
         }
         panel.setDefaultTextColor(defaultTextColor);
         // set color if needed
@@ -219,26 +282,25 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
             log.warn("Could not parse color attributes!");
         } catch (NullPointerException e) {  // considered normal if the attributes are not present
         }
-        //set the (global) editor display widgets to their flag settings
+        // set the (global) editor display widgets to their flag settings
         panel.initView();
 
         // load the contents with their individual option settings
-        List<Element> items = shared.getChildren();
-        for (int i = 0; i < items.size(); i++) {
+        List<Element> panelItems = shared.getChildren();
+        for (Element item : panelItems) {
             // get the class, hence the adapter object to do loading
-            Element item = items.get(i);
             String adapterName = item.getAttribute("class").getValue();
             log.debug("load via {}", adapterName);
             try {
-                XmlAdapter adapter = (XmlAdapter) Class.forName(adapterName).newInstance();
+                XmlAdapter adapter = (XmlAdapter) Class.forName(adapterName).getDeclaredConstructor().newInstance();
                 // and do it
                 adapter.load(item, panel);
                 if (!panel.loadOK()) {
                     result = false;
                 }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
                     | jmri.configurexml.JmriConfigureXmlException
-                    | RuntimeException e) {
+                    | java.lang.reflect.InvocationTargetException e) {
                 log.error("Exception while loading {}", item.getName(), e);
                 result = false;
             }
@@ -252,7 +314,7 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         // we don't pack the target frame here, because size was specified
         // TODO: Work out why, when calling this method, panel size is increased
         // vertically (at least on MS Windows)
-        panel.getTargetFrame().setVisible(true);    // always show the panel
+        panel.getTargetFrame().setVisible(true); // always show the panel
 
         // register the resulting panel for later configuration
         ConfigureManager cm = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
@@ -264,6 +326,7 @@ public class SwitchboardEditorXml extends AbstractXmlAdapter {
         panel.getTargetFrame().setLocation(x, y);
         panel.getTargetFrame().setSize(width, height);
         panel.updatePressed();
+        log.debug("Switchboard ready");
         return result;
     }
 

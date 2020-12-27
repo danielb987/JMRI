@@ -8,28 +8,28 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Stop a train in a block if required.
- * <P>
- * Watches a Block object that is passing around a Throttle object as it's
+ * <p>
+ * Watches a Block object that is passing around a Throttle object as its
  * value. When the Block goes OCCUPIED, check whether a signal is telling the
  * train to stop; if so, force the Throttle to zero speed.
- * <P>
+ * <p>
  * This contains multiple SignalHead objects, each associated with a Path that
  * contains one or more BeanSettings (e.g. Turnout positions) and directions.
- * When needed, this consults the paths to see which one is active (has it's
+ * When needed, this consults the paths to see which one is active (has its
  * Turnouts set) and corresponds to the current direction of the block. There
  * should be exactly one of these, which will then identify which signal to
  * monitor.
- * <P>
+ * <p>
  * Limitations:
- * <UL>
- * <LI>Current implementation does not protect against changing direction and
+ * <ul>
+ * <li>Current implementation does not protect against changing direction and
  * backing out of the block
- * <LI>Should track speed at time of stop and restore it on restart (or should
+ * <li>Should track speed at time of stop and restore it on restart (or should
  * it not restart? Optional restart?)
- * </UL>
+ * </ul>
  *
  * @author Bob Jacobsen Copyright (C) 2006
-  */
+ */
 public class StoppingBlock {
 
     public StoppingBlock(Block b) {
@@ -56,7 +56,7 @@ public class StoppingBlock {
             }
             int val = fastestAppearance();
             if (log.isDebugEnabled()) {
-                log.debug("Block " + block.getSystemName() + " occupied with " + val);
+                log.debug("Block {} occupied with {}", block.getSystemName(), val);
             }
 
             if (val == SignalHead.RED) {
@@ -82,7 +82,7 @@ public class StoppingBlock {
             }
             int val = fastestAppearance();
             if (log.isDebugEnabled()) {
-                log.debug("Block " + block.getSystemName() + " signal change to " + val);
+                log.debug("Block {} signal change to {}", block.getSystemName(), val);
             }
 
             if (val == SignalHead.YELLOW) {
@@ -134,21 +134,21 @@ public class StoppingBlock {
      */
     void doStop() {
         if (log.isDebugEnabled()) {
-            log.debug("Block " + block.getSystemName() + " speed being set to stop");
+            log.debug("Block {} speed being set to stop", block.getSystemName());
         }
         setSpeed(0.0f, false, false, false);  // bell on
     }
 
     void doSlow() {
         if (log.isDebugEnabled()) {
-            log.debug("Block " + block.getSystemName() + " speed being set to slow");
+            log.debug("Block {} speed being set to slow", block.getSystemName());
         }
         setSpeed(slow, false, false, false);  // bell off
     }
 
     void doRestart() {
         if (log.isDebugEnabled()) {
-            log.debug("Block " + block.getSystemName() + " speed being set to run");
+            log.debug("Block {} speed being set to run", block.getSystemName());
         }
         setSpeed(fast, false, false, false);  // bell off
     }
@@ -156,7 +156,7 @@ public class StoppingBlock {
     void setSpeed(float speed, boolean f1, boolean f2, boolean f3) {
         Object o = block.getValue();
         if (o == null) {
-            log.error("Block " + block.getSystemName() + " contained no Throttle object");
+            log.error("Block {} contained no Throttle object", block.getSystemName());
             return;
         }
         try {
@@ -165,7 +165,7 @@ public class StoppingBlock {
             t.setF1(f1);
             t.setF2(f2);
         } catch (ClassCastException e) {
-            log.error("Block " + block.getSystemName() + " did not contain object of Throttle type: " + e);
+            log.error("Block {} did not contain object of Throttle type: {}", block.getSystemName(), e);
         }
     }
 
@@ -183,4 +183,5 @@ public class StoppingBlock {
     float fast = 0.6f;
 
     private final static Logger log = LoggerFactory.getLogger(StoppingBlock.class);
+
 }

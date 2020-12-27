@@ -35,6 +35,7 @@ public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetwork
         LnCommandStationType.COMMAND_STATION_DCS200,
         LnCommandStationType.COMMAND_STATION_DCS050,
         LnCommandStationType.COMMAND_STATION_DCS051,
+        LnCommandStationType.COMMAND_STATION_DCS052,
         LnCommandStationType.COMMAND_STATION_DB150,
         LnCommandStationType.COMMAND_STATION_IBX_TYPE_1,
         LnCommandStationType.COMMAND_STATION_IBX_TYPE_2,
@@ -117,7 +118,7 @@ public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetwork
     @Override
     public void configureOption3(String value) {
         super.configureOption3(value);
-        log.debug("configureOption3: " + value);
+        log.debug("configureOption3: {}", value);
         setTurnoutHandling(value);
     }
 

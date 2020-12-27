@@ -2,11 +2,11 @@ package jmri.jmrix.nce;
 
 import jmri.DccLocoAddress;
 import jmri.util.JUnitUtil;
-import org.junit.After;
+import jmri.util.JUnitAppender;
+import jmri.util.junit.annotations.*;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
@@ -18,8 +18,9 @@ public class NceConsistManagerTest extends jmri.implementation.AbstractConsistMa
     private NceSystemConnectionMemo memo = null;
 
     @Override
-    @Ignore("Causes error message reading consist memory")
     @Test
+    @Disabled("produces multiple error messages on CI servers")
+    @ToDo("rewrite parent class test here with appropriate replies to consist memory read requests")
     public void testGetConsist() {
         // getConsist with a valid address should always return
         // a consist.
@@ -30,22 +31,32 @@ public class NceConsistManagerTest extends jmri.implementation.AbstractConsistMa
     }
 
     @Test
-    @Ignore("This test gives the error message below")
-    // Time out reading NCE command station consist memory [Read Consist 12] jmri.jmrix.nce.NceConsist.readConsistMemory()
-    // 12 is one of the loco number used in the test.
+    @Disabled("produces multiple error messages on CI servers")
+    @ToDo("rewrite parent class test here with appropriate replies to consist memory read requests")
     @Override
     public void testConsists() {
+       super.testConsists();
+       // no message is being generated in response to consist memory read
+       // messages, so the parent class sometimes produces error messages.  
+       // We need to supress those.
+       JUnitAppender.suppressErrorMessage("read timeout");
+       JUnitAppender.suppressErrorMessage("Time out reading NCE command station consist memory");
     }
 
-    @Test
     @Override
-    @Ignore("test causes Null Pointer Exception")
-    public void testRequestUpdateFromLayout(){
+    @Test
+    @Disabled("causes NPE on Appveyor; produces multiple error messages on CI servers")
+    @ToDo("rewrite parent class test here with appropriate replies to consist memory read requests. Investigate why Appveyor throws NPE while getting port name from traffic controller")
+    public void testRequestUpdateFromLayout() {
+       super.testRequestUpdateFromLayout();
+       // no message is being generated in response to consist memory read
+       // messages, so the parent class sometimes produces error messages.  
+       // We need to supress those.
+       JUnitAppender.suppressErrorMessage("read timeout");
+       JUnitAppender.suppressErrorMessage("Time out reading NCE command station consist memory");
     }
 
-
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         JUnitUtil.setUp();
@@ -55,10 +66,11 @@ public class NceConsistManagerTest extends jmri.implementation.AbstractConsistMa
         cm = new NceConsistManager(memo);
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() {
         cm = null;
+        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
         JUnitUtil.tearDown();
     }
 

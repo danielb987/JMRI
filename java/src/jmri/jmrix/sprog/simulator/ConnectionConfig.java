@@ -9,7 +9,7 @@ package jmri.jmrix.sprog.simulator;
  * @author Bob Jacobsen Copyright (C) 2001, 2003, 2017
  * @author Paul Bender Copyright (C) 2009
  * @author Mark Underwood Copyright (C) 2015
-  *
+ *
  * @see SimulatorAdapter
  *
  * Based on jmri.jmrix.lenz.xnetsimulator.ConnectionConfig, copied from DCCpp
@@ -19,13 +19,15 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
     /**
      * Ctor for an object being created during load process; Swing init is
      * deferred.
+     * @param p Serial port adapter.
      */
     public ConnectionConfig(jmri.jmrix.SerialPortAdapter p) {
         super(p);
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -48,6 +50,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSimulatorConnectionConf
         manufacturerName = manu;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         if (adapter == null) {

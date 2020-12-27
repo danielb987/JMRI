@@ -1,14 +1,12 @@
 package jmri.jmrit;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
@@ -33,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handle common aspects of XML files.
- * <P>
+ * <p>
  * JMRI needs to be able to operate offline, so it needs to store resources
  * locally. At the same time, we want XML files to be transportable, and to have
  * their schema and stylesheets accessible via the web (for browser rendering).
@@ -111,7 +109,7 @@ public abstract class XmlFile {
         File fp = findFile(name);
         if (fp != null && fp.exists() && fp.canRead()) {
             if (log.isDebugEnabled()) {
-                log.debug("readFile: " + name + " from " + fp.getAbsolutePath());
+                log.debug("readFile: {} from {}", name, fp.getAbsolutePath());
             }
             return rootFromFile(fp);
         }
@@ -122,26 +120,26 @@ public abstract class XmlFile {
             if (!name.startsWith("xml")) {
                 return this.rootFromName("xml" + File.separator + name);
             }
-            log.warn("Did not find file or resource " + name);
+            log.warn("Did not find file or resource {}", name);
             throw new FileNotFoundException("Did not find file or resource " + name);
         }
     }
 
     /**
      * Read a File as XML, and return the root object.
-     *
+     * <p>
      * Exceptions are only thrown when local recovery is impossible.
      *
-     * @throws org.jdom2.JDOMException       only when all methods have failed
-     * @throws java.io.FileNotFoundException if file not found
      * @param file File to be parsed. A FileNotFoundException is thrown if it
      *             doesn't exist.
+     * @throws org.jdom2.JDOMException       only when all methods have failed
+     * @throws java.io.FileNotFoundException if file not found
      * @return root element from the file. This should never be null, as an
      *         exception should be thrown if anything goes wrong.
      */
     public Element rootFromFile(File file) throws JDOMException, IOException {
         if (log.isDebugEnabled()) {
-            log.debug("reading xml from file: " + file.getPath());
+            log.debug("reading xml from file: {}", file.getPath());
         }
 
         try (FileInputStream fs = new FileInputStream(file)) {
@@ -151,12 +149,12 @@ public abstract class XmlFile {
 
     /**
      * Read an {@link java.io.InputStream} as XML, and return the root object.
-     *
+     * <p>
      * Exceptions are only thrown when local recovery is impossible.
      *
+     * @param stream InputStream to be parsed.
      * @throws org.jdom2.JDOMException       only when all methods have failed
      * @throws java.io.FileNotFoundException if file not found
-     * @param stream InputStream to be parsed.
      * @return root element from the file. This should never be null, as an
      *         exception should be thrown if anything goes wrong.
      */
@@ -166,18 +164,18 @@ public abstract class XmlFile {
 
     /**
      * Read a URL as XML, and return the root object.
-     *
+     * <p>
      * Exceptions are only thrown when local recovery is impossible.
      *
+     * @param url URL locating the data file
      * @throws org.jdom2.JDOMException only when all methods have failed
      * @throws FileNotFoundException   if file not found
-     * @param url URL locating the data file
      * @return root element from the file. This should never be null, as an
      *         exception should be thrown if anything goes wrong.
      */
     public Element rootFromURL(URL url) throws JDOMException, IOException {
         if (log.isDebugEnabled()) {
-            log.debug("reading xml from URL: " + url.toString());
+            log.debug("reading xml from URL: {}", url.toString());
         }
         return getRoot(url.openConnection().getInputStream());
     }
@@ -201,84 +199,11 @@ public abstract class XmlFile {
     }
 
     /**
-     * While the various Deprecated methods are present, this provides a warning
-     * against their continued use. JMRI itself stopped using these with JMRI
-     * 4.7.2
-     */
-    protected static void warnDeprecated() {
-        if (warned) {
-            return;
-        }
-        log.warn("Deprecated XmlFile method was used, validation may be ignored; only mentioning once");
-        warned = true;
-    }
-    static protected boolean warned = false;
-
-    /**
-     * @deprecated 4.7.2 use setVerifySchema, setVerifyDTD methods
-     * @param verify true if the XML document should be validated (but this is
-     *               now ignored)
-     * @param stream input containing the XML document
-     * @return the root element of the XML document
-     * @throws org.jdom2.JDOMException if the XML document is invalid
-     * @throws java.io.IOException     if the input cannot be read
-     */
-    @Deprecated
-    protected Element getRoot(boolean verify, InputStream stream) throws JDOMException, IOException {
-        warnDeprecated();
-        return getRoot(stream);
-    }
-
-    /**
-     * Get the root element from an XML document in a Reader.
-     *
-     * Runs through a BufferedReader for increased performance.
-     *
-     *
-     * @param verifySchema true if the XML document should be validated against
-     *                     its schema
-     * @param verifyDTD    true if the XML document should be validated against
-     *                     its DTD
-     * @param reader       input containing the XML document
-     * @return the root element of the XML document
-     * @throws org.jdom2.JDOMException if the XML document is invalid
-     * @throws java.io.IOException     if the input cannot be read
-     * @since 3.1.5
-     * @deprecated 4.7.2 use setVerifySchema, setVerifyDTD methods
-     */
-    @Deprecated
-    protected Element getRoot(boolean verifySchema, boolean verifyDTD, InputStreamReader reader) throws JDOMException, IOException {
-        warnDeprecated();
-        log.trace("getRoot from reader with encoding {}", reader.getEncoding());
-
-        SAXBuilder builder = getBuilder(getValidate());  // argument controls validation
-        Document doc = builder.build(new BufferedReader(reader));
-        doc = processInstructions(doc);  // handle any process instructions
-        // find root
-        return doc.getRootElement();
-    }
-
-    /**
-     * @deprecated 4.7.2 use setVerifySchema, setVerifyDTD methods
-     * @param verify true if the XML document should be validated (but this is
-     *               now ignored)
-     * @param reader input containing the XML document
-     * @return the root element of the XML document
-     * @throws org.jdom2.JDOMException if the XML document is invalid
-     * @throws java.io.IOException     if the input cannot be read
-     */
-    @Deprecated
-    protected Element getRoot(boolean verify, InputStreamReader reader) throws JDOMException, IOException {
-        warnDeprecated();
-        return getRoot(verify, verify, reader);
-    }
-
-    /**
      * Write a File as XML.
      *
-     * @throws FileNotFoundException if file not found
      * @param file File to be created.
      * @param doc  Document to be written out. This should never be null.
+     * @throws FileNotFoundException if file not found
      */
     public void writeXML(File file, Document doc) throws IOException, FileNotFoundException {
         // ensure parent directory exists
@@ -319,12 +244,12 @@ public abstract class XmlFile {
 
     /**
      * Return a File object for a name. This is here to implement the search
-     * rule: <OL> <LI>Look in user preferences directory, located by
+     * rule: <ol> <li>Look in user preferences directory, located by
      * {@link jmri.util.FileUtil#getUserFilesPath()} <li>Look in current working
      * directory (usually the JMRI distribution directory) <li>Look in program
      * directory, located by {@link jmri.util.FileUtil#getProgramPath()}
-     * <LI>Look in XML directory, located by {@link #xmlDir} <LI>Check for
-     * absolute name. </OL>
+     * <li>Look in XML directory, located by {@link #xmlDir} <li>Check for
+     * absolute name. </ol>
      *
      * @param name Filename perhaps containing subdirectory information (e.g.
      *             "decoders/Mine.xml")
@@ -367,19 +292,19 @@ public abstract class XmlFile {
     public void makeBackupFile(String name) {
         File file = findFile(name);
         if (file == null) {
-            log.info("No " + name + " file to backup");
+            log.info("No {} file to backup", name);
         } else if (file.canWrite()) {
             String backupName = backupFileName(file.getAbsolutePath());
             File backupFile = findFile(backupName);
             if (backupFile != null) {
                 if (backupFile.delete()) {
-                    log.debug("deleted backup file " + backupName);
+                    log.debug("deleted backup file {}", backupName);
                 }
             }
             if (file.renameTo(new File(backupName))) {
-                log.debug("created new backup file " + backupName);
+                log.debug("created new backup file {}", backupName);
             } else {
-                log.error("could not create backup file " + backupName);
+                log.error("could not create backup file {}", backupName);
             }
         }
     }
@@ -398,14 +323,14 @@ public abstract class XmlFile {
         } else if (file.canWrite()) {
             String backupFullName = directory + File.separator + createFileNameWithDate(file.getName());
             if (log.isDebugEnabled()) {
-                log.debug("new backup file: " + backupFullName);
+                log.debug("new backup file: {}", backupFullName);
             }
 
             File backupFile = findFile(backupFullName);
             if (backupFile != null) {
                 if (backupFile.delete()) {
                     if (log.isDebugEnabled()) {
-                        log.debug("deleted backup file " + backupFullName);
+                        log.debug("deleted backup file {}", backupFullName);
                     }
                 }
             } else {
@@ -415,7 +340,7 @@ public abstract class XmlFile {
             File parentDir = backupFile.getParentFile();
             if (!parentDir.exists()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("creating backup directory: " + parentDir.getName());
+                    log.debug("creating backup directory: {}", parentDir.getName());
                 }
                 if (!parentDir.mkdirs()) {
                     log.error("backup directory not created");
@@ -424,11 +349,11 @@ public abstract class XmlFile {
             }
             if (file.renameTo(new File(backupFullName))) {
                 if (log.isDebugEnabled()) {
-                    log.debug("created new backup file " + backupFullName);
+                    log.debug("created new backup file {}", backupFullName);
                 }
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("could not create backup file " + backupFullName);
+                    log.debug("could not create backup file {}", backupFullName);
                 }
                 return false;
             }
@@ -445,20 +370,20 @@ public abstract class XmlFile {
     public void revertBackupFile(String name) {
         File file = findFile(name);
         if (file == null) {
-            log.info("No " + name + " file to revert");
+            log.info("No {} file to revert", name);
         } else {
             String backupName = backupFileName(file.getAbsolutePath());
             File backupFile = findFile(backupName);
             if (backupFile != null) {
-                log.info("No " + backupName + " backup file to revert");
+                log.info("No {} backup file to revert", backupName);
                 if (file.delete()) {
-                    log.debug("deleted original file " + name);
+                    log.debug("deleted original file {}", name);
                 }
 
                 if (backupFile.renameTo(new File(name))) {
-                    log.debug("created original file " + name);
+                    log.debug("created original file {}", name);
                 } else {
-                    log.error("could not create original file " + name);
+                    log.error("could not create original file {}", name);
                 }
             }
         }
@@ -477,7 +402,7 @@ public abstract class XmlFile {
     public String backupFileName(String name) {
         String f = name + ".bak";
         if (log.isDebugEnabled()) {
-            log.debug("backup file name is: " + f);
+            log.debug("backup file name is: {}", f);
         }
         return f;
     }
@@ -487,7 +412,7 @@ public abstract class XmlFile {
         String[] fileName = name.split(".xml");
         String f = fileName[0] + "_" + getDate() + ".xml";
         if (log.isDebugEnabled()) {
-            log.debug("backup file name is: " + f);
+            log.debug("backup file name is: {}", f);
         }
         return f;
     }
@@ -530,7 +455,7 @@ public abstract class XmlFile {
 
     /**
      * Execute the Processing Instructions in the file.
-     *
+     * <p>
      * JMRI only knows about certain ones; the others will be ignored.
      *
      * @param doc the document containing processing instructions
@@ -543,11 +468,11 @@ public abstract class XmlFile {
                 try {
                     doc = processOneInstruction((ProcessingInstruction) c, doc);
                 } catch (org.jdom2.transform.XSLTransformException ex) {
-                    log.error("XSLT error while transforming with " + c + ", ignoring transform", ex);
+                    log.error("XSLT error while transforming with {}, ignoring transform", c, ex);
                 } catch (org.jdom2.JDOMException ex) {
-                    log.error("JDOM error while transforming with " + c + ", ignoring transform", ex);
+                    log.error("JDOM error while transforming with {}, ignoring transform", c, ex);
                 } catch (java.io.IOException ex) {
-                    log.error("IO error while transforming with " + c + ", ignoring transform", ex);
+                    log.error("IO error while transforming with {}, ignoring transform", c, ex);
                 }
             }
         }
@@ -612,12 +537,12 @@ public abstract class XmlFile {
 
     /**
      * Add default information to the XML before writing it out.
-     * <P>
+     * <p>
      * Currently, this is identification information as an XML comment. This
-     * includes: <UL>
-     * <LI>The JMRI version used <LI>Date of writing <LI>A CVS id string, in
-     * case the file gets checked in or out </UL>
-     * <P>
+     * includes: <ul>
+     * <li>The JMRI version used <li>Date of writing <li>A CVS id string, in
+     * case the file gets checked in or out </ul>
+     * <p>
      * It may be necessary to extend this to check whether the info is already
      * present, e.g. if re-writing a file.
      *
@@ -707,58 +632,36 @@ public abstract class XmlFile {
 
     /**
      * Provide a JFileChooser initialized to the default user location, and with
-     * a default filter.
+     * a default filter. This filter excludes {@code .zip} and {@code .jar}
+     * archives.
      *
-     * @param filter  Title for the filter, may not be null
-     * @param suffix1 An allowed suffix, or null
-     * @param suffix2 A second allowed suffix, or null. If both arguments are
-     *                null, no specific filtering is done.
+     * @param filter Title for the filter, may not be null
+     * @param suffix Allowed file extensions, if empty all extensions are
+     *               allowed except {@code .zip} and {@code .jar}; include an
+     *               empty String to allow files without an extension if
+     *               specifying other extensions.
      * @return a file chooser
      */
-    public static JFileChooser userFileChooser(
-            String filter, String suffix1, String suffix2) {
+    public static JFileChooser userFileChooser(String filter, String... suffix) {
         JFileChooser fc = new JFileChooser(FileUtil.getUserFilesPath());
-        NoArchiveFileFilter filt = new NoArchiveFileFilter(filter);
-        if (suffix1 != null) {
-            filt.addExtension(suffix1);
-        }
-        if (suffix2 != null) {
-            filt.addExtension(suffix2);
-        }
-        fc.setFileFilter(filt);
+        fc.setFileFilter(new NoArchiveFileFilter(filter, suffix));
         return fc;
-    }
-
-    public static JFileChooser userFileChooser() {
-        JFileChooser fc = new JFileChooser(FileUtil.getUserFilesPath());
-        NoArchiveFileFilter filt = new NoArchiveFileFilter();
-        fc.setFileFilter(filt);
-        return fc;
-    }
-
-    public static JFileChooser userFileChooser(String filter) {
-        return userFileChooser(filter, null, null);
-    }
-
-    public static JFileChooser userFileChooser(
-            String filter, String suffix1) {
-        return userFileChooser(filter, suffix1, null);
     }
 
     /**
-     * @param verify true if validation should be attempted
-     * @return a SAX builder pre-configured to (not) validate XML
-     * @deprecated 4.7.2
+     * Provide a JFileChooser initialized to the default user location, and with
+     * a default filter. This filter excludes {@code .zip} and {@code .jar}
+     * archives.
+     *
+     * @return a file chooser
      */
-    @Deprecated
-    public static SAXBuilder getBuilder(boolean verify) {
-        warnDeprecated();
-        if (verify) {
-            return getBuilder(Validate.CheckDtdThenSchema);
-        }
-        return getBuilder(Validate.None);
+    public static JFileChooser userFileChooser() {
+        JFileChooser fc = new JFileChooser(FileUtil.getUserFilesPath());
+        fc.setFileFilter(new NoArchiveFileFilter());
+        return fc;
     }
 
+    @SuppressWarnings("deprecation") // wait for updated Xerxes before coding substitute for SAXBuilder(String, boolean)
     public static SAXBuilder getBuilder(Validate validate) {  // should really be a Verify enum
         SAXBuilder builder;
 

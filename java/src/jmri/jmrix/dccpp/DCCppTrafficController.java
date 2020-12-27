@@ -64,7 +64,9 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
      */
     @Override
     public void forwardMessage(AbstractMRListener reply, AbstractMRMessage m) {
-        ((DCCppListener) reply).message((DCCppMessage) m);
+        if (reply instanceof DCCppListener && m instanceof DCCppMessage) {
+            ((DCCppListener) reply).message((DCCppMessage) m);
+        }
     }
 
     /**
@@ -80,6 +82,10 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
     @Override
     public void forwardReply(AbstractMRListener client, AbstractMRReply m) {
         // check parity
+        if (!( client instanceof DCCppListener || m instanceof DCCppReply )){
+            return;
+        }
+        
         try {
             // NOTE: For now, just forward ALL messages without filtering
             ((DCCppListener) client).message((DCCppReply) m);
@@ -144,7 +150,7 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
             highPriorityQueue.put(m);
             highPriorityListeners.put(reply);
         } catch (java.lang.InterruptedException ie) {
-            log.error("Interupted while adding High Priority Message to Queue");
+            log.error("Interrupted while adding High Priority Message to Queue");
         }
     }
 
@@ -157,7 +163,7 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
                 return highPriorityQueue.take();
             }
         } catch (java.lang.InterruptedException ie) {
-            log.error("Interupted while removing High Priority Message from Queue");
+            log.error("Interrupted while removing High Priority Message from Queue");
         }
         return null;
     }
@@ -171,7 +177,7 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
                 return highPriorityListeners.take();
             }
         } catch (java.lang.InterruptedException ie) {
-            log.error("Interupted while removing High Priority Message Listener from Queue");
+            log.error("Interrupted while removing High Priority Message Listener from Queue");
         }
         return null;
     }
@@ -220,7 +226,12 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
         if (mMemo == null) {
             return true;
         }
-        return !(((jmri.jmrix.dccpp.DCCppProgrammer) mMemo.getProgrammerManager().getGlobalProgrammer()).programmerBusy());
+        DCCppProgrammer progrmr = (jmri.jmrix.dccpp.DCCppProgrammer) mMemo.getProgrammerManager().getGlobalProgrammer();
+        if ( progrmr!=null ) {
+            return !(progrmr.programmerBusy());
+        }
+        log.warn("Unable to fetch DCCppProgrammer");
+        return true;
     }
 
     @Override
@@ -240,9 +251,9 @@ public abstract class DCCppTrafficController extends AbstractMRTrafficController
 
     //    /**
     //     * Get characters from the input source, and file a message.
-    //     * <P>
+    //     * <p>
     //     * Returns only when the message is complete.
-    //     * <P>
+    //     * <p>
     //     * Only used in the Receive thread.
     //     *
     //     * @param msg     message to fill

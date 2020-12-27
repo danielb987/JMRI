@@ -2,11 +2,11 @@ package jmri.jmrix.ecos;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
+
 import jmri.ProgrammingMode;
 import jmri.jmrix.AbstractProgrammer;
 import jmri.jmrix.ecos.utilities.GetEcosObjectNumber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements the jmri.Programmer interface via commands for the ECoS
@@ -25,10 +25,13 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
     String readCommand  = "mode[readdccdirect]";
     String writeCommand = "mode[writedccdirect]";
     
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * @return list of programming modes implemented for ECoS
      */
     @Override
+    @Nonnull
     public List<ProgrammingMode> getSupportedModes() {
         List<ProgrammingMode> ret = new ArrayList<ProgrammingMode>();
         ret.add(ProgrammingMode.DIRECTBYTEMODE);
@@ -46,11 +49,14 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
 
     // programming interface
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void writeCV(int CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
-            log.debug("writeCV " + CV + " listens " + p);
+            log.debug("writeCV {} listens {}", CV, p);
         }
         useProgrammer(p);
         _progRead = false;
@@ -69,16 +75,22 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
         tc.sendEcosMessage(m, this);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     synchronized public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
-    @Deprecated // 4.1.1
-    synchronized public void readCV(int CV, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void readCV(String CVname, jmri.ProgListener p) throws jmri.ProgrammerException {
+        final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
-            log.debug("readCV " + CV + " listens " + p);
+            log.debug("readCV {} listens {}", CV, p);
         }
         useProgrammer(p);
         _progRead = true;
@@ -104,7 +116,7 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
         // test for only one!
         if (_usingProgrammer != null && _usingProgrammer != p) {
             if (log.isInfoEnabled()) {
-                log.info("programmer already in use by " + _usingProgrammer);
+                log.info("programmer already in use by {}", _usingProgrammer);
             }
             throw new jmri.ProgrammerException("programmer in use");
         } else {
@@ -113,14 +125,20 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     public void message(EcosMessage m) {
-        log.info("message: "+m);
+        log.info("message: {}", m);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     @Override
     synchronized public void reply(EcosReply reply) {
-        log.info("reply: "+reply);
+        log.info("reply: {}", reply);
         if (progState == NOTPROGRAMMING) {
             // we get the complete set of replies now, so ignore these
             if (log.isDebugEnabled()) {
@@ -144,15 +162,15 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
                 EcosMessage m;
                 if (_progRead) {
                     // read was in progress - send read command
-                    m = new EcosMessage("set("+ecosObject+","+readCommand+",cv["+_cv+"])");
+                    m = new EcosMessage("set(" + ecosObject + "," + readCommand + ",cv[" + _cv + "])");
                 } else {
                     // write was in progress - send write command
-                    m = new EcosMessage("set("+ecosObject+","+writeCommand+",cv["+_cv+","+_val+"])");
+                    m = new EcosMessage("set(" + ecosObject + "," + writeCommand + ",cv[" + _cv + "," + _val + "])");
                 }
                 tc.sendEcosMessage(m, this);
             } catch (Exception e) {
                 // program op failed, go straight to end
-                log.error("program operation failed, exception " + e);
+                log.error("program operation failed, exception {}", e);
                 progState = NOTPROGRAMMING;
                 EcosMessage m;
                 m = new EcosMessage("release("+ecosObject+",view)");
@@ -176,7 +194,7 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
             tc.sendEcosMessage(m, this);
             // check for errors
             if (reply.match("error") >= 0 || reply.match(",ok]") == -1) {
-                log.debug("ERROR during programming " + reply);
+                log.debug("ERROR during programming {}", reply);
                 // ECOS is not very informative about the precise nature of errors.
                 // We might guess that there is no loco present
                 notifyProgListenerEnd(-1, jmri.ProgListener.NoLocoDetected);
@@ -185,8 +203,8 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
             // Get the CV value from the reply if reading
             if (_progRead) {
                 // read was in progress - get return value
-                _val = GetEcosObjectNumber.getEcosObjectNumber(reply.toString(),",",",ok]");
-                log.debug("read CV "+_cv+" value: "+_val);
+                _val = GetEcosObjectNumber.getEcosObjectNumber(reply.toString(), ",", ",ok]");
+                log.debug("read CV {} value: ", _cv, _val);
             }
             
             // if this was a read, we cached the value earlier.  If its a
@@ -198,7 +216,9 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
         }
     }
 
-    /**
+    /** 
+     * {@inheritDoc}
+     *
      * Internal routine to handle a timeout.
      */
     @Override
@@ -219,10 +239,12 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
 
     /**
      * Internal method to notify of the final result.
+     * @param value Value transferred, particularly if a read operation
+     * @param status Status of completed operation
      */
     protected void notifyProgListenerEnd(int value, int status) {
         if (log.isDebugEnabled()) {
-            log.debug("notifyProgListenerEnd value " + value + " status " + status);
+            log.debug("notifyProgListenerEnd value {} status {}", value, status);
         }
         // the programmingOpReply handler might send an immediate reply, so
         // clear the current listener _first_
@@ -231,6 +253,6 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
         notifyProgListenerEnd(temp,value,status);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(EcosProgrammer.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EcosProgrammer.class);
 
 }

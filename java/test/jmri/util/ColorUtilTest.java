@@ -2,12 +2,13 @@ package jmri.util;
 
 import java.awt.Color;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the jmri.util.ColorUtil class.
  *
- * @author	Paul Bender Copyright 2016
+ * @author Paul Bender Copyright 2016
  */
 public class ColorUtilTest {
 
@@ -149,8 +150,13 @@ public class ColorUtilTest {
 
     @Test
     public void testDefaultColorFromString() {
-        Assert.assertEquals("other from color", Color.black, ColorUtil.stringToColor("other")); //NOI18N
-        jmri.util.JUnitAppender.assertErrorMessage("unknown color text 'other' sent to stringToColor ");
+        try {
+            ColorUtil.stringToColor("other"); // NOI18N
+            Assert.fail("Expected exception not thrown");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertEquals("unknown color text 'other'", ex.getMessage());
+        }
+        jmri.util.JUnitAppender.assertErrorMessage("unknown color text 'other' sent to stringToColor");
     }
 
     @Test
@@ -193,12 +199,12 @@ public class ColorUtilTest {
         Assert.assertNull("color name from null", ColorUtil.colorToColorName(null));
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
        jmri.util.JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
        jmri.util.JUnitUtil.tearDown();
     }

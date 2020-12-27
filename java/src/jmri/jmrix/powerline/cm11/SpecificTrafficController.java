@@ -14,17 +14,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts Stream-based I/O to/from messages. The "SerialInterface" side
  * sends/receives message objects.
- * <P>
+ * <p>
  * The connection to a SerialPortController is via a pair of *Streams, which
  * then carry sequences of characters for transmission. Note that this
  * processing is handled in an independent thread.
- * <P>
+ * <p>
  * This maintains a list of nodes, but doesn't currently do anything with it.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2003, 2005, 2006, 2008 Converted to
  * multiple connection
  * @author kcameron Copyright (C) 2011
-  */
+ */
 public class SpecificTrafficController extends SerialTrafficController {
 
     public SpecificTrafficController(SerialSystemConnectionMemo memo) {
@@ -87,7 +87,7 @@ public class SpecificTrafficController extends SerialTrafficController {
     @Override
     protected void forwardToPort(AbstractMRMessage m, AbstractMRListener reply) {
         if (logDebug) {
-            log.debug("forward " + m);
+            log.debug("forward {}", m);
         }
         sendInterlock = ((SerialMessage) m).getInterlocked();
         super.forwardToPort(m, reply);
@@ -118,13 +118,13 @@ public class SpecificTrafficController extends SerialTrafficController {
             countingBytes = true;
             remainingBytes = msg.getElement(1) & 0xF; // 0 was the read command; max 9, really
             if (logDebug) {
-                log.debug("Receive count set to " + remainingBytes);
+                log.debug("Receive count set to {}", remainingBytes);
             }
             return false;
         }
         if (remainingBytes > 0) {
             if (remainingBytes > 8) {
-                log.error("Invalid remainingBytes: " + remainingBytes);
+                log.error("Invalid remainingBytes: {}", remainingBytes);
                 remainingBytes = 0;
                 return true;
             }
@@ -170,13 +170,12 @@ public class SpecificTrafficController extends SerialTrafficController {
             return false; // just leave in buffer
         }
         if (logDebug) {
-            log.debug("end of message: " + msg);
+            log.debug("end of message: {}", msg);
         }
         return true;
     }
 
     private final static Logger log = LoggerFactory.getLogger(SpecificTrafficController.class);
+
 }
-
-
 

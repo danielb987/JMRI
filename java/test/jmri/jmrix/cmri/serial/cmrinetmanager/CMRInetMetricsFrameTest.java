@@ -2,35 +2,32 @@ package jmri.jmrix.cmri.serial.cmrinetmanager;
 
 import jmri.util.JUnitUtil;
 import jmri.jmrix.cmri.CMRISystemConnectionMemo;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
+
 import java.awt.GraphicsEnvironment;
 
 /**
  * Test simple functioning of CMRInetMetricsFrame
  *
- * @author	Chuck Catania Copyright (C) 2017, 2018
+ * @author Chuck Catania Copyright (C) 2017, 2018
  */
-public class CMRInetMetricsFrameTest {
+public class CMRInetMetricsFrameTest extends jmri.util.JmriJFrameTestBase {
 
-    @Test
-    public void testMemoCtor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        CMRInetMetricsFrame action = new CMRInetMetricsFrame(new CMRISystemConnectionMemo()); 
-        Assert.assertNotNull("exists", action);
-    }
-
-    @Before
+    @BeforeEach
+    @Override
     public void setUp() {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
+        if (!GraphicsEnvironment.isHeadless()) {
+            frame = new CMRInetMetricsFrame(new CMRISystemConnectionMemo());
+        }
     }
 
-    @After
+    @AfterEach
+    @Override
     public void tearDown() {
-        JUnitUtil.tearDown();
+        jmri.util.JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        super.tearDown();
     }
 }

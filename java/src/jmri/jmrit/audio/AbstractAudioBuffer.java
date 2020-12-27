@@ -11,18 +11,17 @@ import org.slf4j.LoggerFactory;
  * Base implementation of the AudioBuffer class.
  * <p>
  * Specific implementations will extend this base class.
- * <BR>
+ * <br>
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * </P><P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * </P>
  *
  * @author Matthew Harris copyright (c) 2009, 2011
  */
@@ -112,7 +111,7 @@ public abstract class AbstractAudioBuffer extends AbstractAudio implements Audio
         // command thread
         loadBuffer();
         if (log.isDebugEnabled()) {
-            log.debug("Set url of Buffer " + this.getSystemName() + " to " + url);
+            log.debug("Set url of Buffer {} to {}", this.getSystemName(), url);
         }
     }
 
@@ -122,7 +121,7 @@ public abstract class AbstractAudioBuffer extends AbstractAudio implements Audio
 
         loadBuffer(stream);
         if (log.isDebugEnabled()) {
-            log.debug("Set inputstream of Buffer " + this.getSystemName() + " to stream");
+            log.debug("Set inputstream of Buffer {} to stream", this.getSystemName());
         }
     }
 
@@ -198,7 +197,7 @@ public abstract class AbstractAudioBuffer extends AbstractAudio implements Audio
             generateLoopBuffers(LOOP_POINT_START);
         }
         if (log.isDebugEnabled()) {
-            log.debug("Set start loop point of Buffer " + this.getSystemName() + " to " + startLoopPoint);
+            log.debug("Set start loop point of Buffer {} to {}", this.getSystemName(), startLoopPoint);
         }
     }
 
@@ -225,7 +224,7 @@ public abstract class AbstractAudioBuffer extends AbstractAudio implements Audio
             generateLoopBuffers(LOOP_POINT_END);
         }
         if (log.isDebugEnabled()) {
-            log.debug("Set end loop point of Buffer " + this.getSystemName() + " to " + endLoopPoint);
+            log.debug("Set end loop point of Buffer {} to {}", this.getSystemName(), endLoopPoint);
         }
     }
 
@@ -243,7 +242,7 @@ public abstract class AbstractAudioBuffer extends AbstractAudio implements Audio
         boolean changed = this.streamed != streamed;
         this.streamed = this.streamedForced == true ? true : streamed;
         if (log.isDebugEnabled()) {
-            log.debug("Set streamed property of Buffer " + this.getSystemName() + " to " + streamed + "; changed = " + changed);
+            log.debug("Set streamed property of Buffer {} to {}; changed = {}", this.getSystemName(), streamed, changed);
         }
         if (streamed && changed) {
             generateStreamingBuffers();
@@ -266,7 +265,7 @@ public abstract class AbstractAudioBuffer extends AbstractAudio implements Audio
         boolean changed = this.streamedForced == false && streamedForced == true;
         this.streamedForced = streamedForced;
         if (log.isDebugEnabled()) {
-            log.debug("Set streamedForced property of Buffer " + this.getSystemName() + " to " + streamedForced + "; changed = " + changed);
+            log.debug("Set streamedForced property of Buffer {} to {}; changed = {}", this.getSystemName(), streamedForced, changed);
         }
         this.setStreamed(streamedForced == true ? true : this.streamed);
         if (changed) {

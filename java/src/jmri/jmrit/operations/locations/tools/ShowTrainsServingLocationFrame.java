@@ -1,9 +1,9 @@
 package jmri.jmrit.operations.locations.tools;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.text.MessageFormat;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -12,6 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.locations.Location;
@@ -22,8 +27,6 @@ import jmri.jmrit.operations.routes.RouteLocation;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Frame to show which trains can service this location
@@ -139,24 +142,24 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
                     train.getRoute().addPropertyChangeListener(this);
                     if (rl.isPickUpAllowed()
                             && rl.getMaxCarMoves() > 0
-                            && !train.skipsLocation(rl.getId())
+                            && !train.isLocationSkipped(rl.getId())
                             && (typeComboBox.getSelectedItem() == null || typeComboBox.getSelectedItem().equals(NONE) || train
-                            .acceptsTypeName((String) typeComboBox.getSelectedItem()))
+                            .isTypeNameAccepted((String) typeComboBox.getSelectedItem()))
                             && (train.isLocalSwitcher() || (rl.getTrainDirection() & _location.getTrainDirections()) != 0)
                             && (train.isLocalSwitcher() || _track == null || ((rl.getTrainDirection() & _track
                             .getTrainDirections()) != 0))
-                            && (_track == null || _track.acceptsPickupTrain(train))) {
+                            && (_track == null || _track.isPickupTrainAccepted(train))) {
                         pickup = true;
                     }
                     if (rl.isDropAllowed()
                             && rl.getMaxCarMoves() > 0
-                            && !train.skipsLocation(rl.getId())
+                            && !train.isLocationSkipped(rl.getId())
                             && (typeComboBox.getSelectedItem() == null || typeComboBox.getSelectedItem().equals(NONE) || train
-                            .acceptsTypeName((String) typeComboBox.getSelectedItem()))
+                            .isTypeNameAccepted((String) typeComboBox.getSelectedItem()))
                             && (train.isLocalSwitcher() || (rl.getTrainDirection() & _location.getTrainDirections()) != 0)
                             && (train.isLocalSwitcher() || _track == null || ((rl.getTrainDirection() & _track
                             .getTrainDirections()) != 0)) 
-                            && (_track == null || _track.acceptsDropTrain(train))) {
+                            && (_track == null || _track.isDropTrainAccepted(train))) {
                         setout = true;
                     }
                     // now display results
@@ -214,7 +217,7 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
             if (_location != null && !_location.acceptsTypeName(type)) {
                 typeComboBox.removeItem(type);
             }
-            if (_track != null && !_track.acceptsTypeName(type)) {
+            if (_track != null && !_track.isTypeNameAccepted(type)) {
                 typeComboBox.removeItem(type);
             }
         }
@@ -234,7 +237,9 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
 
     @Override
     public void dispose() {
-        _location.removePropertyChangeListener(this);
+        if (_location != null) {
+            _location.removePropertyChangeListener(this);
+        }
         if (_track != null) {
             _track.removePropertyChangeListener(this);
         }

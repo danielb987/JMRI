@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * Swing action to create and register a ListFrame object
  *
  * @author Dave Duchamp Copyright (C) 2006
-  */
+ */
 public class ListAction extends AbstractAction {
 
     private MapleSystemConnectionMemo _memo = null;
@@ -30,7 +30,7 @@ public class ListAction extends AbstractAction {
         try {
             f.initComponents();
         } catch (Exception ex) {
-            log.error("Exception: " + ex.toString());
+            log.error("Exception: {}", ex.toString());
         }
         f.setVisible(true);
     }

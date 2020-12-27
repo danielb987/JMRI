@@ -5,12 +5,12 @@ import jmri.InstanceManager;
 import jmri.ThrottleListener;
 
 /**
- * Represents a RPS transmitter, generally a locomotive.
+ * Represents an RPS transmitter, generally a locomotive.
  * <p>
  * The "ID" is used to identify this transmitter in RPS. The "rosterName" is the
  * name (ID) of the roster entry this was originally created from.
  *
- * @author	Bob Jacobsen Copyright (C) 2006, 2008
+ * @author Bob Jacobsen Copyright (C) 2006, 2008
  */
 public class Transmitter implements ThrottleListener {
 
@@ -92,7 +92,8 @@ public class Transmitter implements ThrottleListener {
             return false;
         }
         // request throttle
-        InstanceManager.throttleManagerInstance().requestThrottle(address, longAddress, this);
+        InstanceManager.throttleManagerInstance().requestThrottle(
+            new jmri.DccLocoAddress(address, longAddress), this, false);
         return false;
     }
 
@@ -106,9 +107,13 @@ public class Transmitter implements ThrottleListener {
     public void notifyFailedThrottleRequest(jmri.LocoAddress address, String reason) {
     }
 
+    /**
+     * No steal or share decisions made locally
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
-    public void notifyStealThrottleRequired(jmri.LocoAddress address){
-        // this is an automatically stealing impelementation.
-        InstanceManager.throttleManagerInstance().stealThrottleRequest(address, this, true);
+    public void notifyDecisionRequired(jmri.LocoAddress address, DecisionType question) {
     }
+
 }

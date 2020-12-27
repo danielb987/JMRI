@@ -1,32 +1,50 @@
 package jmri.jmrit.operations.trains;
 
-import jmri.util.JUnitUtil;
-import org.junit.After;
+import java.io.File;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+
+import jmri.InstanceManager;
+import jmri.jmrit.operations.OperationsTestCase;
+import jmri.jmrit.operations.setup.Setup;
+import jmri.util.JUnitOperationsUtil;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
-public class TrainLoggerTest {
+public class TrainLoggerTest extends OperationsTestCase {
 
     @Test
     public void testCTor() {
         TrainLogger t = new TrainLogger();
         Assert.assertNotNull("exists",t);
     }
+    
+    @Test
+    public void testLogging() {
+        TrainLogger t = new TrainLogger();
+        Assert.assertNotNull("exists",t);
+        
+        JUnitOperationsUtil.initOperationsData();
+        // Turn on train logging
+        Setup.setTrainLoggerEnabled(true);
+        
+        TrainManager tmanager = InstanceManager.getDefault(TrainManager.class);
+        
+        Train train = tmanager.getTrainByName("STF");
+        train.build();
+        train.terminate();
+        
+        // confirm file created
+        File file = new File(t.getFullLoggerFileName());
+        Assert.assertTrue("Confirm file creation", file.exists()); 
+        
+        Setup.setTrainLoggerEnabled(false);
+        
+        JUnitOperationsUtil.checkOperationsShutDownTask();
 
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
-    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
     }
 
     // private final static Logger log = LoggerFactory.getLogger(TrainLoggerTest.class);

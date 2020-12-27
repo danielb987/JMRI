@@ -1,38 +1,45 @@
 package jmri.jmrit.operations.trains;
 
-import jmri.InstanceManager;
-import jmri.util.JUnitUtil;
-import org.junit.After;
+import java.io.BufferedReader;
+import java.io.File;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+
+import jmri.InstanceManager;
+import jmri.jmrit.operations.OperationsTestCase;
+import jmri.jmrit.operations.rollingstock.cars.Car;
+import jmri.jmrit.operations.rollingstock.cars.CarManager;
+import jmri.util.JUnitOperationsUtil;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
-public class TrainManifestTest {
+public class TrainManifestTest extends OperationsTestCase {
 
     @Test
     public void testCTor() {
+        JUnitOperationsUtil.initOperationsData();
         Train train1 = InstanceManager.getDefault(TrainManager.class).getTrainById("1");
-        TrainManifest t = new TrainManifest(train1);
-        Assert.assertNotNull("exists", t);
+        TrainManifest tm = new TrainManifest(train1);
+        Assert.assertNotNull("exists", tm);
     }
-
-    // The minimal setup for log4J
-    @Before
-    public void setUp() {
-        JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetProfileManager();
-
-        jmri.util.JUnitOperationsUtil.resetOperationsManager();
-        jmri.util.JUnitOperationsUtil.initOperationsData();
-    }
-
-    @After
-    public void tearDown() {
-        JUnitUtil.tearDown();
+    
+    @Test
+    public void testAddCarsLocationUnknown() {
+        JUnitOperationsUtil.initOperationsData();
+        CarManager cmanager = InstanceManager.getDefault(CarManager.class);
+        Car car = cmanager.getByRoadAndNumber("CP", "777");
+        car.setLocationUnknown(true);
+        Train train1 = InstanceManager.getDefault(TrainManager.class).getTrainById("1");
+        TrainManifest tm = new TrainManifest(train1);
+        Assert.assertNotNull("exists", tm);
+        
+        File file = InstanceManager.getDefault(TrainManagerXml.class).getTrainManifestFile(train1.getName());
+        
+        BufferedReader in = JUnitOperationsUtil.getBufferedReader(file);
+        Assert.assertEquals("confirm number of lines in manifest", 15, in.lines().count());
     }
 
     // private final static Logger log = LoggerFactory.getLogger(TrainManifestTest.class);

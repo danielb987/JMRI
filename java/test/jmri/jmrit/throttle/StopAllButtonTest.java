@@ -1,49 +1,29 @@
 package jmri.jmrit.throttle;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Test simple functioning of StopAllButton
  *
- * @author	Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
-public class StopAllButtonTest extends TestCase {
+public class StopAllButtonTest {
 
+    @Test
     public void testCtor() {
         StopAllButton panel = new StopAllButton();
-        Assert.assertNotNull("exists", panel );
+        Assert.assertNotNull("exists", panel);
     }
 
-    // from here down is testing infrastructure
-    public StopAllButtonTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", StopAllButtonTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(StopAllButtonTest.class);
-        return suite;
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         jmri.util.JUnitUtil.setUp();
 
     }
-    
-    @Override
+
+    @AfterEach
     public void tearDown() throws Exception {
-        super.tearDown();
         jmri.util.JUnitUtil.tearDown();
 
     }

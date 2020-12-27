@@ -1,17 +1,18 @@
 package jmri.util.zeroconf;
 
 import java.util.HashMap;
+
 import javax.jmdns.ServiceInfo;
+
 import jmri.InstanceManager;
 import jmri.util.JUnitUtil;
 import jmri.web.server.WebServerPreferences;
-import org.junit.After;
-import org.junit.AfterClass;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * Tests for the ZeroConfService class
@@ -23,30 +24,39 @@ public class ZeroConfServiceTest {
 
     private static final String HTTP = "_http._tcp.local.";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
-        ZeroConfService.stopAll();
-        JUnitUtil.waitFor(() -> {
-            return (ZeroConfService.allServices().isEmpty());
-        }, "Stopping all ZeroConf Services");
+        JUnitUtil.initZeroConfServiceManager();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        ZeroConfService.stopAll();
-        JUnitUtil.waitFor(() -> {
-            return (ZeroConfService.allServices().isEmpty());
-        }, "Stopping all ZeroConf Services");
+        JUnitUtil.resetZeroConfServiceManager();
+        
+        // wait for dns threads to end
+        Thread.getAllStackTraces().keySet().forEach((t) -> 
+            {
+                String name = t.getName();
+                if (! name.equals("dns.close in ZerConfServiceManager#stopAll")) return; // skip
+                
+                try {
+                    t.join(5000); // wait up to 35 seconds for that thread to end; 
+                } catch (InterruptedException e) {
+                    // nothing, just means that thread was terminated externally
+                }
+            }
+        );        
+        
         JUnitUtil.tearDown();
     }
 
@@ -57,7 +67,7 @@ public class ZeroConfServiceTest {
     public void testCreate_String_int() {
         ZeroConfService result = ZeroConfService.create(HTTP, 9999);
         Assert.assertNotNull(result);
-        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), result.name());
+        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), result.getName());
     }
 
     /**
@@ -68,7 +78,7 @@ public class ZeroConfServiceTest {
         HashMap<String, String> properties = new HashMap<>();
         ZeroConfService result = ZeroConfService.create(HTTP, 9999, properties);
         Assert.assertNotNull(result);
-        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), result.name());
+        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), result.getName());
     }
 
     /**
@@ -80,54 +90,45 @@ public class ZeroConfServiceTest {
         HashMap<String, String> properties = new HashMap<>();
         ZeroConfService result = ZeroConfService.create(HTTP, name, 9999, 1, 1, properties);
         Assert.assertNotNull(result);
-        Assert.assertEquals(name, result.name());
+        Assert.assertEquals(name, result.getName());
     }
 
     /**
-     * Test of key method, of class ZeroConfService.
+     * Test of getKey method, of class ZeroConfService.
      */
     @Test
-    public void testKey_0args() {
+    public void testGetKey() {
         String name = "my_name";
         ZeroConfService instance = ZeroConfService.create(HTTP, name, 9999, 0, 0, new HashMap<>());
-        String result = instance.key();
+        String result = instance.getKey();
         Assert.assertEquals(name + "." + HTTP, result);
     }
 
     /**
-     * Test of key method, of class ZeroConfService.
+     * Test of getName method, of class ZeroConfService.
      */
     @Test
-    public void testKey_String_String() {
-        String result = ZeroConfService.key("THAT", "THIS");
-        Assert.assertEquals("this.that", result);
-    }
-
-    /**
-     * Test of name method, of class ZeroConfService.
-     */
-    @Test
-    public void testName() {
+    public void testGetName() {
         ZeroConfService instance = ZeroConfService.create(HTTP, 9999);
-        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), instance.name());
+        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), instance.getName());
     }
 
     /**
-     * Test of type method, of class ZeroConfService.
+     * Test of getType method, of class ZeroConfService.
      */
     @Test
-    public void testType() {
+    public void testGetType() {
         ZeroConfService instance = ZeroConfService.create(HTTP, 9999);
-        Assert.assertEquals(HTTP, instance.type());
+        Assert.assertEquals(HTTP, instance.getType());
     }
 
     /**
-     * Test of serviceInfo method, of class ZeroConfService.
+     * Test of getServiceInfo method, of class ZeroConfService.
      */
     @Test
     public void testServiceInfo() {
         ZeroConfService instance = ZeroConfService.create(HTTP, 9999);
-        ServiceInfo result = instance.serviceInfo();
+        ServiceInfo result = instance.getServiceInfo();
         Assert.assertNotNull(result);
     }
 
@@ -174,42 +175,4 @@ public class ZeroConfServiceTest {
         }, "Stopping ZeroConf Service");
         Assert.assertFalse(instance.isPublished());
     }
-
-    /**
-     * Test of stopAll method, of class ZeroConfService.
-     */
-    @Test
-    public void testStopAll() {
-        ZeroConfService instance = ZeroConfService.create(HTTP, 9999);
-        Assert.assertFalse(instance.isPublished());
-        // can fail if platform does not release earlier stopped service within 15 seconds
-        instance.publish();
-        Assume.assumeTrue("Timed out publishing ZeroConf Service", JUnitUtil.waitFor(() -> {
-            return instance.isPublished() == true;
-        }));
-        Assert.assertTrue(instance.isPublished());
-        ZeroConfService.stopAll();
-        JUnitUtil.waitFor(() -> {
-            return instance.isPublished() == false;
-        }, "Stopping ZeroConf Service");
-        Assert.assertFalse(instance.isPublished());
-    }
-
-    /**
-     * Test of allServices method, of class ZeroConfService.
-     */
-    @Test
-    public void testAllServices() {
-        Assert.assertEquals(0, ZeroConfService.allServices().size());
-        ZeroConfService instance = ZeroConfService.create(HTTP, 9999);
-        Assert.assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getDefaultRailroadName(), instance.name());
-        Assert.assertEquals(0, ZeroConfService.allServices().size());
-        // can fail if platform does not release earlier stopped service within 15 seconds
-        instance.publish();
-        Assume.assumeTrue("Timed out publishing ZeroConf Service", JUnitUtil.waitFor(() -> {
-            return instance.isPublished() == true;
-        }));
-        Assert.assertEquals(1, ZeroConfService.allServices().size());
-    }
-
 }

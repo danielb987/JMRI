@@ -1,20 +1,20 @@
 package jmri.util.jdom;
 
 import jmri.util.JUnitUtil;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.junit.Assert;
+import org.junit.jupiter.api.*;
 
 /**
  * Tests for the jmri.util.LocaleSelector class.
  *
- * @author	Bob Jacobsen Copyright 2010
+ * @author Bob Jacobsen Copyright 2010
  */
-public class LocaleSelectorTest extends TestCase {
+public class LocaleSelectorTest {
 
+    @Test
     public void testFindDefault() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -34,6 +34,7 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "a", result);
     }
 
+    @Test
     public void testFindFullCode() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -63,6 +64,7 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "c", result);
     }
 
+    @Test
     public void testFindPartialCode() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -92,6 +94,7 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "c", result);
     }
 
+    @Test
     public void testDefaultAttribute() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -105,6 +108,7 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "a", result);
     }
 
+    @Test
     public void testDefaultElement() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -121,6 +125,7 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "b", result);
     }
 
+    @Test
     public void testFindFullCodeNoAttribute() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -149,6 +154,7 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "c", result);
     }
 
+    @Test
     public void testFindPartialCodeNoAttribute() {
         LocaleSelector.suffixes
                 = new String[]{
@@ -177,31 +183,13 @@ public class LocaleSelectorTest extends TestCase {
         Assert.assertEquals("find default", "c", result);
     }
 
-    // from here down is testing infrastructure
-    public LocaleSelectorTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {LocaleSelectorTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(LocaleSelectorTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
         JUnitUtil.tearDown();
     }
 }

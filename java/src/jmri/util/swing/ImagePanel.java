@@ -20,12 +20,16 @@ public class ImagePanel extends JPanel {
 
     /**
      * Set background images for ImagePanel.
-     * @see jmri.jmrit.catalog.PreviewDialog#setupPanel()
-     * @see jmri.jmrit.catalog.CatalogPanel#makeButtonPanel()
+     * For specifics, 
+     * see the setupPanel() private method in {@link jmri.jmrit.catalog.PreviewDialog}
+     * and the makeButtonPanel() private method in {@link jmri.jmrit.catalog.CatalogPanel}
      *
      * @param img Image to load as background
      */
     public void setImage(Image img) {
+        if (!(img instanceof BufferedImage)){
+            throw new IllegalArgumentException("Not a Buffered Image: "+img);
+        }
         back = (BufferedImage) img;
         repaint();
         log.debug("DrawPanel ready");

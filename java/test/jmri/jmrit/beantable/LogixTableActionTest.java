@@ -1,19 +1,22 @@
 package jmri.jmrit.beantable;
 
 import java.awt.GraphicsEnvironment;
+
 import javax.swing.JFrame;
+
 import jmri.InstanceManager;
 import jmri.Logix;
 
 import jmri.util.*;
-import jmri.util.junit.rules.*;
+import jmri.util.junit.rules.RetryRule;
+import jmri.util.swing.JemmyUtil;
 
-import org.junit.*;
-import org.junit.rules.*;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.jupiter.api.*;
 
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JCheckBoxOperator;
-import org.netbeans.jemmy.operators.JDialogOperator;
 import org.netbeans.jemmy.operators.JFrameOperator;
 import org.netbeans.jemmy.operators.JTextFieldOperator;
 
@@ -23,12 +26,10 @@ import org.netbeans.jemmy.operators.JTextFieldOperator;
 * Re-created using JUnit4 with support for the new conditional editors
 * @author Dave Sand Copyright (C) 2017
  */
-public class LogixTableActionTest extends AbstractTableActionBase {
+@Timeout(10)
+public class LogixTableActionTest extends AbstractTableActionBase<Logix> {
 
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(10); // 10 second timeout for methods in this test class.
-
-    @Rule
+    //@Rule
     public RetryRule retryRule = new RetryRule(2); // allow 2 retries
 
     @Test
@@ -77,7 +78,7 @@ public class LogixTableActionTest extends AbstractTableActionBase {
     }
 
     @Test
-    public void testWhereused() {
+    public void testWhereUsed() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LogixTableAction lgxTable = (LogixTableAction) a;
 
@@ -153,6 +154,7 @@ public class LogixTableActionTest extends AbstractTableActionBase {
         Assert.assertNotNull("Found Logix Frame", lgxFrame);  // NOI18N
 
         lgxTable.addPressed(null);
+        new org.netbeans.jemmy.QueueTool().waitEmpty();
         JFrameOperator addFrame = new JFrameOperator(Bundle.getMessage("TitleAddLogix"));  // NOI18N
         Assert.assertNotNull("Found Add Logix Frame", addFrame);  // NOI18N
 
@@ -180,14 +182,14 @@ public class LogixTableActionTest extends AbstractTableActionBase {
         Assert.assertNotNull("Found Logix Frame", lgxFrame);  // NOI18N
 
         // Delete IX102, respond No
-        Thread t1 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonNo"));  // NOI18N
+        Thread t1 = JemmyUtil.createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonNo"));  // NOI18N
         lgxTable.deletePressed("IX102");  // NOI18N
         t1.join();
         Logix chk102 = jmri.InstanceManager.getDefault(jmri.LogixManager.class).getBySystemName("IX102");  // NOI18N
         Assert.assertNotNull("Verify IX102 Not Deleted", chk102);  // NOI18N
 
         // Delete IX103, respond Yes
-        Thread t2 = createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonYes"));  // NOI18N
+        Thread t2 = JemmyUtil.createModalDialogOperatorThread(Bundle.getMessage("QuestionTitle"), Bundle.getMessage("ButtonYes"));  // NOI18N
         lgxTable.deletePressed("IX103");  // NOI18N
         t2.join();
         Logix chk103 = jmri.InstanceManager.getDefault(jmri.LogixManager.class).getBySystemName("IX103");  // NOI18N
@@ -196,19 +198,26 @@ public class LogixTableActionTest extends AbstractTableActionBase {
         JUnitUtil.dispose(lgxFrame);
     }
 
-    Thread createModalDialogOperatorThread(String dialogTitle, String buttonText) {
-        Thread t = new Thread(() -> {
-            // constructor for jdo will wait until the dialog is visible
-            JDialogOperator jdo = new JDialogOperator(dialogTitle);
-            JButtonOperator jbo = new JButtonOperator(jdo, buttonText);
-            jbo.pushNoBlock();
-        });
-        t.setName(dialogTitle + " Close Dialog Thread");
-        t.start();
-        return t;
+    @Override
+    public String getAddFrameName(){
+        return Bundle.getMessage("TitleAddLogix");
     }
 
-    @Before
+    @Test
+    @Disabled("Logix create frame does not have a hardware address")
+    @Override
+    // TODO: Re-write parent class test to use the right name
+    public void testAddThroughDialog() {
+    }
+
+    @Test
+    @Disabled("Logix create frame does not have a hardware address")
+    @Override
+    // TODO: Re-write parent class test to use the right name, or add without dialog
+    public void testEditButton() {
+    }
+
+    @BeforeEach
     @Override
     public void setUp() {
         JUnitUtil.setUp();
@@ -225,10 +234,11 @@ public class LogixTableActionTest extends AbstractTableActionBase {
         a = new LogixTableAction();
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() {
         a = null;
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 }

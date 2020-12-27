@@ -4,8 +4,8 @@ package jmri.jmrix.qsi;
  * Define interface for sending and receiving messages to the QSI command
  * station.
  *
- * @author	Bob Jacobsen Copyright (C) 2001
-  */
+ * @author Bob Jacobsen Copyright (C) 2001
+ */
 public interface QsiInterface {
 
     public void addQsiListener(QsiListener l);
@@ -15,7 +15,7 @@ public interface QsiInterface {
     /**
      * Test operational status of interface.
      *
-     * @return true is interface implementation is operational.
+     * @return true is interface implementation is operational
      */
     boolean status();
 
@@ -26,7 +26,5 @@ public interface QsiInterface {
      * @param l Listener to be notified of reply.
      */
     void sendQsiMessage(QsiMessage m, QsiListener l);
+
 }
-
-
-

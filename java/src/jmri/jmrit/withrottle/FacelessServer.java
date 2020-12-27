@@ -1,7 +1,6 @@
 package jmri.jmrit.withrottle;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import jmri.InstanceManager;
@@ -68,9 +67,9 @@ public class FacelessServer implements DeviceListener, DeviceManager, ZeroConfSe
                 device = new DeviceServer(socket.accept(), this);  //blocks here until a connection is made
 
                 String threadName = "DeviceServer-" + threadNumber++;  // NOI18N
-                Thread t = new Thread(device, threadName);
-                for(DeviceListener dl:deviceListenerList){
-                   device.addDeviceListener(dl);
+                Thread t = jmri.util.ThreadingUtil.newThread(device, threadName);
+                for (DeviceListener dl : deviceListenerList) {
+                    device.addDeviceListener(dl);
                 }
                 log.debug("Starting thread '{}'", threadName);  // NOI18N
                 t.start();
@@ -86,25 +85,24 @@ public class FacelessServer implements DeviceListener, DeviceManager, ZeroConfSe
     }
 
     // package protected getters
-    ZeroConfService getZeroConfService(){
+    ZeroConfService getZeroConfService() {
         return service;
     }
 
-    int getPort(){
-       return port;
+    int getPort() {
+        return port;
     }
 
     /**
-     * Add a device listener that will be added for each new
-     * device connection
+     * Add a device listener that will be added for each new device connection
      *
-     * @param dl the device listener to add 
+     * @param dl the device listener to add
      */
     @Override
-    public void addDeviceListener(DeviceListener dl){
-       if(!deviceListenerList.contains(dl)){
-          deviceListenerList.add(dl);
-       }
+    public void addDeviceListener(DeviceListener dl) {
+        if (!deviceListenerList.contains(dl)) {
+            deviceListenerList.add(dl);
+        }
     }
 
     /**
@@ -114,12 +112,11 @@ public class FacelessServer implements DeviceListener, DeviceManager, ZeroConfSe
      * @param dl the device listener to remove
      */
     @Override
-    public void removeDeviceListener(DeviceListener dl){
-       if(deviceListenerList.contains(dl)){
-          deviceListenerList.remove(dl);
-       }
+    public void removeDeviceListener(DeviceListener dl) {
+        if (deviceListenerList.contains(dl)) {
+            deviceListenerList.remove(dl);
+        }
     }
-
 
     @Override
     public void notifyDeviceConnected(DeviceServer device) {
@@ -191,15 +188,9 @@ public class FacelessServer implements DeviceListener, DeviceManager, ZeroConfSe
     @Override
     public void servicePublished(ZeroConfServiceEvent se) {
         try {
-            InetAddress addr = se.getDNS().getInetAddress();
-            // most addresses are Inet6Address objects,
-            if (!addr.isLoopbackAddress()) {
-                log.info("Published ZeroConf service for '{}' on {}:{}", se.getService().key(), addr.getHostAddress(), port); // NOI18N
-            }
+            log.info("Published ZeroConf service for '{}' on {}:{}", se.getService().getKey(), se.getAddress().getHostAddress(), port); // NOI18N
         } catch (NullPointerException ex) {
             log.error("NPE in FacelessServer.servicePublished(): {}", ex.getLocalizedMessage());
-        } catch (IOException ex) {
-            log.error("IOException in FacelessServer.servicePublished(): {}", ex.getLocalizedMessage());
         }
     }
 
@@ -240,19 +231,8 @@ public class FacelessServer implements DeviceListener, DeviceManager, ZeroConfSe
         deviceList.clear();
     }
 
-    private jmri.implementation.AbstractShutDownTask task = null;
-
     private void setShutDownTask() {
-        if (jmri.InstanceManager.getNullableDefault(jmri.ShutDownManager.class) != null) {
-            task = new jmri.implementation.AbstractShutDownTask("WiThrottle Server ShutdownTask") {
-                @Override
-                public boolean execute() {
-                    disableServer();
-                    return true;
-                }
-            };
-            jmri.InstanceManager.getDefault(jmri.ShutDownManager.class).register(task);
-        }
+        jmri.InstanceManager.getDefault(jmri.ShutDownManager.class).register(this::disableServer);
     }
 
     @Override

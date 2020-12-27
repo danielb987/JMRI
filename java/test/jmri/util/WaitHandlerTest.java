@@ -1,9 +1,8 @@
 package jmri.util;
 
 import java.util.Calendar;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+import org.junit.jupiter.api.*;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +14,9 @@ import org.slf4j.LoggerFactory;
  * Some have been commented out so they don't run during normal production
  * testing.
  *
- * @author	Bob Jacobsen Copyright 2003, 2009, 2010
+ * @author Bob Jacobsen Copyright 2003, 2009, 2010
  */
-public class WaitHandlerTest extends TestCase {
+public class WaitHandlerTest {
 
     static transient boolean flag1;
     static transient boolean flag2;
@@ -28,6 +27,7 @@ public class WaitHandlerTest extends TestCase {
     transient long startTime;
     transient long endTime;
 
+    @Test
     public void testInlineWait() {
         long startTime = Calendar.getInstance().getTimeInMillis();
 
@@ -39,6 +39,7 @@ public class WaitHandlerTest extends TestCase {
         Assert.assertTrue("wait time long enough", 50 <= endTime - startTime);
     }
 
+    @Test
     public void testSeparateThreadWaiting() {
         flag1 = false;
         flag2 = false;
@@ -67,6 +68,7 @@ public class WaitHandlerTest extends TestCase {
         Assert.assertTrue("run time long enough", THREAD_DELAY <= endTime - startTime);
     }
 
+    @Test
     public void testInterrupt() {
         flag1 = false;
         flag2 = false;
@@ -98,6 +100,7 @@ public class WaitHandlerTest extends TestCase {
         Assert.assertTrue("ended early", THREAD_DELAY >= endTime - startTime);
     }
 
+    @Test
     public void testSpuriousWake() {
         flag1 = false;
         flag2 = false;
@@ -138,7 +141,9 @@ public class WaitHandlerTest extends TestCase {
         Assert.assertTrue("run time long enough", THREAD_DELAY <= endTime - startTime);
     }
 
-    public void xtestCheckMethod() {
+    @Test
+    @Disabled("disabled in JUnit 3 testing paradigm")
+    public void testCheckMethod() {
         flag1 = false;
         flag2 = false;
         Thread t = new Thread() {
@@ -173,39 +178,19 @@ public class WaitHandlerTest extends TestCase {
         Assert.assertTrue("ended", flag2);
 
         if (THREAD_DELAY <= endTime - startTime) {
-            log.error("run time not shortened: " + (endTime - startTime));
+            log.error("run time not shortened: {}", endTime - startTime);
         }
         Assert.assertTrue("run time shortened", THREAD_DELAY > endTime - startTime);
     }
 
-    // from here down is testing infrastructure
-    public WaitHandlerTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {"-noloading", WaitHandlerTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(WaitHandlerTest.class);
-        return suite;
-    }
-
-    // The minimal setup for log4J
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
         jmri.util.JUnitUtil.setUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         jmri.util.JUnitUtil.tearDown();
-        super.tearDown();
     }
 
     private final static Logger log = LoggerFactory.getLogger(WaitHandlerTest.class);

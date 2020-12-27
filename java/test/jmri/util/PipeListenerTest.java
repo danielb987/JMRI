@@ -2,16 +2,17 @@ package jmri.util;
 
 import java.io.PipedReader;
 import java.io.PipedWriter;
+
 import javax.swing.JTextArea;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 /**
  *
- * @author Paul Bender Copyright (C) 2017	
+ * @author Paul Bender Copyright (C) 2017
  */
+@Timeout(10)
 public class PipeListenerTest {
 
     @Test
@@ -28,22 +29,24 @@ public class PipeListenerTest {
         PipedWriter wr = new PipedWriter();
         PipedReader pr = new PipedReader(wr,1);
         PipeListener t = new PipeListener(pr,jta);
+        t.setName("PipeListenerTest thread");
         t.start();
-        wr.write("Test String");
+        
+        String testString = "Test String";
+        wr.write(testString);
         wr.flush();
-        jmri.util.JUnitUtil.waitFor(()->{return !(pr.ready());},"buffer empty");
-        new org.netbeans.jemmy.QueueTool().waitEmpty(100); // pause to let the JTextArea catch up.
-        Assert.assertEquals("text after character write","Test String",jta.getText());
+        JUnitUtil.waitFor(()->{return !(pr.ready());},"buffer empty");
+
+        JUnitUtil.waitFor(()->{return testString.equals(jta.getText());}, "find text after character write");
         t.stop();
     }
 
-    // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         JUnitUtil.tearDown();
     }

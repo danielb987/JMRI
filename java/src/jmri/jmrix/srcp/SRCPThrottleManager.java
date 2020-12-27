@@ -1,18 +1,19 @@
 package jmri.jmrix.srcp;
 
+import java.util.EnumSet;
 import jmri.DccLocoAddress;
-import jmri.DccThrottle;
 import jmri.LocoAddress;
+import jmri.SpeedStepMode;
 import jmri.jmrix.AbstractThrottleManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * SRCP implementation of a ThrottleManager.
- * <P>
+ * <p>
  * Based on early NCE code.
  *
- * @author	Bob Jacobsen Copyright (C) 2001, 2005, 2008
+ * @author Bob Jacobsen Copyright (C) 2001, 2005, 2008
  * @author Modified by Kelly Loyd
  */
 public class SRCPThrottleManager extends AbstractThrottleManager {
@@ -21,6 +22,7 @@ public class SRCPThrottleManager extends AbstractThrottleManager {
 
     /**
      * Constructor.
+     * @param memo system connection.
      */
     public SRCPThrottleManager(SRCPBusConnectionMemo memo) {
         super(memo);
@@ -29,7 +31,7 @@ public class SRCPThrottleManager extends AbstractThrottleManager {
 
     @Override
     public void requestThrottleSetup(LocoAddress address, boolean control) {
-        log.debug("new SRCPThrottle for " + address);
+        log.debug("new SRCPThrottle for {}", address);
         // Notify ready to go (without waiting for OK?)
         if(address instanceof DccLocoAddress) {
            notifyThrottleKnown(new SRCPThrottle((SRCPBusConnectionMemo) adapterMemo, (DccLocoAddress) address), address);
@@ -81,8 +83,9 @@ public class SRCPThrottleManager extends AbstractThrottleManager {
     }
 
     @Override
-    public int supportedSpeedModes() {
-        return (DccThrottle.SpeedStepMode128 | DccThrottle.SpeedStepMode28);
+    public EnumSet<SpeedStepMode> supportedSpeedModes() {
+        return EnumSet.of(SpeedStepMode.NMRA_DCC_128, SpeedStepMode.NMRA_DCC_28,
+            SpeedStepMode.NMRA_DCC_27, SpeedStepMode.NMRA_DCC_14);
     }
 
     @Override
