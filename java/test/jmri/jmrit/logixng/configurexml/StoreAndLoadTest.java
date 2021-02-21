@@ -174,8 +174,25 @@ public class StoreAndLoadTest {
         
         int indexAction = 0;
         
+        
+        
+        
+        
+        se.bergqvist.jmri_newlogix_plugin.ActionHideAndShowPanel actionHideAndShowPanel =
+                new se.bergqvist.jmri_newlogix_plugin.ActionHideAndShowPanel(digitalActionManager.getAutoSystemName(), null);
+        MaleSocket maleSocket = digitalActionManager.registerAction(actionHideAndShowPanel);
+        maleSocket.setEnabled(false);
+        actionManySocket.getChild(indexAction++).connect(maleSocket);
+        
+        
+        
+        
+        
+        
+        
+        
         ActionLight actionLight = new ActionLight(digitalActionManager.getAutoSystemName(), null);
-        MaleSocket maleSocket = digitalActionManager.registerAction(actionLight);
+        maleSocket = digitalActionManager.registerAction(actionLight);
         maleSocket.setEnabled(false);
         actionManySocket.getChild(indexAction++).connect(maleSocket);
         

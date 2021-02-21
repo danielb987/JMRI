@@ -28,6 +28,13 @@ public class DefaultDigitalActionManager extends AbstractBaseManager<MaleDigital
 
     
     public DefaultDigitalActionManager() {
+        
+        System.out.format("aaaaaaa%n");
+        new se.bergqvist.jmri.logixng.TestDaniel("IQDA1", "Hello");
+        System.out.format("bbbbbbb%n");
+        new se.bergqvist.jmri.logixng.ActionHideAndShowPanel("IQDA1", "Hello");
+        System.out.format("ccccccc%n");
+        
         InstanceManager.getDefault(LogixNG_Manager.class).registerManager(this);
         
         for (DigitalActionFactory actionFactory : ServiceLoader.load(DigitalActionFactory.class)) {

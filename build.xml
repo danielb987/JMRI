@@ -201,6 +201,7 @@
     <!-- jars that are needed at build and/or test time -->
     <path id="compile.class.path">
         <pathelement path="${runtime.class.jars}"/>
+        <pathelement location="${libdir}/JMRI_NewLogixPlugins.jar"/>
         <pathelement location="${libdir}/AppleJavaExtensions.jar"/> <!-- build with Mac OS X-specific support -->
         <pathelement location="${libdir}/junit-jupiter-5.6.0.jar"/>
         <pathelement location="${libdir}/junit-platform-console-standalone-1.6.0.jar"/>
