@@ -163,6 +163,27 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                 logixNG.unregisterListeners();
             }
         }
+        
+        jmri.util.ThreadingUtil.runOnGUIDelayed(() -> {doTest();}, 1000);
+    }
+    
+    private void doTest() {
+        jmri.jmrit.display.Editor editor =
+                InstanceManager.getDefault(jmri.jmrit.display.EditorManager.class).getAll().first();
+        
+        int i=0;
+        for (jmri.jmrit.display.Positionable p : editor.getContents()) {
+            System.out.format("Positionable: %s, name: %s%n", p.getClass().getName(), p.getNameString());
+            
+            i++;
+            int rot = i*10;
+            jmri.util.TimerUtil.schedule(new TimerTask(){
+                @Override
+                public void run() {
+                    p.rotate(p.getDegrees()+rot);
+                }
+            }, 500, 500);
+        }
     }
 
     /** {@inheritDoc} */

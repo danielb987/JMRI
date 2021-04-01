@@ -39,6 +39,18 @@ import javax.swing.border.Border;
  */
 public interface Positionable extends Cloneable {
 
+    /**
+     * Sets the Id of this Positionable
+     * @param id the id or null if no id
+     */
+    void setId(String id);
+
+    /**
+     * Gets the Id of this Positionable
+     * @return id the id or null if no id
+     */
+    String getId();
+
     void setPositionable(boolean enabled);
 
     boolean isPositionable();
@@ -176,6 +188,18 @@ public interface Positionable extends Cloneable {
 
     int getDegrees();
 
+    default void setRotationCenterType(RotationCenterType type) {}
+
+    default RotationCenterType getRotationCenterType() { return RotationCenterType.Legacy; }
+
+    default void setRotationCenterX(double x) {}
+
+    default double getRotationCenterX() { return 0.0; }
+
+    default void setRotationCenterY(double y) {}
+
+    default double getRotationCenterY() { return 0.0; }
+
     JComponent getTextComponent();
 
     void remove();
@@ -271,4 +295,50 @@ public interface Positionable extends Cloneable {
     void repaint();
 
     boolean requestFocusInWindow();
+
+
+    /**
+     * Defines the point which a Positionable is rotated around.
+     */
+    public enum RotationCenterType {
+        /**
+         * The legacy rotation.
+         * This doesn't rotate around a single point.
+         */
+        Legacy(Bundle.getMessage("RotationCenterType_Legacy")),
+        
+        /**
+         * The rotation point is defined in percent, where 0 is left/top side
+         * and 100 is right/bottom side. 50 is center.
+         */
+        Percent(Bundle.getMessage("RotationCenterType_Percent")),
+        
+        /**
+         * The rotation point is defined in pixels, where 0 is left/top side.
+         * The rotation point can have a value less than zero or larger than
+         * width/height if the rotation point is outside of the Positionable.
+         * For example, an analog clock has the rotation point of its clock
+         * hands in the center of the clock.
+         */
+        Pixels(Bundle.getMessage("RotationCenterType_Pixels")),
+        
+        /**
+         * The rotation point is defined in pixels on the panel, where 0 is
+         * left/top side.
+         */
+        PixelsPanel(Bundle.getMessage("RotationCenterType_PixelsPanel"));
+
+        private final String _text;
+
+        private RotationCenterType(String text) {
+            this._text = text;
+        }
+
+        @Override
+        public String toString() {
+            return _text;
+        }
+
+    }
+
 }
