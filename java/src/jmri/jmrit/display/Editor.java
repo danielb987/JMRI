@@ -310,7 +310,7 @@ abstract public class Editor extends JmriJFrame implements MouseListener, MouseM
         return !_loadFailed;
     }
 
-    public ArrayList<Positionable> getContents() {
+    public List<Positionable> getContents() {
         return _contents;
     }
 
@@ -2656,7 +2656,7 @@ abstract public class Editor extends JmriJFrame implements MouseListener, MouseM
      * @param event contains the mouse position.
      * @return a list of positionable items or an empty list.
      */
-    protected ArrayList<Positionable> getSelectedItems(MouseEvent event) {
+    protected List<Positionable> getSelectedItems(MouseEvent event) {
         Rectangle rect = new Rectangle();
         ArrayList<Positionable> selections = new ArrayList<>();
         for (Positionable p : _contents) {
