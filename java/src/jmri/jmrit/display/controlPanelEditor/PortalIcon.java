@@ -311,6 +311,11 @@ public class PortalIcon extends PositionableIcon implements PropertyChangeListen
     }
 
     @Override
+    public boolean setRotationCenterMenu(@Nonnull JPopupMenu popup) {
+        return false;
+    }
+
+    @Override
     public boolean setScaleMenu(@Nonnull JPopupMenu popup) {
         return false;
     }

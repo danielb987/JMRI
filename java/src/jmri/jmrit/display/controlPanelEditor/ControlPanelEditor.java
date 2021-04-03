@@ -1585,6 +1585,8 @@ public class ControlPanelEditor extends Editor implements DropTargetListener, Cl
             boolean popupSet = false;
 //            popupSet |= p.setRotateOrthogonalMenu(popup);
             popupSet |= p.setRotateMenu(popup);
+            popupSet |= p.setRotationCenterMenu(popup);
+            popupSet |= p.setRotationCenterPointMenu(popup);
             popupSet |= p.setScaleMenu(popup);
             if (popupSet) {
                 popup.addSeparator();

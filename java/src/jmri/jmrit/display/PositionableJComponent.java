@@ -1,10 +1,13 @@
 package jmri.jmrit.display;
 
 import java.awt.event.MouseEvent;
+
+import javax.annotation.Nonnull;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,6 +267,16 @@ public class PositionableJComponent extends JComponent implements Positionable {
 
     @Override
     public boolean setRotateMenu(JPopupMenu popup) {
+        return false;
+    }
+
+    @Override
+    public boolean setRotationCenterMenu(@Nonnull JPopupMenu popup) {
+        return false;
+    }
+
+    @Override
+    public boolean setRotationCenterPointMenu(JPopupMenu popup) {
         return false;
     }
 

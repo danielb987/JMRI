@@ -16,6 +16,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeListener;
+import jmri.jmrit.display.Positionable.RotationCenterType;
 import jmri.util.JmriJFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,6 +169,21 @@ public class CoordinateEdit extends JmriJFrame {
                 f.addHelpMenu("package.jmri.jmrit.display.CoordinateEdit", true);
                 f.init(Bundle.getMessage("Rotate", ""), pos, true);
                 f.initRotate();
+                f.setVisible(true);
+                f.setLocationRelativeTo((Component) pos);
+            }
+        };
+    }
+    //////////////////////////////////////////////////////////////
+
+    public static AbstractAction getRotateCenterPointEditAction(final Positionable pos) {
+        return new AbstractAction(Bundle.getMessage("SetRotationCenter", "")) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CoordinateEdit f = new CoordinateEdit();
+                f.addHelpMenu("package.jmri.jmrit.display.CoordinateEdit", true);
+                f.init(Bundle.getMessage("SetRotationCenter", ""), pos, true);
+                f.initSetSetRotationCenter();
                 f.setVisible(true);
                 f.setLocationRelativeTo((Component) pos);
             }
@@ -564,6 +580,103 @@ public class CoordinateEdit extends JmriJFrame {
         });
         okButton.getRootPane().setDefaultButton(okButton);
         cancelButton.addActionListener(e -> dispose());
+        pack();
+    }
+
+    public void initSetSetRotationCenter() {
+        int minX;
+        int minY;
+        int maxX;
+        int maxY;
+
+        switch (pl.getRotationCenterType()) {
+            case Legacy:
+                minX = 0;
+                minY = 0;
+                maxX = 10000;
+                maxY = 10000;
+                break;
+
+            case Percent:
+                minX = 0;
+                minY = 0;
+                maxX = 100;
+                maxY = 100;
+                break;
+
+            case Pixels:
+                minX = -10000;
+                minY = -10000;
+                maxX = 10000;
+                maxY = 10000;
+                break;
+
+            case PixelsPanel:
+                minX = 0;
+                minY = 0;
+                maxX = 10000;
+                maxY = 10000;
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown rotation center type: "+pl.getRotationCenterType().name());
+        }
+
+        oldX = pl.getX();
+        oldY = pl.getY();
+
+        textX = new JLabel();
+        textX.setText("X: " + pl.getRotationCenterX());
+        textX.setVisible(true);
+        textY = new JLabel();
+        textY.setText("Y: " + pl.getRotationCenterY());
+        textY.setVisible(true);
+
+        SpinnerNumberModel model = new SpinnerNumberModel(0, minX, maxX, 1);
+        ChangeListener listener = e -> {
+            int x = ((Number) spinX.getValue()).intValue();
+            int y = ((Number) spinY.getValue()).intValue();
+            pl.setRotationCenterX(x);
+            pl.setRotationCenterY(y);
+            textX.setText("X: " + pl.getRotationCenterX());
+            textY.setText("Y: " + pl.getRotationCenterY());
+        };
+        spinX = new JSpinner(model);
+        spinX.setValue(pl.getRotationCenterX());
+        spinX.setToolTipText(Bundle.getMessage("EnterXcoord"));
+        spinX.setMaximumSize(new Dimension(
+                spinX.getMaximumSize().width, spinX.getPreferredSize().height));
+        spinX.addChangeListener(listener);
+        model = new SpinnerNumberModel(0, minY, maxY, 1);
+        spinY = new JSpinner(model);
+        spinY.setValue(pl.getRotationCenterY());
+        spinY.setToolTipText(Bundle.getMessage("EnterYcoord"));
+        spinY.setMaximumSize(new Dimension(
+                spinY.getMaximumSize().width, spinY.getPreferredSize().height));
+        spinY.addChangeListener(listener);
+
+        getContentPane().setLayout(new GridBagLayout());
+
+        addSpinItems(true);
+
+        okButton.addActionListener(e -> {
+            int x = ((Number) spinX.getValue()).intValue();
+            int y = ((Number) spinY.getValue()).intValue();
+            pl.setRotationCenterX(x);
+            pl.setRotationCenterY(y);
+            textX.setText("X: " + pl.getRotationCenterX());
+            textY.setText("Y: " + pl.getRotationCenterY());
+            dispose();
+        });
+        okButton.getRootPane().setDefaultButton(okButton);
+
+        cancelButton.addActionListener(e -> {
+            pl.setRotationCenterX(oldX);
+            pl.setRotationCenterY(oldY);
+            dispose();
+        });
+        // make large enough to easily move
+        setMinimumSize(new Dimension(250, 175));
         pack();
     }
 

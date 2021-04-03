@@ -307,6 +307,23 @@ public abstract class PositionableShape extends PositionableJComponent implement
     }
 
     @Override
+    public boolean setRotationCenterMenu(@Nonnull JPopupMenu popup) {
+        if (super.getDisplayLevel() > Editor.BKG) {
+            Positionable.addRotationCenterMenu(this, popup);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setRotationCenterPointMenu(@Nonnull JPopupMenu popup) {
+        if (super.getDisplayLevel() > Editor.BKG) {
+             popup.add(jmri.jmrit.display.CoordinateEdit.getRotateCenterPointEditAction(this));
+        }
+        return false;
+    }
+
+    @Override
     public boolean setScaleMenu(JPopupMenu popup) {
         return false;
     }

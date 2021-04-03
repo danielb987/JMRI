@@ -6,9 +6,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
+
+import javax.swing.*;
 import javax.swing.border.Border;
 
 /**
@@ -138,6 +139,51 @@ public interface Positionable extends Cloneable {
      */
     boolean setRotateMenu(JPopupMenu popup);
 
+    static void addRotationCenterMenuEntry(
+            Positionable p, JMenu menu, final RotationCenterType rotation) {
+        ButtonGroup rotationButtonGroup = new ButtonGroup();
+        JRadioButtonMenuItem r = new JRadioButtonMenuItem(rotation.toString());
+        r.addActionListener((ActionEvent e) -> p.setRotationCenterType(rotation));
+        rotationButtonGroup.add(r);
+        if (p.getRotationCenterType() == rotation) {
+            r.setSelected(true);
+        } else {
+            r.setSelected(false);
+        }
+        menu.add(r);
+    }
+
+    /**
+     * Add additional menu items to the menu.
+     *
+     * @param p the Positionable that the menu belongs to
+     * @param popup the menu to add the menu items to
+     */
+    static void addRotationCenterMenu(Positionable p, JPopupMenu popup) {
+        JMenu justMenu = new JMenu(Bundle.getMessage("RotationCenterTypeMenu"));
+        addRotationCenterMenuEntry(p, justMenu, RotationCenterType.Legacy);
+        addRotationCenterMenuEntry(p, justMenu, RotationCenterType.Percent);
+        addRotationCenterMenuEntry(p, justMenu, RotationCenterType.Pixels);
+        addRotationCenterMenuEntry(p, justMenu, RotationCenterType.PixelsPanel);
+        popup.add(justMenu);
+    }
+
+    /**
+     * Add additional menu items to the menu.
+     *
+     * @param popup the menu to add the menu items to
+     * @return true if adding items; false otherwise
+     */
+    boolean setRotationCenterMenu(JPopupMenu popup);
+
+    /**
+     * Add additional menu items to the menu.
+     *
+     * @param popup the menu to add the menu items to
+     * @return true if adding items; false otherwise
+     */
+    boolean setRotationCenterPointMenu(JPopupMenu popup);
+
     /**
      * Add additional menu items to the menu.
      *
@@ -194,11 +240,11 @@ public interface Positionable extends Cloneable {
 
     default void setRotationCenterX(double x) {}
 
-    default double getRotationCenterX() { return 0.0; }
+    default int getRotationCenterX() { return 0; }
 
     default void setRotationCenterY(double y) {}
 
-    default double getRotationCenterY() { return 0.0; }
+    default int getRotationCenterY() { return 0; }
 
     JComponent getTextComponent();
 

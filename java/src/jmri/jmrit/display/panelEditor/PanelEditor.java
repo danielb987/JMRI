@@ -605,9 +605,11 @@ public class PanelEditor extends Editor implements ItemListener {
             }
 
             // Positionable items with defaults or using overrides
-            boolean popupSet = false;
+            boolean popupSet;
             popupSet = p.setRotateOrthogonalMenu(popup);
             popupSet |= p.setRotateMenu(popup);
+            popupSet |= p.setRotationCenterMenu(popup);
+            popupSet |= p.setRotationCenterPointMenu(popup);
             popupSet |= p.setScaleMenu(popup);
             if (popupSet) {
                 popup.addSeparator();

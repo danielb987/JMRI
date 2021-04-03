@@ -750,6 +750,23 @@ public class PositionableLabel extends JLabel implements Positionable {
         return false;
     }
 
+    @Override
+    public boolean setRotationCenterMenu(@Nonnull JPopupMenu popup) {
+        if (_displayLevel > Editor.BKG) {
+            Positionable.addRotationCenterMenu(this, popup);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setRotationCenterPointMenu(@Nonnull JPopupMenu popup) {
+        if (_displayLevel > Editor.BKG) {
+             popup.add(CoordinateEdit.getRotateCenterPointEditAction(this));
+        }
+        return false;
+    }
+
     /**
      * Scale percentage form display.
      *

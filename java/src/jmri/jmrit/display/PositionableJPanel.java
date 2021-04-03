@@ -341,6 +341,16 @@ public class PositionableJPanel extends JPanel implements Positionable, MouseLis
     }
 
     @Override
+    public boolean setRotationCenterMenu(JPopupMenu popup) {
+        return false;
+    }
+
+    @Override
+    public boolean setRotationCenterPointMenu(JPopupMenu popup) {
+        return false;
+    }
+
+    @Override
     public boolean setScaleMenu(JPopupMenu popup) {
         return false;
     }
