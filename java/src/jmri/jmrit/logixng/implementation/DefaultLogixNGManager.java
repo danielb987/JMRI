@@ -171,6 +171,11 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         jmri.jmrit.display.Editor editor =
                 InstanceManager.getDefault(jmri.jmrit.display.EditorManager.class).getAll().first();
         
+//        System.out.format("Editor title: %s%n", editor.getTitle());
+        System.out.format("Editor name: %s%n", editor.getName());
+//        System.out.format("Editor target panel name: %s%n", editor.getTargetPanel().getName());
+//        editor.getTargetPanel()
+        
         int i=0;
         for (jmri.jmrit.display.Positionable p : editor.getContents()) {
             System.out.format("Positionable: %s, name: %s%n", p.getClass().getName(), p.getNameString());
