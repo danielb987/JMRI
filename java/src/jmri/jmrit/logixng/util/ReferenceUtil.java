@@ -1,7 +1,6 @@
 package jmri.jmrit.logixng.util;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import jmri.InstanceManager;
 import jmri.Memory;
@@ -22,6 +21,7 @@ public class ReferenceUtil {
      * @param value the string to check
      * @return true if value has a reference. falsw otherwise
      */
+    @CheckReturnValue
     static public boolean isReference(String value) {
         if (value == null) return false;
         // A reference starts with { and ends with }
@@ -55,6 +55,8 @@ public class ReferenceUtil {
      * @param endIndex index of the end of the value. This is an output parameter.
      * @return the value
      */
+    @CheckReturnValue
+    @CheckForNull
     static protected String getValue(String reference, int startIndex, IntRef endIndex) {
         boolean escapeFound = false;
         boolean escaped = false;
@@ -94,6 +96,8 @@ public class ReferenceUtil {
      * @param endIndex index of the end of the value. This is an output parameter.
      * @return the value
      */
+    @CheckReturnValue
+    @CheckForNull
     static protected String getReferenceOrValue(SymbolTable symbolTable, String reference, int startIndex, IntRef endIndex) {
         
         // Do we have a new reference?
@@ -113,6 +117,8 @@ public class ReferenceUtil {
      * @param endIndex index of the end of the reference. This is an output parameter.
      * @return the value of the reference
      */
+    @CheckReturnValue
+    @CheckForNull
     static protected String getReference(
             SymbolTable symbolTable, String reference, int startIndex, IntRef endIndex) {
         
@@ -153,7 +159,7 @@ public class ReferenceUtil {
             Memory m = memoryManager.getNamedBean(leftValue);
             if (m != null) {
                 if (m.getValue() != null) return m.getValue().toString();
-                else throw new IllegalArgumentException("Memory '"+leftValue+"' has no value");
+                else return null;
             }
             else throw new IllegalArgumentException("Memory '"+leftValue+"' is not found");
         }

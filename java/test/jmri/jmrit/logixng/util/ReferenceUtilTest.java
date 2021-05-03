@@ -120,6 +120,10 @@ public class ReferenceUtilTest {
                 "Turnout 222",
                 ReferenceUtil.getReference(symbolTable, "{Yard table[Rightmost turnout,North yard]}"));
         
+        _memoryManager.newMemory("IM999", "Memory 999");
+        Assert.assertNull("Reference is null",
+                ReferenceUtil.getReference(symbolTable, "{IM999}"));
+        
         // The line below reads 'Yard table[Rightmost turnout,East yard]' which
         // has the value IM15. And then reads the memory IM15 which has the value
         // 'Chicago north east'.
@@ -163,10 +167,6 @@ public class ReferenceUtilTest {
         }, IllegalArgumentException.class, "Memory 'IM999' is not found");
         
         Memory m999 = _memoryManager.newMemory("IM999", "Memory 999");
-        expectException(() -> {
-            ReferenceUtil.getReference(symbolTable, "{IM999}");
-        }, IllegalArgumentException.class, "Memory 'IM999' has no value");
-        
         m999.setValue("Turnout 1");
         Assert.assertEquals("Reference is correct",
                 "Turnout 1",
