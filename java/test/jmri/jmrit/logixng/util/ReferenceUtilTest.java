@@ -171,6 +171,11 @@ public class ReferenceUtilTest {
         Assert.assertEquals("Reference is correct",
                 "Turnout 1",
                 ReferenceUtil.getReference(symbolTable, "{IM999}"));
+        
+        
+        
+//        _memoryManager.newMemory("IM_MemoryIsNull", null);
+//        ReferenceUtil.getReference(symbolTable, "{{IM_MemoryIsNull}}");
     }
     
     @Test
