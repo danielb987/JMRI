@@ -271,9 +271,10 @@ NOTE: joal.jar is currently replaced by an own-built version with modifications 
     - https://download.eclipse.org/eclipse/downloads/drops4/R-4.10-201812060815/ (via selecting ecj-4.10.jar) January 3, 2019
 - used in ant warnings target
 
-##### jemmy-22-00c9f753cd0a.jar
-- Built from rev 22 repo after changeset 22:00c9f753cd0a; see http://hg.openjdk.java.net/code-tools/jemmy/v2/rev/00c9f753cd0a
+##### jemmy-27-7f1077e65e78.jar
+- Built from rev 27 repo after changeset 27:7f1077e65e78; see http://hg.openjdk.java.net/code-tools/jemmy/v2/rev/7f1077e65e78
 - See also http://hg.openjdk.java.net/code-tools/jemmy/v2/
+- To update Jemmy for maven, see the folder: lib/org/netbeans/external/jemmy
 
 ##### junit-4.12.jar
 - version 4.12
