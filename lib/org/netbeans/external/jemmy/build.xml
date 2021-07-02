@@ -32,7 +32,7 @@
 
     <!-- JMRI definitions start -->
     <!-- SDK version (11 as of JMRI 4.25.1 [4.26/5.0 pre-releases]) -->
-    <property name="sdk_version" value="1"/>
+    <property name="sdk_version" value="11"/>
     <property name="source_version" value="11"/>
     <property name="jre_version" value="11"/>
     <!-- JMRI definitions end -->
@@ -53,7 +53,7 @@
     </target>
     <target name="compile" depends="timestamp">
         <mkdir dir="${build.classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" includeantruntime="false"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" includeantruntime="false" source="${source_version}" target="${jre_version}"/>
         <copy file="${src.dir}/org/netbeans/jemmy/debug.timeouts" todir="${build.classes.dir}/org/netbeans/jemmy"/>
         <filter token="BUILD_NUMBER" value="${buildnumber}"/>
         <copy file="${src.dir}/org/netbeans/jemmy/version_info" tofile="${build.classes.dir}/org/netbeans/jemmy/version_info" filtering="on"/>
