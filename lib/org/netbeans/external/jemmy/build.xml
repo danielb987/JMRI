@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 1997, 2016, Oracle and/or its affiliates. All rights reserved.
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+
+ This code is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License version 2 only, as
+ published by the Free Software Foundation. Oracle designates this
+ particular file as subject to the "Classpath" exception as provided
+ by Oracle in the LICENSE file that accompanied this code.
+
+ This code is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ version 2 for more details (a copy is included in the LICENSE file that
+ accompanied this code).
+
+ You should have received a copy of the GNU General Public License version
+ 2 along with this work; if not, write to the Free Software Foundation,
+ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+
+ Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ or visit www.oracle.com if you need additional information or have any
+ questions.
+ -->
+
+ <!--
+ This build.xml file is used to build jemmy for JMRI. It specifies the SDK and Java version.
+ -->
+
+<project name="jemmy" default="compile" basedir=".">
+
+    <!-- JMRI definitions start -->
+    <!-- SDK version (11 as of JMRI 4.25.1 [4.26/5.0 pre-releases]) -->
+    <property name="sdk_version" value="1"/>
+    <property name="source_version" value="11"/>
+    <property name="jre_version" value="11"/>
+    <!-- JMRI definitions end -->
+
+    <property name="src.dir" location="src"/>
+    <property name="test.dir" location="test"/>
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.test.dir" location="${build.dir}/test"/>
+    <property name="dist.jar" location="${build.dir}/jemmy.jar"/>
+    <property name="test.list" location="${build.dir}/testlist"/>
+    <property name="test.workdir" location="${build.dir}/test_wd"/>
+    <property name="test.report" location="${build.dir}/test_report"/>
+    <target name="timestamp" unless="buildnumber">
+        <tstamp>
+            <format property="buildnumber" pattern="yyyyMMdd"/>
+        </tstamp>
+    </target>
+    <target name="compile" depends="timestamp">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" includeantruntime="false"/>
+        <copy file="${src.dir}/org/netbeans/jemmy/debug.timeouts" todir="${build.classes.dir}/org/netbeans/jemmy"/>
+        <filter token="BUILD_NUMBER" value="${buildnumber}"/>
+        <copy file="${src.dir}/org/netbeans/jemmy/version_info" tofile="${build.classes.dir}/org/netbeans/jemmy/version_info" filtering="on"/>
+    </target>
+    <target name="compile-test" depends="compile">
+        <mkdir dir="${build.test.dir}"/>
+        <javac srcdir="${test.dir}" destdir="${build.test.dir}" debug="on" includeantruntime="false"
+               classpath="${build.classes.dir}:${jtreg.home}/lib/testng.jar"/>
+    </target>
+    <target name="find-tests" unless="tests">
+        <fileset id="testset" dir="${test.dir}">
+            <include name="**/*Test.java" />
+        </fileset>
+        <pathconvert pathsep="${line.separator}" property="testlist" refid="testset">
+            <globmapper from="${test.dir}/*" to="*"/>
+        </pathconvert>
+        <echo file="${test.list}">${testlist}</echo>
+        <property name="tests" value="@${test.list}"/>
+    </target>
+    <target name="test" depends="compile-test,find-tests">
+        <exec executable="${jtreg.home}/bin/jtreg">
+            <arg value="-cpa:${build.classes.dir}"/>
+            <arg value="-w:${test.workdir}"/>
+            <arg value="-r:${test.report}"/>
+            <arg value="-conc:1"/>
+            <arg value="-ovm"/>
+            <arg value="-v:default"/>
+            <arg value="-dir:test"/>
+            <arg value="${tests}"/>
+        </exec>
+    </target>
+    <target name="jar" depends="compile">
+        <mkdir dir="${build.dir}"/>
+        <jar jarfile="${dist.jar}" basedir="${build.classes.dir}" manifest="${build.classes.dir}/org/netbeans/jemmy/version_info"/>
+    </target>
+    <target name="version" depends="compile">
+        <filter token="BUILD_NUMBER" value="${buildnumber}"/>
+        <mkdir dir="${build.classes.dir}"/>
+        <java classpath="${build.classes.dir}" classname="org.netbeans.jemmy.JemmyProperties" args="-f"/>
+        <copy file="${src.dir}/org/netbeans/jemmy/debug.timeouts" todir="${build.classes.dir}/org/netbeans/jemmy"/>
+        <copy file="${src.dir}/org/netbeans/jemmy/version_info" tofile="${build.classes.dir}/org/netbeans/jemmy/version_info" filtering="on"/>
+    </target>
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+</project>
+
+
