@@ -27,7 +27,7 @@ import jmri.util.JmriJFrame;
  * @author Daniel Bergqvist 2018
  */
 public class ConditionalNGDebugger extends JmriJFrame implements PropertyChangeListener {
-
+ 
     private static final int panelWidth = 700;
     private static final int panelHeight = 500;
     
