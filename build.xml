@@ -1530,7 +1530,6 @@
                     <sysproperty key="jmri.prefsdir" path="${tempdir}"/>
                     <sysproperty key="jmri.shutdownmanager" value="jmri.util.MockShutDownManager" />
                     <sysproperty key="jmri.skipTestsRequiringSeparateRunning" value="true"/>
-                    <sysproperty key="jmri.util.JUnitUtil.printSetUpTearDownNames" value="true"/>
                     <sysproperty key="user.language" value="en"/>
                     <sysproperty key="user.country" value="US"/>
                     <jvmarg value="-Xmx1536m"/>
