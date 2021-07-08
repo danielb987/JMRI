@@ -123,6 +123,7 @@ public class CarSetFrameTest extends OperationsTestCase {
     @Test
     public void testCarInTrain() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
         JUnitOperationsUtil.initOperationsData();
         
         // build train

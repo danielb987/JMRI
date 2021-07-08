@@ -319,6 +319,7 @@ public class TrainEditFrameTest extends OperationsTestCase {
     @Test
     public void testTrainEditFrameSaveButton() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
         // create a train
         TrainManager tmanager = InstanceManager.getDefault(TrainManager.class);
         Train train = tmanager.newTrain("Test Train Save Button");

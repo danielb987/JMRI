@@ -295,6 +295,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase<LogixNG> {
     @Test
     public void testAddAndRun() throws JmriException, InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
 
         Sensor sensor1 = InstanceManager.getDefault(SensorManager.class).provide("IS1");
         Turnout turnout1 = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");

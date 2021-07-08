@@ -680,6 +680,7 @@ public class CarEditFrameTest extends OperationsTestCase {
     // please detail failure so test can be fixed
     public void testSaveCarUtility() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
 
         JUnitOperationsUtil.initOperationsData();
 

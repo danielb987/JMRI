@@ -55,8 +55,9 @@ import java.nio.file.StandardCopyOption;
         @SuppressWarnings("null")  // spec says cannot happen, everything defined in test data.
         @Test
         public void testToManual() throws Exception {
-             jmri.configurexml.ConfigXmlManager cm = new jmri.configurexml.ConfigXmlManager() {
-            };
+            Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
+            
+            jmri.configurexml.ConfigXmlManager cm = new jmri.configurexml.ConfigXmlManager() { };
             // Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
 
             WarrantPreferences.getDefault().setShutdown(WarrantPreferences.Shutdown.NO_MERGE);

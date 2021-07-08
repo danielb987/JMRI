@@ -246,6 +246,7 @@ public class ThrottleFrameTest {
     @Test
     public void testChangeToSpeedStepMode() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
 
         to.setAddressValue(new DccLocoAddress(42, false));
 

@@ -50,6 +50,7 @@ public class RouteCopyFrameTest extends OperationsTestCase {
     @Test
     public void testCopy() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
         Route r = JUnitOperationsUtil.createThreeLocationRoute();
         RouteCopyFrame rcf = new RouteCopyFrame(r);
         Assert.assertNotNull("exists", rcf);

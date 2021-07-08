@@ -28,6 +28,7 @@ public class ScheduleCopyFrameTest extends OperationsTestCase {
     @Test
     public void testCopy() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
         ScheduleManager sManager = InstanceManager.getDefault(ScheduleManager.class);
         Schedule s = sManager.newSchedule("Test Schedule A");
         Assert.assertNotNull("Test Schedule A exists", s);
