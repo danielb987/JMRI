@@ -36,6 +36,8 @@ public class TrainEditFrameTest extends OperationsTestCase {
     @Test
     public void testTrainEditFrame() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
+
         TrainEditFrame trainEditFrame = new TrainEditFrame(null);
         trainEditFrame.setTitle("Test Edit Train Frame");
         ThreadingUtil.runOnGUI(() -> {

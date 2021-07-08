@@ -51,6 +51,7 @@ public class LogixNGModuleTableActionTest extends AbstractTableActionBase<Module
     @Test
     public void testStringCtor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
         Assert.assertNotNull("LogixNGModuleTableAction Constructor Return", new LogixNGModuleTableAction("test"));  // NOI18N
     }
 

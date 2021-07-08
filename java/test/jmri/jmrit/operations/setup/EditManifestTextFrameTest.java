@@ -26,6 +26,8 @@ public class EditManifestTextFrameTest extends OperationsTestCase {
     @Test
     public void testEditManifestTextFrameReset() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
+
         EditManifestTextFrame f = new EditManifestTextFrame();
         f.initComponents();
         

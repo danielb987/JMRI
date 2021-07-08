@@ -38,6 +38,8 @@ public class TimeTableFrameTest {
     @Test
     public void testDriver() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
+        
         _ttf = new TimeTableFrame("");
         Assert.assertNotNull(_ttf);
         _ttf.setVisible(true);
