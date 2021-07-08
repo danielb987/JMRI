@@ -33,6 +33,7 @@ public class CtcEditorSignalHeadsTest {
     @Test
     public void testEditor() throws Exception {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
 
         // Load the test panel and initialize Logix and advanced block routing
         java.io.File f = new java.io.File("java/test/jmri/jmrit/ctc/configurexml/load/CTC_Test_Heads-SSL.xml");  // NOI18N

@@ -190,6 +190,8 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
     @Test
     public void testCarAttributeEditFrameLengthErrors() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
+
         CarAttributeEditFrame f = new CarAttributeEditFrame();
         f.initComponents(CarAttributeEditFrame.LENGTH);
         // confirm that the right number of default lengths were loaded
@@ -378,6 +380,8 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
     @Test
     public void testCarAttributeEditFrameRoad() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring on Jenkins", Boolean.getBoolean("jmri.skipTestOnJenkins"));
+
         CarAttributeEditFrame f = new CarAttributeEditFrame();
         f.initComponents(CarAttributeEditFrame.ROAD);
         // confirm that the right number of default lengths were loaded
