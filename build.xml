@@ -1556,7 +1556,7 @@
             <sysproperty key="jmri.prefsdir" path="${tempdir}"/>
             <sysproperty key="jmri.shutdownmanager" value="jmri.util.MockShutDownManager" />
             <sysproperty key="jmri.util.JUnitUtil.printSetUpTearDownNames" value="true"/>
-            <sysproperty key="jmri.skipTestOnJenkins" value="true"/>
+<!--            <sysproperty key="jmri.skipTestOnJenkins" value="true"/> -->
             <sysproperty key="jmri.util.junit.PrintingTestListener.verbose" value="true"/>
             <!-- <sysproperty key="jinput.plugins" path="net.bobis.jinput.hidraw.HidRawEnvironmentPlugin"/> no longer specify specific library -->
 
