@@ -19,9 +19,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Change screen resolution
-      run: Set-DisplayResolution -Width 1600 -Height 1200 -Force
-      shell: pwsh
+#    - name: Change screen resolution
+#      run: Set-DisplayResolution -Width 1600 -Height 1200 -Force
+#      shell: pwsh
 #    - name: Cache Maven packages
 #      uses: actions/cache@v1
 #      with:
