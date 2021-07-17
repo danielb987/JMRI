@@ -5410,7 +5410,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
             case LEVEL_XING_D: {
                 try {
                     fromObject.setConnection(fromPointType, toObject, toPointType);
-                } catch (jmri.JmriException e) {
+                } catch (JmriException e) {
                     // ignore (log.error in setConnection method)
                 }
                 break;
@@ -6270,7 +6270,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
             case LEVEL_XING_D: {
                 try {
                     o.setConnection(type, null, HitPointType.NONE);
-                } catch (jmri.JmriException e) {
+                } catch (JmriException e) {
                     // ignore (log.error in setConnection method)
                 }
                 break;
@@ -7487,7 +7487,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
             InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefsMgr) -> prefsMgr.setSimplePreferenceState(getWindowFrameRef() + ".highlightSelectedBlock", highlightSelectedBlockFlag));
 
             // thread this so it won't break the AppVeyor checks
-            jmri.util.ThreadingUtil.newThread(() -> {
+            ThreadingUtil.newThread(() -> {
                 if (highlightSelectedBlockFlag) {
                     // use the "Extra" color to highlight the selected block
                     if (!highlightBlockInComboBox(leToolBarPanel.blockIDComboBox)) {

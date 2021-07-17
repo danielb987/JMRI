@@ -40,7 +40,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // test replace
         f.addTextBox.setText("Pinker");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
@@ -82,7 +82,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         f.comboBox.setSelectedItem("TestKernel");
         f.addTextBox.setText("TestKernel2");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
@@ -115,7 +115,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         f.comboBox.setSelectedItem("12");
         f.addTextBox.setText("13");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
@@ -142,7 +142,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // test replace
         f.addTextBox.setText("73");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
@@ -154,7 +154,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // now try error condition
         f.addTextBox.setText("A" + "\"");
         // should cause error dialog to appear
-        JemmyUtil.enterClickAndLeave(f.addButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
 
         JemmyUtil.pressDialogButton(Bundle.getMessage("ErrorRsLength"), Bundle.getMessage("ButtonOK"));
 
@@ -180,7 +180,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // now try error condition
         f.addTextBox.setText("A" + "cm");
         // should cause error dialog to appear
-        JemmyUtil.enterClickAndLeave(f.addButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
 
         JemmyUtil.pressDialogButton(Bundle.getMessage("ErrorRsLength"), Bundle.getMessage("ButtonOK"));
 
@@ -198,7 +198,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         Assert.assertEquals(12, f.comboBox.getItemCount());
         // now add a bogus length
         f.addTextBox.setText("A");
-        JemmyUtil.enterClickAndLeave(f.addButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
         
         JemmyUtil.pressDialogButton(MessageFormat.format(Bundle
                 .getMessage("canNotAdd"), new Object[]{Bundle.getMessage("Length")}), Bundle.getMessage("ButtonOK"));
@@ -213,7 +213,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
 
         // now add a negative length
         f.addTextBox.setText("-1");
-        JemmyUtil.enterClickAndLeave(f.addButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
         
         JemmyUtil.pressDialogButton(MessageFormat.format(Bundle
                 .getMessage("canNotAdd"), new Object[]{Bundle.getMessage("Length")}), Bundle.getMessage("ButtonOK"));
@@ -230,7 +230,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         f.addTextBox.setText("10000");
 
         // should cause error dialog to appear
-        JemmyUtil.enterClickAndLeave(f.addButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
 
         JemmyUtil.pressDialogButton(MessageFormat.format(Bundle
                 .getMessage("canNotAdd"), new Object[]{Bundle.getMessage("Length")}), Bundle.getMessage("ButtonOK"));
@@ -252,14 +252,14 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // now add a new type
         f.addTextBox.setText("ABC-TEST_TEST_TEST");
         // the following should cause two dialog windows to appear
-        Thread add = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                JemmyUtil.enterClickAndLeave(f.addButton);
-            }
-        });
-        add.setName("Add type attribute"); // NOI18N
-        add.start();
+//        Thread add = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+                JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
+//            }
+//        });
+//        add.setName("Add type attribute"); // NOI18N
+//        add.start();
 
         // dboudreau periodically fails on AppVeyor 3/27/2019
         // try without the wait
@@ -270,11 +270,11 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         JemmyUtil.pressDialogButton(Bundle.getMessage("ModifyLocations"), Bundle.getMessage("ButtonNo"));
         JemmyUtil.pressDialogButton(Bundle.getMessage("ModifyTrains"), Bundle.getMessage("ButtonNo"));
 
-        try {
-            add.join();
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+//        try {
+//            add.join();
+//        } catch (InterruptedException e) {
+//            // do nothing
+//        }
 
         // new type should appear at start of list
         Assert.assertEquals("new type name", "ABC-TEST_TEST_TEST", f.comboBox.getItemAt(0));
@@ -283,7 +283,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         f.comboBox.setSelectedItem("ABC-TEST_TEST_TEST");
         f.addTextBox.setText("ABCDEF-TEST");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
@@ -294,7 +294,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
 
         // enter a type name that is too long
         f.addTextBox.setText("ABCDEFGHIJKLM-TEST");
-        JemmyUtil.enterClickAndLeave(f.addButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
 
         JemmyUtil.pressDialogButton(
                 MessageFormat.format(Bundle.getMessage("canNotAdd"), new Object[]{Bundle.getMessage("Type")}),
@@ -331,20 +331,20 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
 
         // now try to add a new type name with the reserved characters
         f.addTextBox.setText("Test & Test");
-        add = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                JemmyUtil.enterClickAndLeave(f.addButton);
-            }
-        });
-        add.setName("Add type attribute"); // NOI18N
-        add.start();
-
-        try {
-            add.join();
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+//        add = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+                JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
+//            }
+//        });
+//        add.setName("Add type attribute"); // NOI18N
+//        add.start();
+//
+//        try {
+//            add.join();
+//        } catch (InterruptedException e) {
+//            // do nothing
+//        }
 
         JemmyUtil.pressDialogButton(
                 MessageFormat.format(Bundle.getMessage("canNotAdd"), new Object[]{Bundle.getMessage("Type")}),
@@ -353,20 +353,20 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // again try a new type name with the reserved characters
         f.addTextBox.setText("TEST" + CarLoad.SPLIT_CHAR + "TEST");
         // the following should cause two dialog windows to appear
-        add = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                JemmyUtil.enterClickAndLeave(f.addButton);
-            }
-        });
-        add.setName("Add type attribute"); // NOI18N
-        add.start();
-
-        try {
-            add.join();
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+//        add = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+                JemmyUtil.enterClickAndLeaveThreadSafe(f.addButton);
+//            }
+//        });
+//        add.setName("Add type attribute"); // NOI18N
+//        add.start();
+//
+//        try {
+//            add.join();
+//        } catch (InterruptedException e) {
+//            // do nothing
+//        }
 
         JemmyUtil.pressDialogButton(
                 MessageFormat.format(Bundle.getMessage("canNotAdd"), new Object[]{Bundle.getMessage("Type")}),
@@ -396,7 +396,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // test replace
         f.addTextBox.setText("ABCDEF-TEST");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
@@ -408,7 +408,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // enter a road name that is too long
         f.addTextBox.setText("ABCDEFGHIJKLM-TEST");
         // should cause error dialog to appear
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
 
         JemmyUtil.pressDialogButton(
                 MessageFormat.format(Bundle.getMessage("canNotReplace"), new Object[]{Bundle.getMessage("Road")}),
@@ -417,7 +417,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // enter a road name that has a reserved character
         f.addTextBox.setText("A.B");
         // should cause error dialog to appear
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
 
         JemmyUtil.pressDialogButton(
                 MessageFormat.format(Bundle.getMessage("canNotReplace"), new Object[]{Bundle.getMessage("Road")}),
@@ -443,7 +443,7 @@ public class CarAttributeEditFrameTest extends OperationsTestCase {
         // test replace
         f.addTextBox.setText("Bob");
         // push replace button
-        JemmyUtil.enterClickAndLeave(f.replaceButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.replaceButton);
         // need to also push the "Yes" button in the dialog window
         JemmyUtil.pressDialogButton(f, Bundle.getMessage("replaceAll"), Bundle.getMessage("ButtonYes"));
         // did the replace work?
