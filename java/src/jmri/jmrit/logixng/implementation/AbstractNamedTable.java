@@ -24,7 +24,7 @@ import jmri.jmrit.logixng.NamedTableManager;
 import jmri.util.FileUtil;
 
 /**
- * The default implementation of a NamedTable
+ * The abstract  implementation of a NamedTable
  * 
  * @author Daniel Bergqvist 2018
  */

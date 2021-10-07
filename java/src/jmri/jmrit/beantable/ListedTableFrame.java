@@ -104,6 +104,7 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
             addTable("jmri.jmrit.beantable.LogixNGTableAction", Bundle.getMessage("MenuItemLogixNGTable"), true);
             addTable("jmri.jmrit.beantable.LogixNGModuleTableAction", Bundle.getMessage("MenuItemLogixNGModuleTable"), true);
             addTable("jmri.jmrit.beantable.LogixNGTableTableAction", Bundle.getMessage("MenuItemLogixNGTableTable"), true);
+            addTable("jmri.jmrit.beantable.LogixNGTypeTableAction", Bundle.getMessage("MenuItemLogixNGTypeTable"), true);
             addTable("jmri.jmrit.beantable.BlockTableAction", Bundle.getMessage("MenuItemBlockTable"), true);
             if (InstanceManager.getDefault(GuiLafPreferencesManager.class).isOblockEditTabbed()) { // select _tabbed in prefs
                 addTable("jmri.jmrit.beantable.OBlockTableAction", Bundle.getMessage("MenuItemOBlockTable"), false);
@@ -382,6 +383,7 @@ public class ListedTableFrame<E extends NamedBean> extends BeanTableFrame<E> {
                 log.error("Not part of the abstractTableActions : {}", aaClass);
                 return;
             } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException e) {
+                System.out.format("FFF: %s, %s%n", e.getClass().getName(), e.getCause());
                 log.error("Exception accessing {}: {}", aaClass, e.getMessage());
                 return;
             }
