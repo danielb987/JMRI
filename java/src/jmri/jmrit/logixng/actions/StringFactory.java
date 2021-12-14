@@ -1,12 +1,11 @@
 package jmri.jmrit.logixng.actions;
 
-import java.util.AbstractMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import jmri.jmrit.logixng.Base;
+
 import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.StringActionFactory;
+
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -16,11 +15,11 @@ import org.openide.util.lookup.ServiceProvider;
 public class StringFactory implements StringActionFactory {
 
     @Override
-    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses() {
-        Set<Map.Entry<Category, Class<? extends Base>>> stringActionClasses = new HashSet<>();
-        stringActionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, StringActionMemory.class));
-        stringActionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, StringActionStringIO.class));
-        stringActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, StringMany.class));
+    public Set<ClassInfo> getClasses() {
+        Set<ClassInfo> stringActionClasses = new HashSet<>();
+        stringActionClasses.add(new ClassInfo(Category.ITEM, StringActionMemory.class));
+        stringActionClasses.add(new ClassInfo(Category.ITEM, StringActionStringIO.class));
+        stringActionClasses.add(new ClassInfo(Category.COMMON, StringMany.class));
         return stringActionClasses;
     }
 

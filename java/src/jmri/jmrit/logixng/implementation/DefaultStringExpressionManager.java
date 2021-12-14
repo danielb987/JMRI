@@ -43,7 +43,7 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
         for (StringExpressionFactory expressionFactory : ServiceLoader.load(StringExpressionFactory.class)) {
             expressionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
-                expressionClassList.get(entry.getKey()).add(entry.getValue());
+                expressionClassList.get(entry.category).add(entry.clazz);
             });
         }
         

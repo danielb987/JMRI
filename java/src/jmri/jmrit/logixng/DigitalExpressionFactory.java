@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,6 +19,33 @@ public interface DigitalExpressionFactory {
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends DigitalExpressionBean>>> getExpressionClasses();
+    public Set<ClassInfo> getExpressionClasses();
+    
+    
+    public static class ClassInfo {
+        
+        public final Category category;
+        public final Class<? extends DigitalExpressionBean> clazz;
+        public final String description;
+        
+        public ClassInfo(
+                Category category,
+                Class<? extends DigitalExpressionBean> clazz) {
+            
+            this.category = category;
+            this.clazz = clazz;
+            this.description = null;
+        }
+        
+        public ClassInfo(
+                Category category,
+                Class<? extends DigitalExpressionBean> clazz,
+                String description) {
+            
+            this.category = category;
+            this.clazz = clazz;
+            this.description = description;
+        }
+    }
     
 }

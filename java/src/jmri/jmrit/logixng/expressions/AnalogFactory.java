@@ -1,12 +1,9 @@
 package jmri.jmrit.logixng.expressions;
 
-import java.util.AbstractMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import jmri.jmrit.logixng.AnalogExpressionFactory;
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 
 import org.openide.util.lookup.ServiceProvider;
@@ -18,13 +15,13 @@ import org.openide.util.lookup.ServiceProvider;
 public class AnalogFactory implements AnalogExpressionFactory {
 
     @Override
-    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses() {
-        Set<Map.Entry<Category, Class<? extends Base>>> analogExpressionClasses = new HashSet<>();
-        analogExpressionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, AnalogExpressionAnalogIO.class));
-        analogExpressionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, AnalogExpressionConstant.class));
-        analogExpressionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, AnalogExpressionMemory.class));
-        analogExpressionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, AnalogFormula.class));
-        analogExpressionClasses.add(new AbstractMap.SimpleEntry<>(Category.ITEM, TimeSinceMidnight.class));
+    public Set<ClassInfo> getClasses() {
+        Set<ClassInfo> analogExpressionClasses = new HashSet<>();
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionAnalogIO.class));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionConstant.class));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionMemory.class));
+        analogExpressionClasses.add(new ClassInfo(Category.COMMON, AnalogFormula.class));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, TimeSinceMidnight.class));
         return analogExpressionClasses;
     }
 

@@ -40,7 +40,7 @@ public class DefaultStringActionManager extends AbstractBaseManager<MaleStringAc
         for (StringActionFactory actionFactory : ServiceLoader.load(StringActionFactory.class)) {
             actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
-                actionClassList.get(entry.getKey()).add(entry.getValue());
+                actionClassList.get(entry.category).add(entry.clazz);
             });
         }
         

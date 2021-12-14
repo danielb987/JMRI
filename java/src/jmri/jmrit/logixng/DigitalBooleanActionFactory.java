@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,6 +19,33 @@ public interface DigitalBooleanActionFactory {
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses();
+    public Set<ClassInfo> getClasses();
+    
+    
+    public static class ClassInfo {
+        
+        public final Category category;
+        public final Class<? extends DigitalBooleanActionBean> clazz;
+        public final String description;
+        
+        public ClassInfo(
+                Category category,
+                Class<? extends DigitalBooleanActionBean> clazz) {
+            
+            this.category = category;
+            this.clazz = clazz;
+            this.description = null;
+        }
+        
+        public ClassInfo(
+                Category category,
+                Class<? extends DigitalBooleanActionBean> clazz,
+                String description) {
+            
+            this.category = category;
+            this.clazz = clazz;
+            this.description = description;
+        }
+    }
     
 }

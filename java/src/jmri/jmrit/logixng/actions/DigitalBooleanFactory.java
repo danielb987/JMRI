@@ -1,11 +1,8 @@
 package jmri.jmrit.logixng.actions;
 
-import java.util.AbstractMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.Category;
 
 import org.openide.util.lookup.ServiceProvider;
@@ -19,10 +16,10 @@ import jmri.jmrit.logixng.DigitalBooleanActionFactory;
 public class DigitalBooleanFactory implements DigitalBooleanActionFactory {
 
     @Override
-    public Set<Map.Entry<Category, Class<? extends Base>>> getClasses() {
-        Set<Map.Entry<Category, Class<? extends Base>>> digitalBooleanActionClasses = new HashSet<>();
-        digitalBooleanActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, DigitalBooleanMany.class));
-        digitalBooleanActionClasses.add(new AbstractMap.SimpleEntry<>(Category.COMMON, DigitalBooleanOnChange.class));
+    public Set<ClassInfo> getClasses() {
+        Set<ClassInfo> digitalBooleanActionClasses = new HashSet<>();
+        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanMany.class));
+        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanOnChange.class));
         return digitalBooleanActionClasses;
     }
 
