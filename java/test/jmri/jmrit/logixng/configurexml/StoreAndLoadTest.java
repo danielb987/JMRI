@@ -38,7 +38,20 @@ import org.junit.*;
  */
 public class StoreAndLoadTest {
 
+    private static final String treeIndent = "   ";
+
 //    private AudioManager audioManager;
+    LogixNG_Manager logixNG_Manager;
+    ConditionalNG_Manager conditionalNGManager;
+    AnalogActionManager analogActionManager;
+    AnalogExpressionManager analogExpressionManager;
+    DigitalActionManager digitalActionManager;
+    DigitalBooleanActionManager digitalBooleanActionManager;
+    DigitalExpressionManager digitalExpressionManager;
+    StringActionManager stringActionManager;
+    StringExpressionManager stringExpressionManager;
+    LogixNG_InitializationManager logixNG_InitializationManager;
+
 
     private NamedBeanReference getNamedBeanReference(
             Collection<NamedBeanReference> collection, String name) {
@@ -123,17 +136,6 @@ public class StoreAndLoadTest {
         Warrant warrant = InstanceManager.getDefault(jmri.jmrit.logix.WarrantManager.class).getWarrant("IW99");
         warrant.addBlockOrder(new BlockOrder(InstanceManager.getDefault(jmri.jmrit.logix.OBlockManager.class).getOBlock("OB98")));
         warrant.addBlockOrder(new BlockOrder(InstanceManager.getDefault(jmri.jmrit.logix.OBlockManager.class).getOBlock("OB99")));
-
-        LogixNG_Manager logixNG_Manager = InstanceManager.getDefault(LogixNG_Manager.class);
-        ConditionalNG_Manager conditionalNGManager = InstanceManager.getDefault(ConditionalNG_Manager.class);
-        AnalogActionManager analogActionManager = InstanceManager.getDefault(AnalogActionManager.class);
-        AnalogExpressionManager analogExpressionManager = InstanceManager.getDefault(AnalogExpressionManager.class);
-        DigitalActionManager digitalActionManager = InstanceManager.getDefault(DigitalActionManager.class);
-        DigitalBooleanActionManager digitalBooleanActionManager = InstanceManager.getDefault(DigitalBooleanActionManager.class);
-        DigitalExpressionManager digitalExpressionManager = InstanceManager.getDefault(DigitalExpressionManager.class);
-        StringActionManager stringActionManager = InstanceManager.getDefault(StringActionManager.class);
-        StringExpressionManager stringExpressionManager = InstanceManager.getDefault(StringExpressionManager.class);
-        LogixNG_InitializationManager logixNG_InitializationManager = InstanceManager.getDefault(LogixNG_InitializationManager.class);
 
 
         // Load table turnout_and_signals.csv
@@ -3618,7 +3620,6 @@ public class StoreAndLoadTest {
 
 /*
         if (1==1) {
-            final String treeIndent = "   ";
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
             logixNG_Manager.printTree(Locale.ENGLISH, printWriter, treeIndent);
@@ -3668,7 +3669,6 @@ public class StoreAndLoadTest {
             log.info("Temporary first file: %s%n", firstFile.getAbsoluteFile());
             log.info("Temporary second file: %s%n", secondFile.getAbsoluteFile());
 
-            final String treeIndent = "   ";
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
             logixNG_Manager.printTree(Locale.ENGLISH, printWriter, treeIndent, new MutableInt(0));
@@ -3689,88 +3689,7 @@ public class StoreAndLoadTest {
             // Delete all the LogixNGs, ConditionalNGs, and so on before reading the file.
             //**********************************
 
-            java.util.Set<LogixNG> logixNG_Set = new java.util.HashSet<>(logixNG_Manager.getNamedBeanSet());
-            for (LogixNG aLogixNG : logixNG_Set) {
-                logixNG_Manager.deleteLogixNG(aLogixNG);
-            }
-
-            java.util.Set<ConditionalNG> conditionalNGSet = new java.util.HashSet<>(conditionalNGManager.getNamedBeanSet());
-            for (ConditionalNG aConditionalNG : conditionalNGSet) {
-                conditionalNGManager.deleteConditionalNG(aConditionalNG);
-            }
-
-            java.util.Set<MaleAnalogActionSocket> analogActionSet = new java.util.HashSet<>(analogActionManager.getNamedBeanSet());
-            for (MaleAnalogActionSocket aAnalogAction : analogActionSet) {
-                analogActionManager.deleteAnalogAction(aAnalogAction);
-            }
-
-            java.util.Set<MaleAnalogExpressionSocket> analogExpressionSet = new java.util.HashSet<>(analogExpressionManager.getNamedBeanSet());
-            for (MaleAnalogExpressionSocket aAnalogExpression : analogExpressionSet) {
-                analogExpressionManager.deleteAnalogExpression(aAnalogExpression);
-            }
-
-            java.util.Set<MaleDigitalActionSocket> digitalActionSet = new java.util.HashSet<>(digitalActionManager.getNamedBeanSet());
-            for (MaleDigitalActionSocket aDigitalActionSocket : digitalActionSet) {
-                digitalActionManager.deleteDigitalAction(aDigitalActionSocket);
-            }
-
-            java.util.Set<MaleDigitalBooleanActionSocket> digitalBooleanActionSet = new java.util.HashSet<>(digitalBooleanActionManager.getNamedBeanSet());
-            for (MaleDigitalBooleanActionSocket aDigitalBooleanAction : digitalBooleanActionSet) {
-                digitalBooleanActionManager.deleteDigitalBooleanAction(aDigitalBooleanAction);
-            }
-
-            java.util.Set<MaleDigitalExpressionSocket> digitalExpressionSet = new java.util.HashSet<>(digitalExpressionManager.getNamedBeanSet());
-            for (MaleDigitalExpressionSocket aDigitalExpression : digitalExpressionSet) {
-                digitalExpressionManager.deleteDigitalExpression(aDigitalExpression);
-            }
-
-            java.util.Set<MaleStringActionSocket> stringActionSet = new java.util.HashSet<>(stringActionManager.getNamedBeanSet());
-            for (MaleStringActionSocket aStringAction : stringActionSet) {
-                stringActionManager.deleteStringAction(aStringAction);
-            }
-
-            java.util.Set<MaleStringExpressionSocket> stringExpressionSet = new java.util.HashSet<>(stringExpressionManager.getNamedBeanSet());
-            for (MaleStringExpressionSocket aStringExpression : stringExpressionSet) {
-                stringExpressionManager.deleteStringExpression(aStringExpression);
-            }
-
-            java.util.Set<Module> moduleSet = new java.util.HashSet<>(InstanceManager.getDefault(ModuleManager.class).getNamedBeanSet());
-            for (Module aModule : moduleSet) {
-                InstanceManager.getDefault(ModuleManager.class).deleteModule(aModule);
-            }
-
-            java.util.Set<NamedTable> tableSet = new java.util.HashSet<>(InstanceManager.getDefault(NamedTableManager.class).getNamedBeanSet());
-            for (NamedTable aTable : tableSet) {
-                InstanceManager.getDefault(NamedTableManager.class).deleteNamedTable(aTable);
-            }
-
-            while (! logixNG_InitializationManager.getList().isEmpty()) {
-                logixNG_InitializationManager.delete(0);
-            }
-
-            Assert.assertEquals(0, logixNG_Manager.getNamedBeanSet().size());
-            Assert.assertEquals(0, analogActionManager.getNamedBeanSet().size());
-            Assert.assertEquals(0, analogExpressionManager.getNamedBeanSet().size());
-            Assert.assertEquals(0, digitalActionManager.getNamedBeanSet().size());
-            Assert.assertEquals(0, digitalExpressionManager.getNamedBeanSet().size());
-            Assert.assertEquals(0, stringActionManager.getNamedBeanSet().size());
-            Assert.assertEquals(0, stringExpressionManager.getNamedBeanSet().size());
-            Assert.assertEquals(0, InstanceManager.getDefault(ModuleManager.class).getNamedBeanSet().size());
-            Assert.assertEquals(0, InstanceManager.getDefault(NamedTableManager.class).getNamedBeanSet().size());
-            Assert.assertEquals(0, logixNG_InitializationManager.getList().size());
-
-            LogixNG_Thread.stopAllLogixNGThreads();
-            LogixNG_Thread.assertLogixNGThreadNotRunning();
-
-/*
-            audioManager.cleanup();
-            JUnitUtil.waitFor(()->{return !audioManager.isInitialised();});
-
-            audioManager = new jmri.jmrit.audio.DefaultAudioManager(
-                    InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class));
-            audioManager.init();
-            JUnitUtil.waitFor(()->{return audioManager.isInitialised();});
-*/
+            deleteAndInitializeLogixNG();
 
             //**********************************
             // Try to load file
@@ -3779,34 +3698,7 @@ public class StoreAndLoadTest {
             results = cm.load(secondFile);
             log.debug(results ? "load was successful" : "store failed");
             if (results) {
-                logixNG_Manager.setupAllLogixNGs();
-
-                stringWriter = new StringWriter();
-                printWriter = new PrintWriter(stringWriter);
-                logixNG_Manager.printTree(Locale.ENGLISH, printWriter, treeIndent, new MutableInt(0));
-
-                if (!originalTree.equals(stringWriter.toString())) {
-                    log.error("--------------------------------------------");
-                    log.error("Old tree:");
-                    log.error("XXX"+originalTree+"XXX");
-                    log.error("--------------------------------------------");
-                    log.error("New tree:");
-                    log.error("XXX"+stringWriter.toString()+"XXX");
-                    log.error("--------------------------------------------");
-
-                    System.out.println("--------------------------------------------");
-                    System.out.println("Old tree:");
-                    System.out.println("XXX"+originalTree+"XXX");
-                    System.out.println("--------------------------------------------");
-                    System.out.println("New tree:");
-                    System.out.println("XXX"+stringWriter.toString()+"XXX");
-                    System.out.println("--------------------------------------------");
-
-//                    log.error(conditionalNGManager.getBySystemName(originalTree).getChild(0).getConnectedSocket().getSystemName());
-
-                    Assert.fail("tree has changed");
-//                    throw new RuntimeException("tree has changed");
-                }
+                compareOldAndNewLogixNG(originalTree);
             } else {
                 Assert.fail("Failed to load panel");
 //                throw new RuntimeException("Failed to load panel");
@@ -3852,6 +3744,127 @@ public class StoreAndLoadTest {
         }
     }
 
+    private void deleteAndInitializeLogixNG() {
+        //**********************************
+        // Delete all the LogixNGs, ConditionalNGs, and so on.
+        //**********************************
+
+        java.util.Set<LogixNG> logixNG_Set = new java.util.HashSet<>(logixNG_Manager.getNamedBeanSet());
+        for (LogixNG aLogixNG : logixNG_Set) {
+            logixNG_Manager.deleteLogixNG(aLogixNG);
+        }
+
+        java.util.Set<ConditionalNG> conditionalNGSet = new java.util.HashSet<>(conditionalNGManager.getNamedBeanSet());
+        for (ConditionalNG aConditionalNG : conditionalNGSet) {
+            conditionalNGManager.deleteConditionalNG(aConditionalNG);
+        }
+
+        java.util.Set<MaleAnalogActionSocket> analogActionSet = new java.util.HashSet<>(analogActionManager.getNamedBeanSet());
+        for (MaleAnalogActionSocket aAnalogAction : analogActionSet) {
+            analogActionManager.deleteAnalogAction(aAnalogAction);
+        }
+
+        java.util.Set<MaleAnalogExpressionSocket> analogExpressionSet = new java.util.HashSet<>(analogExpressionManager.getNamedBeanSet());
+        for (MaleAnalogExpressionSocket aAnalogExpression : analogExpressionSet) {
+            analogExpressionManager.deleteAnalogExpression(aAnalogExpression);
+        }
+
+        java.util.Set<MaleDigitalActionSocket> digitalActionSet = new java.util.HashSet<>(digitalActionManager.getNamedBeanSet());
+        for (MaleDigitalActionSocket aDigitalActionSocket : digitalActionSet) {
+            digitalActionManager.deleteDigitalAction(aDigitalActionSocket);
+        }
+
+        java.util.Set<MaleDigitalBooleanActionSocket> digitalBooleanActionSet = new java.util.HashSet<>(digitalBooleanActionManager.getNamedBeanSet());
+        for (MaleDigitalBooleanActionSocket aDigitalBooleanAction : digitalBooleanActionSet) {
+            digitalBooleanActionManager.deleteDigitalBooleanAction(aDigitalBooleanAction);
+        }
+
+        java.util.Set<MaleDigitalExpressionSocket> digitalExpressionSet = new java.util.HashSet<>(digitalExpressionManager.getNamedBeanSet());
+        for (MaleDigitalExpressionSocket aDigitalExpression : digitalExpressionSet) {
+            digitalExpressionManager.deleteDigitalExpression(aDigitalExpression);
+        }
+
+        java.util.Set<MaleStringActionSocket> stringActionSet = new java.util.HashSet<>(stringActionManager.getNamedBeanSet());
+        for (MaleStringActionSocket aStringAction : stringActionSet) {
+            stringActionManager.deleteStringAction(aStringAction);
+        }
+
+        java.util.Set<MaleStringExpressionSocket> stringExpressionSet = new java.util.HashSet<>(stringExpressionManager.getNamedBeanSet());
+        for (MaleStringExpressionSocket aStringExpression : stringExpressionSet) {
+            stringExpressionManager.deleteStringExpression(aStringExpression);
+        }
+
+        java.util.Set<Module> moduleSet = new java.util.HashSet<>(InstanceManager.getDefault(ModuleManager.class).getNamedBeanSet());
+        for (Module aModule : moduleSet) {
+            InstanceManager.getDefault(ModuleManager.class).deleteModule(aModule);
+        }
+
+        java.util.Set<NamedTable> tableSet = new java.util.HashSet<>(InstanceManager.getDefault(NamedTableManager.class).getNamedBeanSet());
+        for (NamedTable aTable : tableSet) {
+            InstanceManager.getDefault(NamedTableManager.class).deleteNamedTable(aTable);
+        }
+
+        while (! logixNG_InitializationManager.getList().isEmpty()) {
+            logixNG_InitializationManager.delete(0);
+        }
+
+        Assert.assertEquals(0, logixNG_Manager.getNamedBeanSet().size());
+        Assert.assertEquals(0, analogActionManager.getNamedBeanSet().size());
+        Assert.assertEquals(0, analogExpressionManager.getNamedBeanSet().size());
+        Assert.assertEquals(0, digitalActionManager.getNamedBeanSet().size());
+        Assert.assertEquals(0, digitalExpressionManager.getNamedBeanSet().size());
+        Assert.assertEquals(0, stringActionManager.getNamedBeanSet().size());
+        Assert.assertEquals(0, stringExpressionManager.getNamedBeanSet().size());
+        Assert.assertEquals(0, InstanceManager.getDefault(ModuleManager.class).getNamedBeanSet().size());
+        Assert.assertEquals(0, InstanceManager.getDefault(NamedTableManager.class).getNamedBeanSet().size());
+        Assert.assertEquals(0, logixNG_InitializationManager.getList().size());
+
+        LogixNG_Thread.stopAllLogixNGThreads();
+        LogixNG_Thread.assertLogixNGThreadNotRunning();
+
+/*
+        audioManager.cleanup();
+        JUnitUtil.waitFor(()->{return !audioManager.isInitialised();});
+
+        audioManager = new jmri.jmrit.audio.DefaultAudioManager(
+                InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class));
+        audioManager.init();
+        JUnitUtil.waitFor(()->{return audioManager.isInitialised();});
+*/
+    }
+    
+    private void compareOldAndNewLogixNG(String originalTree) {
+        logixNG_Manager.setupAllLogixNGs();
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        
+        logixNG_Manager.printTree(Locale.ENGLISH, printWriter, treeIndent, new MutableInt(0));
+
+        if (!originalTree.equals(stringWriter.toString())) {
+            log.error("--------------------------------------------");
+            log.error("Old tree:");
+            log.error("XXX"+originalTree+"XXX");
+            log.error("--------------------------------------------");
+            log.error("New tree:");
+            log.error("XXX"+stringWriter.toString()+"XXX");
+            log.error("--------------------------------------------");
+
+            System.out.println("--------------------------------------------");
+            System.out.println("Old tree:");
+            System.out.println("XXX"+originalTree+"XXX");
+            System.out.println("--------------------------------------------");
+            System.out.println("New tree:");
+            System.out.println("XXX"+stringWriter.toString()+"XXX");
+            System.out.println("--------------------------------------------");
+
+//            log.error(conditionalNGManager.getBySystemName(originalTree).getChild(0).getConnectedSocket().getSystemName());
+
+            Assert.fail("tree has changed");
+//                    throw new RuntimeException("tree has changed");
+        }
+    }
+    
 
     @Before
     public void setUp() {
@@ -3871,6 +3884,16 @@ public class StoreAndLoadTest {
         JUnitUtil.initWarrantManager();
 
 //        JUnitUtil.initLogixNGManager();
+        logixNG_Manager = InstanceManager.getDefault(LogixNG_Manager.class);
+        conditionalNGManager = InstanceManager.getDefault(ConditionalNG_Manager.class);
+        analogActionManager = InstanceManager.getDefault(AnalogActionManager.class);
+        analogExpressionManager = InstanceManager.getDefault(AnalogExpressionManager.class);
+        digitalActionManager = InstanceManager.getDefault(DigitalActionManager.class);
+        digitalBooleanActionManager = InstanceManager.getDefault(DigitalBooleanActionManager.class);
+        digitalExpressionManager = InstanceManager.getDefault(DigitalExpressionManager.class);
+        stringActionManager = InstanceManager.getDefault(StringActionManager.class);
+        stringExpressionManager = InstanceManager.getDefault(StringExpressionManager.class);
+        logixNG_InitializationManager = InstanceManager.getDefault(LogixNG_InitializationManager.class);
     }
 
     @After
