@@ -1,6 +1,5 @@
 package jmri.jmrit.logixng;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,6 +19,33 @@ public interface DigitalActionFactory {
      * 
      * @return a set of entries with category and class
      */
-    public Set<Map.Entry<Category, Class<? extends DigitalActionBean>>> getActionClasses();
+    public Set<ClassInfo> getActionClasses();
+    
+    
+    public static class ClassInfo {
+        
+        public final Category category;
+        public final Class<? extends DigitalActionBean> clazz;
+        public final String description;
+        
+        public ClassInfo(
+                Category category,
+                Class<? extends DigitalActionBean> clazz) {
+            
+            this.category = category;
+            this.clazz = clazz;
+            this.description = null;
+        }
+        
+        public ClassInfo(
+                Category category,
+                Class<? extends DigitalActionBean> clazz,
+                String description) {
+            
+            this.category = category;
+            this.clazz = clazz;
+            this.description = description;
+        }
+    }
     
 }
