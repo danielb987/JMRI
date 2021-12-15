@@ -24,6 +24,7 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
         implements DigitalBooleanActionManager {
 
     private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
+    private final Map<String, Class<? extends Base>> actionClassMap = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
     
@@ -42,6 +43,10 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
             actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.category).add(entry.clazz);
+                if (actionClassMap.containsKey(entry.description)) {
+                    throw new RuntimeException("Duplicate items: "+entry.description);
+                }
+                actionClassMap.put(entry.description, entry.clazz);
             });
         }
         
@@ -114,18 +119,6 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
         return 'Q';
     }
 
-    /*.*
-     * Test if parameter is a properly formatted system name.
-     *
-     * @param systemName the system name
-     * @return enum indicating current validity, which might be just as a prefix
-     *./
-    @Override
-    public NameValidity validSystemNameFormat(String systemName) {
-        return LogixNG_Manager.validSystemNameFormat(
-                getSubSystemNamePrefix(), systemName);
-    }
-*/
     @Override
     public FemaleDigitalBooleanActionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
@@ -135,6 +128,11 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
     @Override
     public Map<Category, List<Class<? extends Base>>> getActionClasses() {
         return actionClassList;
+    }
+
+    @Override
+    public Class<? extends Base> getClassByDescription(String descr) {
+        return actionClassMap.get(descr);
     }
 
     /** {@inheritDoc} */

@@ -30,15 +30,6 @@ public interface DigitalExpressionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends DigitalExpressionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends DigitalExpressionBean> clazz,
                 String description) {
             

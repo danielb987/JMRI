@@ -30,15 +30,6 @@ public interface AnalogActionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends AnalogActionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends AnalogActionBean> clazz,
                 String description) {
             

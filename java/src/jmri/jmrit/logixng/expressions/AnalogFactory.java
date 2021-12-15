@@ -17,11 +17,11 @@ public class AnalogFactory implements AnalogExpressionFactory {
     @Override
     public Set<ClassInfo> getClasses() {
         Set<ClassInfo> analogExpressionClasses = new HashSet<>();
-        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionAnalogIO.class));
-        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionConstant.class));
-        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionMemory.class));
-        analogExpressionClasses.add(new ClassInfo(Category.COMMON, AnalogFormula.class));
-        analogExpressionClasses.add(new ClassInfo(Category.ITEM, TimeSinceMidnight.class));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionAnalogIO.class, Bundle.getMessage("AnalogExpressionAnalogIO_Description")));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionConstant.class, Bundle.getMessage("AnalogExpressionConstant_Description")));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, AnalogExpressionMemory.class, Bundle.getMessage("AnalogExpressionMemory_Description")));
+        analogExpressionClasses.add(new ClassInfo(Category.COMMON, AnalogFormula.class, Bundle.getMessage("AnalogFormula_Description")));
+        analogExpressionClasses.add(new ClassInfo(Category.ITEM, TimeSinceMidnight.class, Bundle.getMessage("TimeSinceMidnight_Description")));
         return analogExpressionClasses;
     }
 

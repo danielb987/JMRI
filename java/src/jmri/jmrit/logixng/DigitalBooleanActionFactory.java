@@ -30,15 +30,6 @@ public interface DigitalBooleanActionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends DigitalBooleanActionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends DigitalBooleanActionBean> clazz,
                 String description) {
             

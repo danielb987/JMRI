@@ -30,15 +30,6 @@ public interface StringActionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends StringActionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends StringActionBean> clazz,
                 String description) {
             

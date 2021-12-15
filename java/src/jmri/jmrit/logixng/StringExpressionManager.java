@@ -46,27 +46,13 @@ public interface StringExpressionManager extends BaseManager<MaleStringExpressio
      */
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses();
 
-    /*.*
-     * Add an Expression.
-     *
-     * @param expression the expression to add
-     * @throws IllegalArgumentException if the expression has an invalid system name
+    /**
+     * Get a class from the description.
+     * 
+     * @param descr the description
+     * @return the class
      */
-//    public void addExpression(Expression expression)
-//            throws IllegalArgumentException;
-
-    /*.*
-     * Locate via user name, then system name if needed. Does not create a new
-     * one if nothing found
-     *
-     * @param name User name or system name to match
-     * @return null if no match found
-     */
-//    public Expression getExpression(String name);
-
-//    public Expression getByUserName(String s);
-
-//    public Expression getBySystemName(String s);
+    public Class<? extends Base> getClassByDescription(String descr);
 
     /**
      * {@inheritDoc}

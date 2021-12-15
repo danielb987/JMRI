@@ -39,6 +39,14 @@ public interface AnalogActionManager extends BaseManager<MaleAnalogActionSocket>
      */
     public Map<Category, List<Class<? extends Base>>> getActionClasses();
 
+    /**
+     * Get a class from the description.
+     * 
+     * @param descr the description
+     * @return the class
+     */
+    public Class<? extends Base> getClassByDescription(String descr);
+
     /*.*
      * Add an Action.
      *

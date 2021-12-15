@@ -30,15 +30,6 @@ public interface StringExpressionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends StringExpressionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends StringExpressionBean> clazz,
                 String description) {
             

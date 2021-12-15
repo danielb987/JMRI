@@ -18,8 +18,8 @@ public class DigitalBooleanFactory implements DigitalBooleanActionFactory {
     @Override
     public Set<ClassInfo> getClasses() {
         Set<ClassInfo> digitalBooleanActionClasses = new HashSet<>();
-        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanMany.class));
-        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanOnChange.class));
+        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanMany.class, Bundle.getMessage("DigitalBooleanMany_Description")));
+        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanOnChange.class, Bundle.getMessage("DigitalBooleanOnChange_Description")));
         return digitalBooleanActionClasses;
     }
 

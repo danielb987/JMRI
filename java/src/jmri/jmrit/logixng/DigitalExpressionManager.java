@@ -31,13 +31,7 @@ public interface DigitalExpressionManager extends BaseManager<MaleDigitalExpress
 
     public FemaleDigitalExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName);
-/*
-    public FemaleDigitalExpressionSocket createFemaleExpressionSocket(
-            Base parent,
-            FemaleSocketListener listener,
-            String socketName,
-            MaleDigitalExpressionSocket maleSocket);
-*/
+
     /**
      * Get a set of classes that implements the DigitalAction interface.
      * 
@@ -45,27 +39,13 @@ public interface DigitalExpressionManager extends BaseManager<MaleDigitalExpress
      */
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses();
 
-    /*.*
-     * Add an DigitalExpressionBean.
-     *
-     * @param expression the expression to add
-     * @throws IllegalArgumentException if the expression has an invalid system name
+    /**
+     * Get a class from the description.
+     * 
+     * @param descr the description
+     * @return the class
      */
-//    public void addExpression(DigitalExpressionBean expression)
-//            throws IllegalArgumentException;
-
-    /*.*
-     * Locate via user name, then system name if needed. Does not create a new
-     * one if nothing found
-     *
-     * @param name User name or system name to match
-     * @return null if no match found
-     */
-//    public DigitalExpressionBean getExpression(String name);
-
-//    public DigitalExpressionBean getByUserName(String s);
-
-//    public DigitalExpressionBean getBySystemName(String s);
+    public Class<? extends Base> getClassByDescription(String descr);
 
     /**
      * {@inheritDoc}

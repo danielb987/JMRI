@@ -39,27 +39,13 @@ public interface StringActionManager extends BaseManager<MaleStringActionSocket>
      */
     public Map<Category, List<Class<? extends Base>>> getActionClasses();
 
-    /*.*
-     * Add an Action.
-     *
-     * @param action the action to add
-     * @throws IllegalArgumentException if the action has an invalid system name
+    /**
+     * Get a class from the description.
+     * 
+     * @param descr the description
+     * @return the class
      */
-//    public void addAction(Action action)
-//            throws IllegalArgumentException;
-
-    /*.*
-     * Locate via user name, then system name if needed. Does not create a new
-     * one if nothing found
-     *
-     * @param name User name or system name to match
-     * @return null if no match found
-     */
-//    public Action getAction(String name);
-
-//    public Action getByUserName(String s);
-
-//    public Action getBySystemName(String s);
+    public Class<? extends Base> getClassByDescription(String descr);
 
     /**
      * {@inheritDoc}

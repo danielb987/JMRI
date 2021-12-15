@@ -40,6 +40,14 @@ public interface DigitalActionManager extends BaseManager<MaleDigitalActionSocke
     public Map<Category, List<Class<? extends Base>>> getActionClasses();
 
     /**
+     * Get a class from the description.
+     * 
+     * @param descr the description
+     * @return the class
+     */
+    public Class<? extends Base> getClassByDescription(String descr);
+
+    /**
      * {@inheritDoc}
      * 
      * The sub system prefix for the DigitalActionManager is

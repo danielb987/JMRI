@@ -24,8 +24,8 @@ public class ActionFactory implements DigitalActionFactory {
         
         // We don't want to add these classes if we don't have a LocoNet connection
         if (CategoryLocoNet.hasLocoNet()) {
-            actionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ActionClearSlots.class));
-            actionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ActionUpdateSlots.class));
+            actionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ActionClearSlots.class, Bundle.getMessage("ActionClearSlots_Description")));
+            actionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ActionUpdateSlots.class, Bundle.getMessage("ActionUpdateSlots_Description")));
         }
         
         return actionClasses;

@@ -15,9 +15,9 @@ public class AnalogFactory implements AnalogActionFactory {
     @Override
     public Set<ClassInfo> getClasses() {
         Set<ClassInfo> analogActionClasses = new HashSet<>();
-        analogActionClasses.add(new ClassInfo(Category.ITEM, AnalogActionLightIntensity.class));
-        analogActionClasses.add(new ClassInfo(Category.ITEM, AnalogActionMemory.class));
-        analogActionClasses.add(new ClassInfo(Category.COMMON, AnalogMany.class));
+        analogActionClasses.add(new ClassInfo(Category.ITEM, AnalogActionLightIntensity.class, Bundle.getMessage("AnalogActionLightIntensity_Description")));
+        analogActionClasses.add(new ClassInfo(Category.ITEM, AnalogActionMemory.class, Bundle.getMessage("AnalogActionMemory_Description")));
+        analogActionClasses.add(new ClassInfo(Category.COMMON, AnalogMany.class, Bundle.getMessage("AnalogMany_Description")));
         return analogActionClasses;
     }
 

@@ -24,6 +24,7 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
         implements DigitalExpressionManager, InstanceManagerAutoDefault {
 
     private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
+    private final Map<String, Class<? extends Base>> expressionClassMap = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
     
@@ -43,6 +44,10 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
             expressionFactory.getExpressionClasses().forEach((entry) -> {
 //                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.category).add(entry.clazz);
+                if (expressionClassMap.containsKey(entry.description)) {
+                    throw new RuntimeException("Duplicate items: "+entry.description);
+                }
+                expressionClassMap.put(entry.description, entry.clazz);
             });
         }
         
@@ -115,18 +120,6 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
         return 'Q';
     }
 
-    /*.*
-     * Test if parameter is a properly formatted system name.
-     *
-     * @param systemName the system name
-     * @return enum indicating current validity, which might be just as a prefix
-     *./
-    @Override
-    public NameValidity validSystemNameFormat(String systemName) {
-        return LogixNG_Manager.validSystemNameFormat(
-                getSubSystemNamePrefix(), systemName);
-    }
-*/
     @Override
     public FemaleDigitalExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
@@ -137,6 +130,11 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
     @Override
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
         return expressionClassList;
+    }
+
+    @Override
+    public Class<? extends Base> getClassByDescription(String descr) {
+        return expressionClassMap.get(descr);
     }
 
     /** {@inheritDoc} */

@@ -24,7 +24,7 @@ public class ActionFactory implements DigitalActionFactory {
     public Set<ClassInfo> getActionClasses() {
         Set<ClassInfo> actionClasses = new HashSet<>();
         
-        actionClasses.add(new ClassInfo(CategoryDisplay.DISPLAY, ActionPositionable.class));
+        actionClasses.add(new ClassInfo(CategoryDisplay.DISPLAY, ActionPositionable.class, Bundle.getMessage("ActionPositionable_Description")));
         
         return actionClasses;
     }

@@ -17,9 +17,9 @@ public class StringFactory implements StringActionFactory {
     @Override
     public Set<ClassInfo> getClasses() {
         Set<ClassInfo> stringActionClasses = new HashSet<>();
-        stringActionClasses.add(new ClassInfo(Category.ITEM, StringActionMemory.class));
-        stringActionClasses.add(new ClassInfo(Category.ITEM, StringActionStringIO.class));
-        stringActionClasses.add(new ClassInfo(Category.COMMON, StringMany.class));
+        stringActionClasses.add(new ClassInfo(Category.ITEM, StringActionMemory.class, Bundle.getMessage("StringActionMemory_Description")));
+        stringActionClasses.add(new ClassInfo(Category.ITEM, StringActionStringIO.class, Bundle.getMessage("StringActionStringIO_Description")));
+        stringActionClasses.add(new ClassInfo(Category.COMMON, StringMany.class, Bundle.getMessage("StringMany_Description")));
         return stringActionClasses;
     }
 

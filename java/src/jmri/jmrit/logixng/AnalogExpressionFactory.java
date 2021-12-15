@@ -30,15 +30,6 @@ public interface AnalogExpressionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends AnalogExpressionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends AnalogExpressionBean> clazz,
                 String description) {
             

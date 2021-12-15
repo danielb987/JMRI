@@ -30,15 +30,6 @@ public interface DigitalActionFactory {
         
         public ClassInfo(
                 Category category,
-                Class<? extends DigitalActionBean> clazz) {
-            
-            this.category = category;
-            this.clazz = clazz;
-            this.description = null;
-        }
-        
-        public ClassInfo(
-                Category category,
                 Class<? extends DigitalActionBean> clazz,
                 String description) {
             

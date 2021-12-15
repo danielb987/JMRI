@@ -25,7 +25,7 @@ public class ExpressionFactory implements DigitalExpressionFactory {
         
         // We don't want to add these classes if we don't have a LocoNet connection
         if (CategoryLocoNet.hasLocoNet()) {
-            expressionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ExpressionSlotUsage.class));
+            expressionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ExpressionSlotUsage.class, Bundle.getMessage("ExpressionSlotUsage_Description")));
         }
         
         return expressionClasses;
