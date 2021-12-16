@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.actions;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import jmri.jmrit.logixng.Category;
@@ -18,8 +19,8 @@ public class DigitalBooleanFactory implements DigitalBooleanActionFactory {
     @Override
     public Set<ClassInfo> getClasses() {
         Set<ClassInfo> digitalBooleanActionClasses = new HashSet<>();
-        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanMany.class, Bundle.getMessage("DigitalBooleanMany_Description")));
-        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanOnChange.class, Bundle.getMessage("DigitalBooleanOnChange_Description")));
+        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanMany.class, Bundle.getMessage("DigitalBooleanMany_Description"), Bundle.getMessage("DigitalBooleanMany_Description", Locale.US)));
+        digitalBooleanActionClasses.add(new ClassInfo(Category.COMMON, DigitalBooleanOnChange.class, Bundle.getMessage("DigitalBooleanOnChange_Description"), Bundle.getMessage("DigitalBooleanOnChange_Description", Locale.US)));
         return digitalBooleanActionClasses;
     }
 

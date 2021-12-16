@@ -48,6 +48,14 @@ public interface DigitalBooleanActionManager extends BaseManager<MaleDigitalBool
     public Class<? extends Base> getClassByDescription(String descr);
 
     /**
+     * Get a class from the English description.
+     * 
+     * @param descr the description
+     * @return the class
+     */
+    public Class<? extends Base> getClassByEnglishDescription(String descr);
+
+    /**
      * {@inheritDoc}
      * 
      * The sub system prefix for the DigitalActionManager is

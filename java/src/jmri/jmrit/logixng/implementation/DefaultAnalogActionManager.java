@@ -24,6 +24,7 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
 
     private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private final Map<String, Class<? extends Base>> actionClassMap = new HashMap<>();
+    private final Map<String, Class<? extends Base>> actionEnglishClassMap = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
     
@@ -42,10 +43,16 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
             actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.category).add(entry.clazz);
+                
                 if (actionClassMap.containsKey(entry.description)) {
                     throw new RuntimeException("Duplicate items: "+entry.description);
                 }
                 actionClassMap.put(entry.description, entry.clazz);
+                
+                if (actionEnglishClassMap.containsKey(entry.englishDescription)) {
+                    throw new RuntimeException("Duplicate items: "+entry.englishDescription);
+                }
+                actionEnglishClassMap.put(entry.englishDescription, entry.clazz);
             });
         }
         
@@ -156,6 +163,11 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
     @Override
     public Class<? extends Base> getClassByDescription(String descr) {
         return actionClassMap.get(descr);
+    }
+
+    @Override
+    public Class<? extends Base> getClassByEnglishDescription(String descr) {
+        return actionEnglishClassMap.get(descr);
     }
 
     /** {@inheritDoc} */

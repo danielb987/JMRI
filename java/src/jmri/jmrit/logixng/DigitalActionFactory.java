@@ -27,15 +27,18 @@ public interface DigitalActionFactory {
         public final Category category;
         public final Class<? extends DigitalActionBean> clazz;
         public final String description;
+        public final String englishDescription;
         
         public ClassInfo(
                 Category category,
                 Class<? extends DigitalActionBean> clazz,
-                String description) {
+                String description,
+                String englishDescription) {
             
             this.category = category;
             this.clazz = clazz;
             this.description = description;
+            this.englishDescription = englishDescription;
         }
     }
     

@@ -1,6 +1,7 @@
 package jmri.jmrit.logixng.expressions;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import jmri.jmrit.logixng.Category;
@@ -17,9 +18,9 @@ public class StringFactory implements StringExpressionFactory {
     @Override
     public Set<ClassInfo> getClasses() {
         Set<ClassInfo> stringExpressionClasses = new HashSet<>();
-        stringExpressionClasses.add(new ClassInfo(Category.ITEM, StringExpressionConstant.class, Bundle.getMessage("StringExpressionConstant_Description")));
-        stringExpressionClasses.add(new ClassInfo(Category.ITEM, StringExpressionMemory.class, Bundle.getMessage("StringExpressionMemory_Description")));
-        stringExpressionClasses.add(new ClassInfo(Category.COMMON, StringFormula.class, Bundle.getMessage("StringFormula_Description")));
+        stringExpressionClasses.add(new ClassInfo(Category.ITEM, StringExpressionConstant.class, Bundle.getMessage("StringExpressionConstant_Description"), Bundle.getMessage("StringExpressionConstant_Description", Locale.US)));
+        stringExpressionClasses.add(new ClassInfo(Category.ITEM, StringExpressionMemory.class, Bundle.getMessage("StringExpressionMemory_Description"), Bundle.getMessage("StringExpressionMemory_Description", Locale.US)));
+        stringExpressionClasses.add(new ClassInfo(Category.COMMON, StringFormula.class, Bundle.getMessage("StringFormula_Description"), Bundle.getMessage("StringFormula_Description", Locale.US)));
         return stringExpressionClasses;
     }
 

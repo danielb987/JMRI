@@ -47,27 +47,13 @@ public interface AnalogActionManager extends BaseManager<MaleAnalogActionSocket>
      */
     public Class<? extends Base> getClassByDescription(String descr);
 
-    /*.*
-     * Add an Action.
-     *
-     * @param action the action to add
-     * @throws IllegalArgumentException if the action has an invalid system name
+    /**
+     * Get a class from the English description.
+     * 
+     * @param descr the description
+     * @return the class
      */
-//    public void addAction(Action action)
-//            throws IllegalArgumentException;
-
-    /*.*
-     * Locate via user name, then system name if needed. Does not create a new
-     * one if nothing found
-     *
-     * @param name User name or system name to match
-     * @return null if no match found
-     */
-//    public Action getAction(String name);
-
-//    public Action getByUserName(String s);
-
-//    public Action getBySystemName(String s);
+    public Class<? extends Base> getClassByEnglishDescription(String descr);
 
     /**
      * {@inheritDoc}

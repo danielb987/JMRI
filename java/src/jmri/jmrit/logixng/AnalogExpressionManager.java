@@ -55,6 +55,14 @@ public interface AnalogExpressionManager extends BaseManager<MaleAnalogExpressio
     public Class<? extends Base> getClassByDescription(String descr);
 
     /**
+     * Get a class from the English description.
+     * 
+     * @param descr the description
+     * @return the class
+     */
+    public Class<? extends Base> getClassByEnglishDescription(String descr);
+
+    /**
      * {@inheritDoc}
      * 
      * The sub system prefix for the AnalogExpressionManager is

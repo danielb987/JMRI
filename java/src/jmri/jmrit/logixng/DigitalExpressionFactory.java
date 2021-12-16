@@ -27,15 +27,18 @@ public interface DigitalExpressionFactory {
         public final Category category;
         public final Class<? extends DigitalExpressionBean> clazz;
         public final String description;
+        public final String englishDescription;
         
         public ClassInfo(
                 Category category,
                 Class<? extends DigitalExpressionBean> clazz,
-                String description) {
+                String description,
+                String englishDescription) {
             
             this.category = category;
             this.clazz = clazz;
             this.description = description;
+            this.englishDescription = englishDescription;
         }
     }
     

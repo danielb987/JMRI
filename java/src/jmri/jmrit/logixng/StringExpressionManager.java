@@ -55,6 +55,14 @@ public interface StringExpressionManager extends BaseManager<MaleStringExpressio
     public Class<? extends Base> getClassByDescription(String descr);
 
     /**
+     * Get a class from the English description.
+     * 
+     * @param descr the description
+     * @return the class
+     */
+    public Class<? extends Base> getClassByEnglishDescription(String descr);
+
+    /**
      * {@inheritDoc}
      * 
      * The sub system prefix for the StringExpressionManager is

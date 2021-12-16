@@ -1,6 +1,7 @@
 package jmri.jmrix.loconet.logixng;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import jmri.jmrit.logixng.Category;
@@ -25,7 +26,7 @@ public class ExpressionFactory implements DigitalExpressionFactory {
         
         // We don't want to add these classes if we don't have a LocoNet connection
         if (CategoryLocoNet.hasLocoNet()) {
-            expressionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ExpressionSlotUsage.class, Bundle.getMessage("ExpressionSlotUsage_Description")));
+            expressionClasses.add(new ClassInfo(CategoryLocoNet.LOCONET, ExpressionSlotUsage.class, Bundle.getMessage("ExpressionSlotUsage_Description"), Bundle.getMessage("ExpressionSlotUsage_Description", Locale.US)));
         }
         
         return expressionClasses;

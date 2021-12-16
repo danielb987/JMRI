@@ -1,7 +1,6 @@
 package jmri.jmrit.display.logixng;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import jmri.jmrit.logixng.DigitalActionFactory;
 
@@ -24,7 +23,7 @@ public class ActionFactory implements DigitalActionFactory {
     public Set<ClassInfo> getActionClasses() {
         Set<ClassInfo> actionClasses = new HashSet<>();
         
-        actionClasses.add(new ClassInfo(CategoryDisplay.DISPLAY, ActionPositionable.class, Bundle.getMessage("ActionPositionable_Description")));
+        actionClasses.add(new ClassInfo(CategoryDisplay.DISPLAY, ActionPositionable.class, Bundle.getMessage("ActionPositionable_Description"), Bundle.getMessage("ActionPositionable_Description", Locale.US)));
         
         return actionClasses;
     }

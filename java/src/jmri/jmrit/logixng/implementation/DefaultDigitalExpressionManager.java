@@ -25,6 +25,7 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
 
     private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
     private final Map<String, Class<? extends Base>> expressionClassMap = new HashMap<>();
+    private final Map<String, Class<? extends Base>> expressionEnglishClassMap = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
     
@@ -44,10 +45,16 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
             expressionFactory.getExpressionClasses().forEach((entry) -> {
 //                System.out.format("Add expression: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 expressionClassList.get(entry.category).add(entry.clazz);
+                
                 if (expressionClassMap.containsKey(entry.description)) {
                     throw new RuntimeException("Duplicate items: "+entry.description);
                 }
                 expressionClassMap.put(entry.description, entry.clazz);
+                
+                if (expressionEnglishClassMap.containsKey(entry.englishDescription)) {
+                    throw new RuntimeException("Duplicate items: "+entry.englishDescription);
+                }
+                expressionEnglishClassMap.put(entry.englishDescription, entry.clazz);
             });
         }
         
@@ -135,6 +142,11 @@ public class DefaultDigitalExpressionManager extends AbstractBaseManager<MaleDig
     @Override
     public Class<? extends Base> getClassByDescription(String descr) {
         return expressionClassMap.get(descr);
+    }
+
+    @Override
+    public Class<? extends Base> getClassByEnglishDescription(String descr) {
+        return expressionEnglishClassMap.get(descr);
     }
 
     /** {@inheritDoc} */
