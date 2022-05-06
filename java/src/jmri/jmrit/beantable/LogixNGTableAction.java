@@ -157,6 +157,16 @@ public class LogixNGTableAction extends AbstractLogixNGTableAction<LogixNG> {
     }
 
     @Override
+    protected boolean isExportBeanSupported() {
+        return true;
+    }
+
+    @Override
+    protected void exportBean(LogixNG bean) {
+        // Do nothing
+    }
+
+    @Override
     protected String getBeanText(LogixNG e) {
         StringWriter writer = new StringWriter();
         _curNamedBean.printTree(_printTreeSettings, new PrintWriter(writer), "    ", new MutableInt(0));

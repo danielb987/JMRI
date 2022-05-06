@@ -192,6 +192,9 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                     } else if (Bundle.getMessage("ButtonCopy").equals(value)) {  // NOI18N
                         copyPressed(sName);
 
+                    } else if (Bundle.getMessage("ButtonExportLogixNG").equals(value)) {  // NOI18N
+                        exportPressed(sName);
+
                     } else if (Bundle.getMessage("ButtonDelete").equals(value)) {  // NOI18N
                         deletePressed(sName);
                     }
@@ -270,6 +273,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                 editCombo.addItem(Bundle.getMessage("ButtonEdit"));  // NOI18N
                 editCombo.addItem(Bundle.getMessage("BrowserButton"));  // NOI18N
                 if (isCopyBeanSupported()) editCombo.addItem(Bundle.getMessage("ButtonCopy"));  // NOI18N
+                if (isExportBeanSupported()) editCombo.addItem(Bundle.getMessage("ButtonExportLogixNG"));  // NOI18N
                 editCombo.addItem(Bundle.getMessage("ButtonDelete"));  // NOI18N
                 TableColumn col = table.getColumnModel().getColumn(BeanTableDataModel.DELETECOL);
                 col.setCellEditor(new DefaultCellEditor(editCombo));
@@ -406,6 +410,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
     // Edit E Variables
     private boolean _inEditMode = false;
     private boolean _inCopyMode = false;
+    private boolean _inExportMode = false;
 
     // ------------ Methods for Add bean Window ------------
 
@@ -514,6 +519,43 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
         _logixNGSysName = sName;
     }
 
+    /**
+     * Respond to the Copy bean button in Add bean window.
+     * <p>
+     * Provides a pane to set new properties of the copy.
+     *
+     * @param sName system name of bean to be copied
+     */
+    void exportPressed(String sName) {
+        if (!checkFlags(sName)) {
+            return;
+        }
+
+        Runnable t = new Runnable() {
+            @Override
+            public void run() {
+//                JOptionPane.showMessageDialog(null, "Copy is not implemented yet.", "Error", JOptionPane.ERROR_MESSAGE);
+
+//                JPanel panel5 = makeAddFrame("TitleCopyLogixNG", "Copy");    // NOI18N
+                JPanel panel5 = makeAddFrame("TitleExportLogixNG", "Export");    // NOI18N
+                // Create bean
+                JButton export = new JButton(Bundle.getMessage("ButtonExport"));  // NOI18N
+                panel5.add(export);
+                export.addActionListener((ActionEvent e) -> {
+                    exportBeanPressed(e);
+                });
+                addLogixNGFrame.pack();
+                addLogixNGFrame.setVisible(true);
+
+                _inExportMode = false;
+            }
+        };
+        log.debug("exportPressed started for {}", sName);  // NOI18N
+        javax.swing.SwingUtilities.invokeLater(t);
+        _inExportMode = true;
+        _logixNGSysName = sName;
+    }
+
     String _logixNGSysName;
 
     protected void copyBean(@Nonnull E sourceBean, @Nonnull E targetBean) {
@@ -522,6 +564,26 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
 
     protected boolean isCopyBeanSupported() {
         return false;
+    }
+
+    protected boolean isExportBeanSupported() {
+        return false;
+    }
+
+    @Override
+    public void addToFrame(@Nonnull BeanTableFrame<E> beanTableFrame) {
+        if (isExportBeanSupported()) {
+            JButton importButton = new JButton(Bundle.getMessage("ButtonImportLogixNG"));
+            beanTableFrame.addToBottomBox(importButton, this.getClass().getName());
+            importButton.addActionListener((ActionEvent e1) -> {
+                importPressed(e1);
+            });
+        }
+    }
+
+    private void importPressed(ActionEvent e) {
+        // Do something
+        System.out.format("Daniel%n");
     }
 
     /**
@@ -585,6 +647,19 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
         if (sourceBean != null) copyBean(sourceBean, targetBean);
         else log.error("Error targetLogix is null!");  // NOI18N
         cancelAddPressed(null);
+    }
+
+    /**
+     * Copy the bean as configured in the Copy set up pane.
+     *
+     * @param e the event heard
+     */
+    private void exportBeanPressed(ActionEvent e) {
+        E sourceBean = getManager().getBySystemName(_logixNGSysName);
+    }
+
+    protected void exportBean(E bean) {
+        // Do nothing
     }
 
     /**
@@ -658,6 +733,15 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             // Already editing a bean, ask for completion of that edit
             JOptionPane.showMessageDialog(null,
                     Bundle.getMessage("LogixNGError31", _logixNGSysName),
+                    Bundle.getMessage("ErrorTitle"), // NOI18N
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (_inExportMode) {
+            // Already editing a bean, ask for completion of that edit
+            JOptionPane.showMessageDialog(null,
+                    Bundle.getMessage("LogixNGError33", _logixNGSysName),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
                     JOptionPane.ERROR_MESSAGE);
             return false;
