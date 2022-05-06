@@ -21,7 +21,7 @@
 
         <h4>CBUS</h4>
             <ul>
-                <li></li>
+                <li>Console - Added Throttle speed / direction translations.</li>
             </ul>
 
         <h4>C/MRI</h4>
@@ -31,7 +31,7 @@
 
         <h4>DCC++ and DCC-EX</h4>
             <ul>
-                <li></li>
+                <li>Updated to take advantage of Version 4 changes</li>
             </ul>
 
         <h4>DCC4pc</h4>
@@ -76,7 +76,11 @@
 
         <h4>LocoNet</h4>
             <ul>
-                <li></li>
+                <li>The DCS240 command station type was defaulting to the standalone programmer mode.
+                If a user was not paying attention, they would have issues trying to use all of the
+                command station capability.</li>
+                <li>Some message interpretation features provided by "LocoNet Monitor" have been
+                    'refactored' and slightly improved.</li>
             </ul>
 
         <h4>Maple</h4>
@@ -96,7 +100,9 @@
 
         <h4>MQTT</h4>
             <ul>
-                <li></li>
+                <li>LogixNG has now support for MQTT. If a MQTT connection is
+                defined, the category MQTT is visible with the LogixNG actions
+                <i>Publish</i> and <i>Subscribe</i>.</li>
             </ul>
 
         <h4>MRC</h4>
@@ -116,28 +122,7 @@
 
         <h4><a href="http://openlcb.org">OpenLCB</a> / LCC</h4>
             <ul>
-                <li><b>Throttle support.</b> JMRI Throttles can now operate
-                OpenLCB locomotives on OpenLCB / LCC Command Stations via the
-                Traction Protocol draft.</li>
-                <li><b>Monitor Log updates.</b> Decodes and prints the Traction
-                Protocol messages in the Monitor Log window.</li>
-                <li><b>Accessibility changes.</b> The network browser / tree is
-                now navigable using keyboard shortcuts. On the Configuration
-                Editor panel the keys F6 and Shift+F6 can be used to navigate
-                between subsequent sections of the configuration and the bar of
-                buttons at the bottom.</li>
-                <li><b>Test Event button.</b> In the Configuration Editor the
-                Event panels have a new button More... which opens a
-                dropdown. In the dropdown there is a Trigger button which sends
-                the given event. This is useful for testing. In the same
-                dropdown there is a Create Sensor button which for JMRI will
-                create a single-event sensor.</li>
-                <li><b>Bug fixes.</b> Fixes memory leak when opening many
-                different nodes' Configuration Editor windows. The CAN
-                Interface engine now correctly supports sending a message to a
-                Destination Node ID for which there is no currently registered
-                Alias in the Alias Map. The outgoing message will be enqueued
-                and an alias lookup interaction is triggered.</li>
+                <li></li>
             </ul>
 
         <h4>RFID</h4>
@@ -187,7 +172,7 @@
 
     <h3>New / Updated decoder definitions</h3>
         <ul>
-          <li></li>
+          <li>Added multiple SUSI accessory decoder definitions.</li>
         </ul>
 
         <h4>Arnold</h4>
@@ -222,12 +207,12 @@
 
         <h4>Digitrax</h4>
             <ul>
-                <li></li>
+              <li>Added Kato EM13 in Digitrax family: newer versions of this decoder have a Digitrax manufacturer code and a full fledged Digitrax SW.</li>
             </ul>
 
         <h4>Doehler &amp; Haas</h4>
             <ul>
-                <li></li>
+              <li>Added PD10MU: This is a specific decoder for <a href=https://www.dm-toys.de/fr/produit-detail/DH_PD10MU-4.html target=_BLANK>ModellBahn Union / DM-Toys</a>. Same SW as PD12A, but N scale form factor.</li>
             </ul>
 
         <h4>ESU</h4>
@@ -259,6 +244,11 @@
             <ul>
                 <li></li>
             </ul>
+
+        <h4>MD Electronics</h4>
+             <ul>
+                <li>Added a definition for the MDE HDD turntable decoder.</li>
+             </ul>
 
         <h4>MGP</h4>
              <ul>
@@ -315,12 +305,7 @@
                 <li></li>
             </ul>
 
-        <h4>Tam Valley Depot</h4>
-            <ul>
-                <li>QuadLN_S - added support for new firmware version 3.1 features</li>
-            </ul>
-            
-       <h4>TAMS</h4>
+        <h4>TAMS</h4>
             <ul>
                 <li></li>
             </ul>
@@ -367,7 +352,7 @@
 
         <h4>ZIMO</h4>
             <ul>
-                <li></li>
+              <li>Added MX605N: Zimo non-sound decoder for Kato N ICE4 - same form factor as Kato EM13. <i>Note that MX605 (already in DecoderPro) is the sound-version of MX605N</i>.</li>
             </ul>
 
         <h4>Miscellaneous</h4>
@@ -378,7 +363,8 @@
     <h3>DecoderPro</h3>
         <a id="DecoderPro" name="DecoderPro"></a>
         <ul>
-            <li></li>
+            <li>Improved handling of improper input in variables.</li>
+            <li>Improved accessibility of programming mode selections.</li>
         </ul>
 
     <h3>CTC Tool</h3>
@@ -390,9 +376,7 @@
    <h3>Dispatcher</h3>
         <a id="Dispatcher" name="Dispatcher"></a>
         <ul>
-             <li>Fixed bouncing speed slider in manual mode.</li>
-             <li>Size AutoTrainsWindow correctly when going between auto and manual with use scroll bars off.</li>
-             <li>Enabled disaplay scale speed for running with speed profiles.</li>
+             <li></li>
         </ul>
 
     <h3>Dispatcher System</h3>
@@ -410,7 +394,8 @@
     <h3>Layout Editor</h3>
         <a id="LE" name="LE"></a>
         <ul>
-	        <li></li>
+	        <li>Fixed an error when an anchor point only had one track segment assigned.</li>
+            <li>Improved display of certain images when rotated for display.<li>
         </ul>
 
         <h4>NX - Entry/Exit Tool</h4>
@@ -427,7 +412,22 @@
     <h3>LogixNG</h3>
         <a id="LogixNG" name="LogixNG"></a>
         <ul>
-          <li></li>
+          <li>The action <i>Clock Rate</i> has been added. It sets the
+          rate of the fast clock.</li>
+          <li><i>Global Variables</i> has been added. A Global Variable
+          is similar to a Local Variable, except that it is shared among
+          the ConditionalNGs.</li>
+          <li>Global variables and Local variables can now be initialized
+          with a script expression or a script file.</li>
+          <li>The action <i>Listen on beans</i> now protects against
+          removal of the beans it's listening to.</li>
+          <li>The <i>Edit local variables</i> dialog can now be resized
+          so that the table grows and shrinks when it's resized.</li>
+          <li>Update the Sequence action to reset itself when done if the continuous option is not
+          selected.</li>
+          <li>Support for MQTT has been added. If a MQTT connection is
+          defined, the category MQTT is visible with the actions <i>Publish</i>
+          and <i>Subscribe</i>.</li>
         </ul>
 
     <h3>Meters and MeterFrames</h3>
@@ -439,19 +439,19 @@
     <h3>Operations</h3>
         <a id="Operations" name="Operations"></a>
         <ul>
-            <li></li>
+            <li>Improved the build report</li>
         </ul>
 
    <h3>Panel Editor</h3>
         <a id="PE" name="PE"></a>
         <ul>
-            <li></li>
+            <li>Improved display of certain images when rotated for display.<li>
         </ul>
 
     <h3>Control Panel Editor</h3>
         <a id="CPE" name="CPE"></a>
         <ul>
-            <li></li>
+            <li>Improved display of certain images when rotated for display.<li>
         </ul>
         <h4>Circuit Builder</h4>
             <a id="CPE-CB" name="CPE-CB"></a>
@@ -491,7 +491,11 @@
     <h3>Turnouts, Lights, Sensors and other elements</h3>
         <a id="TLae" name="TLae"></a>
         <ul>
-            <li></li>
+            <li>The order of presenting these elements in combo boxes
+                has been changed to make it more consistent.  They now
+                list all user names first, followed by ones with just system
+                names.  This also fixes a problem where some items are
+                not listed in the combo box.</li>
         </ul>
 
     <h3>Scripting</h3>
@@ -549,7 +553,7 @@
     <h3>Throttle</h3>
         <a id="throttle" name="throttle"></a>
         <ul>
-            <li>Add capability to display/print throttle files in easy-to-read browser format (using XSL transform)</li>
+            <li></li>
         </ul>
 
     <h3>Timetable</h3>
@@ -567,13 +571,47 @@
    <h3>Warrants</h3>
         <a id="Wt" name="Wt"></a>
         <ul>
-            <li></li>
+            <li>Any warrant, regular or shared, will not allocate blocks beyond a restricted block.
+                A block is <b>restricted</b> if it is:
+                <ul>
+                   <li>Allocated to another warrant.</li>
+                    <li>Occupied by an unknown train.</li>
+                    <li>Signal protects it from entry.</li>
+                </ul>
+            </li>
+            <li>
+                When entering a block, the warrant will allocate as many blocks as it can up to the
+                next restricted block or its limit.
+                 <ul>
+                    <li>Shared warrants only allocate up to a maximum of 2 blocks. (limit is 2)</li>
+                    <li>Regular warrants will allocate the full route if no restricted block is found. (unlimited)</li>
+                </ul>
+            </li>
+            <li>
+                Crossovers typically use one turnout to control both switches. Often, each switch is
+                track in different blocks. For such shared turnouts, throwing the switch in one block
+                may change the path in another block and could cause a derailment.
+                 <ul>
+                    <li>Warrants now detect shared turnouts. Should the paths in the respective
+                    blocks have different settings for the turnout, the warrant will allocate the block
+                    sharing the turnout but <b>not</b> set its path.</li>
+                    <li>The warrant will stop the train before
+                     entering the block. The train will continue when the conflict is resolved.</li>
+                 </ul>
+            </li>
+            <li>
+                Block status of OUT_OF_SERVICE is informational. Warrants can allocate OUT_OF_SERVICE blocks.
+            </li>
+            <li>
+                The "Set" column of the Warrant List Table is removed. The "Allocate" column indicates the route.
+                The path is set if the block is not in a restricted state.
+            </li>
         </ul>
 
    <h3>Web Access</h3>
         <a id="WA" name="WA"></a>
         <ul>
-            <li></li>
+            <li>Multiple updates to JavaScript libraries shipped with JMRI.</li>
         </ul>
 
     <h3>Where Used</h3>
@@ -597,19 +635,14 @@
    <h3>Virtual Sound Decoder</h3>
         <a id="VSD" name="VSD"></a>
         <ul>
-            <li>Added a new version of "advanced location following". This is now based
-            on a LayoutEditor panel and hence much easier to setup. See the
-            <a href="https://www.jmri.org/help/en/manual/DecoderPro/VSD_LocationsMgr.shtml#advanced_location_following">
-			documentation</a> for details.</li>
+            <li></li>
         </ul>
 
     <h3>Miscellaneous</h3>
         <a id="Misc" name="Misc"></a>
         <ul>
-            <li>Add a search feature to the JmriHelp local web page.</li>
-            <li>The method JUnitUtil.releaseThread(this) and JUnitUtil.releaseThread(this, delay)
-            has been removed. Use JUnitUtil.waitFor(int time) instead. Replace the call
-            JUnitUtil.releaseThread(this) with JUnitUtil.waitFor(JUnitUtil.DEFAULT_RELEASETHREAD_DELAY);</li>
-            <li>Improve Block tracking in the case of a broken train being rejoined.
+            <li>Update commons-io library to version 2.11.0 from 2.6. JMRI uses this for file selectors.</li>
+            <li>Updated jsoup library to 1.14.3 from 1.13.1. JMRI uses this when rebuilding help metadata.</li>
+            <li>Update for multiple hardware clocks.</li>
         </ul>
 
