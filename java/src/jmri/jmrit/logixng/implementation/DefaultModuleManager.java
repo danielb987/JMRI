@@ -21,14 +21,14 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 /**
  * Class providing the basic logic of the LogixNG_Manager interface.
- * 
+ *
  * @author Dave Duchamp       Copyright (C) 2007
  * @author Daniel Bergqvist   Copyright (C) 2018
  */
 public class DefaultModuleManager extends AbstractManager<Module>
-        implements ModuleManager {
+        implements ModuleManager, SupportsImportExport {
 
-    
+
     public DefaultModuleManager() {
         // The LogixNGPreferences class may load plugins so we must ensure
         // it's loaded here.
@@ -59,7 +59,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
     public Module createModule(String systemName, String userName,
             FemaleSocketManager.SocketType socketType)
             throws IllegalArgumentException {
-        
+
         // Check that Module does not already exist
         Module x;
         if (userName != null && !userName.equals("")) {
@@ -80,10 +80,10 @@ public class DefaultModuleManager extends AbstractManager<Module>
         x = new DefaultModule(systemName, userName, socketType);
         // save in the maps
         register(x);
-        
+
         // Keep track of the last created auto system name
         updateAutoNumber(systemName);
-        
+
         return x;
     }
 
@@ -92,7 +92,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
     public Module createModule(String userName, FemaleSocketManager.SocketType socketType) throws IllegalArgumentException {
         return createModule(getAutoSystemName(), userName, socketType);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Module getModule(String name) {
@@ -130,7 +130,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
         }
         return result;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public void setupAllModules() {
@@ -146,7 +146,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
         deregister(x);
         x.dispose();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public void printTree(
@@ -154,10 +154,10 @@ public class DefaultModuleManager extends AbstractManager<Module>
             PrintWriter writer,
             String indent,
             MutableInt lineNumber) {
-        
+
         printTree(settings, Locale.getDefault(), writer, indent, lineNumber);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public void printTree(
@@ -166,14 +166,14 @@ public class DefaultModuleManager extends AbstractManager<Module>
             PrintWriter writer,
             String indent,
             MutableInt lineNumber) {
-        
+
         for (Module module : getNamedBeanSet()) {
             module.printTree(settings, locale, writer, indent, "", lineNumber);
             writer.println();
         }
         InstanceManager.getDefault(ModuleManager.class);
     }
-    
+
     static volatile DefaultModuleManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
@@ -181,7 +181,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
         if (!ThreadingUtil.isGUIThread()) {
             LoggingUtil.warnOnce(log, "instance() called on wrong thread");
         }
-        
+
         if (_instance == null) {
             _instance = new DefaultModuleManager();
         }
@@ -217,7 +217,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
             vc.vetoableChange(evt);
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
 //    @OverridingMethodsMustInvokeSuper
@@ -229,7 +229,7 @@ public class DefaultModuleManager extends AbstractManager<Module>
                 maleSocket.getManager().deleteBean(maleSocket, property);
             }
         }
-        
+
         // throws PropertyVetoException if vetoed
         fireVetoableChange(property, module);
         if (property.equals("DoDelete")) { // NOI18N
@@ -237,8 +237,8 @@ public class DefaultModuleManager extends AbstractManager<Module>
             module.dispose();
         }
     }
-    
-    
+
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultModuleManager.class);
 
 }

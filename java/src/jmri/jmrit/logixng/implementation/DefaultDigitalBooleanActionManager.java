@@ -16,35 +16,35 @@ import jmri.util.ThreadingUtil;
 
 /**
  * Class providing the basic logic of the DigitalBooleanActionManager interface.
- * 
+ *
  * @author Dave Duchamp       Copyright (C) 2007
  * @author Daniel Bergqvist   Copyright (C) 2018
  */
 public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<MaleDigitalBooleanActionSocket>
-        implements DigitalBooleanActionManager {
+        implements DigitalBooleanActionManager, SupportsImportExport {
 
     private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
-    
+
     public DefaultDigitalBooleanActionManager() {
         InstanceManager.getDefault(LogixNG_Manager.class).registerManager(this);
-        
+
         for (DigitalBooleanActionFactory actionFactory : ServiceLoader.load(DigitalBooleanActionFactory.class)) {
             actionFactory.init();
         }
-        
+
         for (Category category : Category.values()) {
             actionClassList.put(category, new ArrayList<>());
         }
-        
+
         for (DigitalBooleanActionFactory actionFactory : ServiceLoader.load(DigitalBooleanActionFactory.class)) {
             actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
-        
+
         for (MaleDigitalBooleanActionSocketFactory maleSocketFactory : ServiceLoader.load(MaleDigitalBooleanActionSocketFactory.class)) {
             _maleSocketFactories.add(maleSocketFactory);
         }
@@ -67,7 +67,7 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
     public MaleSocket getLastRegisteredMaleSocket() {
         return _lastRegisteredBean;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public MaleDigitalBooleanActionSocket registerBean(MaleDigitalBooleanActionSocket maleSocket) {
@@ -75,7 +75,7 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
         _lastRegisteredBean = maleSocket;
         return bean;
     }
-    
+
     /**
      * Remember a NamedBean Object created outside the manager.
      * This method creates a MaleDigitalBooleanActionSocket for the action.
@@ -85,25 +85,25 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
     @Override
     public MaleDigitalBooleanActionSocket registerAction(@Nonnull DigitalBooleanActionBean action)
             throws IllegalArgumentException {
-        
+
         if (action instanceof MaleDigitalBooleanActionSocket) {
             throw new IllegalArgumentException("registerAction() cannot register a MaleDigitalBooleanActionSocket. Use the method register() instead.");
         }
-        
+
         // Check if system name is valid
         if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException(String.format("System name is invalid: %s", action.getSystemName()));
         }
-        
+
         // Keep track of the last created auto system name
         updateAutoNumber(action.getSystemName());
-        
+
         // save in the maps
         MaleDigitalBooleanActionSocket maleSocket = createMaleActionSocket(action);
         return registerBean(maleSocket);
     }
-    
+
     @Override
     public int getXMLOrder() {
         return LOGIXNG_DIGITAL_BOOLEAN_ACTIONS;
@@ -150,7 +150,7 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
         deregister(x);
         x.dispose();
     }
-    
+
     static volatile DefaultDigitalBooleanActionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
@@ -158,7 +158,7 @@ public class DefaultDigitalBooleanActionManager extends AbstractBaseManager<Male
         if (!ThreadingUtil.isGUIThread()) {
             LoggingUtil.warnOnce(log, "instance() called on wrong thread");
         }
-        
+
         if (_instance == null) {
             _instance = new DefaultDigitalBooleanActionManager();
         }

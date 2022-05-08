@@ -2,13 +2,15 @@ package jmri.jmrit.logixng.implementation.configurexml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import jmri.ConfigureManager;
-import jmri.InstanceManager;
+import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.logixng.implementation.DefaultLogixNGManager;
+import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 
 import org.jdom2.Element;
 
@@ -25,7 +27,8 @@ import jmri.util.ThreadingUtil;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultLogixNGManagerXml extends AbstractNamedBeanManagerConfigXML
+        implements ImportExportManagerXml {
 
     public DefaultLogixNGManagerXml() {
     }
@@ -39,7 +42,7 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
     @Override
     public Element store(Object o) {
         boolean hasData = false;
-        
+
         Element logixNGs = new Element("LogixNGs");
         setStoreElementClass(logixNGs);
         LogixNG_Manager tm = (LogixNG_Manager) o;
@@ -312,6 +315,80 @@ public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.Abstrac
                 cmOD.registerConfig(pManager, jmri.Manager.LOGIXNGS);
             }
         });
+    }
+
+    @Override
+    public void addNamedBeansToExport(
+            Object o,
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+
+        LogixNG_Manager tm = (LogixNG_Manager) o;
+        if (tm != null) {
+            for (LogixNG logixNG : tm.getNamedBeanSet()) {
+                ImportExportItemXml.addNameBean(logixNG, tm, LogixNG_Manager.class, map);
+            }
+        }
+    }
+
+    @Override
+    public Element export(Object o) {
+        boolean hasData = false;
+
+        Element logixNGs = new Element("LogixNGs");
+        LogixNG_Manager tm = (LogixNG_Manager) o;
+        if (tm != null) {
+            for (LogixNG_Thread thread : LogixNG_Thread.getThreads()) {
+                Element e = new Element("Thread");  // NOI18N
+                e.addContent(new Element("id").addContent(Integer.toString(thread.getThreadId())));
+                e.addContent(new Element("name").addContent(thread.getThreadName()));
+                logixNGs.addContent(e);
+            }
+
+            for (LogixNG logixNG : tm.getNamedBeanSet()) {
+                log.debug("logixng system name is " + logixNG.getSystemName());  // NOI18N
+                boolean enabled = logixNG.isEnabled();
+                Element elem = new Element("LogixNG");  // NOI18N
+                elem.addContent(new Element("systemName").addContent(logixNG.getSystemName()));  // NOI18N
+
+                // store common part
+                storeCommon(logixNG, elem);
+
+                Element e = new Element("ConditionalNGs");
+                for (int i=0; i < logixNG.getNumConditionalNGs(); i++) {
+                    e.addContent(new Element("systemName").addContent(logixNG.getConditionalNG(i).getSystemName()));
+                }
+                elem.addContent(e);
+
+                elem.setAttribute("enabled", enabled ? "yes" : "no");  // NOI18N
+
+                logixNGs.addContent(elem);
+                hasData = true;
+            }
+
+            Element elemInitializationTable = new Element("InitializationTable");  // NOI18N
+            for (LogixNG logixNG : InstanceManager.getDefault(LogixNG_InitializationManager.class).getList()) {
+                Element e = new Element("LogixNG").addContent(logixNG.getSystemName());   // NOI18N
+                elemInitializationTable.addContent(e);
+            }
+            logixNGs.addContent(elemInitializationTable);
+
+            // Store items on the clipboard
+            Element elemClipboard = new Element("Clipboard");  // NOI18N
+            Clipboard clipboard = tm.getClipboard();
+            if (clipboard.getFemaleSocket().isConnected()) {
+                Base rootObject = clipboard.getFemaleSocket().getConnectedSocket().getObject();
+                try {
+                    Element e = jmri.configurexml.ConfigXmlManager.elementFromObject(rootObject);
+                    if (e != null) {
+                        elemClipboard.addContent(e);
+                    }
+                } catch (Exception e) {
+                    log.error("Error storing action: {}", e, e);
+                }
+            }
+            logixNGs.addContent(elemClipboard);
+        }
+        return hasData ? logixNGs : null;
     }
 
     @Override

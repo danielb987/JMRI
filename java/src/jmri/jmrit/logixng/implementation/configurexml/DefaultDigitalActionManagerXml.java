@@ -1,14 +1,14 @@
 package jmri.jmrit.logixng.implementation.configurexml;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import jmri.ConfigureManager;
-import jmri.InstanceManager;
+import jmri.*;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.logixng.implementation.DefaultDigitalActionManager;
 import jmri.jmrit.logixng.implementation.DefaultMaleDigitalActionSocket;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
@@ -22,10 +22,11 @@ import org.jdom2.Element;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
+public class DefaultDigitalActionManagerXml extends AbstractManagerXml
+        implements ImportExportManagerXml {
 
     private final Map<String, Class<?>> xmlClasses = new HashMap<>();
-    
+
     public DefaultDigitalActionManagerXml() {
     }
 
@@ -103,17 +104,17 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
      * @param actions Element containing the DigitalActionBean elements to load.
      */
     public void loadActions(Element actions) {
-        
+
         List<Element> actionList = actions.getChildren();  // NOI18N
         log.debug("Found " + actionList.size() + " actions");  // NOI18N
 
         for (int i = 0; i < actionList.size(); i++) {
-            
+
             String className = actionList.get(i).getAttribute("class").getValue();
 //            log.error("className: " + className);
-            
+
             Class<?> clazz = xmlClasses.get(className);
-            
+
             if (clazz == null) {
                 try {
                     clazz = Class.forName(className);
@@ -122,7 +123,7 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
                     log.error("cannot load class " + className, ex);
                 }
             }
-            
+
             if (clazz != null) {
                 Constructor<?> c = null;
                 try {
@@ -130,14 +131,14 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
                 } catch (NoSuchMethodException | SecurityException ex) {
                     log.error("cannot create constructor", ex);
                 }
-                
+
                 if (c != null) {
                     try {
                         AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
-                        
+
                         MaleSocket oldLastItem = InstanceManager.getDefault(DigitalActionManager.class).getLastRegisteredMaleSocket();
                         o.load(actionList.get(i), null);
-                        
+
                         // Load male socket data if a new bean has been registered
                         MaleSocket newLastItem = InstanceManager.getDefault(DigitalActionManager.class).getLastRegisteredMaleSocket();
                         if (newLastItem != oldLastItem) loadMaleSocket(actionList.get(i), newLastItem);
@@ -181,6 +182,17 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
                 cmOD.registerConfig(pManager, jmri.Manager.LOGIXNG_DIGITAL_ACTIONS);
             }
         });
+    }
+
+    @Override
+    public void addNamedBeansToExport(
+            Object o,
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+    }
+
+    @Override
+    public Element export(Object o) {
+        return null;
     }
 
     @Override

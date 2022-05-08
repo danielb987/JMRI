@@ -2,15 +2,18 @@ package jmri.configurexml;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import jmri.InstanceManager;
+import jmri.Manager;
+import jmri.NamedBean;
 import jmri.jmrit.XmlFile;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.revhistory.FileHistory;
 import jmri.util.FileUtil;
+
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -145,6 +148,22 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
         confirmAdapterAvailable(o);
         // and add to list
         clist.put(o, x);
+
+        // LogixNG supports import/export of LogixNGs and therefore we need
+        // to also store the LogixNG managers in a separate map.
+        if (o instanceof jmri.jmrit.logixng.SupportsImportExport) {
+            if (o.getClass().getName().contains(".logixng.")) {
+//                System.out.format("::: register LogixNG managers: %s, %d%n", o.getClass().getName(), x);
+                logixNG_Managers.put(o, x);
+            }
+        } else {
+            if ((o != null) && o.getClass().getName().contains(".logixng.")) {
+                // All LogixNG managers are expected to support the
+                // jmri.jmrit.logixng.SupportsImportExport interface.
+                log.error("The LogixNG class {} does not implement the jmri.jmrit.logixng.SupportsImportExport interface",
+                        o.getClass().getName());
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -198,6 +217,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
         tlist.remove(o);
         ulist.remove(o);
         uplist.remove(o);
+        logixNG_Managers.remove(o);
     }
 
     private List<Object> plist = new ArrayList<>();
@@ -206,6 +226,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
     private List<Object> ulist = new ArrayList<>();
     private List<Object> uplist = new ArrayList<>();
     private final List<Element> loadDeferredList = new ArrayList<>();
+    Map<Object, Integer> logixNG_Managers = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * Find the name of the adapter class for an object.
@@ -491,7 +512,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
         XmlAdapter adapter = null;
         try {
             adapter = (XmlAdapter) Class.forName(adapterName(object)).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException 
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException
                     | NoSuchMethodException | java.lang.reflect.InvocationTargetException ex) {
             log.error("Cannot load configuration adapter for {}", object.getClass().getName(), ex);
         }
@@ -572,10 +593,10 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
     @Override
     public boolean load(URL url, boolean registerDeferred) throws JmriConfigureXmlException {
         log.trace("starting load({}, {})", url, registerDeferred);
-        
+
         // we do the actual load on the Swing thread in case it changes visible windows
         Boolean retval = jmri.util.ThreadingUtil.runOnGUIwithReturn(() -> {
-            try { 
+            try {
                 Boolean ret = loadOnSwingThread(url, registerDeferred);
                 return ret;
             } catch (Exception e) {
@@ -583,7 +604,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
                 throw new RuntimeException(e);
             }
         });
-        
+
         log.trace("  ending load({}, {} with {})", url, registerDeferred, retval);
         return retval;
     }
@@ -825,8 +846,6 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
             String userName,
             Throwable exception) {
         // format and log a message (note reordered from arguments)
-//        System.out.format("creationErrorEncountered: %s%n", exception.getMessage());
-//        System.out.format("creationErrorEncountered: %s, %s, %s, %s, %s, %s%n", adapter, operation, description, systemName, userName, exception == null ? null : exception.getMessage());
         ErrorMemo e = new ErrorMemo(
                 adapter, operation, description,
                 systemName, userName, exception, "loading");
@@ -888,6 +907,110 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
     protected List<Element> getLoadDeferredList() {
         return loadDeferredList;
     }
+
+    private boolean addLogixNGConfigStore(Element root) {
+        boolean result = true;
+        List<Map.Entry<Object, Integer>> l = new ArrayList<>(logixNG_Managers.entrySet());
+        Collections.sort(l, (Map.Entry<Object, Integer> o1, Map.Entry<Object, Integer> o2) -> o1.getValue().compareTo(o2.getValue()));
+        for (int i = 0; i < l.size(); i++) {
+            try {
+                Object o = l.get(i).getKey();
+                Element e = elementFromObject(o);
+                if (e != null) {
+                    root.addContent(e);
+                }
+            } catch (Exception e) {
+                storingErrorEncountered(null, "storing to file in addConfigStore",
+                        "Exception thrown", null, null, e);
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    private List<Map.Entry<Object,ImportExportManagerXml>> getLogixNG_ImportExportManagers() {
+        List list = new ArrayList<>();
+
+        List<Map.Entry<Object, Integer>> l = new ArrayList<>(logixNG_Managers.entrySet());
+        Collections.sort(l, (Map.Entry<Object, Integer> o1, Map.Entry<Object, Integer> o2) -> o1.getValue().compareTo(o2.getValue()));
+
+        for (int i = 0; i < l.size(); i++) {
+            Object object = l.get(i).getKey();
+
+            String aName = adapterName(object);
+            log.debug("LogixNG import/export using {}", aName);
+            ImportExportManagerXml adapter;
+            try {
+                adapter = (ImportExportManagerXml) Class.forName(adapterName(object)).getDeclaredConstructor().newInstance();
+                if (adapter != null) list.add(new HashMap.SimpleEntry<>(object, adapter));
+                else log.error("LogixNG import/export adapter is null for {}", object.getClass().getName());
+
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException
+                        | NoSuchMethodException | java.lang.reflect.InvocationTargetException
+                        | IllegalArgumentException | SecurityException | ClassCastException ex) {
+                log.error("Cannot load configuration adapter for {}", object.getClass().getName(), ex);
+            }
+        }
+        return list;
+    }
+
+    private Element logixNG_ExportNamedBeans(Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+        Element exportedNamedBeans = new Element("ExportedNamedBeans");
+        for (var entry : map.entrySet()) {
+            Element manager = new Element("Manager");
+            for (NamedBeanToExport beansToExport : entry.getValue().values()) {
+                if (manager.getChildren().isEmpty()) {
+                    manager.addContent(new Element("Manager").addContent(beansToExport.getManagerClass().getName()));
+                }
+                NamedBean namedBean = beansToExport.getNamedBean();
+                String userName = namedBean.getUserName();
+                Element namedBeanElement = new Element("NamedBean");
+                namedBeanElement.addContent(new Element("systemName").addContent(namedBean.getSystemName()));
+                if (userName != null && !userName.isEmpty()) {
+                    namedBeanElement.addContent(new Element("userName").addContent(namedBean.getUserName()));
+                }
+                manager.addContent(namedBeanElement);
+            }
+            exportedNamedBeans.addContent(manager);
+        }
+        return exportedNamedBeans;
+    }
+
+    @Override
+    public boolean logixNG_ExportAll(File file) {
+
+        List<Map.Entry<Object,ImportExportManagerXml>> importExportManagers = getLogixNG_ImportExportManagers();
+        Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map = new HashMap<>();
+
+        boolean result = true;
+
+        Element root = initStore();
+
+        // Store all the named beans that the LogixNGs are using
+        for (var entry : importExportManagers) {
+            entry.getValue().addNamedBeansToExport(entry.getKey(), map);
+        }
+        root.addContent(logixNG_ExportNamedBeans(map));
+
+        // Store all the LogixNG managers
+        for (var entry : importExportManagers) {
+            Element e = entry.getValue().export(entry.getKey());
+            if (e != null) root.addContent(e);
+//            else log.error("Element is null for {}", entry.getKey().getClass().getName());
+        }
+
+        if (!finalStore(root, file)) {
+            result = false;
+        }
+        return result;
+    }
+
+
+
+
+
+
+
 
     // initialize logging
     private final static Logger log = LoggerFactory.getLogger(ConfigXmlManager.class);

@@ -13,12 +13,12 @@ import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
-import jmri.InstanceManager;
-import jmri.Manager;
-import jmri.NamedBean;
+import jmri.*;
 import jmri.NamedBean.BadSystemNameException;
 import jmri.NamedBean.BadUserNameException;
-import jmri.UserPreferencesManager;
+import static jmri.configurexml.LoadStoreBaseAction.getUserFileChooser;
+import static jmri.configurexml.StoreXmlConfigAction.getFileCustom;
+import jmri.jmrit.beantable.Bundle;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.tools.swing.AbstractLogixNGEditor;
 import jmri.util.FileUtil;
@@ -393,12 +393,71 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             importButton.addActionListener((ActionEvent e1) -> {
                 importPressed(e1);
             });
+            JButton exportAllButton = new JButton(Bundle.getMessage("ButtonExportAllLogixNGs"));
+            beanTableFrame.addToBottomBox(exportAllButton, this.getClass().getName());
+            exportAllButton.addActionListener((ActionEvent e1) -> {
+                exportAllPressed(e1);
+            });
         }
     }
 
     private void importPressed(ActionEvent e) {
         // Do something
-        System.out.format("Daniel%n");
+        System.out.format("Daniel: importPressed%n");
+    }
+
+    private void exportAllPressed(ActionEvent e) {
+        // Do something
+        System.out.format("Daniel: exportAllPressed%n");
+
+/*
+        JFileChooser myUserFileChooser = getUserFileChooser();
+        myUserFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        myUserFileChooser.setApproveButtonText(Bundle.getMessage("ButtonSave"));  // NOI18N
+        myUserFileChooser.setDialogTitle(Bundle.getMessage("StoreTitle"));  // NOI18N
+        java.io.File file = getFileCustom(myUserFileChooser);
+
+        if (file == null) {
+            return;
+        }
+*/
+        java.io.File file = new File(FileUtil.getUserFilesPath() + "DanielExportLogixNG.xml");
+/*
+        // make a backup file
+        ConfigureManager cm = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
+        if (cm == null) {
+            log.error("Failed to make backup due to unable to get default configure manager");  // NOI18N
+        } else {
+            cm.makeBackup(file);
+            // and finally store
+            boolean results = cm.storeUser(file);
+            log.debug(results ? "store was successful" : "store failed");  // NOI18N
+            if (!results) {
+                JOptionPane.showMessageDialog(null,
+                        jmri.configurexml.Bundle.getMessage("StoreHasErrors") + "\n"  // NOI18N
+                        + jmri.configurexml.Bundle.getMessage("StoreIncomplete") + "\n"  // NOI18N
+                        + jmri.configurexml.Bundle.getMessage("ConsoleWindowHasInfo"),  // NOI18N
+                        jmri.configurexml.Bundle.getMessage("StoreError"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+            } else {
+                InstanceManager.getDefault(jmri.jmrit.display.EditorManager.class).setChanged(false);
+            }
+        }
+*/
+
+        ConfigureManager cm = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
+        if (cm == null) {
+            log.error("Failed to make backup due to unable to get default configure manager");  // NOI18N
+        } else {
+            boolean results = cm.logixNG_ExportAll(file);
+            log.debug(results ? "store was successful" : "store failed");  // NOI18N
+            if (!results) {
+                JOptionPane.showMessageDialog(null,
+                        Bundle.getMessage("StoreHasErrors") + "\n"  // NOI18N
+                        + Bundle.getMessage("StoreIncomplete") + "\n"  // NOI18N
+                        + Bundle.getMessage("ConsoleWindowHasInfo"),  // NOI18N
+                        Bundle.getMessage("StoreError"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+            }
+        }
     }
 
     /**
@@ -470,7 +529,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
      * @param e the event heard
      */
     private void exportBeanPressed(ActionEvent e) {
-        E sourceBean = getManager().getBySystemName(_logixNGSysName);
+//        E sourceBean = getManager().getBySystemName(_logixNGSysName);
     }
 
     protected void exportBean(E bean) {

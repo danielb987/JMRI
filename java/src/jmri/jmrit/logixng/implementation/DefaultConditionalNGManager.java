@@ -20,7 +20,7 @@ import jmri.util.*;
  * @author Dave Sand          Copyright (C) 2021
  */
 public class DefaultConditionalNGManager extends AbstractManager<ConditionalNG>
-        implements ConditionalNG_Manager {
+        implements ConditionalNG_Manager, SupportsImportExport {
 
 
     public DefaultConditionalNGManager() {
@@ -241,7 +241,7 @@ public class DefaultConditionalNGManager extends AbstractManager<ConditionalNG>
             vc.vetoableChange(evt);
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
 //    @OverridingMethodsMustInvokeSuper
@@ -253,7 +253,7 @@ public class DefaultConditionalNGManager extends AbstractManager<ConditionalNG>
                 maleSocket.getManager().deleteBean(maleSocket, property);
             }
         }
-        
+
         // throws PropertyVetoException if vetoed
         fireVetoableChange(property, conditionalNG);
         if (property.equals("DoDelete")) { // NOI18N
@@ -263,7 +263,7 @@ public class DefaultConditionalNGManager extends AbstractManager<ConditionalNG>
             conditionalNG.dispose();
         }
     }
-    
-    
+
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultConditionalNGManager.class);
 }

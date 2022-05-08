@@ -6,11 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jmri.ConfigureManager;
-import jmri.InstanceManager;
+import jmri.*;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.Module;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.logixng.implementation.DefaultModuleManager;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import jmri.util.ThreadingUtil;
@@ -23,7 +24,8 @@ import org.jdom2.Element;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultModuleManagerXml extends AbstractManagerXml {
+public class DefaultModuleManagerXml extends AbstractManagerXml
+        implements ImportExportManagerXml {
 
     private final Map<String, Class<?>> xmlClasses = new HashMap<>();
 
@@ -164,6 +166,17 @@ public class DefaultModuleManagerXml extends AbstractManagerXml {
                 cmOD.registerConfig(pManager, jmri.Manager.LOGIXNG_MODULES);
             }
         });
+    }
+
+    @Override
+    public void addNamedBeansToExport(
+            Object o,
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+    }
+
+    @Override
+    public Element export(Object o) {
+        return null;
     }
 
     @Override

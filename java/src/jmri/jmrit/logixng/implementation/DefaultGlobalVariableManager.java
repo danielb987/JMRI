@@ -20,7 +20,7 @@ import jmri.util.ThreadingUtil;
  * @author Daniel Bergqvist   Copyright (C) 2022
  */
 public class DefaultGlobalVariableManager extends AbstractManager<GlobalVariable>
-        implements GlobalVariableManager {
+        implements GlobalVariableManager, SupportsImportExport {
 
 
     public DefaultGlobalVariableManager() {

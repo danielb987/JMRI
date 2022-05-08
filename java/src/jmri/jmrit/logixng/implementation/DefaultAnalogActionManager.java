@@ -15,35 +15,35 @@ import jmri.util.*;
 
 /**
  * Class providing the basic logic of the ActionManager interface.
- * 
+ *
  * @author Dave Duchamp       Copyright (C) 2007
  * @author Daniel Bergqvist   Copyright (C) 2018
  */
 public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogActionSocket>
-        implements AnalogActionManager {
+        implements AnalogActionManager, SupportsImportExport {
 
     private final Map<Category, List<Class<? extends Base>>> actionClassList = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
-    
+
     public DefaultAnalogActionManager() {
         InstanceManager.getDefault(LogixNG_Manager.class).registerManager(this);
-        
+
         for (AnalogActionFactory actionFactory : ServiceLoader.load(AnalogActionFactory.class)) {
             actionFactory.init();
         }
-        
+
         for (Category category : Category.values()) {
             actionClassList.put(category, new ArrayList<>());
         }
-        
+
         for (AnalogActionFactory actionFactory : ServiceLoader.load(AnalogActionFactory.class)) {
             actionFactory.getClasses().forEach((entry) -> {
 //                System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
                 actionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
-        
+
         for (MaleAnalogActionSocketFactory maleSocketFactory : ServiceLoader.load(MaleAnalogActionSocketFactory.class)) {
             _maleSocketFactories.add(maleSocketFactory);
         }
@@ -66,7 +66,7 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
     public MaleSocket getLastRegisteredMaleSocket() {
         return _lastRegisteredBean;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public MaleAnalogActionSocket registerBean(MaleAnalogActionSocket maleSocket) {
@@ -74,7 +74,7 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
         _lastRegisteredBean = maleSocket;
         return bean;
     }
-    
+
     /**
      * Remember a NamedBean Object created outside the manager.
      * This method creates a MaleActionSocket for the action.
@@ -84,24 +84,24 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
     @Override
     public MaleAnalogActionSocket registerAction(@Nonnull AnalogActionBean action)
             throws IllegalArgumentException {
-        
+
         if (action instanceof MaleAnalogActionSocket) {
             throw new IllegalArgumentException("registerAction() cannot register a MaleAnalogActionSocket. Use the method register() instead.");
         }
-        
+
         // Check if system name is valid
         if (this.validSystemNameFormat(action.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + action.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException(String.format("System name is invalid: %s", action.getSystemName()));
         }
-        
+
         // Keep track of the last created auto system name
         updateAutoNumber(action.getSystemName());
-        
+
         MaleAnalogActionSocket maleSocket = createMaleActionSocket(action);
         return registerBean(maleSocket);
     }
-    
+
     @Override
     public int getXMLOrder() {
         return LOGIXNG_ANALOG_ACTIONS;
@@ -153,7 +153,7 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
     public String getBeanTypeHandled(boolean plural) {
         return Bundle.getMessage(plural ? "BeanNameAnalogActions" : "BeanNameAnalogAction");
     }
-    
+
     static volatile DefaultAnalogActionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
@@ -161,7 +161,7 @@ public class DefaultAnalogActionManager extends AbstractBaseManager<MaleAnalogAc
         if (!ThreadingUtil.isGUIThread()) {
             LoggingUtil.warnOnce(log, "instance() called on wrong thread");
         }
-        
+
         if (_instance == null) {
             _instance = new DefaultAnalogActionManager();
         }

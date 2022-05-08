@@ -484,4 +484,9 @@ public class JmriConfigurationManager implements ConfigureManager {
         return legacy.getValidate();
     }
 
+    @Override
+    public boolean logixNG_ExportAll(File file) {
+        return legacy.logixNG_ExportAll(file);
+    }
+
 }
