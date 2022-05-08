@@ -325,7 +325,7 @@ public class DefaultLogixNGManagerXml extends AbstractNamedBeanManagerConfigXML
         LogixNG_Manager tm = (LogixNG_Manager) o;
         if (tm != null) {
             for (LogixNG logixNG : tm.getNamedBeanSet()) {
-                ImportExportItemXml.addNameBean(logixNG, tm, LogixNG_Manager.class, map);
+                ImportExportItemXml.addNameBean(logixNG, tm, LogixNG_Manager.class, map, true);
             }
         }
     }

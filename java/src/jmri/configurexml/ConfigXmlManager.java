@@ -907,7 +907,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
     protected List<Element> getLoadDeferredList() {
         return loadDeferredList;
     }
-
+/*
     private boolean addLogixNGConfigStore(Element root) {
         boolean result = true;
         List<Map.Entry<Object, Integer>> l = new ArrayList<>(logixNG_Managers.entrySet());
@@ -927,7 +927,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
         }
         return result;
     }
-
+*/
     private List<Map.Entry<Object,ImportExportManagerXml>> getLogixNG_ImportExportManagers() {
         List list = new ArrayList<>();
 
@@ -956,11 +956,13 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
 
     private Element logixNG_ExportNamedBeans(Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
         Element exportedNamedBeans = new Element("ExportedNamedBeans");
+        Element namedBeansElement = new Element("NamedBeans");
         for (var entry : map.entrySet()) {
             Element manager = new Element("Manager");
             for (NamedBeanToExport beansToExport : entry.getValue().values()) {
                 if (manager.getChildren().isEmpty()) {
                     manager.addContent(new Element("Manager").addContent(beansToExport.getManagerClass().getName()));
+                    manager.addContent(new Element("isLogixNG").addContent(beansToExport.isLogixNG() ? "yes" : "no"));
                 }
                 NamedBean namedBean = beansToExport.getNamedBean();
                 String userName = namedBean.getUserName();
@@ -969,8 +971,9 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
                 if (userName != null && !userName.isEmpty()) {
                     namedBeanElement.addContent(new Element("userName").addContent(namedBean.getUserName()));
                 }
-                manager.addContent(namedBeanElement);
+                namedBeansElement.addContent(namedBeanElement);
             }
+            manager.addContent(namedBeansElement);
             exportedNamedBeans.addContent(manager);
         }
         return exportedNamedBeans;

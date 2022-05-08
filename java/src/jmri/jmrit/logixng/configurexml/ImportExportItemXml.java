@@ -26,12 +26,14 @@ public interface ImportExportItemXml {
      * @param manager       the manager for the bean. InstanceManager.getDefault(TurnoutManager.class)
      * @param managerClass  the class. TurnoutManager.class
      * @param map           the map to add the bean to
+     * @param isLogixNG     is this bean a LogixNG bean (Global variable, action, expression, ...)
      */
     public static void addNameBean(
             NamedBean bean,
             Manager<? extends NamedBean> manager,
             Class<? extends Manager> managerClass,
-            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map,
+            boolean isLogixNG) {
 
         Map<String,NamedBeanToExport> subMap = map.get(manager);
         if (subMap == null) {
@@ -40,7 +42,7 @@ public interface ImportExportItemXml {
         }
         NamedBeanToExport data = subMap.get(bean.getSystemName());
         if (data == null) {
-            data = new NamedBeanToExport(bean, manager, managerClass);
+            data = new NamedBeanToExport(bean, manager, managerClass, isLogixNG);
             subMap.put(bean.getSystemName(), data);
         }
     }
@@ -50,11 +52,13 @@ public interface ImportExportItemXml {
         private final NamedBean _namedBean;
         private final Manager<? extends NamedBean> _manager;
         private final Class<? extends Manager> _managerClass;
+        private final boolean _isLogixNG;
 
-        public NamedBeanToExport(NamedBean bean, Manager<? extends NamedBean> manager, Class<? extends Manager> managerClass) {
+        public NamedBeanToExport(NamedBean bean, Manager<? extends NamedBean> manager, Class<? extends Manager> managerClass, boolean isLogixNG) {
             _namedBean = bean;
             _manager = manager;
             _managerClass = managerClass;
+            _isLogixNG = isLogixNG;
         }
 
         public NamedBean getNamedBean() {
@@ -67,6 +71,10 @@ public interface ImportExportItemXml {
 
         public Class<? extends Manager> getManagerClass() {
             return _managerClass;
+        }
+
+        public boolean isLogixNG() {
+            return _isLogixNG;
         }
     }
 
