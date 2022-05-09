@@ -3994,6 +3994,47 @@ public class CreateLogixNGTreeScaffold {
         });
 
 
+        // Verify that we have all the actions and expressions in the tree, even
+        // actions and expressions defined outside of the jmri.jmrit.logixng tree.
+
+        Set<Class<? extends Base>> testedClasses = new HashSet<>();
+        Map<Class<? extends FemaleSocket>, FemaleSocket> femaleSocketMap = new HashMap<>();
+        List<Class<? extends Base>> missingClasses = new ArrayList<>();
+
+        femaleRootSocket.forEntireTree((Base b) -> {
+//            if (!(b instanceof FemaleSocket) && !(b instanceof MaleSocket)) {
+            if (b instanceof MaleSocket) {
+                Base o = ((MaleSocket) b).getObject();
+                while (o instanceof MaleSocket) {
+                    o = ((MaleSocket) o).getObject();
+                }
+//                System.out.format("Class: %s%n", o.getClass().getName());
+                testedClasses.add(o.getClass());
+                for (int i=0; i < o.getChildCount(); i++) {
+                    FemaleSocket fs = o.getChild(i);
+                    femaleSocketMap.put(fs.getClass(), fs);
+                }
+            }
+        });
+
+        for (var femaleSocket : femaleSocketMap.values()) {
+            var connectableClasses = femaleSocket.getConnectableClasses();
+
+            for (var list : connectableClasses.values()) {
+                for (var clazz : list) {
+                    if (!testedClasses.contains(clazz)) {
+//                        System.out.format("Class is not tested: %s%n", clazz.getName());
+                        missingClasses.add(clazz);
+                    }
+                }
+            }
+        }
+
+        for (var clazz : missingClasses) {
+            log.error("Class {} is not added by CreateLogixNGTreeScaffold.createLogixNGTree()", clazz.getName());
+        }
+        Assert.assertTrue(missingClasses.isEmpty());
+
 /*
         if (1==1) {
             final String treeIndent = "   ";
@@ -4210,6 +4251,6 @@ public class CreateLogixNGTreeScaffold {
     }
 
 
-//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CreateLogixNGTreeScaffold.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CreateLogixNGTreeScaffold.class);
 
 }
