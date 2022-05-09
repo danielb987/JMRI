@@ -16,6 +16,9 @@ import jmri.jmrit.logixng.expressions.*;
 import jmri.jmrit.logixng.util.LogixNG_SelectTable;
 import jmri.jmrit.logixng.util.LogixNG_Thread;
 import jmri.jmrit.logixng.util.parser.ParserException;
+import jmri.jmrix.loconet.*;
+import jmri.jmrix.mqtt.MqttSystemConnectionMemo;
+import jmri.util.JUnitUtil;
 
 import org.junit.*;
 
@@ -26,6 +29,11 @@ import org.junit.*;
  * compare the LogixNGs before and after store and load.
  */
 public class CreateLogixNGTreeScaffold {
+
+    private static boolean setupHasBeenCalled = false;
+
+    private static LocoNetSystemConnectionMemo _locoNetMemo;
+    private static MqttSystemConnectionMemo _mqttMemo;
 
 //    private AudioManager audioManager;
 
@@ -39,6 +47,9 @@ public class CreateLogixNGTreeScaffold {
 
     public static void createLogixNGTree() throws PropertyVetoException, Exception {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+
+        // Ensure the setUp() and tearDown() methods of this class are called.
+        Assert.assertTrue(setupHasBeenCalled);
 /*
         audioManager = new jmri.jmrit.audio.DefaultAudioManager(
                 InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class));
@@ -4030,6 +4041,10 @@ public class CreateLogixNGTreeScaffold {
             }
         }
 
+        Collections.sort(missingClasses, (o1,o2) -> {
+            return o1.getName().compareTo(o2.getName());
+        });
+
         for (var clazz : missingClasses) {
             log.error("Class {} is not added by CreateLogixNGTreeScaffold.createLogixNGTree()", clazz.getName());
         }
@@ -4248,6 +4263,53 @@ public class CreateLogixNGTreeScaffold {
         Assert.assertEquals(0, InstanceManager.getDefault(NamedTableManager.class).getNamedBeanSet().size());
         Assert.assertEquals(0, InstanceManager.getDefault(GlobalVariableManager.class).getNamedBeanSet().size());
         Assert.assertEquals(0, logixNG_InitializationManager.getList().size());
+    }
+
+
+    public static void setUp() {
+        JUnitUtil.setUp();
+        JUnitUtil.resetInstanceManager();
+        JUnitUtil.resetProfileManager();
+        JUnitUtil.initConfigureManager();
+        JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initDebugPowerManager();
+
+        JUnitUtil.initInternalSignalHeadManager();
+        JUnitUtil.initDefaultSignalMastManager();
+//        JUnitUtil.initSignalMastLogicManager();
+        JUnitUtil.initOBlockManager();
+        JUnitUtil.initWarrantManager();
+
+        LocoNetInterfaceScaffold lnis = new LocoNetInterfaceScaffold();
+        SlotManager sm = new SlotManager(lnis);
+        _locoNetMemo = new LocoNetSystemConnectionMemo(lnis, sm);
+        sm.setSystemConnectionMemo(_locoNetMemo);
+        InstanceManager.setDefault(LocoNetSystemConnectionMemo.class, _locoNetMemo);
+
+        _mqttMemo = new MqttSystemConnectionMemo();
+        InstanceManager.setDefault(MqttSystemConnectionMemo.class, _mqttMemo);
+
+//        JUnitUtil.initLogixNGManager();
+
+        setupHasBeenCalled = true;
+    }
+
+    public static void tearDown() {
+        setupHasBeenCalled = false;     // Reset for the next test
+
+        _locoNetMemo = null;
+        _mqttMemo = null;
+
+//        JUnitAppender.clearBacklog();    // REMOVE THIS!!!
+        jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
+
+        // Delete all the LogixNGs, ConditionalNGs, and so on.
+        cleanup();
+
+        JUnitUtil.deregisterBlockManagerShutdownTask();
+        JUnitUtil.tearDown();
     }
 
 
