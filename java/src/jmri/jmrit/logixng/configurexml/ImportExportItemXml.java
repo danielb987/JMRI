@@ -31,7 +31,7 @@ public interface ImportExportItemXml {
     public static void addNameBean(
             NamedBean bean,
             Manager<? extends NamedBean> manager,
-            Class<? extends Manager> managerClass,
+            Class<? extends Manager<? extends NamedBean>> managerClass,
             Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map,
             boolean isLogixNG) {
 
@@ -51,10 +51,15 @@ public interface ImportExportItemXml {
     public static class NamedBeanToExport {
         private final NamedBean _namedBean;
         private final Manager<? extends NamedBean> _manager;
-        private final Class<? extends Manager> _managerClass;
+        private final Class<? extends Manager<? extends NamedBean>> _managerClass;
         private final boolean _isLogixNG;
 
-        public NamedBeanToExport(NamedBean bean, Manager<? extends NamedBean> manager, Class<? extends Manager> managerClass, boolean isLogixNG) {
+        public NamedBeanToExport(
+                NamedBean bean,
+                Manager<? extends NamedBean> manager,
+                Class<? extends Manager<? extends NamedBean>> managerClass,
+                boolean isLogixNG) {
+
             _namedBean = bean;
             _manager = manager;
             _managerClass = managerClass;
@@ -69,7 +74,7 @@ public interface ImportExportItemXml {
             return _manager;
         }
 
-        public Class<? extends Manager> getManagerClass() {
+        public Class<? extends Manager<? extends NamedBean>> getManagerClass() {
             return _managerClass;
         }
 
@@ -77,7 +82,7 @@ public interface ImportExportItemXml {
             return _isLogixNG;
         }
     }
-
+/*
     public static class NamedBeanToImport {
         private final String _origSystemName;
         private final String _origUserName;
@@ -88,5 +93,5 @@ public interface ImportExportItemXml {
             throw new RuntimeException("Daniel");
         }
     }
-
+*/
 }

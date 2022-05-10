@@ -929,7 +929,7 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
     }
 */
     private List<Map.Entry<Object,ImportExportManagerXml>> getLogixNG_ImportExportManagers() {
-        List list = new ArrayList<>();
+        List<Map.Entry<Object, ImportExportManagerXml>> list = new ArrayList<>();
 
         List<Map.Entry<Object, Integer>> l = new ArrayList<>(logixNG_Managers.entrySet());
         Collections.sort(l, (Map.Entry<Object, Integer> o1, Map.Entry<Object, Integer> o2) -> o1.getValue().compareTo(o2.getValue()));
