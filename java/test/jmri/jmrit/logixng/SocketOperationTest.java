@@ -168,35 +168,13 @@ public class SocketOperationTest {
 
     @Before
     public void setUp() {
-        JUnitUtil.setUp();
-        JUnitUtil.resetInstanceManager();
-        JUnitUtil.resetProfileManager();
-        JUnitUtil.initConfigureManager();
-        JUnitUtil.initInternalTurnoutManager();
-        JUnitUtil.initInternalLightManager();
-        JUnitUtil.initInternalSensorManager();
-        JUnitUtil.initDebugPowerManager();
-
-        JUnitUtil.initInternalSignalHeadManager();
-        JUnitUtil.initDefaultSignalMastManager();
-//        JUnitUtil.initSignalMastLogicManager();
-        JUnitUtil.initOBlockManager();
-        JUnitUtil.initWarrantManager();
-
-//        JUnitUtil.initLogixNGManager();
+        CreateLogixNGTreeScaffold.setUp();
     }
 
     @After
     public void tearDown() {
 //        JUnitAppender.clearBacklog();    // REMOVE THIS!!!
-        jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
-
-        // Delete all the LogixNGs, ConditionalNGs, and so on.
-        CreateLogixNGTreeScaffold.cleanup();
-
-        JUnitUtil.deregisterBlockManagerShutdownTask();
-        JUnitUtil.deregisterEditorManagerShutdownTask();
-        JUnitUtil.tearDown();
+        CreateLogixNGTreeScaffold.tearDown();
     }
 
 

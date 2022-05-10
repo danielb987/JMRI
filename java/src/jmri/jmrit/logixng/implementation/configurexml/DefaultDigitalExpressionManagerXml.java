@@ -1,17 +1,17 @@
 package jmri.jmrit.logixng.implementation.configurexml;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jmri.ConfigureManager;
-import jmri.InstanceManager;
+import jmri.*;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.logixng.implementation.DefaultDigitalExpressionManager;
 import jmri.jmrit.logixng.implementation.DefaultMaleDigitalExpressionSocket;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
@@ -25,10 +25,11 @@ import org.jdom2.Element;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
+public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml
+        implements ImportExportManagerXml {
 
     private final Map<String, Class<?>> xmlClasses = new HashMap<>();
-    
+
     public DefaultDigitalExpressionManagerXml() {
     }
 
@@ -106,18 +107,18 @@ public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
      * @param expressions Element containing the Logix elements to load.
      */
     public void loadExpressions(Element expressions) {
-        
+
         List<Element> expressionList = expressions.getChildren();  // NOI18N
         log.debug("Found " + expressionList.size() + " expressions");  // NOI18N
 //        DigitalExpressionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class);
 
         for (int i = 0; i < expressionList.size(); i++) {
-            
+
             String className = expressionList.get(i).getAttribute("class").getValue();
 //            log.warn("className: " + className);
-            
+
             Class<?> clazz = xmlClasses.get(className);
-            
+
             if (clazz == null) {
                 try {
                     clazz = Class.forName(className);
@@ -126,7 +127,7 @@ public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
                     log.error("cannot load class " + className, ex);
                 }
             }
-            
+
             if (clazz != null) {
                 Constructor<?> c = null;
                 try {
@@ -134,14 +135,14 @@ public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
                 } catch (NoSuchMethodException | SecurityException ex) {
                     log.error("cannot create constructor", ex);
                 }
-                
+
                 if (c != null) {
                     try {
                         AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
-                        
+
                         MaleSocket oldLastItem = InstanceManager.getDefault(DigitalExpressionManager.class).getLastRegisteredMaleSocket();
                         o.load(expressionList.get(i), null);
-                        
+
                         // Load male socket data if a new bean has been registered
                         MaleSocket newLastItem = InstanceManager.getDefault(DigitalExpressionManager.class).getLastRegisteredMaleSocket();
                         if (newLastItem != oldLastItem) loadMaleSocket(expressionList.get(i), newLastItem);
@@ -186,6 +187,17 @@ public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
                 cmOD.registerConfig(pManager, jmri.Manager.LOGIXNG_DIGITAL_EXPRESSIONS);
             }
         });
+    }
+
+    @Override
+    public void addNamedBeansToExport(
+            Object o,
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+    }
+
+    @Override
+    public Element export(Object o) {
+        return null;
     }
 
     @Override

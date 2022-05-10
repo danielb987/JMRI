@@ -1,14 +1,11 @@
 package jmri.jmrit.logixng.implementation.configurexml;
 
-import java.util.List;
+import java.util.*;
 
-import jmri.ConfigureManager;
-import jmri.InstanceManager;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
+import jmri.*;
+import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNG;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGManager;
 import jmri.jmrit.logixng.util.LogixNG_Thread;
@@ -24,7 +21,8 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright (c) 2018
  * @author Dave Sand        Copyright (c) 2021
  */
-public class DefaultConditionalNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultConditionalNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML
+        implements ImportExportManagerXml {
 
     public DefaultConditionalNGManagerXml() {
     }
@@ -209,6 +207,17 @@ public class DefaultConditionalNGManagerXml extends jmri.managers.configurexml.A
                 cmOD.registerConfig(pManager, jmri.Manager.LOGIXNGS);
             }
         });
+    }
+
+    @Override
+    public void addNamedBeansToExport(
+            Object o,
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+    }
+
+    @Override
+    public Element export(Object o) {
+        return null;
     }
 
     @Override

@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jmri.ConfigureManager;
-import jmri.InstanceManager;
+import jmri.*;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
+import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
 import jmri.jmrit.logixng.implementation.DefaultNamedTableManager;
 import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
 import jmri.util.ThreadingUtil;
@@ -22,10 +23,11 @@ import org.jdom2.Element;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultNamedTableManagerXml extends AbstractManagerXml {
+public class DefaultNamedTableManagerXml extends AbstractManagerXml
+        implements ImportExportManagerXml {
 
     private final Map<String, Class<?>> xmlClasses = new HashMap<>();
-    
+
     public DefaultNamedTableManagerXml() {
     }
 
@@ -93,17 +95,17 @@ public class DefaultNamedTableManagerXml extends AbstractManagerXml {
      * @param expressions Element containing the Logix elements to load.
      */
     public void loadTables(Element expressions) {
-        
+
         List<Element> expressionList = expressions.getChildren();  // NOI18N
         log.debug("Found " + expressionList.size() + " tables");  // NOI18N
 
         for (int i = 0; i < expressionList.size(); i++) {
-            
+
             String className = expressionList.get(i).getAttribute("class").getValue();
 //            log.error("className: " + className);
-            
+
             Class<?> clazz = xmlClasses.get(className);
-            
+
             if (clazz == null) {
                 try {
                     clazz = Class.forName(className);
@@ -112,7 +114,7 @@ public class DefaultNamedTableManagerXml extends AbstractManagerXml {
                     log.error("cannot load class " + className, ex);
                 }
             }
-            
+
             if (clazz != null) {
                 Constructor<?> c = null;
                 try {
@@ -120,7 +122,7 @@ public class DefaultNamedTableManagerXml extends AbstractManagerXml {
                 } catch (NoSuchMethodException | SecurityException ex) {
                     log.error("cannot create constructor", ex);
                 }
-                
+
                 if (c != null) {
                     try {
                         AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
@@ -164,6 +166,17 @@ public class DefaultNamedTableManagerXml extends AbstractManagerXml {
                 cmOD.registerConfig(pManager, jmri.Manager.LOGIXNG_TABLES);
             }
         });
+    }
+
+    @Override
+    public void addNamedBeansToExport(
+            Object o,
+            Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
+    }
+
+    @Override
+    public Element export(Object o) {
+        return null;
     }
 
     @Override

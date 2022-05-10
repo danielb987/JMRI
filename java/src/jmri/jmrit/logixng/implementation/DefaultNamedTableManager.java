@@ -21,7 +21,7 @@ import jmri.util.*;
  * @author Daniel Bergqvist   Copyright (C) 2020
  */
 public class DefaultNamedTableManager extends AbstractManager<NamedTable>
-        implements NamedTableManager {
+        implements NamedTableManager, SupportsImportExport {
 
     DecimalFormat paddedNumber = new DecimalFormat("0000");
 

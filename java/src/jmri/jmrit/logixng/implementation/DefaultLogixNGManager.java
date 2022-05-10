@@ -26,7 +26,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
  * @author Daniel Bergqvist   Copyright (C) 2018
  */
 public class DefaultLogixNGManager extends AbstractManager<LogixNG>
-        implements LogixNG_Manager {
+        implements LogixNG_Manager, SupportsImportExport {
 
 
     private final Map<String, Manager<? extends MaleSocket>> _managers = new HashMap<>();

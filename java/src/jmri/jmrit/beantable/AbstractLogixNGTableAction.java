@@ -13,12 +13,12 @@ import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
-import jmri.InstanceManager;
-import jmri.Manager;
-import jmri.NamedBean;
+import jmri.*;
 import jmri.NamedBean.BadSystemNameException;
 import jmri.NamedBean.BadUserNameException;
-import jmri.UserPreferencesManager;
+import static jmri.configurexml.LoadStoreBaseAction.getUserFileChooser;
+import static jmri.configurexml.StoreXmlConfigAction.getFileCustom;
+import jmri.jmrit.beantable.Bundle;
 import jmri.jmrit.logixng.Base;
 import jmri.jmrit.logixng.tools.swing.AbstractLogixNGEditor;
 import jmri.util.FileUtil;
@@ -225,6 +225,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
     // Edit E Variables
     private boolean _inEditMode = false;
     private boolean _inCopyMode = false;
+    private boolean _inExportMode = false;
 
     // ------------ Methods for Add bean Window ------------
 
@@ -333,6 +334,43 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
         _logixNGSysName = sName;
     }
 
+    /**
+     * Respond to the Copy bean button in Add bean window.
+     * <p>
+     * Provides a pane to set new properties of the copy.
+     *
+     * @param sName system name of bean to be copied
+     */
+    void exportPressed(String sName) {
+        if (!checkFlags(sName)) {
+            return;
+        }
+
+        Runnable t = new Runnable() {
+            @Override
+            public void run() {
+//                JOptionPane.showMessageDialog(null, "Copy is not implemented yet.", "Error", JOptionPane.ERROR_MESSAGE);
+
+//                JPanel panel5 = makeAddFrame("TitleCopyLogixNG", "Copy");    // NOI18N
+                JPanel panel5 = makeAddFrame("TitleExportLogixNG", "Export");    // NOI18N
+                // Create bean
+                JButton export = new JButton(Bundle.getMessage("ButtonExport"));  // NOI18N
+                panel5.add(export);
+                export.addActionListener((ActionEvent e) -> {
+                    exportBeanPressed(e);
+                });
+                addLogixNGFrame.pack();
+                addLogixNGFrame.setVisible(true);
+
+                _inExportMode = false;
+            }
+        };
+        log.debug("exportPressed started for {}", sName);  // NOI18N
+        javax.swing.SwingUtilities.invokeLater(t);
+        _inExportMode = true;
+        _logixNGSysName = sName;
+    }
+
     String _logixNGSysName;
 
     protected void copyBean(@Nonnull E sourceBean, @Nonnull E targetBean) {
@@ -341,6 +379,85 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
 
     protected boolean isCopyBeanSupported() {
         return false;
+    }
+
+    protected boolean isExportBeanSupported() {
+        return false;
+    }
+
+    @Override
+    public void addToFrame(@Nonnull BeanTableFrame<E> beanTableFrame) {
+        if (isExportBeanSupported()) {
+            JButton importButton = new JButton(Bundle.getMessage("ButtonImportLogixNG"));
+            beanTableFrame.addToBottomBox(importButton, this.getClass().getName());
+            importButton.addActionListener((ActionEvent e1) -> {
+                importPressed(e1);
+            });
+            JButton exportAllButton = new JButton(Bundle.getMessage("ButtonExportAllLogixNGs"));
+            beanTableFrame.addToBottomBox(exportAllButton, this.getClass().getName());
+            exportAllButton.addActionListener((ActionEvent e1) -> {
+                exportAllPressed(e1);
+            });
+        }
+    }
+
+    private void importPressed(ActionEvent e) {
+        // Do something
+        System.out.format("Daniel: importPressed%n");
+    }
+
+    private void exportAllPressed(ActionEvent e) {
+        // Do something
+        System.out.format("Daniel: exportAllPressed%n");
+
+/*
+        JFileChooser myUserFileChooser = getUserFileChooser();
+        myUserFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        myUserFileChooser.setApproveButtonText(Bundle.getMessage("ButtonSave"));  // NOI18N
+        myUserFileChooser.setDialogTitle(Bundle.getMessage("StoreTitle"));  // NOI18N
+        java.io.File file = getFileCustom(myUserFileChooser);
+
+        if (file == null) {
+            return;
+        }
+*/
+        java.io.File file = new File(FileUtil.getUserFilesPath() + "DanielExportLogixNG.xml");
+/*
+        // make a backup file
+        ConfigureManager cm = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
+        if (cm == null) {
+            log.error("Failed to make backup due to unable to get default configure manager");  // NOI18N
+        } else {
+            cm.makeBackup(file);
+            // and finally store
+            boolean results = cm.storeUser(file);
+            log.debug(results ? "store was successful" : "store failed");  // NOI18N
+            if (!results) {
+                JOptionPane.showMessageDialog(null,
+                        jmri.configurexml.Bundle.getMessage("StoreHasErrors") + "\n"  // NOI18N
+                        + jmri.configurexml.Bundle.getMessage("StoreIncomplete") + "\n"  // NOI18N
+                        + jmri.configurexml.Bundle.getMessage("ConsoleWindowHasInfo"),  // NOI18N
+                        jmri.configurexml.Bundle.getMessage("StoreError"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+            } else {
+                InstanceManager.getDefault(jmri.jmrit.display.EditorManager.class).setChanged(false);
+            }
+        }
+*/
+
+        ConfigureManager cm = InstanceManager.getNullableDefault(jmri.ConfigureManager.class);
+        if (cm == null) {
+            log.error("Failed to make backup due to unable to get default configure manager");  // NOI18N
+        } else {
+            boolean results = cm.logixNG_ExportAll(file);
+            log.debug(results ? "store was successful" : "store failed");  // NOI18N
+            if (!results) {
+                JOptionPane.showMessageDialog(null,
+                        Bundle.getMessage("StoreHasErrors") + "\n"  // NOI18N
+                        + Bundle.getMessage("StoreIncomplete") + "\n"  // NOI18N
+                        + Bundle.getMessage("ConsoleWindowHasInfo"),  // NOI18N
+                        Bundle.getMessage("StoreError"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+            }
+        }
     }
 
     /**
@@ -404,6 +521,19 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
         if (sourceBean != null) copyBean(sourceBean, targetBean);
         else log.error("Error targetLogix is null!");  // NOI18N
         cancelAddPressed(null);
+    }
+
+    /**
+     * Copy the bean as configured in the Copy set up pane.
+     *
+     * @param e the event heard
+     */
+    private void exportBeanPressed(ActionEvent e) {
+//        E sourceBean = getManager().getBySystemName(_logixNGSysName);
+    }
+
+    protected void exportBean(E bean) {
+        // Do nothing
     }
 
     /**
@@ -477,6 +607,15 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             // Already editing a bean, ask for completion of that edit
             JOptionPane.showMessageDialog(null,
                     Bundle.getMessage("LogixNGError31", _logixNGSysName),
+                    Bundle.getMessage("ErrorTitle"), // NOI18N
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (_inExportMode) {
+            // Already editing a bean, ask for completion of that edit
+            JOptionPane.showMessageDialog(null,
+                    Bundle.getMessage("LogixNGError33", _logixNGSysName),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
                     JOptionPane.ERROR_MESSAGE);
             return false;
@@ -1082,6 +1221,9 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                 } else if (Bundle.getMessage("ButtonCopy").equals(value)) {  // NOI18N
                     copyPressed(sName);
 
+                } else if (Bundle.getMessage("ButtonExportLogixNG").equals(value)) {  // NOI18N
+                    exportPressed(sName);
+
                 } else if (Bundle.getMessage("ButtonDelete").equals(value)) {  // NOI18N
                     deletePressed(sName);
                 }
@@ -1160,6 +1302,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             if (isEditSupported()) editCombo.addItem(Bundle.getMessage("ButtonEdit"));  // NOI18N
             editCombo.addItem(Bundle.getMessage("BrowserButton"));  // NOI18N
             if (isCopyBeanSupported()) editCombo.addItem(Bundle.getMessage("ButtonCopy"));  // NOI18N
+            if (isExportBeanSupported()) editCombo.addItem(Bundle.getMessage("ButtonExportLogixNG"));  // NOI18N
             editCombo.addItem(Bundle.getMessage("ButtonDelete"));  // NOI18N
             TableColumn col = table.getColumnModel().getColumn(BeanTableDataModel.DELETECOL);
             col.setCellEditor(new DefaultCellEditor(editCombo));

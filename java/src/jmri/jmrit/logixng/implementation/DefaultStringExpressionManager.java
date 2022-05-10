@@ -17,28 +17,28 @@ import jmri.util.*;
 
 /**
  * Class providing the basic logic of the ExpressionManager interface.
- * 
+ *
  * @author Dave Duchamp       Copyright (C) 2007
  * @author Daniel Bergqvist   Copyright (C) 2018
  */
 public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStringExpressionSocket>
-        implements StringExpressionManager, InstanceManagerAutoDefault {
+        implements StringExpressionManager, SupportsImportExport {
 
     private final Map<Category, List<Class<? extends Base>>> expressionClassList = new HashMap<>();
     private MaleSocket _lastRegisteredBean;
 
-    
+
     public DefaultStringExpressionManager() {
         InstanceManager.getDefault(LogixNG_Manager.class).registerManager(this);
-        
+
         for (StringExpressionFactory expressionFactory : ServiceLoader.load(StringExpressionFactory.class)) {
             expressionFactory.init();
         }
-        
+
         for (Category category : Category.values()) {
             expressionClassList.put(category, new ArrayList<>());
         }
-        
+
 //        System.out.format("Read expressions%n");
         for (StringExpressionFactory expressionFactory : ServiceLoader.load(StringExpressionFactory.class)) {
             expressionFactory.getClasses().forEach((entry) -> {
@@ -46,7 +46,7 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
                 expressionClassList.get(entry.getKey()).add(entry.getValue());
             });
         }
-        
+
         for (MaleStringExpressionSocketFactory maleSocketFactory : ServiceLoader.load(MaleStringExpressionSocketFactory.class)) {
             _maleSocketFactories.add(maleSocketFactory);
         }
@@ -69,7 +69,7 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
     public MaleSocket getLastRegisteredMaleSocket() {
         return _lastRegisteredBean;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public MaleStringExpressionSocket registerBean(MaleStringExpressionSocket maleSocket) {
@@ -77,7 +77,7 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
         _lastRegisteredBean = maleSocket;
         return bean;
     }
-    
+
     /**
      * Remember a NamedBean Object created outside the manager.
      * This method creates a MaleActionSocket for the action.
@@ -87,25 +87,25 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
     @Override
     public MaleStringExpressionSocket registerExpression(@Nonnull StringExpressionBean expression)
             throws IllegalArgumentException {
-        
+
         if (expression instanceof MaleStringExpressionSocket) {
             throw new IllegalArgumentException("registerExpression() cannot register a MaleStringExpressionSocket. Use the method register() instead.");
         }
-        
+
         // Check if system name is valid
         if (this.validSystemNameFormat(expression.getSystemName()) != NameValidity.VALID) {
             log.warn("SystemName " + expression.getSystemName() + " is not in the correct format");
             throw new IllegalArgumentException(String.format("System name is invalid: %s", expression.getSystemName()));
         }
-        
+
         // Keep track of the last created auto system name
         updateAutoNumber(expression.getSystemName());
-        
+
         // save in the maps
         MaleStringExpressionSocket maleSocket = createMaleStringExpressionSocket(expression);
         return registerBean(maleSocket);
     }
-    
+
     @Override
     public int getXMLOrder() {
         return LOGIXNG_STRING_EXPRESSIONS;
@@ -131,15 +131,15 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
     @Override
     public FemaleStringExpressionSocket createFemaleSocket(
             Base parent, FemaleSocketListener listener, String socketName) {
-        
+
         return new DefaultFemaleStringExpressionSocket(parent, listener, socketName);
     }
-    
+
     @Override
     public Map<Category, List<Class<? extends Base>>> getExpressionClasses() {
         return expressionClassList;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public String getBeanTypeHandled(boolean plural) {
@@ -153,7 +153,7 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
         deregister(x);
         x.dispose();
     }
-    
+
     static volatile DefaultStringExpressionManager _instance = null;
 
     @InvokeOnGuiThread  // this method is not thread safe
@@ -161,7 +161,7 @@ public class DefaultStringExpressionManager extends AbstractBaseManager<MaleStri
         if (!ThreadingUtil.isGUIThread()) {
             LoggingUtil.warnOnce(log, "instance() called on wrong thread");
         }
-        
+
         if (_instance == null) {
             _instance = new DefaultStringExpressionManager();
         }

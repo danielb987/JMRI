@@ -230,4 +230,13 @@ public interface ConfigureManager {
      * @return the validation scope
      */
     public XmlFile.Validate getValidate();
+
+    /**
+     * Exports all the LogixNGs.
+     *
+     * @param file Output file
+     * @return true if succeeded
+     */
+    public boolean logixNG_ExportAll(File file);
+
 }
