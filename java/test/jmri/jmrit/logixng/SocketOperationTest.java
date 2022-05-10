@@ -146,6 +146,8 @@ public class SocketOperationTest {
             sciSet.put(clazz, sci);
         }
 
+        sci.setDefaultValues();
+
         MaleSocket maleSocket = sci.createNewObject(sci.getAutoSystemName(), null);
         child.connect(maleSocket);
 

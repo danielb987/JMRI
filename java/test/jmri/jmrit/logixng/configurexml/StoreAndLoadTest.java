@@ -192,7 +192,6 @@ public class StoreAndLoadTest {
     @After
     public void tearDown() {
 //        JUnitAppender.clearBacklog();    // REMOVE THIS!!!
-
         CreateLogixNGTreeScaffold.tearDown();
     }
 
