@@ -4190,7 +4190,7 @@ public class CreateLogixNGTreeScaffold {
     }
 
 
-    private static void set_LogixNG_SelectTable_Data(
+    protected static void set_LogixNG_SelectTable_Data(
             NamedTable csvTable,
             LogixNG_SelectTable selectTable,
             NamedBeanAddressing nameAddressing)

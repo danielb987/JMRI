@@ -25,6 +25,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 
 import jmri.util.prefs.JmriPreferencesActionFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,8 @@ import jmri.JmriException;
 import jmri.configurexml.ConfigXmlManager;
 import jmri.configurexml.swing.DialogErrorHandler;
 import jmri.jmrit.XmlFile;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.LogixNG;
 import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
 import jmri.spi.PreferencesManager;
@@ -485,8 +488,28 @@ public class JmriConfigurationManager implements ConfigureManager {
     }
 
     @Override
-    public boolean logixNG_ExportAll(File file) {
-        return legacy.logixNG_ExportAll(file);
+    public boolean exportAllLogixNGs(File file) {
+        return legacy.exportAllLogixNGs(file);
+    }
+
+    @Override
+    public boolean importAllLogixNGs(File file) {
+        return legacy.importAllLogixNGs(file);
+    }
+
+    @Override
+    public boolean exportLogixNG(LogixNG logixNG, File file) {
+        return legacy.exportLogixNG(logixNG, file);
+    }
+
+    @Override
+    public boolean exportConditionalNG(ConditionalNG conditionalNG, File file) {
+        return legacy.exportConditionalNG(conditionalNG, file);
+    }
+
+    @Override
+    public boolean exportLogixNGModule(jmri.jmrit.logixng.Module module, File file) {
+        return legacy.exportLogixNGModule(module, file);
     }
 
 }

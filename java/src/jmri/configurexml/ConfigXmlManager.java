@@ -8,6 +8,8 @@ import jmri.InstanceManager;
 import jmri.Manager;
 import jmri.NamedBean;
 import jmri.jmrit.XmlFile;
+import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Module;
 import jmri.jmrit.logixng.configurexml.ImportExportItemXml;
 import jmri.jmrit.logixng.configurexml.ImportExportItemXml.NamedBeanToExport;
 import jmri.jmrit.logixng.configurexml.ImportExportManagerXml;
@@ -980,18 +982,16 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
     }
 
     @Override
-    public boolean logixNG_ExportAll(File file) {
+    public boolean exportAllLogixNGs(File file) {
 
         List<Map.Entry<Object,ImportExportManagerXml>> importExportManagers = getLogixNG_ImportExportManagers();
         Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map = new HashMap<>();
-
-        boolean result = true;
 
         Element root = initStore();
 
         // Store all the named beans that the LogixNGs are using
         for (var entry : importExportManagers) {
-            entry.getValue().addNamedBeansToExport(entry.getKey(), map);
+            entry.getValue().addNamedBeansToExport(null, entry.getKey(), map);
         }
         root.addContent(logixNG_ExportNamedBeans(map));
 
@@ -1002,10 +1002,138 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
 //            else log.error("Element is null for {}", entry.getKey().getClass().getName());
         }
 
-        if (!finalStore(root, file)) {
+        return finalStore(root, file);
+    }
+
+    @Override
+    public boolean importAllLogixNGs(File file) {
+        URL url = FileUtil.fileToURL(file);
+
+        boolean result = true;
+        Element root;
+
+        /* We will put all the elements into a load list, along with the load order
+         As XML files prior to 2.13.1 had no order to the store, beans would be stored/loaded
+         before beans that they were dependant upon had been stored/loaded
+         */
+        Map<Element, Integer> loadlist = Collections.synchronizedMap(new LinkedHashMap<>());
+
+        try {
+            setValidate(validate);
+            root = super.rootFromURL(url);
+            // get the objects to load
+            List<Element> items = root.getChildren();
+            for (Element item : items) {
+                //Put things into an ordered list
+                Attribute a = item.getAttribute("class");
+                if (a == null) {
+                    // this is an element that we're not meant to read
+                    log.debug("skipping {}", item);
+                    continue;
+                }
+                String adapterName = a.getValue();
+                log.debug("attempt to get adapter {} for {}", adapterName, item);
+                adapterName = currentClassName(adapterName);
+                XmlAdapter adapter = (XmlAdapter) Class.forName(adapterName).getDeclaredConstructor().newInstance();
+                int order = adapter.loadOrder();
+                log.debug("add {} to load list with order id of {}", item, order);
+                loadlist.put(item, order);
+            }
+
+            List<Map.Entry<Element, Integer>> l = new ArrayList<>(loadlist.entrySet());
+            Collections.sort(l, (Map.Entry<Element, Integer> o1, Map.Entry<Element, Integer> o2) -> o1.getValue().compareTo(o2.getValue()));
+
+            for (Map.Entry<Element, Integer> elementIntegerEntry : l) {
+                Element item = elementIntegerEntry.getKey();
+                String adapterName = item.getAttribute("class").getValue();
+                adapterName = currentClassName(adapterName);
+                log.debug("load {} via {}", item, adapterName);
+                XmlAdapter adapter = null;
+                try {
+                    adapter = (XmlAdapter) Class.forName(adapterName).getDeclaredConstructor().newInstance();
+
+                    boolean loadStatus = adapter.load(item, item);
+                    log.debug("load status for {} {} is {}", item, adapterName, loadStatus);
+
+                    // if any adaptor load fails, then the entire load has failed
+                    if (!loadStatus) {
+                        result = false;
+                    }
+                } catch (Exception e) {
+                    creationErrorEncountered(adapter, "load(" + url.getFile() + ")", "Unexpected error (Exception)", null, null, e);
+
+                    result = false;  // keep going, but return false to signal problem
+                } catch (Throwable et) {
+                    creationErrorEncountered(adapter, "in load(" + url.getFile() + ")", "Unexpected error (Throwable)", null, null, et);
+
+                    result = false;  // keep going, but return false to signal problem
+                }
+            }
+
+        } catch (java.io.FileNotFoundException e1) {
+            // this returns false to indicate un-success, but not enough
+            // of an error to require a message
+            creationErrorEncountered(null, "opening file " + url.getFile(),
+                    "File not found", null, null, e1);
             result = false;
+        } catch (org.jdom2.JDOMException e) {
+            creationErrorEncountered(null, "parsing file " + url.getFile(),
+                    "Parse error", null, null, e);
+            result = false;
+        } catch (java.io.IOException e) {
+            creationErrorEncountered(null, "loading from file " + url.getFile(),
+                    "IOException", null, null, e);
+            result = false;
+        } catch (ClassNotFoundException e) {
+            creationErrorEncountered(null, "loading from file " + url.getFile(),
+                    "ClassNotFoundException", null, null, e);
+            result = false;
+        } catch (InstantiationException e) {
+            creationErrorEncountered(null, "loading from file " + url.getFile(),
+                    "InstantiationException", null, null, e);
+            result = false;
+        } catch (IllegalAccessException e) {
+            creationErrorEncountered(null, "loading from file " + url.getFile(),
+                    "IllegalAccessException", null, null, e);
+            result = false;
+        } catch (NoSuchMethodException e) {
+            creationErrorEncountered(null, "loading from file " + url.getFile(),
+                    "NoSuchMethodException", null, null, e);
+            result = false;
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            creationErrorEncountered(null, "loading from file " + url.getFile(),
+                    "InvocationTargetException", null, null, e);
+            result = false;
+        } finally {
+            // no matter what, close error reporting
+            handler.done();
         }
+
+        if (result) {
+            jmri.jmrit.logixng.LogixNG_Manager logixNG_Manager =
+                    InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
+            logixNG_Manager.setupAllLogixNGs();
+            if (InstanceManager.getDefault(LogixNGPreferences.class).getStartLogixNGOnStartup()) {
+                logixNG_Manager.activateAllLogixNGs();
+            }
+        }
+
         return result;
+    }
+
+    @Override
+    public boolean exportLogixNG(LogixNG logixNG, File file) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean exportConditionalNG(ConditionalNG conditionalNG, File file) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean exportLogixNGModule(Module module, File file) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 

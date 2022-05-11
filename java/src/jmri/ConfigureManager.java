@@ -3,7 +3,11 @@ package jmri;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+
 import jmri.jmrit.XmlFile;
+import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.ConditionalNG;
+import jmri.jmrit.logixng.Module;
 
 /**
  * Provide load/store capabilities for general configuration.
@@ -237,6 +241,41 @@ public interface ConfigureManager {
      * @param file Output file
      * @return true if succeeded
      */
-    public boolean logixNG_ExportAll(File file);
+    public boolean exportAllLogixNGs(File file);
+
+    /**
+     * Imports all the LogixNGs.
+     *
+     * @param file Input file
+     * @return true if succeeded
+     */
+    public boolean importAllLogixNGs(File file);
+
+    /**
+     * Exports a LogixNG.
+     *
+     * @param logixNG  the LogixNG
+     * @param file     output file
+     * @return true    if succeeded
+     */
+    public boolean exportLogixNG(LogixNG logixNG, File file);
+
+    /**
+     * Exports a ConditionalNG.
+     *
+     * @param conditionalNG  the ConditionalNG
+     * @param file           output file
+     * @return               true if succeeded
+     */
+    public boolean exportConditionalNG(ConditionalNG conditionalNG, File file);
+
+    /**
+     * Exports a LogixNG module.
+     *
+     * @param module  the module
+     * @param file    output file
+     * @return true   if succeeded
+     */
+    public boolean exportLogixNGModule(Module module, File file);
 
 }

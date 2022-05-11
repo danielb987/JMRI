@@ -170,6 +170,7 @@ public class DefaultGlobalVariableManagerXml extends AbstractManagerXml
 
     @Override
     public void addNamedBeansToExport(
+            Base ancestor,
             Object o,
             Map<Manager<? extends NamedBean>, Map<String,NamedBeanToExport>> map) {
     }

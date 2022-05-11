@@ -448,7 +448,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
         if (cm == null) {
             log.error("Failed to make backup due to unable to get default configure manager");  // NOI18N
         } else {
-            boolean results = cm.logixNG_ExportAll(file);
+            boolean results = cm.exportAllLogixNGs(file);
             log.debug(results ? "store was successful" : "store failed");  // NOI18N
             if (!results) {
                 JOptionPane.showMessageDialog(null,

@@ -236,6 +236,17 @@ public interface Base extends PropertyChangeProvider {
     public void setParent(Base parent);
 
     /**
+     * Is the parameter an ancestor to this item?
+     * @param ancestor  the item to be ancestor
+     * @return          true if the item is ancestor, false otherwise
+     */
+    public default boolean isAncestor(Base ancestor) {
+        Base b = this.getParent();
+        while (b != null && b != ancestor) b = b.getParent();
+        return (b == ancestor);
+    }
+
+    /**
      * Set the parent for all the children.
      *
      * @param errors a list of potential errors
