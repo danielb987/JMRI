@@ -390,30 +390,6 @@ public class ConfigXmlManager extends jmri.jmrit.XmlFile
 
     /** {@inheritDoc} */
     @Override
-    public boolean storeAll(File file) {
-        boolean result = true;
-        Element root = initStore();
-        if (!addConfigStore(root)) {
-            result = false;
-        }
-        if (!addToolsStore(root)) {
-            result = false;
-        }
-        if (!addUserStore(root)) {
-            result = false;
-        }
-        addConfigStore(root);
-        addToolsStore(root);
-        addUserStore(root);
-        includeHistory(root);
-        if (!finalStore(root, file)) {
-            result = false;
-        }
-        return result;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void storePrefs() {
         storePrefs(prefsFile);
     }

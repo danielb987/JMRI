@@ -139,11 +139,6 @@ public class JmriConfigurationManager implements ConfigureManager {
         return this.legacy.getInstanceList(c);
     }
 
-    @Override
-    public boolean storeAll(File file) {
-        return this.legacy.storeAll(file);
-    }
-
     /**
      * Save preferences. Preferences are saved using either the
      * {@link jmri.util.prefs.JmriConfigurationProvider} or
