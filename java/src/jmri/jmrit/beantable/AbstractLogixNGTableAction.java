@@ -53,6 +53,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
     static final String PRINT_ERROR_HANDLING_OPTION = "jmri.jmrit.logixng.ErrorHandling";
     static final String PRINT_NOT_CONNECTED_OPTION = "jmri.jmrit.logixng.NotConnectedSockets";
     static final String PRINT_LOCAL_VARIABLES_OPTION = "jmri.jmrit.logixng.LocalVariables";
+    static final String PRINT_SYSTEM_NAMES_OPTION = "jmri.jmrit.logixng.SystemNames";
 
     JTextArea _textContent;
 
@@ -92,6 +93,8 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
     protected boolean browseMonoSpace() { return false; }
 
     protected abstract String getBeanText(E bean);
+
+    protected abstract String getBrowserTitle();
 
     protected abstract String getAddTitleKey();
 
@@ -137,7 +140,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
         javax.swing.JMenuBar menuBar = f.getJMenuBar();
         int pos = menuBar.getMenuCount() - 1;  // count the number of menus to insert the TableMenus before 'Window' and 'Help'
         int offset = 1;
-        log.debug("setMenuBar number of menu items = " + pos);  // NOI18N
+        log.debug("setMenuBar number of menu items = {}", pos);  // NOI18N
         for (int i = 0; i <= pos; i++) {
             if (menuBar.getComponent(i) instanceof JMenu) {
                 if (((JMenu) menuBar.getComponent(i)).getText().equals(Bundle.getMessage("MenuHelp"))) {  // NOI18N
@@ -204,6 +207,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
     protected AbstractLogixNGEditor<E> _editor = null;
 
     boolean _showReminder = false;
+    private boolean _checkEnabled = jmri.InstanceManager.getDefault(jmri.configurexml.ShutdownPreferences.class).isStoreCheckEnabled();
     jmri.jmrit.picker.PickFrame _pickTables;
 
     // Current focus variables
@@ -626,7 +630,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             E x = getManager().getBySystemName(sName);
             if (x == null) {
                 // bean does not exist, so cannot be edited
-                log.error("No bean with system name: " + sName);
+                log.error("No bean with system name: {}", sName);
                 JOptionPane.showMessageDialog(null,
                         Bundle.getMessage("LogixNGError5"),
                         Bundle.getMessage("ErrorTitle"), // NOI18N
@@ -762,7 +766,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
      * Display reminder to save.
      */
     void showSaveReminder() {
-        if (_showReminder) {
+        if (_showReminder && !_checkEnabled) {
             if (InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class) != null) {
                 InstanceManager.getDefault(jmri.UserPreferencesManager.class).
                         showInfoMessage(Bundle.getMessage("ReminderTitle"), Bundle.getMessage("ReminderSaveString", Bundle.getMessage("MenuItemLogixNGTable")), // NOI18N
@@ -804,7 +808,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             getManager().deleteBean(x, "CanDelete");  // NOI18N
         } catch (PropertyVetoException e) {
             if (e.getPropertyChangeEvent().getPropertyName().equals("DoNotDelete")) { // NOI18N
-                log.warn(e.getMessage());
+                log.warn("{} : Do Not Delete", e.getMessage());
                 message.append(Bundle.getMessage("VetoDeleteBean", x.getBeanType(), x.getDisplayName(NamedBean.DisplayOptions.USERNAME_SYSTEMNAME), e.getMessage()));
                 JOptionPane.showMessageDialog(null, message.toString(),
                         Bundle.getMessage("QuestionTitle"),
@@ -943,6 +947,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
             _printTreeSettings._printErrorHandling = prefMgr.getSimplePreferenceState(PRINT_ERROR_HANDLING_OPTION);
             _printTreeSettings._printNotConnectedSockets = prefMgr.getSimplePreferenceState(PRINT_NOT_CONNECTED_OPTION);
             _printTreeSettings._printLocalVariables = prefMgr.getSimplePreferenceState(PRINT_LOCAL_VARIABLES_OPTION);
+            _printTreeSettings._printSystemNames = prefMgr.getSimplePreferenceState(PRINT_SYSTEM_NAMES_OPTION);
         });
     }
 
@@ -959,7 +964,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
      * Create and initialize the conditionalNGs browser window.
      */
     void makeBrowserWindow() {
-        JmriJFrame condBrowserFrame = new JmriJFrame(Bundle.getMessage("LogixNG_Browse_Title"), false, true);   // NOI18N
+        JmriJFrame condBrowserFrame = new JmriJFrame(this.getBrowserTitle(), false, true);
 
         condBrowserFrame.addWindowListener(new WindowAdapter() {
             @Override
@@ -1085,7 +1090,6 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                 updateBrowserText();
             }
         });
-        checkBoxPanel.add(printLineNumbers);
 
         JCheckBox printErrorHandling = new JCheckBox(Bundle.getMessage("LogixNG_Browse_PrintErrorHandling"));
         printErrorHandling.setSelected(_printTreeSettings._printErrorHandling);
@@ -1098,7 +1102,6 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                 updateBrowserText();
             }
         });
-        checkBoxPanel.add(printErrorHandling);
 
         JCheckBox printNotConnectedSockets = new JCheckBox(Bundle.getMessage("LogixNG_Browse_PrintNotConnectedSocket"));
         printNotConnectedSockets.setSelected(_printTreeSettings._printNotConnectedSockets);
@@ -1111,7 +1114,6 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                 });
             }
         });
-        checkBoxPanel.add(printNotConnectedSockets);
 
         JCheckBox printLocalVariables = new JCheckBox(Bundle.getMessage("LogixNG_Browse_PrintLocalVariables"));
         printLocalVariables.setSelected(_printTreeSettings._printLocalVariables);
@@ -1124,7 +1126,26 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
                 });
             }
         });
-        checkBoxPanel.add(printLocalVariables);
+
+        JCheckBox printSystemNames = new JCheckBox(Bundle.getMessage("LogixNG_Browse_PrintSystemNames"));
+        printSystemNames.setSelected(_printTreeSettings._printSystemNames);
+        printSystemNames.addChangeListener((event) -> {
+            if (_printTreeSettings._printSystemNames != printSystemNames.isSelected()) {
+                _printTreeSettings._printSystemNames = printSystemNames.isSelected();
+                InstanceManager.getOptionalDefault(UserPreferencesManager.class).ifPresent((prefMgr) -> {
+                    prefMgr.setSimplePreferenceState(PRINT_SYSTEM_NAMES_OPTION, printSystemNames.isSelected());
+                });
+                updateBrowserText();
+            }
+        });
+
+        if (this instanceof LogixNGTableAction || this instanceof LogixNGModuleTableAction) {
+            checkBoxPanel.add(printLineNumbers);
+            checkBoxPanel.add(printErrorHandling);
+            checkBoxPanel.add(printNotConnectedSockets);
+            checkBoxPanel.add(printLocalVariables);
+            checkBoxPanel.add(printSystemNames);
+        }
 
         return checkBoxPanel;
     }

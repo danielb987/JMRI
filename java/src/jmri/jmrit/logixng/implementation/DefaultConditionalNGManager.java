@@ -246,12 +246,10 @@ public class DefaultConditionalNGManager extends AbstractManager<ConditionalNG>
     @Override
 //    @OverridingMethodsMustInvokeSuper
     public final void deleteBean(@Nonnull ConditionalNG conditionalNG, @Nonnull String property) throws PropertyVetoException {
-        for (int i=0; i < conditionalNG.getChildCount(); i++) {
-            FemaleSocket child = conditionalNG.getChild(i);
-            if (child.isConnected()) {
-                MaleSocket maleSocket = child.getConnectedSocket();
-                maleSocket.getManager().deleteBean(maleSocket, property);
-            }
+        FemaleSocket child = conditionalNG.getFemaleSocket();
+        if (child.isConnected()) {
+            MaleSocket maleSocket = child.getConnectedSocket();
+            maleSocket.getManager().deleteBean(maleSocket, property);
         }
 
         // throws PropertyVetoException if vetoed

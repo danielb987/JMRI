@@ -20,7 +20,7 @@ import jmri.util.iharder.dnd.URIDrop;
 
 import org.jdom2.Element;
 import org.jdom2.Attribute;
-import org.openide.util.Exceptions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,6 @@ public class ThrottleWindow extends JmriJFrame {
     private final PowerManager powerMgr;
     private SmallPowerManagerButton smallPowerMgmtButton;
 
-    private final ThrottleWindowInputsListener myInputsListener;
     private final ThrottleWindowActionsFactory myActionFactory;
 
     private HashMap<String, ThrottleFrame> throttleFrames = new HashMap<>(5);
@@ -88,11 +87,6 @@ public class ThrottleWindow extends JmriJFrame {
             this.throttleManager = InstanceManager.getDefault(jmri.ThrottleManager.class);
         }
 
-        if (jmri.InstanceManager.getNullableDefault(ThrottlesPreferences.class) == null) {
-            log.debug("Creating new ThrottlesPreference Instance");
-            jmri.InstanceManager.store(new ThrottlesPreferences(), ThrottlesPreferences.class);
-        }
-        myInputsListener = new ThrottleWindowInputsListener(this);
         myActionFactory = new ThrottleWindowActionsFactory(this);
         powerMgr = InstanceManager.getNullableDefault(PowerManager.class);
         if (powerMgr == null) {
@@ -152,6 +146,8 @@ public class ThrottleWindow extends JmriJFrame {
         for (Object k : am.allKeys()) {
             getRootPane().getActionMap().put(k, am.get(k));
         }
+        
+        addMouseWheelListener( new ThrottleWindowInputsListener(this) );
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -168,12 +164,14 @@ public class ThrottleWindow extends JmriJFrame {
                         }
                     }
                 }
-            }@Override
+            }
+
+            @Override
             public void windowOpened(WindowEvent e) {
                 try { // on initial open, force selection of address panel
                     getCurrentThrottleFrame().getAddressPanel().setSelected(true);
                 } catch (PropertyVetoException ex) {
-                    Exceptions.printStackTrace(ex);
+                    log.warn("Unable to force selection of address panel", ex);
                 }
             }
         });
@@ -784,7 +782,6 @@ public class ThrottleWindow extends JmriJFrame {
     private void installInputsListenerOnAllComponents(Container c) {
         c.setFocusTraversalKeysEnabled(false); // make tab and shift tab available
         if (! ( c instanceof JTextField)) {
-            c.addMouseWheelListener(myInputsListener);
             c.setFocusable(false);
         }
         for (Component component : c.getComponents()) {
@@ -792,7 +789,6 @@ public class ThrottleWindow extends JmriJFrame {
                 installInputsListenerOnAllComponents( (Container) component);
             } else {
                 if (! ( component instanceof JTextField)) {
-                    component.addMouseWheelListener(myInputsListener);
                     component.setFocusable(false);
                 }
             }

@@ -6,9 +6,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
@@ -32,6 +29,9 @@ import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.swing.JTablePersistenceManager;
 import jmri.util.davidflanagan.HardcopyWriter;
 import jmri.util.swing.ComboBoxToolTipRenderer;
+import jmri.util.swing.JmriMouseAdapter;
+import jmri.util.swing.JmriMouseEvent;
+import jmri.util.swing.JmriMouseListener;
 import jmri.util.swing.StayOpenCheckBoxItem;
 import jmri.util.swing.XTableColumnModel;
 import jmri.util.table.ButtonEditor;
@@ -229,6 +229,9 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
                 NamedBeanPropertyDescriptor<?> desc = getPropertyColumnDescriptor(col);
                 if (desc == null) {
                     return null;
+                }
+                if ( desc instanceof SelectionPropertyDescriptor ){
+                    return JComboBox.class;
                 }
                 return desc.getValueClass();
         }
@@ -459,7 +462,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
             getManager().deleteBean(bean, "DoDelete");
         } catch (PropertyVetoException e) {
             //At this stage the DoDelete shouldn't fail, as we have already done a can delete, which would trigger a veto
-            log.error(e.getMessage());
+            log.error("doDelete should not fail after canDelete. {}", e.getMessage());
         }
     }
 
@@ -498,8 +501,8 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
         configValueColumn(table);
         configDeleteColumn(table);
 
-        MouseListener popupListener = new PopupListener();
-        table.addMouseListener(popupListener);
+        JmriMouseListener popupListener = new PopupListener();
+        table.addMouseListener(JmriMouseListener.adapt(popupListener));
         this.persistTable(table);
     }
 
@@ -683,7 +686,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
             // extend TurnoutTableJTable from it as next 2 classes duplicate.
 
             @Override
-            public String getToolTipText(MouseEvent e) {
+            public String getToolTipText(java.awt.event.MouseEvent e) {
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
@@ -778,7 +781,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
      * Delete
      * @param e source event.
      */
-    protected void showPopup(MouseEvent e) {
+    protected void showPopup(JmriMouseEvent e) {
         JTable source = (JTable) e.getSource();
         int row = source.rowAtPoint(e.getPoint());
         int column = source.columnAtPoint(e.getPoint());
@@ -1077,7 +1080,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
      * @param e Instigating event ( e.g. from Mouse click )
      * @param table table to get columns from
      */
-    protected void showTableHeaderPopup(MouseEvent e, JTable table) {
+    protected void showTableHeaderPopup(JmriMouseEvent e, JTable table) {
         JPopupMenu popupMenu = new JPopupMenu();
         XTableColumnModel tcm = (XTableColumnModel) table.getColumnModel();
         for (int i = 0; i < tcm.getColumnCount(false); i++) {
@@ -1094,8 +1097,8 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
     }
 
     protected void addMouseListenerToHeader(JTable table) {
-        MouseListener mouseHeaderListener = new TableHeaderListener(table);
-        table.getTableHeader().addMouseListener(mouseHeaderListener);
+        JmriMouseListener mouseHeaderListener = new TableHeaderListener(table);
+        table.getTableHeader().addMouseListener(JmriMouseListener.adapt(mouseHeaderListener));
     }
 
     /**
@@ -1201,7 +1204,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
                 getManager().deleteBean(t, "CanDelete");  // NOI18N
             } catch (PropertyVetoException e) {
                 if (e.getPropertyChangeEvent().getPropertyName().equals("DoNotDelete")) { // NOI18N
-                    log.warn(e.getMessage());
+                    log.warn("Should not delete {}, {}", t.getDisplayName((DisplayOptions.USERNAME_SYSTEMNAME)), e.getMessage());
                     message.append(Bundle.getMessage("VetoDeleteBean", t.getBeanType(), t.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME), e.getMessage()));
                     JOptionPane.showMessageDialog(null, message.toString(),
                             Bundle.getMessage("WarningTitle"),
@@ -1323,13 +1326,13 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
      * Listener to trigger display of table cell menu.
      * Delete / Rename / Move etc.
      */
-    class PopupListener extends MouseAdapter {
+    class PopupListener extends JmriMouseAdapter {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(JmriMouseEvent e) {
             if (e.isPopupTrigger()) {
                 showPopup(e);
             }
@@ -1339,7 +1342,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
          * {@inheritDoc}
          */
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(JmriMouseEvent e) {
             if (e.isPopupTrigger()) {
                 showPopup(e);
             }
@@ -1366,7 +1369,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
     /**
      * Listener to trigger display of table header column menu.
      */
-    class TableHeaderListener extends MouseAdapter {
+    class TableHeaderListener extends JmriMouseAdapter {
 
         private final JTable table;
 
@@ -1379,7 +1382,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
          * {@inheritDoc}
          */
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(JmriMouseEvent e) {
             if (e.isPopupTrigger()) {
                 showTableHeaderPopup(e, table);
             }
@@ -1389,7 +1392,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
          * {@inheritDoc}
          */
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(JmriMouseEvent e) {
             if (e.isPopupTrigger()) {
                 showTableHeaderPopup(e, table);
             }
@@ -1399,7 +1402,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
          * {@inheritDoc}
          */
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(JmriMouseEvent e) {
             if (e.isPopupTrigger()) {
                 showTableHeaderPopup(e, table);
             }
@@ -1408,7 +1411,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
 
     private class BtComboboxEditor extends jmri.jmrit.symbolicprog.ValueEditor {
 
-        public BtComboboxEditor(){
+        BtComboboxEditor(){
             super();
         }
 
@@ -1440,7 +1443,7 @@ abstract public class BeanTableDataModel<T extends NamedBean> extends AbstractTa
 
     private class BtValueRenderer implements TableCellRenderer {
 
-        public BtValueRenderer() {
+        BtValueRenderer() {
             super();
         }
 

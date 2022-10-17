@@ -19,14 +19,7 @@ import jmri.util.JUnitUtil;
  */
 public class SimpleTimebaseTest {
 
-    InternalSystemConnectionMemo memo;
-
-    void wait(int msec) {
-        try {
-            super.wait(msec);
-        } catch (Exception e) {
-        }
-    }
+    private InternalSystemConnectionMemo memo = null;
 
     // test creation
     @Test
@@ -170,7 +163,7 @@ public class SimpleTimebaseTest {
         instance.setRun(true);
         JUnitUtil.waitFor(() -> {
             return instance.getTime().getMinutes() != start.getMinutes();
-        });
+        },"getMinutes increased");
         instance.setRun(false);
         Assert.assertNotNull(l1.getTime());
         Assert.assertNotNull(l2.getTime());
@@ -186,7 +179,7 @@ public class SimpleTimebaseTest {
         Date now = new Date();
         p.setTime(now);
         p.setRate(100.);
-        wait(100);
+        JUnitUtil.waitFor(100);
         Date then = p.getTime();
         long delta = then.getTime() - now.getTime();
         Assert.assertTrue("delta ge 50 (nominal value)", delta >= 50);
@@ -197,14 +190,16 @@ public class SimpleTimebaseTest {
 
     @BeforeEach
     public void setUp() {
-        jmri.util.JUnitUtil.setUp();
+        JUnitUtil.setUp();
         memo = InstanceManager.getDefault(InternalSystemConnectionMemo.class);
     }
 
     @AfterEach
     public void tearDown() {
+        Assertions.assertNotNull(memo);
+        memo.dispose();
         memo = null;
-        jmri.util.JUnitUtil.tearDown();
+        JUnitUtil.tearDown();
     }
 
     private static class TestTimebaseTimeListener implements PropertyChangeListener {

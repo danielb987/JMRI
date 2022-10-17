@@ -17,7 +17,6 @@ import jmri.util.JUnitUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -206,7 +205,7 @@ public class TableForEachTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCategory() {
-        Assert.assertTrue("Category matches", Category.COMMON == _base.getCategory());
+        Assert.assertTrue("Category matches", Category.FLOW_CONTROL == _base.getCategory());
     }
 
     @Test
@@ -309,7 +308,7 @@ public class TableForEachTest extends AbstractDigitalActionTestBase {
 
     private class MyAction extends AbstractDigitalAction {
 
-        public MyAction(String sys, String user) throws BadUserNameException, BadSystemNameException {
+        MyAction(String sys, String user) throws BadUserNameException, BadSystemNameException {
             super(sys, user);
         }
 
@@ -333,7 +332,9 @@ public class TableForEachTest extends AbstractDigitalActionTestBase {
             DigitalActionManager manager = InstanceManager.getDefault(DigitalActionManager.class);
             String sysName = systemNames.get(getSystemName());
             String userName = userNames.get(getSystemName());
-            if (sysName == null) sysName = manager.getAutoSystemName();
+            if (sysName == null) {
+                sysName = manager.getAutoSystemName();
+            }
             MyAction copy = new MyAction(sysName, userName);
             copy.setComment(getComment());
             return manager.registerAction(copy).deepCopyChildren(this, systemNames, userNames);
@@ -371,7 +372,7 @@ public class TableForEachTest extends AbstractDigitalActionTestBase {
 
         @Override
         public void execute() throws JmriException {
-            SymbolTable symbolTable = this.getConditionalNG().getSymbolTable();
+            SymbolTable symbolTable = super.getConditionalNG().getSymbolTable();
             _cells.add(symbolTable.getValue("MyVariable").toString());
         }
 

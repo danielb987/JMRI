@@ -112,7 +112,7 @@ public class LogixNGTableAction extends AbstractLogixNGTableAction<LogixNG> {
             InstanceManager.getDefault(LogixNG_Manager.class).deleteBean(logixNG, "DoDelete");
         } catch (PropertyVetoException e) {
             //At this stage the DoDelete shouldn't fail, as we have already done a can delete, which would trigger a veto
-            log.error(e.getMessage());
+            log.error("{} : Could not Delete.", e.getMessage());
         }
     }
 
@@ -140,7 +140,7 @@ public class LogixNGTableAction extends AbstractLogixNGTableAction<LogixNG> {
                                     .getDeepCopy(systemNames, userNames));
                 }
             } catch (JmriException ex) {
-                log.error(ex.getMessage(), ex);
+                log.error("Could not Copy ConditionalNG.", ex);
             }
             sourceConditionalNG.getFemaleSocket().registerListeners();
             targetConditionalNG.getFemaleSocket().registerListeners();
@@ -173,6 +173,11 @@ public class LogixNGTableAction extends AbstractLogixNGTableAction<LogixNG> {
         StringWriter writer = new StringWriter();
         _curNamedBean.printTree(_printTreeSettings, new PrintWriter(writer), "    ", new MutableInt(0));
         return writer.toString();
+    }
+
+    @Override
+    protected String getBrowserTitle() {
+        return Bundle.getMessage("LogixNG_Browse_Title");
     }
 
     @Override

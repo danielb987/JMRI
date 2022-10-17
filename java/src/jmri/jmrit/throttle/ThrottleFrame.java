@@ -83,6 +83,7 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
 
     private boolean isEditMode = true;
     private boolean willSwitch = false;
+    private boolean isLoadingDefault = false;
 
     private static final String DEFAULT_THROTTLE_FILENAME = "JMRI_ThrottlePreference.xml";
 
@@ -102,10 +103,6 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
         super();
         throttleWindow = tw;
         throttleManager = tm;
-        if (jmri.InstanceManager.getNullableDefault(ThrottlesPreferences.class) == null) {
-            log.debug("Creating new ThrottlesPreference Instance");
-            jmri.InstanceManager.store(new ThrottlesPreferences(), ThrottlesPreferences.class);
-        }
         initGUI();
         applyPreferences();
         InstanceManager.getDefault(ThrottleFrameManager.class).getThrottlesListPanel().getTableModel().addThrottleFrame(this);
@@ -221,12 +218,17 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
     }
 
     private void loadDefaultThrottle() {
+        if (isLoadingDefault) { // avoid looping on this method
+            return; 
+        }
+        isLoadingDefault = true;
         String dtf = InstanceManager.getDefault(ThrottlesPreferences.class).getDefaultThrottleFilePath();
         if (dtf == null || dtf.isEmpty()) {
             return;
         }
-        log.debug("Loading default throttle file : "+dtf);
+        log.debug("Loading default throttle file : {}", dtf);
         loadThrottle(dtf);
+        isLoadingDefault = false;
     }
 
     public void loadThrottle() {
@@ -245,7 +247,7 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
             loadThrottle();
             return;
         }
-        log.debug("Loading throttle file : "+sfile);
+        log.debug("Loading throttle file : {}", sfile);
         boolean switchAfter = false;
         if (!isEditMode) {
             setEditMode(true);
@@ -284,11 +286,11 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
         } catch (FileNotFoundException ex) {
             // Don't show error dialog if file is not found
             log.debug("Loading throttle exception: {}", ex.getMessage());
-            log.info("Couldn't load throttle file "+sfile+" , reverting to default one, if any");
+            log.info("Couldn't load throttle file \"{}\" , reverting to default one, if any", sfile);
             loadDefaultThrottle(); // revert to loading default one
         } catch (NullPointerException | IOException | JDOMException ex) {
             log.debug("Loading throttle exception: {}", ex.getMessage());
-            log.info("Couldn't load throttle file "+sfile+" , reverting to default one, if any");
+            log.info("Couldn't load throttle file \"{}\" , reverting to default one, if any", sfile);
             jmri.configurexml.ConfigXmlManager.creationErrorEncountered(
                     null, "parsing file " + sfile,
                     "Parse error", null, null, ex);
