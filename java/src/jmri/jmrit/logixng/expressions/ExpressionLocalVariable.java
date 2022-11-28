@@ -197,7 +197,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
                 // Do nothing
                 break;
             default:
-                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());
+                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());     // NOI18N
         }
 
         switch (_variableOperation) {
@@ -231,7 +231,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_memoryOperation has unknown value: "+_variableOperation.name());
+                throw new IllegalArgumentException("_memoryOperation has unknown value: "+_variableOperation.name());   // NOI18N
         }
 
         return result;
@@ -239,7 +239,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException("Not supported.");  // NOI18N
     }
 
     @Override
@@ -297,7 +297,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());
+                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());     // NOI18N
         }
 
         switch (_variableOperation) {
@@ -325,7 +325,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
                 return Bundle.getMessage(locale, "LocalVariable_Long_CompareRegEx", variableName, _variableOperation._text, other1);
 
             default:
-                throw new IllegalArgumentException("_variableOperation has unknown value: "+_variableOperation.name());
+                throw new IllegalArgumentException("_variableOperation has unknown value: "+_variableOperation.name());     // NOI18N
         }
     }
 
@@ -339,7 +339,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
     @Override
     public void registerListenersForThisClass() {
         if (!_listenersAreRegistered && _listenToMemory) {
-            _selectMemoryNamedBean.addPropertyChangeListener("value", this);
+            _selectMemoryNamedBean.addPropertyChangeListener("value", this);    // NOI18N
             _selectMemoryNamedBean.registerListeners();
             _listenersAreRegistered = true;
         }
@@ -349,7 +349,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
     @Override
     public void unregisterListenersForThisClass() {
         if (_listenersAreRegistered && _listenToMemory) {
-            _selectMemoryNamedBean.removePropertyChangeListener("value", this);
+            _selectMemoryNamedBean.removePropertyChangeListener("value", this); // NOI18N
             _selectMemoryNamedBean.unregisterListeners();
             _listenersAreRegistered = false;
         }

@@ -205,7 +205,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                     case GreaterThan:
                         return (n1 > n2);
                     default:
-                        throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name());
+                        throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name()); // NOI18N
                 }
             } catch (NumberFormatException nfe) {
                 return _reporterOperation == ReporterOperation.NotEqual;   // n1 is a number, n2 is not
@@ -256,7 +256,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                 }
                 break;
             default:
-                throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name());
+                throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name()); // NOI18N
         }
         return false;
     }
@@ -289,7 +289,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_reporterValue has unknown value: "+_reporterValue.name());
+                throw new IllegalArgumentException("_reporterValue has unknown value: "+_reporterValue.name()); // NOI18N
         }
         String reporterValue = getString(obj);
         String otherValue = null;
@@ -310,7 +310,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                 // Do nothing
                 break;
             default:
-                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());
+                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name()); // NOI18N
         }
 
         switch (_reporterOperation) {
@@ -345,7 +345,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name());
+                throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name()); // NOI18N
         }
 
         return result;
@@ -353,7 +353,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException("Not supported.");  // NOI18N
     }
 
     @Override
@@ -396,7 +396,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());
+                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name()); // NOI18N
         }
 
         switch (_reporterOperation) {
@@ -424,7 +424,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                 return Bundle.getMessage(locale, "Reporter_Long_CompareRegEx", reporterName, _reporterValue._text, _reporterOperation._text, other);
 
             default:
-                throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name());
+                throw new IllegalArgumentException("_reporterOperation has unknown value: "+_reporterOperation.name()); // NOI18N
         }
     }
 
@@ -440,11 +440,11 @@ public class ExpressionReporter extends AbstractDigitalExpression
         if (!_listenersAreRegistered) {
             switch (_reporterValue) {
                 case CurrentReport:
-                    _selectNamedBean.addPropertyChangeListener("currentReport", this);
+                    _selectNamedBean.addPropertyChangeListener("currentReport", this);  // NOI18N
                     break;
 
                 case LastReport:
-                    _selectNamedBean.addPropertyChangeListener("lastReport", this);
+                    _selectNamedBean.addPropertyChangeListener("lastReport", this);     // NOI18N
                     break;
 
                 case State:
@@ -455,7 +455,7 @@ public class ExpressionReporter extends AbstractDigitalExpression
                     // Do nothing
             }
             if (_listenToMemory) {
-                _selectMemoryNamedBean.addPropertyChangeListener("value", this);
+                _selectMemoryNamedBean.addPropertyChangeListener("value", this);    // NOI18N
             }
             _selectNamedBean.registerListeners();
             _listenersAreRegistered = true;
@@ -466,10 +466,10 @@ public class ExpressionReporter extends AbstractDigitalExpression
     @Override
     public void unregisterListenersForThisClass() {
         if (_listenersAreRegistered) {
-            _selectNamedBean.removePropertyChangeListener("currentReport", this);
-            _selectNamedBean.removePropertyChangeListener("lastReport", this);
+            _selectNamedBean.removePropertyChangeListener("currentReport", this);   // NOI18N
+            _selectNamedBean.removePropertyChangeListener("lastReport", this);      // NOI18N
             if (_listenToMemory) {
-                _selectMemoryNamedBean.removePropertyChangeListener("value", this);
+                _selectMemoryNamedBean.removePropertyChangeListener("value", this); // NOI18N
             }
             _selectNamedBean.unregisterListeners();
             _listenersAreRegistered = false;

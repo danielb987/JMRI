@@ -200,7 +200,7 @@ public class ExpressionMemory extends AbstractDigitalExpression
                 // Do nothing
                 break;
             default:
-                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());
+                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name()); // NOI18N
         }
 
         switch (_memoryOperation) {
@@ -234,7 +234,7 @@ public class ExpressionMemory extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_memoryOperation has unknown value: "+_memoryOperation.name());
+                throw new IllegalArgumentException("_memoryOperation has unknown value: "+_memoryOperation.name()); // NOI18N
         }
 
         return result;
@@ -242,7 +242,7 @@ public class ExpressionMemory extends AbstractDigitalExpression
 
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException("Not supported.");  // NOI18N
     }
 
     @Override
@@ -295,7 +295,7 @@ public class ExpressionMemory extends AbstractDigitalExpression
                 break;
 
             default:
-                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name());
+                throw new IllegalArgumentException("_compareTo has unknown value: "+_compareTo.name()); // NOI18N
         }
 
         switch (_memoryOperation) {
@@ -323,7 +323,7 @@ public class ExpressionMemory extends AbstractDigitalExpression
                 return Bundle.getMessage(locale, "Memory_Long_CompareRegEx", memoryName, _memoryOperation._text, other1);
 
             default:
-                throw new IllegalArgumentException("_memoryOperation has unknown value: "+_memoryOperation.name());
+                throw new IllegalArgumentException("_memoryOperation has unknown value: "+_memoryOperation.name()); // NOI18N
         }
     }
 
@@ -337,9 +337,9 @@ public class ExpressionMemory extends AbstractDigitalExpression
     @Override
     public void registerListenersForThisClass() {
         if (!_listenersAreRegistered) {
-            _selectNamedBean.addPropertyChangeListener("value", this);
+            _selectNamedBean.addPropertyChangeListener("value", this);  // NOI18N
             if (_listenToOtherMemory) {
-                _selectOtherMemoryNamedBean.addPropertyChangeListener("value", this);
+                _selectOtherMemoryNamedBean.addPropertyChangeListener("value", this);   // NOI18N
             }
             _selectNamedBean.registerListeners();
             _listenersAreRegistered = true;
@@ -350,9 +350,9 @@ public class ExpressionMemory extends AbstractDigitalExpression
     @Override
     public void unregisterListenersForThisClass() {
         if (_listenersAreRegistered) {
-            _selectNamedBean.removePropertyChangeListener("value", this);
+            _selectNamedBean.removePropertyChangeListener("value", this);   // NOI18N
             if (_listenToOtherMemory) {
-                _selectOtherMemoryNamedBean.removePropertyChangeListener("value", this);
+                _selectOtherMemoryNamedBean.removePropertyChangeListener("value", this);    // NOI18N
             }
             _selectNamedBean.unregisterListeners();
             _listenersAreRegistered = false;
