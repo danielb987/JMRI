@@ -8,6 +8,7 @@ import jmri.jmrit.signalsystemeditor.*;
 import jmri.util.FileUtil;
 
 import org.jdom2.*;
+import org.jdom2.output.Format;
 
 /**
  * Load and store a signal mast type from/to xml
@@ -94,7 +95,7 @@ public class SignalMastXml {
 
             signalMast.getReferences().clear();
             for (Element referenceElement : aspecttable.getChildren("reference")) {
-                signalMast.getReferences().add(referenceElement.getText());
+                signalMast.getReferences().add(StringWithLinksXml.load(referenceElement));
             }
 
             signalMast.getDescriptions().clear();
@@ -267,8 +268,15 @@ public class SignalMastXml {
                     Namespace.getNamespace("xsi",
                             "http://www.w3.org/2001/XMLSchema-instance"));
 
+            System.out.format("File: %s%n", file.getAbsolutePath());
+
             if (store(signalMast, root)) {
-                xmlFile.writeXML(file, doc);
+                // The text format _must_ be PRESERVE.
+                // Otherwise html links in the text will not be correctly preserved.
+//                xmlFile.writeXML(file, doc, Format.TextMode.NORMALIZE);
+                xmlFile.writeXML(file, doc, Format.TextMode.PRESERVE);
+//                xmlFile.writeXML(file, doc, Format.TextMode.TRIM_FULL_WHITE);
+//                xmlFile.writeXML(file, doc, Format.TextMode.TRIM);
             }
         } catch (IOException eb) {
             log.warn("Exception in storing signal xml", eb);
@@ -315,8 +323,9 @@ public class SignalMastXml {
 
         root.addContent(new Element("name").setText(signalMast.getName()));
 
-        for (String reference : signalMast.getReferences()) {
-            root.addContent(new Element("reference").setText(reference));
+
+        for (StringWithLinks reference : signalMast.getReferences()) {
+            root.addContent(StringWithLinksXml.store(reference, "reference"));
         }
 
         for (String description : signalMast.getDescriptions()) {

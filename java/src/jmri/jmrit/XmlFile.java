@@ -229,6 +229,19 @@ public abstract class XmlFile {
      * @throws FileNotFoundException if file not found
      */
     public void writeXML(File file, Document doc) throws IOException, FileNotFoundException {
+        writeXML(file, doc, Format.TextMode.TRIM_FULL_WHITE);
+    }
+
+    /**
+     * Write a File as XML.
+     *
+     * @param file      File to be created.
+     * @param doc       Document to be written out. This should never be null.
+     * @param textMode  The text mode
+     * @throws FileNotFoundException if file not found
+     */
+    public void writeXML(File file, Document doc, Format.TextMode textMode)
+            throws IOException, FileNotFoundException {
         // ensure parent directory exists
         if (file.getParent() != null) {
             FileUtil.createDirectory(file.getParent());
@@ -238,7 +251,8 @@ public abstract class XmlFile {
             XMLOutputter fmt = new XMLOutputter();
             fmt.setFormat(Format.getPrettyFormat()
                     .setLineSeparator(System.getProperty("line.separator"))
-                    .setTextMode(Format.TextMode.TRIM_FULL_WHITE));
+                    .setTextMode(textMode)
+                    .setIndent("  "));
             fmt.output(doc, o);
             o.flush();
         }
