@@ -187,9 +187,10 @@ public abstract class AbstractBase
     }
 
     protected void printTreeRow(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String currentIndent,
             MutableInt lineNumber) {
 
@@ -197,47 +198,50 @@ public abstract class AbstractBase
             writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
         }
         writer.append(currentIndent);
-        writer.append(getLongDescription(locale));
+        writer.append(getLongDescription(locale, verbosity));
         writer.println();
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, Locale.getDefault(), writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, Locale.getDefault(), indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, locale, writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, locale, indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             String currentIndent,
             MutableInt lineNumber) {
 
-        printTreeRow(settings, locale, writer, currentIndent, lineNumber);
+        printTreeRow(writer, settings, verbosity, locale, currentIndent, lineNumber);
 
         for (int i=0; i < getChildCount(); i++) {
-            getChild(i).printTree(settings, locale, writer, indent, currentIndent+indent, lineNumber);
+            getChild(i).printTree(writer, settings, verbosity, locale, indent, currentIndent+indent, lineNumber);
         }
     }
 
@@ -246,7 +250,7 @@ public abstract class AbstractBase
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
     public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
-        log.debug("## {} :: {}", level, this.getLongDescription());
+        log.debug("## {} :: {}", level, this.getLongDescription(Verbosity.Normal));
         level++;
         for (int i=0; i < getChildCount(); i++) {
             getChild(i).getUsageTree(level, bean, report, cdl);

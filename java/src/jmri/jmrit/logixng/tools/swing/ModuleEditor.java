@@ -195,7 +195,7 @@ public class ModuleEditor extends TreeEditor implements AbstractLogixNGEditor<Mo
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             return Bundle.getMessage(locale, "ModuleEditor_RootSocket_Long", getName());
         }
 

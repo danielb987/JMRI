@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 public abstract class AbstractMaleSocket implements MaleSocket {
 
     private final Base _object;
+    private Verbosity _verbosity;
     private boolean _locked = false;
     private boolean _system = false;
     protected final List<VariableData> _localVariables = new ArrayList<>();
@@ -113,8 +114,14 @@ public abstract class AbstractMaleSocket implements MaleSocket {
     }
 
     @Override
-    public final String getLongDescription(Locale locale) {
-        String s = _object.getLongDescription(locale);
+    public final String getLongDescription(Locale locale, Verbosity verbosity) {
+        Verbosity v = _verbosity != null ? _verbosity : verbosity;
+        String s;
+        if (v == Verbosity.Short) {
+            s = _object.getShortDescription(locale);
+        } else {
+            s = _object.getLongDescription(locale, v);
+        }
         if (!_listen) {
             s += " ::: " + Base.getNoListenString();
         }
@@ -384,16 +391,18 @@ public abstract class AbstractMaleSocket implements MaleSocket {
      * it's embedding an other AbstractMaleSocket. An example of this is the
      * AbstractDebuggerMaleSocket which embeds other male sockets.
      *
-     * @param settings settings for what to print
-     * @param locale The locale to be used
-     * @param writer the stream to print the tree to
+     * @param writer     the stream to print the tree to
+     * @param settings   settings for what to print
+     * @param verbosity  the verbosity
+     * @param locale     the locale to be used
      * @param currentIndent the current indentation
      * @param lineNumber the line number
      */
     protected void printTreeRow(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String currentIndent,
             MutableInt lineNumber) {
 
@@ -416,7 +425,7 @@ public abstract class AbstractMaleSocket implements MaleSocket {
                 writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
             }
             writer.append(currentIndent);
-            writer.append(getLongDescription(locale));
+            writer.append(getLongDescription(locale, verbosity));
             if (settings._printSystemNames) {
                 writer.append(" ::: ");
                 writer.append(this.getSystemName());
@@ -455,9 +464,9 @@ public abstract class AbstractMaleSocket implements MaleSocket {
     }
 
     protected void printLocalVariable(
+            PrintWriter writer,
             PrintTreeSettings settings,
             Locale locale,
-            PrintWriter writer,
             String currentIndent,
             MutableInt lineNumber,
             VariableData localVariable) {
@@ -479,47 +488,50 @@ public abstract class AbstractMaleSocket implements MaleSocket {
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
-        printTree(settings, Locale.getDefault(), writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, Locale.getDefault(), indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
-        printTree(settings, locale, writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, locale, indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             String currentIndent,
             MutableInt lineNumber) {
 
-        printTreeRow(settings, locale, writer, currentIndent, lineNumber);
+        printTreeRow(writer, settings, verbosity, locale, currentIndent, lineNumber);
 
         if (settings._printLocalVariables) {
             for (VariableData localVariable : _localVariables) {
-                printLocalVariable(settings, locale, writer, currentIndent, lineNumber, localVariable);
+                printLocalVariable(writer, settings, locale, currentIndent, lineNumber, localVariable);
             }
         }
 
         if (getObject() instanceof MaleSocket) {
-            getObject().printTree(settings, locale, writer, indent, currentIndent, lineNumber);
+            getObject().printTree(writer, settings, verbosity, locale, indent, currentIndent, lineNumber);
         } else {
             for (int i=0; i < getChildCount(); i++) {
-                getChild(i).printTree(settings, locale, writer, indent, currentIndent+indent, lineNumber);
+                getChild(i).printTree(writer, settings, verbosity, locale, indent, currentIndent+indent, lineNumber);
             }
         }
     }
@@ -530,7 +542,7 @@ public abstract class AbstractMaleSocket implements MaleSocket {
                                                         justification="Specific log message format")
     public void getUsageTree(int level, NamedBean bean, List<NamedBeanUsageReport> report, NamedBean cdl) {
         if (!(getObject() instanceof AbstractMaleSocket)) {
-            log.debug("*@ {} :: {}", level, this.getLongDescription());
+            log.debug("*@ {} :: {}", level, this.getLongDescription(Verbosity.Normal));
             _object.getUsageDetail(level, bean, report, cdl);
         }
 

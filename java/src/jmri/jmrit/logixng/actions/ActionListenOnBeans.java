@@ -200,7 +200,7 @@ public class ActionListenOnBeans extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "ActionListenOnBeans_Long");
     }
 
@@ -269,7 +269,7 @@ public class ActionListenOnBeans extends AbstractDigitalAction
         for (NamedBeanReference namedBeanReference : _namedBeanReferences.values()) {
             if (namedBeanReference._handle != null) {
                 if (bean.equals(namedBeanReference._handle.getBean())) {
-                    report.add(new NamedBeanUsageReport("LogixNGAction", cdl, getLongDescription()));
+                    report.add(new NamedBeanUsageReport("LogixNGAction", cdl, getLongDescription(Verbosity.Normal)));
                 }
             }
         }

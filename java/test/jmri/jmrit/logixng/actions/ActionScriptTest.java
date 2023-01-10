@@ -92,13 +92,13 @@ public class ActionScriptTest extends AbstractDigitalActionTestBase {
         action2.setScript(SCRIPT_TEXT);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Execute script: Single line command. Script lights.provideLight(\"IL1\").commandedState = ON", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Execute script: Single line command. Script lights.provideLight(\"IL1\").commandedState = ON", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionScript("IQDA321", "My action");
         action2.setScript(SCRIPT_TEXT);
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My action", action2.getUserName());
-        Assert.assertEquals("String matches", "Execute script: Single line command. Script lights.provideLight(\"IL1\").commandedState = ON", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Execute script: Single line command. Script lights.provideLight(\"IL1\").commandedState = ON", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -147,7 +147,7 @@ public class ActionScriptTest extends AbstractDigitalActionTestBase {
     @Test
     public void testDescription() {
         Assert.assertEquals("Script", actionScript.getShortDescription());
-        Assert.assertEquals("Execute script: Single line command. Script lights.provideLight(\"IL1\").commandedState = ON", actionScript.getLongDescription());
+        Assert.assertEquals("Execute script: Single line command. Script lights.provideLight(\"IL1\").commandedState = ON", actionScript.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

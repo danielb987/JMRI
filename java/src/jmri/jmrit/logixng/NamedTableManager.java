@@ -10,7 +10,7 @@ import jmri.*;
 
 /**
  * A manager for a NamedTable
- * 
+ *
  * @author Dave Duchamp       Copyright (C) 2007
  * @author Daniel Bergqvist   Copyright (C) 2018
  */
@@ -24,7 +24,7 @@ public interface NamedTableManager extends Manager<NamedTable> {
      * @return the new table
      */
     public AnonymousTable newAnonymousTable(int numRows, int numColumns);
-    
+
     /**
      * Create a new CSV table.
      * This table is stored in the manager but it's contents does only exists
@@ -54,7 +54,7 @@ public interface NamedTableManager extends Manager<NamedTable> {
      * @return the new table
      */
     public NamedTable newInternalTable(String systemName, String userName, int numRows, int numColumns);
-    
+
     /**
      * Load a table from a CSV text.
      * @param sys the system name of the new table
@@ -66,7 +66,7 @@ public interface NamedTableManager extends Manager<NamedTable> {
     public NamedTable loadTableFromCSVData(
             @Nonnull String sys, @CheckForNull String user, @Nonnull String text)
             throws IOException;
-    
+
     /**
      * Load a table from a CSV finle.
      * @param sys the system name of the new table
@@ -79,7 +79,7 @@ public interface NamedTableManager extends Manager<NamedTable> {
             @Nonnull String sys, @CheckForNull String user,
             @Nonnull String fileName)
             throws IOException;
-    
+
     /**
      * Load a table from a CSV finle.
      * @param file the CSV file
@@ -92,7 +92,7 @@ public interface NamedTableManager extends Manager<NamedTable> {
             @Nonnull String sys, @CheckForNull String user,
             @Nonnull File file)
             throws IOException;
-    
+
     /**
      * Locate via user name, then system name if needed. Does not create a new
      * one if nothing found
@@ -101,24 +101,24 @@ public interface NamedTableManager extends Manager<NamedTable> {
      * @return null if no match found
      */
     public NamedTable getNamedTable(String name);
-    
+
     /** {@inheritDoc} */
     @Override
     public NamedTable getByUserName(String name);
-    
+
     /** {@inheritDoc} */
     @Override
     public NamedTable getBySystemName(String name);
-    
+
     /**
      * Create a new system name for a LogixNG.
      * @return a new system name
      */
     public String getAutoSystemName();
-    
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * The sub system prefix for the NamedTableManager is
      * {@link #getSystemNamePrefix() } and "T";
      */
@@ -126,7 +126,7 @@ public interface NamedTableManager extends Manager<NamedTable> {
     public default String getSubSystemNamePrefix() {
         return getSystemNamePrefix() + "T";
     }
-    
+
     /**
      * Delete NamedTable by removing it from the manager.
      *
@@ -136,19 +136,19 @@ public interface NamedTableManager extends Manager<NamedTable> {
 
     /**
      * Print the tree to a stream.
-     * 
+     *
      * @param writer the stream to print the tree to
      * @param indent the indentation of each level
      */
     public void printTree(PrintWriter writer, String indent);
-    
+
     /**
      * Print the tree to a stream.
-     * 
-     * @param locale The locale to be used
+     *
      * @param writer the stream to print the tree to
+     * @param locale The locale to be used
      * @param indent the indentation of each level
      */
-    public void printTree(Locale locale, PrintWriter writer, String indent);
+    public void printTree(PrintWriter writer, Locale locale, String indent);
 
 }

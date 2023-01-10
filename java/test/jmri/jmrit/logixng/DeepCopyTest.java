@@ -7,7 +7,6 @@ import java.util.*;
 
 import jmri.*;
 import jmri.jmrit.logixng.Base.PrintTreeSettings;
-import jmri.util.*;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -54,9 +53,10 @@ public class DeepCopyTest {
                     StringWriter stringWriter = new StringWriter();
                     PrintWriter printWriter = new PrintWriter(stringWriter);
                     origin.printTree(
-                            otherPrintTreeSettings,
-                            Locale.ENGLISH,
                             printWriter,
+                            otherPrintTreeSettings,
+                            Base.Verbosity.Multiline,
+                            Locale.ENGLISH,
                             treeIndent,
                             new MutableInt(0));
 
@@ -65,9 +65,10 @@ public class DeepCopyTest {
                     stringWriter = new StringWriter();
                     printWriter = new PrintWriter(stringWriter);
                     copy.printTree(
-                            otherPrintTreeSettings,
-                            Locale.ENGLISH,
                             printWriter,
+                            otherPrintTreeSettings,
+                            Base.Verbosity.Multiline,
+                            Locale.ENGLISH,
                             treeIndent,
                             new MutableInt(0));
 

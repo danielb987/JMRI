@@ -94,7 +94,7 @@ public class ConditionalNGTest {
         Assert.assertEquals("socket name is correct", null, conditionalNG.getSocketSystemName());
         setupInitialConditionalNGTree(conditionalNG);
         MaleSocket many = conditionalNG.getChild(0).getConnectedSocket();
-        Assert.assertTrue("description is correct", "Many".equals(many.getLongDescription()));
+        Assert.assertTrue("description is correct", "Many".equals(many.getLongDescription(Base.Verbosity.Normal)));
         Assert.assertEquals("socket name is correct", many.getSystemName(), conditionalNG.getSocketSystemName());
         conditionalNG.getChild(0).disconnect();
         Assert.assertEquals("socket name is correct", null, conditionalNG.getSocketSystemName());
@@ -135,7 +135,7 @@ public class ConditionalNGTest {
                 .createLogixNG("A new logix for test");  // NOI18N
         ConditionalNG conditionalNG_1 = InstanceManager.getDefault(ConditionalNG_Manager.class).createConditionalNG(logixNG, "A conditionalNG");  // NOI18N
         Assert.assertEquals("getLongDescription() returns correct value",
-                "ConditionalNG: A conditionalNG", conditionalNG_1.getLongDescription(Locale.US));
+                "ConditionalNG: A conditionalNG", conditionalNG_1.getLongDescription(Locale.US, Base.Verbosity.Normal));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ConditionalNGTest {
                 .createLogixNG("A new logix for test");  // NOI18N
         ConditionalNG conditionalNG_1 = InstanceManager.getDefault(ConditionalNG_Manager.class).createConditionalNG(logixNG, "A conditionalNG");  // NOI18N
         Assert.assertEquals("getLongDescription() returns correct value",
-                "ConditionalNG: A conditionalNG", conditionalNG_1.getLongDescription(Locale.US));
+                "ConditionalNG: A conditionalNG", conditionalNG_1.getLongDescription(Locale.US, Base.Verbosity.Normal));
     }
 
     @Test

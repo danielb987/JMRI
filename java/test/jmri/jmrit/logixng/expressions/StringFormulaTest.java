@@ -11,9 +11,7 @@ import jmri.jmrit.logixng.actions.DoStringAction;
 import jmri.jmrit.logixng.actions.StringActionMemory;
 import jmri.jmrit.logixng.expressions.StringFormula.SocketData;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
-import jmri.jmrit.logixng.implementation.DefaultSymbolTable;
 import jmri.jmrit.logixng.util.parser.ParserException;
-import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
 import org.junit.After;
@@ -111,25 +109,25 @@ public class StringFormulaTest extends AbstractStringExpressionTestBase {
 //        expression2.setFormula("R1");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new StringFormula("IQSE321", "My expression");
 //        expression2.setFormula("R1");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new StringFormula("IQSE321", null);
 //        expression2.setFormula("R1 and R2");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1 and R2", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1 and R2", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new StringFormula("IQSE321", "My expression");
 //        expression2.setFormula("R1 or R2");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1 or R2", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1 or R2", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -428,7 +426,7 @@ public class StringFormulaTest extends AbstractStringExpressionTestBase {
     public void testDescription() {
         StringFormula expression = new StringFormula("IQSE321", null);
         Assert.assertEquals("strings matches", "String Formula", expression.getShortDescription());
-        Assert.assertEquals("strings matches", "String Formula: empty", expression.getLongDescription());
+        Assert.assertEquals("strings matches", "String Formula: empty", expression.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

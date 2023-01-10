@@ -93,12 +93,12 @@ public class NotTest extends AbstractDigitalExpressionTestBase {
         expression2 = new Not("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Not", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Not", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new Not("IQDE321", "My expression");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Not", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Not", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -249,7 +249,7 @@ public class NotTest extends AbstractDigitalExpressionTestBase {
     public void testDescription() {
         Not e1 = new Not("IQDE321", null);
         Assert.assertTrue("Not".equals(e1.getShortDescription()));
-        Assert.assertTrue("Not".equals(e1.getLongDescription()));
+        Assert.assertTrue("Not".equals(e1.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

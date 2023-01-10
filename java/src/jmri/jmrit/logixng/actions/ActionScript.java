@@ -320,7 +320,7 @@ public class ActionScript extends AbstractDigitalAction {
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String operation;
         String script;
 

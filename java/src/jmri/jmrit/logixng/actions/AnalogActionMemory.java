@@ -79,7 +79,7 @@ public class AnalogActionMemory extends AbstractAnalogAction
 
     /** {@inheritDoc} */
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "AnalogActionMemory_Long", _selectNamedBean.getDescription(locale));
     }
 

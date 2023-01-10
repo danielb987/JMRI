@@ -86,6 +86,6 @@ public interface GlobalVariableManager extends Manager<GlobalVariable> {
      * @param writer the stream to print the tree to
      * @param indent the indentation of each level
      */
-    public void printTree(Locale locale, PrintWriter writer, String indent);
+    public void printTree(PrintWriter writer, Locale locale, String indent);
 
 }

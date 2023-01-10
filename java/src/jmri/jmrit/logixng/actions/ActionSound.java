@@ -190,7 +190,7 @@ public class ActionSound extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String operation = _selectEnum.getDescription(locale);
         String sound;
 

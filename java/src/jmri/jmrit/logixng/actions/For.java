@@ -131,7 +131,7 @@ public class For extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "For_Long",
                 _initActionSocket.getName(),
                 _whileExpressionSocket.getName(),

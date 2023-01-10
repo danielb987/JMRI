@@ -215,7 +215,7 @@ public class ActionTimerTest extends AbstractDigitalActionTestBase {
         ActionTimer a1 = new ActionTimer("IQDA321", null);
         Assert.assertEquals("strings are equal", "Timer", a1.getShortDescription());
         ActionTimer a2 = new ActionTimer("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Timer", a2.getLongDescription());
+        Assert.assertEquals("strings are equal", "Timer", a2.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Ignore

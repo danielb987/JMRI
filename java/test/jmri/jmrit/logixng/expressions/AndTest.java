@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.expressions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import jmri.InstanceManager;
 import jmri.NamedBean;
@@ -17,12 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import jmri.jmrit.logixng.DigitalExpressionBean;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 
@@ -103,12 +97,12 @@ public class AndTest extends AbstractDigitalExpressionTestBase {
         expression2 = new And("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "And. Evaluate All", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "And. Evaluate All", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new And("IQDE321", "My expression");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "And. Evaluate All", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "And. Evaluate All", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -345,7 +339,7 @@ public class AndTest extends AbstractDigitalExpressionTestBase {
     public void testDescription() {
         And e1 = new And("IQDE321", null);
         Assert.assertTrue("And".equals(e1.getShortDescription()));
-        Assert.assertTrue("And. Evaluate All".equals(e1.getLongDescription()));
+        Assert.assertTrue("And. Evaluate All".equals(e1.getLongDescription(Base.Verbosity.Normal)));
     }
 
     // The minimal setup for log4J

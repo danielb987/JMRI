@@ -99,12 +99,12 @@ public class OrTest extends AbstractDigitalExpressionTestBase {
         expression2 = new Or("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Or. Evaluate All", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Or. Evaluate All", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new Or("IQDE321", "My expression");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Or. Evaluate All", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Or. Evaluate All", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -341,7 +341,7 @@ public class OrTest extends AbstractDigitalExpressionTestBase {
     public void testDescription() {
         Or e1 = new Or("IQDE321", null);
         Assert.assertTrue("Or".equals(e1.getShortDescription()));
-        Assert.assertTrue("Or. Evaluate All".equals(e1.getLongDescription()));
+        Assert.assertTrue("Or. Evaluate All".equals(e1.getLongDescription(Base.Verbosity.Normal)));
     }
 
     // The minimal setup for log4J

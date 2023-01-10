@@ -12,15 +12,7 @@ import jmri.Memory;
 import jmri.MemoryManager;
 import jmri.NamedBean;
 import jmri.NamedBeanHandleManager;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -100,19 +92,19 @@ public class ExpressionMemoryTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionMemory("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Memory '' is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Memory '' is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionMemory("IQDE321", "My memory");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My memory", expression2.getUserName());
-        Assert.assertEquals("String matches", "Memory '' is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Memory '' is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionMemory("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(memory);
         Assert.assertTrue("memory is correct", memory == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Memory IM1 is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Memory IM1 is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Memory l = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         expression2 = new ExpressionMemory("IQDE321", "My memory");
@@ -120,7 +112,7 @@ public class ExpressionMemoryTest extends AbstractDigitalExpressionTestBase {
         Assert.assertTrue("memory is correct", l == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My memory", expression2.getUserName());
-        Assert.assertEquals("String matches", "Memory IM2 is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Memory IM2 is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -192,13 +184,13 @@ public class ExpressionMemoryTest extends AbstractDigitalExpressionTestBase {
 
         expressionMemory.getSelectNamedBean().removeNamedBean();
         Assert.assertEquals("Memory", expressionMemory.getShortDescription());
-        Assert.assertEquals("Memory '' is equal to \"\"", expressionMemory.getLongDescription());
+        Assert.assertEquals("Memory '' is equal to \"\"", expressionMemory.getLongDescription(Base.Verbosity.Normal));
         expressionMemory.getSelectNamedBean().setNamedBean(memory);
         expressionMemory.setConstantValue("A value");
-        Assert.assertEquals("Memory IM1 is equal to \"A value\"", expressionMemory.getLongDescription());
+        Assert.assertEquals("Memory IM1 is equal to \"A value\"", expressionMemory.getLongDescription(Base.Verbosity.Normal));
         expressionMemory.setConstantValue("Another value");
-        Assert.assertEquals("Memory IM1 is equal to \"Another value\"", expressionMemory.getLongDescription());
-        Assert.assertEquals("Memory IM1 is equal to \"Another value\"", expressionMemory.getLongDescription());
+        Assert.assertEquals("Memory IM1 is equal to \"Another value\"", expressionMemory.getLongDescription(Base.Verbosity.Normal));
+        Assert.assertEquals("Memory IM1 is equal to \"Another value\"", expressionMemory.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

@@ -17,16 +17,16 @@ public abstract class MaleSocketTestBase {
     protected BaseManager<? extends NamedBean> manager;
     protected MaleSocket maleSocketA;
     protected MaleSocket maleSocketB;
-    
+
     protected abstract String getNewSystemName();
-    
+
     @Test
     public void testExists() throws JmriException {
         Assert.assertNotNull("exists", maleSocketA);
         Assert.assertNotNull("exists", maleSocketB);
         Assert.assertNotEquals("not equals", maleSocketA, maleSocketB);
     }
-    
+
     @Test
     public void testLock() {
         maleSocketA.setLocked(false);
@@ -38,7 +38,7 @@ public abstract class MaleSocketTestBase {
         maleSocketA.setSystem(true);
         Assert.assertTrue(maleSocketA.isSystem());
     }
-    
+
     @Test
     public void testCategory() throws JmriException {
         Assert.assertEquals("category is correct",
@@ -48,7 +48,7 @@ public abstract class MaleSocketTestBase {
         Assert.assertNotEquals("categories are different",
                 maleSocketA.getCategory(), maleSocketB.getCategory());
     }
-    
+
     @Test
     public void testShortDescription() throws JmriException {
         Assert.assertEquals("getShortDescription() is correct",
@@ -58,25 +58,25 @@ public abstract class MaleSocketTestBase {
         Assert.assertNotEquals("getShortDescription() are different",
                 maleSocketA.getShortDescription(), maleSocketB.getShortDescription());
     }
-    
+
     @Test
     public void testLongDescription() throws JmriException {
         Assert.assertEquals("getLongDescription() is correct",
-                maleSocketA.getObject().getLongDescription(), maleSocketA.getLongDescription());
+                maleSocketA.getObject().getLongDescription(Base.Verbosity.Normal), maleSocketA.getLongDescription(Base.Verbosity.Normal));
         Assert.assertEquals("getLongDescription() is correct",
-                maleSocketB.getObject().getLongDescription(), maleSocketB.getLongDescription());
+                maleSocketB.getObject().getLongDescription(Base.Verbosity.Normal), maleSocketB.getLongDescription(Base.Verbosity.Normal));
         Assert.assertNotEquals("getLongDescription() are different",
-                maleSocketA.getLongDescription(), maleSocketB.getLongDescription());
+                maleSocketA.getLongDescription(Base.Verbosity.Normal), maleSocketB.getLongDescription(Base.Verbosity.Normal));
     }
-    
+
     @Test
     public void testGetSystemName() throws JmriException {
         Assert.assertNotNull(maleSocketA);
         Assert.assertNotNull(maleSocketA.getSystemName());
         Assert.assertNotNull(maleSocketA.getObject());
         Assert.assertNotNull(maleSocketA.getObject().getSystemName());
-        
-        
+
+
         Assert.assertEquals("getSystemName() is correct",
                 maleSocketA.getObject().getSystemName(), maleSocketA.getSystemName());
         Assert.assertEquals("getSystemName() is correct",
@@ -84,7 +84,7 @@ public abstract class MaleSocketTestBase {
         Assert.assertNotEquals("getSystemName() are different",
                 maleSocketA.getSystemName(), maleSocketB.getSystemName());
     }
-    
+
     @Test
     public void testUserName() throws JmriException {
         maleSocketA.setUserName("Test username Abc");
@@ -94,16 +94,16 @@ public abstract class MaleSocketTestBase {
                 maleSocketB.getObject().getUserName(), maleSocketB.getUserName());
         Assert.assertNotEquals("getUserName() are different",
                 maleSocketA.getUserName(), maleSocketB.getUserName());
-        
+
         maleSocketA.getObject().setUserName("Abc");
         Assert.assertEquals("getUserName() is correct",
                 "Abc", maleSocketA.getUserName());
-        
+
         maleSocketA.getObject().setUserName("Def");
         Assert.assertEquals("getUserName() is correct",
                 "Def", maleSocketA.getUserName());
     }
-    
+
     @Test
     public void testDisplayName() throws JmriException {
         maleSocketA.setUserName("Test username Abc");
@@ -113,15 +113,15 @@ public abstract class MaleSocketTestBase {
                 maleSocketB.getObject().getUserName(), maleSocketB.getUserName());
         Assert.assertNotEquals("getUserName() are different",
                 maleSocketA.getUserName(), maleSocketB.getUserName());
-        
+
         maleSocketA.getObject().setUserName("Abc");
         Assert.assertEquals("getUserName() is correct",
                 "Abc", maleSocketA.getUserName());
-        
+
         maleSocketA.getObject().setUserName("Def");
         Assert.assertEquals("getUserName() is correct",
                 "Def", maleSocketA.getUserName());
-        
+
         Assert.assertEquals("getDisplayName() is correct",
                 ((NamedBean)maleSocketA.getObject()).getDisplayName(), ((NamedBean)maleSocketA).getDisplayName());
         Assert.assertEquals("getDisplayName() is correct",
@@ -129,7 +129,7 @@ public abstract class MaleSocketTestBase {
         Assert.assertNotEquals("getDisplayName() are different",
                 ((NamedBean)maleSocketA).getDisplayName(), ((NamedBean)maleSocketB).getDisplayName());
     }
-    
+
     @Test
     public void testState() throws JmriException {
         ((NamedBean)maleSocketA).setState(NamedBean.UNKNOWN);
@@ -138,25 +138,25 @@ public abstract class MaleSocketTestBase {
         JUnitAppender.assertWarnMessageStartingWith("Unexpected call to setState in ");
         JUnitAppender.assertWarnMessageStartingWith("Unexpected call to getState in ");
     }
-    
+
     @Test
     public void testComment() throws JmriException {
         ((NamedBean)maleSocketA).setComment("Abc");
         Assert.assertEquals("getComment() is correct",
                 "Abc", ((NamedBean)maleSocketA).getComment());
-        
+
         ((NamedBean)maleSocketA).setComment("Def");
         Assert.assertEquals("getComment() is correct",
                 "Def", ((NamedBean)maleSocketA).getComment());
     }
-    
+
     @Test
     public void testProperty() {
         // Remove all properties to be sure we don't hit any problem later
         for (String property : ((NamedBean)maleSocketA).getPropertyKeys()) {
             ((NamedBean)maleSocketA).removeProperty(property);
         }
-        
+
         // Test set property and read it
         ((NamedBean)maleSocketA).setProperty("Abc", "Something");
         Assert.assertEquals("getProperty() is correct",
@@ -180,7 +180,7 @@ public abstract class MaleSocketTestBase {
                 ((NamedBean)maleSocketA).getProperty("Abc"));
         Assert.assertEquals("num properties", 1, ((NamedBean)maleSocketA).getPropertyKeys().size());
     }
-    
+
     @Test
     public void testDebugConfig() {
         DebugConfig debugConfig = maleSocketA.createDebugConfig();
@@ -191,11 +191,11 @@ public abstract class MaleSocketTestBase {
         maleSocketA.setDebugConfig(null);
         Assert.assertNull("debugConfig is null", maleSocketA.getDebugConfig());
     }
-    
+
     @BeforeEach
     abstract public void setUp();
-    
+
     @AfterEach
     abstract public void tearDown();
-    
+
 }

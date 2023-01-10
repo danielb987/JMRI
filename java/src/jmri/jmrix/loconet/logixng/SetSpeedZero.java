@@ -92,7 +92,7 @@ public class SetSpeedZero extends AbstractDigitalAction {
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "SetSpeedZero_Long",
                 _memo != null ? _memo.getUserName() : Bundle.getMessage("MemoNotSet"));
     }

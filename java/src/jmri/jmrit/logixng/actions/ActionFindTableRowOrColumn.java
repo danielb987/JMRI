@@ -229,7 +229,7 @@ public class ActionFindTableRowOrColumn extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String tableName = _selectNamedBean.getDescription(locale);
         return Bundle.getMessage(locale, "ActionFindTableRowOrColumn_Long",
                 _tableRowOrColumn.getOpposite().toStringLowerCase(),

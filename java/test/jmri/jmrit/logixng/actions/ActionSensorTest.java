@@ -99,19 +99,19 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
         action2 = new ActionSensor("IQDA321", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set sensor '' to state Active", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set sensor '' to state Active", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionSensor("IQDA321", "My sensor");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My sensor", action2.getUserName());
-        Assert.assertEquals("String matches", "Set sensor '' to state Active", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set sensor '' to state Active", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionSensor("IQDA321", null);
         action2.getSelectNamedBean().setNamedBean(sensor);
         Assert.assertTrue("sensor is correct", sensor == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set sensor IS1 to state Active", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set sensor IS1 to state Active", action2.getLongDescription(Base.Verbosity.Normal));
 
         Sensor l = InstanceManager.getDefault(SensorManager.class).provide("IS1");
         action2 = new ActionSensor("IQDA321", "My sensor");
@@ -119,7 +119,7 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
         Assert.assertTrue("sensor is correct", l == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My sensor", action2.getUserName());
-        Assert.assertEquals("String matches", "Set sensor IS1 to state Active", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set sensor IS1 to state Active", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -492,7 +492,7 @@ public class ActionSensorTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Set sensor IS1 to state Active", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set sensor IS1 to state Active", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

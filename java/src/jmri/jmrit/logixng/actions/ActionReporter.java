@@ -240,7 +240,7 @@ public class ActionReporter extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String bean = _selectNamedBean.getDescription(locale);
         String dest = "";
 

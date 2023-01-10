@@ -383,7 +383,7 @@ public class ActionCreateBeansFromTable extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String tableName = _selectNamedBean.getDescription(locale);
         String includeCellsWithoutHeaderStr = _includeCellsWithoutHeader
                 ? Bundle.getMessage(locale, "ActionCreateBeansFromTable_FlagStr",
@@ -457,7 +457,7 @@ public class ActionCreateBeansFromTable extends AbstractDigitalAction
         log.debug("getUsageReport :: ActionCreateBeansFromTable: bean = {}, report = {}", cdl, report);
         if (_selectNamedBean.getBean() != null) {
             if (bean.equals(_selectNamedBean.getBean())) {
-                report.add(new NamedBeanUsageReport("LogixNGAction", cdl, getLongDescription()));
+                report.add(new NamedBeanUsageReport("LogixNGAction", cdl, getLongDescription(Verbosity.Normal)));
             }
         }
     }

@@ -219,11 +219,11 @@ public class DigitalBooleanOnChangeTest extends AbstractDigitalBooleanActionTest
     @Test
     public void testGetLongDescription() {
         DigitalBooleanActionBean a1 = new DigitalBooleanOnChange("IQDB321", null, DigitalBooleanOnChange.Trigger.CHANGE_TO_TRUE);
-        Assert.assertEquals("strings are equal", "On change to true", a1.getLongDescription());
+        Assert.assertEquals("strings are equal", "On change to true", a1.getLongDescription(Base.Verbosity.Normal));
         DigitalBooleanActionBean a2 = new DigitalBooleanOnChange("IQDB322", null, DigitalBooleanOnChange.Trigger.CHANGE_TO_FALSE);
-        Assert.assertEquals("strings are equal", "On change to false", a2.getLongDescription());
+        Assert.assertEquals("strings are equal", "On change to false", a2.getLongDescription(Base.Verbosity.Normal));
         DigitalBooleanActionBean a3 = new DigitalBooleanOnChange("IQDB323", null, DigitalBooleanOnChange.Trigger.CHANGE);
-        Assert.assertEquals("strings are equal", "On change", a3.getLongDescription());
+        Assert.assertEquals("strings are equal", "On change", a3.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

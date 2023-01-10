@@ -12,16 +12,7 @@ import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.Sensor;
 import jmri.SensorManager;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.Is_IsNot_Enum;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -102,19 +93,19 @@ public class ExpressionSensorTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionSensor("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Sensor '' is Active", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Sensor '' is Active", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionSensor("IQDE321", "My sensor");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My sensor", expression2.getUserName());
-        Assert.assertEquals("String matches", "Sensor '' is Active", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Sensor '' is Active", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionSensor("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(sensor);
         Assert.assertTrue("sensor is correct", sensor == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Sensor IS1 is Active", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Sensor IS1 is Active", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Sensor s = InstanceManager.getDefault(SensorManager.class).provide("IS2");
         expression2 = new ExpressionSensor("IQDE321", "My sensor");
@@ -122,7 +113,7 @@ public class ExpressionSensorTest extends AbstractDigitalExpressionTestBase {
         Assert.assertTrue("sensor is correct", s == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My sensor", expression2.getUserName());
-        Assert.assertEquals("String matches", "Sensor IS2 is Active", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Sensor IS2 is Active", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -186,15 +177,15 @@ public class ExpressionSensorTest extends AbstractDigitalExpressionTestBase {
 
         expressionSensor.getSelectNamedBean().removeNamedBean();
         Assert.assertEquals("Sensor", expressionSensor.getShortDescription());
-        Assert.assertEquals("Sensor '' is Active", expressionSensor.getLongDescription());
+        Assert.assertEquals("Sensor '' is Active", expressionSensor.getLongDescription(Base.Verbosity.Normal));
         expressionSensor.getSelectNamedBean().setNamedBean(sensor);
         expressionSensor.set_Is_IsNot(Is_IsNot_Enum.Is);
         expressionSensor.setBeanState(ExpressionSensor.SensorState.Inactive);
-        Assert.assertTrue("Sensor IS1 is Inactive".equals(expressionSensor.getLongDescription()));
+        Assert.assertTrue("Sensor IS1 is Inactive".equals(expressionSensor.getLongDescription(Base.Verbosity.Normal)));
         expressionSensor.set_Is_IsNot(Is_IsNot_Enum.IsNot);
-        Assert.assertTrue("Sensor IS1 is not Inactive".equals(expressionSensor.getLongDescription()));
+        Assert.assertTrue("Sensor IS1 is not Inactive".equals(expressionSensor.getLongDescription(Base.Verbosity.Normal)));
         expressionSensor.setBeanState(ExpressionSensor.SensorState.Other);
-        Assert.assertTrue("Sensor IS1 is not Other".equals(expressionSensor.getLongDescription()));
+        Assert.assertTrue("Sensor IS1 is not Other".equals(expressionSensor.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

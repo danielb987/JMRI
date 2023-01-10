@@ -297,7 +297,7 @@ public class ActionLocalVariable extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String copyToMemoryName = _selectMemoryNamedBean.getDescription(locale);
         String copyToBlockName = _selectBlockNamedBean.getDescription(locale);
         String copyToReporterName = _selectReporterNamedBean.getDescription(locale);

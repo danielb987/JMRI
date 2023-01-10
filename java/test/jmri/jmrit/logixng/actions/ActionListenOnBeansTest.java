@@ -98,7 +98,7 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         ActionListenOnBeans a1 = new ActionListenOnBeans("IQDA321", null);
         Assert.assertEquals("strings are equal", "Listen on beans", a1.getShortDescription());
         ActionListenOnBeans a2 = new ActionListenOnBeans("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Listen on beans", a2.getLongDescription());
+        Assert.assertEquals("strings are equal", "Listen on beans", a2.getLongDescription(Base.Verbosity.Normal));
     }
 
     // The minimal setup for log4J

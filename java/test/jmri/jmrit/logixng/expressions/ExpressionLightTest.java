@@ -12,16 +12,7 @@ import jmri.LightManager;
 import jmri.NamedBean;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.Is_IsNot_Enum;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -102,19 +93,19 @@ public class ExpressionLightTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionLight("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Light '' is On", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Light '' is On", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionLight("IQDE321", "My light");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My light", expression2.getUserName());
-        Assert.assertEquals("String matches", "Light '' is On", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Light '' is On", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionLight("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(light);
         Assert.assertTrue("light is correct", light == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Light IL1 is On", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Light IL1 is On", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Light l = InstanceManager.getDefault(LightManager.class).provide("IL2");
         expression2 = new ExpressionLight("IQDE321", "My light");
@@ -122,7 +113,7 @@ public class ExpressionLightTest extends AbstractDigitalExpressionTestBase {
         Assert.assertTrue("light is correct", l == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My light", expression2.getUserName());
-        Assert.assertEquals("String matches", "Light IL2 is On", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Light IL2 is On", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -186,15 +177,15 @@ public class ExpressionLightTest extends AbstractDigitalExpressionTestBase {
 
         expressionLight.getSelectNamedBean().removeNamedBean();
         Assert.assertTrue("Light".equals(expressionLight.getShortDescription()));
-        Assert.assertTrue("Light '' is On".equals(expressionLight.getLongDescription()));
+        Assert.assertTrue("Light '' is On".equals(expressionLight.getLongDescription(Base.Verbosity.Normal)));
         expressionLight.getSelectNamedBean().setNamedBean(light);
         expressionLight.set_Is_IsNot(Is_IsNot_Enum.Is);
         expressionLight.setBeanState(ExpressionLight.LightState.Off);
-        Assert.assertTrue("Light IL1 is Off".equals(expressionLight.getLongDescription()));
+        Assert.assertTrue("Light IL1 is Off".equals(expressionLight.getLongDescription(Base.Verbosity.Normal)));
         expressionLight.set_Is_IsNot(Is_IsNot_Enum.IsNot);
-        Assert.assertTrue("Light IL1 is not Off".equals(expressionLight.getLongDescription()));
+        Assert.assertTrue("Light IL1 is not Off".equals(expressionLight.getLongDescription(Base.Verbosity.Normal)));
         expressionLight.setBeanState(ExpressionLight.LightState.Other);
-        Assert.assertTrue("Light IL1 is not Other".equals(expressionLight.getLongDescription()));
+        Assert.assertTrue("Light IL1 is not Other".equals(expressionLight.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

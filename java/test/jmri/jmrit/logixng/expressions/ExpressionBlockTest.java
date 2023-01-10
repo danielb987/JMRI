@@ -87,19 +87,19 @@ public class ExpressionBlockTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionBlock("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Block \"''\" is Occupied", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Block \"''\" is Occupied", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionBlock("IQDE321", "My block");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My block", expression2.getUserName());
-        Assert.assertEquals("String matches", "Block \"''\" is Occupied", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Block \"''\" is Occupied", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionBlock("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(block);
         Assert.assertTrue("block is correct", block == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Block \"IB1\" is Occupied", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Block \"IB1\" is Occupied", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Block s = InstanceManager.getDefault(BlockManager.class).provide("IB2");
         expression2 = new ExpressionBlock("IQDE321", "My block");
@@ -107,7 +107,7 @@ public class ExpressionBlockTest extends AbstractDigitalExpressionTestBase {
         Assert.assertTrue("block is correct", s == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My block", expression2.getUserName());
-        Assert.assertEquals("String matches", "Block \"IB2\" is Occupied", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Block \"IB2\" is Occupied", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -167,15 +167,15 @@ public class ExpressionBlockTest extends AbstractDigitalExpressionTestBase {
 
         expressionBlock.getSelectNamedBean().removeNamedBean();
         Assert.assertEquals("Block", expressionBlock.getShortDescription());
-        Assert.assertEquals("Block \"''\" is Occupied", expressionBlock.getLongDescription());
+        Assert.assertEquals("Block \"''\" is Occupied", expressionBlock.getLongDescription(Base.Verbosity.Normal));
         expressionBlock.getSelectNamedBean().setNamedBean(block);
         expressionBlock.set_Is_IsNot(Is_IsNot_Enum.Is);
         expressionBlock.setBeanState(ExpressionBlock.BlockState.NotOccupied);
-        Assert.assertEquals("Block \"IB1\" is not Occupied", expressionBlock.getLongDescription());
+        Assert.assertEquals("Block \"IB1\" is not Occupied", expressionBlock.getLongDescription(Base.Verbosity.Normal));
         expressionBlock.set_Is_IsNot(Is_IsNot_Enum.IsNot);
-        Assert.assertEquals("Block \"IB1\" is not not Occupied", expressionBlock.getLongDescription());
+        Assert.assertEquals("Block \"IB1\" is not not Occupied", expressionBlock.getLongDescription(Base.Verbosity.Normal));
         expressionBlock.setBeanState(ExpressionBlock.BlockState.Other);
-        Assert.assertEquals("Block \"IB1\"  some other state", expressionBlock.getLongDescription());
+        Assert.assertEquals("Block \"IB1\"  some other state", expressionBlock.getLongDescription(Base.Verbosity.Normal));
     }
 
     private void setBlockStatus(Block b, int status) {

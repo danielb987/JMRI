@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import jmri.*;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.Base.PrintTreeSettings;
+import jmri.jmrit.logixng.Base.Verbosity;
 import jmri.jmrit.logixng.Module;
 import jmri.managers.AbstractManager;
 import jmri.util.LoggingUtil;
@@ -231,22 +232,22 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
                     log.error("Item has no parent: {}, {}, {}",
                             b.getSystemName(),
                             b.getUserName(),
-                            b.getLongDescription());
+                            b.getLongDescription(Verbosity.Normal));
                     msgs.add(Bundle.getMessage("NoParentMessage",
                             b.getSystemName(),
                             b.getUserName(),
-                            b.getLongDescription()));
+                            b.getLongDescription(Verbosity.Normal)));
 
                     for (int i=0; i < b.getChildCount(); i++) {
                         if (b.getChild(i).isConnected()) {
                             log.error("    Child: {}, {}, {}",
                                     b.getChild(i).getConnectedSocket().getSystemName(),
                                     b.getChild(i).getConnectedSocket().getUserName(),
-                                    b.getChild(i).getConnectedSocket().getLongDescription());
+                                    b.getChild(i).getConnectedSocket().getLongDescription(Verbosity.Normal));
                         }
                     }
                     log.error("                                             End Item");
-                    List<String> cliperrors = new ArrayList<String>();
+                    List<String> cliperrors = new ArrayList<>();
                     _clipboard.add((MaleSocket) b, cliperrors);
                 }
             }
@@ -354,31 +355,33 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, Locale.getDefault(), writer, indent, lineNumber);
+        printTree(writer, settings, verbosity, Locale.getDefault(), indent, lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
 
         for (LogixNG logixNG : getNamedBeanSet()) {
-            logixNG.printTree(settings, locale, writer, indent, "", lineNumber);
+            logixNG.printTree(writer, settings, verbosity, locale, indent, "", lineNumber);
             writer.println();
         }
-        InstanceManager.getDefault(ModuleManager.class).printTree(settings, locale, writer, indent, lineNumber);
-        InstanceManager.getDefault(NamedTableManager.class).printTree(locale, writer, indent);
-        InstanceManager.getDefault(GlobalVariableManager.class).printTree(locale, writer, indent);
-        InstanceManager.getDefault(LogixNG_InitializationManager.class).printTree(locale, writer, indent);
+        InstanceManager.getDefault(ModuleManager.class).printTree(writer, settings, verbosity, locale, indent, lineNumber);
+        InstanceManager.getDefault(NamedTableManager.class).printTree(writer, locale, indent);
+        InstanceManager.getDefault(GlobalVariableManager.class).printTree(writer, locale, indent);
+        InstanceManager.getDefault(LogixNG_InitializationManager.class).printTree(writer, locale, indent);
     }
 
 

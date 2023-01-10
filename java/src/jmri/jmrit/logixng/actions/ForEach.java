@@ -250,7 +250,7 @@ public class ForEach extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         if (_useCommonSource) {
             return Bundle.getMessage(locale, "ForEach_Long_Common",
                     _commonManager.toString(), _variableName, _socket.getName());

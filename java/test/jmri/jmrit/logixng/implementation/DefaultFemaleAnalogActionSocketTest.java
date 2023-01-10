@@ -53,7 +53,7 @@ public class DefaultFemaleAnalogActionSocketTest extends FemaleSocketTestBase {
     @Test
     public void testGetDescription() {
         Assert.assertEquals("String matches", "!~", _femaleSocket.getShortDescription());
-        Assert.assertEquals("String matches", "!~ A1", _femaleSocket.getLongDescription());
+        Assert.assertEquals("String matches", "!~ A1", _femaleSocket.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Override

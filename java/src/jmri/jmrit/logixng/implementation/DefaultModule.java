@@ -102,7 +102,7 @@ public class DefaultModule extends AbstractBase
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         StringBuilder sb = new StringBuilder(Bundle.getMessage("DefaultModule_Long", getDisplayName()));
         if (! _parameters.isEmpty()) {
             List<String> inParams = new ArrayList<>();
@@ -179,39 +179,42 @@ public class DefaultModule extends AbstractBase
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, Locale.getDefault(), writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, Locale.getDefault(), indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, locale, writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, locale, indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             String currentIndent,
             MutableInt lineNumber) {
 
-        printTreeRow(settings, locale, writer, currentIndent, lineNumber);
+        printTreeRow(writer, settings, verbosity, locale, currentIndent, lineNumber);
 
-        _femaleRootSocket.printTree(settings, locale, writer, indent, currentIndent+indent, lineNumber);
+        _femaleRootSocket.printTree(writer, settings, verbosity, locale, indent, currentIndent+indent, lineNumber);
     }
 /*
     @Override

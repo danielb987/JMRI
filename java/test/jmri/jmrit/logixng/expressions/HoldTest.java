@@ -6,16 +6,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.InstanceManager;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
+import jmri.jmrit.logixng.actions.IfThenElse;
+import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 import jmri.util.JUnitUtil;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
-import jmri.jmrit.logixng.actions.IfThenElse;
-import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 
 /**
  * Test Hold
@@ -97,12 +96,12 @@ public class HoldTest extends AbstractDigitalExpressionTestBase {
         expression2 = new Hold("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Trigger on expression Trigger. Hold while expression Hold", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Trigger on expression Trigger. Hold while expression Hold", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new Hold("IQDE321", "My expression");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Trigger on expression Trigger. Hold while expression Hold", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Trigger on expression Trigger. Hold while expression Hold", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -314,7 +313,7 @@ public class HoldTest extends AbstractDigitalExpressionTestBase {
     public void testDescription() {
         Hold e1 = new Hold("IQDE321", null);
         Assert.assertTrue("Hold".equals(e1.getShortDescription()));
-        Assert.assertTrue("Trigger on expression Trigger. Hold while expression Hold".equals(e1.getLongDescription()));
+        Assert.assertTrue("Trigger on expression Trigger. Hold while expression Hold".equals(e1.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

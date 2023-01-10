@@ -225,7 +225,7 @@ public class ActionMemory extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String namedBean = _selectNamedBean.getDescription(locale);
 
         String copyToMemoryName = _selectOtherMemoryNamedBean.getDescription(locale);

@@ -84,19 +84,19 @@ public class ActionPositionableTest extends AbstractDigitalActionTestBase {
         action2 = new ActionPositionable("IQDA321", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set icon/label \"''\" on panel \"''\" to \"Enable\"", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set icon/label \"''\" on panel \"''\" to \"Enable\"", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionPositionable("IQDA321", "My turnout");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My turnout", action2.getUserName());
-        Assert.assertEquals("String matches", "Set icon/label \"''\" on panel \"''\" to \"Enable\"", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set icon/label \"''\" on panel \"''\" to \"Enable\"", action2.getLongDescription(Base.Verbosity.Normal));
 /*
         action2 = new ActionPositionable("IQDA321", null);
         action2.setTurnout(turnout);
         Assert.assertTrue("turnout is correct", turnout == action2.getTurnout().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription(Base.Verbosity.Normal));
 
         Turnout l = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
         action2 = new ActionPositionable("IQDA321", "My turnout");
@@ -104,7 +104,7 @@ public class ActionPositionableTest extends AbstractDigitalActionTestBase {
         Assert.assertTrue("turnout is correct", l == action2.getTurnout().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My turnout", action2.getUserName());
-        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription(Base.Verbosity.Normal));
 */
         boolean thrown = false;
         try {
@@ -483,7 +483,7 @@ public class ActionPositionableTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Set icon/label \"Some other id\" on panel \"A panel editor\" to \"Disable\"", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set icon/label \"Some other id\" on panel \"A panel editor\" to \"Disable\"", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

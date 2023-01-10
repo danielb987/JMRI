@@ -299,7 +299,7 @@ public class TableForEach extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String namedBean = _selectNamedBean.getDescription(locale);
         String rowOrColumnName;
 

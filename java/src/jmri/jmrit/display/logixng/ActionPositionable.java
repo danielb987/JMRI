@@ -344,7 +344,7 @@ public class ActionPositionable extends AbstractDigitalAction implements Vetoabl
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String editorName = _editorName != null ? _editorName : Bundle.getMessage(locale, "BeanNotSelected");
         String positonableName;
         String state;

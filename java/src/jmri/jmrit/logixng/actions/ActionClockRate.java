@@ -127,7 +127,7 @@ public class ActionClockRate extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String value;
         if (_selectSpeed.getAddressing() == NamedBeanAddressing.Direct) {
             value = formatSpeed(_selectSpeed.getValue());

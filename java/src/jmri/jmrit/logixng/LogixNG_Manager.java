@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import jmri.Manager;
 import jmri.jmrit.logixng.Base.PrintTreeSettings;
+import jmri.jmrit.logixng.Base.Verbosity;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -143,62 +144,70 @@ public interface LogixNG_Manager extends Manager<LogixNG> {
     /**
      * Print the tree to a stream.
      *
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param verbosity  the verbosity
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public default void printTree(
             PrintWriter writer,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(new PrintTreeSettings(), writer, indent, lineNumber);
+        printTree(writer, new PrintTreeSettings(), verbosity, indent, lineNumber);
     }
 
     /**
      * Print the tree to a stream.
      *
-     * @param settings settings for what to print
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param settings   settings for what to print
+     * @param verbosity  the verbosity
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber);
 
     /**
      * Print the tree to a stream.
      *
-     * @param locale The locale to be used
      * @param writer the stream to print the tree to
+     * @param verbosity  the verbosity
+     * @param locale The locale to be used
      * @param indent the indentation of each level
      * @param lineNumber the line number
      */
     public default void printTree(
-            Locale locale,
             PrintWriter writer,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(new PrintTreeSettings(), locale, writer, indent, lineNumber);
+        printTree(writer, new PrintTreeSettings(), verbosity, locale, indent, lineNumber);
     }
 
     /**
      * Print the tree to a stream.
      *
-     * @param settings settings for what to print
-     * @param locale The locale to be used
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param settings   settings for what to print
+     * @param verbosity  the verbosity
+     * @param locale     the locale to be used
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber);
 

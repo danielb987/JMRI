@@ -75,7 +75,7 @@ public class LastResultOfDigitalExpression extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String beanName = _selectNamedBean.getDescription(locale);
 
         return Bundle.getMessage(locale, "LastResultOfDigitalExpression_Long",

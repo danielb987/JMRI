@@ -72,7 +72,7 @@ public class LogixNGTest {
     public void testLongDescription() {
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         Assert.assertEquals("getLongDescription() returns correct value",
-                "LogixNG: A new logix for test", logixNG.getLongDescription(Locale.US));
+                "LogixNG: A new logix for test", logixNG.getLongDescription(Locale.US, Base.Verbosity.Normal));
     }
 
     @Test
@@ -346,7 +346,7 @@ public class LogixNGTest {
         LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A new logix for test");  // NOI18N
         ConditionalNG conditionalNG = InstanceManager.getDefault(ConditionalNG_Manager.class).createConditionalNG(logixNG, "A conditionalNG");  // NOI18N
         setupInitialConditionalNGTree(conditionalNG);
-        logixNG.printTree(new PrintWriter(writer), "...", new MutableInt(0));
+        logixNG.printTree(new PrintWriter(writer), Base.Verbosity.Normal, "...", new MutableInt(0));
         String resultStr = writer.toString();
 /*
         System.err.format("=======================================%n");
@@ -408,11 +408,11 @@ public class LogixNGTest {
         ConditionalNG conditionalNG = InstanceManager.getDefault(ConditionalNG_Manager.class).createConditionalNG(logixNG, "A conditionalNG");  // NOI18N
         setupInitialConditionalNGTree(conditionalNG);
         MaleSocket many = conditionalNG.getChild(0).getConnectedSocket();
-//        System.err.format("aa: %s%n", many.getLongDescription());
-        Assert.assertTrue("description is correct", "Many".equals(many.getLongDescription()));
+//        System.err.format("aa: %s%n", many.getLongDescription(Base.Verbosity.Normal));
+        Assert.assertTrue("description is correct", "Many".equals(many.getLongDescription(Base.Verbosity.Normal)));
         MaleSocket ifThen = many.getChild(0).getConnectedSocket();
-//        System.err.format("aa: %s%n", ifThen.getLongDescription());
-        Assert.assertTrue("description is correct", "If Then Else. Execute on change".equals(ifThen.getLongDescription()));
+//        System.err.format("aa: %s%n", ifThen.getLongDescription(Base.Verbosity.Normal));
+        Assert.assertTrue("description is correct", "If Then Else. Execute on change".equals(ifThen.getLongDescription(Base.Verbosity.Normal)));
         systemName = InstanceManager.getDefault(DigitalExpressionManager.class).getAutoSystemName();
         DigitalExpressionBean expression = new ExpressionTurnout(systemName, "An expression for test");  // NOI18N
         MaleSocket digitalExpressionBean = InstanceManager.getDefault(DigitalExpressionManager.class).registerExpression(expression);
@@ -451,7 +451,7 @@ public class LogixNGTest {
 
         Assert.assertTrue("conditionalng child is correct",
                 "Set turnout '' to state Thrown"
-                        .equals(conditionalNG.getChild(0).getConnectedSocket().getLongDescription()));
+                        .equals(conditionalNG.getChild(0).getConnectedSocket().getLongDescription(Base.Verbosity.Normal)));
         Assert.assertEquals("conditionalng is correct", conditionalNG, digitalActionBean.getConditionalNG());
         Assert.assertEquals("logixlng is correct", logixNG, digitalActionBean.getLogixNG());
     }

@@ -128,7 +128,7 @@ public class DefaultGlobalVariableManager extends AbstractManager<GlobalVariable
 
     /** {@inheritDoc} */
     @Override
-    public void printTree(Locale locale, PrintWriter writer, String indent) {
+    public void printTree(PrintWriter writer, Locale locale, String indent) {
         for (GlobalVariable globalVariable : getNamedBeanSet()) {
             writer.append(String.format(
                     "Global variable: System name: %s, User name: %s, Initial value type: %s, Initial value data: %s",

@@ -99,19 +99,19 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
         action2 = new ActionLight("IQDA321", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set light '' to state On", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set light '' to state On", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionLight("IQDA321", "My light");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My light", action2.getUserName());
-        Assert.assertEquals("String matches", "Set light '' to state On", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set light '' to state On", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionLight("IQDA321", null);
         action2.getSelectNamedBean().setNamedBean(light);
         Assert.assertTrue("light is correct", light == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set light IL1 to state On", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set light IL1 to state On", action2.getLongDescription(Base.Verbosity.Normal));
 
         Light l = InstanceManager.getDefault(LightManager.class).provide("IL1");
         action2 = new ActionLight("IQDA321", "My light");
@@ -119,7 +119,7 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
         Assert.assertTrue("light is correct", l == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My light", action2.getUserName());
-        Assert.assertEquals("String matches", "Set light IL1 to state On", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set light IL1 to state On", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -489,7 +489,7 @@ public class ActionLightTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Set light IL1 to state On", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set light IL1 to state On", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

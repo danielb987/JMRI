@@ -347,7 +347,7 @@ public class ExpressionDispatcher extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String fileName;
         String state;
 

@@ -376,7 +376,7 @@ public class TreePane extends JPanel implements PropertyChangeListener {
                     commentPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
                 }
 
-                String label = connectedSocket.getLongDescription();
+                String label = connectedSocket.getLongDescription(Base.Verbosity.Normal);
                 if (connectedSocket.getUserName() != null) {
                     label += " ::: " + connectedSocket.getUserName();
                 }

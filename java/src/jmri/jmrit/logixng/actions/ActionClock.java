@@ -126,7 +126,7 @@ public class ActionClock extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String value;
         if (_selectValue.getAddressing() == NamedBeanAddressing.Direct) {
             value = formatTime(_selectValue.getValue());

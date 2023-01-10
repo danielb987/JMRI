@@ -158,25 +158,27 @@ public interface Base extends PropertyChangeProvider {
 
     /**
      * Get a long description of this item.
+     * @param verbosity the verbosity
      * @return a long description
      */
-    default public String getLongDescription() {
-        return getLongDescription(Locale.getDefault());
+    default public String getLongDescription(Verbosity verbosity) {
+        return getLongDescription(Locale.getDefault(), verbosity);
     }
 
     /**
      * Get a short description of this item.
-     * @param locale The locale to be used
+     * @param locale the locale to be used
      * @return a short description
      */
     public String getShortDescription(Locale locale);
 
     /**
      * Get a long description of this item.
-     * @param locale The locale to be used
+     * @param locale     the locale to be used
+     * @param verbosity  the verbosity
      * @return a long description
      */
-    public String getLongDescription(Locale locale);
+    public String getLongDescription(Locale locale, Verbosity verbosity);
 
     /**
      * Get the Module of this item, if it's part of a module.
@@ -374,77 +376,87 @@ public interface Base extends PropertyChangeProvider {
     /**
      * Print the tree to a stream.
      *
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param verbosity  the verbosity
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public default void printTree(
             PrintWriter writer,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
-        printTree(new PrintTreeSettings(), writer, indent, lineNumber);
+        printTree(writer, new PrintTreeSettings(), verbosity, indent, lineNumber);
     }
 
     /**
      * Print the tree to a stream.
      *
-     * @param settings settings for what to print
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param settings   settings for what to print
+     * @param verbosity  the verbosity
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber);
 
     /**
      * Print the tree to a stream.
      *
-     * @param locale The locale to be used
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param verbosity  the verbosity
+     * @param locale     the locale to be used
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public default void printTree(
-            Locale locale,
             PrintWriter writer,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
-        printTree(new PrintTreeSettings(), locale, writer, indent, lineNumber);
+        printTree(writer, new PrintTreeSettings(), verbosity, locale, indent, lineNumber);
     }
 
     /**
      * Print the tree to a stream.
      *
-     * @param settings settings for what to print
-     * @param locale The locale to be used
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param settings   settings for what to print
+     * @param verbosity  the verbosity
+     * @param locale     the locale to be used
+     * @param indent     the indentation of each level
      * @param lineNumber the line number
      */
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber);
 
     /**
      * Print the tree to a stream.
      *
-     * @param settings settings for what to print
-     * @param locale The locale to be used
-     * @param writer the stream to print the tree to
-     * @param indent the indentation of each level
+     * @param writer     the stream to print the tree to
+     * @param settings   settings for what to print
+     * @param verbosity  the verbosity
+     * @param locale     the locale to be used
+     * @param indent     the indentation of each level
      * @param currentIndent the current indentation
      * @param lineNumber the line number
      */
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             String currentIndent,
             MutableInt lineNumber);
@@ -632,6 +644,42 @@ public interface Base extends PropertyChangeProvider {
 
 
     public final String PRINT_LINE_NUMBERS_FORMAT = "%8d:  ";
+
+
+    public enum Verbosity {
+        /**
+         * Short verbosity. Only prints basic information.
+         */
+        Short(Bundle.getMessage("Base_Verbosity_Short")),
+
+        /**
+         * Normal verbosity.
+         */
+        Normal(Bundle.getMessage("Base_Verbosity_Normal")),
+
+        /**
+         * Print extended information but keep it on a single line.
+         */
+        Extended(Bundle.getMessage("Base_Verbosity_Extended")),
+
+        /**
+         * Print all data, even if it requires several lines.
+         * The lines are separated with \n.
+         */
+        Multiline(Bundle.getMessage("Base_Verbosity_Multiline"));
+
+        private final String _text;
+
+        private Verbosity(String text) {
+            this._text = text;
+        }
+
+        @Override
+        public String toString() {
+            return _text;
+        }
+
+    }
 
 
     public static class PrintTreeSettings {

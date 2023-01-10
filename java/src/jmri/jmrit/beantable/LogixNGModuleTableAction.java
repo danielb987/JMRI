@@ -125,7 +125,7 @@ public class LogixNGModuleTableAction extends AbstractLogixNGTableAction<jmri.jm
     @Override
     protected String getBeanText(Module bean) {
         StringWriter writer = new StringWriter();
-        _curNamedBean.printTree(_printTreeSettings, new PrintWriter(writer), "    ", new MutableInt(0));
+        _curNamedBean.printTree(new PrintWriter(writer), _printTreeSettings, _verbosity, "    ", new MutableInt(0));
         return writer.toString();
     }
 

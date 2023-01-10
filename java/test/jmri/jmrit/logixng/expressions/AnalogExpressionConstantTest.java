@@ -86,24 +86,24 @@ public class AnalogExpressionConstantTest extends AbstractAnalogExpressionTestBa
         expression2 = new AnalogExpressionConstant("IQAE11", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", null, expression2.getUserName());
-        Assert.assertEquals("String matches", "Get analog constant 0", expression2.getLongDescription(Locale.ENGLISH));
+        Assert.assertEquals("String matches", "Get analog constant 0", expression2.getLongDescription(Locale.ENGLISH, Base.Verbosity.Normal));
 
         expression2 = new AnalogExpressionConstant("IQAE11", "My constant value");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My constant value", expression2.getUserName());
-        Assert.assertEquals("String matches", "Get analog constant 0", expression2.getLongDescription(Locale.ENGLISH));
+        Assert.assertEquals("String matches", "Get analog constant 0", expression2.getLongDescription(Locale.ENGLISH, Base.Verbosity.Normal));
 
         expression2 = new AnalogExpressionConstant("IQAE11", null);
         expression2.setValue(12.34);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", null, expression2.getUserName());
-        Assert.assertEquals("String matches", "Get analog constant 12.34", expression2.getLongDescription(Locale.ENGLISH));
+        Assert.assertEquals("String matches", "Get analog constant 12.34", expression2.getLongDescription(Locale.ENGLISH, Base.Verbosity.Normal));
 
         expression2 = new AnalogExpressionConstant("IQAE11", "My constant");
         expression2.setValue(98.76);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My constant", expression2.getUserName());
-        Assert.assertEquals("String matches", "Get analog constant 98.76", expression2.getLongDescription(Locale.ENGLISH));
+        Assert.assertEquals("String matches", "Get analog constant 98.76", expression2.getLongDescription(Locale.ENGLISH, Base.Verbosity.Normal));
 
         // Call setup(). It doesn't do anything, but we call it for coverage
         expression2.setup();
@@ -189,7 +189,7 @@ public class AnalogExpressionConstantTest extends AbstractAnalogExpressionTestBa
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Get analog constant 10.2", _base.getLongDescription(Locale.ENGLISH));
+        Assert.assertEquals("String matches", "Get analog constant 10.2", _base.getLongDescription(Locale.ENGLISH, Base.Verbosity.Normal));
     }
 
     @Test

@@ -254,7 +254,7 @@ public class AbstractFemaleSocketTest {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             throw new UnsupportedOperationException("Not supported");
         }
 
@@ -301,7 +301,7 @@ public class AbstractFemaleSocketTest {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             throw new UnsupportedOperationException("Not supported");
         }
 
@@ -361,17 +361,17 @@ public class AbstractFemaleSocketTest {
         }
 
         @Override
-        public void printTree(PrintTreeSettings settings, PrintWriter writer, String indent, MutableInt lineNumber) {
+        public void printTree(PrintWriter writer, PrintTreeSettings settings, Verbosity verbosity, String indent, MutableInt lineNumber) {
             throw new UnsupportedOperationException("Not supported");
         }
 
         @Override
-        public void printTree(PrintTreeSettings settings, Locale locale, PrintWriter writer, String indent, MutableInt lineNumber) {
+        public void printTree(PrintWriter writer, PrintTreeSettings settings, Verbosity verbosity, Locale locale, String indent, MutableInt lineNumber) {
             throw new UnsupportedOperationException("Not supported");
         }
 
         @Override
-        public void printTree(PrintTreeSettings settings, Locale locale, PrintWriter writer, String indent, String currentIndent, MutableInt lineNumber) {
+        public void printTree(PrintWriter writer, PrintTreeSettings settings, Verbosity verbosity, Locale locale, String indent, String currentIndent, MutableInt lineNumber) {
             throw new UnsupportedOperationException("Not supported");
         }
 

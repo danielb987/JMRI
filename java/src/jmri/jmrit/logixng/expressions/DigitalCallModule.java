@@ -146,7 +146,7 @@ public class DigitalCallModule extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String moduleName = _selectNamedBean.getDescription(locale);
 
         return Bundle.getMessage(locale, "DigitalCallModule_Long", moduleName);

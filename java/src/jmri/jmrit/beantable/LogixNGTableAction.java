@@ -14,6 +14,7 @@ import javax.swing.*;
 
 import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Base.Verbosity;
 import jmri.jmrit.logixng.tools.swing.AbstractLogixNGEditor;
 import jmri.jmrit.logixng.tools.swing.LogixNGEditor;
 import jmri.util.JmriJFrame;
@@ -175,7 +176,7 @@ public class LogixNGTableAction extends AbstractLogixNGTableAction<LogixNG> {
     @Override
     protected String getBeanText(LogixNG e) {
         StringWriter writer = new StringWriter();
-        _curNamedBean.printTree(_printTreeSettings, new PrintWriter(writer), "    ", new MutableInt(0));
+        _curNamedBean.printTree(new PrintWriter(writer), _printTreeSettings, _verbosity, "    ", new MutableInt(0));
         return writer.toString();
     }
 

@@ -170,7 +170,7 @@ public class StoreAndLoadTest {
             final String treeIndent = "   ";
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
-            logixNG_Manager.printTree(Locale.ENGLISH, printWriter, treeIndent, new MutableInt(0));
+            logixNG_Manager.printTree(printWriter, Base.Verbosity.Normal, Locale.ENGLISH, treeIndent, new MutableInt(0));
             final String originalTree = stringWriter.toString();
 
             boolean results = cm.storeUser(firstFile);
@@ -244,7 +244,7 @@ public class StoreAndLoadTest {
 
                 stringWriter = new StringWriter();
                 printWriter = new PrintWriter(stringWriter);
-                logixNG_Manager.printTree(Locale.ENGLISH, printWriter, treeIndent, new MutableInt(0));
+                logixNG_Manager.printTree(printWriter, Base.Verbosity.Normal, Locale.ENGLISH, treeIndent, new MutableInt(0));
 
                 if (!originalTree.equals(stringWriter.toString())) {
                     log.error("--------------------------------------------");

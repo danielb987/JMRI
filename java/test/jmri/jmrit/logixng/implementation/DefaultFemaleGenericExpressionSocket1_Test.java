@@ -82,14 +82,14 @@ public class DefaultFemaleGenericExpressionSocket1_Test extends FemaleSocketTest
     @Test
     public void testGetDescription() {
         Assert.assertEquals("String matches", "?*", _femaleSocket.getShortDescription());
-        Assert.assertEquals("String matches", "?* E", _femaleSocket.getLongDescription());
+        Assert.assertEquals("String matches", "?* E", _femaleSocket.getLongDescription(Base.Verbosity.Normal));
 
 
         DefaultFemaleGenericExpressionSocket socket;
 
         socket = new DefaultFemaleGenericExpressionSocket(SocketType.DIGITAL, _conditionalNG, _listener, "E");
         Assert.assertEquals("String matches", "?*", socket.getShortDescription());
-        Assert.assertEquals("String matches", "?* E", socket.getLongDescription());
+        Assert.assertEquals("String matches", "?* E", socket.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Override

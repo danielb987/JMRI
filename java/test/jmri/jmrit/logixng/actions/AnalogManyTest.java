@@ -309,7 +309,7 @@ public class AnalogManyTest extends AbstractAnalogActionTestBase {
     public void testDescription() {
         AnalogMany action = new AnalogMany("IQAA121", null);
         Assert.assertEquals("Short description", "Many", action.getShortDescription());
-        Assert.assertEquals("Long description", "Many", action.getLongDescription());
+        Assert.assertEquals("Long description", "Many", action.getLongDescription(Base.Verbosity.Normal));
     }
 
     // The minimal setup for log4J

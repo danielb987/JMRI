@@ -90,13 +90,13 @@ public class ExpressionScriptTest extends AbstractDigitalExpressionTestBase {
         expression2.setScript(SCRIPT_TEXT);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Evaluate script: Single line command. Script result.setValue( sensors.provideSensor(\"IS1\").getState() == ACTIVE )", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Evaluate script: Single line command. Script result.setValue( sensors.provideSensor(\"IS1\").getState() == ACTIVE )", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionScript("IQDE321", "My expression");
         expression2.setScript(SCRIPT_TEXT);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Evaluate script: Single line command. Script result.setValue( sensors.provideSensor(\"IS1\").getState() == ACTIVE )", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Evaluate script: Single line command. Script result.setValue( sensors.provideSensor(\"IS1\").getState() == ACTIVE )", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -145,7 +145,7 @@ public class ExpressionScriptTest extends AbstractDigitalExpressionTestBase {
     @Test
     public void testDescription() {
         Assert.assertEquals("Script", expressionScript.getShortDescription());
-        Assert.assertEquals("Evaluate script: Single line command. Script result.setValue( sensors.provideSensor(\"IS1\").getState() == ACTIVE )", expressionScript.getLongDescription());
+        Assert.assertEquals("Evaluate script: Single line command. Script result.setValue( sensors.provideSensor(\"IS1\").getState() == ACTIVE )", expressionScript.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

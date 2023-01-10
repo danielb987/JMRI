@@ -110,12 +110,12 @@ public class ActionThrottleTest extends AbstractDigitalActionTestBase {
         action2 = new ActionThrottle("IQDA321", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Throttle", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Throttle", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionThrottle("IQDA321", "My throttle");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My throttle", action2.getUserName());
-        Assert.assertEquals("String matches", "Throttle", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Throttle", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -398,7 +398,7 @@ public class ActionThrottleTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Throttle", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Throttle", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test
@@ -715,7 +715,7 @@ public class ActionThrottleTest extends AbstractDigitalActionTestBase {
         ActionThrottle a1 = new ActionThrottle("IQDA321", null);
         Assert.assertEquals("strings are equal", "Throttle", a1.getShortDescription());
         ActionThrottle a2 = new ActionThrottle("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Throttle", a2.getLongDescription());
+        Assert.assertEquals("strings are equal", "Throttle", a2.getLongDescription(Base.Verbosity.Normal));
     }
 
     // The minimal setup for log4J

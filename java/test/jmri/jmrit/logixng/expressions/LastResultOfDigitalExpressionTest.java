@@ -99,13 +99,13 @@ public class LastResultOfDigitalExpressionTest extends AbstractDigitalExpression
         expression2 = new LastResultOfDigitalExpression("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Last result of digital expression \"''\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Last result of digital expression \"''\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new LastResultOfDigitalExpression("IQDE321", "My expr");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expr", expression2.getUserName());
         expression2.getSelectNamedBean().setNamedBean(expressionLightSocket);
-        Assert.assertEquals("String matches", "Last result of digital expression \"My other expression\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Last result of digital expression \"My other expression\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new LastResultOfDigitalExpression("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(expressionLightSocket);
@@ -158,9 +158,9 @@ public class LastResultOfDigitalExpressionTest extends AbstractDigitalExpression
 
         lastResultOfDigitalExpression.getSelectNamedBean().removeNamedBean();
         Assert.assertEquals("Last result of digital expression", lastResultOfDigitalExpression.getShortDescription());
-        Assert.assertEquals("Last result of digital expression \"''\"", lastResultOfDigitalExpression.getLongDescription());
+        Assert.assertEquals("Last result of digital expression \"''\"", lastResultOfDigitalExpression.getLongDescription(Base.Verbosity.Normal));
         lastResultOfDigitalExpression.getSelectNamedBean().setNamedBean(expressionLightSocket);
-        Assert.assertEquals("Last result of digital expression \"My other expression\"", lastResultOfDigitalExpression.getLongDescription());
+        Assert.assertEquals("Last result of digital expression \"My other expression\"", lastResultOfDigitalExpression.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

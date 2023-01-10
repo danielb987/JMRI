@@ -374,7 +374,7 @@ public class TreeEditor extends TreeViewer {
                 this,
                 Bundle.getMessage(
                         "RenameSocketDialogTitle",
-                        femaleSocket.getLongDescription()),
+                        femaleSocket.getLongDescription(Base.Verbosity.Normal)),
                 false);
 //        _renameSocketDialog.addHelpMenu(
 //                "package.jmri.jmrit.logixng.tools.swing.ConditionalNGAddEdit", true);     // NOI18N
@@ -681,7 +681,7 @@ public class TreeEditor extends TreeViewer {
                 this,
                 Bundle.getMessage(
                         addOrEdit ? "AddMaleSocketDialogTitle" : "EditMaleSocketDialogTitle",
-                        femaleSocket.getLongDescription()),
+                        femaleSocket.getLongDescription(Base.Verbosity.Normal)),
                 false);
 //        frame.addHelpMenu(
 //                "package.jmri.jmrit.logixng.tools.swing.ConditionalNGAddEdit", true);     // NOI18N
@@ -773,7 +773,7 @@ public class TreeEditor extends TreeViewer {
 
                 dialog.setTitle(Bundle.getMessage(
                         addOrEdit ? "AddMaleSocketDialogTitleWithType" : "EditMaleSocketDialogTitleWithType",
-                        femaleSocket.getLongDescription(),
+                        femaleSocket.getLongDescription(Base.Verbosity.Normal),
                         _editSwingConfiguratorInterface.toString())
                 );
             } else {
@@ -797,7 +797,7 @@ public class TreeEditor extends TreeViewer {
 
             dialog.setTitle(Bundle.getMessage(
                     addOrEdit ? "AddMaleSocketDialogTitleWithType" : "EditMaleSocketDialogTitleWithType",
-                    femaleSocket.getLongDescription(),
+                    femaleSocket.getLongDescription(Base.Verbosity.Normal),
                     _addSwingConfiguratorInterface.toString())
             );
         }
@@ -960,7 +960,7 @@ public class TreeEditor extends TreeViewer {
                     this,
                     Bundle.getMessage(
                             "EditLocalVariablesDialogTitle",
-                            femaleSocket.getLongDescription()),
+                            femaleSocket.getLongDescription(Base.Verbosity.Normal)),
                     false);
     //        frame.addHelpMenu(
     //                "package.jmri.jmrit.logixng.tools.swing.ConditionalNGAddEdit", true);     // NOI18N
@@ -1145,7 +1145,7 @@ public class TreeEditor extends TreeViewer {
                     this,
                     Bundle.getMessage(
                             "EditLocalVariablesDialogTitle",
-                            femaleSocket.getLongDescription()),
+                            femaleSocket.getLongDescription(Base.Verbosity.Normal)),
                     false);
     //        frame.addHelpMenu(
     //                "package.jmri.jmrit.logixng.tools.swing.ConditionalNGAddEdit", true);     // NOI18N
@@ -1299,7 +1299,7 @@ public class TreeEditor extends TreeViewer {
         int result = JOptionPane.showConfirmDialog(
                 this,
                 Bundle.getMessage("TreeEditor_ChangeSystemNode"),
-                b.getLongDescription(),
+                b.getLongDescription(Base.Verbosity.Normal),
                 JOptionPane.YES_NO_OPTION);
 
         return result == JOptionPane.NO_OPTION;

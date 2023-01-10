@@ -369,7 +369,7 @@ public class ActionDispatcher extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
 
 // Start train using train info file {abc.xml}
 // Terminate train {transit/name}

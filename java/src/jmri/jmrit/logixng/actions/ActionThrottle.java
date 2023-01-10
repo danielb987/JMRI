@@ -299,7 +299,7 @@ public final class ActionThrottle extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         if (_memo != null) {
             return Bundle.getMessage(locale, "ActionThrottle_LongConnection",
                     _memo.getUserName());

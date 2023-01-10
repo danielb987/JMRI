@@ -256,7 +256,7 @@ public class ExpressionMemory extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String memoryName = _selectNamedBean.getDescription(locale);
 
         String otherMemoryName = _selectOtherMemoryNamedBean.getDescription(locale);

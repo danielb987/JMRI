@@ -86,20 +86,20 @@ public class ExpressionLocalVariableTest extends AbstractDigitalExpressionTestBa
         expression2.setLocalVariable("");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Local variable '' is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Local variable '' is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionLocalVariable("IQDE321", "My memory");
         expression2.setLocalVariable("");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My memory", expression2.getUserName());
-        Assert.assertEquals("String matches", "Local variable '' is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Local variable '' is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionLocalVariable("IQDE321", null);
         expression2.setLocalVariable("myVar");
         Assert.assertEquals("variable is correct", "myVar", expression2.getLocalVariable());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Local variable myVar is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Local variable myVar is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Memory l = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         expression2 = new ExpressionLocalVariable("IQDE321", "My memory");
@@ -108,7 +108,7 @@ public class ExpressionLocalVariableTest extends AbstractDigitalExpressionTestBa
         Assert.assertTrue("memory is correct", l == expression2.getSelectMemoryNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My memory", expression2.getUserName());
-        Assert.assertEquals("String matches", "Local variable someVar is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Local variable someVar is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -180,13 +180,13 @@ public class ExpressionLocalVariableTest extends AbstractDigitalExpressionTestBa
 
         expressionLocalVariable.setLocalVariable("someVar");
         Assert.assertEquals("Local variable", expressionLocalVariable.getShortDescription());
-        Assert.assertEquals("Local variable someVar is equal to \"\"", expressionLocalVariable.getLongDescription());
+        Assert.assertEquals("Local variable someVar is equal to \"\"", expressionLocalVariable.getLongDescription(Base.Verbosity.Normal));
         expressionLocalVariable.setLocalVariable("myVar");
         expressionLocalVariable.setConstantValue("A value");
-        Assert.assertEquals("Local variable myVar is equal to \"A value\"", expressionLocalVariable.getLongDescription());
+        Assert.assertEquals("Local variable myVar is equal to \"A value\"", expressionLocalVariable.getLongDescription(Base.Verbosity.Normal));
         expressionLocalVariable.setConstantValue("Another value");
-        Assert.assertEquals("Local variable myVar is equal to \"Another value\"", expressionLocalVariable.getLongDescription());
-        Assert.assertEquals("Local variable myVar is equal to \"Another value\"", expressionLocalVariable.getLongDescription());
+        Assert.assertEquals("Local variable myVar is equal to \"Another value\"", expressionLocalVariable.getLongDescription(Base.Verbosity.Normal));
+        Assert.assertEquals("Local variable myVar is equal to \"Another value\"", expressionLocalVariable.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

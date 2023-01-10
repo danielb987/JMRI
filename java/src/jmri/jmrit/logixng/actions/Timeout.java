@@ -176,7 +176,7 @@ public class Timeout extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String delay = _selectDelay.getDescription(locale);
 
         if ((_selectDelay.getAddressing() == NamedBeanAddressing.Direct)

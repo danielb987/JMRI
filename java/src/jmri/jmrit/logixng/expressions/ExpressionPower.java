@@ -107,7 +107,7 @@ public class ExpressionPower extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         if (_ignoreUnknownState) {
             return Bundle.getMessage(locale, "Power_Long3",
                     _is_IsNot.toString(),

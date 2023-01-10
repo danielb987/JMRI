@@ -315,9 +315,10 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     }
 
     protected void printTreeRow(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String currentIndent,
             MutableInt lineNumber) {
 
@@ -325,15 +326,16 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
             writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
         }
         writer.append(currentIndent);
-        writer.append(getLongDescription(locale));
+        writer.append(getLongDescription(locale, verbosity));
         writer.println();
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
 
@@ -343,9 +345,10 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
 
@@ -355,17 +358,18 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             String currentIndent,
             MutableInt lineNumber) {
 
-        printTreeRow(settings, locale, writer, currentIndent, lineNumber);
+        printTreeRow(writer, settings, verbosity, locale, currentIndent, lineNumber);
 
         if (isConnected()) {
-            getConnectedSocket().printTree(settings, locale, writer, indent, currentIndent+indent, lineNumber);
+            getConnectedSocket().printTree(writer, settings, verbosity, locale, indent, currentIndent+indent, lineNumber);
         } else {
             if (settings._printLineNumbers) {
                 writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
@@ -382,7 +386,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
     public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
-        log.debug("** {} :: {}", level, this.getLongDescription());
+        log.debug("** {} :: {}", level, this.getLongDescription(Verbosity.Normal));
         level++;
 
         if (isConnected()) {

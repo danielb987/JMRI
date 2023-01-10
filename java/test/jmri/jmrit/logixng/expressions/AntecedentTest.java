@@ -112,25 +112,25 @@ public class AntecedentTest extends AbstractDigitalExpressionTestBase implements
         expression2.setAntecedent("R1");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Antecedent: R1", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Antecedent: R1", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new Antecedent("IQDE321", "My expression");
         expression2.setAntecedent("R1");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Antecedent: R1", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Antecedent: R1", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new Antecedent("IQDE321", null);
         expression2.setAntecedent("R1 and R2");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Antecedent: R1 and R2", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Antecedent: R1 and R2", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new Antecedent("IQDE321", "My expression");
         expression2.setAntecedent("R1 or R2");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Antecedent: R1 or R2", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Antecedent: R1 or R2", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -409,7 +409,7 @@ public class AntecedentTest extends AbstractDigitalExpressionTestBase implements
     public void testDescription() {
         Antecedent e1 = new Antecedent("IQDE321", null);
         Assert.assertEquals("strings matches", "Antecedent", e1.getShortDescription());
-        Assert.assertEquals("strings matches", "Antecedent: empty", e1.getLongDescription());
+        Assert.assertEquals("strings matches", "Antecedent: empty", e1.getLongDescription(Base.Verbosity.Normal));
     }
 
     private void testValidate(boolean expectedResult, String antecedent, List<DigitalExpressionBean> conditionalVariablesList) throws Exception {

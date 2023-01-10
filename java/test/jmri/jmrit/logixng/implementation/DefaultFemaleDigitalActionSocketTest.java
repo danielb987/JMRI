@@ -52,7 +52,7 @@ public class DefaultFemaleDigitalActionSocketTest extends FemaleSocketTestBase {
     @Test
     public void testGetDescription() {
         Assert.assertTrue("String matches", "!".equals(_femaleSocket.getShortDescription()));
-        Assert.assertTrue("String matches", "! A1".equals(_femaleSocket.getLongDescription()));
+        Assert.assertTrue("String matches", "! A1".equals(_femaleSocket.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Override

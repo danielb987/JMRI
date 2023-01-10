@@ -273,7 +273,7 @@ public class LogixTest extends AbstractDigitalActionTestBase {
         DigitalActionBean a1 = new Logix("IQDA321", null);
         Assert.assertEquals("strings are equal", "Logix", a1.getShortDescription());
         DigitalActionBean a2 = new Logix("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Logix", a2.getLongDescription());
+        Assert.assertEquals("strings are equal", "Logix", a2.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

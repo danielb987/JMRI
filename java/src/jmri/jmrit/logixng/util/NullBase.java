@@ -43,7 +43,7 @@ public class NullBase extends AbstractBase {
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         throw new UnsupportedOperationException("Not supported");
     }
 

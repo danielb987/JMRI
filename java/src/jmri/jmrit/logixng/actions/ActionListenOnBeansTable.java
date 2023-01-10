@@ -231,7 +231,7 @@ public class ActionListenOnBeansTable extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String tableName = _selectNamedBean.getDescription(locale);
         return Bundle.getMessage(locale, "ActionListenOnBeansTable_Long",
                 _namedBeanType.toString(),

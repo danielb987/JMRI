@@ -94,12 +94,12 @@ public class TriggerOnceTest extends AbstractDigitalExpressionTestBase {
         expression2 = new TriggerOnce("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Trigger once", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Trigger once", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new TriggerOnce("IQDE321", "My sensor");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My sensor", expression2.getUserName());
-        Assert.assertEquals("String matches", "Trigger once", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Trigger once", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -258,7 +258,7 @@ public class TriggerOnceTest extends AbstractDigitalExpressionTestBase {
                     SocketAlreadyConnectedException {
         DigitalExpressionBean e1 = new TriggerOnce("IQDE321", null);
         Assert.assertTrue("Trigger once".equals(e1.getShortDescription()));
-        Assert.assertTrue("Trigger once".equals(e1.getLongDescription()));
+        Assert.assertTrue("Trigger once".equals(e1.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

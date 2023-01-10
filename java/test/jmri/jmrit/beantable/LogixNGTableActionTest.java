@@ -588,7 +588,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase<LogixNG> {
 
         Assert.assertTrue("Is connected", conditionalNG.getChild(0).isConnected());
         Assert.assertEquals("Action is correct", "If Then Else. Execute on change",
-                conditionalNG.getChild(0).getConnectedSocket().getLongDescription());
+                conditionalNG.getChild(0).getConnectedSocket().getLongDescription(Base.Verbosity.Normal));
         Assert.assertEquals("Num childs are correct", 3, conditionalNG.getChild(0).getConnectedSocket().getChildCount());
 
 
@@ -617,7 +617,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase<LogixNG> {
         JUnitUtil.waitFor(() -> {return conditionalNG.getChild(0).getConnectedSocket().getChild(0).getConnectedSocket() != null;});
 
         Assert.assertEquals("Expression is correct", "Sensor IS1 is Active",
-                conditionalNG.getChild(0).getConnectedSocket().getChild(0).getConnectedSocket().getLongDescription());
+                conditionalNG.getChild(0).getConnectedSocket().getChild(0).getConnectedSocket().getLongDescription(Base.Verbosity.Normal));
 
 
         JUnitUtil.waitFor(100);
@@ -645,7 +645,7 @@ public class LogixNGTableActionTest extends AbstractTableActionBase<LogixNG> {
         Assert.assertTrue("Is connected", conditionalNG.getChild(0).isConnected());
         Assert.assertEquals("Num childs are correct", 3, conditionalNG.getChild(0).getConnectedSocket().getChildCount());
         Assert.assertEquals("Action is correct", "Set turnout IT1 to state Thrown",
-                conditionalNG.getChild(0).getConnectedSocket().getChild(1).getConnectedSocket().getLongDescription());
+                conditionalNG.getChild(0).getConnectedSocket().getChild(1).getConnectedSocket().getLongDescription(Base.Verbosity.Normal));
 
 
         // Close EditConditionalNG window

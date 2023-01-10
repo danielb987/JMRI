@@ -236,12 +236,12 @@ public class DefaultNamedTableManager extends AbstractManager<NamedTable>
     /** {@inheritDoc} */
     @Override
     public void printTree(PrintWriter writer, String indent) {
-        printTree(Locale.getDefault(), writer, indent);
+        printTree(writer, Locale.getDefault(), indent);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void printTree(Locale locale, PrintWriter writer, String indent) {
+    public void printTree(PrintWriter writer, Locale locale, String indent) {
         for (NamedTable namedTable : getNamedBeanSet()) {
             if (namedTable instanceof DefaultCsvNamedTable) {
                 DefaultCsvNamedTable csvTable = (DefaultCsvNamedTable)namedTable;

@@ -54,8 +54,8 @@ public class AbstractDigitalActionTest {
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
         JUnitUtil.tearDown();
     }
-    
-    
+
+
     // The purpose of this class is to test the method
     // AbstractDigitalAction.getNewSocketName(). We want
     // to test that the method throws an exception if no
@@ -68,11 +68,11 @@ public class AbstractDigitalActionTest {
     private static class MyAction extends AbstractDigitalAction implements FemaleSocketListener {
 
         private final MyFemaleSocket child = new MyFemaleSocket(this, this, "A1");
-        
+
         public MyAction() {
             super(InstanceManager.getDefault(DigitalActionManager.class).getAutoSystemName(), null);
         }
-        
+
         @Override
         protected void registerListenersForThisClass() {
             throw new UnsupportedOperationException("Not supported.");
@@ -94,7 +94,7 @@ public class AbstractDigitalActionTest {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             throw new UnsupportedOperationException("Not supported.");
         }
 
@@ -154,16 +154,16 @@ public class AbstractDigitalActionTest {
         public Base deepCopyChildren(Base base, Map<String, String> map, Map<String, String> map1) throws JmriException {
             throw new UnsupportedOperationException("Not supported");
         }
-        
+
     }
-    
-    
+
+
     private static class MyFemaleSocket extends AbstractFemaleSocket {
-    
+
         public MyFemaleSocket(Base parent, FemaleSocketListener listener, String name) {
             super(parent, listener, name);
         }
-        
+
         @Override
         public void disposeMe() {
             throw new UnsupportedOperationException("Not supported.");
@@ -185,12 +185,12 @@ public class AbstractDigitalActionTest {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             throw new UnsupportedOperationException("Not supported.");
         }
-    
+
     }
-    
-    
-    
+
+
+
 }

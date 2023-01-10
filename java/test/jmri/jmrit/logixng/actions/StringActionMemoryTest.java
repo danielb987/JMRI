@@ -86,24 +86,24 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
         action2 = new StringActionMemory("IQSA11", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new StringActionMemory("IQSA11", "My memory");
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
-        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new StringActionMemory("IQSA11", null);
         action2.getSelectNamedBean().setNamedBean(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new StringActionMemory("IQSA11", "My memory");
         action2.getSelectNamedBean().setNamedBean(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
-        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -219,7 +219,7 @@ public class StringActionMemoryTest extends AbstractStringActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertTrue("String matches", "Set memory IM1".equals(_base.getLongDescription()));
+        Assert.assertTrue("String matches", "Set memory IM1".equals(_base.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

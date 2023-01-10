@@ -10,9 +10,7 @@ import jmri.JmriException;
 import jmri.Manager;
 import jmri.NamedBean;
 import jmri.NamedBeanUsageReport;
-// import jmri.implementation.JmriSimplePropertyListener;
 import jmri.implementation.AbstractNamedBean;
-import jmri.jmrit.display.Positionable;
 import jmri.jmrit.logixng.*;
 
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -90,7 +88,7 @@ public class DefaultLogixNG extends AbstractNamedBean
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return "LogixNG: "+getDisplayName();
     }
 
@@ -368,9 +366,10 @@ public class DefaultLogixNG extends AbstractNamedBean
     }
 
     protected void printTreeRow(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String currentIndent,
             MutableInt lineNumber) {
 
@@ -378,48 +377,50 @@ public class DefaultLogixNG extends AbstractNamedBean
             writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
         }
         writer.append(currentIndent);
-        writer.append(getLongDescription(locale));
+        writer.append(getLongDescription(locale, verbosity));
         writer.println();
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, Locale.getDefault(), writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, Locale.getDefault(), indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             MutableInt lineNumber) {
 
-        printTree(settings, locale, writer, indent, "", lineNumber);
+        printTree(writer, settings, verbosity, locale, indent, "", lineNumber);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printTree(
-            PrintTreeSettings settings,
-            Locale locale,
             PrintWriter writer,
+            PrintTreeSettings settings,
+            Verbosity verbosity,
+            Locale locale,
             String indent,
             String currentIndent,
             MutableInt lineNumber) {
 
-        printTreeRow(settings, locale, writer, currentIndent, lineNumber);
+        printTreeRow(writer, settings, verbosity, locale, currentIndent, lineNumber);
 
         for (int i=0; i < this.getNumConditionalNGs(); i++) {
-            getConditionalNG(i).printTree(settings, locale, writer, indent, currentIndent+indent, lineNumber);
-//            writer.println();
+            getConditionalNG(i).printTree(writer, settings, verbosity, locale, indent, currentIndent+indent, lineNumber);
         }
     }
 

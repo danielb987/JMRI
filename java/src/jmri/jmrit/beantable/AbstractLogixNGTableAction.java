@@ -18,6 +18,7 @@ import jmri.NamedBean.BadSystemNameException;
 import jmri.NamedBean.BadUserNameException;
 import jmri.UserPreferencesManager;
 import jmri.jmrit.logixng.Base;
+import jmri.jmrit.logixng.Base.Verbosity;
 import jmri.jmrit.logixng.tools.swing.AbstractLogixNGEditor;
 import jmri.jmrit.logixng.tools.swing.DeleteBean;
 import jmri.util.FileUtil;
@@ -215,6 +216,7 @@ public abstract class AbstractLogixNGTableAction<E extends NamedBean> extends Ab
     int conditionalRowNumber = 0;
 
     protected final Base.PrintTreeSettings _printTreeSettings = new Base.PrintTreeSettings();
+    protected Verbosity _verbosity = Verbosity.Normal;
 
     // Add E Variables
     JmriJFrame addLogixNGFrame = null;

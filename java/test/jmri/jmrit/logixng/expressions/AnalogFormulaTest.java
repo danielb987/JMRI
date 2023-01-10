@@ -106,25 +106,25 @@ public class AnalogFormulaTest extends AbstractAnalogExpressionTestBase {
 //        expression2.setFormula("R1");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new AnalogFormula("IQAE321", "My expression");
 //        expression2.setFormula("R1");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new AnalogFormula("IQAE321", null);
 //        expression2.setFormula("R1 and R2");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1 and R2", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1 and R2", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new AnalogFormula("IQAE321", "My expression");
 //        expression2.setFormula("R1 or R2");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-//        Assert.assertEquals("String matches", "Formula: R1 or R2", expression2.getLongDescription());
+//        Assert.assertEquals("String matches", "Formula: R1 or R2", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -423,7 +423,7 @@ public class AnalogFormulaTest extends AbstractAnalogExpressionTestBase {
     public void testDescription() {
         AnalogFormula expression = new AnalogFormula("IQAE321", null);
         Assert.assertEquals("strings matches", "Analog Formula", expression.getShortDescription());
-        Assert.assertEquals("strings matches", "Analog Formula: empty", expression.getLongDescription());
+        Assert.assertEquals("strings matches", "Analog Formula: empty", expression.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

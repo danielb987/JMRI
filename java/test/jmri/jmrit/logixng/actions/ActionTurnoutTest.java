@@ -78,19 +78,19 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
         action2 = new ActionTurnout("IQDA321", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set turnout '' to state Thrown", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout '' to state Thrown", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionTurnout("IQDA321", "My turnout");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My turnout", action2.getUserName());
-        Assert.assertEquals("String matches", "Set turnout '' to state Thrown", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout '' to state Thrown", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionTurnout("IQDA321", null);
         action2.getSelectNamedBean().setNamedBean(turnout);
         Assert.assertTrue("turnout is correct", turnout == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription(Base.Verbosity.Normal));
 
         Turnout l = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
         action2 = new ActionTurnout("IQDA321", "My turnout");
@@ -98,7 +98,7 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
         Assert.assertTrue("turnout is correct", l == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My turnout", action2.getUserName());
-        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -491,7 +491,7 @@ public class ActionTurnoutTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set turnout IT1 to state Thrown", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

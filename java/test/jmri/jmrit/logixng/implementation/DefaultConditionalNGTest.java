@@ -76,7 +76,7 @@ public class DefaultConditionalNGTest {
     public void testDescription() {
         DefaultConditionalNG conditionalNG = new DefaultConditionalNG("IQC123", null);
         Assert.assertEquals("Short description is correct", "ConditionalNG: IQC123", conditionalNG.getShortDescription());
-        Assert.assertEquals("Long description is correct", "ConditionalNG: IQC123", conditionalNG.getLongDescription());
+        Assert.assertEquals("Long description is correct", "ConditionalNG: IQC123", conditionalNG.getLongDescription(Base.Verbosity.Normal));
     }
 
     // The minimal setup for log4J
@@ -130,7 +130,7 @@ public class DefaultConditionalNGTest {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             return "MyDigitalAction";
         }
 

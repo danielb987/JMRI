@@ -75,7 +75,7 @@ public class ActionRequestUpdateAllSensors extends AbstractDigitalAction {
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         if (_memo != null) {
             return Bundle.getMessage(locale, "ActionRequestUpdateAllSensors_LongConnection",
                     _memo.getUserName());

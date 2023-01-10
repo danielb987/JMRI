@@ -99,7 +99,7 @@ public class Publish extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "Publish_Long",
                 _selectTopic.getDescription(locale),
                 _selectMessage.getDescription(locale));

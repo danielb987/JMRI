@@ -2,7 +2,6 @@ package jmri.jmrit.logixng.expressions;
 
 import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,22 +9,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import jmri.*;
 import jmri.implementation.DefaultSection;
 import jmri.jmrit.dispatcher.*;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.Is_IsNot_Enum;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 import jmri.jmrit.logixng.util.DispatcherActiveTrainManager;
-import jmri.util.FileUtil;
-import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
 import org.jdom2.JDOMException;
@@ -103,26 +91,26 @@ public class ExpressionDispatcherTest extends AbstractDigitalExpressionTestBase 
         expression2 = new ExpressionDispatcher("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Train \"\" is -  Train Mode  -", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Train \"\" is -  Train Mode  -", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionDispatcher("IQDE321", "My expr");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expr", expression2.getUserName());
-        Assert.assertEquals("String matches", "Train \"\" is -  Train Mode  -", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Train \"\" is -  Train Mode  -", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionDispatcher("IQDE321", null);
         expression2.setTrainInfoFileName(_myActiveTrainFileName);
         Assert.assertEquals(_myActiveTrainFileName, expression2.getTrainInfoFileName());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Train \"MyActiveTrainFile.xml\" is -  Train Mode  -", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Train \"MyActiveTrainFile.xml\" is -  Train Mode  -", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionDispatcher("IQDE321", "My expr");
         expression2.setTrainInfoFileName(_myActiveTrainFileName);
         Assert.assertEquals(_myActiveTrainFileName, expression2.getTrainInfoFileName());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expr", expression2.getUserName());
-        Assert.assertEquals("String matches", "Train \"MyActiveTrainFile.xml\" is -  Train Mode  -", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Train \"MyActiveTrainFile.xml\" is -  Train Mode  -", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -169,15 +157,15 @@ public class ExpressionDispatcherTest extends AbstractDigitalExpressionTestBase 
 
 //        expressionDispatcher.setTrainInfoFileName(null);
 //        Assert.assertEquals("Dispatcher", expressionDispatcher.getShortDescription());
-//        Assert.assertEquals("Train \"null\" is Automatic mode", expressionDispatcher.getLongDescription());
+//        Assert.assertEquals("Train \"null\" is Automatic mode", expressionDispatcher.getLongDescription(Base.Verbosity.Normal));
         expressionDispatcher.setTrainInfoFileName(_myActiveTrainFileName);
         expressionDispatcher.set_Is_IsNot(Is_IsNot_Enum.Is);
         expressionDispatcher.setBeanState(ExpressionDispatcher.DispatcherState.Dispatched);
-        Assert.assertEquals("Train \"MyActiveTrainFile.xml\" is Dispatched mode", expressionDispatcher.getLongDescription());
+        Assert.assertEquals("Train \"MyActiveTrainFile.xml\" is Dispatched mode", expressionDispatcher.getLongDescription(Base.Verbosity.Normal));
         expressionDispatcher.set_Is_IsNot(Is_IsNot_Enum.IsNot);
-        Assert.assertEquals("Train \"MyActiveTrainFile.xml\" is not Dispatched mode", expressionDispatcher.getLongDescription());
+        Assert.assertEquals("Train \"MyActiveTrainFile.xml\" is not Dispatched mode", expressionDispatcher.getLongDescription(Base.Verbosity.Normal));
         expressionDispatcher.setBeanState(ExpressionDispatcher.DispatcherState.Manual);
-        Assert.assertEquals("Train \"MyActiveTrainFile.xml\" is not Manual mode", expressionDispatcher.getLongDescription());
+        Assert.assertEquals("Train \"MyActiveTrainFile.xml\" is not Manual mode", expressionDispatcher.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

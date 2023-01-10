@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import jmri.*;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
-import jmri.jmrit.logixng.implementation.DefaultSymbolTable;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
@@ -81,24 +80,24 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
         action2 = new AnalogActionMemory("IQAA11", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new AnalogActionMemory("IQAA11", "My memory");
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
-        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory ''", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new AnalogActionMemory("IQAA11", null);
         action2.getSelectNamedBean().setNamedBean(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", null == action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new AnalogActionMemory("IQAA11", "My memory");
         action2.getSelectNamedBean().setNamedBean(_memory);
         Assert.assertNotNull("object exists", action2);
         Assert.assertTrue("Username matches", "My memory".equals(action2.getUserName()));
-        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -214,7 +213,7 @@ public class AnalogActionMemoryTest extends AbstractAnalogActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Set memory IM1", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

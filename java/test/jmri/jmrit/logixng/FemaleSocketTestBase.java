@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import jmri.*;
 import jmri.Manager.NameValidity;
+import jmri.jmrit.logixng.Base.Verbosity;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.jmrit.logixng.swing.SwingTools;
 
@@ -355,7 +356,7 @@ public abstract class FemaleSocketTestBase {
     public void testMethodsThatAreNotSupported() {
         errorFlag.set(false);
         try {
-            _femaleSocket.printTree((PrintWriter)null, "", new MutableInt(0));
+            _femaleSocket.printTree((PrintWriter)null, Verbosity.Normal, "", new MutableInt(0));
         } catch (UnsupportedOperationException ex) {
             errorFlag.set(true);
         }
@@ -363,7 +364,7 @@ public abstract class FemaleSocketTestBase {
 
         errorFlag.set(false);
         try {
-            _femaleSocket.printTree((Locale)null, (PrintWriter)null, "", new MutableInt(0));
+            _femaleSocket.printTree((PrintWriter)null, Verbosity.Normal, (Locale)null, "", new MutableInt(0));
         } catch (UnsupportedOperationException ex) {
             errorFlag.set(true);
         }
@@ -522,7 +523,7 @@ public abstract class FemaleSocketTestBase {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             throw new UnsupportedOperationException("Not supported.");
         }
 
@@ -587,17 +588,17 @@ public abstract class FemaleSocketTestBase {
         }
 */
         @Override
-        public void printTree(PrintTreeSettings settings, PrintWriter writer, String indent, MutableInt lineNumber) {
+        public void printTree(PrintWriter writer, PrintTreeSettings settings, Verbosity verbosity, String indent, MutableInt lineNumber) {
             throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
-        public void printTree(PrintTreeSettings settings, Locale locale, PrintWriter writer, String indent, MutableInt lineNumber) {
+        public void printTree(PrintWriter writer, PrintTreeSettings settings, Verbosity verbosity, Locale locale, String indent, MutableInt lineNumber) {
             throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
-        public void printTree(PrintTreeSettings settings, Locale locale, PrintWriter writer, String indent, String currentIndent, MutableInt lineNumber) {
+        public void printTree(PrintWriter writer, PrintTreeSettings settings, Verbosity verbosity, Locale locale, String indent, String currentIndent, MutableInt lineNumber) {
             throw new UnsupportedOperationException("Not supported.");
         }
 

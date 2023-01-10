@@ -84,24 +84,24 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
         expression2 = new StringExpressionMemory("IQSE11", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
-        Assert.assertEquals("String matches", "Get memory '' as string value", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Get memory '' as string value", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new StringExpressionMemory("IQSE11", "My memory");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
-        Assert.assertEquals("String matches", "Get memory '' as string value", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Get memory '' as string value", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new StringExpressionMemory("IQSE11", null);
         expression2.getSelectNamedBean().setNamedBean(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", null == expression2.getUserName());
-        Assert.assertEquals("String matches", "Get memory IM1 as string value", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Get memory IM1 as string value", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new StringExpressionMemory("IQSE11", "My memory");
         expression2.getSelectNamedBean().setNamedBean(_memory);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertTrue("Username matches", "My memory".equals(expression2.getUserName()));
-        Assert.assertEquals("String matches", "Get memory IM1 as string value", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Get memory IM1 as string value", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -315,7 +315,7 @@ public class StringExpressionMemoryTest extends AbstractStringExpressionTestBase
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("Get memory IM1 as string value", _base.getLongDescription());
+        Assert.assertEquals("Get memory IM1 as string value", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

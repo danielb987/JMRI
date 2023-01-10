@@ -13,15 +13,7 @@ import jmri.NamedBean;
 import jmri.NamedBeanHandleManager;
 import jmri.Reporter;
 import jmri.ReporterManager;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -102,19 +94,19 @@ public class ExpressionReporterTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionReporter("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Reporter '' Current Report is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Reporter '' Current Report is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionReporter("IQDE321", "My reporter");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My reporter", expression2.getUserName());
-        Assert.assertEquals("String matches", "Reporter '' Current Report is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Reporter '' Current Report is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionReporter("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(reporter);
         Assert.assertTrue("reporter is correct", reporter == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Reporter IR1 Current Report is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Reporter IR1 Current Report is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Reporter l = InstanceManager.getDefault(ReporterManager.class).provide("IR2");
         expression2 = new ExpressionReporter("IQDE321", "My reporter");
@@ -122,7 +114,7 @@ public class ExpressionReporterTest extends AbstractDigitalExpressionTestBase {
         Assert.assertTrue("reporter is correct", l == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My reporter", expression2.getUserName());
-        Assert.assertEquals("String matches", "Reporter IR2 Current Report is equal to \"\"", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Reporter IR2 Current Report is equal to \"\"", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -194,13 +186,13 @@ public class ExpressionReporterTest extends AbstractDigitalExpressionTestBase {
 
         expressionReporter.getSelectNamedBean().removeNamedBean();
         Assert.assertEquals("Reporter", expressionReporter.getShortDescription());
-        Assert.assertEquals("Reporter '' Current Report is equal to \"\"", expressionReporter.getLongDescription());
+        Assert.assertEquals("Reporter '' Current Report is equal to \"\"", expressionReporter.getLongDescription(Base.Verbosity.Normal));
         expressionReporter.getSelectNamedBean().setNamedBean(reporter);
         expressionReporter.setConstantValue("A value");
-        Assert.assertEquals("Reporter IR1 Current Report is equal to \"A value\"", expressionReporter.getLongDescription());
+        Assert.assertEquals("Reporter IR1 Current Report is equal to \"A value\"", expressionReporter.getLongDescription(Base.Verbosity.Normal));
         expressionReporter.setConstantValue("Another value");
-        Assert.assertEquals("Reporter IR1 Current Report is equal to \"Another value\"", expressionReporter.getLongDescription());
-        Assert.assertEquals("Reporter IR1 Current Report is equal to \"Another value\"", expressionReporter.getLongDescription());
+        Assert.assertEquals("Reporter IR1 Current Report is equal to \"Another value\"", expressionReporter.getLongDescription(Base.Verbosity.Normal));
+        Assert.assertEquals("Reporter IR1 Current Report is equal to \"Another value\"", expressionReporter.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

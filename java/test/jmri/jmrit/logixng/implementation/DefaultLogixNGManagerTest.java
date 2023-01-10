@@ -146,14 +146,14 @@ public class DefaultLogixNGManagerTest {
                 maleSocket.getClass().getName());
         Assert.assertEquals("action is of correct class",
                 "Many",
-                maleSocket.getLongDescription());
+                maleSocket.getLongDescription(Base.Verbosity.Normal));
         MaleSocket maleSocket2 = maleSocket.getChild(0).getConnectedSocket();
         Assert.assertEquals("action is of correct class",
                 "jmri.jmrit.logixng.tools.debugger.DebuggerMaleDigitalActionSocket",
                 maleSocket2.getClass().getName());
         Assert.assertEquals("action is of correct class",
                 "If Then Else. Execute on change",
-                maleSocket2.getLongDescription());
+                maleSocket2.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

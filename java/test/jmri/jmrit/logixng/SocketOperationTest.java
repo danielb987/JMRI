@@ -146,7 +146,7 @@ public class SocketOperationTest {
                 sb.append(c.name());
                 sb.append(", ");
             }
-            log.error("Item: {}, child: {}, Category: {}", child.getParent().getLongDescription(), child.getName(), sb.toString());
+            log.error("Item: {}, child: {}, Category: {}", child.getParent().getLongDescription(Base.Verbosity.Normal), child.getName(), sb.toString());
         }
 
 

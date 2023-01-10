@@ -302,7 +302,7 @@ public class DigitalManyTest extends AbstractDigitalActionTestBase {
     public void testDescription() {
         DigitalMany action = new DigitalMany("IQDA121", null);
         Assert.assertEquals("Short description", "Many", action.getShortDescription());
-        Assert.assertEquals("Long description", "Many", action.getLongDescription());
+        Assert.assertEquals("Long description", "Many", action.getLongDescription(Base.Verbosity.Normal));
     }
 
     // The minimal setup for log4J

@@ -333,12 +333,12 @@ public class IfThenElseTest extends AbstractDigitalActionTestBase {
         IfThenElse action = new IfThenElse("IQDA321", null);
         action.setExecuteType(IfThenElse.ExecuteType.ExecuteOnChange);
         Assert.assertEquals("strings are equal", "If Then Else", action.getShortDescription());
-        Assert.assertEquals("strings are equal", "If Then Else. Execute on change", action.getLongDescription());
+        Assert.assertEquals("strings are equal", "If Then Else. Execute on change", action.getLongDescription(Base.Verbosity.Normal));
 
         action = new IfThenElse("IQDA321", null);
         action.setExecuteType(IfThenElse.ExecuteType.AlwaysExecute);
         Assert.assertEquals("strings are equal", "If Then Else", action.getShortDescription());
-        Assert.assertEquals("strings are equal", "If Then Else. Always execute", action.getLongDescription());
+        Assert.assertEquals("strings are equal", "If Then Else. Always execute", action.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

@@ -12,16 +12,7 @@ import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
 import jmri.Turnout;
 import jmri.TurnoutManager;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.Is_IsNot_Enum;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -102,19 +93,19 @@ public class ExpressionTurnoutTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionTurnout("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Turnout '' is Thrown", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Turnout '' is Thrown", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionTurnout("IQDE321", "My turnout");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My turnout", expression2.getUserName());
-        Assert.assertEquals("String matches", "Turnout '' is Thrown", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Turnout '' is Thrown", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionTurnout("IQDE321", null);
         expression2.getSelectNamedBean().setNamedBean(turnout);
         Assert.assertTrue("turnout is correct", turnout == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Turnout IT1 is Thrown", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Turnout IT1 is Thrown", expression2.getLongDescription(Base.Verbosity.Normal));
 
         Turnout t = InstanceManager.getDefault(TurnoutManager.class).provide("IT2");
         expression2 = new ExpressionTurnout("IQDE321", "My turnout");
@@ -122,7 +113,7 @@ public class ExpressionTurnoutTest extends AbstractDigitalExpressionTestBase {
         Assert.assertTrue("turnout is correct", t == expression2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My turnout", expression2.getUserName());
-        Assert.assertEquals("String matches", "Turnout IT2 is Thrown", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Turnout IT2 is Thrown", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -186,15 +177,15 @@ public class ExpressionTurnoutTest extends AbstractDigitalExpressionTestBase {
 
         expressionTurnout.getSelectNamedBean().removeNamedBean();
         Assert.assertTrue("Turnout".equals(expressionTurnout.getShortDescription()));
-        Assert.assertTrue("Turnout '' is Thrown".equals(expressionTurnout.getLongDescription()));
+        Assert.assertTrue("Turnout '' is Thrown".equals(expressionTurnout.getLongDescription(Base.Verbosity.Normal)));
         expressionTurnout.getSelectNamedBean().setNamedBean(turnout);
         expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.Is);
         expressionTurnout.setBeanState(ExpressionTurnout.TurnoutState.Closed);
-        Assert.assertTrue("Turnout IT1 is Closed".equals(expressionTurnout.getLongDescription()));
+        Assert.assertTrue("Turnout IT1 is Closed".equals(expressionTurnout.getLongDescription(Base.Verbosity.Normal)));
         expressionTurnout.set_Is_IsNot(Is_IsNot_Enum.IsNot);
-        Assert.assertTrue("Turnout IT1 is not Closed".equals(expressionTurnout.getLongDescription()));
+        Assert.assertTrue("Turnout IT1 is not Closed".equals(expressionTurnout.getLongDescription(Base.Verbosity.Normal)));
         expressionTurnout.setBeanState(ExpressionTurnout.TurnoutState.Other);
-        Assert.assertTrue("Turnout IT1 is not Other".equals(expressionTurnout.getLongDescription()));
+        Assert.assertTrue("Turnout IT1 is not Other".equals(expressionTurnout.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

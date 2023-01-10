@@ -78,19 +78,19 @@ public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
         action2 = new ActionAtomicBoolean("IQDA321", null);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionAtomicBoolean("IQDA321", "My atomicBoolean");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My atomicBoolean", action2.getUserName());
-        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionAtomicBoolean("IQDA321", null);
         action2.setAtomicBoolean(atomicBoolean);
         Assert.assertTrue("atomic boolean is correct", atomicBoolean == action2.getAtomicBoolean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription(Base.Verbosity.Normal));
 
         AtomicBoolean ab = new AtomicBoolean();
         action2 = new ActionAtomicBoolean("IQDA321", "My atomicBoolean");
@@ -98,7 +98,7 @@ public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
         Assert.assertTrue("atomic boolean is correct", ab == action2.getAtomicBoolean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My atomicBoolean", action2.getUserName());
-        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set the atomic boolean to false", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -171,7 +171,7 @@ public class ActionAtomicBooleanTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testLongDescription() {
-        Assert.assertEquals("String matches", "Set the atomic boolean to true", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set the atomic boolean to true", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

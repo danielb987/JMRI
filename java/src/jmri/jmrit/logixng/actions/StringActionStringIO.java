@@ -76,7 +76,7 @@ public class StringActionStringIO extends AbstractStringAction
 
     /** {@inheritDoc} */
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "StringActionStringIO_Long", _selectNamedBean.getDescription(locale));
     }
 

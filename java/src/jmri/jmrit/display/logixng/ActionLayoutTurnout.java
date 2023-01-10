@@ -413,7 +413,7 @@ public class ActionLayoutTurnout extends AbstractDigitalAction
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String editorName = _layoutEditor != null
                 ? _layoutEditor.getName() : Bundle.getMessage(locale, "BeanNotSelected");
         String positonableName;

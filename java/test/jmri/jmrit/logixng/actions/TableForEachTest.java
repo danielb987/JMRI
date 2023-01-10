@@ -213,7 +213,7 @@ public class TableForEachTest extends AbstractDigitalActionTestBase {
         TableForEach a1 = new TableForEach("IQDA321", null);
         Assert.assertEquals("strings are equal", "Table: For each", a1.getShortDescription());
         TableForEach a2 = new TableForEach("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Table: For each column of row \"\" in table \"''\" set variable \"\" and execute action A1", a2.getLongDescription());
+        Assert.assertEquals("strings are equal", "Table: For each column of row \"\" in table \"''\" set variable \"\" and execute action A1", a2.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test
@@ -346,7 +346,7 @@ public class TableForEachTest extends AbstractDigitalActionTestBase {
         }
 
         @Override
-        public String getLongDescription(Locale locale) {
+        public String getLongDescription(Locale locale, Verbosity verbosity) {
             return "MyAction";
         }
 

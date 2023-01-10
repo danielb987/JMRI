@@ -52,9 +52,10 @@ public class StoreAndLoadTest {
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
             logixNG_Manager.printTree(
-                    printTreeSettings,
-                    Locale.ENGLISH,
                     printWriter,
+                    printTreeSettings,
+                    Base.Verbosity.Multiline,
+                    Locale.ENGLISH,
                     treeIndent,
                     new MutableInt(0));
             final String originalTree = stringWriter.toString();
@@ -100,9 +101,10 @@ public class StoreAndLoadTest {
                 stringWriter = new StringWriter();
                 printWriter = new PrintWriter(stringWriter);
                 logixNG_Manager.printTree(
-                        printTreeSettings,
-                        Locale.ENGLISH,
                         printWriter,
+                        printTreeSettings,
+                        Base.Verbosity.Multiline,
+                        Locale.ENGLISH,
                         treeIndent,
                         new MutableInt(0));
 

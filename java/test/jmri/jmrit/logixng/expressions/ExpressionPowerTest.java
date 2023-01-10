@@ -7,16 +7,7 @@ import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.PowerManager;
 import jmri.NamedBean;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.ConditionalNG;
-import jmri.jmrit.logixng.ConditionalNG_Manager;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.Is_IsNot_Enum;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -95,12 +86,12 @@ public class ExpressionPowerTest extends AbstractDigitalExpressionTestBase {
         expression2 = new ExpressionPower("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Power is On. Ignore unknown state", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Power is On. Ignore unknown state", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new ExpressionPower("IQDE321", "My power");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My power", expression2.getUserName());
-        Assert.assertEquals("String matches", "Power is On. Ignore unknown state", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Power is On. Ignore unknown state", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -165,14 +156,14 @@ public class ExpressionPowerTest extends AbstractDigitalExpressionTestBase {
         conditionalNG.setEnabled(false);
 
         Assert.assertTrue("Power".equals(expressionPower.getShortDescription()));
-        Assert.assertTrue("Power is On. Ignore unknown state".equals(expressionPower.getLongDescription()));
+        Assert.assertTrue("Power is On. Ignore unknown state".equals(expressionPower.getLongDescription(Base.Verbosity.Normal)));
         expressionPower.set_Is_IsNot(Is_IsNot_Enum.Is);
         expressionPower.setBeanState(ExpressionPower.PowerState.Off);
-        Assert.assertTrue("Power is Off. Ignore unknown state".equals(expressionPower.getLongDescription()));
+        Assert.assertTrue("Power is Off. Ignore unknown state".equals(expressionPower.getLongDescription(Base.Verbosity.Normal)));
         expressionPower.set_Is_IsNot(Is_IsNot_Enum.IsNot);
-        Assert.assertTrue("Power is not Off. Ignore unknown state".equals(expressionPower.getLongDescription()));
+        Assert.assertTrue("Power is not Off. Ignore unknown state".equals(expressionPower.getLongDescription(Base.Verbosity.Normal)));
         expressionPower.setBeanState(ExpressionPower.PowerState.OnOrOff);
-        Assert.assertTrue("Power is not On or Off. Ignore unknown state".equals(expressionPower.getLongDescription()));
+        Assert.assertTrue("Power is not On or Off. Ignore unknown state".equals(expressionPower.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

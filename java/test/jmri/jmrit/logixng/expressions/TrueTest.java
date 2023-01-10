@@ -16,12 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import jmri.jmrit.logixng.DigitalExpressionBean;
-import jmri.jmrit.logixng.DigitalExpressionManager;
-import jmri.jmrit.logixng.LogixNG;
-import jmri.jmrit.logixng.LogixNG_Manager;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.SocketAlreadyConnectedException;
+import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.ActionAtomicBoolean;
 import jmri.jmrit.logixng.actions.IfThenElse;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
@@ -92,12 +87,12 @@ public class TrueTest extends AbstractDigitalExpressionTestBase {
         expression2 = new True("IQDE321", null);
         Assert.assertNotNull("object exists", expression2);
         Assert.assertNull("Username matches", expression2.getUserName());
-        Assert.assertEquals("String matches", "Always true", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Always true", expression2.getLongDescription(Base.Verbosity.Normal));
 
         expression2 = new True("IQDE321", "My expression");
         Assert.assertNotNull("object exists", expression2);
         Assert.assertEquals("Username matches", "My expression", expression2.getUserName());
-        Assert.assertEquals("String matches", "Always true", expression2.getLongDescription());
+        Assert.assertEquals("String matches", "Always true", expression2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -141,7 +136,7 @@ public class TrueTest extends AbstractDigitalExpressionTestBase {
     public void testDescription() {
         DigitalExpressionBean e1 = new True("IQDE321", null);
         Assert.assertTrue("Always true".equals(e1.getShortDescription()));
-        Assert.assertTrue("Always true".equals(e1.getLongDescription()));
+        Assert.assertTrue("Always true".equals(e1.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Test

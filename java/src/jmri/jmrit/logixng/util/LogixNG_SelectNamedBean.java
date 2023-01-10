@@ -462,7 +462,7 @@ public class LogixNG_SelectNamedBean<E extends NamedBean> implements VetoableCha
     public void getUsageDetail(int level, NamedBean bean, List<NamedBeanUsageReport> report, NamedBean cdl, Base base, Type type) {
         log.debug("getUsageReport :: {}: bean = {}, report = {}", base.getShortDescription(), cdl, report);
         if (_handle != null && bean.equals(_handle.getBean())) {
-            report.add(new NamedBeanUsageReport(type.toString(), cdl, base.getLongDescription()));
+            report.add(new NamedBeanUsageReport(type.toString(), cdl, base.getLongDescription(Base.Verbosity.Normal)));
         }
     }
 

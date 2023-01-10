@@ -92,7 +92,7 @@ public class ConnectionName extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         return Bundle.getMessage(locale, "ConnectionName_Long", _manufacturer, _connectionName);
     }
 

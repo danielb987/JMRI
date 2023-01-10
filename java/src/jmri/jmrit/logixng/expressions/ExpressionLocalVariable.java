@@ -253,7 +253,7 @@ public class ExpressionLocalVariable extends AbstractDigitalExpression
     }
 
     @Override
-    public String getLongDescription(Locale locale) {
+    public String getLongDescription(Locale locale, Verbosity verbosity) {
         String variableName;
         if ((_localVariable == null) || _localVariable.isEmpty()) {
             variableName = Bundle.getMessage(locale, "BeanNotSelected");

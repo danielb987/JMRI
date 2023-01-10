@@ -13,7 +13,6 @@ import jmri.MemoryManager;
 import jmri.NamedBean;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
-import jmri.jmrit.logixng.implementation.DefaultSymbolTable;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -87,14 +86,14 @@ public class ActionMemoryTest extends AbstractDigitalActionTestBase {
         action2.setMemoryOperation(ActionMemory.MemoryOperation.SetToNull);
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory '' to null", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory '' to null", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionMemory("IQDA321", "My memory");
         action2.setMemoryOperation(ActionMemory.MemoryOperation.SetToString);
         action2.setOtherConstantValue("New value");
         Assert.assertNotNull("object exists", action2);
         Assert.assertEquals("Username matches", "My memory", action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory '' to \"New value\"", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory '' to \"New value\"", action2.getLongDescription(Base.Verbosity.Normal));
 
         action2 = new ActionMemory("IQDA321", null);
         action2.setMemoryOperation(ActionMemory.MemoryOperation.CopyMemoryToMemory);
@@ -104,7 +103,7 @@ public class ActionMemoryTest extends AbstractDigitalActionTestBase {
         Assert.assertTrue("memory is correct", memory == action2.getSelectNamedBean().getNamedBean().getBean());
         Assert.assertNotNull("object exists", action2);
         Assert.assertNull("Username matches", action2.getUserName());
-        Assert.assertEquals("String matches", "Set memory IM1 to the value of memory IM12", action2.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1 to the value of memory IM12", action2.getLongDescription(Base.Verbosity.Normal));
 
         boolean thrown = false;
         try {
@@ -275,16 +274,16 @@ public class ActionMemoryTest extends AbstractDigitalActionTestBase {
         actionMemory.unregisterListeners();
 
         actionMemory.setMemoryOperation(ActionMemory.MemoryOperation.SetToNull);
-        Assert.assertEquals("String matches", "Set memory IM1 to null", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1 to null", _base.getLongDescription(Base.Verbosity.Normal));
 
         actionMemory.setMemoryOperation(ActionMemory.MemoryOperation.SetToString);
         actionMemory.setOtherConstantValue("Some new value");
-        Assert.assertEquals("String matches", "Set memory IM1 to \"Some new value\"", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1 to \"Some new value\"", _base.getLongDescription(Base.Verbosity.Normal));
 
         actionMemory.setMemoryOperation(ActionMemory.MemoryOperation.CopyMemoryToMemory);
         Memory otherMemory = InstanceManager.getDefault(MemoryManager.class).provide("IM99");
         actionMemory.getSelectOtherMemoryNamedBean().setNamedBean(otherMemory);
-        Assert.assertEquals("String matches", "Set memory IM1 to the value of memory IM99", _base.getLongDescription());
+        Assert.assertEquals("String matches", "Set memory IM1 to the value of memory IM99", _base.getLongDescription(Base.Verbosity.Normal));
     }
 
     @Test

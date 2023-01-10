@@ -46,7 +46,7 @@ public class DefaultFemaleStringExpressionSocketTest extends FemaleSocketTestBas
     @Test
     public void testGetDescription() {
         Assert.assertTrue("String matches", "?s".equals(_femaleSocket.getShortDescription()));
-        Assert.assertTrue("String matches", "?s E1".equals(_femaleSocket.getLongDescription()));
+        Assert.assertTrue("String matches", "?s E1".equals(_femaleSocket.getLongDescription(Base.Verbosity.Normal)));
     }
 
     @Override
