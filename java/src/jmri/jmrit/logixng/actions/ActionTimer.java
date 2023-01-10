@@ -32,6 +32,7 @@ public class ActionTimer extends AbstractDigitalAction
     private TimerState _timerState = TimerState.Off;
     private boolean _startImmediately = false;
     private boolean _runContinuously = false;
+    private boolean _startAndStopByStartExpression = false;
     private TimerUnit _unit = TimerUnit.MilliSeconds;
     private long _currentTimerDelay = 0;
     private long _currentTimerStart = 0;
@@ -75,6 +76,7 @@ public class ActionTimer extends AbstractDigitalAction
         }
         copy.setStartImmediately(_startImmediately);
         copy.setRunContinuously(_runContinuously);
+        copy.setStartAndStopByStartExpression(_startAndStopByStartExpression);
         copy.setUnit(_unit);
         return manager.registerAction(copy).deepCopyChildren(this, systemNames, userNames);
     }
@@ -178,8 +180,15 @@ public class ActionTimer extends AbstractDigitalAction
     }
 
     private boolean stop() throws JmriException {
-        if (_stopExpressionSocket.isConnected()
-                && _stopExpressionSocket.evaluate()) {
+        boolean stop;
+
+        if (_startAndStopByStartExpression) {
+            stop = _startExpressionSocket.isConnected() && !_startExpressionSocket.evaluate();
+        } else {
+            stop = _stopExpressionSocket.isConnected() && _stopExpressionSocket.evaluate();
+        }
+
+        if (stop) {
             synchronized(this) {
                 if (_timerTask != null) _timerTask.stopTimer();
                 _timerTask = null;
@@ -193,7 +202,10 @@ public class ActionTimer extends AbstractDigitalAction
     /** {@inheritDoc} */
     @Override
     public void execute() throws JmriException {
-        if (stop()) return;
+        if (stop()) {
+            _startIsActive = false;
+            return;
+        }
 
         if (checkStart()) return;
 
@@ -252,7 +264,7 @@ public class ActionTimer extends AbstractDigitalAction
      * Get if to start immediately
      * @return true if to start immediately
      */
-    public boolean getStartImmediately() {
+    public boolean isStartImmediately() {
         return _startImmediately;
     }
 
@@ -268,7 +280,7 @@ public class ActionTimer extends AbstractDigitalAction
      * Get if run continuously
      * @return true if run continuously
      */
-    public boolean getRunContinuously() {
+    public boolean isRunContinuously() {
         return _runContinuously;
     }
 
@@ -278,6 +290,22 @@ public class ActionTimer extends AbstractDigitalAction
      */
     public void setRunContinuously(boolean runContinuously) {
         _runContinuously = runContinuously;
+    }
+
+    /**
+     * Is both start and stop is controlled by the start expression.
+     * @return true if to start immediately
+     */
+    public boolean isStartAndStopByStartExpression() {
+        return _startAndStopByStartExpression;
+    }
+
+    /**
+     * Set if both start and stop is controlled by the start expression.
+     * @param startAndStopByStartExpression true if to start immediately
+     */
+    public void setStartAndStopByStartExpression(boolean startAndStopByStartExpression) {
+        _startAndStopByStartExpression = startAndStopByStartExpression;
     }
 
     /**
@@ -350,7 +378,12 @@ public class ActionTimer extends AbstractDigitalAction
 
     @Override
     public String getLongDescription(Locale locale, Verbosity verbosity) {
-        return Bundle.getMessage(locale, "ActionTimer_Long");
+        if (_startAndStopByStartExpression) {
+            return Bundle.getMessage(locale, "ActionTimer_Long2",
+                    Bundle.getMessage("ActionTimer_StartAndStopByStartExpression"));
+        } else {
+            return Bundle.getMessage(locale, "ActionTimer_Long");
+        }
     }
 
     public FemaleDigitalExpressionSocket getStartExpressionSocket() {
