@@ -381,12 +381,12 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
     @Override
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
-    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
+    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
         log.debug("** {} :: {}", level, this.getLongDescription());
         level++;
 
         if (isConnected()) {
-            getConnectedSocket().getUsageTree(level, bean, report, cdl);
+            getConnectedSocket().getUsageTree(level, bean, report, cdl, showParents);
         }
     }
 

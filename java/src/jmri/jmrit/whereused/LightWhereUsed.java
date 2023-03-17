@@ -14,17 +14,18 @@ public class LightWhereUsed {
 
     /**
      * Populate a textarea with the where used content for the supplied sensor.
-     * @param light The light bean.
+     * @param light               The light bean.
+     * @param showLogixNGParents  true if the LogixNG parents should be included, false otherwise
      * @return a populated textarea.
      */
-    static public JTextArea getWhereUsed(NamedBean light) {
+    static public JTextArea getWhereUsed(NamedBean light, boolean showLogixNGParents) {
         JTextArea textArea = new JTextArea();
         String label = Bundle.getMessage("MakeLabel", Bundle.getMessage("BeanNameLight"));  // NOI18N
         textArea.append(Bundle.getMessage("ReferenceTitle", label, light.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME)));  // NOI18N
         textArea.append(Bundle.getMessage("ListenerCount", light.getNumPropertyChangeListeners()));  // NOI18N
 
         textArea.append(WhereUsedCollectors.checkLogixConditionals(light));
-        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(light));
+        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(light, showLogixNGParents));
         textArea.append(WhereUsedCollectors.checkPanels(light));
         return textArea;
     }

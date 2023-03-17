@@ -14,10 +14,11 @@ public class SignalHeadWhereUsed {
 
     /**
      * Populate a textarea with the where used content for the supplied signal head.
-     * @param signalHead The signal head bean.
+     * @param signalHead          The signal head bean.
+     * @param showLogixNGParents  true if the LogixNG parents should be included, false otherwise
      * @return a populated textarea.
      */
-    static public JTextArea getWhereUsed(NamedBean signalHead) {
+    static public JTextArea getWhereUsed(NamedBean signalHead, boolean showLogixNGParents) {
         JTextArea textArea = new JTextArea();
         String label = Bundle.getMessage("MakeLabel", Bundle.getMessage("BeanNameSignalHead"));  // NOI18N
         textArea.append(Bundle.getMessage("ReferenceTitle", label, signalHead.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME)));  // NOI18N
@@ -29,7 +30,7 @@ public class SignalHeadWhereUsed {
         textArea.append(WhereUsedCollectors.checkWarrants(signalHead));
         textArea.append(WhereUsedCollectors.checkEntryExit(signalHead));
         textArea.append(WhereUsedCollectors.checkLogixConditionals(signalHead));
-        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(signalHead));
+        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(signalHead, showLogixNGParents));
         textArea.append(WhereUsedCollectors.checkPanels(signalHead));
         textArea.append(WhereUsedCollectors.checkCTC(signalHead));
         return textArea;

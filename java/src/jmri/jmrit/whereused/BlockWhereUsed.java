@@ -14,10 +14,11 @@ public class BlockWhereUsed {
 
     /**
      * Populate a textarea with the where used content for the supplied sensor.
-     * @param block The block bean.
+     * @param block               The block bean.
+     * @param showLogixNGParents  true if the LogixNG parents should be included, false otherwise
      * @return a populated textarea.
      */
-    static public JTextArea getWhereUsed(NamedBean block) {
+    static public JTextArea getWhereUsed(NamedBean block, boolean showLogixNGParents) {
         JTextArea textArea = new JTextArea();
         String label = Bundle.getMessage("MakeLabel", Bundle.getMessage("BeanNameBlock"));  // NOI18N
         textArea.append(Bundle.getMessage("ReferenceTitle", label, block.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME)));  // NOI18N
@@ -28,7 +29,7 @@ public class BlockWhereUsed {
         textArea.append(WhereUsedCollectors.checkSections(block));
         textArea.append(WhereUsedCollectors.checkPanels(block));
         textArea.append(WhereUsedCollectors.checkCTC(block));
-        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(block));
+        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(block, showLogixNGParents));
         return textArea;
     }
 }

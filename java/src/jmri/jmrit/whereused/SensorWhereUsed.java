@@ -13,10 +13,11 @@ public class SensorWhereUsed {
 
     /**
      * Populate a textarea with the whereused content for the supplied sensor.
-     * @param sensor The sensor bean.
+     * @param sensor              The sensor bean.
+     * @param showLogixNGParents  true if the LogixNG parents should be included, false otherwise
      * @return a populated textarea.
      */
-    static public JTextArea getWhereUsed(NamedBean sensor) {
+    static public JTextArea getWhereUsed(NamedBean sensor, boolean showLogixNGParents) {
         JTextArea textArea = new JTextArea();
         String label = Bundle.getMessage("MakeLabel", Bundle.getMessage("BeanNameSensor"));  // NOI18N
         textArea.append(Bundle.getMessage("ReferenceTitle", label, sensor.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME)));  // NOI18N
@@ -33,7 +34,7 @@ public class SensorWhereUsed {
         textArea.append(WhereUsedCollectors.checkOBlocks(sensor));
         textArea.append(WhereUsedCollectors.checkEntryExit(sensor));
         textArea.append(WhereUsedCollectors.checkLogixConditionals(sensor));
-        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(sensor));
+        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(sensor, showLogixNGParents));
         textArea.append(WhereUsedCollectors.checkSections(sensor));
         textArea.append(WhereUsedCollectors.checkTransits(sensor));
         textArea.append(WhereUsedCollectors.checkPanels(sensor));

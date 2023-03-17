@@ -245,11 +245,11 @@ public abstract class AbstractBase
     @Override
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
-    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
+    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
         log.debug("## {} :: {}", level, this.getLongDescription());
         level++;
         for (int i=0; i < getChildCount(); i++) {
-            getChild(i).getUsageTree(level, bean, report, cdl);
+            getChild(i).getUsageTree(level, bean, report, cdl, showParents);
         }
     }
 

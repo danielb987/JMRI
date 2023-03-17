@@ -284,7 +284,7 @@ public class DefaultGlobalVariable extends AbstractNamedBean
     @Override
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
-    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
+    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
         log.debug("** {} :: {}", level, this.getClass().getName());
 
         throw new UnsupportedOperationException("Not supported");

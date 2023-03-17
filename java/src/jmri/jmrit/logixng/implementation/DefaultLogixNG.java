@@ -462,10 +462,10 @@ public class DefaultLogixNG extends AbstractNamedBean
 
     /** {@inheritDoc} */
     @Override
-    public List<NamedBeanUsageReport> getUsageReport(NamedBean bean) {
+    public List<NamedBeanUsageReport> getUsageReport(NamedBean bean, boolean showParents) {
         List<NamedBeanUsageReport> report = new ArrayList<>();
         if (bean != null) {
-            getUsageTree(0, bean, report, null);
+            getUsageTree(0, bean, report, null, showParents);
         }
         return report;
     }
@@ -474,12 +474,12 @@ public class DefaultLogixNG extends AbstractNamedBean
     @Override
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
-    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
+    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
         log.debug("** {} :: {}", level, this.getClass().getName());
 
         level++;
         for (int i=0; i < this.getNumConditionalNGs(); i++) {
-            getConditionalNG(i).getUsageTree(level, bean, report, getConditionalNG(i));
+            getConditionalNG(i).getUsageTree(level, bean, report, getConditionalNG(i), showParents);
         }
     }
 

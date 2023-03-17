@@ -14,10 +14,11 @@ public class MemoryWhereUsed {
 
     /**
      * Populate a textarea with the where used content for the supplied memory.
-     * @param memory The memory bean.
+     * @param memory              The memory bean.
+     * @param showLogixNGParents  true if the LogixNG parents should be included, false otherwise
      * @return a populated textarea.
      */
-    static public JTextArea getWhereUsed(NamedBean memory) {
+    static public JTextArea getWhereUsed(NamedBean memory, boolean showLogixNGParents) {
         JTextArea textArea = new JTextArea();
         String label = Bundle.getMessage("MakeLabel", Bundle.getMessage("BeanNameMemory"));  // NOI18N
         textArea.append(Bundle.getMessage("ReferenceTitle", label, memory.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME)));  // NOI18N
@@ -25,7 +26,7 @@ public class MemoryWhereUsed {
 
         textArea.append(WhereUsedCollectors.checkLayoutBlocks(memory));
         textArea.append(WhereUsedCollectors.checkLogixConditionals(memory));
-        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(memory));
+        textArea.append(WhereUsedCollectors.checkLogixNGConditionals(memory, showLogixNGParents));
         textArea.append(WhereUsedCollectors.checkPanels(memory));
         return textArea;
     }

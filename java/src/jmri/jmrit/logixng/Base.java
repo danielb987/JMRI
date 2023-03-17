@@ -464,12 +464,13 @@ public interface Base extends PropertyChangeProvider {
     /**
      * Navigate the LogixNG tree.
      *
-     * @param level  The current recursion level for debugging.
-     * @param bean   The named bean that is the object of the search.
-     * @param report A list of NamedBeanUsageReport usage reports.
-     * @param cdl    The current ConditionalNG bean.  Null for Module searches since there is no conditional
+     * @param level        The current recursion level for debugging.
+     * @param bean         The named bean that is the object of the search.
+     * @param report       A list of NamedBeanUsageReport usage reports.
+     * @param cdl          The current ConditionalNG bean.  Null for Module searches since there is no conditional
+     * @param showParents  true if the parents should be included, false otherwise
      */
-    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl);
+    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents);
 
     /**
      * Add a new NamedBeanUsageReport to the report list if there are any matches in this action or expresssion.

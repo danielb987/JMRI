@@ -351,10 +351,10 @@ public class DefaultModule extends AbstractBase
 
     /** {@inheritDoc} */
     @Override
-    public List<NamedBeanUsageReport> getUsageReport(NamedBean bean) {
+    public List<NamedBeanUsageReport> getUsageReport(NamedBean bean, boolean showParents) {
         List<NamedBeanUsageReport> report = new ArrayList<>();
         if (bean != null) {
-            getUsageTree(0, bean, report, null);
+            getUsageTree(0, bean, report, null, showParents);
         }
         return report;
     }
@@ -363,10 +363,10 @@ public class DefaultModule extends AbstractBase
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
     @Override
-    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
+    public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
         log.debug("** {} :: {}", level, this.getClass().getName());
         level++;
-        _femaleRootSocket.getUsageTree(level, bean, report, cdl);
+        _femaleRootSocket.getUsageTree(level, bean, report, cdl, showParents);
     }
 
     @Override

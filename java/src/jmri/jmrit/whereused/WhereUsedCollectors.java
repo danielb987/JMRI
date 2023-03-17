@@ -364,16 +364,16 @@ public class WhereUsedCollectors {
      * @param bean The requesting bean:  Many.
      * @return usage string
      */
-    static String checkLogixNGConditionals(NamedBean bean) {
+    static String checkLogixNGConditionals(NamedBean bean, boolean showParents) {
         StringBuilder sb = new StringBuilder();
-        InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet().forEach((logixng) -> logixng.getUsageReport(bean).forEach((report) -> {
+        InstanceManager.getDefault(LogixNG_Manager.class).getNamedBeanSet().forEach((logixng) -> logixng.getUsageReport(bean, showParents).forEach((report) -> {
             if (report.usageKey.startsWith("LogixNG")) {  // NOI18N
                 String name = logixng.getDisplayName(NamedBean.DisplayOptions.USERNAME_SYSTEMNAME);
                 String cdlName = report.usageBean != null ? report.usageBean.getDisplayName() : "";
                 sb.append(Bundle.getMessage("ReferenceLineLogixNG", name, cdlName, Bundle.getMessage(report.usageKey), report.usageData));  // NOI18N
             }
         }));
-        InstanceManager.getDefault(ModuleManager.class).getNamedBeanSet().forEach((module) -> module.getUsageReport(bean).forEach((report) -> {
+        InstanceManager.getDefault(ModuleManager.class).getNamedBeanSet().forEach((module) -> module.getUsageReport(bean, showParents).forEach((report) -> {
             if (report.usageKey.startsWith("LogixNG")) {  // NOI18N
                 String name = module.getDisplayName(NamedBean.DisplayOptions.USERNAME_SYSTEMNAME);
                 sb.append(Bundle.getMessage("ReferenceLineModule", name, Bundle.getMessage(report.usageKey), report.usageData));  // NOI18N

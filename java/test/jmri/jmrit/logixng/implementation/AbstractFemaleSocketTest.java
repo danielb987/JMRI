@@ -477,7 +477,7 @@ public class AbstractFemaleSocketTest {
         }
 
         @Override
-        public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl) {
+        public void getUsageTree(int level, NamedBean bean, List<jmri.NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
             throw new UnsupportedOperationException("Not supported");
         }
     }

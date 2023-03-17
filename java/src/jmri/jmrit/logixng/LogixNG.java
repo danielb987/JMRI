@@ -1,8 +1,11 @@
 package jmri.jmrit.logixng;
 
+import java.util.List;
+
+import javax.annotation.CheckForNull;
+
 import jmri.NamedBean;
-import jmri.jmrit.display.Positionable;
-import jmri.jmrit.display.layoutEditor.LayoutTrackView;
+import jmri.NamedBeanUsageReport;
 
 /**
  * LogixNG.
@@ -161,5 +164,14 @@ public interface LogixNG extends Base, NamedBean {
      * @param allowRunDelayed true if it's ok to run delayed, false otherwise
      */
     public void execute(boolean allowRunDelayed);
+
+    /**
+     * Get a list of references for the specified bean.
+     *
+     * @param bean         The bean to be checked.
+     * @param showParents  true if the parents should be included, false otherwise
+     * @return a list of NamedBeanUsageReports or an empty ArrayList.
+     */
+    public List<NamedBeanUsageReport> getUsageReport(@CheckForNull NamedBean bean, boolean showParents);
 
 }

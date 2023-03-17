@@ -149,45 +149,46 @@ public class WhereUsedFrame extends jmri.util.JmriJFrame {
      * @param bean The bean being examined
      */
     void buildWhereUsedListing(ItemType type, NamedBean bean) {
+        boolean showLogixNGParents = true;
         switch (type) {
             case TURNOUT:
-                _textArea = TurnoutWhereUsed.getWhereUsed(bean);
+                _textArea = TurnoutWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case SENSOR:
-                _textArea = SensorWhereUsed.getWhereUsed(bean);
+                _textArea = SensorWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case LIGHT:
-                _textArea = LightWhereUsed.getWhereUsed(bean);
+                _textArea = LightWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case SIGNALHEAD:
-                _textArea = SignalHeadWhereUsed.getWhereUsed(bean);
+                _textArea = SignalHeadWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case SIGNALMAST:
-                _textArea = SignalMastWhereUsed.getWhereUsed(bean);
+                _textArea = SignalMastWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case REPORTER:
                 _textArea = ReporterWhereUsed.getWhereUsed(bean);
                 break;
             case MEMORY:
-                _textArea = MemoryWhereUsed.getWhereUsed(bean);
+                _textArea = MemoryWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case ROUTE:
-                _textArea = RouteWhereUsed.getWhereUsed(bean);
+                _textArea = RouteWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case OBLOCK:
-                _textArea = OBlockWhereUsed.getWhereUsed(bean);
+                _textArea = OBlockWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case BLOCK:
-                _textArea = BlockWhereUsed.getWhereUsed(bean);
+                _textArea = BlockWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case SECTION:
                 _textArea = SectionWhereUsed.getWhereUsed(bean);
                 break;
             case WARRANT:
-                _textArea = WarrantWhereUsed.getWhereUsed(bean);
+                _textArea = WarrantWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             case ENTRYEXIT:
-                _textArea = EntryExitWhereUsed.getWhereUsed(bean);
+                _textArea = EntryExitWhereUsed.getWhereUsed(bean, showLogixNGParents);
                 break;
             default:
                 _textArea = new JTextArea(Bundle.getMessage("TypePrompt", Bundle.getMessage("ButtonCreate")));

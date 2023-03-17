@@ -528,18 +528,18 @@ public abstract class AbstractMaleSocket implements MaleSocket {
     @Override
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SLF4J_SIGN_ONLY_FORMAT",
                                                         justification="Specific log message format")
-    public void getUsageTree(int level, NamedBean bean, List<NamedBeanUsageReport> report, NamedBean cdl) {
+    public void getUsageTree(int level, NamedBean bean, List<NamedBeanUsageReport> report, NamedBean cdl, boolean showParents) {
         if (!(getObject() instanceof AbstractMaleSocket)) {
             log.debug("*@ {} :: {}", level, this.getLongDescription());
             _object.getUsageDetail(level, bean, report, cdl);
         }
 
         if (getObject() instanceof MaleSocket) {
-            getObject().getUsageTree(level, bean, report, cdl);
+            getObject().getUsageTree(level, bean, report, cdl, showParents);
         } else {
             level++;
             for (int i=0; i < getChildCount(); i++) {
-                getChild(i).getUsageTree(level, bean, report, cdl);
+                getChild(i).getUsageTree(level, bean, report, cdl, showParents);
             }
         }
     }
