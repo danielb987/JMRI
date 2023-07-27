@@ -1,10 +1,9 @@
-This test was from HEAD, Win10, Java 11, and the command Debug->RailCom Throttle.
--ken c
+With a RailDriver connected, and trying the Debug->RailDriver Throttle, here is what I got:
 
 util.Log4JUtil                        INFO  - ****** JMRI log ******* [main]
 util.Log4JUtil                        INFO  - This log is appended to file: C:\Users\kcameron\JMRI\log\messages.log [main]
 util.Log4JUtil                        INFO  - This log is stored in file: C:\Users\kcameron\JMRI\log\session.log [main]
-apps.Apps                             INFO  - PanelPro version 5.5.2plus+kcameron+20230727T0211Z+Rea56e44bd5 starts under Java 11.0.2 on Windows 10 amd64 v10.0 at Wed Jul 26 22:11:50 EDT 2023 [main]
+apps.Apps                             INFO  - PanelPro version 5.5.2plus+kcameron+2023-07-26T13:30:18Z+Rfe9d9e41dc starts under Java 11.0.2 on Windows 10 amd64 v10.0 at Wed Jul 26 10:25:02 EDT 2023 [main]
 apps.Apps                             INFO  - Starting with profile PanelProDMX.3f77965f [main]
 node.NodeIdentity                     INFO  - Using 92ccc8b0-5cf4-11e8-8000-84a6c8d92d62 as the JMRI storage identity for profile id 3f77965f [AWT-EventQueue-0]
 startup.PerformFileModel              INFO  - Loading file C:\Users\kcameron\JMRI\PanelProDMX.jmri\File2.xml [main]
@@ -17,15 +16,22 @@ util.FileUtilSupport                  INFO  - File path home: is C:\Users\kcamer
 util.FileUtilSupport                  INFO  - File path scripts: is C:\Users\kcameron\git\JMRI\jython\ [main]
 PanelPro.PanelPro                     INFO  - Main initialization done [main]
 input.DefaultControllerEnvironment    WARN  - Found unknown Windows version: Windows 10 [AWT-EventQueue-0]
-input.DefaultControllerEnvironment    INFO  - Attempting to use default windows plug-in. [AWT-EventQueue-0]
-input.DefaultControllerEnvironment    INFO  - Loading: C [AWT-EventQueue-0]
-java.lang.ClassNotFoundException: C
-	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
-	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
-	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
-	at java.base/java.lang.Class.forName0(Native Method)
-	at java.base/java.lang.Class.forName(Class.java:315)
-	at net.java.games.input.DefaultControllerEnvironment.getControllers(DefaultControllerEnvironment.java:161)
+input.DefaultControllerEnvironment    WARN  - Attempting to use default windows plug-in. [AWT-EventQueue-0]
+java.lang.UnsatisfiedLinkError: no jinput-dx8_64 in java.library.path: [C:\Program Files\Java\jdk-11.0.2\bin, C:\WINDOWS\Sun\Java\bin, C:\WINDOWS\system32, C:\WINDOWS, C:/Users/kcameron/.p2/pool/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.6.v20230125-1136/jre/bin/server, C:/Users/kcameron/.p2/pool/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.6.v20230125-1136/jre/bin, C:\Program Files\Common Files\Oracle\Java\javapath, C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common, C:\Program Files\Microsoft MPI\Bin\, C:\ProgramData\Oracle\Java\javapath, C:\Program Files (x86)\Intel\iCLS Client\, C:\Program Files\Intel\iCLS Client\, C:\WINDOWS\system32, C:\WINDOWS, C:\WINDOWS\System32\Wbem, C:\WINDOWS\System32\WindowsPowerShell\v1.0\, C:\Program Files\Hewlett-Packard\SimplePass\, C:\Program Files\Intel\Intel(R) Management Engine Components\DAL, C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL, C:\Program Files\Intel\Intel(R) Management Engine Components\IPT, C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT, C:\Program Files\Intel\WiFi\bin\, C:\Program Files\Common Files\Intel\WirelessCommon\, C:\WINDOWS\System32\OpenSSH\, C:\Program Files (x86)\HP\Common\HPDestPlgIn\, C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\, C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\, C:\Program Files\Microsoft SQL Server\120\Tools\Binn\, C:\Program Files\Microsoft SQL Server\120\DTS\Binn\, C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\, C:\Program Files\PuTTY\, C:\Program Files\dotnet\, C:\Program Files\Common Files\Autodesk Shared\Advance\, C:\Program Files (x86)\Common Files\Autodesk Shared\Advance\, C:\Program Files\Git\cmd, C:\Program Files (x86)\Common Files\Rockwell\, C:\Program Files (x86)\Rockwell Software\RSCommon, C:\Program Files (x86)\Common Files\Rockwell, C:\Program Files (x86)\Rockwell Software\, C:\Program Files (x86)\Google\Google Apps Sync\, C:\Program Files (x86)\Google\Google Apps Migration\, C:\Users\kcameron\AppData\Local\Microsoft\WindowsApps, C:\Program Files (x86)\HP\Common\HPDestPlgIn\, C:\Users\kcameron\AppData\Local\GitHubDesktop\bin, C:\WINDOWS\system32, ., .]
+	at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2660)
+	at java.base/java.lang.Runtime.loadLibrary0(Runtime.java:829)
+	at java.base/java.lang.System.loadLibrary(System.java:1867)
+	at net.java.games.input.DirectInputEnvironmentPlugin$1.run(DirectInputEnvironmentPlugin.java:75)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at net.java.games.input.DirectInputEnvironmentPlugin.loadLibrary(DirectInputEnvironmentPlugin.java:67)
+	at net.java.games.input.DirectInputEnvironmentPlugin.<clinit>(DirectInputEnvironmentPlugin.java:109)
+	at net.java.games.input.DirectAndRawInputEnvironmentPlugin.<init>(DirectAndRawInputEnvironmentPlugin.java:45)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+	at java.base/java.lang.Class.newInstance(Class.java:584)
+	at net.java.games.input.DefaultControllerEnvironment.getControllers(DefaultControllerEnvironment.java:160)
 	at jmri.jmrix.jinput.TreeModel.loadSystem(TreeModel.java:251)
 	at jmri.jmrix.jinput.TreeModel.<init>(TreeModel.java:46)
 	at jmri.jmrix.jinput.TreeModel.instance(TreeModel.java:98)
@@ -89,14 +95,21 @@ java.lang.ClassNotFoundException: C
 	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
 	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
 	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
-input.DefaultControllerEnvironment    INFO  - Loading: \Users\kcameron\git\JMRI\net.bobis.jinput.hidraw.HidRawEnvironmentPlugin [AWT-EventQueue-0]
-java.lang.ClassNotFoundException: \Users\kcameron\git\JMRI\net.bobis.jinput.hidraw.HidRawEnvironmentPlugin
-	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
-	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
-	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
-	at java.base/java.lang.Class.forName0(Native Method)
-	at java.base/java.lang.Class.forName(Class.java:315)
-	at net.java.games.input.DefaultControllerEnvironment.getControllers(DefaultControllerEnvironment.java:161)
+java.lang.UnsatisfiedLinkError: no jinput-raw_64 in java.library.path: [C:\Program Files\Java\jdk-11.0.2\bin, C:\WINDOWS\Sun\Java\bin, C:\WINDOWS\system32, C:\WINDOWS, C:/Users/kcameron/.p2/pool/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.6.v20230125-1136/jre/bin/server, C:/Users/kcameron/.p2/pool/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.6.v20230125-1136/jre/bin, C:\Program Files\Common Files\Oracle\Java\javapath, C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common, C:\Program Files\Microsoft MPI\Bin\, C:\ProgramData\Oracle\Java\javapath, C:\Program Files (x86)\Intel\iCLS Client\, C:\Program Files\Intel\iCLS Client\, C:\WINDOWS\system32, C:\WINDOWS, C:\WINDOWS\System32\Wbem, C:\WINDOWS\System32\WindowsPowerShell\v1.0\, C:\Program Files\Hewlett-Packard\SimplePass\, C:\Program Files\Intel\Intel(R) Management Engine Components\DAL, C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL, C:\Program Files\Intel\Intel(R) Management Engine Components\IPT, C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT, C:\Program Files\Intel\WiFi\bin\, C:\Program Files\Common Files\Intel\WirelessCommon\, C:\WINDOWS\System32\OpenSSH\, C:\Program Files (x86)\HP\Common\HPDestPlgIn\, C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\, C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\, C:\Program Files\Microsoft SQL Server\120\Tools\Binn\, C:\Program Files\Microsoft SQL Server\120\DTS\Binn\, C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\, C:\Program Files\PuTTY\, C:\Program Files\dotnet\, C:\Program Files\Common Files\Autodesk Shared\Advance\, C:\Program Files (x86)\Common Files\Autodesk Shared\Advance\, C:\Program Files\Git\cmd, C:\Program Files (x86)\Common Files\Rockwell\, C:\Program Files (x86)\Rockwell Software\RSCommon, C:\Program Files (x86)\Common Files\Rockwell, C:\Program Files (x86)\Rockwell Software\, C:\Program Files (x86)\Google\Google Apps Sync\, C:\Program Files (x86)\Google\Google Apps Migration\, C:\Users\kcameron\AppData\Local\Microsoft\WindowsApps, C:\Program Files (x86)\HP\Common\HPDestPlgIn\, C:\Users\kcameron\AppData\Local\GitHubDesktop\bin, C:\WINDOWS\system32, ., .]
+	at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2660)
+	at java.base/java.lang.Runtime.loadLibrary0(Runtime.java:829)
+	at java.base/java.lang.System.loadLibrary(System.java:1867)
+	at net.java.games.input.RawInputEnvironmentPlugin$1.run(RawInputEnvironmentPlugin.java:75)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at net.java.games.input.RawInputEnvironmentPlugin.loadLibrary(RawInputEnvironmentPlugin.java:67)
+	at net.java.games.input.RawInputEnvironmentPlugin.<clinit>(RawInputEnvironmentPlugin.java:109)
+	at net.java.games.input.DirectAndRawInputEnvironmentPlugin.<init>(DirectAndRawInputEnvironmentPlugin.java:46)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:490)
+	at java.base/java.lang.Class.newInstance(Class.java:584)
+	at net.java.games.input.DefaultControllerEnvironment.getControllers(DefaultControllerEnvironment.java:160)
 	at jmri.jmrix.jinput.TreeModel.loadSystem(TreeModel.java:251)
 	at jmri.jmrix.jinput.TreeModel.<init>(TreeModel.java:46)
 	at jmri.jmrix.jinput.TreeModel.instance(TreeModel.java:98)
@@ -160,13 +173,5 @@ java.lang.ClassNotFoundException: \Users\kcameron\git\JMRI\net.bobis.jinput.hidr
 	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
 	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
 	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
-input.DefaultControllerEnvironment    INFO  - Loading: net.java.games.input.DirectAndRawInputEnvironmentPlugin [AWT-EventQueue-0]
-input.ControllerEnvironment           INFO  - Failed to initialize device ITE Device(8350) because of: java.io.IOException: Failed to acquire device (8007001e)
+input.ControllerEnvironment           INFO  - net.java.games.input.DirectAndRawInputEnvironmentPlugin is not supported
  [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller HID-compliant mouse has 19 components [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller HID-compliant mouse has 5 components [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller Standard PS/2 Keyboard has 114 components [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller Synaptics SMBus TouchPad has 8 components [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller Logitech Download Assistant has 0 components [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller HP Wireless Button Driver has 1 components [AWT-EventQueue-0]
-jinput.TreeModel                      INFO  - Controller Synaptics Touch Digitizer V04 has 0 components [AWT-EventQueue-0]
