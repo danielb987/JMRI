@@ -1,0 +1,172 @@
+This test was from HEAD, Win10, Java 11, and the command Debug->RailCom Throttle.
+-ken c
+
+2023-07-26 22:11:50,314 util.Log4JUtil                        INFO  - ****** JMRI log ******* [main]
+2023-07-26 22:11:50,321 util.Log4JUtil                        INFO  - This log is appended to file: C:\Users\kcameron\JMRI\log\messages.log [main]
+2023-07-26 22:11:50,321 util.Log4JUtil                        INFO  - This log is stored in file: C:\Users\kcameron\JMRI\log\session.log [main]
+2023-07-26 22:11:50,430 apps.Apps                             INFO  - PanelPro version 5.5.2plus+kcameron+20230727T0211Z+Rea56e44bd5 starts under Java 11.0.2 on Windows 10 amd64 v10.0 at Wed Jul 26 22:11:50 EDT 2023 [main]
+2023-07-26 22:11:58,716 apps.Apps                             INFO  - Starting with profile PanelProDMX.3f77965f [main]
+2023-07-26 22:11:59,744 node.NodeIdentity                     INFO  - Using 92ccc8b0-5cf4-11e8-8000-84a6c8d92d62 as the JMRI storage identity for profile id 3f77965f [AWT-EventQueue-0]
+2023-07-26 22:12:01,994 startup.PerformFileModel              INFO  - Loading file C:\Users\kcameron\JMRI\PanelProDMX.jmri\File2.xml [main]
+2023-07-26 22:12:04,733 gurexml.AbstractLightManagerConfigXML ERROR - failed to create Light: PL1 [AWT-EventQueue-0]
+2023-07-26 22:12:04,832 util.FileUtilSupport                  INFO  - File path program: is C:\Users\kcameron\git\JMRI\ [main]
+2023-07-26 22:12:04,832 util.FileUtilSupport                  INFO  - File path preference: is C:\Users\kcameron\JMRI\PanelProDMX.jmri\ [main]
+2023-07-26 22:12:04,833 util.FileUtilSupport                  INFO  - File path profile: is C:\Users\kcameron\JMRI\PanelProDMX.jmri\ [main]
+2023-07-26 22:12:04,833 util.FileUtilSupport                  INFO  - File path settings: is C:\Users\kcameron\JMRI\ [main]
+2023-07-26 22:12:04,833 util.FileUtilSupport                  INFO  - File path home: is C:\Users\kcameron\ [main]
+2023-07-26 22:12:04,833 util.FileUtilSupport                  INFO  - File path scripts: is C:\Users\kcameron\git\JMRI\jython\ [main]
+2023-07-26 22:12:08,856 PanelPro.PanelPro                     INFO  - Main initialization done [main]
+2023-07-26 22:12:23,587 input.DefaultControllerEnvironment    WARN  - Found unknown Windows version: Windows 10 [AWT-EventQueue-0]
+2023-07-26 22:12:23,587 input.DefaultControllerEnvironment    INFO  - Attempting to use default windows plug-in. [AWT-EventQueue-0]
+2023-07-26 22:12:23,587 input.DefaultControllerEnvironment    INFO  - Loading: C [AWT-EventQueue-0]
+java.lang.ClassNotFoundException: C
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:315)
+	at net.java.games.input.DefaultControllerEnvironment.getControllers(DefaultControllerEnvironment.java:161)
+	at jmri.jmrix.jinput.TreeModel.loadSystem(TreeModel.java:251)
+	at jmri.jmrix.jinput.TreeModel.<init>(TreeModel.java:46)
+	at jmri.jmrix.jinput.TreeModel.instance(TreeModel.java:98)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java:190)
+	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java:208)
+	at org.python.core.PyObject.__call__(PyObject.java:446)
+	at org.python.core.PyObject.__call__(PyObject.java:450)
+	at org.python.pycode._pyx1.f$0(<script>:317)
+	at org.python.pycode._pyx1.call_function(<script>)
+	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+	at org.python.core.PyCode.call(PyCode.java:18)
+	at org.python.core.Py.runCode(Py.java:1687)
+	at org.python.core.__builtin__.eval(__builtin__.java:497)
+	at org.python.core.__builtin__.eval(__builtin__.java:501)
+	at org.python.util.PythonInterpreter.eval(PythonInterpreter.java:255)
+	at org.python.jsr223.PyScriptEngine.eval(PyScriptEngine.java:57)
+	at org.python.jsr223.PyScriptEngine.eval(PyScriptEngine.java:64)
+	at java.scripting/javax.script.AbstractScriptEngine.eval(AbstractScriptEngine.java:249)
+	at jmri.script.JmriScriptEngineManager.eval(JmriScriptEngineManager.java:368)
+	at jmri.script.JmriScriptEngineManager.eval(JmriScriptEngineManager.java:305)
+	at jmri.jmrit.jython.RunJythonScript.invoke(RunJythonScript.java:115)
+	at jmri.jmrit.jython.RunJythonScript.actionPerformed(RunJythonScript.java:88)
+	at java.desktop/javax.swing.AbstractButton.fireActionPerformed(AbstractButton.java:1967)
+	at java.desktop/javax.swing.AbstractButton$Handler.actionPerformed(AbstractButton.java:2308)
+	at java.desktop/javax.swing.DefaultButtonModel.fireActionPerformed(DefaultButtonModel.java:405)
+	at java.desktop/javax.swing.DefaultButtonModel.setPressed(DefaultButtonModel.java:262)
+	at java.desktop/javax.swing.AbstractButton.doClick(AbstractButton.java:369)
+	at java.desktop/javax.swing.plaf.basic.BasicMenuItemUI.doClick(BasicMenuItemUI.java:1020)
+	at java.desktop/javax.swing.plaf.basic.BasicMenuItemUI$Handler.mouseReleased(BasicMenuItemUI.java:1064)
+	at java.desktop/java.awt.Component.processMouseEvent(Component.java:6632)
+	at java.desktop/javax.swing.JComponent.processMouseEvent(JComponent.java:3342)
+	at java.desktop/java.awt.Component.processEvent(Component.java:6397)
+	at java.desktop/java.awt.Container.processEvent(Container.java:2263)
+	at java.desktop/java.awt.Component.dispatchEventImpl(Component.java:5008)
+	at java.desktop/java.awt.Container.dispatchEventImpl(Container.java:2321)
+	at java.desktop/java.awt.Component.dispatchEvent(Component.java:4840)
+	at java.desktop/java.awt.LightweightDispatcher.retargetMouseEvent(Container.java:4918)
+	at java.desktop/java.awt.LightweightDispatcher.processMouseEvent(Container.java:4547)
+	at java.desktop/java.awt.LightweightDispatcher.dispatchEvent(Container.java:4488)
+	at java.desktop/java.awt.Container.dispatchEventImpl(Container.java:2307)
+	at java.desktop/java.awt.Window.dispatchEventImpl(Window.java:2772)
+	at java.desktop/java.awt.Component.dispatchEvent(Component.java:4840)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:772)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:715)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:95)
+	at java.desktop/java.awt.EventQueue$5.run(EventQueue.java:745)
+	at java.desktop/java.awt.EventQueue$5.run(EventQueue.java:743)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+2023-07-26 22:12:23,688 input.DefaultControllerEnvironment    INFO  - Loading: \Users\kcameron\git\JMRI\net.bobis.jinput.hidraw.HidRawEnvironmentPlugin [AWT-EventQueue-0]
+java.lang.ClassNotFoundException: \Users\kcameron\git\JMRI\net.bobis.jinput.hidraw.HidRawEnvironmentPlugin
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:315)
+	at net.java.games.input.DefaultControllerEnvironment.getControllers(DefaultControllerEnvironment.java:161)
+	at jmri.jmrix.jinput.TreeModel.loadSystem(TreeModel.java:251)
+	at jmri.jmrix.jinput.TreeModel.<init>(TreeModel.java:46)
+	at jmri.jmrix.jinput.TreeModel.instance(TreeModel.java:98)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java:190)
+	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java:208)
+	at org.python.core.PyObject.__call__(PyObject.java:446)
+	at org.python.core.PyObject.__call__(PyObject.java:450)
+	at org.python.pycode._pyx1.f$0(<script>:317)
+	at org.python.pycode._pyx1.call_function(<script>)
+	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+	at org.python.core.PyCode.call(PyCode.java:18)
+	at org.python.core.Py.runCode(Py.java:1687)
+	at org.python.core.__builtin__.eval(__builtin__.java:497)
+	at org.python.core.__builtin__.eval(__builtin__.java:501)
+	at org.python.util.PythonInterpreter.eval(PythonInterpreter.java:255)
+	at org.python.jsr223.PyScriptEngine.eval(PyScriptEngine.java:57)
+	at org.python.jsr223.PyScriptEngine.eval(PyScriptEngine.java:64)
+	at java.scripting/javax.script.AbstractScriptEngine.eval(AbstractScriptEngine.java:249)
+	at jmri.script.JmriScriptEngineManager.eval(JmriScriptEngineManager.java:368)
+	at jmri.script.JmriScriptEngineManager.eval(JmriScriptEngineManager.java:305)
+	at jmri.jmrit.jython.RunJythonScript.invoke(RunJythonScript.java:115)
+	at jmri.jmrit.jython.RunJythonScript.actionPerformed(RunJythonScript.java:88)
+	at java.desktop/javax.swing.AbstractButton.fireActionPerformed(AbstractButton.java:1967)
+	at java.desktop/javax.swing.AbstractButton$Handler.actionPerformed(AbstractButton.java:2308)
+	at java.desktop/javax.swing.DefaultButtonModel.fireActionPerformed(DefaultButtonModel.java:405)
+	at java.desktop/javax.swing.DefaultButtonModel.setPressed(DefaultButtonModel.java:262)
+	at java.desktop/javax.swing.AbstractButton.doClick(AbstractButton.java:369)
+	at java.desktop/javax.swing.plaf.basic.BasicMenuItemUI.doClick(BasicMenuItemUI.java:1020)
+	at java.desktop/javax.swing.plaf.basic.BasicMenuItemUI$Handler.mouseReleased(BasicMenuItemUI.java:1064)
+	at java.desktop/java.awt.Component.processMouseEvent(Component.java:6632)
+	at java.desktop/javax.swing.JComponent.processMouseEvent(JComponent.java:3342)
+	at java.desktop/java.awt.Component.processEvent(Component.java:6397)
+	at java.desktop/java.awt.Container.processEvent(Container.java:2263)
+	at java.desktop/java.awt.Component.dispatchEventImpl(Component.java:5008)
+	at java.desktop/java.awt.Container.dispatchEventImpl(Container.java:2321)
+	at java.desktop/java.awt.Component.dispatchEvent(Component.java:4840)
+	at java.desktop/java.awt.LightweightDispatcher.retargetMouseEvent(Container.java:4918)
+	at java.desktop/java.awt.LightweightDispatcher.processMouseEvent(Container.java:4547)
+	at java.desktop/java.awt.LightweightDispatcher.dispatchEvent(Container.java:4488)
+	at java.desktop/java.awt.Container.dispatchEventImpl(Container.java:2307)
+	at java.desktop/java.awt.Window.dispatchEventImpl(Window.java:2772)
+	at java.desktop/java.awt.Component.dispatchEvent(Component.java:4840)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:772)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:715)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:95)
+	at java.desktop/java.awt.EventQueue$5.run(EventQueue.java:745)
+	at java.desktop/java.awt.EventQueue$5.run(EventQueue.java:743)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+2023-07-26 22:12:23,725 input.DefaultControllerEnvironment    INFO  - Loading: net.java.games.input.DirectAndRawInputEnvironmentPlugin [AWT-EventQueue-0]
+2023-07-26 22:12:23,997 input.ControllerEnvironment           INFO  - Failed to initialize device ITE Device(8350) because of: java.io.IOException: Failed to acquire device (8007001e)
+ [AWT-EventQueue-0]
+2023-07-26 22:12:24,108 jinput.TreeModel                      INFO  - Controller HID-compliant mouse has 19 components [AWT-EventQueue-0]
+2023-07-26 22:12:24,110 jinput.TreeModel                      INFO  - Controller HID-compliant mouse has 5 components [AWT-EventQueue-0]
+2023-07-26 22:12:24,111 jinput.TreeModel                      INFO  - Controller Standard PS/2 Keyboard has 114 components [AWT-EventQueue-0]
+2023-07-26 22:12:24,113 jinput.TreeModel                      INFO  - Controller Synaptics SMBus TouchPad has 8 components [AWT-EventQueue-0]
+2023-07-26 22:12:24,113 jinput.TreeModel                      INFO  - Controller Logitech Download Assistant has 0 components [AWT-EventQueue-0]
+2023-07-26 22:12:24,113 jinput.TreeModel                      INFO  - Controller HP Wireless Button Driver has 1 components [AWT-EventQueue-0]
+2023-07-26 22:12:24,114 jinput.TreeModel                      INFO  - Controller Synaptics Touch Digitizer V04 has 0 components [AWT-EventQueue-0]
