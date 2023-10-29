@@ -76,6 +76,11 @@ public abstract class AbstractBase
             // Ignore duplicate errors since these errors might happen temporary in this loop.
             getChild(i).setName(original.getChild(i).getName(), true);
 
+            FemaleSocketConfiguration fsc = getChild(i).getConfiguration();
+            if (fsc != null) {
+                fsc.copyConfiguration(original.getChild(i).getConfiguration());
+            }
+
             // Copy the child
             if (original.getChild(i).isConnected()) {
                 Base childTree = original.getChild(i).getConnectedSocket().getDeepCopy(systemNames, userNames);

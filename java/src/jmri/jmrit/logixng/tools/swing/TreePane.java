@@ -309,6 +309,9 @@ public class TreePane extends JPanel implements PropertyChangeListener {
             JPanel commentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
             mainPanel.add(commentPanel);
 
+            JPanel configurationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            mainPanel.add(configurationPanel);
+
             JPanel panel = new JPanel();
             panel.setAlignmentX(LEFT_ALIGNMENT);
             mainPanel.add(panel);
@@ -330,6 +333,21 @@ public class TreePane extends JPanel implements PropertyChangeListener {
             panel.add(socketNameLabel);
 
             panel.add(javax.swing.Box.createRigidArea(new Dimension(5,0)));
+
+            FemaleSocketConfiguration socketConfig = socket.getConfiguration();
+            if (socketConfig != null) {
+                String configurationStr = socketConfig.getDescription();
+                JLabel configurationLabel = new JLabel();
+                configurationLabel.setText("<html><pre>"+configurationStr+"</pre></html>");
+                configurationLabel.setForeground(Color.RED);
+//                configurationLabel.setForeground(Color.GRAY);
+                Font font2 = configurationLabel.getFont();
+                configurationLabel.setFont(font2.deriveFont(Font.ITALIC));
+                configurationPanel.setOpaque(false);
+                configurationPanel.add(configurationLabel);
+                configurationPanel.setAlignmentX(LEFT_ALIGNMENT);
+                configurationPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+            }
 
             JLabel connectedItemLabel = new JLabel();
             if (socket.isConnected()) {

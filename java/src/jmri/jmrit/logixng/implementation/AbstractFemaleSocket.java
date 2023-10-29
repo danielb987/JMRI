@@ -21,6 +21,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
 
     private Base _parent;
     protected final FemaleSocketListener _listener;
+    private final FemaleSocketConfiguration _config;
     private MaleSocket _socket = null;
     private String _name = null;
     private boolean _listenersAreRegistered = false;
@@ -28,6 +29,11 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
 
 
     public AbstractFemaleSocket(Base parent, FemaleSocketListener listener, String name) {
+        this(parent, listener, name, null);
+    }
+
+    public AbstractFemaleSocket(Base parent, FemaleSocketListener listener,
+            String name, FemaleSocketConfiguration config) {
         if (!validateName(name)) {
             throw new IllegalArgumentException("the name is not valid: " + name);
         }
@@ -35,6 +41,15 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
         _parent = parent;
         _listener = listener;
         _name = name;
+        _config = config;
+    }
+
+    /**
+     * Get the configuration of this female socket.
+     * @return the configuration or null if no configuration
+     */
+    public FemaleSocketConfiguration getConfiguration() {
+        return _config;
     }
 
     /** {@inheritDoc} */

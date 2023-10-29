@@ -18,6 +18,7 @@ import jmri.*;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.SymbolTable.InitialValueType;
+import jmri.jmrit.logixng.swing.FemaleSocketConfigurationSwing;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.jmrit.logixng.swing.SwingTools;
 import jmri.jmrit.logixng.util.LogixNG_Thread;
@@ -42,6 +43,7 @@ public class TreeEditor extends TreeViewer {
 
 
     private static final String ACTION_COMMAND_RENAME_SOCKET = "rename_socket";
+    private static final String ACTION_COMMAND_EDIT_SOCKET_CONFIG = "edit_socket_config";
     private static final String ACTION_COMMAND_REMOVE = "remove";
     private static final String ACTION_COMMAND_EDIT = "edit";
     private static final String ACTION_COMMAND_CUT = "cut";
@@ -64,6 +66,7 @@ public class TreeEditor extends TreeViewer {
     private final LogixNGPreferences _prefs = InstanceManager.getDefault(LogixNGPreferences.class);
 
     private JDialog _renameSocketDialog = null;
+    private JDialog _editSocketConfigDialog = null;
     private JDialog _addItemDialog = null;
     private JDialog _editActionExpressionDialog = null;
     private JDialog _editLocalVariablesDialog = null;
@@ -452,6 +455,107 @@ public class TreeEditor extends TreeViewer {
         _renameSocketDialog.setLocationRelativeTo(null);
         _renameSocketDialog.pack();
         _renameSocketDialog.setVisible(true);
+    }
+
+    /**
+     * Respond to the Edit configuration choice in the popup menu.
+     *
+     * @param femaleSocket the female socket
+     * @param path the path to the item the user has clicked on
+     */
+    final protected void editSocketConfigPressed(FemaleSocket femaleSocket, TreePath path) {
+        setPopupMenuLock(true);
+        _editSocketConfigDialog = new JDialog(
+                this,
+                Bundle.getMessage(
+                        "EditSocketConfigDialogTitle",
+                        femaleSocket.getLongDescription()),
+                false);
+//        _renameSocketDialog.addHelpMenu(
+//                "package.jmri.jmrit.logixng.tools.swing.ConditionalNGAddEdit", true);     // NOI18N
+        _editSocketConfigDialog.setLocation(50, 30);
+        Container contentPanel = _editSocketConfigDialog.getContentPane();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+/*
+        JPanel p;
+        p = new JPanel();
+//        p.setLayout(new FlowLayout());
+        p.setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagConstraints c = new java.awt.GridBagConstraints();
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = java.awt.GridBagConstraints.EAST;
+        p.add(_renameSocketLabel, c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.anchor = java.awt.GridBagConstraints.WEST;
+        c.weightx = 1.0;
+        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+        p.add(_socketNameTextField, c);
+        _socketNameTextField.setText(femaleSocket.getName());
+
+        contentPanel.add(p);
+*/
+
+        JPanel buttonPanel = new JPanel();
+
+        FemaleSocketConfiguration config = femaleSocket.getConfiguration();
+        FemaleSocketConfigurationSwing fscs =
+                SwingTools.getFemaleSocketConfigurationSwingForClass(config.getClass());
+        contentPanel.add(fscs.getConfigPanel(config, buttonPanel));
+
+        // set up create and cancel buttons
+        buttonPanel.setLayout(new FlowLayout());
+        // Cancel
+        JButton cancel = new JButton(Bundle.getMessage("ButtonCancel"));    // NOI18N
+        buttonPanel.add(cancel);
+        cancel.addActionListener((ActionEvent e) -> {
+            cancelEditSocketConfigPressed(null);
+        });
+//        cancel.setToolTipText(Bundle.getMessage("CancelLogixButtonHint"));      // NOI18N
+        cancel.setToolTipText("CancelLogixButtonHint");      // NOI18N
+
+        _editSocketConfigDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                cancelEditSocketConfigPressed(null);
+            }
+        });
+
+        _create = new JButton(Bundle.getMessage("ButtonOK"));  // NOI18N
+        buttonPanel.add(_create);
+        _create.addActionListener((ActionEvent e) -> {
+/*
+            if (femaleSocket.validateName(_socketNameTextField.getText())) {
+                femaleSocket.setName(_socketNameTextField.getText());
+                cancelEditSocketConfigPressed(null);
+                for (TreeModelListener l : _treePane.femaleSocketTreeModel.listeners) {
+                    TreeModelEvent tme = new TreeModelEvent(
+                            femaleSocket,
+                            path.getPath()
+                    );
+                    l.treeNodesChanged(tme);
+                }
+                _treePane._tree.updateUI();
+                setPopupMenuLock(false);
+            } else {
+                JmriJOptionPane.showMessageDialog(null,
+                        Bundle.getMessage("ValidateFemaleSocketMessage", _socketNameTextField.getText()),
+                        Bundle.getMessage("ValidateFemaleSocketTitle"),
+                        JmriJOptionPane.ERROR_MESSAGE);
+            }
+*/
+        });
+
+        contentPanel.add(buttonPanel);
+
+//        _renameSocketDialog.setLocationRelativeTo(component);
+        _editSocketConfigDialog.setLocationRelativeTo(null);
+        _editSocketConfigDialog.pack();
+        _editSocketConfigDialog.setVisible(true);
     }
 
     /**
@@ -1233,6 +1337,21 @@ public class TreeEditor extends TreeViewer {
     }
 
     /**
+     * Respond to the Cancel button in Rename socket window.
+     * <p>
+     * Note: Also get there if the user closes the Rename socket window.
+     *
+     * @param e The event heard
+     */
+    final protected void cancelEditSocketConfigPressed(ActionEvent e) {
+        _editSocketConfigDialog.setVisible(false);
+        _editSocketConfigDialog.dispose();
+        _editSocketConfigDialog = null;
+        setPopupMenuLock(false);
+        this.setVisible(true);
+    }
+
+    /**
      * Respond to the Cancel button in Add ConditionalNG window.
      * <p>
      * Note: Also get there if the user closes the Add ConditionalNG window.
@@ -1534,6 +1653,10 @@ public class TreeEditor extends TreeViewer {
                 renameSocketPressed(femaleSocket, path);
                 break;
 
+            case ACTION_COMMAND_EDIT_SOCKET_CONFIG:
+                editSocketConfigPressed(femaleSocket, path);
+                break;
+
             case ACTION_COMMAND_EDIT:
                 editItem(femaleSocket, path);
                 break;
@@ -1685,6 +1808,7 @@ public class TreeEditor extends TreeViewer {
         private final TreePath _currentPath;
 
         private JMenuItem menuItemRenameSocket;
+        private JMenuItem menuItemEditSocketConfig;
         private JMenuItem menuItemRemove;
         private JMenuItem menuItemCut;
         private JMenuItem menuItemCopy;
@@ -1750,6 +1874,14 @@ public class TreeEditor extends TreeViewer {
                 menuItemRenameSocket.addActionListener(this);
                 menuItemRenameSocket.setActionCommand(ACTION_COMMAND_RENAME_SOCKET);
                 add(menuItemRenameSocket);
+
+                if (femaleSocket.getConfiguration() != null) {
+                    menuItemEditSocketConfig = new JMenuItem(Bundle.getMessage("PopupMenuEditSocketConfig"));
+                    menuItemEditSocketConfig.addActionListener(this);
+                    menuItemEditSocketConfig.setActionCommand(ACTION_COMMAND_EDIT_SOCKET_CONFIG);
+                    add(menuItemEditSocketConfig);
+                }
+
                 addSeparator();
 
                 if (!_isConnected && !_parentIsLocked) {

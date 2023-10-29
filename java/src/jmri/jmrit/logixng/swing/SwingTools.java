@@ -32,17 +32,49 @@ public final class SwingTools {
         log.trace("handle object of class {}", className);
         int lastDot = className.lastIndexOf(".");
         if (lastDot > 0) {
-            // found package-class boundary OK
-            String result = className.substring(0, lastDot)
-                    + ".swing."
-                    + className.substring(lastDot + 1, className.length())
-                    + "Swing";
+            String result;
+            int dollarSign = className.lastIndexOf("$");
+            if (dollarSign > 0) {
+                result = className.substring(0, lastDot)
+                        + ".swing."
+                        + className.substring(lastDot + 1, dollarSign)
+                        + "Swing"
+                        + className.substring(dollarSign, className.length())
+                        + "Swing";
+            } else {
+                // found package-class boundary OK
+                result = className.substring(0, lastDot)
+                        + ".swing."
+                        + className.substring(lastDot + 1, className.length())
+                        + "Swing";
+            }
             log.trace("adapter class name is {}", result);
             return result;
         } else {
             // No last dot found! This should not be possible in Java.
             log.error("No package name found, which is not yet handled!");
             throw new RuntimeException("No package name found, which is not yet handled!");
+        }
+    }
+
+    /**
+     * Get a FemaleSocketConfigurationSwing for a class
+     * @param clazz The class to get a SwingConfiguratorInterface of
+     * @return a SwingConfiguratorInterface object
+     */
+    static public FemaleSocketConfigurationSwing getFemaleSocketConfigurationSwingForClass(Class<?> clazz) {
+        FemaleSocketConfigurationSwing adapter = null;
+        try {
+            adapter = (FemaleSocketConfigurationSwing) Class.forName(adapterNameForClass(clazz)).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException
+                    | NoSuchMethodException | java.lang.reflect.InvocationTargetException ex) {
+            log.error("Cannot load FemaleSocketConfigurationSwing adapter for {}", clazz.getName(), ex);
+        }
+        if (adapter != null) {
+            return adapter;
+        } else {
+            log.error("Cannot load FemaleSocketConfigurationSwing for {}", clazz.getName());
+            return null;
         }
     }
 

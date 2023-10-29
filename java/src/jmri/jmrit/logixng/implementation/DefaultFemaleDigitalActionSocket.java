@@ -6,13 +6,7 @@ import java.util.Map;
 
 import jmri.InstanceManager;
 import jmri.JmriException;
-import jmri.jmrit.logixng.Base;
-import jmri.jmrit.logixng.Category;
-import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.FemaleSocketListener;
-import jmri.jmrit.logixng.MaleSocket;
-import jmri.jmrit.logixng.FemaleDigitalActionSocket;
-import jmri.jmrit.logixng.MaleDigitalActionSocket;
+import jmri.jmrit.logixng.*;
 
 /**
  * Default implementation of the Female Digital Action socket
@@ -22,15 +16,22 @@ public class DefaultFemaleDigitalActionSocket
         implements FemaleDigitalActionSocket {
 
 
-    public DefaultFemaleDigitalActionSocket(Base parent, FemaleSocketListener listener, String name) {
+    public DefaultFemaleDigitalActionSocket(
+            Base parent, FemaleSocketListener listener, String name) {
         super(parent, listener, name);
     }
-    
+
+    public DefaultFemaleDigitalActionSocket(
+            Base parent, FemaleSocketListener listener, String name,
+            FemaleSocketConfiguration config) {
+        super(parent, listener, name, config);
+    }
+
     @Override
     public boolean isCompatible(MaleSocket socket) {
         return socket instanceof MaleDigitalActionSocket;
     }
-    
+
     @Override
     public void execute() throws JmriException {
         if (isConnected()) {
