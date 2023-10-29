@@ -50,6 +50,27 @@
 <!--                          <xs:element name="delay" type="xs:int" minOccurs="1" maxOccurs="1"/> -->
                           <xs:element name="socketName" type="xs:string" minOccurs="1" maxOccurs="1"/>
                           <xs:element name="systemName" type="systemNameType" minOccurs="0" maxOccurs="1"/>
+
+                          <xs:element name="SocketConfig" minOccurs="1" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="delayByLocalVariable" type="yesNoType" minOccurs="1" maxOccurs="1" />
+                                <xs:element name="delay" type="xs:int" minOccurs="1" maxOccurs="1"/>
+                                <xs:element name="unit" minOccurs="1" maxOccurs="1">
+                                  <xs:simpleType>
+                                    <xs:restriction base="xs:token">
+                                      <xs:enumeration value="MilliSeconds"/>
+                                      <xs:enumeration value="Seconds"/>
+                                      <xs:enumeration value="Minutes"/>
+                                      <xs:enumeration value="Hours"/>
+                                    </xs:restriction>
+                                  </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="delayLocalVariable" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
@@ -59,21 +80,6 @@
 
               <xs:element name="startImmediately" type="yesNoType" />
               <xs:element name="runContinuously" type="yesNoType" />
-<!--              <xs:element name="startAndStopByStartExpression" type="yesNoType" minOccurs="0" maxOccurs="1" /> -->
-<!--
-              <xs:element name="unit" minOccurs="1" maxOccurs="1">
-                <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                    <xs:enumeration value="MilliSeconds"/>
-                    <xs:enumeration value="Seconds"/>
-                    <xs:enumeration value="Minutes"/>
-                    <xs:enumeration value="Hours"/>
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:element>
--->
-              <xs:element name="delayByLocalVariables" type="yesNoType" minOccurs="0" maxOccurs="1" />
-              <xs:element name="delayLocalVariablePrefix" type="xs:string" minOccurs="0" maxOccurs="1" />
 
               <xs:element name="MaleSocket" type="LogixNG_MaleSocket_Type" minOccurs="0" maxOccurs="1"/>
 

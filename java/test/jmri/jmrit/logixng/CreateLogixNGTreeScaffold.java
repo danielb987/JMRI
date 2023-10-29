@@ -2674,6 +2674,74 @@ public class CreateLogixNGTreeScaffold {
         actionManySocket.getChild(indexAction++).connect(maleSocket);
 
 
+        IndependentTimer independentTimer = new IndependentTimer(
+                digitalActionManager.getAutoSystemName(), null);
+        maleSocket = digitalActionManager.registerAction(independentTimer);
+        maleSocket.setEnabled(false);
+        actionManySocket.getChild(indexAction++).connect(maleSocket);
+
+        independentTimer = new IndependentTimer(digitalActionManager.getAutoSystemName(), null);
+        independentTimer.setComment("A comment");
+        maleSocket = digitalActionManager.registerAction(independentTimer);
+        actionManySocket.getChild(indexAction++).connect(maleSocket);
+
+        independentTimer = new IndependentTimer(digitalActionManager.getAutoSystemName(), null);
+        independentTimer.setComment("A comment");
+        maleSocket = digitalActionManager.registerAction(independentTimer);
+        actionManySocket.getChild(indexAction++).connect(maleSocket);
+
+        DigitalMany manyIndependentTimer = new DigitalMany(digitalActionManager.getAutoSystemName(), null);
+        maleSocket = digitalActionManager.registerAction(manyIndependentTimer);
+        independentTimer.getChild(0).connect(maleSocket);
+        IndependentTimer.IndependentTimerSocketConfiguration itsc =
+                (IndependentTimer.IndependentTimerSocketConfiguration)independentTimer
+                        .getChild(0).getConfiguration();
+        itsc.setDelayByLocalVariable(false);
+        itsc.setDelay(735);
+        itsc.setUnit(TimerUnit.MilliSeconds);
+        itsc.setDelayLocalVariable("");
+
+        manyIndependentTimer = new DigitalMany(digitalActionManager.getAutoSystemName(), null);
+        maleSocket = digitalActionManager.registerAction(manyIndependentTimer);
+        independentTimer.getChild(1).connect(maleSocket);
+        itsc = (IndependentTimer.IndependentTimerSocketConfiguration)independentTimer
+                        .getChild(1).getConfiguration();
+        itsc.setDelayByLocalVariable(false);
+        itsc.setDelay(23);
+        itsc.setUnit(TimerUnit.Seconds);
+        itsc.setDelayLocalVariable("");
+
+        manyIndependentTimer = new DigitalMany(digitalActionManager.getAutoSystemName(), null);
+        maleSocket = digitalActionManager.registerAction(manyIndependentTimer);
+        independentTimer.getChild(2).connect(maleSocket);
+        itsc = (IndependentTimer.IndependentTimerSocketConfiguration)independentTimer
+                        .getChild(2).getConfiguration();
+        itsc.setDelayByLocalVariable(false);
+        itsc.setDelay(52);
+        itsc.setUnit(TimerUnit.Minutes);
+        itsc.setDelayLocalVariable("");
+
+        manyIndependentTimer = new DigitalMany(digitalActionManager.getAutoSystemName(), null);
+        maleSocket = digitalActionManager.registerAction(manyIndependentTimer);
+        independentTimer.getChild(3).connect(maleSocket);
+        itsc = (IndependentTimer.IndependentTimerSocketConfiguration)independentTimer
+                        .getChild(3).getConfiguration();
+        itsc.setDelayByLocalVariable(false);
+        itsc.setDelay(11);
+        itsc.setUnit(TimerUnit.Hours);
+        itsc.setDelayLocalVariable("");
+
+        manyIndependentTimer = new DigitalMany(digitalActionManager.getAutoSystemName(), null);
+        maleSocket = digitalActionManager.registerAction(manyIndependentTimer);
+        independentTimer.getChild(4).connect(maleSocket);
+        itsc = (IndependentTimer.IndependentTimerSocketConfiguration)independentTimer
+                        .getChild(4).getConfiguration();
+        itsc.setDelayByLocalVariable(true);
+        itsc.setDelay(5);
+        itsc.setUnit(TimerUnit.Minutes);
+        itsc.setDelayLocalVariable("DelayTime");
+
+
         jmri.jmrit.logixng.actions.Logix logix =
                 new jmri.jmrit.logixng.actions.Logix(digitalActionManager.getAutoSystemName(), null);
         maleSocket = digitalActionManager.registerAction(logix);

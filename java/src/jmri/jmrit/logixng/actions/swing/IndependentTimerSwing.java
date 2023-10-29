@@ -1,7 +1,5 @@
 package jmri.jmrit.logixng.actions.swing;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
@@ -11,40 +9,20 @@ import javax.swing.*;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.actions.IndependentTimer;
+import jmri.jmrit.logixng.actions.IndependentTimer.IndependentTimerSocketConfiguration;
 import jmri.jmrit.logixng.swing.FemaleSocketConfigurationSwing;
 import jmri.jmrit.logixng.util.TimerUnit;
 import jmri.util.swing.JComboBoxUtil;
 
 /**
- * Configures an ActionTurnout object with a Swing JPanel.
+ * Configures an IndependentTimer object with a Swing JPanel.
  *
- * @author Daniel Bergqvist Copyright 2021
+ * @author Daniel Bergqvist Copyright 2023
  */
 public class IndependentTimerSwing extends AbstractDigitalActionSwing {
 
-    public static final int MAX_NUM_TIMERS = 10;
-
     private JCheckBox _startImmediately;
     private JCheckBox _runContinuously;
-    private JComboBox<TimerUnit> _unitComboBox;
-
-    private JCheckBox _delayByLocalVariables;
-    private JTextField _delayLocalVariablePrefix;
-
-    private JTextField _numTimers;
-    private JButton _addTimer;
-    private JButton _removeTimer;
-    private JTextField[] _timerSocketNames;
-    private JTextField[] _timerDelays;
-    private int numActions = 1;
-
-    private String getNewSocketName(IndependentTimer action) {
-        String[] names = new String[MAX_NUM_TIMERS];
-        for (int i=0; i < MAX_NUM_TIMERS; i++) {
-            names[i] = _timerSocketNames[i].getText();
-        }
-        return action.getNewSocketName(names);
-    }
 
     @Override
     protected void createPanel(@CheckForNull Base object, @Nonnull JPanel buttonPanel) {
@@ -55,152 +33,22 @@ public class IndependentTimerSwing extends AbstractDigitalActionSwing {
         // Create a temporary action in case we don't have one.
         IndependentTimer action = object != null ? (IndependentTimer)object : new IndependentTimer("IQDA1", null);
 
-        numActions = action.getNumActions();
-
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JPanel optionsPanel = new JPanel();
-
-        JPanel leftOptionsPanel = new JPanel();
-        leftOptionsPanel.setLayout(new BoxLayout(leftOptionsPanel, BoxLayout.Y_AXIS));
         _startImmediately = new JCheckBox(Bundle.getMessage("IndependentTimerSwing_StartImmediately"));
-        _runContinuously = new JCheckBox(Bundle.getMessage("IndependentTimerSwing_RunContinuously"));
-
-        _unitComboBox = new JComboBox<>();
-        for (TimerUnit u : TimerUnit.values()) _unitComboBox.addItem(u);
-        JComboBoxUtil.setupComboBoxMaxRows(_unitComboBox);
-//        _unitComboBox.setSelectedItem(action.getUnit());
-
-        leftOptionsPanel.add(_startImmediately);
-        leftOptionsPanel.add(_runContinuously);
-
-        JPanel unitPanel = new JPanel();
-        unitPanel.add(new JLabel(Bundle.getMessage("IndependentTimerSwing_Unit")));
-        unitPanel.add(_unitComboBox);
-        leftOptionsPanel.add(unitPanel);
-
-        leftOptionsPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
-
-
-        JPanel rightOptionsPanel = new JPanel();
-        rightOptionsPanel.setLayout(new BoxLayout(rightOptionsPanel, BoxLayout.Y_AXIS));
-        _delayByLocalVariables = new JCheckBox(Bundle.getMessage("IndependentTimerSwing_DelayByLocalVariables"));
-        _delayByLocalVariables.setSelected(action.isDelayByLocalVariables());
-        _delayByLocalVariables.addActionListener((evt)->{updateEnableDisabled();});
-
-        _delayLocalVariablePrefix = new JTextField(20);
-        _delayLocalVariablePrefix.setText(action.getDelayLocalVariablePrefix());
-
-        rightOptionsPanel.add(_delayByLocalVariables);
-        rightOptionsPanel.add(new JLabel(Bundle.getMessage("IndependentTimerSwing_DelayLocalVariablePrefix")));
-        rightOptionsPanel.add(_delayLocalVariablePrefix);
-
-
-        optionsPanel.add(leftOptionsPanel);
-        optionsPanel.add(rightOptionsPanel);
-
-
-        JPanel numActionsPanel = new JPanel();
-        _numTimers = new JTextField(Integer.toString(numActions));
-        _numTimers.setColumns(2);
-        _numTimers.setEnabled(false);
-
-        _addTimer = new JButton(Bundle.getMessage("IndependentTimerSwing_AddTimer"));
-        _addTimer.addActionListener((ActionEvent e) -> {
-            numActions++;
-            _numTimers.setText(Integer.toString(numActions));
-            if (_timerSocketNames[numActions-1].getText().trim().isEmpty()) {
-                _timerSocketNames[numActions-1].setText(getNewSocketName(action));
-            }
-            _timerSocketNames[numActions-1].setEnabled(true);
-            _timerDelays[numActions-1].setEnabled(true);
-            if (numActions >= MAX_NUM_TIMERS) _addTimer.setEnabled(false);
-            _removeTimer.setEnabled(true);
-        });
-        if (numActions >= MAX_NUM_TIMERS) _addTimer.setEnabled(false);
-
-        _removeTimer = new JButton(Bundle.getMessage("IndependentTimerSwing_RemoveTimer"));
-        _removeTimer.addActionListener((ActionEvent e) -> {
-            _timerSocketNames[numActions-1].setEnabled(false);
-            _timerDelays[numActions-1].setEnabled(false);
-            numActions--;
-            _numTimers.setText(Integer.toString(numActions));
-            _addTimer.setEnabled(true);
-            if ((numActions <= 1)
-                    || ((action.getNumActions() >= numActions)
-                        && (action.getActionSocket(numActions-1).isConnected()))) {
-                _removeTimer.setEnabled(false);
-            }
-        });
-        if ((numActions <= 1) || (action.getActionSocket(numActions-1).isConnected())) {
-            _removeTimer.setEnabled(false);
-        }
-
-        numActionsPanel.add(new JLabel(Bundle.getMessage("IndependentTimerSwing_NumTimers")));
-        numActionsPanel.add(_numTimers);
-        numActionsPanel.add(_addTimer);
-        numActionsPanel.add(_removeTimer);
-
-        JPanel timerDelaysPanel = new JPanel();
-        timerDelaysPanel.setLayout(new BoxLayout(timerDelaysPanel, BoxLayout.Y_AXIS));
-        timerDelaysPanel.add(new JLabel(Bundle.getMessage("IndependentTimerSwing_TimerDelays")));
-        JPanel timerDelaysSubPanel = new JPanel();
-        _timerSocketNames = new JTextField[MAX_NUM_TIMERS];
-        _timerDelays = new JTextField[MAX_NUM_TIMERS];
-
-        for (int i=0; i < MAX_NUM_TIMERS; i++) {
-            JPanel delayPanel = new JPanel();
-            delayPanel.setLayout(new BoxLayout(delayPanel, BoxLayout.Y_AXIS));
-            _timerDelays[i] = new JTextField("0");
-            _timerDelays[i].setColumns(7);
-            _timerDelays[i].setEnabled(false);
-            delayPanel.add(_timerDelays[i]);
-            _timerSocketNames[i] = new JTextField();
-            _timerSocketNames[i].setEnabled(false);
-            delayPanel.add(_timerSocketNames[i]);
-            timerDelaysSubPanel.add(delayPanel);
-            if (i < action.getNumActions()) {
-                String socketName = action.getActionSocket(i).getName();
-                _timerSocketNames[i].setText(socketName);
-                _timerSocketNames[i].setEnabled(true);
-//                _timerDelays[i].setText(Integer.toString(action.getDelay(i)));
-                _timerDelays[i].setEnabled(true);
-            }
-        }
-        timerDelaysPanel.add(timerDelaysSubPanel);
-
-        panel.add(optionsPanel);
-        panel.add(numActionsPanel);
-        panel.add(timerDelaysPanel);
-
         _startImmediately.setSelected(action.isStartImmediately());
+        panel.add(_startImmediately);
+
+        _runContinuously = new JCheckBox(Bundle.getMessage("IndependentTimerSwing_RunContinuously"));
         _runContinuously.setSelected(action.isRunContinuously());
-        _numTimers.setText(Integer.toString(action.getNumActions()));
-
-        updateEnableDisabled();
-    }
-
-    private void updateEnableDisabled() {
-        _delayLocalVariablePrefix.setEnabled(_delayByLocalVariables.isSelected());
-        for (int i=0; i < MAX_NUM_TIMERS; i++) {
-            _timerDelays[i].setEnabled(!_delayByLocalVariables.isSelected());
-        }
+        panel.add(_runContinuously);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean validate(@Nonnull List<String> errorMessages) {
-        IndependentTimer tempAction = new IndependentTimer("IQDA1", null);
-
-        boolean hasErrors = false;
-        for (int i=0; i < numActions; i++) {
-            if (! tempAction.getActionSocket(0).validateName(_timerSocketNames[i].getText())) {
-                errorMessages.add(Bundle.getMessage("InvalidSocketName", _timerSocketNames[i].getText()));
-                hasErrors = true;
-            }
-        }
-        return !hasErrors;
+        return true;
     }
 
     /** {@inheritDoc} */
@@ -222,15 +70,6 @@ public class IndependentTimerSwing extends AbstractDigitalActionSwing {
 
         action.setStartImmediately(_startImmediately.isSelected());
         action.setRunContinuously(_runContinuously.isSelected());
-//        action.setUnit(_unitComboBox.getItemAt(_unitComboBox.getSelectedIndex()));
-        action.setDelayByLocalVariables(_delayByLocalVariables.isSelected());
-        action.setDelayLocalVariablePrefix(_delayLocalVariablePrefix.getText());
-        action.setNumActions(numActions);
-
-        for (int i=0; i < numActions; i++) {
-            action.getActionSocket(i).setName(_timerSocketNames[i].getText());
-//            action.setDelay(i, Integer.parseInt(_timerDelays[i].getText()));
-        }
     }
 
     /** {@inheritDoc} */
@@ -247,16 +86,106 @@ public class IndependentTimerSwing extends AbstractDigitalActionSwing {
     public static class IndependentTimerSocketConfigurationSwing
             implements FemaleSocketConfigurationSwing {
 
+        private JTabbedPane _tabbedPane;
+        private JPanel _panelDirect;
+        private JPanel _panelLocalVariable;
+        private JTextField _delayTextField;
+        private JComboBox<TimerUnit> _unitComboBox;
+        private JTextField _delayLocalVariable;
+
         @Override
         public JPanel getConfigPanel(FemaleSocketConfiguration config, JPanel buttonPanel) throws IllegalArgumentException {
+            if (!(config instanceof IndependentTimerSocketConfiguration)) {
+                throw new IllegalArgumentException("Configuration is not a IndependentTimerSocketConfiguration");
+            }
+            IndependentTimerSocketConfiguration c =
+                    (IndependentTimerSocketConfiguration) config;
+
             JPanel panel = new JPanel();
-            panel.add(new JLabel("Daniel testar!!!"));
+
+            _tabbedPane = new JTabbedPane();
+            _panelDirect = new JPanel();
+            _panelLocalVariable = new JPanel();
+
+            _panelDirect.setLayout(new java.awt.GridBagLayout());
+            java.awt.GridBagConstraints constraints = new java.awt.GridBagConstraints();
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.anchor = java.awt.GridBagConstraints.EAST;
+            _panelDirect.add(new JLabel(Bundle.getMessage("IndependentTimerSwing_Config_Delay")), constraints);
+            constraints.gridx = 1;
+            constraints.gridy = 0;
+            constraints.anchor = java.awt.GridBagConstraints.WEST;
+            constraints.weightx = 1.0;
+            constraints.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+            _delayTextField = new JTextField(20);
+            _delayTextField.setText(Integer.toString(c.getDelay()));
+            _panelDirect.add(_delayTextField, constraints);
+
+            constraints.gridx = 0;
+            constraints.gridy = 1;
+            constraints.anchor = java.awt.GridBagConstraints.EAST;
+            _panelDirect.add(new JLabel(Bundle.getMessage("IndependentTimerSwing_Config_Unit")), constraints);
+            constraints.gridx = 1;
+            constraints.gridy = 1;
+            constraints.anchor = java.awt.GridBagConstraints.WEST;
+            constraints.weightx = 1.0;
+            constraints.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+            _unitComboBox = new JComboBox<>();
+            for (TimerUnit u : TimerUnit.values()) _unitComboBox.addItem(u);
+            JComboBoxUtil.setupComboBoxMaxRows(_unitComboBox);
+            _unitComboBox.setSelectedItem(c.getUnit());
+            _panelDirect.add(_unitComboBox, constraints);
+
+            _delayLocalVariable = new JTextField(20);
+            _delayLocalVariable.setText(c.getDelayLocalVariable());
+            _panelLocalVariable.add(_delayLocalVariable);
+
+            _tabbedPane.add(Bundle.getMessage("IndependentTimerSwing_Config_Direct"), _panelDirect);
+            _tabbedPane.add(Bundle.getMessage("IndependentTimerSwing_Config_LocalVariable"), _panelLocalVariable);
+
+            if (c.isDelayByLocalVariable()) {
+                _tabbedPane.setSelectedComponent(_panelLocalVariable);
+            }
+
+            panel.add(_tabbedPane);
+
             return panel;
         }
 
         @Override
         public boolean validate(List<String> errorMessages) {
-            return true;
+            if (_tabbedPane.getSelectedComponent() == _panelDirect) {
+                try {
+                    Integer.parseInt(_delayTextField.getText());
+                } catch (NumberFormatException e) {
+                    errorMessages.add(Bundle.getMessage("IndependentTimerSwing_InvalidDelay",
+                            _delayTextField.getText()));
+                }
+            }
+            return errorMessages.isEmpty();
+        }
+
+        /**{@inheritDoc} */
+        @Override
+        public void updateObject(@Nonnull FemaleSocketConfiguration config) {
+            if (!(config instanceof IndependentTimerSocketConfiguration)) {
+                throw new IllegalArgumentException("Configuration is not a IndependentTimerSocketConfiguration");
+            }
+            IndependentTimerSocketConfiguration c =
+                    (IndependentTimerSocketConfiguration) config;
+
+            boolean delayByLocalVariable =
+                    _tabbedPane.getSelectedComponent() == _panelLocalVariable;
+            c.setDelayByLocalVariable(delayByLocalVariable);
+            if (delayByLocalVariable) {
+                c.setDelayLocalVariable(_delayLocalVariable.getText());
+            } else {
+                c.setDelay(Integer.parseInt(_delayTextField.getText()));
+                c.setUnit(_unitComboBox.getItemAt(_unitComboBox.getSelectedIndex()));
+            }
         }
 
     }

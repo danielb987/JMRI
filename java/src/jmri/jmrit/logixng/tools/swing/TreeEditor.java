@@ -477,29 +477,6 @@ public class TreeEditor extends TreeViewer {
         Container contentPanel = _editSocketConfigDialog.getContentPane();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
-/*
-        JPanel p;
-        p = new JPanel();
-//        p.setLayout(new FlowLayout());
-        p.setLayout(new java.awt.GridBagLayout());
-        java.awt.GridBagConstraints c = new java.awt.GridBagConstraints();
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.anchor = java.awt.GridBagConstraints.EAST;
-        p.add(_renameSocketLabel, c);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.anchor = java.awt.GridBagConstraints.WEST;
-        c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
-        p.add(_socketNameTextField, c);
-        _socketNameTextField.setText(femaleSocket.getName());
-
-        contentPanel.add(p);
-*/
-
         JPanel buttonPanel = new JPanel();
 
         FemaleSocketConfiguration config = femaleSocket.getConfiguration();
@@ -528,9 +505,9 @@ public class TreeEditor extends TreeViewer {
         _create = new JButton(Bundle.getMessage("ButtonOK"));  // NOI18N
         buttonPanel.add(_create);
         _create.addActionListener((ActionEvent e) -> {
-/*
-            if (femaleSocket.validateName(_socketNameTextField.getText())) {
-                femaleSocket.setName(_socketNameTextField.getText());
+            List<String> errorMessages = new ArrayList<>();
+            if (fscs.validate(errorMessages)) {
+                fscs.updateObject(config);
                 cancelEditSocketConfigPressed(null);
                 for (TreeModelListener l : _treePane.femaleSocketTreeModel.listeners) {
                     TreeModelEvent tme = new TreeModelEvent(
@@ -542,12 +519,16 @@ public class TreeEditor extends TreeViewer {
                 _treePane._tree.updateUI();
                 setPopupMenuLock(false);
             } else {
+                StringBuilder errorMsg = new StringBuilder();
+                for (String s : errorMessages) {
+                    if (errorMsg.length() > 0) errorMsg.append("<br>");
+                    errorMsg.append(s);
+                }
                 JmriJOptionPane.showMessageDialog(null,
-                        Bundle.getMessage("ValidateFemaleSocketMessage", _socketNameTextField.getText()),
-                        Bundle.getMessage("ValidateFemaleSocketTitle"),
+                        Bundle.getMessage("ValidateErrorMessage", errorMsg),
+                        Bundle.getMessage("ValidateErrorTitle"),
                         JmriJOptionPane.ERROR_MESSAGE);
             }
-*/
         });
 
         contentPanel.add(buttonPanel);

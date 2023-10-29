@@ -14,10 +14,10 @@ import jmri.jmrit.logixng.util.TimerUnit;
 import org.jdom2.Element;
 
 /**
- * Handle XML configuration for ActionLightXml objects.
+ * Handle XML configuration for IndependentTimer objects.
  *
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
- * @author Daniel Bergqvist Copyright (C) 2019
+ * @author Daniel Bergqvist Copyright (C) 2023
  */
 public class IndependentTimerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
 
@@ -45,6 +45,7 @@ public class IndependentTimerXml extends jmri.managers.configurexml.AbstractName
             Element e2 = new Element("Socket");
 //            e2.addContent(new Element("delay").addContent(Integer.toString(p.getDelay(i))));
             e2.addContent(new Element("socketName").addContent(p.getActionSocket(i).getName()));
+
             MaleSocket socket = p.getActionSocket(i).getConnectedSocket();
             String socketSystemName;
             if (socket != null) {
@@ -55,15 +56,25 @@ public class IndependentTimerXml extends jmri.managers.configurexml.AbstractName
             if (socketSystemName != null) {
                 e2.addContent(new Element("systemName").addContent(socketSystemName));
             }
+
+            Element socketConfig = new Element("SocketConfig");
+            if (!(p.getActionSocket(i).getConfiguration() instanceof IndependentTimerSocketConfiguration)) {
+                throw new IllegalArgumentException("Configuration is not a IndependentTimerSocketConfiguration");
+            }
+            IndependentTimerSocketConfiguration config =
+                    (IndependentTimerSocketConfiguration) p.getActionSocket(i).getConfiguration();
+            socketConfig.addContent(new Element("delayByLocalVariable").addContent(config.isDelayByLocalVariable() ? "yes" : "no"));
+            socketConfig.addContent(new Element("delay").addContent(Integer.toString(config.getDelay())));
+            socketConfig.addContent(new Element("unit").addContent(config.getUnit().name()));
+            socketConfig.addContent(new Element("delayLocalVariable").addContent(config.getDelayLocalVariable()));
+            e2.addContent(socketConfig);
+
             e.addContent(e2);
         }
         element.addContent(e);
 
         element.addContent(new Element("startImmediately").addContent(p.isStartImmediately() ? "yes" : "no"));
         element.addContent(new Element("runContinuously").addContent(p.isRunContinuously() ? "yes" : "no"));
-//        element.addContent(new Element("unit").addContent(p.getUnit().name()));
-        element.addContent(new Element("delayByLocalVariables").addContent(p.isDelayByLocalVariables() ? "yes" : "no"));
-        element.addContent(new Element("delayLocalVariablePrefix").addContent(p.getDelayLocalVariablePrefix()));
 
         return element;
     }
@@ -82,14 +93,31 @@ public class IndependentTimerXml extends jmri.managers.configurexml.AbstractName
             if (systemNameElement != null) {
                 systemName = systemNameElement.getTextTrim();
             }
-//            Element delayElement = socketElement.getChild("delay");
-//            int delay = 0;
-//            if (delayElement != null) {
-//                delay = Integer.parseInt(delayElement.getText());
-//            }
-//            actionDataList.add(new IndependentTimer.ActionData(delay, socketName, systemName));
 
             IndependentTimerSocketConfiguration socketConfig = new IndependentTimerSocketConfiguration();
+
+            Element socketConfigElement = socketElement.getChild("SocketConfig");
+
+            Element delayByLocalVariable = socketConfigElement.getChild("delayByLocalVariable");
+            if (delayByLocalVariable != null) {
+                socketConfig.setDelayByLocalVariable("yes".equals(delayByLocalVariable.getTextTrim()));
+            }
+
+            Element delayElement = socketConfigElement.getChild("delay");
+            if (delayElement != null) {
+                socketConfig.setDelay(Integer.parseInt(delayElement.getText()));
+            }
+
+            Element unit = socketConfigElement.getChild("unit");
+            if (unit != null) {
+                socketConfig.setUnit(TimerUnit.valueOf(unit.getTextTrim()));
+            }
+
+            Element delayLocalVariable = socketConfigElement.getChild("delayLocalVariable");
+            if (delayLocalVariable != null) {
+                socketConfig.setDelayLocalVariable(delayLocalVariable.getTextTrim());
+            }
+
             actionDataList.add(new IndependentTimer.ActionData(socketName, systemName, socketConfig));
         }
 
@@ -111,25 +139,6 @@ public class IndependentTimerXml extends jmri.managers.configurexml.AbstractName
             h.setRunContinuously("yes".equals(runContinuously.getTextTrim()));
         } else {
             h.setRunContinuously(false);
-        }
-
-//        Element unit = shared.getChild("unit");
-//        if (unit != null) {
-//            h.setUnit(TimerUnit.valueOf(unit.getTextTrim()));
-//        }
-
-        Element delayByLocalVariables = shared.getChild("delayByLocalVariables");
-        if (delayByLocalVariables != null) {
-            h.setDelayByLocalVariables("yes".equals(delayByLocalVariables.getTextTrim()));
-        } else {
-            h.setDelayByLocalVariables(false);
-        }
-
-        Element delayLocalVariablePrefix = shared.getChild("delayLocalVariablePrefix");
-        if (delayLocalVariablePrefix != null) {
-            h.setDelayLocalVariablePrefix(delayLocalVariablePrefix.getTextTrim());
-        } else {
-            h.setDelayLocalVariablePrefix("");
         }
 
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);

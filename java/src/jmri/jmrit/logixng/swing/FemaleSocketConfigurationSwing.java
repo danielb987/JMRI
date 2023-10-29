@@ -35,4 +35,11 @@ public interface FemaleSocketConfigurationSwing {
      */
     public boolean validate(@Nonnull List<String> errorMessages);
 
+    /**
+     * Updates the object with the data in the form.
+     *
+     * @param config the configuration to update
+     */
+    public void updateObject(@Nonnull FemaleSocketConfiguration config);
+
 }

@@ -17,7 +17,7 @@ import jmri.util.TimerUtil;
  * This timer calls ConditionalNG.execute(socket) to trigger execution only
  * of its child actions, not on the entire ConditionalNG.
  *
- * @author Daniel Bergqvist Copyright 2019
+ * @author Daniel Bergqvist Copyright 2023
  */
 public class IndependentTimer extends AbstractDigitalAction
         implements FemaleSocketListener, PropertyChangeListener {
@@ -39,21 +39,18 @@ public class IndependentTimer extends AbstractDigitalAction
             new LogixNG_SelectNamedBean<>(
                     this, Sensor.class, InstanceManager.getDefault(SensorManager.class), this);
 
-    private final LogixNG_SelectNamedBean<Sensor> _selectPauseSensor =
-            new LogixNG_SelectNamedBean<>(
-                    this, Sensor.class, InstanceManager.getDefault(SensorManager.class), this);
+//    private final LogixNG_SelectNamedBean<Sensor> _selectPauseSensor =
+//            new LogixNG_SelectNamedBean<>(
+//                    this, Sensor.class, InstanceManager.getDefault(SensorManager.class), this);
 
-    private final LogixNG_SelectNamedBean<Sensor> _selectResetSensor =
-            new LogixNG_SelectNamedBean<>(
-                    this, Sensor.class, InstanceManager.getDefault(SensorManager.class), this);
+//    private final LogixNG_SelectNamedBean<Sensor> _selectResetSensor =
+//            new LogixNG_SelectNamedBean<>(
+//                    this, Sensor.class, InstanceManager.getDefault(SensorManager.class), this);
 
     private final List<ActionEntry> _actionEntries = new ArrayList<>();
     private boolean disableCheckForUnconnectedSocket = false;
     private boolean _startImmediately = false;
     private boolean _runContinuously = false;
-//    private TimerUnit _unit = TimerUnit.MilliSeconds;
-    private boolean _delayByLocalVariables = false;
-    private String _delayLocalVariablePrefix = "";  // An index is appended, for example Delay1, Delay2, ... Delay15.
     private final Map<ConditionalNG, State> _stateMap = new HashMap<>();
 
 
@@ -89,15 +86,8 @@ public class IndependentTimer extends AbstractDigitalAction
         if (sysName == null) sysName = manager.getAutoSystemName();
         IndependentTimer copy = new IndependentTimer(sysName, userName);
         copy.setComment(getComment());
-        copy.setNumActions(getNumActions());
-//        for (int i=0; i < getNumActions(); i++) {
-//            copy.setDelay(i, getDelay(i));
-//        }
         copy.setStartImmediately(_startImmediately);
         copy.setRunContinuously(_runContinuously);
-//        copy.setUnit(_unit);
-        copy.setDelayByLocalVariables(_delayByLocalVariables);
-        copy.setDelayLocalVariablePrefix(_delayLocalVariablePrefix);
         copy.setNumSockets(getChildCount());
         return manager.registerAction(copy).deepCopyChildren(this, systemNames, userNames);
     }
@@ -114,7 +104,6 @@ public class IndependentTimer extends AbstractDigitalAction
                                     data._socketConfig);
 
             _actionEntries.add(new ActionEntry(socket, data._socketSystemName));
-//            _actionEntries.add(new ActionEntry(data._delay, socket, data._socketSystemName));
         }
     }
 
@@ -159,22 +148,11 @@ public class IndependentTimer extends AbstractDigitalAction
 
     private void schedule(ConditionalNG conditionalNG, SymbolTable symbolTable, State state) {
         synchronized(this) {
-            long delay;
-
-            if (_delayByLocalVariables) {
-                delay = jmri.util.TypeConversionUtil
-                        .convertToLong(symbolTable.getValue(
-                                _delayLocalVariablePrefix + Integer.toString(state._currentTimer+1)));
-            } else {
-                delay = _actionEntries.get(state._currentTimer).getDelay();
-            }
-
-//            state._currentTimerDelay = delay * _unit.getMultiply();
+            long delay = _actionEntries.get(state._currentTimer).getDelay(symbolTable);
             state._currentTimerDelay = delay;
             state._currentTimerStart = System.currentTimeMillis();
             state._timerState = TimerState.WaitToRun;
             scheduleTimer(conditionalNG, state, delay);
-//            scheduleTimer(conditionalNG, state, delay * _unit.getMultiply());
         }
     }
 
@@ -200,7 +178,7 @@ public class IndependentTimer extends AbstractDigitalAction
             state._currentTimer = 0;
             while (state._currentTimer < _actionEntries.size()) {
                 ActionEntry ae = _actionEntries.get(state._currentTimer);
-                if (ae.getDelay() > 0) {
+                if (ae.getDelay(symbolTable) > 0) {
                     schedule(conditionalNG, symbolTable, state);
                     return true;
                 }
@@ -239,6 +217,8 @@ public class IndependentTimer extends AbstractDigitalAction
     @Override
     public void execute() throws JmriException {
         ConditionalNG conditionalNG = getConditionalNG();
+        SymbolTable symbolTable = conditionalNG.getSymbolTable();
+
         State state = _stateMap.computeIfAbsent(conditionalNG, o -> new State());
 
         if (stop(conditionalNG, state)) {
@@ -246,7 +226,7 @@ public class IndependentTimer extends AbstractDigitalAction
             return;
         }
 
-        if (checkStart(conditionalNG, conditionalNG.getSymbolTable(), state)) return;
+        if (checkStart(conditionalNG, symbolTable, state)) return;
 
         if (state._timerState == TimerState.Off) return;
         if (state._timerState == TimerState.Running) return;
@@ -269,7 +249,7 @@ public class IndependentTimer extends AbstractDigitalAction
             }
 
             ActionEntry ae = _actionEntries.get(state._currentTimer);
-            if (ae.getDelay() > 0) {
+            if (ae.getDelay(symbolTable) > 0) {
                 schedule(conditionalNG, conditionalNG.getSymbolTable(), state);
                 return;
             }
@@ -313,38 +293,6 @@ public class IndependentTimer extends AbstractDigitalAction
         _runContinuously = runContinuously;
     }
 
-    /**
-     * Is delays given by local variables?
-     * @return value true if delay is given by local variables
-     */
-    public boolean isDelayByLocalVariables() {
-        return _delayByLocalVariables;
-    }
-
-    /**
-     * Set if delays should be given by local variables.
-     * @param value true if delay is given by local variables
-     */
-    public void setDelayByLocalVariables(boolean value) {
-        _delayByLocalVariables = value;
-    }
-
-    /**
-     * Is both start and stop is controlled by the start expression.
-     * @return true if to start immediately
-     */
-    public String getDelayLocalVariablePrefix() {
-        return _delayLocalVariablePrefix;
-    }
-
-    /**
-     * Set if both start and stop is controlled by the start expression.
-     * @param value true if to start immediately
-     */
-    public void setDelayLocalVariablePrefix(String value) {
-        _delayLocalVariablePrefix = value;
-    }
-
     @Override
     public FemaleSocket getChild(int index) throws IllegalArgumentException, UnsupportedOperationException {
         if ((index < 0) || (index >= _actionEntries.size())) {
@@ -367,7 +315,8 @@ public class IndependentTimer extends AbstractDigitalAction
         while (_actionEntries.size() < num) {
             FemaleDigitalActionSocket socket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .createFemaleSocket(this, this, getNewSocketName());
+                            .createFemaleSocket(this, this, getNewSocketName(),
+                                    new IndependentTimerSocketConfiguration());
             _actionEntries.add(new ActionEntry(socket));
             addList.add(socket);
         }
@@ -383,7 +332,8 @@ public class IndependentTimer extends AbstractDigitalAction
         if (!hasFreeSocket) {
             FemaleDigitalActionSocket socket =
                     InstanceManager.getDefault(DigitalActionManager.class)
-                            .createFemaleSocket(this, this, getNewSocketName());
+                            .createFemaleSocket(this, this, getNewSocketName(),
+                                    new IndependentTimerSocketConfiguration());
             _actionEntries.add(new ActionEntry(socket));
 
             List<FemaleSocket> list = new ArrayList<>();
@@ -415,7 +365,8 @@ public class IndependentTimer extends AbstractDigitalAction
     private void insertNewSocket(int index) {
         FemaleDigitalActionSocket socket =
                 InstanceManager.getDefault(DigitalActionManager.class)
-                        .createFemaleSocket(this, this, getNewSocketName());
+                        .createFemaleSocket(this, this, getNewSocketName(),
+                                new IndependentTimerSocketConfiguration());
         _actionEntries.add(index, new ActionEntry(socket));
 
         List<FemaleSocket> addList = new ArrayList<>();
@@ -497,45 +448,11 @@ public class IndependentTimer extends AbstractDigitalAction
 
     @Override
     public String getLongDescription(Locale locale) {
-        String options = "";
-        if (_delayByLocalVariables) {
-            options = Bundle.getMessage("IndependentTimer_Options_DelayByLocalVariable", _delayLocalVariablePrefix);
-        }
-//        if (_startAndStopByStartExpression) {
-//            return Bundle.getMessage(locale, "IndependentTimer_Long2",
-//                    Bundle.getMessage("IndependentTimer_StartAndStopByStartExpression"), options);
-//        } else {
-            return Bundle.getMessage(locale, "IndependentTimer_Long", options);
-//        }
+        return Bundle.getMessage(locale, "IndependentTimer_Long");
     }
 
     public int getNumActions() {
         return _actionEntries.size();
-    }
-
-    public void setNumActions(int num) {
-        List<FemaleSocket> addList = new ArrayList<>();
-        List<FemaleSocket> removeList = new ArrayList<>();
-
-        // Is there too many children?
-        while (_actionEntries.size() > num) {
-            ActionEntry ae = _actionEntries.get(num);
-            if (ae._socket.isConnected()) {
-                throw new IllegalArgumentException("Cannot remove sockets that are connected");
-            }
-            removeList.add(_actionEntries.get(_actionEntries.size()-1)._socket);
-            _actionEntries.remove(_actionEntries.size()-1);
-        }
-
-        // Is there not enough children?
-        while (_actionEntries.size() < num) {
-            FemaleDigitalActionSocket socket =
-                    InstanceManager.getDefault(DigitalActionManager.class)
-                            .createFemaleSocket(this, this, getNewSocketName());
-            _actionEntries.add(new ActionEntry(socket));
-            addList.add(socket);
-        }
-        firePropertyChange(Base.PROPERTY_CHILD_COUNT, removeList, addList);
     }
 
     public FemaleDigitalActionSocket getActionSocket(int socket) {
@@ -663,12 +580,18 @@ public class IndependentTimer extends AbstractDigitalAction
             this._socket = socket;
         }
 
-        private long getDelay() {
+        private long getDelay(SymbolTable symbolTable) {
             FemaleSocketConfiguration config = _socket.getConfiguration();
             if (config instanceof IndependentTimerSocketConfiguration) {
                 IndependentTimerSocketConfiguration c =
                         (IndependentTimerSocketConfiguration) config;
-                return c._delay * c._unit.getMultiply();
+                if (c._delayByLocalVariable) {
+                    String localVariable = c.getDelayLocalVariable();
+                    return jmri.util.TypeConversionUtil
+                            .convertToLong(symbolTable.getValue(localVariable));
+                } else {
+                    return c._delay * c._unit.getMultiply();
+                }
             } else {
                 throw new IllegalArgumentException("Configuration is not a IndependentTimerSocketConfiguration");
             }
@@ -702,8 +625,10 @@ public class IndependentTimer extends AbstractDigitalAction
     public static class IndependentTimerSocketConfiguration
             implements FemaleSocketConfiguration {
 
+        private boolean _delayByLocalVariable = false;
         private int _delay;
         private TimerUnit _unit = TimerUnit.MilliSeconds;
+        private String _delayLocalVariable = "";
 
         /** {@inheritDoc} */
         @Override
@@ -713,8 +638,42 @@ public class IndependentTimer extends AbstractDigitalAction
             }
             IndependentTimerSocketConfiguration c =
                     (IndependentTimerSocketConfiguration) config;
+            _delayByLocalVariable = c._delayByLocalVariable;
             _delay = c._delay;
             _unit = c._unit;
+            _delayLocalVariable = c._delayLocalVariable;
+        }
+
+        /**
+         * Is delays given by local variable?
+         * @return value true if delay is given by local variable
+         */
+        public boolean isDelayByLocalVariable() {
+            return _delayByLocalVariable;
+        }
+
+        /**
+         * Set if delays should be given by local variable.
+         * @param value true if delay is given by local variable
+         */
+        public void setDelayByLocalVariable(boolean value) {
+            _delayByLocalVariable = value;
+        }
+
+        /**
+         * Get the delay.
+         * @return the delay
+         */
+        public int getDelay() {
+            return _delay;
+        }
+
+        /**
+         * Set the delay.
+         * @param delay the delay
+         */
+        public void setDelay(int delay) {
+            _delay = delay;
         }
 
         /**
@@ -726,24 +685,6 @@ public class IndependentTimer extends AbstractDigitalAction
         }
 
         /**
-         * Get the delay.
-         * @param actionSocket the socket
-         * @return the delay
-         */
-        public int getDelay(int actionSocket) {
-            return _delay;
-        }
-
-        /**
-         * Set the delay.
-         * @param actionSocket the socket
-         * @param delay the delay
-         */
-        public void setDelay(int actionSocket, int delay) {
-            _delay = delay;
-        }
-
-        /**
          * Set the unit
          * @param unit the unit
          */
@@ -751,9 +692,31 @@ public class IndependentTimer extends AbstractDigitalAction
             _unit = unit;
         }
 
+        /**
+         * Get the name of local variable
+         * @return the name of the local variable
+         */
+        public String getDelayLocalVariable() {
+            return _delayLocalVariable;
+        }
+
+        /**
+         * Set the name of local variable
+         * @param localVariable the name of the local variable
+         */
+        public void setDelayLocalVariable(String localVariable) {
+            _delayLocalVariable = localVariable;
+        }
+
         @Override
         public String getDescription(Locale locale) {
-            return "Delay 30 seconds";
+            if (_delayByLocalVariable) {
+                return Bundle.getMessage("IndependentTimer_SocketConfig_DescrLocalVariable",
+                        _delayLocalVariable);
+            } else {
+                return Bundle.getMessage("IndependentTimer_SocketConfig_Descr",
+                        _unit.getTimeWithUnit(_delay));
+            }
         }
 
     }

@@ -48,6 +48,7 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
      * Get the configuration of this female socket.
      * @return the configuration or null if no configuration
      */
+    @Override
     public FemaleSocketConfiguration getConfiguration() {
         return _config;
     }
@@ -336,6 +337,21 @@ public abstract class AbstractFemaleSocket implements FemaleSocket {
             String currentIndent,
             MutableInt lineNumber) {
 
+        FemaleSocketConfiguration config = getConfiguration();
+        if (config != null) {
+            String configStr = config.getDescription(locale);
+            configStr = configStr.replaceAll("\\r\\n", "\\n");
+            configStr = configStr.replaceAll("\\r", "\\n");
+            for (String s : configStr.split("\\n", 0)) {
+                if (settings._printLineNumbers) {
+                    writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
+                }
+                writer.append(currentIndent);
+                writer.append(Bundle.getMessage("AbstractFemaleSocket_Config") + " ");
+                writer.append(s);
+                writer.println();
+            }
+        }
         if (settings._printLineNumbers) {
             writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
         }
