@@ -70,8 +70,8 @@ public class NamedIcon extends ImageIcon {
      */
     public NamedIcon(NamedIcon pOld, Component comp) {
         this(pOld.mURL, pOld.mName, pOld.mGifInfo);
-        setLoad(pOld._degrees, pOld._scale, comp);
-        setRotation(pOld.mRotation, comp);
+        NamedIcon.this.setLoad(pOld._degrees, pOld._scale, comp);
+        NamedIcon.this.setRotation(pOld.mRotation, comp);
     }
 
     /**
@@ -145,13 +145,13 @@ public class NamedIcon extends ImageIcon {
      * @param pName Human-readable name for the icon
      * @param pGifState  Breakdown of GIF Image metadata and frames
      */
-    public NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
+    private NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
         super(substituteDefaultUrl(pUrl));
         URL u = FileUtil.findURL(pUrl);
         if (u == null) {
             log.warn("Could not load image from {} (file does not exist)", pUrl);
         }
-        mDefaultImage = getImage();
+        mDefaultImage = NamedIcon.this.getImage();
         if (mDefaultImage == null) {
             log.warn("Could not load image from {} (image is null)", pUrl);
         }
@@ -172,24 +172,13 @@ public class NamedIcon extends ImageIcon {
     }
 
     /**
-     * Create a named icon that includes an image to be loaded from a URL.
-     *
-     * @param pUrl  String-form URL of image file to load
-     * @param pName Human-readable name for the icon
-     */
-    public NamedIcon(URL pUrl, String pName) {
-        this(pUrl.toString(), pName);
-    }
-
-
-    /**
      * Create a named icon from an Image. N.B. NamedIcon's create
      * using this constructor can NOT be animated GIFs
      * @param im Image to use
      */
     public NamedIcon(Image im) {
         super(im);
-        mDefaultImage = getImage();
+        mDefaultImage = NamedIcon.this.getImage();
     }
 
     /**
