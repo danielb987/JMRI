@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
 import javax.annotation.CheckForNull;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -44,7 +46,7 @@ import jmri.util.MathUtil;
  *
  * Modified by Joe Comuzzi and Larry Allen to rotate animated GIFs
  */
-public class NamedIcon implements Icon {
+public class NamedIcon implements Icon, Accessible {
 
     private final ImageIcon imageIcon;
 
@@ -673,6 +675,12 @@ public class NamedIcon implements Icon {
     @Override
     public int getIconHeight() {
         return imageIcon.getIconHeight();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        return imageIcon.getAccessibleContext();
     }
 
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NamedIcon.class);
