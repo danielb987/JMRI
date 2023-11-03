@@ -1,10 +1,6 @@
 package jmri.jmrit.catalog;
 
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -31,8 +27,6 @@ import javax.swing.ImageIcon;
 import jmri.jmrit.display.PositionableLabel;
 import jmri.util.FileUtil;
 import jmri.util.MathUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Extend an ImageIcon to remember the name from which it was created and
@@ -70,8 +64,8 @@ public class NamedIcon extends ImageIcon {
      */
     public NamedIcon(NamedIcon pOld, Component comp) {
         this(pOld.mURL, pOld.mName, pOld.mGifInfo);
-        setLoad(pOld._degrees, pOld._scale, comp);
-        setRotation(pOld.mRotation, comp);
+        NamedIcon.this.setLoad(pOld._degrees, pOld._scale, comp);
+        NamedIcon.this.setRotation(pOld.mRotation, comp);
     }
 
     /**
@@ -145,13 +139,13 @@ public class NamedIcon extends ImageIcon {
      * @param pName Human-readable name for the icon
      * @param pGifState  Breakdown of GIF Image metadata and frames
      */
-    public NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
+    private NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
         super(substituteDefaultUrl(pUrl));
         URL u = FileUtil.findURL(pUrl);
         if (u == null) {
             log.warn("Could not load image from {} (file does not exist)", pUrl);
         }
-        mDefaultImage = getImage();
+        mDefaultImage = NamedIcon.this.getImage();
         if (mDefaultImage == null) {
             log.warn("Could not load image from {} (image is null)", pUrl);
         }
@@ -172,24 +166,13 @@ public class NamedIcon extends ImageIcon {
     }
 
     /**
-     * Create a named icon that includes an image to be loaded from a URL.
-     *
-     * @param pUrl  String-form URL of image file to load
-     * @param pName Human-readable name for the icon
-     */
-    public NamedIcon(URL pUrl, String pName) {
-        this(pUrl.toString(), pName);
-    }
-
-
-    /**
      * Create a named icon from an Image. N.B. NamedIcon's create
      * using this constructor can NOT be animated GIFs
      * @param im Image to use
      */
     public NamedIcon(Image im) {
         super(im);
-        mDefaultImage = getImage();
+        mDefaultImage = NamedIcon.this.getImage();
     }
 
     /**
@@ -661,6 +644,6 @@ public class NamedIcon extends ImageIcon {
         transformImage(w, h, _transformF, null);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(NamedIcon.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NamedIcon.class);
 
 }
