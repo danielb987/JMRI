@@ -23,6 +23,7 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import jmri.jmrit.display.PositionableLabel;
 import jmri.util.FileUtil;
@@ -43,7 +44,9 @@ import jmri.util.MathUtil;
  *
  * Modified by Joe Comuzzi and Larry Allen to rotate animated GIFs
  */
-public class NamedIcon extends ImageIcon {
+public class NamedIcon implements Icon {
+
+    private final ImageIcon imageIcon;
 
     /**
      * Create a NamedIcon that is a complete copy of an existing NamedIcon
@@ -140,7 +143,9 @@ public class NamedIcon extends ImageIcon {
      * @param pGifState  Breakdown of GIF Image metadata and frames
      */
     private NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
-        super(substituteDefaultUrl(pUrl));
+        URL url = substituteDefaultUrl(pUrl);
+        imageIcon = new ImageIcon(url);
+
         URL u = FileUtil.findURL(pUrl);
         if (u == null) {
             log.warn("Could not load image from {} (file does not exist)", pUrl);
@@ -171,7 +176,7 @@ public class NamedIcon extends ImageIcon {
      * @param im Image to use
      */
     public NamedIcon(Image im) {
-        super(im);
+        imageIcon = new ImageIcon(im);
         mDefaultImage = NamedIcon.this.getImage();
     }
 
@@ -642,6 +647,32 @@ public class NamedIcon extends ImageIcon {
         }
 
         transformImage(w, h, _transformF, null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+        imageIcon.paintIcon(c, g, x, y);
+    }
+
+    public Image getImage() {
+        return imageIcon.getImage();
+    }
+
+    public void setImage(Image image) {
+        imageIcon.setImage(image);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getIconWidth() {
+        return imageIcon.getIconWidth();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getIconHeight() {
+        return imageIcon.getIconHeight();
     }
 
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NamedIcon.class);
