@@ -53,6 +53,7 @@ public class NamedIcon extends ImageIcon {
      */
     public NamedIcon(NamedIcon pOld) {
         this(pOld.mURL, pOld.mName, pOld.mGifInfo);
+        log.error("NamedIcon: AAA: {}", this.getURL());
     }
 
     /**
@@ -64,6 +65,7 @@ public class NamedIcon extends ImageIcon {
      */
     public NamedIcon(NamedIcon pOld, Component comp) {
         this(pOld.mURL, pOld.mName, pOld.mGifInfo);
+        log.error("NamedIcon: BBB: {}", this.getURL());
         NamedIcon.this.setLoad(pOld._degrees, pOld._scale, comp);
         NamedIcon.this.setRotation(pOld.mRotation, comp);
     }
@@ -79,6 +81,8 @@ public class NamedIcon extends ImageIcon {
      */
     public NamedIcon(String pUrl, String pName) {
         this(pUrl, pName, null);
+
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("NamedIcon: CCC: {}", this.getURL());
 
         // See if this is a GIF file and if it is, see if it's animated. If it is,
         // breakout the metadata and individual frames. Also collect the max sizes in case the
@@ -106,6 +110,8 @@ public class NamedIcon extends ImageIcon {
                 // No need to keep the GIF info if it's not animated, the old code works
                 // in that case.
                 if (numFrames > 1) {
+                    log.error("NamedIcon: CCC: {}. NumFrames: {}", this.getURL(), numFrames);
+
                     gifState.mStreamMd = gifReader.getStreamMetadata();
                     gifState.mFrames = new IIOImage[numFrames];
                     gifState.mWidth = 0;
@@ -141,6 +147,7 @@ public class NamedIcon extends ImageIcon {
      */
     private NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
         super(substituteDefaultUrl(pUrl));
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(pUrl)) log.error("NamedIcon: DDD: {}", pUrl);
         URL u = FileUtil.findURL(pUrl);
         if (u == null) {
             log.warn("Could not load image from {} (file does not exist)", pUrl);
@@ -172,6 +179,7 @@ public class NamedIcon extends ImageIcon {
      */
     public NamedIcon(Image im) {
         super(im);
+        log.error("NamedIcon: EEE: {}", "No url");
         mDefaultImage = NamedIcon.this.getImage();
     }
 
@@ -229,6 +237,7 @@ public class NamedIcon extends ImageIcon {
      * @param url the URL associated with this icon
      */
     public void setURL(@CheckForNull String url) {
+        log.error("setUrl: {}", this.getURL());
         mURL = url;
     }
 
@@ -252,10 +261,13 @@ public class NamedIcon extends ImageIcon {
      * @param comp      the component containing this icon
      */
     public void setRotation(int pRotation, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("setRotation: {}", this.getURL());
         // don't transform a blinking icon, it will no longer blink!
         if (pRotation == 0) {
+            if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("setRotation. Abort!: {}", this.getURL());
             return;
         }
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("setRotation: Rotate!: {}", this.getURL());
         if (pRotation > 3) {
             pRotation = 0;
         }
@@ -313,6 +325,7 @@ public class NamedIcon extends ImageIcon {
      * @return new Image object containing the rotated input image
      */
     public Image createRotatedImage(Image pImage, Component pComponent, int pRotation) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("createRotatedImage: {}", this.getURL());
         log.debug("createRotatedImage: pRotation= {}, mRotation= {}", pRotation, mRotation);
         if (pRotation == 0) {
             return pImage;
@@ -394,6 +407,7 @@ public class NamedIcon extends ImageIcon {
     }
 
     public void setLoad(int d, double s, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("setLoad: {}", this.getURL());
         if (d != 0 || s != 1.0) {
             setImage(createRotatedImage(mDefaultImage, comp, 0));
             //mRotation = 3;
@@ -405,6 +419,7 @@ public class NamedIcon extends ImageIcon {
     }
 
     public void transformImage(int w, int h, AffineTransform t, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("transformImage: {}", this.getURL());
         if (w <= 0 || h <= 0) {
             if (comp instanceof jmri.jmrit.display.Positionable) {
                 log.debug("transformImage bad coords {}",
@@ -478,6 +493,7 @@ public class NamedIcon extends ImageIcon {
      * @return Transformed image
      */
     private BufferedImage transformFrame(Image frame, int w, int h, AffineTransform t, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("transformFrame: {}", this.getURL());
 
         BufferedImage bufIm = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufIm.createGraphics();
@@ -529,6 +545,7 @@ public class NamedIcon extends ImageIcon {
      * "+getDescription()); if (s<1) { return; } scale(s/100.0, comp); }
      */
     public void scale(double scale, Component comp) {
+        log.error("scale: {}", this.getURL());
         _scale = scale;
         _transformS = AffineTransform.getScaleInstance(scale, scale);
         rotate(_degrees, comp);
@@ -541,6 +558,7 @@ public class NamedIcon extends ImageIcon {
      * @param comp   containing component
      */
     public void rotate(int degree, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("rotate: {}", this.getURL());
         setImage(mDefaultImage);
 
         mRotation = 0;
@@ -595,6 +613,7 @@ public class NamedIcon extends ImageIcon {
      * @return the scale by which this image was resized
      */
     public double reduceTo(int width, int height, double limit) {
+        log.error("reduceTo: {}", this.getURL());
         int w = getIconWidth();
         int h = getIconHeight();
         double scale = 1.0;
@@ -622,6 +641,7 @@ public class NamedIcon extends ImageIcon {
     public final static int VERTICALFLIP = 0X02;
 
     public void flip(int flip, Component comp) {
+        log.error("flip: {}", this.getURL());
         if (flip == NOFLIP) {
             setImage(mDefaultImage);
             _transformF = new AffineTransform();
