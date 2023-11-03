@@ -83,6 +83,8 @@ public class NamedIcon implements Icon {
     public NamedIcon(String pUrl, String pName) {
         this(pUrl, pName, null);
 
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("NamedIcon: CCC: {}", this.getURL());
+
         // See if this is a GIF file and if it is, see if it's animated. If it is,
         // breakout the metadata and individual frames. Also collect the max sizes in case the
         // frames aren't all the same.
@@ -109,6 +111,8 @@ public class NamedIcon implements Icon {
                 // No need to keep the GIF info if it's not animated, the old code works
                 // in that case.
                 if (numFrames > 1) {
+                    log.error("NamedIcon: CCC: {}. NumFrames: {}", this.getURL(), numFrames);
+
                     gifState.mStreamMd = gifReader.getStreamMetadata();
                     gifState.mFrames = new IIOImage[numFrames];
                     gifState.mWidth = 0;
@@ -143,6 +147,7 @@ public class NamedIcon implements Icon {
      * @param pGifState  Breakdown of GIF Image metadata and frames
      */
     private NamedIcon(String pUrl, String pName, GIFMetadataImages pGifState) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(pUrl)) log.error("NamedIcon: DDD: {}", pUrl);
         URL url = substituteDefaultUrl(pUrl);
         imageIcon = new ImageIcon(url);
 
@@ -257,6 +262,7 @@ public class NamedIcon implements Icon {
      * @param comp      the component containing this icon
      */
     public void setRotation(int pRotation, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("setRotation: {}", this.getURL());
         // don't transform a blinking icon, it will no longer blink!
         if (pRotation == 0) {
             return;
@@ -399,6 +405,7 @@ public class NamedIcon implements Icon {
     }
 
     public void setLoad(int d, double s, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("setLoad: {}", this.getURL());
         if (d != 0 || s != 1.0) {
             setImage(createRotatedImage(mDefaultImage, comp, 0));
             //mRotation = 3;
@@ -546,6 +553,7 @@ public class NamedIcon implements Icon {
      * @param comp   containing component
      */
     public void rotate(int degree, Component comp) {
+        if ("program:resources/icons/RGB-animated-once-Square.gif".equals(this.getURL())) log.error("rotate: {}", this.getURL());
         setImage(mDefaultImage);
 
         mRotation = 0;
