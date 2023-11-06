@@ -135,7 +135,7 @@ public class ActionLight extends AbstractDigitalAction
         String namedBean = _selectNamedBean.getDescription(locale);
         String state = _selectEnum.getDescription(locale);
 
-        if (_selectEnum.getAddressing() == NamedBeanAddressing.Direct) {
+        if (_selectEnum.isDirectAddressing()) {
             if (_selectEnum.getEnum() == LightState.Intensity || _selectEnum.getEnum() == LightState.Interval) {
                 String bundleKey = "Light_Long_Value";
 

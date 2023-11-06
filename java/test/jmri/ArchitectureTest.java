@@ -401,8 +401,6 @@ public class ArchitectureTest {
             .resideInAPackage("jmri.jmrit.logixng.actions")
             .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionDispatcher")   // Not converted to Select... yet
             .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionDispatcher$1") // Not converted to Select... yet
-            .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionLight")        // Data not converted to Select... yet
-            .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionLight$1")      // Data not converted to Select... yet
             .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionOBlock")       // Data not converted to Select... yet
             .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionOBlock$1")     // Data not converted to Select... yet
             .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.actions.ActionReporter")     // Data not converted to Select... yet

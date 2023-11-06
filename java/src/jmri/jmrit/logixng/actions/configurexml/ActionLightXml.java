@@ -3,12 +3,10 @@ package jmri.jmrit.logixng.actions.configurexml;
 import jmri.*;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.NamedBeanAddressing;
 import jmri.jmrit.logixng.actions.ActionLight;
 import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectEnumXml;
 import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectIntegerXml;
 import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectNamedBeanXml;
-import jmri.jmrit.logixng.util.parser.ParserException;
 
 import org.jdom2.Element;
 
