@@ -74,12 +74,15 @@
               <xs:element name="stateFormula" type="xs:string" minOccurs="0" maxOccurs="1" />
               <!-- These are for backwards compability up until JMRI 4.99.4 -->
 
+              <xs:element name="value" type="LogixNG_SelectIntegerType" minOccurs="0" maxOccurs="1" />
+
+              <!-- These are for backwards compability up until JMRI 5.5.5 -->
               <xs:element name="dataAddressing" type="LogixNG_Addressing_Type" minOccurs="0" maxOccurs="1" />
               <xs:element name="dataReference" type="xs:string" minOccurs="0" maxOccurs="1" />
               <xs:element name="dataLocalVariable" type="xs:string" minOccurs="0" maxOccurs="1" />
               <xs:element name="dataFormula" type="xs:string" minOccurs="0" maxOccurs="1" />
-
               <xs:element name="lightValue" type="xs:int" minOccurs="0" maxOccurs="1"/>
+              <!-- These are for backwards compability up until JMRI 5.5.5 -->
 
               <xs:element name="MaleSocket" type="LogixNG_MaleSocket_Type" minOccurs="0" maxOccurs="1"/>
 

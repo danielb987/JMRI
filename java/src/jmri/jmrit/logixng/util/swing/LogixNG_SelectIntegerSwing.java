@@ -111,6 +111,15 @@ public class LogixNG_SelectIntegerSwing {
         return panel;
     }
 
+    public boolean isDirectAddressing() {
+        return _tabbedPane.getSelectedComponent() == _panelDirect;
+    }
+
+    public int getValue(@Nonnull LogixNG_SelectInteger selectInteger) {
+        return selectInteger.getFormatterParserValidator()
+                .parse(_valueTextField.getText());
+    }
+
     public boolean validate(
             @Nonnull LogixNG_SelectInteger selectInteger,
             @Nonnull List<String> errorMessages) {

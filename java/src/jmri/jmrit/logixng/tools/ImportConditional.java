@@ -1103,7 +1103,7 @@ public class ImportConditional {
                 } catch (NumberFormatException ex) {
                     intensity = 0;
                 }
-                action.setLightValue(intensity);
+                action.getSelectLightValue().setValue(intensity);
                 action.getSelectEnum().setEnum(ActionLight.LightState.Intensity);
                 break;
 
@@ -1117,7 +1117,7 @@ public class ImportConditional {
                 } catch (NumberFormatException ex) {
                     interval = 0;
                 }
-                action.setLightValue(interval);
+                action.getSelectLightValue().setValue(interval);
                 action.getSelectEnum().setEnum(ActionLight.LightState.Interval);
                 break;
 

@@ -14885,10 +14885,11 @@
         <enum>On</enum>
         <listenToMemory>no</listenToMemory>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="no" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -14972,10 +14973,11 @@
         <enum>On</enum>
         <listenToMemory>no</listenToMemory>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="yes" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15067,10 +15069,11 @@
         <localVariable>index2</localVariable>
         <formula>"IT"+index2</formula>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="yes" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15162,10 +15165,11 @@
         <localVariable>index2</localVariable>
         <formula>"IT"+index2</formula>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="yes" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15257,10 +15261,11 @@
         <localVariable>index2</localVariable>
         <formula>"IT"+index2</formula>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="yes" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15352,10 +15357,11 @@
         <localVariable>index2</localVariable>
         <formula>"IT"+index2</formula>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="yes" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15440,10 +15446,11 @@
         <enum>Interval</enum>
         <listenToMemory>no</listenToMemory>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="no" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15528,10 +15535,11 @@
         <enum>Unknown</enum>
         <listenToMemory>no</listenToMemory>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="no" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15616,10 +15624,11 @@
         <enum>Inconsistent</enum>
         <listenToMemory>no</listenToMemory>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="no" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">
@@ -15703,10 +15712,11 @@
         <enum>On</enum>
         <listenToMemory>no</listenToMemory>
       </state>
-      <dataAddressing>Direct</dataAddressing>
-      <dataReference />
-      <dataLocalVariable />
-      <dataFormula />
+      <value>
+        <addressing>Direct</addressing>
+        <value>0</value>
+        <listenToMemory>no</listenToMemory>
+      </value>
       <MaleSocket>
         <AbstractDebuggerMaleSocket class="jmri.jmrit.logixng.tools.debugger.configurexml.DebuggerMaleDigitalActionSocketXml" />
         <AbstractMaleSocket enabled="yes" locked="no" system="no" catchAbortExecution="no" class="jmri.jmrit.logixng.implementation.configurexml.DefaultMaleDigitalActionSocketXml">

@@ -14,8 +14,9 @@ import jmri.jmrit.logixng.actions.ActionLight;
 import jmri.jmrit.logixng.actions.ActionLight.LightState;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.jmrit.logixng.util.parser.ParserException;
-import jmri.jmrit.logixng.util.swing.LogixNG_SelectNamedBeanSwing;
 import jmri.jmrit.logixng.util.swing.LogixNG_SelectEnumSwing;
+import jmri.jmrit.logixng.util.swing.LogixNG_SelectIntegerSwing;
+import jmri.jmrit.logixng.util.swing.LogixNG_SelectNamedBeanSwing;
 
 /**
  * Configures an ActionLight object with a Swing JPanel.
@@ -25,18 +26,8 @@ import jmri.jmrit.logixng.util.swing.LogixNG_SelectEnumSwing;
 public class ActionLightSwing extends AbstractDigitalActionSwing {
 
     private LogixNG_SelectNamedBeanSwing<Light> _selectNamedBeanSwing;
-
     private LogixNG_SelectEnumSwing<LightState> _selectEnumSwing;
-
-    private JTabbedPane _tabbedPaneData;
-    private JPanel _panelDataDirect;
-    private JPanel _panelDataReference;
-    private JPanel _panelDataLocalVariable;
-    private JPanel _panelDataFormula;
-    private JTextField _lightDataDirectTextField;
-    private JTextField _lightDataReferenceTextField;
-    private JTextField _lightDataLocalVariableTextField;
-    private JTextField _lightDataFormulaTextField;
+    private LogixNG_SelectIntegerSwing _selectLightValueSwing;
 
 
     public ActionLightSwing() {
@@ -55,71 +46,34 @@ public class ActionLightSwing extends AbstractDigitalActionSwing {
 
         _selectEnumSwing = new LogixNG_SelectEnumSwing<>(getJDialog(), this);
 
+        _selectLightValueSwing = new LogixNG_SelectIntegerSwing(getJDialog(), this);
+
         panel = new JPanel();
 
         JPanel _tabbedPaneNamedBean;
         JPanel _tabbedPaneEnum;
+        JPanel _tabbedPaneLightValue;
 
         if (action != null) {
             _tabbedPaneNamedBean = _selectNamedBeanSwing.createPanel(action.getSelectNamedBean());
             _tabbedPaneEnum = _selectEnumSwing.createPanel(action.getSelectEnum(), LightState.values());
+            _tabbedPaneLightValue = _selectLightValueSwing.createPanel(action.getSelectLightValue());
         } else {
+            // Create a temporary action
+            action = new ActionLight("IQDA1", null);
             _tabbedPaneNamedBean = _selectNamedBeanSwing.createPanel(null);
             _tabbedPaneEnum = _selectEnumSwing.createPanel(null, LightState.values());
+            _tabbedPaneLightValue = _selectLightValueSwing.createPanel(action.getSelectLightValue());
         }
 
         _selectEnumSwing.addEnumListener(e -> { setDataPanelState(); });
 
-        // Right section
-        _tabbedPaneData = new JTabbedPane();
-        _panelDataDirect = new javax.swing.JPanel();
-        _panelDataReference = new javax.swing.JPanel();
-        _panelDataLocalVariable = new javax.swing.JPanel();
-        _panelDataFormula = new javax.swing.JPanel();
-
-        _tabbedPaneData.addTab(NamedBeanAddressing.Direct.toString(), _panelDataDirect);
-        _tabbedPaneData.addTab(NamedBeanAddressing.Reference.toString(), _panelDataReference);
-        _tabbedPaneData.addTab(NamedBeanAddressing.LocalVariable.toString(), _panelDataLocalVariable);
-        _tabbedPaneData.addTab(NamedBeanAddressing.Formula.toString(), _panelDataFormula);
-
-        _lightDataDirectTextField = new JTextField();
-        _lightDataDirectTextField.setColumns(30);
-        _panelDataDirect.add(_lightDataDirectTextField);
-
-        _lightDataReferenceTextField = new JTextField();
-        _lightDataReferenceTextField.setColumns(30);
-        _panelDataReference.add(_lightDataReferenceTextField);
-
-        _lightDataLocalVariableTextField = new JTextField();
-        _lightDataLocalVariableTextField.setColumns(30);
-        _panelDataLocalVariable.add(_lightDataLocalVariableTextField);
-
-        _lightDataFormulaTextField = new JTextField();
-        _lightDataFormulaTextField.setColumns(30);
-        _panelDataFormula.add(_lightDataFormulaTextField);
-
         setDataPanelState();
-
-        if (action != null) {
-            switch (action.getDataAddressing()) {
-                case Direct: _tabbedPaneData.setSelectedComponent(_panelDataDirect); break;
-                case Reference: _tabbedPaneData.setSelectedComponent(_panelDataReference); break;
-                case LocalVariable: _tabbedPaneData.setSelectedComponent(_panelDataLocalVariable); break;
-                case Formula: _tabbedPaneData.setSelectedComponent(_panelDataFormula); break;
-                default: throw new IllegalArgumentException("invalid _addressing state: " + action.getDataAddressing().name());
-            }
-            _lightDataReferenceTextField.setText(action.getDataReference());
-            _lightDataLocalVariableTextField.setText(action.getDataLocalVariable());
-            _lightDataFormulaTextField.setText(action.getDataFormula());
-
-            _lightDataDirectTextField.setText(Integer.toString(action.getLightValue()));
-            setDataPanelState();
-        }
 
         JComponent[] components = new JComponent[]{
             _tabbedPaneNamedBean,
             _tabbedPaneEnum,
-            _tabbedPaneData};
+            _tabbedPaneLightValue};
 
         List<JComponent> componentList = SwingConfiguratorInterface.parseMessage(
                 Bundle.getMessage("ActionLight_Components"), components);
@@ -130,11 +84,7 @@ public class ActionLightSwing extends AbstractDigitalActionSwing {
     private void setDataPanelState() {
         boolean newState = _selectEnumSwing.isEnumSelectedOrIndirectAddressing(LightState.Intensity) ||
                 _selectEnumSwing.isEnumSelectedOrIndirectAddressing(LightState.Interval);
-        _tabbedPaneData.setEnabled(newState);
-        _lightDataDirectTextField.setEnabled(newState);
-        _lightDataReferenceTextField.setEnabled(newState);
-        _lightDataLocalVariableTextField.setEnabled(newState);
-        _lightDataFormulaTextField.setEnabled(newState);
+        _selectLightValueSwing.setEnabled(newState);
     }
 
     /** {@inheritDoc} */
@@ -145,40 +95,14 @@ public class ActionLightSwing extends AbstractDigitalActionSwing {
 
         _selectNamedBeanSwing.validate(action.getSelectNamedBean(), errorMessages);
         _selectEnumSwing.validate(action.getSelectEnum(), errorMessages);
+        _selectLightValueSwing.validate(action.getSelectLightValue(), errorMessages);
 
-        try {
-            if (_tabbedPaneData.getSelectedComponent() == _panelDataReference) {
-                action.setDataReference(_lightDataReferenceTextField.getText());
-            }
-        } catch (IllegalArgumentException e) {
-            errorMessages.add(e.getMessage());
-            return false;
-        }
-
-        try {
-            action.setDataFormula(_lightDataFormulaTextField.getText());
-            if (_tabbedPaneData.getSelectedComponent() == _panelDataDirect) {
-                action.setDataAddressing(NamedBeanAddressing.Direct);
-            } else if (_tabbedPaneData.getSelectedComponent() == _panelDataReference) {
-                action.setDataAddressing(NamedBeanAddressing.Reference);
-            } else if (_tabbedPaneData.getSelectedComponent() == _panelDataLocalVariable) {
-                action.setDataAddressing(NamedBeanAddressing.LocalVariable);
-            } else if (_tabbedPaneData.getSelectedComponent() == _panelDataFormula) {
-                action.setDataAddressing(NamedBeanAddressing.Formula);
-            } else {
-                throw new IllegalArgumentException("_tabbedPane has unknown selection");
-            }
-        } catch (ParserException e) {
-            errorMessages.add("Cannot parse formula: " + e.getMessage());
-            return false;
-        }
-
-        if (_tabbedPaneData.getSelectedComponent() == _panelDataDirect) {
+        if (_selectLightValueSwing.isDirectAddressing()) {
 
             if (_selectEnumSwing.isEnumSelectedOrIndirectAddressing(LightState.Intensity)) {
                 boolean result = true;
                 try {
-                    int value = Integer.parseInt(_lightDataDirectTextField.getText());
+                    int value = _selectLightValueSwing.getValue(action.getSelectLightValue());
                     if (value < 0 || value > 100) {
                         result = false;
                     }
@@ -194,7 +118,7 @@ public class ActionLightSwing extends AbstractDigitalActionSwing {
             if (_selectEnumSwing.isEnumSelectedOrIndirectAddressing(LightState.Interval)) {
                 boolean result = true;
                 try {
-                    int value = Integer.parseInt(_lightDataDirectTextField.getText());
+                    int value = _selectLightValueSwing.getValue(action.getSelectLightValue());
                     if (value < 0) {
                         result = false;
                     }
@@ -228,38 +152,7 @@ public class ActionLightSwing extends AbstractDigitalActionSwing {
         ActionLight action = (ActionLight)object;
         _selectNamedBeanSwing.updateObject(action.getSelectNamedBean());
         _selectEnumSwing.updateObject(action.getSelectEnum());
-
-        try {
-            // Right section
-            if (_tabbedPaneData.getSelectedComponent() == _panelDataDirect) {
-                action.setDataAddressing(NamedBeanAddressing.Direct);
-                // Handle optional data field
-                if (_selectEnumSwing.isEnumSelectedOrIndirectAddressing(LightState.Intensity) ||
-                        _selectEnumSwing.isEnumSelectedOrIndirectAddressing(LightState.Interval)) {
-                    int value;
-                    try {
-                        value = Integer.parseInt(_lightDataDirectTextField.getText());
-                    } catch (NumberFormatException ex) {
-                        value = 0;
-                    }
-                    action.setLightValue(value);
-                }
-            } else if (_tabbedPaneData.getSelectedComponent() == _panelDataReference) {
-                action.setDataAddressing(NamedBeanAddressing.Reference);
-                action.setDataReference(_lightDataReferenceTextField.getText());
-            } else if (_tabbedPaneData.getSelectedComponent() == _panelDataLocalVariable) {
-                action.setDataAddressing(NamedBeanAddressing.LocalVariable);
-                action.setDataLocalVariable(_lightDataLocalVariableTextField.getText());
-            } else if (_tabbedPaneData.getSelectedComponent() == _panelDataFormula) {
-                action.setDataAddressing(NamedBeanAddressing.Formula);
-                action.setDataFormula(_lightDataFormulaTextField.getText());
-            } else {
-                throw new IllegalArgumentException("_tabbedPaneData has unknown selection");
-            }
-
-        } catch (ParserException e) {
-            throw new RuntimeException("ParserException: "+e.getMessage(), e);
-        }
+        _selectLightValueSwing.updateObject(action.getSelectLightValue());
     }
 
     /** {@inheritDoc} */
