@@ -2,6 +2,7 @@ package jmri.jmrit.logixng.actions.swing;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
@@ -16,7 +17,7 @@ import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.jmrit.logixng.util.DispatcherActiveTrainManager;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrit.logixng.util.swing.LogixNG_SelectEnumSwing;
-import jmri.util.swing.JComboBoxUtil;
+import jmri.jmrit.logixng.util.swing.LogixNG_SelectStringSwing;
 
 /**
  * Configures an ActionDispatcher object with a Swing JPanel.
@@ -26,17 +27,7 @@ import jmri.util.swing.JComboBoxUtil;
  */
 public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
 
-    private JTabbedPane _tabbedPaneDispatcher;
-    private JPanel _panelDispatcherDirect;
-    private JPanel _panelDispatcherReference;
-    private JPanel _panelDispatcherLocalVariable;
-    private JPanel _panelDispatcherFormula;
-
-    private JComboBox<String> _fileNamesComboBox;
-    private JTextField _dispatcherReferenceTextField;
-    private JTextField _dispatcherLocalVariableTextField;
-    private JTextField _dispatcherFormulaTextField;
-
+    private LogixNG_SelectStringSwing _selectTrainInfoSwing;
     private LogixNG_SelectEnumSwing<DirectOperation> _selectOperationSwing;
 
     private JTabbedPane _tabbedPaneData;
@@ -67,48 +58,27 @@ public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
     protected void createPanel(@CheckForNull Base object, @Nonnull JPanel buttonPanel) {
         ActionDispatcher action = (ActionDispatcher)object;
 
+        _selectTrainInfoSwing = new LogixNG_SelectStringSwing(getJDialog(), this);
         _selectOperationSwing = new LogixNG_SelectEnumSwing<>(getJDialog(), this);
 
         panel = new JPanel();
 
         // Left section
-        _tabbedPaneDispatcher = new JTabbedPane();
-        _panelDispatcherDirect = new javax.swing.JPanel();
-        _panelDispatcherReference = new javax.swing.JPanel();
-        _panelDispatcherLocalVariable = new javax.swing.JPanel();
-        _panelDispatcherFormula = new javax.swing.JPanel();
-
-        _tabbedPaneDispatcher.addTab(NamedBeanAddressing.Direct.toString(), _panelDispatcherDirect);
-        _tabbedPaneDispatcher.addTab(NamedBeanAddressing.Reference.toString(), _panelDispatcherReference);
-        _tabbedPaneDispatcher.addTab(NamedBeanAddressing.LocalVariable.toString(), _panelDispatcherLocalVariable);
-        _tabbedPaneDispatcher.addTab(NamedBeanAddressing.Formula.toString(), _panelDispatcherFormula);
-
-        _fileNamesComboBox = new JComboBox<>();
+        List<String> trainInfoFiles = new ArrayList<>();
         InstanceManager.getDefault(DispatcherActiveTrainManager.class).getTrainInfoFileNames().forEach(name -> {
-            _fileNamesComboBox.addItem(name);
+            trainInfoFiles.add(name);
         });
-        JComboBoxUtil.setupComboBoxMaxRows(_fileNamesComboBox);
-        _panelDispatcherDirect.add(_fileNamesComboBox);
-
-        _dispatcherReferenceTextField = new JTextField();
-        _dispatcherReferenceTextField.setColumns(30);
-        _panelDispatcherReference.add(_dispatcherReferenceTextField);
-
-        _dispatcherLocalVariableTextField = new JTextField();
-        _dispatcherLocalVariableTextField.setColumns(30);
-        _panelDispatcherLocalVariable.add(_dispatcherLocalVariableTextField);
-
-        _dispatcherFormulaTextField = new JTextField();
-        _dispatcherFormulaTextField.setColumns(30);
-        _panelDispatcherFormula.add(_dispatcherFormulaTextField);
 
 
-        // Center section
+        // Left and center section
+        JPanel _tabbedPaneTrainInfo;
         JPanel _tabbedPaneOperation;
 
         if (action != null) {
+            _tabbedPaneTrainInfo = _selectTrainInfoSwing.createPanel(action.getSelectTrainInfo(), trainInfoFiles);
             _tabbedPaneOperation = _selectOperationSwing.createPanel(action.getSelectEnum(), DirectOperation.values());
         } else {
+            _tabbedPaneTrainInfo = _selectTrainInfoSwing.createPanel(null, trainInfoFiles);
             _tabbedPaneOperation = _selectOperationSwing.createPanel(null, DirectOperation.values());
         }
 
@@ -175,18 +145,6 @@ public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
 
 
         if (action != null) {
-            switch (action.getAddressing()) {
-                case Direct: _tabbedPaneDispatcher.setSelectedComponent(_panelDispatcherDirect); break;
-                case Reference: _tabbedPaneDispatcher.setSelectedComponent(_panelDispatcherReference); break;
-                case LocalVariable: _tabbedPaneDispatcher.setSelectedComponent(_panelDispatcherLocalVariable); break;
-                case Formula: _tabbedPaneDispatcher.setSelectedComponent(_panelDispatcherFormula); break;
-                default: throw new IllegalArgumentException("invalid _addressing state: " + action.getAddressing().name());
-            }
-            _fileNamesComboBox.setSelectedItem(action.getTrainInfoFileName());
-            _dispatcherReferenceTextField.setText(action.getReference());
-            _dispatcherLocalVariableTextField.setText(action.getLocalVariable());
-            _dispatcherFormulaTextField.setText(action.getFormula());
-
             switch (action.getDataAddressing()) {
                 case Direct: _tabbedPaneData.setSelectedComponent(_panelDataDirect); break;
                 case Reference: _tabbedPaneData.setSelectedComponent(_panelDataReference); break;
@@ -208,7 +166,7 @@ public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
         _selectOperationSwing.addEnumListener((evt) -> { setDataPanelState(); });
 
         JComponent[] components = new JComponent[]{
-            _tabbedPaneDispatcher,
+            _tabbedPaneTrainInfo,
             _tabbedPaneOperation,
             _tabbedPaneData};
 
@@ -262,7 +220,7 @@ public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
         // Create a temporary action to test formula
         ActionDispatcher action = new ActionDispatcher("IQDA2", null);
 
-        validateInfoFileSection(errorMessages);
+        _selectTrainInfoSwing.validate(action.getSelectTrainInfo(), errorMessages);
         _selectOperationSwing.validate(action.getSelectEnum(), errorMessages);
 
         if ((_selectOperationSwing.getAddressing() == NamedBeanAddressing.Direct)
@@ -271,43 +229,6 @@ public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
         }
         validateDataSection(errorMessages);
         return errorMessages.isEmpty();
-    }
-
-    private void validateInfoFileSection(List<String> errorMessages) {
-        // Create a temporary action to test formula
-        ActionDispatcher action = new ActionDispatcher("IQDA1", null);
-
-        try {
-            if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherReference) {
-                action.setReference(_dispatcherReferenceTextField.getText());
-            }
-        } catch (IllegalArgumentException e) {
-            errorMessages.add(e.getMessage());
-            return;
-        }
-
-        try {
-            action.setFormula(_dispatcherFormulaTextField.getText());
-            if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherDirect) {
-                action.setAddressing(NamedBeanAddressing.Direct);
-            } else if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherReference) {
-                action.setAddressing(NamedBeanAddressing.Reference);
-            } else if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherLocalVariable) {
-                action.setAddressing(NamedBeanAddressing.LocalVariable);
-            } else if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherFormula) {
-                action.setAddressing(NamedBeanAddressing.Formula);
-            } else {
-                throw new IllegalArgumentException("_tabbedPane has unknown selection");
-            }
-        } catch (ParserException e) {
-            errorMessages.add("Cannot parse formula: " + e.getMessage());
-        }
-
-//        if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherDirect) {
-//            if (_stateComboBox.getSelectedItem() == null) {
-//                errorMessages.add(Bundle.getMessage("ActionDispatcher_ErrorFile"));
-//            }
-//        }
     }
 
     private void validateDataSection(List<String> errorMessages) {
@@ -360,21 +281,7 @@ public class ActionDispatcherSwing extends AbstractDigitalActionSwing {
 
         try {
             // Left section
-            if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherDirect) {
-                action.setAddressing(NamedBeanAddressing.Direct);
-                action.setTrainInfoFileName((String) _fileNamesComboBox.getSelectedItem());
-            } else if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherReference) {
-                action.setAddressing(NamedBeanAddressing.Reference);
-                action.setReference(_dispatcherReferenceTextField.getText());
-            } else if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherLocalVariable) {
-                action.setAddressing(NamedBeanAddressing.LocalVariable);
-                action.setLocalVariable(_dispatcherLocalVariableTextField.getText());
-            } else if (_tabbedPaneDispatcher.getSelectedComponent() == _panelDispatcherFormula) {
-                action.setAddressing(NamedBeanAddressing.Formula);
-                action.setFormula(_dispatcherFormulaTextField.getText());
-            } else {
-                throw new IllegalArgumentException("_tabbedPaneDispatcher has unknown selection");
-            }
+            _selectTrainInfoSwing.updateObject(action.getSelectTrainInfo());
 
             // Center section
             _selectOperationSwing.updateObject(action.getSelectEnum());

@@ -24,12 +24,8 @@ import jmri.util.TypeConversionUtil;
 public class ActionDispatcher extends AbstractDigitalAction
         implements PropertyChangeListener {
 
-    private NamedBeanAddressing _addressing = NamedBeanAddressing.Direct;
-    private String _trainInfoFileName = "";
-    private String _reference = "";
-    private String _localVariable = "";
-    private String _formula = "";
-    private ExpressionNode _expressionNode;
+    private final LogixNG_SelectString _selectTrainInfo =
+            new LogixNG_SelectString(this, this);
 
     private final LogixNG_SelectEnum<DirectOperation> _selectEnum =
             new LogixNG_SelectEnum<>(this, DirectOperation.values(), DirectOperation.None, this);
@@ -62,12 +58,7 @@ public class ActionDispatcher extends AbstractDigitalAction
         ActionDispatcher copy = new ActionDispatcher(sysName, userName);
         copy.setComment(getComment());
 
-        copy.setAddressing(_addressing);
-        copy.setTrainInfoFileName(_trainInfoFileName);
-        copy.setReference(_reference);
-        copy.setLocalVariable(_localVariable);
-        copy.setFormula(_formula);
-
+        _selectTrainInfo.copy(copy._selectTrainInfo);
         _selectEnum.copy(copy._selectEnum);
 
         copy.setDataAddressing(_dataAddressing);
@@ -82,63 +73,9 @@ public class ActionDispatcher extends AbstractDigitalAction
         return manager.registerAction(copy);
     }
 
-    public void setTrainInfoFileName(@Nonnull String fileName) {
-        _trainInfoFileName = fileName;
+    public LogixNG_SelectString getSelectTrainInfo() {
+        return _selectTrainInfo;
     }
-
-    public String getTrainInfoFileName() {
-        return _trainInfoFileName;
-    }
-
-
-    public void setAddressing(NamedBeanAddressing addressing) throws ParserException {
-        _addressing = addressing;
-        parseFormula();
-    }
-
-    public NamedBeanAddressing getAddressing() {
-        return _addressing;
-    }
-
-    public void setReference(@Nonnull String reference) {
-        if ((! reference.isEmpty()) && (! ReferenceUtil.isReference(reference))) {
-            throw new IllegalArgumentException("The reference \"" + reference + "\" is not a valid reference");
-        }
-        _reference = reference;
-    }
-
-    public String getReference() {
-        return _reference;
-    }
-
-    public void setLocalVariable(@Nonnull String localVariable) {
-        _localVariable = localVariable;
-    }
-
-    public String getLocalVariable() {
-        return _localVariable;
-    }
-
-    public void setFormula(@Nonnull String formula) throws ParserException {
-        _formula = formula;
-        parseFormula();
-    }
-
-    public String getFormula() {
-        return _formula;
-    }
-
-    private void parseFormula() throws ParserException {
-        if (_addressing == NamedBeanAddressing.Formula) {
-            Map<String, Variable> variables = new HashMap<>();
-
-            RecursiveDescentParser parser = new RecursiveDescentParser(variables);
-            _expressionNode = parser.parseExpression(_formula);
-        } else {
-            _expressionNode = null;
-        }
-    }
-
 
     public LogixNG_SelectEnum<DirectOperation> getSelectEnum() {
         return _selectEnum;
@@ -266,42 +203,16 @@ public class ActionDispatcher extends AbstractDigitalAction
     /** {@inheritDoc} */
     @Override
     public void execute() throws JmriException {
-        String trainInfoFileName = "";
+        ConditionalNG conditionalNG = getConditionalNG();
 
-        switch (_addressing) {
-            case Direct:
-                trainInfoFileName = _trainInfoFileName;
-                break;
-
-            case Reference:
-                trainInfoFileName = ReferenceUtil.getReference(
-                        getConditionalNG().getSymbolTable(), _reference);
-                break;
-
-            case LocalVariable:
-                SymbolTable symbolTable = getConditionalNG().getSymbolTable();
-                trainInfoFileName = TypeConversionUtil
-                                .convertToString(symbolTable.getValue(_localVariable), false);
-                break;
-
-            case Formula:
-                trainInfoFileName = _expressionNode != null ?
-                        TypeConversionUtil.convertToString(_expressionNode.calculate(
-                                getConditionalNG().getSymbolTable()), false)
-                        : "";
-                break;
-
-            default:
-                throw new IllegalArgumentException("invalid _addressing state: " + _addressing.name());
-        }
-
+        String trainInfoFileName = _selectTrainInfo.evaluateValue(conditionalNG);
         if (trainInfoFileName.isEmpty()) {
             return;
         }
 
         ActiveTrain activeTrain = _atManager.getActiveTrain(trainInfoFileName);
 
-        DirectOperation oper = _selectEnum.evaluateEnum(getConditionalNG());
+        DirectOperation oper = _selectEnum.evaluateEnum(conditionalNG);
 
         String newData = getNewData(oper);
 
@@ -377,29 +288,8 @@ public class ActionDispatcher extends AbstractDigitalAction
 // {[Enable|Disable]} "reset when done" for train {}}
 // {[Enable|Disable]} "terminate when done" for train using {}}
 
-        String fileName;
+        String fileName = _selectTrainInfo.getDescription(locale);
         String state = _selectEnum.getDescription(locale);
-
-        switch (_addressing) {
-            case Direct:
-                fileName = Bundle.getMessage(locale, "AddressByDirect", _trainInfoFileName);
-                break;
-
-            case Reference:
-                fileName = Bundle.getMessage(locale, "AddressByReference", _reference);
-                break;
-
-            case LocalVariable:
-                fileName = Bundle.getMessage(locale, "AddressByLocalVariable", _localVariable);
-                break;
-
-            case Formula:
-                fileName = Bundle.getMessage(locale, "AddressByFormula", _formula);
-                break;
-
-            default:
-                throw new IllegalArgumentException("invalid _addressing state: " + _addressing.name());
-        }
 
         if (_selectEnum.getAddressing() == NamedBeanAddressing.Direct) {
             switch (_selectEnum.getEnum()) {

@@ -6,6 +6,7 @@ import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.NamedBeanAddressing;
 import jmri.jmrit.logixng.actions.ActionDispatcher;
 import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectEnumXml;
+import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectStringXml;
 import jmri.jmrit.logixng.util.parser.ParserException;
 
 import org.jdom2.Element;
@@ -38,18 +39,10 @@ public class ActionDispatcherXml extends jmri.managers.configurexml.AbstractName
 
         storeCommon(p, element);
 
+        var selectTrainInfoXml = new LogixNG_SelectStringXml();
         var selectEnumXml = new LogixNG_SelectEnumXml<ActionDispatcher.DirectOperation>();
 
-        String trainInfoFileName = p.getTrainInfoFileName();
-        if (trainInfoFileName != null) {
-            element.addContent(new Element("trainInfoFileName").addContent(trainInfoFileName));
-        }
-
-        element.addContent(new Element("addressing").addContent(p.getAddressing().name()));
-        element.addContent(new Element("reference").addContent(p.getReference()));
-        element.addContent(new Element("localVariable").addContent(p.getLocalVariable()));
-        element.addContent(new Element("formula").addContent(p.getFormula()));
-
+        element.addContent(selectTrainInfoXml.store(p.getSelectTrainInfo(), "trainInfo"));
         element.addContent(selectEnumXml.store(p.getSelectEnum(), "operation"));
 
         element.addContent(new Element("dataAddressing").addContent(p.getDataAddressing().name()));
@@ -72,7 +65,17 @@ public class ActionDispatcherXml extends jmri.managers.configurexml.AbstractName
 
         loadCommon(h, shared);
 
+        var selectTrainInfoXml = new LogixNG_SelectStringXml();
         var selectEnumXml = new LogixNG_SelectEnumXml<ActionDispatcher.DirectOperation>();
+
+        selectTrainInfoXml.load(shared.getChild("trainInfo"), h.getSelectTrainInfo());
+        selectTrainInfoXml.loadLegacy(
+                shared, h.getSelectTrainInfo(),
+                "addressing",
+                "trainInfoFileName",
+                "reference",
+                "localVariable",
+                "formula");
 
         selectEnumXml.load(shared.getChild("operation"), h.getSelectEnum());
         selectEnumXml.loadLegacy(
@@ -84,27 +87,7 @@ public class ActionDispatcherXml extends jmri.managers.configurexml.AbstractName
                 "operationFormula");
 
         try {
-            Element elem = shared.getChild("trainInfoFileName");
-            if (elem != null) {
-                h.setTrainInfoFileName(elem.getTextTrim());
-            }
-
-            elem = shared.getChild("addressing");
-            if (elem != null) {
-                h.setAddressing(NamedBeanAddressing.valueOf(elem.getTextTrim()));
-            }
-
-            elem = shared.getChild("reference");
-            if (elem != null) h.setReference(elem.getTextTrim());
-
-            elem = shared.getChild("localVariable");
-            if (elem != null) h.setLocalVariable(elem.getTextTrim());
-
-            elem = shared.getChild("formula");
-            if (elem != null) h.setFormula(elem.getTextTrim());
-
-
-            elem = shared.getChild("dataAddressing");
+            Element elem = shared.getChild("dataAddressing");
             if (elem != null) {
                 h.setDataAddressing(NamedBeanAddressing.valueOf(elem.getTextTrim()));
             }

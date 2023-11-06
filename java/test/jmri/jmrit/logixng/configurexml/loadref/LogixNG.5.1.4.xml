@@ -15062,11 +15062,11 @@
     </ActionClockRate>
     <ActionDispatcher class="jmri.jmrit.logixng.actions.configurexml.ActionDispatcherXml">
       <systemName>IQDA:AUTO:0031</systemName>
-      <trainInfoFileName />
-      <addressing>Direct</addressing>
-      <reference />
-      <localVariable />
-      <formula />
+      <trainInfo>
+        <addressing>Direct</addressing>
+        <value />
+        <listenToMemory>no</listenToMemory>
+      </trainInfo>
       <operation>
         <addressing>Direct</addressing>
         <enum>TrainPriority</enum>

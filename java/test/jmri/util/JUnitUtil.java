@@ -1600,6 +1600,13 @@ public class JUnitUtil {
         return random;
     }
 
+    // It's important that the random seed for this random is constant and doesn't change between runs.
+    final private static Random randomConstantSeed = new Random(0);
+
+    public static Random getRandomConstantSeed(){
+        return randomConstantSeed;
+    }
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JUnitUtil.class);
 
 }

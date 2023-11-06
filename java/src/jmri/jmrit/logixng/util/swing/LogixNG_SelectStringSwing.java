@@ -13,8 +13,7 @@ import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.jmrit.logixng.util.LogixNG_SelectString;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.util.FileUtil;
-import jmri.util.swing.BeanSelectPanel;
-import jmri.util.swing.JmriJFileChooser;
+import jmri.util.swing.*;
 
 /**
  * Swing class for jmri.jmrit.logixng.util.LogixNG_SelectString.
@@ -28,6 +27,7 @@ public class LogixNG_SelectStringSwing {
 
     private JTabbedPane _tabbedPane;
     private JTextField _valueTextField;
+    private JComboBox<String> _valueComboBox;
     private JPanel _panelDirect;
     private JPanel _panelReference;
     private JPanel _panelMemory;
@@ -53,6 +53,20 @@ public class LogixNG_SelectStringSwing {
 
         _valueTextField = new JTextField(30);
         _panelDirect.add(_valueTextField);
+
+        return internalCreatePanel(selectStr);
+    }
+
+    public JPanel createPanel(@CheckForNull LogixNG_SelectString selectStr, List<String> options) {
+        _panelDirect = new javax.swing.JPanel();
+
+
+        _valueComboBox = new JComboBox<>();
+        options.forEach((s) -> {
+            _valueComboBox.addItem(s);
+        });
+        JComboBoxUtil.setupComboBoxMaxRows(_valueComboBox);
+        _panelDirect.add(_valueComboBox);
 
         return internalCreatePanel(selectStr);
     }
@@ -145,7 +159,13 @@ public class LogixNG_SelectStringSwing {
                 default: throw new IllegalArgumentException("invalid _addressing state: " + selectStr.getAddressing().name());
             }
             if (selectStr.getValue() != null) {
-                _valueTextField.setText(selectStr.getValue());
+                if (_valueTextField != null) {
+                    _valueTextField.setText(selectStr.getValue());
+                } else if (_valueComboBox != null) {
+                    _valueComboBox.setSelectedItem(selectStr.getValue());
+                } else {
+                    throw new RuntimeException("No valid component for string");
+                }
             }
             _referenceTextField.setText(selectStr.getReference());
             _memoryPanel.setDefaultNamedBean(selectStr.getMemory());
@@ -163,7 +183,13 @@ public class LogixNG_SelectStringSwing {
             @Nonnull List<String> errorMessages) {
         try {
             if (_tabbedPane.getSelectedComponent() == _panelDirect) {
-                selectStr.setValue(_valueTextField.getText());
+                if (_valueTextField != null) {
+                    selectStr.setValue(_valueTextField.getText());
+                } else if (_valueComboBox != null) {
+                    selectStr.setValue(_valueComboBox.getItemAt(_valueComboBox.getSelectedIndex()));
+                } else {
+                    throw new RuntimeException("No valid component for string");
+                }
             }
             if (_tabbedPane.getSelectedComponent() == _panelReference) {
                 selectStr.setReference(_referenceTextField.getText());
@@ -202,7 +228,13 @@ public class LogixNG_SelectStringSwing {
 
     public void setEnabled(boolean value) {
         _tabbedPane.setEnabled(value);
-        _valueTextField.setEnabled(value);
+        if (_valueTextField != null) {
+            _valueTextField.setEnabled(value);
+        } else if (_valueComboBox != null) {
+            _valueComboBox.setEnabled(value);
+        } else {
+            throw new RuntimeException("No valid component for string");
+        }
         _referenceTextField.setEnabled(value);
         _localVariableTextField.setEnabled(value);
         _formulaTextField.setEnabled(value);
@@ -211,7 +243,13 @@ public class LogixNG_SelectStringSwing {
     public void updateObject(@Nonnull LogixNG_SelectString selectStr) {
 
         if (_tabbedPane.getSelectedComponent() == _panelDirect) {
-            selectStr.setValue(_valueTextField.getText());
+            if (_valueTextField != null) {
+                selectStr.setValue(_valueTextField.getText());
+            } else if (_valueComboBox != null) {
+                selectStr.setValue(_valueComboBox.getItemAt(_valueComboBox.getSelectedIndex()));
+            } else {
+                throw new RuntimeException("No valid component for string");
+            }
         }
 
         try {
