@@ -658,11 +658,11 @@ public class CreateLogixNGTreeScaffold {
         actionManySocket.getChild(indexAction++).connect(maleSocket);
 
         actionDispatcher = new ActionDispatcher(digitalActionManager.getAutoSystemName(), null);
-        actionDispatcher.setTrainInfoFileName("MyTrainInfo.xml");
-        actionDispatcher.setAddressing(NamedBeanAddressing.Direct);
-        actionDispatcher.setReference("{IM1}");
-        actionDispatcher.setLocalVariable("MyVar");
-        actionDispatcher.setFormula("a+b");
+        actionDispatcher.getSelectTrainInfo().setValue("MyTrainInfo.xml");
+        actionDispatcher.getSelectTrainInfo().setAddressing(NamedBeanAddressing.Direct);
+        actionDispatcher.getSelectTrainInfo().setReference("{IM1}");
+        actionDispatcher.getSelectTrainInfo().setLocalVariable("MyVar");
+        actionDispatcher.getSelectTrainInfo().setFormula("a+b");
         actionDispatcher.getSelectEnum().setEnum(ActionDispatcher.DirectOperation.TrainPriority);
         actionDispatcher.setDataAddressing(NamedBeanAddressing.Direct);
         actionDispatcher.setDataReference("{IM3}");
@@ -676,11 +676,11 @@ public class CreateLogixNGTreeScaffold {
         actionManySocket.getChild(indexAction++).connect(maleSocket);
 
         actionDispatcher = new ActionDispatcher(digitalActionManager.getAutoSystemName(), null);
-        actionDispatcher.setTrainInfoFileName("MyOtherTrainInfo.xml");
-        actionDispatcher.setAddressing(NamedBeanAddressing.LocalVariable);
-        actionDispatcher.setReference("{IM2}");
-        actionDispatcher.setLocalVariable("MyOtherVar");
-        actionDispatcher.setFormula("a+b+c");
+        actionDispatcher.getSelectTrainInfo().setValue("MyOtherTrainInfo.xml");
+        actionDispatcher.getSelectTrainInfo().setAddressing(NamedBeanAddressing.LocalVariable);
+        actionDispatcher.getSelectTrainInfo().setReference("{IM2}");
+        actionDispatcher.getSelectTrainInfo().setLocalVariable("MyOtherVar");
+        actionDispatcher.getSelectTrainInfo().setFormula("a+b+c");
         actionDispatcher.getSelectEnum().setEnum(ActionDispatcher.DirectOperation.TrainPriority);
         actionDispatcher.setDataAddressing(NamedBeanAddressing.Direct);
         actionDispatcher.setDataReference("{IM5}");
@@ -694,11 +694,11 @@ public class CreateLogixNGTreeScaffold {
         actionManySocket.getChild(indexAction++).connect(maleSocket);
 
         actionDispatcher = new ActionDispatcher(digitalActionManager.getAutoSystemName(), null);
-        actionDispatcher.setTrainInfoFileName("MyOtherTrainInfo.xml");
-        actionDispatcher.setAddressing(NamedBeanAddressing.LocalVariable);
-        actionDispatcher.setReference("{IM8}");
-        actionDispatcher.setLocalVariable("MyOtherVar");
-        actionDispatcher.setFormula("a+c");
+        actionDispatcher.getSelectTrainInfo().setValue("MyOtherTrainInfo.xml");
+        actionDispatcher.getSelectTrainInfo().setAddressing(NamedBeanAddressing.LocalVariable);
+        actionDispatcher.getSelectTrainInfo().setReference("{IM8}");
+        actionDispatcher.getSelectTrainInfo().setLocalVariable("MyOtherVar");
+        actionDispatcher.getSelectTrainInfo().setFormula("a+c");
         actionDispatcher.getSelectEnum().setEnum(ActionDispatcher.DirectOperation.TrainPriority);
         actionDispatcher.setDataAddressing(NamedBeanAddressing.Direct);
         actionDispatcher.setDataReference("{IM7}");
@@ -780,11 +780,11 @@ public class CreateLogixNGTreeScaffold {
         actionLight.getSelectEnum().setFormula("\"IT\"+index2");
         actionLight.getSelectEnum().setLocalVariable("index2");
         actionLight.getSelectEnum().setReference("{IM2}");
-        actionLight.setDataAddressing(NamedBeanAddressing.Direct);
-        actionLight.setLightValue(10);
-        actionLight.setDataReference("{MyRef}");
-        actionLight.setDataLocalVariable("MyLocalVariable");
-        actionLight.setDataFormula("a+b-c");
+        actionLight.getSelectLightValue().setAddressing(NamedBeanAddressing.Direct);
+        actionLight.getSelectLightValue().setValue(10);
+        actionLight.getSelectLightValue().setReference("{MyRef}");
+        actionLight.getSelectLightValue().setLocalVariable("MyLocalVariable");
+        actionLight.getSelectLightValue().setFormula("a+b-c");
         maleSocket = digitalActionManager.registerAction(actionLight);
         maleSocket.setErrorHandlingType(MaleSocket.ErrorHandlingType.AbortExecution);
         actionManySocket.getChild(indexAction++).connect(maleSocket);
@@ -801,11 +801,11 @@ public class CreateLogixNGTreeScaffold {
         actionLight.getSelectEnum().setFormula("\"IT\"+index2");
         actionLight.getSelectEnum().setLocalVariable("index2");
         actionLight.getSelectEnum().setReference("{IM2}");
-        actionLight.setDataAddressing(NamedBeanAddressing.Formula);
-        actionLight.setLightValue(15);
-        actionLight.setDataReference("{MyOtherRef}");
-        actionLight.setDataLocalVariable("MyOtherLocalVariable");
-        actionLight.setDataFormula("a+b*c");
+        actionLight.getSelectLightValue().setAddressing(NamedBeanAddressing.Formula);
+        actionLight.getSelectLightValue().setValue(15);
+        actionLight.getSelectLightValue().setReference("{MyOtherRef}");
+        actionLight.getSelectLightValue().setLocalVariable("MyOtherLocalVariable");
+        actionLight.getSelectLightValue().setFormula("a+b*c");
         maleSocket = digitalActionManager.registerAction(actionLight);
         maleSocket.setErrorHandlingType(MaleSocket.ErrorHandlingType.LogError);
         actionManySocket.getChild(indexAction++).connect(maleSocket);
