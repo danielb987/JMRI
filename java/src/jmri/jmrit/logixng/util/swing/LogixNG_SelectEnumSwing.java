@@ -235,6 +235,10 @@ public class LogixNG_SelectEnumSwing<E extends Enum<?>> {
         }
     }
 
+    public boolean isDirectAddressing() {
+        return _tabbedPane.getSelectedComponent() == _panelDirect;
+    }
+
     public E getEnum() {
         return _enumComboBox.getItemAt(_enumComboBox.getSelectedIndex());
     }

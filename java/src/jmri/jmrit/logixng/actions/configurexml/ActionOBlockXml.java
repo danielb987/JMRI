@@ -4,11 +4,10 @@ import jmri.*;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logixng.DigitalActionManager;
-import jmri.jmrit.logixng.NamedBeanAddressing;
 import jmri.jmrit.logixng.actions.ActionOBlock;
 import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectEnumXml;
 import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectNamedBeanXml;
-import jmri.jmrit.logixng.util.parser.ParserException;
+import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectStringXml;
 
 import org.jdom2.Element;
 
@@ -49,12 +48,8 @@ public class ActionOBlockXml extends jmri.managers.configurexml.AbstractNamedBea
         var selectEnumXml = new LogixNG_SelectEnumXml<ActionOBlock.DirectOperation>();
         element.addContent(selectEnumXml.store(p.getSelectEnum(), "operation"));
 
-        element.addContent(new Element("dataAddressing").addContent(p.getDataAddressing().name()));
-        element.addContent(new Element("dataReference").addContent(p.getDataReference()));
-        element.addContent(new Element("dataLocalVariable").addContent(p.getDataLocalVariable()));
-        element.addContent(new Element("dataFormula").addContent(p.getDataFormula()));
-
-        element.addContent(new Element("oblockValue").addContent(p.getOBlockValue()));
+        var selectOblockValueXml = new LogixNG_SelectStringXml();
+        element.addContent(selectOblockValueXml.store(p.getSelectOBlockValue(), "value"));
 
         return element;
     }
@@ -69,6 +64,7 @@ public class ActionOBlockXml extends jmri.managers.configurexml.AbstractNamedBea
 
         var selectNamedBeanXml = new LogixNG_SelectNamedBeanXml<OBlock>();
         var selectEnumXml = new LogixNG_SelectEnumXml<ActionOBlock.DirectOperation>();
+        var selectOblockValueXml = new LogixNG_SelectStringXml();
 
         var selectMemoryNamedBeanXml = new LogixNG_SelectNamedBeanXml<Memory>();
 
@@ -85,28 +81,14 @@ public class ActionOBlockXml extends jmri.managers.configurexml.AbstractNamedBea
                 "operationLocalVariable",
                 "operationFormula");
 
-        try {
-            Element elem = shared.getChild("dataAddressing");
-            if (elem != null) {
-                h.setDataAddressing(NamedBeanAddressing.valueOf(elem.getTextTrim()));
-            }
-
-            elem = shared.getChild("dataReference");
-            if (elem != null) h.setDataReference(elem.getTextTrim());
-
-            elem = shared.getChild("dataLocalVariable");
-            if (elem != null) h.setDataLocalVariable(elem.getTextTrim());
-
-            elem = shared.getChild("dataFormula");
-            if (elem != null) h.setDataFormula(elem.getTextTrim());
-
-
-            elem = shared.getChild("oblockValue");
-            if (elem != null) h.setOBlockValue(elem.getTextTrim());
-
-        } catch (ParserException e) {
-            throw new JmriConfigureXmlException(e);
-        }
+        selectOblockValueXml.load(shared.getChild("value"), h.getSelectOBlockValue());
+        selectOblockValueXml.loadLegacy(
+                shared, h.getSelectOBlockValue(),
+                "dataAddressing",
+                "oblockValue",
+                "dataReference",
+                "dataLocalVariable",
+                "dataFormula");
 
         InstanceManager.getDefault(DigitalActionManager.class).registerAction(h);
         return true;

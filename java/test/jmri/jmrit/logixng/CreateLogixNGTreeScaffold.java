@@ -1355,8 +1355,8 @@ public class CreateLogixNGTreeScaffold {
         actionOBlock.getSelectEnum().setAddressing(NamedBeanAddressing.Direct);
         actionOBlock.getSelectEnum().setEnum(ActionOBlock.DirectOperation.SetValue);
 
-        actionOBlock.setDataAddressing(NamedBeanAddressing.Direct);
-        actionOBlock.setOBlockValue("ABC");
+        actionOBlock.getSelectOBlockValue().setAddressing(NamedBeanAddressing.Direct);
+        actionOBlock.getSelectOBlockValue().setValue("ABC");
 
         maleSocket = digitalActionManager.registerAction(actionOBlock);
         maleSocket.setErrorHandlingType(MaleSocket.ErrorHandlingType.AbortExecution);

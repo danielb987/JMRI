@@ -1400,11 +1400,11 @@ public class ImportConditional {
                 if (oblockData.startsWith("@")) {
                     // indirect
                     String ref = "{" + oblockData.substring(1) + "}";
-                    action.setDataAddressing(NamedBeanAddressing.Reference);
-                    action.setDataReference(ref);
+                    action.getSelectOBlockValue().setAddressing(NamedBeanAddressing.Reference);
+                    action.getSelectOBlockValue().setReference(ref);
                 } else {
-                    action.setDataAddressing(NamedBeanAddressing.Direct);
-                    action.setOBlockValue(oblockData);
+                    action.getSelectOBlockValue().setAddressing(NamedBeanAddressing.Direct);
+                    action.getSelectOBlockValue().setValue(oblockData);
                 }
                 break;
 

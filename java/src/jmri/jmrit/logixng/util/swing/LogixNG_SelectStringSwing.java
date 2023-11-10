@@ -178,6 +178,14 @@ public class LogixNG_SelectStringSwing {
         return panel;
     }
 
+    public boolean isDirectAddressing() {
+        return _tabbedPane.getSelectedComponent() == _panelDirect;
+    }
+
+    public String getValue() {
+        return _valueTextField.getText();
+    }
+
     public boolean validate(
             @Nonnull LogixNG_SelectString selectStr,
             @Nonnull List<String> errorMessages) {

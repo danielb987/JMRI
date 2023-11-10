@@ -235,6 +235,10 @@ public class LogixNG_SelectNamedBeanSwing<E extends NamedBean> {
         _tabbedPane.removeChangeListener(l);
     }
 
+    public boolean isDirectAddressing() {
+        return _tabbedPane.getSelectedComponent() == _panelDirect;
+    }
+
     public E getBean() {
         if (getAddressing() == NamedBeanAddressing.Direct) {
             return _namedBeanPanel.getNamedBean();
