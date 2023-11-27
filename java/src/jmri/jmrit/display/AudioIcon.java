@@ -85,6 +85,25 @@ public class AudioIcon extends PositionableLabel {
         return super.finishClone(pos);
     }
 
+    @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_AudioIcon");
+    }
+
+    @Override
+    @Nonnull
+    public String getNameString() {
+        String name;
+        if (_namedAudio == null) {
+            name = Bundle.getMessage("NotConnected");
+        } else {
+            name = _namedAudio.getBean().getDisplayName(
+                    NamedBean.DisplayOptions.USERNAME_SYSTEMNAME);
+        }
+        return name;
+    }
+
     public int getIdentity() {
         return _identity;
     }
@@ -259,50 +278,6 @@ public class AudioIcon extends PositionableLabel {
                         changeAudioIconType();
                     }
                 });
-
-                JMenu menu = new JMenu(Bundle.getMessage("AudioIcon_WebPanelMenu"));
-                ButtonGroup buttonGroup = new ButtonGroup();
-
-                JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_OnClickPlaySoundGlobally"));
-                rbMenuItem.addActionListener((ActionEvent event) -> {
-                    _onClickOperation = OnClickOperation.PlaySoundGlobally;
-                });
-                rbMenuItem.setSelected(_onClickOperation == OnClickOperation.PlaySoundGlobally);
-                menu.add(rbMenuItem);
-                buttonGroup.add(rbMenuItem);
-
-                rbMenuItem = new JRadioButtonMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_OnClickPlaySoundLocally"));
-                rbMenuItem.addActionListener((ActionEvent event) -> {
-                    _onClickOperation = OnClickOperation.PlaySoundLocally;
-                });
-                rbMenuItem.setSelected(_onClickOperation == OnClickOperation.PlaySoundLocally);
-                menu.add(rbMenuItem);
-                buttonGroup.add(rbMenuItem);
-
-                rbMenuItem = new JRadioButtonMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_OnClickDoNothing"));
-                rbMenuItem.addActionListener((ActionEvent event) -> {
-                    _onClickOperation = OnClickOperation.DoNothing;
-                });
-                rbMenuItem.setSelected(_onClickOperation == OnClickOperation.DoNothing);
-                menu.add(rbMenuItem);
-                buttonGroup.add(rbMenuItem);
-
-                JCheckBoxMenuItem cbMenuItem2 = new JCheckBoxMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_PlaySoundWhenJmriPlays"));
-                cbMenuItem2.addActionListener((ActionEvent event) -> {
-                    _playSoundWhenJmriPlays = cbMenuItem2.isSelected();
-                });
-                cbMenuItem2.setSelected(_playSoundWhenJmriPlays);
-                menu.add(cbMenuItem2);
-
-                JCheckBoxMenuItem cbMenuItem3 = new JCheckBoxMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_StopSoundWhenJmriStops"));
-                cbMenuItem3.addActionListener((ActionEvent event) -> {
-                    _stopSoundWhenJmriStops = cbMenuItem3.isSelected();
-                });
-                cbMenuItem3.setSelected(_stopSoundWhenJmriStops);
-                menu.add(cbMenuItem3);
-
-                popup.add(menu);
-
             } else {
                 popup.add(new AbstractAction(Bundle.getMessage("ChangeToIcon")) {
                     @Override
@@ -311,6 +286,49 @@ public class AudioIcon extends PositionableLabel {
                     }
                 });
             }
+
+            JMenu menu = new JMenu(Bundle.getMessage("AudioIcon_WebPanelMenu"));
+            ButtonGroup buttonGroup = new ButtonGroup();
+
+            JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_OnClickPlaySoundGlobally"));
+            rbMenuItem.addActionListener((ActionEvent event) -> {
+                _onClickOperation = OnClickOperation.PlaySoundGlobally;
+            });
+            rbMenuItem.setSelected(_onClickOperation == OnClickOperation.PlaySoundGlobally);
+            menu.add(rbMenuItem);
+            buttonGroup.add(rbMenuItem);
+
+            rbMenuItem = new JRadioButtonMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_OnClickPlaySoundLocally"));
+            rbMenuItem.addActionListener((ActionEvent event) -> {
+                _onClickOperation = OnClickOperation.PlaySoundLocally;
+            });
+            rbMenuItem.setSelected(_onClickOperation == OnClickOperation.PlaySoundLocally);
+            menu.add(rbMenuItem);
+            buttonGroup.add(rbMenuItem);
+
+            rbMenuItem = new JRadioButtonMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_OnClickDoNothing"));
+            rbMenuItem.addActionListener((ActionEvent event) -> {
+                _onClickOperation = OnClickOperation.DoNothing;
+            });
+            rbMenuItem.setSelected(_onClickOperation == OnClickOperation.DoNothing);
+            menu.add(rbMenuItem);
+            buttonGroup.add(rbMenuItem);
+
+            JCheckBoxMenuItem cbMenuItem2 = new JCheckBoxMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_PlaySoundWhenJmriPlays"));
+            cbMenuItem2.addActionListener((ActionEvent event) -> {
+                _playSoundWhenJmriPlays = cbMenuItem2.isSelected();
+            });
+            cbMenuItem2.setSelected(_playSoundWhenJmriPlays);
+            menu.add(cbMenuItem2);
+
+            JCheckBoxMenuItem cbMenuItem3 = new JCheckBoxMenuItem(Bundle.getMessage("AudioIcon_WebPanelMenu_StopSoundWhenJmriStops"));
+            cbMenuItem3.addActionListener((ActionEvent event) -> {
+                _stopSoundWhenJmriStops = cbMenuItem3.isSelected();
+            });
+            cbMenuItem3.setSelected(_stopSoundWhenJmriStops);
+            menu.add(cbMenuItem3);
+
+            popup.add(menu);
         }
         return true;
     }

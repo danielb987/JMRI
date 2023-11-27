@@ -128,11 +128,9 @@ public class StoreAndLoadTest {
                             log.error("Tree differs on line {}:", line+1);
                             log.error("Orig: {}", originalTreeLines[line]);
                             log.error(" New: {}", newTreeLines[line]);
-//                            System.out.format("Tree differs on line %d:%nOrig: %s%n New: %s%n", line+1, originalTreeLines[line], newTreeLines[line]);
                             break;
                         }
                     }
-//                    System.out.println("The tree has changed. The tree differs on line "+Integer.toString(line+1));
                     Assert.fail("The tree has changed. The tree differs on line "+Integer.toString(line+1));
 //                    throw new RuntimeException("tree has changed");
                 }

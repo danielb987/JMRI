@@ -157,6 +157,11 @@
           interface.
         </dd>
 
+        <dd>
+          <a href="https://www.sprog-dcc.co.uk/lcc/usb-lcc">USB-LCC</a> A galvanically isolated LCC to USB
+          interface.
+        </dd>
+
         <dt>CANable</dt>
 
         <dd>
@@ -164,6 +169,15 @@
           CAN via Lawicell CANUSB System Connection.
         </dd>
 
+      </dl>
+
+      <h4>Raspberry Pi Adapters</h4>
+      <dl>
+        <dt>SPROG DCC Ltd</dt>
+
+        <dd>
+          <a href="https://www.sprog-dcc.co.uk/lcc/pi-lcc">PI-LCC</a> Raspberry Pi adapter for OpenLCB/LCC (New product).
+        </dd>
       </dl>
 
       <h4>Other CAN Hardware Interfaces</h4>
@@ -196,7 +210,7 @@
         <dt>SPROG DCC Ltd</dt>
 
         <dd>
-          <a href="https://www.sprog-dcc.co.uk">SPROG DCC Pi-SPROG 3 Plus</a> CBUS DCC Command
+          <a href="https://www.sprog-dcc.co.uk/pi-sprog/pi-sprog-3-plus">SPROG DCC Pi-SPROG 3 Plus</a> CBUS DCC Command
           Station for direct attachment to a Raspberry-Pi via its 40-pin I/O connector.
         </dd>
 

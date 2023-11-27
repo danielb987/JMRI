@@ -686,10 +686,22 @@ function processPanelXML($returnedData, $success, $xhr) {
                     $widget['styles'] = $getTextCSSFromObj($widget);
                     switch ($widget.widgetType) {
                         case "audioicon" :
-                            $widget.jsonType = "audioicon"; // JSON object type
+                            $widget.jsonType = 'audio'; // JSON object type
                             $widget['identity'] = $(this).find('Identity').text();
+                            audioIconIDs['audioicon:'+$widget['identity']] = $widget;   // Ensure the key is a string, not a number
+                            $widget['sound'] = $(this).attr('sound');
+                            $widget['onClickOperation'] = $(this).attr('onClickOperation');
+                            $widget['audio_widget'] = new Audio($widget['sound']);
+                            $widget['playSoundWhenJmriPlays'] = $(this).attr('playSoundWhenJmriPlays') == "yes";
+                            $widget['stopSoundWhenJmriStops'] = $(this).attr('stopSoundWhenJmriStops') == "yes";
                             $widget.styles['user-select'] = "none";
                             $widget.classes += " " + $widget.jsonType + " clickable ";
+                            if (!$('#' + $widget.id).hasClass('clickable')) {
+                                $('#' + $widget.id).addClass("clickable");
+                                $('#' + $widget.id).bind(UPEVENT, $handleClick);
+                            }
+                            jmri.getAudio($widget.systemName);
+                            jmri.getAudioIcon($widget['identity']);
                             break;
                         case "logixngicon" :
                             $widget.jsonType = "logixngicon"; // JSON object type
@@ -1476,6 +1488,8 @@ function $handleClick(e) {
         switch ($widget['onClickOperation']) {
             case "PlaySoundLocally":
                 if ($widget['audio_widget'].paused) {   // Sound is stopped
+                    $widget['audio_widget'].loop = false;
+//                    $widget['audio_widget'].loop = (playNumLoops == -1);
                     $widget['audio_widget'].play();
                 } else {                                // Sound is playing
                     $widget['audio_widget'].pause();
@@ -1639,7 +1653,7 @@ function $drawIcon($widget) {
     // add the image to the panel area, with appropriate css classes and id (skip any unsupported)
     if (isDefined($widget['icon' + $indicator + $state])) {
         $imgHtml = "<img id=" + $widget.id + " class='" + $widget.classes +
-                "' src='" + $widget["icon" + $indicator + $state] + "' " + $hoverText + "/>"
+                "' src='" + $widget["icon" + $indicator + $state].replaceAll("'","&apos;") + "' " + $hoverText + "/>"
 
         $("#panel-area").append($imgHtml); // put the html in the panel
 
@@ -2490,13 +2504,15 @@ $(document).ready(function() {
                         $widget['audio_widget'].currentTime = 0;
                     } else if (state == 17 && $widget['playSoundWhenJmriPlays']) {  // Sound is playing
                         $widget['audio_widget'].currentTime = 0;
+                        $widget['audio_widget'].loop = (data.playNumLoops == -1);
                         $widget['audio_widget'].play();
                     }
                 });
             },
-            audioicon: function(identity, command) {
+            audioicon: function(identity, command, playNumLoops) {
                 $widget = audioIconIDs['audioicon:'+identity];
                 if (command == "Play") {
+                    $widget['audio_widget'].loop = (playNumLoops == -1);
                     $widget['audio_widget'].play();
                 } else if (command == "Stop") {
                     $widget['audio_widget'].pause();
