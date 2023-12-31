@@ -42,14 +42,14 @@ public class DefaultLogixNGManager extends AbstractManager<LogixNG>
         // it's loaded here.
         InstanceManager.getDefault(LogixNGPreferences.class);
 
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
-        log.error("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
+        log.info("Test Jenkins branch");
     }
 
     @Override
