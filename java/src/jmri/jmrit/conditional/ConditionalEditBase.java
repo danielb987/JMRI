@@ -11,15 +11,11 @@ import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jmri.Audio;
 import jmri.Conditional;
@@ -56,6 +52,7 @@ import jmri.jmrit.picker.PickSinglePanel;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.JmriJFrame;
 import jmri.util.swing.JComboBoxUtil;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * This is the base class for the Conditional edit view classes. Contains shared
@@ -93,6 +90,7 @@ public class ConditionalEditBase {
     boolean _showReminder = false;
     boolean _suppressReminder = false;
     boolean _suppressIndirectRef = false;
+    private boolean _checkEnabled = jmri.InstanceManager.getDefault(jmri.configurexml.ShutdownPreferences.class).isStoreCheckEnabled();
 
     /**
      * Input selection names.
@@ -296,10 +294,10 @@ public class ConditionalEditBase {
         if (antecedent.length() > 0) {
             String message = curConditional.validateAntecedent(antecedent, variableList);
             if (message != null) {
-                JOptionPane.showMessageDialog(_editLogixFrame,
+                JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         message + Bundle.getMessage("ParseError8"), // NOI18N
                         Bundle.getMessage("ErrorTitle"),            // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -362,10 +360,10 @@ public class ConditionalEditBase {
             if (p != null) {
                 // Conditional with this user name already exists
                 log.error("Failure to update Conditional with Duplicate User Name: {}", uName);
-                JOptionPane.showMessageDialog(_editLogixFrame,
+                JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         Bundle.getMessage("Error10"), // NOI18N
                         Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } // else return true;
@@ -767,9 +765,9 @@ public class ConditionalEditBase {
                     Conditional cRef = xRef.getConditional(refName);
                     Object[] msgs = new Object[]{c.getUserName(), c.getSystemName(), cRef.getUserName(),
                         cRef.getSystemName(), xRef.getUserName(), xRef.getSystemName()};
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                    JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Error11", msgs), // NOI18N
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE); // NOI18N
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE); // NOI18N
                     return false;
                 }
             }
@@ -807,7 +805,7 @@ public class ConditionalEditBase {
      * Display reminder to save.
      */
     void showSaveReminder() {
-        if (_showReminder) {
+        if (_showReminder && !_checkEnabled) {
             if (InstanceManager.getNullableDefault(jmri.UserPreferencesManager.class) != null) {
                 InstanceManager.getDefault(jmri.UserPreferencesManager.class).
                         showInfoMessage(Bundle.getMessage("ReminderTitle"), Bundle.getMessage("ReminderSaveString", // NOI18N
@@ -856,9 +854,9 @@ public class ConditionalEditBase {
                     }
                     validateIntensity(Integer.parseInt((String) m.getValue()));
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                    JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Error24", intReference),
-                            Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE); // NOI18N
+                            Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 }
                 return true;    // above is a warning to set memory correctly
             }
@@ -876,9 +874,9 @@ public class ConditionalEditBase {
      */
     boolean validateIntensity(int time) {
         if (time < 0 || time > 100) {
-            JOptionPane.showMessageDialog(_editLogixFrame,
+            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Error38", time, Bundle.getMessage("Error42")),
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE); // NOI18N
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -922,9 +920,9 @@ public class ConditionalEditBase {
                     }
                     validateTime(actionType, Float.parseFloat((String) m.getValue()));
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                    JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Error24", memRef),
-                            Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);   // NOI18N
+                            Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 }
                 return true;    // above is a warning to set memory correctly
             }
@@ -965,9 +963,9 @@ public class ConditionalEditBase {
                 default:
                     break;
             }
-            JOptionPane.showMessageDialog(_editLogixFrame,
+            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Error38", time, Bundle.getMessage(errorNum)),
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);       // NOI18N
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -996,9 +994,9 @@ public class ConditionalEditBase {
                 errorNum = "Error27";       // NOI18N
                 break;
             case SET_LIGHT_INTENSITY:
-                JOptionPane.showMessageDialog(_editLogixFrame,
+                JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         Bundle.getMessage("Error43"), // NOI18N
-                        Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);       // NOI18N
+                        Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);       // NOI18N
                 return;
             case SET_LIGHT_TRANSITION_TIME:
                 errorNum = "Error29";       // NOI18N
@@ -1006,9 +1004,9 @@ public class ConditionalEditBase {
             default:
                 log.warn("Unexpected action type {} in displayBadNumberReference", actionType);  // NOI18N
         }
-        JOptionPane.showMessageDialog(_editLogixFrame,
+        JmriJOptionPane.showMessageDialog(_editLogixFrame,
                 Bundle.getMessage("Error9", Bundle.getMessage(errorNum)),
-                Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);       // NOI18N
+                Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);       // NOI18N
     }
 
     /**
@@ -1046,15 +1044,15 @@ public class ConditionalEditBase {
      */
     boolean confirmIndirectMemory(String memName) {
         if (!_suppressIndirectRef) {
-            int response = JOptionPane.showConfirmDialog(_editLogixFrame,
+            int response = JmriJOptionPane.showConfirmDialog(_editLogixFrame,
                     Bundle.getMessage("ConfirmIndirectReference", memName,
                             Bundle.getMessage("ButtonYes"), Bundle.getMessage("ButtonNo"),
                             Bundle.getMessage("ButtonCancel")), // NOI18N
-                    Bundle.getMessage("QuestionTitle"), JOptionPane.YES_NO_CANCEL_OPTION, // NOI18N
-                    JOptionPane.QUESTION_MESSAGE);
-            if (response == JOptionPane.NO_OPTION) {
+                    Bundle.getMessage("QuestionTitle"), JmriJOptionPane.YES_NO_CANCEL_OPTION, // NOI18N
+                    JmriJOptionPane.QUESTION_MESSAGE);
+            if (response == JmriJOptionPane.NO_OPTION || response == JmriJOptionPane.CLOSED_OPTION ) {
                 return false;
-            } else if (response == JOptionPane.CANCEL_OPTION) {
+            } else if (response == JmriJOptionPane.CANCEL_OPTION) {
                 _suppressIndirectRef = true;
             }
         }
@@ -1070,14 +1068,11 @@ public class ConditionalEditBase {
      * @return false if user replies No
      */
     boolean confirmActionAsVariable(String actionName, String variableName) {
-        int response = JOptionPane.showConfirmDialog(_editLogixFrame,
+        int response = JmriJOptionPane.showConfirmDialog(_editLogixFrame,
                 Bundle.getMessage("ConfirmActionAsVariable", actionName, variableName),
-                Bundle.getMessage("QuestionTitle"), JOptionPane.YES_NO_OPTION, // NOI18N
-                JOptionPane.QUESTION_MESSAGE);
-        if (response == JOptionPane.NO_OPTION) {
-            return false;
-        }
-        return true;
+                Bundle.getMessage("QuestionTitle"), JmriJOptionPane.YES_NO_OPTION, // NOI18N
+                JmriJOptionPane.QUESTION_MESSAGE);
+        return ( response == JmriJOptionPane.YES_OPTION );
     }
 
     /**
@@ -1471,10 +1466,10 @@ public class ConditionalEditBase {
         }
         if (error) {
             // if unsuccessful, print error message
-            JOptionPane.showMessageDialog(_editLogixFrame,
+            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Error26", s),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return (-1);
         }
         // here if successful
@@ -1518,10 +1513,10 @@ public class ConditionalEditBase {
      * @param appearance to compare to
      */
     void messageInvalidSignalHeadAppearance(String name, String appearance) {
-        JOptionPane.showMessageDialog(_editLogixFrame,
+        JmriJOptionPane.showMessageDialog(_editLogixFrame,
                 Bundle.getMessage("Error21", name, appearance),
                 Bundle.getMessage("ErrorTitle"), // NOI18N
-                JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -1531,10 +1526,10 @@ public class ConditionalEditBase {
      * @param itemType type of Bean to look for
      */
     void messageInvalidActionItemName(String name, String itemType) {
-        JOptionPane.showMessageDialog(_editLogixFrame,
+        JmriJOptionPane.showMessageDialog(_editLogixFrame,
                 Bundle.getMessage("Error22", name, Bundle.getMessage("BeanName" + itemType)),
                 Bundle.getMessage("ErrorTitle"), // NOI18N
-                JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -1543,10 +1538,10 @@ public class ConditionalEditBase {
      * @param svName proposed name that duplicates an existing name
      */
     void messageDuplicateConditionalUserName(String svName) {
-        JOptionPane.showMessageDialog(_editLogixFrame,
+        JmriJOptionPane.showMessageDialog(_editLogixFrame,
                 Bundle.getMessage("Error30", svName),
                 Bundle.getMessage("ErrorTitle"), // NOI18N
-                JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.ERROR_MESSAGE);
     }
 
     public void bringToFront() {
@@ -1562,6 +1557,6 @@ public class ConditionalEditBase {
         return ConditionalEditBase.class.getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ConditionalEditBase.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConditionalEditBase.class);
 
 }

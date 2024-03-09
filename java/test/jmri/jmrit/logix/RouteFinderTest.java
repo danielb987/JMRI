@@ -1,10 +1,14 @@
 package jmri.jmrit.logix;
 
 import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
+import java.util.List;
 
+import jmri.InstanceManager;
+import jmri.ShutDownManager;
+import jmri.ShutDownTask;
 import jmri.util.JUnitUtil;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 import org.junit.Assume;
 
@@ -38,8 +42,19 @@ public class RouteFinderTest {
 
     @AfterEach
     public void tearDown() {
+        if (InstanceManager.containsDefault(ShutDownManager.class)) {
+            List<ShutDownTask> list = new ArrayList<>();
+            ShutDownManager sm = InstanceManager.getDefault(jmri.ShutDownManager.class);
+            for (Runnable r : sm.getRunnables()) {
+                if (r instanceof jmri.jmrit.logix.WarrantShutdownTask) {
+                    list.add((ShutDownTask)r);
+                }
+            }
+            for ( ShutDownTask t : list) {
+                sm.deregister(t);
+            }
+        }
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
-
-    // private final static Logger log = LoggerFactory.getLogger(RouteFinderTest.class.getName());
 }

@@ -1,8 +1,9 @@
 package jmri.jmrit.display.configurexml;
 
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.catalog.NamedIcon;
-import jmri.jmrit.display.Editor;
-import jmri.jmrit.display.LinkingLabel;
+import jmri.jmrit.display.*;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -49,6 +50,8 @@ public class LinkingLabelXml extends PositionableLabelXml {
 
         element.addContent(new Element("url").addContent(p.getURL()));
 
+        storeLogixNG_Data(p, element);
+
         element.setAttribute("class", "jmri.jmrit.display.configurexml.LinkingLabelXml");
         return element;
     }
@@ -58,9 +61,11 @@ public class LinkingLabelXml extends PositionableLabelXml {
      *
      * @param element Top level Element to unpack.
      * @param o       Editor as an Object
+     * @throws JmriConfigureXmlException when a error prevents creating the objects as as
+     *                   required by the input XML
      */
     @Override
-    public void load(Element element, Object o) {
+    public void load(Element element, Object o) throws JmriConfigureXmlException {
         // create the objects
         LinkingLabel l;
 
@@ -123,18 +128,25 @@ public class LinkingLabelXml extends PositionableLabelXml {
                 java.util.List<Attribute> attrs = element.getAttributes();
                 log.debug("\tElement Has {} Attributes:", attrs.size());
                 for (Attribute a : attrs) {
-                    log.debug("\t\t{} = {}", a.getName(), a.getValue());
+                    log.debug("\tattribute:\t{} = {}", a.getName(), a.getValue());
                 }
                 java.util.List<Element> kids = element.getChildren();
                 log.debug("\tElementHas {} children:", kids.size());
                 for (Element e : kids) {
-                    log.debug("\t\t{} = \"{}\"", e.getName(), e.getValue());
+                    log.debug("\tchild:\t{} = \"{}\"", e.getName(), e.getValue());
                 }
             }
             editor.loadFailed();
             return;
         }
-        editor.putItem(l);
+        try {
+            editor.putItem(l);
+        } catch (Positionable.DuplicateIdException e) {
+            throw new JmriConfigureXmlException("Positionable id is not unique", e);
+        }
+
+        loadLogixNG_Data(l, element);
+
         // load individual item's option settings after editor has set its global settings
         loadCommonAttributes(l, Editor.LABELS, element);
     }

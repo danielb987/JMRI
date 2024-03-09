@@ -1,7 +1,6 @@
 package jmri.jmrix.loconet.Intellibox;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.NoSuchElementException;
 import jmri.jmrix.loconet.LnPacketizer;
 import jmri.jmrix.loconet.LocoNetMessage;
 import jmri.jmrix.loconet.LocoNetMessageException;
@@ -178,11 +177,11 @@ public class IBLnPacketizer extends LnPacketizer {
                     // done with this one
                 } catch (LocoNetMessageException e) {
                     // just let it ride for now
-                    log.warn("run: unexpected LocoNetMessageException: {}", e);
+                    log.warn("run: unexpected LocoNetMessageException", e);
                 } // normally, we don't catch the unnamed Exception, but in this
                 // permanently running loop it seems wise.
                 catch (Exception e) {
-                    log.warn("run: unexpected Exception: {}", e);
+                    log.warn("run: unexpected Exception", e);
                 }
             } // end of permanent loop
         }
@@ -199,12 +198,10 @@ public class IBLnPacketizer extends LnPacketizer {
             while (true) {   // loop permanently
                 // any input?
                 try {
-                    // get content; failure is a NoSuchElementException
+                    // get content; blocks until present
                     log.debug("check for input");
-                    byte msg[] = null;
-                    synchronized (this) {
-                        msg = xmtList.removeFirst();
-                    }
+
+                    byte msg[] = xmtList.take();
 
                     // input - now send
                     try {
@@ -237,13 +234,8 @@ public class IBLnPacketizer extends LnPacketizer {
                     } catch (java.io.IOException e) {
                         log.warn("sendLocoNetMessage: IOException: {}", e.toString());
                     }
-                } catch (NoSuchElementException e) {
-                    // message queue was empty, wait for input
-                    log.debug("start wait");
-
-                    new jmri.util.WaitHandler(this);  // handle synchronization, spurious wake, interruption
-
-                    log.debug("end wait");
+                } catch (InterruptedException ie) {
+                    return; // ending the thread
                 }
             }
         }
@@ -263,7 +255,7 @@ public class IBLnPacketizer extends LnPacketizer {
         if (xmtHandler == null) {
             xmtHandler = new XmtHandler();
         }
-        Thread xmtThread = new Thread(xmtHandler, "LocoNet Intellibox transmit handler");
+        xmtThread = new Thread(xmtHandler, "LocoNet Intellibox transmit handler");
         log.debug("Xmt thread starts at priority {}", xmtpriority);
         xmtThread.setDaemon(true);
         xmtThread.setPriority(Thread.MAX_PRIORITY - 1);
@@ -273,7 +265,7 @@ public class IBLnPacketizer extends LnPacketizer {
         if (rcvHandler == null) {
             rcvHandler = new RcvHandler(this);
         }
-        Thread rcvThread = new Thread(rcvHandler, "LocoNet Intellibox receive handler");
+        rcvThread = new Thread(rcvHandler, "LocoNet Intellibox receive handler");
         rcvThread.setDaemon(true);
         rcvThread.setPriority(Thread.MAX_PRIORITY);
         rcvThread.start();

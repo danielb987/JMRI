@@ -1,10 +1,6 @@
 package jmri.managers;
 
-import java.beans.PropertyChangeListener;
-
-import jmri.InstanceManager;
-import jmri.Light;
-import jmri.LightManager;
+import jmri.*;
 import jmri.jmrix.internal.InternalLightManager;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitAppender;
@@ -18,22 +14,10 @@ import org.junit.jupiter.api.*;
  *
  * @author Bob Jacobsen 2003, 2006, 2008
  */
-public class ProxyLightManagerTest {
+public class ProxyLightManagerTest extends AbstractProxyManagerTestBase<ProxyLightManager,Light> {
 
     public String getSystemName(int i) {
         return "JL" + i;
-    }
-
-    protected LightManager l = null; // holds objects under test
-
-    static protected boolean listenerResult = false;
-
-    protected class Listen implements PropertyChangeListener {
-
-        @Override
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-            listenerResult = true;
-        }
     }
 
     @Test
@@ -46,7 +30,7 @@ public class ProxyLightManagerTest {
         // create
         Light t = l.newLight(getSystemName(getNumToTest1()), "mine");
         // check
-        Assert.assertTrue("real object returned ", t != null);
+        Assert.assertNotNull("real object returned ", t );
         Assert.assertTrue("user name correct ", t == l.getByUserName("mine"));
         Assert.assertTrue("system name correct ", t == l.getBySystemName(getSystemName(getNumToTest1())));
     }
@@ -56,7 +40,7 @@ public class ProxyLightManagerTest {
         // create
         Light t = l.provideLight("" + getNumToTest1());
         // check
-        Assert.assertTrue("real object returned ", t != null);
+        Assert.assertNotNull("real object returned ", t );
         Assert.assertTrue("system name correct ", t == l.getBySystemName(getSystemName(getNumToTest1())));
     }
 
@@ -70,12 +54,12 @@ public class ProxyLightManagerTest {
     public void testSingleObject() {
         // test that you always get the same representation
         Light t1 = l.newLight(getSystemName(getNumToTest1()), "mine");
-        Assert.assertTrue("t1 real object returned ", t1 != null);
+        Assert.assertNotNull("t1 real object returned ", t1 );
         Assert.assertTrue("same by user ", t1 == l.getByUserName("mine"));
         Assert.assertTrue("same by system ", t1 == l.getBySystemName(getSystemName(getNumToTest1())));
 
         Light t2 = l.newLight(getSystemName(getNumToTest1()), "mine");
-        Assert.assertTrue("t2 real object returned ", t2 != null);
+        Assert.assertNotNull("t2 real object returned ", t2 );
         // check
         Assert.assertTrue("same new ", t1 == t2);
     }
@@ -83,8 +67,8 @@ public class ProxyLightManagerTest {
     @Test
     public void testMisses() {
         // try to get nonexistant lights
-        Assert.assertTrue(null == l.getByUserName("foo"));
-        Assert.assertTrue(null == l.getBySystemName("bar"));
+        Assert.assertNull( l.getByUserName("foo"));
+        Assert.assertNull( l.getBySystemName("bar"));
     }
 
     @Test
@@ -143,10 +127,10 @@ public class ProxyLightManagerTest {
 
     @Test
     public void testInstanceManagerIntegration() {
-        jmri.util.JUnitUtil.resetInstanceManager();
+        JUnitUtil.resetInstanceManager();
         Assert.assertNotNull(InstanceManager.getDefault(LightManager.class));
 
-        jmri.util.JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalLightManager();
 
         Assert.assertTrue(InstanceManager.getDefault(LightManager.class) instanceof ProxyLightManager);
 
@@ -178,8 +162,15 @@ public class ProxyLightManagerTest {
     public void setUp() {
         JUnitUtil.setUp();
         // create and register the manager object
-        l = new InternalLightManager(new InternalSystemConnectionMemo("J", "Juliet"));
-        jmri.InstanceManager.setLightManager(l);
+        LightManager ilm = new InternalLightManager(new InternalSystemConnectionMemo("J", "Juliet"));
+        InstanceManager.setLightManager(ilm);
+        LightManager pl = InstanceManager.getDefault(LightManager.class);
+        if ( pl instanceof ProxyLightManager ) {
+            l = (ProxyLightManager) pl;
+        } else {
+            Assertions.fail("LightManager is not a ProxyLightManager");
+        }
+        
     }
 
     @AfterEach

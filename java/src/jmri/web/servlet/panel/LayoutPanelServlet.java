@@ -75,6 +75,33 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
         panel.setAttribute("turnoutcirclethrowncolor", editor.getTurnoutCircleThrownColor());
         panel.setAttribute("turnoutfillcontrolcircles", (editor.isTurnoutFillControlCircles()) ? "yes" : "no");
 
+        //add Layout Track Drawing Options settings
+        LayoutTrackDrawingOptions ltdo = editor.getLayoutTrackDrawingOptions();
+        panel.setAttribute("mainBallastColor", (ColorUtil.colorToColorName(ltdo.getMainBallastColor())));       
+        panel.setAttribute("mainBallastWidth", (Integer.toString(ltdo.getMainBallastWidth())));       
+        panel.setAttribute("mainBlockLineDashPercentageX10", (Integer.toString(ltdo.getMainBlockLineDashPercentageX10())));       
+        panel.setAttribute("mainBlockLineWidth", (Integer.toString(ltdo.getMainBlockLineWidth())));       
+        panel.setAttribute("mainRailColor", (ColorUtil.colorToColorName(ltdo.getMainRailColor())));       
+        panel.setAttribute("mainRailCount", (Integer.toString(ltdo.getMainRailCount())));       
+        panel.setAttribute("mainRailGap", (Integer.toString(ltdo.getMainRailGap())));       
+        panel.setAttribute("mainRailWidth", (Integer.toString(ltdo.getMainRailWidth())));       
+        panel.setAttribute("mainTieColor", (ColorUtil.colorToColorName(ltdo.getMainTieColor())));       
+        panel.setAttribute("mainTieGap", (Integer.toString(ltdo.getMainTieGap())));       
+        panel.setAttribute("mainTieLength", (Integer.toString(ltdo.getMainTieLength())));       
+        panel.setAttribute("mainTieWidth", (Integer.toString(ltdo.getMainTieWidth())));       
+        panel.setAttribute("sideBallastColor", (ColorUtil.colorToColorName(ltdo.getSideBallastColor())));       
+        panel.setAttribute("sideBallastWidth", (Integer.toString(ltdo.getSideBallastWidth())));       
+        panel.setAttribute("sideBlockLineDashPercentageX10", (Integer.toString(ltdo.getSideBlockLineDashPercentageX10())));       
+        panel.setAttribute("sideBlockLineWidth", (Integer.toString(ltdo.getSideBlockLineWidth())));       
+        panel.setAttribute("sideRailColor", (ColorUtil.colorToColorName(ltdo.getSideRailColor())));       
+        panel.setAttribute("sideRailCount", (Integer.toString(ltdo.getSideRailCount())));       
+        panel.setAttribute("sideRailGap", (Integer.toString(ltdo.getSideRailGap())));       
+        panel.setAttribute("sideRailWidth", (Integer.toString(ltdo.getSideRailWidth())));       
+        panel.setAttribute("sideTieColor", (ColorUtil.colorToColorName(ltdo.getSideTieColor())));       
+        panel.setAttribute("sideTieGap", (Integer.toString(ltdo.getSideTieGap())));       
+        panel.setAttribute("sideTieLength", (Integer.toString(ltdo.getSideTieLength())));       
+        panel.setAttribute("sideTieWidth", (Integer.toString(ltdo.getSideTieWidth())));       
+
         // include positionable elements
         List<Positionable> contents = editor.getContents();
         log.debug("Number of positionable elements: {}", contents.size());
@@ -83,7 +110,7 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
                 try {
                     panel.addContent(positionableElement(sub));
                 } catch (Exception ex) {
-                    log.error("Error storing panel positionable element: {}", ex);
+                    log.error("Error storing panel positionable element", ex);
                 }
             }
         }
@@ -126,8 +153,9 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
                 elem.setAttribute("trackcolor", ColorUtil.colorToColorName(b.getBlockTrackColor()));
                 elem.setAttribute("occupiedcolor", ColorUtil.colorToColorName(b.getBlockOccupiedColor()));
                 elem.setAttribute("extracolor", ColorUtil.colorToColorName(b.getBlockExtraColor()));
-                if (!b.getMemoryName().isEmpty()) {
-                    elem.setAttribute("memory", b.getMemory().getSystemName());
+                Memory m = b.getMemory();
+                if (!b.getMemoryName().isEmpty() && (m != null)) {
+                    elem.setAttribute("memory", m.getSystemName()); // NOI18N
                 }
                 if (!b.useDefaultMetric()) {
                     elem.addContent(new Element("metric").addContent(Integer.toString(b.getBlockMetric())));
@@ -161,7 +189,7 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
                             panel.addContent(e);
                         }
                     } catch (Exception e) {
-                        log.error("Error storing panel LayoutTrack element: {}", e);
+                        log.error("Error storing panel LayoutTrack element", e);
                     }
                 }
             }
@@ -176,7 +204,7 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
                     panel.addContent(e);
                 }
             } catch (Exception e) {
-                log.error("Error storing panel LayoutShape element: {}", e);
+                log.error("Error storing panel LayoutShape element", e);
             }
         }
         log.debug("Number of LayoutShape elements: {}", layoutShapes.size());
@@ -200,12 +228,11 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
      *
      */
     private void replaceUserNameAttribute(@Nonnull Element e, @Nonnull String beanType, @Nonnull String attrName) {
-
-        String sn = "";
         Attribute a = e.getAttribute(attrName);
         if (a == null) {
             return;
         }
+        String sn;
         String un = a.getValue();
 
         switch (beanType) {
@@ -241,12 +268,11 @@ public class LayoutPanelServlet extends AbstractPanelServlet {
      *
      */
     private void replaceUserNameChild(@Nonnull Element e, @Nonnull String beanType, @Nonnull String childName) {
-
-        String sn = "";
         Element c = e.getChild(childName);
         if (c == null) {
             return;
         }
+        String sn;
         String un = c.getText();
 
         switch (beanType) {

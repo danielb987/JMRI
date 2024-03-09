@@ -12,7 +12,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -22,6 +21,7 @@ import javax.swing.event.ListSelectionListener;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Portal;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  *
@@ -138,8 +138,8 @@ public class EditPortalDirection extends EditFrame implements ActionListener, Li
         if (portal != null) {
             List<PortalIcon> piArray = _parent.getPortalIcons(portal);
             if (piArray.isEmpty()) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("portalHasNoIcon", portal.getName()),
-                        Bundle.getMessage("incompleteCircuit"), JOptionPane.INFORMATION_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("portalHasNoIcon", portal.getName()),
+                        Bundle.getMessage("incompleteCircuit"), JmriJOptionPane.INFORMATION_MESSAGE);
                 clearListSelection();
             } else {
                 for (PortalIcon icon : piArray) {
@@ -157,12 +157,12 @@ public class EditPortalDirection extends EditFrame implements ActionListener, Li
         if (PortalIcon.TO_ARROW.equals(e.getActionCommand())) {
             _icon.setIcon(PortalIcon.TO_ARROW,_iconMap.get(PortalIcon.TO_ARROW));
             _icon.setIcon(PortalIcon.FROM_ARROW, _iconMap.get(PortalIcon.FROM_ARROW));
-            _icon.setArrowOrientatuon(true);
+            _icon.setArrowOrientation(true);
             _icon.setHideArrows(false);
         } else if (PortalIcon.FROM_ARROW.equals(e.getActionCommand())) {
             _icon.setIcon(PortalIcon.TO_ARROW, _iconMap.get(PortalIcon.FROM_ARROW));
             _icon.setIcon(PortalIcon.FROM_ARROW, _iconMap.get(PortalIcon.TO_ARROW));
-            _icon.setArrowOrientatuon(false);
+            _icon.setArrowOrientation(false);
             _icon.setHideArrows(false);
         } else if (PortalIcon.HIDDEN.equals(e.getActionCommand())) {
             _icon.setHideArrows(true);

@@ -1,19 +1,13 @@
 package jmri.jmrit.roster;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.io.IOException;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+
+import javax.swing.*;
+
 import jmri.util.davidflanagan.HardcopyWriter;
 import jmri.util.swing.EditableResizableImagePanel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +22,11 @@ public class FunctionLabelPane extends javax.swing.JPanel {
     RosterEntry re;
 
     JTextField[] labels;
+    public JTextField getLabel(int index) { return labels[index]; }
+
     JCheckBox[] lockable;
+    public JCheckBox getLockable(int index) { return lockable[index]; }
+
     JRadioButton[] shunterMode;
     ButtonGroup shunterModeGroup;
     EditableResizableImagePanel[] _imageFilePath;
@@ -47,8 +45,11 @@ public class FunctionLabelPane extends javax.swing.JPanel {
     public FunctionLabelPane(RosterEntry r) {
         super();
         re = r;
+        initGUI();
+    }
 
-        maxfunction = re.getMAXFNNUM();
+    private void initGUI() {
+        maxfunction = re.getMaxFnNumAsInt();
         GridBagLayout gbLayout = new GridBagLayout();
         GridBagConstraints cL = new GridBagConstraints();
         setLayout(gbLayout);
@@ -69,6 +70,7 @@ public class FunctionLabelPane extends javax.swing.JPanel {
         cL.weighty = 1.0;
         int nextx = 0;
 
+        // column labels
         // first column
         add(new JLabel(Bundle.getMessage("FunctionButtonN")), cL);
         cL.gridx++;
@@ -82,6 +84,9 @@ public class FunctionLabelPane extends javax.swing.JPanel {
         cL.gridx++;
         add(new JLabel(Bundle.getMessage("FunctionButtonShunterFn")), cL);
         cL.gridx++;
+        // divider
+        add(new JLabel("|"));
+        cL.gridx++;
         // second column
         add(new JLabel(Bundle.getMessage("FunctionButtonN")), cL);
         cL.gridx++;
@@ -94,10 +99,10 @@ public class FunctionLabelPane extends javax.swing.JPanel {
         add(new JLabel(Bundle.getMessage("FunctionButtonImageOn")), cL);
         cL.gridx++;
         add(new JLabel(Bundle.getMessage("FunctionButtonShunterFn")), cL);
-        cL.gridx++;
 
         cL.gridx = 0;
         cL.gridy = 1;
+        // add function rows
         for (int i = 0; i <= maxfunction; i++) {
             // label the row
             add(new JLabel("" + i), cL);
@@ -105,48 +110,54 @@ public class FunctionLabelPane extends javax.swing.JPanel {
 
             // add the label
             labels[i] = new JTextField(20);
-            if (r.getFunctionLabel(i) != null) {
-                labels[i].setText(r.getFunctionLabel(i));
+            if (re.getFunctionLabel(i) != null) {
+                labels[i].setText(re.getFunctionLabel(i));
             }
             add(labels[i], cL);
             cL.gridx++;
 
             // add the checkbox
             lockable[i] = new JCheckBox();
-            lockable[i].setSelected(r.getFunctionLockable(i));
+            lockable[i].setSelected(re.getFunctionLockable(i));
             add(lockable[i], cL);
             cL.gridx++;
 
             // add the function buttons
-            _imageFilePath[i] = new EditableResizableImagePanel(r.getFunctionImage(i), 20, 20);
+            _imageFilePath[i] = new EditableResizableImagePanel(re.getFunctionImage(i), 20, 20);
             _imageFilePath[i].setDropFolder(Roster.getDefault().getRosterFilesLocation());
             _imageFilePath[i].setBackground(new Color(0, 0, 0, 0));
             _imageFilePath[i].setToolTipText(Bundle.getMessage("FunctionButtonRosterImageToolTip"));
             _imageFilePath[i].setBorder(BorderFactory.createLineBorder(java.awt.Color.blue));
+            _imageFilePath[i].addMenuItemBrowseFolder(Bundle.getMessage("MediaRosterOpenSystemFileBrowserOnJMRIfnButtonsRessources"), jmri.util.FileUtil.getExternalFilename("resources/icons/functionicons"));
             add(_imageFilePath[i], cL);
             cL.gridx++;
 
-            _imagePressedFilePath[i] = new EditableResizableImagePanel(r.getFunctionSelectedImage(i), 20, 20);
+            _imagePressedFilePath[i] = new EditableResizableImagePanel(re.getFunctionSelectedImage(i), 20, 20);
             _imagePressedFilePath[i].setDropFolder(Roster.getDefault().getRosterFilesLocation());
             _imagePressedFilePath[i].setBackground(new Color(0, 0, 0, 0));
             _imagePressedFilePath[i].setToolTipText(Bundle.getMessage("FunctionButtonPressedRosterImageToolTip"));
             _imagePressedFilePath[i].setBorder(BorderFactory.createLineBorder(java.awt.Color.blue));
+            _imagePressedFilePath[i].addMenuItemBrowseFolder(Bundle.getMessage("MediaRosterOpenSystemFileBrowserOnJMRIfnButtonsRessources"), jmri.util.FileUtil.getExternalFilename("resources/icons/functionicons"));
             add(_imagePressedFilePath[i], cL);
             cL.gridx++;
 
             shunterMode[i] = new JRadioButton();
             shunterModeGroup.add(shunterMode[i]);
-            if (("F" + i).compareTo(r.getShuntingFunction()) == 0) {
+            if (("F" + i).compareTo(re.getShuntingFunction()) == 0) {
                 shunterMode[i].setSelected(true);
             }
+            shunterMode[i].setToolTipText(Bundle.getMessage("ShuntButtonToolTip"));
             add(shunterMode[i], cL);
-            cL.gridx++;
-
+            if (cL.gridx == 5) {
+                cL.gridx++;
+                // add divider
+                add(new JLabel("|"), cL);
+            }
             // advance position
             cL.gridy++;
             if (cL.gridy == ((maxfunction + 2) / 2) + 1) {
                 cL.gridy = 1;  // skip titles
-                nextx = nextx + 6;
+                nextx = nextx + 7;
             }
             cL.gridx = nextx;
         }
@@ -222,8 +233,21 @@ public class FunctionLabelPane extends javax.swing.JPanel {
     }
 
     /**
+     * Update contents from a RosterEntry object
+     * <p>TODO: This doesn't do every element.
+     * @param re the new contents
+     */
+    public void updateFromEntry(RosterEntry re) {
+        if (labels != null) {
+             for (int i = 0; i < labels.length; i++) {
+                labels[i].setText(re.getFunctionLabel(i));
+                lockable[i].setSelected(re.getFunctionLockable(i));
+             }
+        }
+    }
+
+    /**
      * Update a RosterEntry object from panel contents.
-     *
      *
      * @param r the roster entry to update
      */
@@ -252,9 +276,7 @@ public class FunctionLabelPane extends javax.swing.JPanel {
     }
 
     public void dispose() {
-        if (log.isDebugEnabled()) {
-            log.debug("dispose");
-        }
+        log.debug("dispose");
     }
 
     public boolean includeInPrint() {
@@ -269,7 +291,7 @@ public class FunctionLabelPane extends javax.swing.JPanel {
     public void printPane(HardcopyWriter w) {
         // if pane is empty, don't print anything
         //if (varList.size() == 0 && cvList.size() == 0) return;
-        // future work needed her to print indexed CVs
+        // future work needed here to print indexed CVs
 
         // Define column widths for name and value output.
         // Make col 2 slightly larger than col 1 and reduce both to allow for
@@ -383,7 +405,7 @@ public class FunctionLabelPane extends javax.swing.JPanel {
             w.writeBorders();
             w.write(s, 0, s.length());
         } catch (IOException e) {
-            log.warn("error during printing: {}", e);
+            log.warn("error during printing", e);
         }
 
     }

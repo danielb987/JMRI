@@ -4,9 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 
 import org.slf4j.Logger;
@@ -42,16 +40,18 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
     private static final int RFID_WHERE_LAST_SEEN_COLUMN = 8;
     private static final int RFID_WHEN_LAST_SEEN_COLUMN = 9;
     private static final int DESTINATION_COLUMN = 10;
-    private static final int TRAIN_COLUMN = 11;
-    private static final int MOVES_COLUMN = 12;
-    private static final int BUILT_COLUMN = 13;
-    private static final int OWNER_COLUMN = 14;
-    private static final int VALUE_COLUMN = 15;
-    private static final int RFID_COLUMN = 16;
-    private static final int LAST_COLUMN = 17;
-    private static final int DCC_ADDRESS_COLUMN = 18;
-    private static final int SET_COLUMN = 19;
-    private static final int EDIT_COLUMN = 20;
+    private static final int PREVIOUS_LOCATION_COLUMN = 11;
+    private static final int TRAIN_COLUMN = 12;
+    private static final int MOVES_COLUMN = 13;
+    private static final int BUILT_COLUMN = 14;
+    private static final int OWNER_COLUMN = 15;
+    private static final int VALUE_COLUMN = 16;
+    private static final int RFID_COLUMN = 17;
+    private static final int LAST_COLUMN = 18;
+    private static final int DCC_ADDRESS_COLUMN = 19;
+    private static final int COMMENT_COLUMN = 20;
+    private static final int SET_COLUMN = 21;
+    private static final int EDIT_COLUMN = 22;
 
     private static final int HIGHEST_COLUMN = EDIT_COLUMN + 1;
 
@@ -76,6 +76,7 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
     public final int SORTBY_LAST = 12;
     public final int SORTBY_HP = 13;
     public final int SORTBY_DCC_ADDRESS = 14;
+    public final int SORTBY_COMMENT = 15;
 
     private int _sort = SORTBY_NUMBER;
 
@@ -93,7 +94,8 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 sort == SORTBY_VALUE ||
                 sort == SORTBY_RFID ||
                 sort == SORTBY_LAST ||
-                sort == SORTBY_DCC_ADDRESS) {
+                sort == SORTBY_DCC_ADDRESS ||
+                sort == SORTBY_COMMENT) {
             XTableColumnModel tcm = (XTableColumnModel) _table.getColumnModel();
             tcm.setColumnVisible(tcm.getColumnByModelIndex(MOVES_COLUMN), sort == SORTBY_MOVES);
             tcm.setColumnVisible(tcm.getColumnByModelIndex(BUILT_COLUMN), sort == SORTBY_BUILT);
@@ -102,8 +104,10 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
             tcm.setColumnVisible(tcm.getColumnByModelIndex(RFID_COLUMN), sort == SORTBY_RFID);
             tcm.setColumnVisible(tcm.getColumnByModelIndex(RFID_WHEN_LAST_SEEN_COLUMN), sort == SORTBY_RFID);
             tcm.setColumnVisible(tcm.getColumnByModelIndex(RFID_WHERE_LAST_SEEN_COLUMN), sort == SORTBY_RFID);
+            tcm.setColumnVisible(tcm.getColumnByModelIndex(PREVIOUS_LOCATION_COLUMN), sort == SORTBY_LAST);
             tcm.setColumnVisible(tcm.getColumnByModelIndex(LAST_COLUMN), sort == SORTBY_LAST);
             tcm.setColumnVisible(tcm.getColumnByModelIndex(DCC_ADDRESS_COLUMN), sort == SORTBY_DCC_ADDRESS);
+            tcm.setColumnVisible(tcm.getColumnByModelIndex(COMMENT_COLUMN), sort == SORTBY_COMMENT);
         }
         fireTableDataChanged();
     }
@@ -144,6 +148,8 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 return Setup.getRfidLabel();
             case SORTBY_LAST:
                 return Bundle.getMessage("Last");
+            case SORTBY_COMMENT:
+                return Bundle.getMessage("Comment");
             default:
                 return "Error"; // NOI18N
         }
@@ -179,7 +185,14 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
             if (e != null) {
                 String[] number = e.getNumber().split(TrainCommon.HYPHEN);
                 // check for wild card '*'
-                if (roadNumber.startsWith("*")) {
+                if (roadNumber.startsWith("*") && roadNumber.endsWith("*")) {
+                    String rN = roadNumber.substring(1, roadNumber.length() - 1);
+                    if (e.getNumber().contains(rN)) {
+                        _roadNumber = roadNumber;
+                        _index = index + 1;
+                        return index;
+                    }
+                } else if (roadNumber.startsWith("*")) {
                     String rN = roadNumber.substring(1);
                     if (e.getNumber().endsWith(rN) || number[0].endsWith(rN)) {
                         _roadNumber = roadNumber;
@@ -257,6 +270,9 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
             case SORTBY_LAST:
                 list = engineManager.getByLastDateList();
                 break;
+            case SORTBY_COMMENT:
+                list = engineManager.getByCommentList();
+                break;
             case SORTBY_NUMBER:
             default:
                 list = engineManager.getByNumberList();
@@ -277,7 +293,7 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
 
     // Default engines frame table column widths, starts with Number column and ends with Edit
     private final int[] _enginesTableColumnWidths =
-            {60, 60, 65, 50, 65, 35, 75, 190, 190, 140, 190, 65, 50, 50, 50, 50, 100, 130, 50, 65, 70};
+            {60, 60, 65, 50, 65, 35, 75, 190, 190, 190, 140, 190, 65, 50, 50, 50, 50, 100, 130, 50, 100, 65, 70};
 
     void initTable() {
         // Use XTableColumnModel so we can control which columns are visible
@@ -307,8 +323,10 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
         tcm.setColumnVisible(tcm.getColumnByModelIndex(RFID_COLUMN), false);
         tcm.setColumnVisible(tcm.getColumnByModelIndex(RFID_WHEN_LAST_SEEN_COLUMN), false);
         tcm.setColumnVisible(tcm.getColumnByModelIndex(RFID_WHERE_LAST_SEEN_COLUMN), false);
+        tcm.setColumnVisible(tcm.getColumnByModelIndex(PREVIOUS_LOCATION_COLUMN), false);
         tcm.setColumnVisible(tcm.getColumnByModelIndex(LAST_COLUMN), false);
         tcm.setColumnVisible(tcm.getColumnByModelIndex(DCC_ADDRESS_COLUMN), false);
+        tcm.setColumnVisible(tcm.getColumnByModelIndex(COMMENT_COLUMN), false);
 
         // turn on default
         tcm.setColumnVisible(tcm.getColumnByModelIndex(MOVES_COLUMN), true);
@@ -349,6 +367,8 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 return Bundle.getMessage("WhenLastSeen");
             case DESTINATION_COLUMN:
                 return Bundle.getMessage("Destination");
+            case PREVIOUS_LOCATION_COLUMN:
+                return Bundle.getMessage("LastLocation");
             case TRAIN_COLUMN:
                 return Bundle.getMessage("Train");
             case MOVES_COLUMN:
@@ -365,6 +385,8 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 return Bundle.getMessage("LastMoved");
             case DCC_ADDRESS_COLUMN:
                 return Bundle.getMessage("DccAddress");
+            case COMMENT_COLUMN:
+                return Bundle.getMessage("Comment");
             case SET_COLUMN:
                 return Bundle.getMessage("Set");
             case EDIT_COLUMN:
@@ -383,6 +405,8 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
             case LENGTH_COLUMN:
             case MOVES_COLUMN:
                 return Integer.class;
+            case LAST_COLUMN:
+                return Object.class; // to disable sorting
             default:
                 return String.class;
         }
@@ -455,6 +479,13 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 }
                 return s;
             }
+            case PREVIOUS_LOCATION_COLUMN: {
+                String s = "";
+                if (!eng.getLastLocationName().equals(Engine.NONE)) {
+                    s = eng.getLastLocationName() + " (" + eng.getLastTrackName() + ")";
+                }
+                return s;
+            }
             case TRAIN_COLUMN: {
                 // if train was manually set by user add an asterisk
                 if (eng.getTrain() != null && eng.getRouteLocation() == null) {
@@ -467,7 +498,7 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
             case BUILT_COLUMN:
                 return eng.getBuilt();
             case OWNER_COLUMN:
-                return eng.getOwner();
+                return eng.getOwnerName();
             case VALUE_COLUMN:
                 return eng.getValue();
             case RFID_COLUMN:
@@ -476,6 +507,8 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 return eng.getLastDate();
             case DCC_ADDRESS_COLUMN:
                 return eng.getDccAddress();
+            case COMMENT_COLUMN:
+                return eng.getComment();
             case SET_COLUMN:
                 return Bundle.getMessage("Set");
             case EDIT_COLUMN:
@@ -503,7 +536,7 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 engine.setBuilt(value.toString());
                 break;
             case OWNER_COLUMN:
-                engine.setOwner(value.toString());
+                engine.setOwnerName(value.toString());
                 break;
             case VALUE_COLUMN:
                 engine.setValue(value.toString());
@@ -520,7 +553,7 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                 SwingUtilities.invokeLater(() -> {
                     engineSetFrame = new EngineSetFrame();
                     engineSetFrame.initComponents();
-                    engineSetFrame.loadEngine(engine);
+                    engineSetFrame.load(engine);
                 });
                 break;
             case EDIT_COLUMN:
@@ -567,7 +600,7 @@ public class EnginesTableModel extends javax.swing.table.AbstractTableModel impl
                     .getNewValue());
         }
         if (e.getPropertyName().equals(EngineManager.LISTLENGTH_CHANGED_PROPERTY) ||
-                e.getPropertyName().equals(EngineManager.CONSISTLISTLENGTH_CHANGED_PROPERTY)) {
+                e.getPropertyName().equals(ConsistManager.LISTLENGTH_CHANGED_PROPERTY)) {
             updateList();
             fireTableDataChanged();
         }

@@ -5,6 +5,7 @@ import jmri.InstanceManager;
 import jmri.Sensor;
 import jmri.SensorManager;
 import jmri.jmrit.display.controlPanelEditor.ControlPanelEditor;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
 import java.io.File;
@@ -35,15 +36,16 @@ public class PortalManagerTest {
         OBlock bWest = _OBlockMgr.createNewOBlock("OB1", "West");
         OBlock bNorth = _OBlockMgr.createNewOBlock("OB3", "North");
         OBlock bSouth = _OBlockMgr.createNewOBlock("OB4", "South");
-        
+
         Portal pNorthWest = _portalMgr.createNewPortal("NorthWest");
         pNorthWest.setToBlock(bWest, false);
         pNorthWest.setFromBlock(bNorth, false);
         Portal pSouthWest = _portalMgr.createNewPortal("SouthWest");
         pSouthWest.setToBlock(bWest, false);
-        pSouthWest.setFromBlock(bSouth, false);        
+        pSouthWest.setFromBlock(bSouth, false);
         assertThat(_portalMgr.getPortal("NorthWest")).withFailMessage("Portal").isEqualTo(pNorthWest);
         assertThat(_portalMgr.getPortal("SouthWest").getFromBlock()).withFailMessage("Portal Block").isEqualTo(bSouth);
+        Assertions.assertNotNull(bSouth);
         assertThat(bSouth.getPortalByName("SouthWest")).withFailMessage("Portal").isEqualTo(pSouthWest);
         assertThat(_portalMgr.getPortal("NorthWest").getToBlockName()).withFailMessage("Portal Block").isEqualTo("West");
         assertThat(_portalMgr.getPortal("NorthWest").getFromBlockName()).withFailMessage("Portal Block").isEqualTo("North");
@@ -55,7 +57,7 @@ public class PortalManagerTest {
         OBlock east = _OBlockMgr.getOBlock("OB2");
         pSouthEast.setToBlock(east, false);
         pSouthEast.setFromBlock(_OBlockMgr.getOBlock("South"), false);
-        
+
         assertThat(_portalMgr.getPortal("SouthEast").getToBlock()).withFailMessage("Portal Block").isEqualTo(east);
         assertThat(_portalMgr.getPortal("NorthWest").getToBlockName()).withFailMessage("Portal Block").isEqualTo("West");
         assertThat(_portalMgr.getPortal("SouthWest").getFromBlock()).withFailMessage("Portal Block").isEqualTo(_OBlockMgr.getOBlock("South"));
@@ -68,7 +70,8 @@ public class PortalManagerTest {
         // load and display
         File f = new File("java/test/jmri/jmrit/logix/valid/ShortBlocksTest.xml");
         InstanceManager.getDefault(ConfigureManager.class).load(f);
-        
+        JUnitAppender.suppressErrorMessage("Portal elem = null");
+
         ControlPanelEditor panel = (ControlPanelEditor) jmri.util.JmriJFrame.getFrame("LinkedWarrantsTest");
 
         WarrantTableFrame tableFrame = WarrantTableFrame.getDefault();
@@ -99,11 +102,11 @@ public class PortalManagerTest {
         OBlockManager _OBlockMgr = InstanceManager.getDefault(OBlockManager.class);
         Sensor sensor1 = InstanceManager.getDefault(SensorManager.class).getBySystemName("IS1");
         NXFrameTest.setAndConfirmSensorAction(sensor1, Sensor.ACTIVE, _OBlockMgr.getBySystemName("OB1"));
-        // WarrantTable.runTrain() returns a string that is not null if the 
-        // warrant can't be started 
+        // WarrantTable.runTrain() returns a string that is not null if the
+        // warrant can't be started
         assertThat(tableFrame.runTrain(warrant, Warrant.MODE_RUN)).withFailMessage("Warrant starts").isNull(); // start run
 
-        jmri.util.JUnitUtil.waitFor(() -> {
+        JUnitUtil.waitFor(() -> {
             String m =  warrant.getRunningMessage();
             return m.endsWith("Cmd #8.");
         }, "Train starts to move at 8th command");
@@ -118,6 +121,7 @@ public class PortalManagerTest {
         // passed test - cleanup.
         JFrameOperator jfo = new JFrameOperator(tableFrame);
         jfo.requestClose();
+        assert panel != null;
         panel.dispose();    // disposing this way allows test to be rerun (i.e. reload panel file) multiple times
     }
 
@@ -134,13 +138,14 @@ public class PortalManagerTest {
         JUnitUtil.initWarrantManager();
         JUnitUtil.initDebugThrottleManager();
 
-        _portalMgr = InstanceManager.getDefault(PortalManager.class);        
+        _portalMgr = InstanceManager.getDefault(PortalManager.class);
     }
 
     @AfterEach
     public void tearDown() {
+        JUnitUtil.removeMatchingThreads("Engineer(");
         _portalMgr = null;
-        JUnitUtil.clearShutDownManager(); // should be converted to check of scheduled ShutDownActions
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

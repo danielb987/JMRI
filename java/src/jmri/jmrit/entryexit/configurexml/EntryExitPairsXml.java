@@ -49,9 +49,10 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
         }
 
         java.util.Collections.sort(editors, new Comparator<LayoutEditor>(){
+                    @Override
                     public int compare(LayoutEditor o1, LayoutEditor o2) { return o1.toString().compareTo(o2.toString() ); }
                 });
-                
+
         int clearDown = p.getClearDownOption();
         if (clearDown > 0) {
             element.addContent(new Element("cleardown").addContent("" + clearDown));  // NOI18N
@@ -75,17 +76,23 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
         if (p.getDispatcherIntegration()) {
             element.addContent(new Element("dispatcherintegration").addContent("yes"));  // NOI18N
         }
+
         if (p.useDifferentColorWhenSetting()) {
-            element.addContent(new Element("colourwhilesetting")    
+            element.addContent(new Element("colourwhilesetting")
                     .addContent(ColorUtil.colorToColorName(p.getSettingRouteColor())));  // NOI18N
             element.addContent(new Element("settingTimer").addContent("" + p.getSettingTimer()));  // NOI18N
         }
-        
+
+        if (p.isAbsSignalMode()) {
+            element.addContent(new Element("abssignalmode").addContent("yes"));  // NOI18N
+        }
+
         for (int k = 0; k < editors.size(); k++) {
             LayoutEditor panel = editors.get(k);
             List<Object> nxpair = p.getSourceList(panel);
 
             java.util.Collections.sort(nxpair, new Comparator<Object>(){
+                    @Override
                     public int compare(Object o1, Object o2) { return o1.toString().compareTo(o2.toString() ); }
                 });
             Element panelElem = new Element("layoutPanel");  // NOI18N
@@ -112,9 +119,10 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
 
                 List<Object> a = p.getDestinationList(key, panel);
                 java.util.Collections.sort(a, new Comparator<Object>(){
+                    @Override
                     public int compare(Object o1, Object o2) { return o1.toString().compareTo(o2.toString() ); }
                 });
-                
+
                 for (int i = 0; i < a.size(); i++) {
                     Object keyDest = a.get(i);
                     String typeDest = "";
@@ -207,9 +215,11 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
             log.error("Failed getting optional default config manager");  // NOI18N
             loadedPanel = new ArrayList<>();
         }
+
         if (shared.getChild("dispatcherintegration") != null && shared.getChild("dispatcherintegration").getText().equals("yes")) {  // NOI18N
             eep.setDispatcherIntegration(true);
         }
+
         if (shared.getChild("colourwhilesetting") != null) {
             try {
                 eep.setSettingRouteColor(ColorUtil.stringToColor(shared.getChild("colourwhilesetting").getText()));  // NOI18N
@@ -225,6 +235,11 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
             }
             eep.setSettingTimer(settingTimer);
         }
+
+        if (shared.getChild("abssignalmode") != null && shared.getChild("abssignalmode").getText().equals("yes")) {  // NOI18N
+            eep.setAbsSignalMode(true);
+        }
+
         List<Element> panelList = shared.getChildren("layoutPanel");  // NOI18N
         for (int k = 0; k < panelList.size(); k++) {
             String panelName = panelList.get(k).getAttribute("name").getValue();  // NOI18N

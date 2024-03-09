@@ -16,11 +16,6 @@ import jmri.jmrit.operations.trains.TrainManifestHeaderText;
  */
 public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
 
-//    private static final Logger log = LoggerFactory.getLogger(OperationsSetupPanel.class);
-
-    //protected static final ResourceBundle rb = ResourceBundle
-    //        .getBundle("jmri.jmrit.operations.trains.JmritOperationsTrainsBundle");
-
     // major buttons
     JButton saveButton = new JButton(Bundle.getMessage("ButtonSave"));
     JButton resetButton = new JButton(Bundle.getMessage("Reset"));
@@ -33,6 +28,7 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
     JTextField length_TextField = new JTextField(25);
     JTextField weight_TextField = new JTextField(25);
     JTextField owner_TextField = new JTextField(25);
+    JTextField division_TextField = new JTextField(25);
     JTextField track_TextField = new JTextField(25);
     JTextField location_TextField = new JTextField(25);
     JTextField destination_TextField = new JTextField(25);
@@ -52,6 +48,7 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
     // engine attributes
     JTextField model_TextField = new JTextField(25);
     JTextField consist_TextField = new JTextField(25);
+    JTextField dcc_address_TextField = new JTextField(25);
 
     public EditManifestHeaderTextPanel() {
 
@@ -197,7 +194,13 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
         pRWE_TextField.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("RWELabel")));
         pRWE_TextField.add(rwe_TextField);
         rwe_TextField.setText(TrainManifestHeaderText.getStringHeader_RWE());
-        pManifest.add(pRWE_TextField);
+        pManifest.add(pRWE_TextField);   
+        
+        JPanel pDivision_TextField = new JPanel();
+        pDivision_TextField.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Division")));
+        pDivision_TextField.add(division_TextField);
+        division_TextField.setText(TrainManifestHeaderText.getStringHeader_Division());
+        pManifest.add(pDivision_TextField);
 
         // engine attributes
         JPanel pModel_TextField = new JPanel();
@@ -211,6 +214,12 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
         pConsist_TextField.add(consist_TextField);
         consist_TextField.setText(TrainManifestHeaderText.getStringHeader_Consist());
         pManifest.add(pConsist_TextField);
+        
+        JPanel pDccAddress_TextField = new JPanel();
+        pDccAddress_TextField.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("DCC_Address")));
+        pDccAddress_TextField.add(dcc_address_TextField);
+        dcc_address_TextField.setText(TrainManifestHeaderText.getStringHeader_DCC_Address());
+        pManifest.add(pDccAddress_TextField);
 
         // add tool tips
         saveButton.setToolTipText(Bundle.getMessage("SaveToolTip"));
@@ -228,8 +237,6 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
         // set up buttons
         addButtonAction(resetButton);
         addButtonAction(saveButton);
-
-        initMinimumSize();
     }
 
     // Save buttons
@@ -243,6 +250,7 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
             length_TextField.setText(Bundle.getMessage("Length"));
             weight_TextField.setText(Bundle.getMessage("Weight"));
             owner_TextField.setText(Bundle.getMessage("Owner"));
+            division_TextField.setText(Bundle.getMessage("Division"));
             track_TextField.setText(Bundle.getMessage("Track"));
             location_TextField.setText(Bundle.getMessage("Location"));
             destination_TextField.setText(Bundle.getMessage("Destination"));
@@ -262,11 +270,13 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
             // engine attributes
             model_TextField.setText(Bundle.getMessage("Model"));
             consist_TextField.setText(Bundle.getMessage("Consist"));
+            dcc_address_TextField.setText(Bundle.getMessage("DCC_Address"));
         }
         if (ae.getSource() == saveButton) {
             this.savePreferences();
-            if (Setup.isCloseWindowOnSaveEnabled()) {
-                dispose();
+            var topLevelAncestor = getTopLevelAncestor();
+            if (Setup.isCloseWindowOnSaveEnabled() && topLevelAncestor instanceof EditManifestHeaderTextFrame) {
+                ((EditManifestHeaderTextFrame) topLevelAncestor).dispose();
             }
         }
     }
@@ -307,9 +317,11 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
         TrainManifestHeaderText.setStringHeader_Pickup_Comment(pickup_comment_TextField.getText());
         TrainManifestHeaderText.setStringHeader_Kernel(kernel_TextField.getText());
         TrainManifestHeaderText.setStringHeader_RWE(rwe_TextField.getText());
+        TrainManifestHeaderText.setStringHeader_Division(division_TextField.getText());
         // engine attributes
         TrainManifestHeaderText.setStringHeader_Model(model_TextField.getText());
         TrainManifestHeaderText.setStringHeader_Consist(consist_TextField.getText());
+        TrainManifestHeaderText.setStringHeader_DCC_Address(dcc_address_TextField.getText());
 
         InstanceManager.getDefault(OperationsSetupXml.class).writeOperationsFile();
 
@@ -326,6 +338,7 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
                 && TrainManifestHeaderText.getStringHeader_Length().equals(length_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_Weight().equals(weight_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_Owner().equals(owner_TextField.getText())
+                && TrainManifestHeaderText.getStringHeader_Division().equals(division_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_Track().equals(track_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_Location().equals(location_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_Destination().equals(destination_TextField.getText())
@@ -342,6 +355,7 @@ public class EditManifestHeaderTextPanel extends OperationsPreferencesPanel {
                 && TrainManifestHeaderText.getStringHeader_Kernel().equals(kernel_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_RWE().equals(rwe_TextField.getText())
                 && TrainManifestHeaderText.getStringHeader_Model().equals(model_TextField.getText())
-                && TrainManifestHeaderText.getStringHeader_Consist().equals(consist_TextField.getText()));
+                && TrainManifestHeaderText.getStringHeader_Consist().equals(consist_TextField.getText())
+                && TrainManifestHeaderText.getStringHeader_DCC_Address().equals(dcc_address_TextField.getText()));
     }
 }

@@ -36,7 +36,7 @@ public class TurnoutSignalMast extends AbstractSignalMast {
         configureFromName(systemName);
     }
 
-    private static final String mastType = "IF$tsm";
+    private static final String THE_MAST_TYPE = "IF$tsm";
 
     private void configureFromName(String systemName) {
         // split out the basic information
@@ -45,8 +45,8 @@ public class TurnoutSignalMast extends AbstractSignalMast {
             log.error("SignalMast system name needs at least three parts: {}", systemName);
             throw new IllegalArgumentException("System name needs at least three parts: " + systemName);
         }
-        if (!parts[0].equals(mastType)) {
-            log.warn("SignalMast system name should start with {} but is {}", mastType, systemName);
+        if (!parts[0].equals(THE_MAST_TYPE)) {
+            log.warn("SignalMast system name should start with {} but is {}", THE_MAST_TYPE, systemName);
         }
         String system = parts[1];
         String mast = parts[2];
@@ -79,10 +79,10 @@ public class TurnoutSignalMast extends AbstractSignalMast {
             log.warn("attempting to set an aspect that has been disabled: {} on mast: {}", aspect, getDisplayName());
             throw new IllegalArgumentException("attempting to set an aspect that has been disabled: " + aspect + " on mast: " + getDisplayName());
         }
-        
-        
+
+
         if (getLit()) { // If the signalmast is lit, then send the commands to change the aspect.
-            
+
             // reset all states before setting this one, including this one
             if (resetPreviousStates) {
                 // Clear all the current states, this will result in the signalmast going blank for a very short time.
@@ -113,7 +113,7 @@ public class TurnoutSignalMast extends AbstractSignalMast {
             } else {
                 log.error("Trying to set \"{}\" on signal mast \"{}\" which has not been configured", aspect, getDisplayName());
             }
-            
+
         } else if (log.isDebugEnabled()) {
             log.debug("Mast set to unlit, will not send aspect change to hardware");
         }
@@ -155,7 +155,10 @@ public class TurnoutSignalMast extends AbstractSignalMast {
         super.setLit(newLit);
         if (newLit) {
             // This will force the signalmast to send out the commands to set the aspect again.
-            setAspect(getAspect());
+            String litAspect = getAspect();
+            if (litAspect != null ) {
+                setAspect(litAspect);
+            }
         } else {
             if (unLit != null) {
                 // there is a specific unlit output defined
@@ -165,13 +168,13 @@ public class TurnoutSignalMast extends AbstractSignalMast {
                 }
             } else {
                 // turn everything off
-                for (TurnoutAspect aspect : turnouts.values()) {
+                for (TurnoutAspect tAspect : turnouts.values()) {
                     int setState = Turnout.CLOSED;
-                    if (aspect.getTurnoutState() == Turnout.CLOSED) {
+                    if (tAspect.getTurnoutState() == Turnout.CLOSED) {
                         setState = Turnout.THROWN;
                     }
-                    if (aspect.getTurnout().getKnownState() != setState) {
-                        aspect.getTurnout().setCommandedState(setState);
+                    if (tAspect.getTurnout().getKnownState() != setState) {
+                        tAspect.getTurnout().setCommandedState(setState);
                     }
                 }
             }
@@ -179,17 +182,17 @@ public class TurnoutSignalMast extends AbstractSignalMast {
     }
 
     public String getTurnoutName(String appearance) {
-        TurnoutAspect aspect = turnouts.get(appearance);
-        if (aspect != null) {
-            return aspect.getTurnoutName();
+        TurnoutAspect tAspect = turnouts.get(appearance);
+        if (tAspect != null) {
+            return tAspect.getTurnoutName();
         }
         return "";
     }
 
     public int getTurnoutState(String appearance) {
-        TurnoutAspect aspect = turnouts.get(appearance);
-        if (aspect != null) {
-            return aspect.getTurnoutState();
+        TurnoutAspect tAspect = turnouts.get(appearance);
+        if (tAspect != null) {
+            return tAspect.getTurnoutState();
         }
         return -1;
     }
@@ -229,7 +232,7 @@ public class TurnoutSignalMast extends AbstractSignalMast {
             if (turnoutName != null && !turnoutName.equals("")) {
                 state = turnoutState;
                 Turnout turn = jmri.InstanceManager.turnoutManagerInstance().getTurnout(turnoutName);
-                if (turn == null) {  
+                if (turn == null) {
                     log.error("TurnoutAspect couldn't locate turnout {}", turnoutName);
                     return;
                 }
@@ -262,14 +265,11 @@ public class TurnoutSignalMast extends AbstractSignalMast {
                 return true;
             }
         }
-        if (t.equals(getUnLitTurnout())) {
-            return true;
-        }
-        return false;
+        return t.equals(getUnLitTurnout());
     }
 
     public List<NamedBeanHandle<Turnout>> getHeadsUsed() {
-        return new ArrayList<NamedBeanHandle<Turnout>>();
+        return new ArrayList<>();
     }
 
     /**
@@ -304,11 +304,6 @@ public class TurnoutSignalMast extends AbstractSignalMast {
                 }
             }
         }
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 
     private final static Logger log = LoggerFactory.getLogger(TurnoutSignalMast.class);

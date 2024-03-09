@@ -6,22 +6,15 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.rollingstock.cars.Car;
-import jmri.jmrit.operations.rollingstock.cars.CarLoads;
-import jmri.jmrit.operations.rollingstock.cars.CarManager;
-import jmri.jmrit.operations.rollingstock.cars.CarRoads;
+import jmri.jmrit.operations.locations.*;
+import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.trains.schedules.TrainSchedule;
 import jmri.jmrit.operations.trains.schedules.TrainScheduleManager;
@@ -35,6 +28,8 @@ import jmri.util.table.ButtonRenderer;
  * @author Daniel Boudreau Copyright (C) 2009, 2014
  */
 public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements PropertyChangeListener {
+    
+    protected static final String POINTER = "    -->";
 
     // Defines the columns
     private static final int ID_COLUMN = 0;
@@ -145,8 +140,9 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
         _table.getColumnModel().getColumn(DELETE_COLUMN).setPreferredWidth(70);
 
         _frame.loadTableDetails(_table);
-        // turn off columns
-        tcm.setColumnVisible(tcm.getColumnByModelIndex(HIT_COLUMN), false);
+        // setup columns
+        tcm.setColumnVisible(tcm.getColumnByModelIndex(HIT_COLUMN), _matchMode);
+        tcm.setColumnVisible(tcm.getColumnByModelIndex(COUNT_COLUMN), !_matchMode);
 
         // does not use a table sorter
         _table.setRowSorter(null);
@@ -238,11 +234,11 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
     @Override
     public boolean isCellEditable(int row, int col) {
         switch (col) {
+            case CURRENT_COLUMN:
             case RANDOM_COLUMN:
             case SETOUT_DAY_COLUMN:
             case ROAD_COLUMN:
             case LOAD_COLUMN:
-            case SHIP_COLUMN:
             case DEST_COLUMN:
             case TRACK_COLUMN:
             case PICKUP_DAY_COLUMN:
@@ -253,6 +249,8 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
             case DOWN_COLUMN:
             case DELETE_COLUMN:
                 return true;
+            case SHIP_COLUMN:
+                return !_track.isDisableLoadChangeEnabled();
             default:
                 return false;
         }
@@ -314,6 +312,9 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
             return;
         }
         switch (col) {
+            case CURRENT_COLUMN:
+                setCurrent(row);
+                break;
             case RANDOM_COLUMN:
                 setRandom(value, row);
                 break;
@@ -364,9 +365,9 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
     private String getCurrentPointer(ScheduleItem si) {
         if (_track.getCurrentScheduleItem() == si) {
             if (_track.getScheduleMode() == Track.SEQUENTIAL && si.getCount() > 1) {
-                return " " + _track.getScheduleCount() + " -->"; // NOI18N
+                return " " + _track.getScheduleCount() + POINTER; // NOI18N
             } else {
-                return "    -->"; // NOI18N
+                return POINTER; // NOI18N
             }
         } else {
             return "";
@@ -377,7 +378,7 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
         if (_track.isTypeNameAccepted(si.getTypeName())) {
             return si.getTypeName();
         } else {
-            return MessageFormat.format(Bundle.getMessage("NotValid"), new Object[]{si.getTypeName()});
+            return Bundle.getMessage("NotValid", si.getTypeName());
         }
     }
 
@@ -386,16 +387,14 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
         JComboBox<String> cb = new JComboBox<>();
         cb.addItem(ScheduleItem.NONE);
         for (String roadName : InstanceManager.getDefault(CarRoads.class).getNames()) {
-            if (_track.isRoadNameAccepted(roadName)) {
-                Car car = InstanceManager.getDefault(CarManager.class).getByTypeAndRoad(si.getTypeName(), roadName);
-                if (car != null) {
-                    cb.addItem(roadName);
-                }
+            if (_track.isRoadNameAccepted(roadName) &&
+                    InstanceManager.getDefault(CarManager.class).getByTypeAndRoad(si.getTypeName(), roadName) != null) {
+                cb.addItem(roadName);
             }
         }
         cb.setSelectedItem(si.getRoadName());
         if (!cb.getSelectedItem().equals(si.getRoadName())) {
-            String notValid = MessageFormat.format(Bundle.getMessage("NotValid"), new Object[]{si.getRoadName()});
+            String notValid = Bundle.getMessage("NotValid", si.getRoadName());
             cb.addItem(notValid);
             cb.setSelectedItem(notValid);
         }
@@ -404,7 +403,7 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
 
     String[] randomValues = {ScheduleItem.NONE, "50", "30", "25", "20", "15", "10", "5", "2", "1"}; // NOI18N
 
-    private JComboBox<String> getRandomComboBox(ScheduleItem si) {
+    protected JComboBox<String> getRandomComboBox(ScheduleItem si) {
         JComboBox<String> cb = new JComboBox<>();
         for (String item : randomValues) {
             cb.addItem(item);
@@ -421,8 +420,7 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
             cb.setSelectedItem(sch);
         } else if (!si.getSetoutTrainScheduleId().equals(ScheduleItem.NONE)) {
             // error user deleted this set out day
-            String notValid = MessageFormat.format(Bundle.getMessage("NotValid"), new Object[]{si
-                    .getSetoutTrainScheduleId()});
+            String notValid = Bundle.getMessage("NotValid", si.getSetoutTrainScheduleId());
             TrainSchedule errorSchedule = new TrainSchedule(si.getSetoutTrainScheduleId(), notValid);
             cb.addItem(errorSchedule);
             cb.setSelectedItem(errorSchedule);
@@ -438,8 +436,7 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
             cb.setSelectedItem(sch);
         } else if (!si.getPickupTrainScheduleId().equals(ScheduleItem.NONE)) {
             // error user deleted this pick up day
-            String notValid = MessageFormat.format(Bundle.getMessage("NotValid"), new Object[]{si
-                    .getPickupTrainScheduleId()});
+            String notValid = Bundle.getMessage("NotValid", si.getPickupTrainScheduleId());
             TrainSchedule errorSchedule = new TrainSchedule(si.getSetoutTrainScheduleId(), notValid);
             cb.addItem(errorSchedule);
             cb.setSelectedItem(errorSchedule);
@@ -447,21 +444,20 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
         return cb;
     }
 
-    private JComboBox<String> getLoadComboBox(ScheduleItem si) {
+    protected JComboBox<String> getLoadComboBox(ScheduleItem si) {
         // log.debug("getLoadComboBox for ScheduleItem "+si.getType());
         JComboBox<String> cb = InstanceManager.getDefault(CarLoads.class).getSelectComboBox(si.getTypeName());
         filterLoads(si, cb); // remove loads not accepted by this track
         cb.setSelectedItem(si.getReceiveLoadName());
         if (!cb.getSelectedItem().equals(si.getReceiveLoadName())) {
-            String notValid = MessageFormat.format(Bundle.getMessage("NotValid"), new Object[]{si
-                    .getReceiveLoadName()});
+            String notValid = Bundle.getMessage("NotValid", si.getReceiveLoadName());
             cb.addItem(notValid);
             cb.setSelectedItem(notValid);
         }
         return cb;
     }
 
-    private JComboBox<String> getShipComboBox(ScheduleItem si) {
+    protected JComboBox<String> getShipComboBox(ScheduleItem si) {
         // log.debug("getShipComboBox for ScheduleItem "+si.getType());
         JComboBox<String> cb = InstanceManager.getDefault(CarLoads.class).getSelectComboBox(si.getTypeName());
         cb.setSelectedItem(si.getShipLoadName());
@@ -474,7 +470,7 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
         return cb;
     }
 
-    private JComboBox<Location> getDestComboBox(ScheduleItem si) {
+    protected JComboBox<Location> getDestComboBox(ScheduleItem si) {
         // log.debug("getDestComboBox for ScheduleItem "+si.getType());
         JComboBox<Location> cb = InstanceManager.getDefault(LocationManager.class).getComboBox();
         filterDestinations(cb, si.getTypeName());
@@ -488,7 +484,7 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
         return cb;
     }
 
-    private JComboBox<Track> getTrackComboBox(ScheduleItem si) {
+    protected JComboBox<Track> getTrackComboBox(ScheduleItem si) {
         // log.debug("getTrackComboBox for ScheduleItem "+si.getType());
         JComboBox<Track> cb = new JComboBox<>();
         if (si.getDestination() != null) {
@@ -504,6 +500,11 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
             }
         }
         return cb;
+    }
+    
+    private void setCurrent(int row) {
+        ScheduleItem si = _list.get(row);
+        _track.setScheduleItemId(si.getId());
     }
 
     // set the count or hits if in match mode
@@ -554,9 +555,9 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
             log.error("Schedule wait must be a positive number");
             return;
         }
-        if (wait > 10) {
-            log.warn("Schedule wait must be 10 or less");
-            wait = 10;
+        if (wait > 100) {
+            log.warn("Schedule wait must be 100 or less");
+            wait = 100;
         }
         si.setWait(wait);
     }

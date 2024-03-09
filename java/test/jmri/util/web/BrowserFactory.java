@@ -26,7 +26,7 @@ import java.util.logging.Level;
  */
 public class BrowserFactory {
 
-    private static Map<String, EventFiringWebDriver> drivers = new HashMap<String, EventFiringWebDriver>();
+    private final static Map<String, EventFiringWebDriver> drivers = new HashMap<>();
 
     /**
      * Factory method for getting browsers
@@ -60,12 +60,8 @@ public class BrowserFactory {
                 if (driver == null) {
                     WebDriverManager.getInstance(ChromeDriver.class).setup();
                     ChromeOptions chromeOptions = new ChromeOptions();
-                   // if (GraphicsEnvironment.isHeadless()) {
-                        chromeOptions.addArguments("--headless");
-                    //} else {
-                        chromeOptions.addArguments("--log-level=3");
-                    //}
-                    chromeOptions.addArguments("--disable-extensions");
+                    chromeOptions.addArguments("--headless", "--log-level=3", "--disable-extensions");
+                    
                     LoggingPreferences logPrefs = new LoggingPreferences();
                     logPrefs.enable(LogType.BROWSER, Level.SEVERE);
                     chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
@@ -85,8 +81,8 @@ public class BrowserFactory {
     /**
      * close all currently open web browsers.
      */
-    public static void CloseAllDriver() {
-        drivers.keySet().forEach(o -> drivers.get(o).close());
+    public static void closeAllDrivers() {
+        drivers.forEach((name, o) -> o.close());
     }
 
     // initialize logging

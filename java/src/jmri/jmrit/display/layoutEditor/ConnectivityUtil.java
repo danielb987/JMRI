@@ -524,6 +524,9 @@ final public class ConnectivityUtil {
                     // turnout is inside current block, add it to the list
                     result.add(new LayoutTrackExpectedState<>(ls, getTurnoutSetting(ls, cType, suppress)));
                 }
+            } else if (HitPointType.isTurntableRayHitType(cType)) {
+                // Declare arrival at a turntable ray to be the end of the block
+                trackSegment = null;
             }
         }
         return result;
@@ -1304,7 +1307,6 @@ final public class ConnectivityUtil {
             @CheckForNull TrackSegment currentTrackSegment,
             int currentNodeState) {
         // initialize
-        //@SuppressWarnings("unused")
         //LayoutEditor.HitPointType prevTrackType = currentNodeType;
         LayoutTrack prevTrack = currentNode;
         TrackSegment nextTrackSegment = currentTrackSegment;
@@ -1921,6 +1923,29 @@ final public class ConnectivityUtil {
     }
 
     // support methods
+
+    /**
+     * Provide the "neither branch leads to next block" warning message if relevant
+     */
+    private void neitherBranchWarning(LayoutTurnout layoutTurnout, LayoutBlock nextLayoutBlock, boolean suppress) {
+        if (!suppress) {
+            String layoutTrackInfo = layoutTurnout.toString();
+            if (layoutTurnout.namedTurnout != null && layoutTurnout.namedTurnout.getBean() != null) {
+                Turnout turnout = layoutTurnout.namedTurnout.getBean();
+                String turnoutSystemName = turnout.getSystemName();
+                String turnoutUserName = turnout.getUserName();
+                layoutTrackInfo = layoutTrackInfo+ " turnout: "+turnoutUserName+" ("+turnoutSystemName+")";
+            }
+            String layoutBlockSystemName = nextLayoutBlock.getSystemName();
+            String layoutBlockUserName = nextLayoutBlock.getUserName();
+
+            log.warn("Neither branch at {} leads to next block {} ({})",
+                        layoutTrackInfo,
+                        layoutBlockUserName,
+                        layoutBlockSystemName);
+        }
+    }
+
     /**
      * Initialize the setting (as an object), sets the new track segment (if in
      * Block), and sets the prevConnectType.
@@ -1973,9 +1998,7 @@ final public class ConnectivityUtil {
                             setting = LayoutSlip.STATE_AD;
                             trackSegment = (TrackSegment) layoutTurnout.getConnectD();
                         } else {
-                            if (!suppress) {
-                                log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                            }
+                            neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                             trackSegment = null;
                         }
                     }
@@ -2017,9 +2040,7 @@ final public class ConnectivityUtil {
                                     setting = LayoutSlip.STATE_BC;
                                     trackSegment = (TrackSegment) layoutTurnout.getConnectC();
                                 } else {
-                                    if (!suppress) {
-                                        log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                                    }
+                                    neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                                     trackSegment = null;
                                 }
                             }
@@ -2071,9 +2092,7 @@ final public class ConnectivityUtil {
                                     setting = LayoutSlip.STATE_BC;
                                     trackSegment = (TrackSegment) layoutTurnout.getConnectB();
                                 } else {
-                                    if (!suppress) {
-                                        log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                                    }
+                                    neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                                     trackSegment = null;
                                 }
                             }
@@ -2123,9 +2142,7 @@ final public class ConnectivityUtil {
                             setting = LayoutSlip.STATE_BD;
                             trackSegment = (TrackSegment) layoutTurnout.getConnectB();
                         } else {
-                            if (!suppress) {
-                                log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                            }
+                            neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                             trackSegment = null;
                         }
                     }
@@ -2186,9 +2203,7 @@ final public class ConnectivityUtil {
                             prevConnectType = HitPointType.TURNOUT_C;
                             trackSegment = (TrackSegment) layoutTurnout.getConnectC();
                         } else {
-                            if (!suppress) {
-                                log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                            }
+                            neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                             trackSegment = null;
                         }
                     }
@@ -2230,9 +2245,7 @@ final public class ConnectivityUtil {
                                 prevConnectType = HitPointType.TURNOUT_D;
                                 trackSegment = (TrackSegment) layoutTurnout.getConnectD();
                             } else {
-                                if (!suppress) {
-                                    log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                                }
+                                neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                                 trackSegment = null;
                             }
                         }
@@ -2280,9 +2293,7 @@ final public class ConnectivityUtil {
                                 prevConnectType = HitPointType.TURNOUT_A;
                                 trackSegment = (TrackSegment) layoutTurnout.getConnectA();
                             } else {
-                                if (!suppress) {
-                                    log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                                }
+                                neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                                 trackSegment = null;
                             }
                         }
@@ -2334,9 +2345,7 @@ final public class ConnectivityUtil {
                                 prevConnectType = HitPointType.TURNOUT_B;
                                 trackSegment = (TrackSegment) layoutTurnout.getConnectB();
                             } else {
-                                if (!suppress) {
-                                    log.warn("Neither branch at {} leads to next Block {}", layoutTurnout, nextLayoutBlock);
-                                }
+                                neitherBranchWarning(layoutTurnout, nextLayoutBlock, suppress);
                                 trackSegment = null;
                             }
                         }

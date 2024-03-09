@@ -2,13 +2,12 @@ package jmri.jmrit.vsdecoder.swing;
 
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
-import java.beans.PropertyChangeEvent;
-import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -17,9 +16,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.Timer;
+
 import jmri.jmrit.vsdecoder.EnginePane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Sound control buttons for the new GUI.
@@ -27,18 +26,18 @@ import org.slf4j.LoggerFactory;
  * <hr>
  * This file is part of JMRI.
  * <p>
- * JMRI is free software; you can redistribute it and/or modify it under 
- * the terms of version 2 of the GNU General Public License as published 
+ * JMRI is free software; you can redistribute it and/or modify it under
+ * the terms of version 2 of the GNU General Public License as published
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
  * <p>
- * JMRI is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ * JMRI is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
  * @author Mark Underwood Copyright (C) 2011
- * @author Klaus Killinger Copyright (C) 2018-2020
+ * @author Klaus Killinger Copyright (C) 2018-2021
  */
 public class DieselPane extends EnginePane {
 
@@ -173,6 +172,8 @@ public class DieselPane extends EnginePane {
     }
 
     // Respond to a start button press with stateChanged
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification="I18N of Headless Info Message")
     public void startButtonStateChange(ChangeEvent ev) {
         AbstractButton abstractButton = (AbstractButton) ev.getSource();
         ButtonModel buttonModel = abstractButton.getModel();
@@ -186,7 +187,7 @@ public class DieselPane extends EnginePane {
             if (GraphicsEnvironment.isHeadless()) {
                 log.info(Bundle.getMessage("EngineStartSpeedMessage"));
             } else {
-                JOptionPane.showMessageDialog(null, Bundle.getMessage("EngineStartSpeedMessage"));
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("EngineStartSpeedMessage"));
             }
         }
 
@@ -196,7 +197,7 @@ public class DieselPane extends EnginePane {
             if (GraphicsEnvironment.isHeadless()) {
                 log.info(Bundle.getMessage("EngineStopSpeedMessage"));
             } else {
-                JOptionPane.showMessageDialog(null, Bundle.getMessage("EngineStopSpeedMessage"));
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("EngineStopSpeedMessage"));
             }
         }
     }
@@ -267,6 +268,6 @@ public class DieselPane extends EnginePane {
         lastSpeed = s;
     }
 
-    private static final Logger log = LoggerFactory.getLogger(DieselPane.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DieselPane.class);
 
 }

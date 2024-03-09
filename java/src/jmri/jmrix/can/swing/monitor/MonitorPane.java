@@ -32,11 +32,11 @@ public class MonitorPane extends jmri.jmrix.AbstractMonPane implements CanListen
     public void initComponents(CanSystemConnectionMemo memo) {
         this.memo = memo;
 
-        memo.getTrafficController().addCanListener(this);
+        memo.getTrafficController().addCanConsoleListener(this);
         try {
             initComponents();
         } catch (Exception e) {
-            log.error(e.toString());
+            log.error("Cannot initComponents, {}", e.toString());
         }
     }
 

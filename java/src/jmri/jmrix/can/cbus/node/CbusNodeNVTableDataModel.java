@@ -3,7 +3,9 @@ package jmri.jmrix.can.cbus.node;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
+
 import jmri.jmrix.can.CanSystemConnectionMemo;
+import jmri.jmrix.can.cbus.swing.modules.CbusConfigPaneProvider;
 import jmri.util.StringUtil;
 import jmri.util.ThreadingUtil;
 
@@ -21,35 +23,39 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
 
     private int[] newNVs;
     private CbusNode nodeOfInterest;
-    
+
     // column order needs to match list in column tooltips
     static public final int NV_NUMBER_COLUMN = 0;
-    static public final int NV_CURRENT_VAL_COLUMN = 1;
-    static public final int NV_CURRENT_HEX_COLUMN = 2;
-    static public final int NV_CURRENT_BIT_COLUMN = 3;
-    static public final int NV_SELECT_COLUMN = 4;
-    static public final int NV_SELECT_HEX_COLUMN = 5;
-    static public final int NV_SELECT_BIT_COLUMN = 6;
-    static public final int MAX_COLUMN = 7;
+    static public final int NV_NAME_COLUMN = 1;
+    static public final int NV_CURRENT_VAL_COLUMN = 2;
+    static public final int NV_CURRENT_HEX_COLUMN = 3;
+    static public final int NV_CURRENT_BIT_COLUMN = 4;
+    static public final int NV_SELECT_COLUMN = 5;
+    static public final int NV_SELECT_HEX_COLUMN = 6;
+    static public final int NV_SELECT_BIT_COLUMN = 7;
+    static public final int MAX_COLUMN = 8;
 
     public CbusNodeNVTableDataModel(CanSystemConnectionMemo memo, int row, int column ) {
         log.debug("Starting MERG CBUS Node NV Table");
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public void propertyChange(PropertyChangeEvent ev){
         if (ev.getPropertyName().equals("SINGLENVUPDATE")) {
             int newValue = (Integer) ev.getNewValue();
-            resetNewNvs();
+//            resetNewNvs();    // Why do this for a single NV?
+            log.debug("SINGLENVUPDATE {}", newValue);
+            resetSingleNv(newValue);
             fireTableRowsUpdated(newValue,newValue);
         }
         else if (ev.getPropertyName().equals("ALLNVUPDATE")) {
+            log.debug("ALLNVUPDATE");
             resetNewNvs();
             fireTableDataChanged();
         }
     }
-    
+
     /**
      * Return the number of rows to be displayed.
      * {@inheritDoc} 
@@ -82,6 +88,8 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         switch (col) {
             case NV_NUMBER_COLUMN:
                 return ("NV");
+            case NV_NAME_COLUMN:
+                return ("Name");
             case NV_CURRENT_VAL_COLUMN:
                 return ("Dec.");
             case NV_CURRENT_HEX_COLUMN:
@@ -98,7 +106,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
                 return "unknown " + col; // NOI18N
         }
     }
-    
+
     /**
      * Returns column class type.
      * {@inheritDoc}
@@ -107,6 +115,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
     public Class<?> getColumnClass(int col) {
         switch (col) {
             case NV_SELECT_HEX_COLUMN:
+            case NV_NAME_COLUMN:
             case NV_SELECT_BIT_COLUMN:
             case NV_CURRENT_HEX_COLUMN:
             case NV_CURRENT_BIT_COLUMN:
@@ -115,7 +124,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
                 return Integer.class;
         }
     }
-    
+
     /**
     * boolean return to edit table cell or not
     * {@inheritDoc}
@@ -141,14 +150,16 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
      */
     @Override
     public Object getValueAt(int row, int col) {
-        
+
         if ( nodeOfInterest.getNodeNvManager().getTotalNVs() < 1 ) {
             return null;
         }
-        
+
         switch (col) {
             case NV_NUMBER_COLUMN:
                 return (row +1);
+            case NV_NAME_COLUMN:
+                return CbusConfigPaneProvider.getProviderByNode(nodeOfInterest).getNVNameByIndex(row + 1);  // NV indices start at 1
             case NV_CURRENT_VAL_COLUMN:
                 return nodeOfInterest.getNodeNvManager().getNV(row+1);
             case NV_CURRENT_HEX_COLUMN:
@@ -201,7 +212,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         }
         return "";
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -235,7 +246,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
                 break;
         }
     }
-    
+
     /**
      * Set the Node to be used in table.
      * @param node the CbusNode of Interest to the NV Table
@@ -245,6 +256,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         
         if ( nodeOfInterest != null ) {
             nodeOfInterest.removePropertyChangeListener(this);
+            nodeOfInterest.setliveUpdate(false);
         }
         
         nodeOfInterest = node;
@@ -255,12 +267,19 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         
         resetNewNvs();
         nodeOfInterest.addPropertyChangeListener(this);
-        ThreadingUtil.runOnGUIEventually( ()->{ 
-            fireTableDataChanged();
-        });
+        fireTableDataChanged();
         
     }
-    
+
+    /**
+     * Get the Node being used in table.
+     * 
+     * @return the CbusNode of Interest
+     */
+    public CbusNode getNode() {
+        return nodeOfInterest;
+    }
+
     /**
      * Checks if a single NV has been edited to a new value
      * @param nvToCheck the single NV to check
@@ -270,7 +289,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         return ( (int) getValueAt(nvToCheck,NV_CURRENT_VAL_COLUMN) ) != (
                 (int) getValueAt(nvToCheck,NV_SELECT_COLUMN) );
     }
-    
+
     /**
      * Checks if any NV has been edited to a new value
      * @return true if any NV has been edited, else false
@@ -288,7 +307,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
             return false;
         }
     }
-    
+
     /**
      * Get count of changed NVs.
      * @return number of changed NVs
@@ -302,7 +321,7 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         }
         return count;
     }
-    
+
     /**
      * Resets the edit NV value to match the actual NV value.
      */
@@ -310,9 +329,11 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         
         // setup a new fixed length array to hold new nv values
         if ( nodeOfInterest.getNodeNvManager().getNvArray() == null ) {
+            log.debug("Create newNVs[] of length 0");
             newNVs = new int[0];
         }
         else {
+            log.debug("Create newNVs[] of length {}", nodeOfInterest.getNodeNvManager().getNvArray().length);
             newNVs = new int[ ( nodeOfInterest.getNodeNvManager().getNvArray().length ) ];        
             newNVs = Arrays.copyOf(
                 nodeOfInterest.getNodeNvManager().getNvArray(),
@@ -324,7 +345,16 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
             setValueAt( getValueAt(i,NV_CURRENT_VAL_COLUMN), i, NV_SELECT_COLUMN);
         }
     }
-    
+
+    /**
+     * Resets a single edit NV value to match the actual NV value.
+     * 
+     * @param row row to reset
+     */
+    public void resetSingleNv(int row) {
+        setValueAt( getValueAt(row,NV_CURRENT_VAL_COLUMN), row, NV_SELECT_COLUMN);
+    }
+
     /**
      * Get a backup node containing the edited NVs.
      * @return a node which has the new NV's
@@ -334,15 +364,16 @@ public class CbusNodeNVTableDataModel extends javax.swing.table.AbstractTableMod
         temp.getNodeNvManager().setNVs(newNVs);
         return temp;
     }
-    
+
     /**
      * De-registers the NV Table from receiving updates from the CbusNode.
      */
     public void dispose(){
         if ( nodeOfInterest != null ) {
             nodeOfInterest.removePropertyChangeListener(this);
+            nodeOfInterest.setliveUpdate(false);
         }
     }
-    
+
     private final static Logger log = LoggerFactory.getLogger(CbusNodeNVTableDataModel.class);
 }

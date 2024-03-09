@@ -1,5 +1,8 @@
 package jmri.jmrit.operations.rollingstock.cars;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,13 +57,33 @@ public class CarRoads extends RollingStockAttribute implements InstanceManagerAu
      *
      * @return the maximum character length of a car road name
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+            justification="I18N of Info Message")
     @Override
     public int getMaxNameLength() {
         if (maxNameSubStringLength == 0) {
             super.getMaxNameSubStringLength();
-            log.info("Max road name ({}) length {}", maxName, maxNameSubStringLength);
+            log.info(Bundle.getMessage("InfoMaxRoad", maxName, maxNameSubStringLength));
         }
         return maxNameSubStringLength;
+    }
+    
+    /**
+     * Gets a sorted list of road names for a given car type
+     *
+     * @param type car type
+     * @return list of road names
+     */
+    public List<String> getNames(String type) {
+        List<String> names = new ArrayList<>();  
+        List<Car> cars = InstanceManager.getDefault(CarManager.class).getByTypeList(type);
+        for (Car car : cars) {
+            if (!names.contains(car.getRoadName())) {
+                names.add(car.getRoadName());
+            }
+        }
+        java.util.Collections.sort(names);
+        return names;
     }
 
     /**

@@ -1,9 +1,11 @@
 package jmri.jmrit.display.configurexml;
 
 import java.util.List;
+
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.catalog.NamedIcon;
-import jmri.jmrit.display.Editor;
-import jmri.jmrit.display.MultiSensorIcon;
+import jmri.jmrit.display.*;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -46,6 +48,8 @@ public class MultiSensorIconXml extends PositionableLabelXml {
         element.addContent(storeIcon("unknown", p.getUnknownIcon()));
         element.addContent(storeIcon("inconsistent", p.getInconsistentIcon()));
 
+        storeLogixNG_Data(p, element);
+
         element.setAttribute("class", "jmri.jmrit.display.configurexml.MultiSensorIconXml");
         return element;
     }
@@ -55,9 +59,11 @@ public class MultiSensorIconXml extends PositionableLabelXml {
      *
      * @param element Top level Element to unpack.
      * @param o       an Editor an Object
+     * @throws JmriConfigureXmlException when a error prevents creating the objects as as
+     *                   required by the input XML
      */
     @Override
-    public void load(Element element, Object o) {
+    public void load(Element element, Object o) throws JmriConfigureXmlException {
         Editor pe = (Editor) o;
         MultiSensorIcon l = new MultiSensorIcon(pe);
         // create the objects
@@ -149,7 +155,14 @@ public class MultiSensorIconXml extends PositionableLabelXml {
                 l.addEntry(sensor, icon);
             }
         }
-        pe.putItem(l);
+        try {
+            pe.putItem(l);
+        } catch (Positionable.DuplicateIdException e) {
+            throw new JmriConfigureXmlException("Positionable id is not unique", e);
+        }
+
+        loadLogixNG_Data(l, element);
+
         // load individual item's option settings after editor has set its global settings
         loadCommonAttributes(l, Editor.SENSORS, element);
     }

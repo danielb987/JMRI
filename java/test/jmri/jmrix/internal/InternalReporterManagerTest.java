@@ -17,17 +17,17 @@ public class InternalReporterManagerTest extends jmri.managers.AbstractReporterM
     public String getSystemName(String i) {
         return "IR" + i;
     }
-    
+
     @Override
     protected String getASystemNameWithNoPrefix() {
         return "My Reporter 6";
     }
-    
+
     // No manager-specific system name validation at present
     @Test
     @Override
     public void testMakeSystemNameWithNoPrefixNotASystemName() {}
-    
+
     // No manager-specific system name validation at present
     @Test
     @Override

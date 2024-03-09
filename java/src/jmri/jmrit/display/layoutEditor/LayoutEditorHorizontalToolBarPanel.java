@@ -1,6 +1,5 @@
 package jmri.jmrit.display.layoutEditor;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -146,6 +145,8 @@ public class LayoutEditorHorizontalToolBarPanel extends LayoutEditorToolBarPanel
             hTop4Center.add(textLabelTextField);
             hTop4Center.add(memoryButton);
             hTop4Center.add(textMemoryComboBox);
+            hTop4Center.add(globalVariableButton);
+            hTop4Center.add(textGlobalVariableComboBox);
             hTop4Center.add(blockContentsButton);
             hTop4Center.add(blockContentsComboBox);
             hTop4Panel.add(hTop4Center);
@@ -160,6 +161,8 @@ public class LayoutEditorHorizontalToolBarPanel extends LayoutEditorToolBarPanel
             hTop5Left.add(textLabelTextField);
             hTop5Left.add(memoryButton);
             hTop5Left.add(textMemoryComboBox);
+            hTop5Left.add(globalVariableButton);
+            hTop5Left.add(textGlobalVariableComboBox);
             hTop5Left.add(blockContentsButton);
             hTop5Left.add(blockContentsComboBox);
             hTop5Left.add(Box.createHorizontalGlue());
@@ -183,6 +186,9 @@ public class LayoutEditorHorizontalToolBarPanel extends LayoutEditorToolBarPanel
         hTop6Left.add(signalHeadComboBox);
         hTop6Left.add(new JLabel(" "));
         hTop6Left.add(iconLabelButton);
+        hTop6Left.add(logixngButton);
+        hTop6Left.add(audioButton);
+        hTop6Left.add(textAudioComboBox);
         hTop6Left.add(shapeButton);
 
         hTop6Panel.add(hTop6Left);

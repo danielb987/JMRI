@@ -3,25 +3,23 @@ package jmri.jmrit.ctc.editor.code;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
+
 import jmri.InstanceManager;
 import jmri.BlockManager;
-import jmri.Sensor;
 import jmri.SensorManager;
 import jmri.SignalHeadManager;
 import jmri.SignalMastManager;
@@ -32,8 +30,9 @@ import jmri.jmrit.ctc.NBHSignal;
 import jmri.jmrit.ctc.NBHTurnout;
 import jmri.jmrit.ctc.ctcserialdata.CTCSerialData;
 import jmri.jmrit.ctc.ctcserialdata.CodeButtonHandlerData;
-import jmri.jmrit.ctc.ctcserialdata.OtherData;
 import jmri.jmrit.ctc.ctcserialdata.ProjectsCommonSubs;
+import jmri.util.swing.JmriJOptionPane;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -58,8 +57,8 @@ public class CommonSubs {
 
     public static boolean allowClose(Component parentComponent, boolean dataChanged) {
         if (dataChanged) {
-            return JOptionPane.showConfirmDialog(parentComponent, Bundle.getMessage("CommonSubsDataModified"),
-                    Bundle.getMessage("WarningTitle"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;  // NOI18N
+            return JmriJOptionPane.showConfirmDialog(parentComponent, Bundle.getMessage("CommonSubsDataModified"),
+                    Bundle.getMessage("WarningTitle"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION;  // NOI18N
         }
         return true;    // NO change, ok to exit
     }
@@ -94,7 +93,9 @@ public class CommonSubs {
                 }
             }
         }
-        try (CSVPrinter printer = new CSVPrinter(new StringBuilder(), CSVFormat.DEFAULT.withQuote(null).withRecordSeparator(null))) {
+        try (CSVPrinter printer = new CSVPrinter(new StringBuilder(),
+                CSVFormat.Builder.create(CSVFormat.DEFAULT)
+                        .setQuote(null).setRecordSeparator(null).build())) {
             printer.printRecord(entries);
             return printer.getOut().toString();
         } catch (IOException ex) {
@@ -242,7 +243,7 @@ public class CommonSubs {
                 });
                 break;
             default:
-                log.error(Bundle.getMessage("CommonSubsBeanType"), beanType);   // NOI18N
+                log.error("Unhandled, {}", Bundle.getMessage("CommonSubsBeanType", beanType));   // NOI18N
         }
         list.sort(new jmri.util.AlphanumComparator());
         list.forEach((item) -> {
@@ -312,8 +313,8 @@ public class CommonSubs {
         } else {
             stringBuffer.append(Bundle.getMessage("CommonSubsPleaseFix2")); // NOI18N
         }
-        JOptionPane.showMessageDialog(parentComponent, stringBuffer.toString(),
-                Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);   // NOI18N
+        JmriJOptionPane.showMessageDialog(parentComponent, stringBuffer.toString(),
+                Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);   // NOI18N
         return true;
     }
 

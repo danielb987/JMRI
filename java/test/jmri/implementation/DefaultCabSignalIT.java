@@ -1,6 +1,7 @@
 package jmri.implementation;
 
 import java.awt.GraphicsEnvironment;
+
 import jmri.Block;
 import jmri.BlockManager;
 import jmri.JmriException;
@@ -16,9 +17,11 @@ import jmri.jmrit.display.layoutEditor.LayoutEditor;
 import jmri.jmrit.display.layoutEditor.ConnectivityUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.ThreadingUtil;
+
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 
 /**
@@ -30,16 +33,18 @@ public class DefaultCabSignalIT {
 
     protected jmri.CabSignal cs = null;
 
+    @DisabledIfSystemProperty(named ="java.awt.headless", matches ="true")
     @Test
     public void testSignalSequence() throws jmri.JmriException {
         runSequence(new DccLocoAddress(1234,true));
     }
 
+    @DisabledIfSystemProperty(named ="java.awt.headless", matches ="true")
     @Test
     public void testSignalSequenceIdTag() throws jmri.JmriException {
         runSequence(new DefaultRailCom("ID1234","Test Tag"));
     }
-    
+
     protected void runSequence(Object initialBlockContents) throws jmri.JmriException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         // load and display test panel file
@@ -69,12 +74,12 @@ public class DefaultCabSignalIT {
             return InstanceManager.sensorManagerInstance().provideSensor("IS_ROUTING_DONE").getKnownState() == jmri.Sensor.ACTIVE;
         },
                 "LayoutEditor stabilized sensor went ACTIVE");
-        
+
         BlockManager bm = InstanceManager.getDefault(jmri.BlockManager.class);
         SensorManager sm = InstanceManager.getDefault(jmri.SensorManager.class);
         TurnoutManager tm = InstanceManager.getDefault(jmri.TurnoutManager.class);
 
-        ThreadingUtil.runOnLayout( ()-> { 
+        ThreadingUtil.runOnLayout( ()-> {
              try{
                 tm.provideTurnout("EastTurnout").setState(Turnout.CLOSED);
                 tm.provideTurnout("WestTurnout").setState(Turnout.CLOSED);
@@ -118,7 +123,7 @@ public class DefaultCabSignalIT {
         checkBlock(cs,"MainlineBlock","EastTurnoutOSBlock","IF$vsm:AAR-1946:PL-1-high-abs($0005)");
 
         //throw the turnout behind the train.
-        ThreadingUtil.runOnLayout( ()-> { 
+        ThreadingUtil.runOnLayout( ()-> {
              try{
               tm.provideTurnout("WestTurnout").setState(Turnout.THROWN);
              } catch (JmriException je) {
@@ -128,7 +133,7 @@ public class DefaultCabSignalIT {
         checkBlock(cs,"MainlineBlock","EastTurnoutOSBlock","IF$vsm:AAR-1946:PL-1-high-abs($0005)");
 
         // throw the turnout in front of the train
-        ThreadingUtil.runOnLayout( ()-> { 
+        ThreadingUtil.runOnLayout( ()-> {
              try{
               tm.provideTurnout("EastTurnout").setState(Turnout.THROWN);
              } catch (JmriException je) {
@@ -136,7 +141,7 @@ public class DefaultCabSignalIT {
         });
         // and verify the state changes.
         checkBlock(cs,"MainlineBlock","","");
-        
+
         cs.dispose(); // verify no exceptions
 
         // and close the editor window
@@ -145,11 +150,11 @@ public class DefaultCabSignalIT {
 
     private void moveBlock(String startingBlock,String endingBlock) {
         // use sensors to move to the next block.
-        ThreadingUtil.runOnLayout( ()-> { 
+        ThreadingUtil.runOnLayout( ()-> {
              try{
                  SensorManager sm = InstanceManager.getDefault(jmri.SensorManager.class);
                  sm.provideSensor(endingBlock).setState(Sensor.ACTIVE);
-                 sm.provideSensor(startingBlock).setState(Sensor.INACTIVE); 
+                 sm.provideSensor(startingBlock).setState(Sensor.INACTIVE);
              } catch (JmriException je) {
              }
         });
@@ -161,10 +166,12 @@ public class DefaultCabSignalIT {
         Assert.assertEquals("Block set",bm.getBlock(currentBlock),lcs.getBlock());
         Assert.assertEquals("next Block set",bm.getBlock(nextBlock),lcs.getNextBlock());
         Assert.assertEquals("Mast set",smm.getSignalMast(mastName),lcs.getNextMast());
-        if(mastName!="") {
+        if(!mastName.isEmpty()) {
            new org.netbeans.jemmy.QueueTool().waitEmpty(100); // wait for signal to settle.
            // mast expected, so check the aspect.
-           JUnitUtil.waitFor( () -> { return "Clear".equals(lcs.getNextMast().getAspect().toString());});
+           JUnitUtil.waitFor( () -> {
+               return "Clear".equals(lcs.getNextMast().getAspect());
+           },"Mast " + mastName + " did not go clear");
            Assert.assertEquals("Mast " + mastName + " Aspect clear","Clear",lcs.getNextMast().getAspect());
         }
     }
@@ -188,6 +195,7 @@ public class DefaultCabSignalIT {
     public void tearDown() {
         cs.dispose(); // verify no exceptions
         cs = null;
+        InstanceManager.getDefault(jmri.IdTagManager.class).dispose();
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }

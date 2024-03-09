@@ -48,9 +48,10 @@ import jmri.implementation.AbstractTurnout;
  * Each subclass also has its own xxxTurnoutOperationXml class, which knows how
  * to store the information in an XML element, and restore it.
  * <p>
- * The current code defines two operations, NoFeedback and Sensor. Because these
- * have so much in common (only the xxxTurnoutOperator class has any
- * differences), most of them is implemented in the CommonTurnout... classes.
+ * The current code defines three operations, NoFeedback, Raw and Sensor.
+ * Because these have so much in common
+ * (only the xxxTurnoutOperator class has any differences),
+ * most of them are implemented in the CommonTurnout... classes.
  * This family is not part of the general structure, although it can be reused
  * if it helps.
  * <p>
@@ -95,7 +96,6 @@ public abstract class TurnoutOperation extends PropertyChangeSupport implements 
 
     TurnoutOperation(@Nonnull String n) {
         name = n;
-        InstanceManager.getDefault(TurnoutOperationManager.class).addOperation(this);
     }
 
     /**
@@ -158,7 +158,7 @@ public abstract class TurnoutOperation extends PropertyChangeSupport implements 
     /**
      *
      * @param other another TurnoutOperation
-     * @return true iff the two operations are equivalent, i.e. same subclass
+     * @return true if the two operations are equivalent, i.e. same subclass
      *         and same parameters
      */
     public abstract boolean equivalentTo(TurnoutOperation other);
@@ -197,7 +197,7 @@ public abstract class TurnoutOperation extends PropertyChangeSupport implements 
 
     /**
      *
-     * @return true iff this is the "defining instance" of the class, which we
+     * @return true if this is the "defining instance" of the class, which we
      *         determine by the name of the instance being the same as the
      *         prefix of the class
      */
@@ -236,7 +236,7 @@ public abstract class TurnoutOperation extends PropertyChangeSupport implements 
     /**
      * See if operation is in use (needed by the UI).
      *
-     * @return true iff any turnouts are using it
+     * @return true if any turnouts are using it
      */
     public boolean isInUse() {
         TurnoutManager tm = InstanceManager.turnoutManagerInstance();
@@ -249,8 +249,10 @@ public abstract class TurnoutOperation extends PropertyChangeSupport implements 
     }
 
     /**
-     * Nonce support. A nonce is a TurnoutOperation created specifically for one
-     * turnout, which can't be directly referred to by name. It does have a
+     * Nonce support.
+     * A nonce is a TurnoutOperation created specifically for one
+     * turnout, which can't be directly referred to by name.
+     * It does have a
      * name, which is the turnout it was created for, prefixed by "*"
      *
      * @return true if this object is a nonce
@@ -272,11 +274,19 @@ public abstract class TurnoutOperation extends PropertyChangeSupport implements 
 
     /**
      * @param mode feedback mode for a turnout
-     * @return true iff this operation's feedback mode is one we know how to
+     * @return true if this operation's feedback mode is one we know how to
      *         deal with
      */
     public boolean matchFeedbackMode(int mode) {
         return (mode & feedbackModes) != 0;
+    }
+
+    /**
+     * Get the ToolTip for the Turnout Operator.
+     * @return String or null.
+     */
+    public String getToolTip(){
+        return null;
     }
 
 }

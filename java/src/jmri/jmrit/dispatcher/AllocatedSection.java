@@ -12,6 +12,9 @@ import jmri.InstanceManager;
 import jmri.Section;
 import jmri.Sensor;
 import jmri.TransitSection;
+import jmri.jmrit.display.layoutEditor.LayoutTrackExpectedState;
+import jmri.jmrit.display.layoutEditor.LayoutTurnout;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,10 +101,21 @@ public class AllocatedSection {
     private int mAllocationNumber = 0;     // used to keep track of allocation order
     private Sensor mForwardStoppingSensor = null;
     private Sensor mReverseStoppingSensor = null;
+    // list of expected states of turnouts in allocated section
+    // used for delayed checking
+    private List<LayoutTrackExpectedState<LayoutTurnout>> autoTurnoutsResponse = null;
 
     //
     // Access methods
     //
+    public void setAutoTurnoutsResponse(List<LayoutTrackExpectedState<LayoutTurnout>> atr) {
+        autoTurnoutsResponse = atr;
+    }
+
+    public List<LayoutTrackExpectedState<LayoutTurnout>> getAutoTurnoutsResponse() {
+        return autoTurnoutsResponse;
+    }
+
     public Section getSection() {
         return mSection;
     }
@@ -202,7 +216,7 @@ public class AllocatedSection {
     /**
      * Methods
      */
-    protected void setStoppingSensors() {
+    final protected void setStoppingSensors() {
         if (mSection.getState() == Section.FORWARD) {
             mForwardStoppingSensor = mSection.getForwardStoppingSensor();
             mReverseStoppingSensor = mSection.getReverseStoppingSensor();
@@ -248,16 +262,10 @@ public class AllocatedSection {
                 mActiveTrain.getAutoActiveTrain().handleSectionOccupancyChange(this);
             }
         }
-
-        //       if (mEntered && !mExited && mActiveTrain.getResetWhenDone() && mActiveTrain.getDelayedRestart() != ActiveTrain.NODELAY) {
-        //           if (getSequence() == mActiveTrain.getEndBlockSectionSequenceNumber()) {
-        //               mActiveTrain.setRestart();
-        //           }
-        //       }
         InstanceManager.getDefault(DispatcherFrame.class).sectionOccupancyChanged();
     }
 
-    public synchronized void initializeMonitorBlockOccupancy() {
+    public synchronized final void initializeMonitorBlockOccupancy() {
         if (mBlockList != null) {
             return;
         }
@@ -382,11 +390,13 @@ public class AllocatedSection {
                     if ((_block == mActiveTrain.getEndBlock()) && mActiveTrain.getReverseAtEnd()) {
                         // reverse direction of Allocated Sections
                         mActiveTrain.reverseAllAllocatedSections();
-                        mActiveTrain.setRestart();
+                        mActiveTrain.setRestart(mActiveTrain.getDelayReverseRestart(),mActiveTrain.getReverseRestartDelay(),
+                                mActiveTrain.getReverseRestartSensor(),mActiveTrain.getResetReverseRestartSensor());
                     } else if ((_block == mActiveTrain.getStartBlock()) && mActiveTrain.getResetWhenDone()) {
                         // reset the direction of Allocated Sections
                         mActiveTrain.resetAllAllocatedSections();
-                        mActiveTrain.setRestart();
+                        mActiveTrain.setRestart(mActiveTrain.getDelayedRestart(),mActiveTrain.getRestartDelay(),
+                                mActiveTrain.getRestartSensor(),mActiveTrain.getResetRestartSensor());
                     } else if (_block == mActiveTrain.getEndBlock() || _block == mActiveTrain.getStartBlock() ) {
                         mActiveTrain.setStatus(ActiveTrain.DONE);
                     }

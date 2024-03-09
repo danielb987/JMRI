@@ -14,21 +14,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import jmri.*;
 import jmri.jmrit.dispatcher.ActiveTrain;
+import jmri.jmrit.dispatcher.DispatcherFrame;
 import jmri.jmrit.display.layoutEditor.ConnectivityUtil;
 import jmri.jmrit.display.layoutEditor.LayoutBlock;
 import jmri.jmrit.display.layoutEditor.LayoutBlockConnectivityTools;
+import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.display.layoutEditor.LayoutSlip;
 import jmri.jmrit.display.layoutEditor.LayoutTrackExpectedState;
 import jmri.jmrit.display.layoutEditor.LayoutTurnout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
+import jmri.util.ThreadingUtil;
 
 public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
 
@@ -42,17 +45,22 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
     int entryExitType = EntryExitPairs.SETUPTURNOUTSONLY;//SETUPSIGNALMASTLOGIC;
     boolean enabled = true;
     boolean activeEntryExit = false;
+    boolean activeEntryExitReversed = false;
     List<LayoutBlock> routeDetails = new ArrayList<>();
     LayoutBlock destination;
     boolean disposed = false;
 
-    transient EntryExitPairs manager = jmri.InstanceManager.getDefault(jmri.jmrit.entryexit.EntryExitPairs.class);
+    transient EntryExitPairs manager = InstanceManager.getDefault(jmri.jmrit.entryexit.EntryExitPairs.class);
 
-    transient jmri.SignalMastLogic sml;
+    transient SignalMastLogic sml;
 
     final static int NXMESSAGEBOXCLEARTIMEOUT = 30;
 
-    boolean isEnabled() {
+    /**
+     * public for testing purposes.
+     * @return true if enabled, else false.
+     */
+    public boolean isEnabled() {
         return enabled;
     }
 
@@ -69,7 +77,9 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             return;
         }
         if (enabled) {
-            sourceMast.setHeld(true);
+            if (!manager.isAbsSignalMode()) {
+                sourceMast.setHeld(true);
+            }
         } else {
             // All destinations for the source must be disabled before the mast hold can be released
             for (PointDetails pd : src.getDestinationPoints()) {
@@ -179,21 +189,30 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             if (log.isDebugEnabled()) {
                 log.debug("{}  We have a change of state on the block {}", getUserName(), blk.getDisplayName());  // NOI18N
             }
-            int now = ((Integer) e.getNewValue()).intValue();
+            int now = ((Integer) e.getNewValue());
+
+            LayoutBlock lBlock = InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlock(blk);
+            if (lBlock == null){
+                log.error("Unable to get layout block from block {}",blk);
+                return;
+            }
 
             if (now == Block.OCCUPIED) {
-                LayoutBlock lBlock = InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlock(blk);
                 //If the block was previously active or inactive then we will
                 //reset the useExtraColor, but not if it was previously unknown or inconsistent.
-                if (lBlock==null){
-                    log.error("Unable to get layout block from block {}",blk);
-                    return;
-                }
                 lBlock.setUseExtraColor(false);
                 blk.removePropertyChangeListener(propertyBlockListener); //was this
                 removeBlockFromRoute(lBlock);
             } else {
-                log.debug("state was {} and did not go through reset",now);  // NOI18N
+                if (src.getStart() == lBlock) {
+                    // Remove listener when the start block becomes unoccupied.
+                    // When the start block is occupied when the route is created, the normal
+                    // removal does not occur.
+                    lBlock.getBlock().removePropertyChangeListener(propertyBlockListener);
+                    log.debug("Remove listener from start block {} for {}", lBlock.getDisplayName(), this.getDisplayName());
+                } else {
+                    log.debug("state was {} and did not go through reset",now);  // NOI18N
+                }
             }
         }
     }
@@ -231,9 +250,11 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                 setRouteFrom(false);
                 src.pd.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
                 if (sml != null && getEntryExitType() == EntryExitPairs.FULLINTERLOCK) {
-                    sml.getSourceMast().setHeld(true);
+                    if (!manager.isAbsSignalMode()) {
+                        sml.getSourceMast().setHeld(true);
+                    }
                     SignalMast mast = (SignalMast) getSignal();
-                    if (sml.getStoreState(mast) == jmri.SignalMastLogic.STORENONE) {
+                    if (sml.getStoreState(mast) == SignalMastLogic.STORENONE) {
                         sml.removeDestination(mast);
                     }
                 }
@@ -243,7 +264,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             if (log.isDebugEnabled()) {
                 log.debug("Route details contents {}", routeDetails);  // NOI18N
                 for (int i = 0; i < routeDetails.size(); i++) {
-                    log.debug("      {}", routeDetails.get(i).getDisplayName());
+                    log.debug("    name: {}", routeDetails.get(i).getDisplayName());
                 }
             }
             if ((routeDetails.size() == 1) && (routeDetails.contains(destination))) {
@@ -315,8 +336,8 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         }
         /* We put the setting of the route into a seperate thread and put a glass pane in front of the layout editor.
          The swing thread for flashing the icons will carry on without interuption. */
-        final List<Color> realColorStd = new ArrayList<Color>();
-        final List<Color> realColorXtra = new ArrayList<Color>();
+        final List<Color> realColorStd = new ArrayList<>();
+        final List<Color> realColorXtra = new ArrayList<>();
         final List<LayoutBlock> routeBlocks = new ArrayList<>();
         if (manager.useDifferentColorWhenSetting()) {
             boolean first = true;
@@ -336,8 +357,8 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             src.getPoint().getPanel().redrawPanel();
         }
         ActiveTrain tmpat = null;
-        if (manager.getDispatcherIntegration() && jmri.InstanceManager.getNullableDefault(jmri.jmrit.dispatcher.DispatcherFrame.class) != null) {
-            jmri.jmrit.dispatcher.DispatcherFrame df = jmri.InstanceManager.getDefault(jmri.jmrit.dispatcher.DispatcherFrame.class);
+        if (manager.getDispatcherIntegration() && InstanceManager.getNullableDefault(DispatcherFrame.class) != null) {
+            DispatcherFrame df = InstanceManager.getDefault(DispatcherFrame.class);
             for (ActiveTrain atl : df.getActiveTrainsList()) {
                 if (atl.getEndBlock() == src.getStart().getBlock()) {
                     if (atl.getLastAllocatedSection() == atl.getEndBlockSection()) {
@@ -357,7 +378,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                 src.getPoint().getPanel().getGlassPane().setVisible(true);
 
                 try {
-                    Hashtable<Turnout, Integer> turnoutSettings = new Hashtable<Turnout, Integer>();
+                    Hashtable<Turnout, Integer> turnoutSettings = new Hashtable<>();
 
                     ConnectivityUtil connection = new ConnectivityUtil(point.getPanel());
 //                     log.info("@@ New ConnectivityUtil = '{}'", point.getPanel().getLayoutName());
@@ -414,7 +435,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                     }
                     if (at == null) {
                         if (!isSignalLogicDynamic()) {
-                            jmri.SignalMastLogic tmSml = InstanceManager.getDefault(jmri.SignalMastLogicManager.class).getSignalMastLogic((SignalMast) src.sourceSignal);
+                            SignalMastLogic tmSml = InstanceManager.getDefault(SignalMastLogicManager.class).getSignalMastLogic((SignalMast) src.sourceSignal);
                             for (Turnout t : tmSml.getAutoTurnouts((SignalMast) getSignal())) {
                                 turnoutSettings.put(t, tmSml.getAutoTurnoutState(t, (SignalMast) getSignal()));
                             }
@@ -432,7 +453,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                                     }
                                 }
                             };
-                            Thread thr = jmri.util.ThreadingUtil.newThread(r, "Entry Exit Route: Turnout Setting");  // NOI18N
+                            Thread thr = ThreadingUtil.newThread(r, "Entry Exit Route: Turnout Setting");  // NOI18N
                             thr.start();
                             try {
                                 thr.join();
@@ -455,11 +476,11 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                             SignalMast smSource = (SignalMast) src.sourceSignal;
                             SignalMast smDest = (SignalMast) getSignal();
                             synchronized (this) {
-                                sml = InstanceManager.getDefault(jmri.SignalMastLogicManager.class).newSignalMastLogic(smSource);
+                                sml = InstanceManager.getDefault(SignalMastLogicManager.class).newSignalMastLogic(smSource);
                                 if (!sml.isDestinationValid(smDest)) {
                                     //if no signalmastlogic existed then created it, but set it not to be stored.
                                     sml.setDestinationMast(smDest);
-                                    sml.setStore(jmri.SignalMastLogic.STORENONE, smDest);
+                                    sml.setStore(SignalMastLogic.STORENONE, smDest);
                                 }
                             }
 
@@ -469,8 +490,8 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                             synchronized (this) {
                                 releaseMast(smSource, turnoutSettings);
                                 //Only change the block and turnout details if this a temp signalmast logic
-                                if (sml.getStoreState(smDest) == jmri.SignalMastLogic.STORENONE) {
-                                    LinkedHashMap<Block, Integer> blks = new LinkedHashMap<Block, Integer>();
+                                if (sml.getStoreState(smDest) == SignalMastLogic.STORENONE) {
+                                    LinkedHashMap<Block, Integer> blks = new LinkedHashMap<>();
                                     for (int i = 0; i < routeDetails.size(); i++) {
                                         if (routeDetails.get(i).getBlock().getState() == Block.UNKNOWN) {
                                             routeDetails.get(i).getBlock().setState(Block.UNOCCUPIED);
@@ -523,39 +544,38 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                     }
 
                     if (at != null) {
-                        jmri.Section sec = null;
+                        Section sec;
                         if (sml != null && sml.getAssociatedSection((SignalMast) getSignal()) != null) {
                             sec = sml.getAssociatedSection((SignalMast) getSignal());
                         } else {
-                            sec = InstanceManager.getDefault(jmri.SectionManager.class).createNewSection(src.getPoint().getDisplayName() + ":" + point.getDisplayName());
+                            String secUserName = src.getPoint().getDisplayName() + ":" + point.getDisplayName();
+                            sec = InstanceManager.getDefault(SectionManager.class).getSection(secUserName);
                             if (sec == null) {
-                                //A Section already exists, lets grab it and check that it is one used with the Interlocking, if so carry on using that.
-                                sec = InstanceManager.getDefault(jmri.SectionManager.class).getSection(src.getPoint().getDisplayName() + ":" + point.getDisplayName());
-                            } else {
-                                sec.setSectionType(jmri.Section.DYNAMICADHOC);
+                                sec = InstanceManager.getDefault(SectionManager.class).createNewSection(secUserName);
+                                sec.setSectionType(Section.DYNAMICADHOC);
                             }
-                            if (sec.getSectionType() == jmri.Section.DYNAMICADHOC) {
+                            if (sec.getSectionType() == Section.DYNAMICADHOC) {
                                 sec.removeAllBlocksFromSection();
                                 for (LayoutBlock key : routeDetails) {
                                     if (key != src.getStart()) {
                                         sec.addBlock(key.getBlock());
                                     }
                                 }
-                                String dir = jmri.Path.decodeDirection(src.getStart().getNeighbourDirection(routeDetails.get(0).getBlock()));
-                                jmri.EntryPoint ep = new jmri.EntryPoint(routeDetails.get(0).getBlock(), src.getStart().getBlock(), dir);
+                                String dir = Path.decodeDirection(src.getStart().getNeighbourDirection(routeDetails.get(0).getBlock()));
+                                EntryPoint ep = new EntryPoint(routeDetails.get(0).getBlock(), src.getStart().getBlock(), dir);
                                 ep.setTypeForward();
                                 sec.addToForwardList(ep);
 
                                 LayoutBlock proDestLBlock = point.getProtecting().get(0);
                                 if (proDestLBlock != null) {
-                                    dir = jmri.Path.decodeDirection(proDestLBlock.getNeighbourDirection(point.getFacing()));
-                                    ep = new jmri.EntryPoint(point.getFacing().getBlock(), proDestLBlock.getBlock(), dir);
+                                    dir = Path.decodeDirection(proDestLBlock.getNeighbourDirection(point.getFacing()));
+                                    ep = new EntryPoint(point.getFacing().getBlock(), proDestLBlock.getBlock(), dir);
                                     ep.setTypeReverse();
                                     sec.addToReverseList(ep);
                                 }
                             }
                         }
-                        jmri.InstanceManager.getDefault(jmri.jmrit.dispatcher.DispatcherFrame.class).extendActiveTrainsPath(sec, at, src.getPoint().getPanel());
+                        InstanceManager.getDefault(DispatcherFrame.class).extendActiveTrainsPath(sec, at, src.getPoint().getPanel());
                     }
 
                     src.pd.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
@@ -577,7 +597,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                 //src.setMenuEnabled(true);
             }
         };
-        Thread thrMain = jmri.util.ThreadingUtil.newThread(setRouteRun, "Entry Exit Set Route");  // NOI18N
+        Thread thrMain = ThreadingUtil.newThread(setRouteRun, "Entry Exit Set Route");  // NOI18N
         thrMain.start();
         try {
             thrMain.join();
@@ -628,7 +648,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                 }
             }
         };
-        Thread thr = jmri.util.ThreadingUtil.newThread(r, "Entry Exit Route: Release Mast");  // NOI18N
+        Thread thr = ThreadingUtil.newThread(r, "Entry Exit Route: Release Mast");  // NOI18N
         thr.start();
     }
 
@@ -636,8 +656,8 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         if ((src.sourceSignal instanceof SignalMast) && (getSignal() instanceof SignalMast)) {
             SignalMast smSource = (SignalMast) src.sourceSignal;
             SignalMast smDest = (SignalMast) getSignal();
-            if (InstanceManager.getDefault(jmri.SignalMastLogicManager.class).getSignalMastLogic(smSource) != null
-                    && InstanceManager.getDefault(jmri.SignalMastLogicManager.class).getSignalMastLogic(smSource).getStoreState(smDest) != jmri.SignalMastLogic.STORENONE) {
+            if (InstanceManager.getDefault(SignalMastLogicManager.class).getSignalMastLogic(smSource) != null
+                    && InstanceManager.getDefault(SignalMastLogicManager.class).getSignalMastLogic(smSource).getStoreState(smDest) != SignalMastLogic.STORENONE) {
                 return false;
             }
         }
@@ -738,7 +758,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             }
         }
         MessageTimeOut mt = new MessageTimeOut();
-        threadAutoClearFrame = jmri.util.ThreadingUtil.newThread(mt, "NX Button Clear Message Timeout ");  // NOI18N
+        threadAutoClearFrame = ThreadingUtil.newThread(mt, "NX Button Clear Message Timeout ");  // NOI18N
         threadAutoClearFrame.start();
         cancelClearFrame.setAlwaysOnTop(true);
         src.getPoint().getPanel().getGlassPane().setVisible(true);
@@ -762,8 +782,8 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         }
 
         if (cancelClear == EntryExitPairs.CANCELROUTE) {
-            if (manager.getDispatcherIntegration() && jmri.InstanceManager.getNullableDefault(jmri.jmrit.dispatcher.DispatcherFrame.class) != null) {
-                jmri.jmrit.dispatcher.DispatcherFrame df = jmri.InstanceManager.getDefault(jmri.jmrit.dispatcher.DispatcherFrame.class);
+            if (manager.getDispatcherIntegration() && InstanceManager.getNullableDefault(DispatcherFrame.class) != null) {
+                DispatcherFrame df = InstanceManager.getDefault(DispatcherFrame.class);
                 ActiveTrain at = null;
                 for (ActiveTrain atl : df.getActiveTrainsList()) {
                     if (atl.getEndBlock() == point.getFacing().getBlock()) {
@@ -774,12 +794,12 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                     }
                 }
                 if (at != null) {
-                    jmri.Section sec = null;
+                    Section sec;
                     synchronized (this) {
                         if (sml != null && sml.getAssociatedSection((SignalMast) getSignal()) != null) {
                             sec = sml.getAssociatedSection((SignalMast) getSignal());
                         } else {
-                            sec = InstanceManager.getDefault(jmri.SectionManager.class).getSection(src.getPoint().getDisplayName() + ":" + point.getDisplayName());
+                            sec = InstanceManager.getDefault(SectionManager.class).getSection(src.getPoint().getDisplayName() + ":" + point.getDisplayName());
                         }
                     }
                     if (sec != null) {
@@ -790,7 +810,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                             src.getPoint().getPanel().getGlassPane().setVisible(false);
                             return;
                         }
-                        if (sec.getSectionType() == jmri.Section.DYNAMICADHOC) {
+                        if (sec.getSectionType() == Section.DYNAMICADHOC) {
                             sec.removeAllBlocksFromSection();
                         }
                     }
@@ -800,11 +820,15 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         src.setMenuEnabled(false);
         if (src.sourceSignal instanceof SignalMast) {
             SignalMast mast = (SignalMast) src.sourceSignal;
-            mast.setAspect(mast.getAppearanceMap().getSpecificAppearance(jmri.SignalAppearanceMap.DANGER));
-            mast.setHeld(true);
+            mast.setAspect(mast.getAppearanceMap().getSpecificAppearance(SignalAppearanceMap.DANGER));
+            if (!manager.isAbsSignalMode()) {
+                mast.setHeld(true);
+            }
         } else if (src.sourceSignal instanceof SignalHead) {
             SignalHead head = (SignalHead) src.sourceSignal;
-            head.setHeld(true);
+            if (!manager.isAbsSignalMode()) {
+                head.setHeld(true);
+            }
         } else {
             log.debug("No signal found");  // NOI18N
         }
@@ -813,7 +837,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         synchronized (this) {
             if ((getSignal() instanceof SignalMast) && (sml != null)) {
                 SignalMast mast = (SignalMast) getSignal();
-                if (sml.getStoreState(mast) == jmri.SignalMastLogic.STORENONE) {
+                if (sml.getStoreState(mast) == SignalMastLogic.STORENONE) {
                     sml.removeDestination(mast);
                 }
             }
@@ -824,7 +848,14 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             return;
         }
 
+        // The block list for an interlocking NX still has the facing block if there are no signals.
+        boolean facing = getSource().getStart().getUseExtraColor();
         for (LayoutBlock blk : routeDetails) {
+            if (facing) {
+                // skip the facing block when there is an active NX pair immediately before this one.
+                facing = false;
+                continue;
+            }
             if ((getEntryExitType() == EntryExitPairs.FULLINTERLOCK)) {
                 blk.setUseExtraColor(false);
             }
@@ -832,7 +863,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         }
 
         if (cancelClear == EntryExitPairs.CLEARROUTE) {
-            if (routeDetails.size() == 0) {
+            if (routeDetails.isEmpty()) {
                 if (log.isDebugEnabled()) {
                     log.debug("{}  all blocks have automatically been cleared down", getUserName());  // NOI18N
                 }
@@ -856,9 +887,9 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                         src.getStart().getBlock().goingInactive();
                     }
                 } catch (java.lang.NullPointerException e) {
-                    log.error("error in clear route A {}", e);  // NOI18N
+                    log.error("error in clear route A", e);  // NOI18N
                 } catch (JmriException e) {
-                    log.error("error in clear route A {}", e);  // NOI18N
+                    log.error("error in clear route A", e);  // NOI18N
                 }
                 if (log.isDebugEnabled()) {
                     log.debug("{}  Going to clear routeDetails down {}", getUserName(), routeDetails.size());  // NOI18N
@@ -913,11 +944,11 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                             routeDetails.get(routeDetails.size() - 2).getBlock().goingInactive();
                         }
                     } catch (java.lang.NullPointerException e) {
-                        log.error("error in clear route c {}", e);  // NOI18N
+                        log.error("error in clear route c", e);  // NOI18N
                     } catch (java.lang.ArrayIndexOutOfBoundsException e) {
-                        log.error("error in clear route c {}", e);  // NOI18N
+                        log.error("error in clear route c", e);  // NOI18N
                     } catch (JmriException e) {
-                        log.error("error in clear route c {}", e);  // NOI18N
+                        log.error("error in clear route c", e);  // NOI18N
                     }
                 }
             }
@@ -948,14 +979,14 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
 
     synchronized void activeBean(boolean reverseDirection, boolean showMessage) {
         // Clear any previous memory message
-        jmri.MemoryManager mgr = InstanceManager.getDefault(jmri.MemoryManager.class);
-        jmri.Memory nxMem = mgr.getMemory(manager.getMemoryOption());
+        MemoryManager mgr = InstanceManager.getDefault(MemoryManager.class);
+        Memory nxMem = mgr.getMemory(manager.getMemoryOption());
         if (nxMem != null) {
             nxMem.setValue("");
         }
 
         if (!isEnabled()) {
-            JOptionPane.showMessageDialog(null, Bundle.getMessage("RouteDisabled", getDisplayName()));  // NOI18N
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("RouteDisabled", getDisplayName()));  // NOI18N
             src.pd.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
             point.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
             return;
@@ -1021,7 +1052,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                         return errorMessage;
                     }
                 }
-                List<BestPath> pathList = new ArrayList<BestPath>(2);
+                List<BestPath> pathList = new ArrayList<>(2);
                 LayoutBlock protectLBlock;
                 LayoutBlock destinationLBlock;
                 //Need to work out around here the best one.
@@ -1034,7 +1065,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                         List<LayoutBlock> blocks = new ArrayList<>();
                         String errorMessage = null;
                         try {
-                            blocks = InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.MASTTOMAST);
+                            blocks = InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.MASTTOMAST);
                         } catch (Exception e) {
                             errorMessage = e.getMessage();
                             //can be considered normal if no free route is found
@@ -1043,25 +1074,27 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                         toadd.setErrorMessage(errorMessage);
                         pathList.add(toadd);
                     } else {
-                        startlBlock = srcProLBlock;
-                        protectLBlock = getFacing();
+                        // Handle reversed direction - Only used when Both Way is enabled.
+                        // The controlling block references are flipped
+                        startlBlock = point.getProtecting().get(0);
+                        protectLBlock = point.getFacing();
 
-                        destinationLBlock = src.getStart();
+                        destinationLBlock = src.getSourceProtecting().get(0);
                         if (log.isDebugEnabled()) {
                             log.debug("reverse set destination is set going for {} {} {}", startlBlock.getDisplayName(), destinationLBlock.getDisplayName(), protectLBlock.getDisplayName());  // NOI18N
                         }
                         try {
                             LayoutBlock srcPro = src.getSourceProtecting().get(0);  //Don't care what block the facing is protecting
                             //Need to add a check for the lengths of the returned lists, then choose the most appropriate
-                            if (!InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().checkValidDest(startlBlock, protectLBlock, srcPro, src.getStart(), LayoutBlockConnectivityTools.Routing.SENSORTOSENSOR)) {
+                            if (!InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().checkValidDest(startlBlock, protectLBlock, srcPro, src.getStart(), LayoutBlockConnectivityTools.Routing.SENSORTOSENSOR)) {
                                 startlBlock = getFacing();
                                 protectLBlock = srcProLBlock;
                                 if (log.isDebugEnabled()) {
                                     log.debug("That didn't work so try  {} {} {}", startlBlock.getDisplayName(), destinationLBlock.getDisplayName(), protectLBlock.getDisplayName());  // NOI18N
                                 }
-                                if (!InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().checkValidDest(startlBlock, protectLBlock, srcPro, src.getStart(), LayoutBlockConnectivityTools.Routing.SENSORTOSENSOR)) {
+                                if (!InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().checkValidDest(startlBlock, protectLBlock, srcPro, src.getStart(), LayoutBlockConnectivityTools.Routing.SENSORTOSENSOR)) {
                                     log.error("No route found");  // NOI18N
-                                    JOptionPane.showMessageDialog(null, "No Valid path found");  // NOI18N
+                                    JmriJOptionPane.showMessageDialog(null, "No Valid path found");  // NOI18N
                                     src.pd.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
                                     point.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
                                     return;
@@ -1069,7 +1102,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                                     List<LayoutBlock> blocks = new ArrayList<>();
                                     String errorMessage = null;
                                     try {
-                                        blocks = InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.MASTTOMAST);
+                                        blocks = InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.MASTTOMAST);
                                     } catch (Exception e) {
                                         errorMessage = e.getMessage();
                                         //can be considered normal if no free route is found
@@ -1078,7 +1111,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                                     toadd.setErrorMessage(errorMessage);
                                     pathList.add(toadd);
                                 }
-                            } else if (InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().checkValidDest(getFacing(), srcProLBlock, srcPro, src.getStart(), LayoutBlockConnectivityTools.Routing.SENSORTOSENSOR)) {
+                            } else if (InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().checkValidDest(getFacing(), srcProLBlock, srcPro, src.getStart(), LayoutBlockConnectivityTools.Routing.SENSORTOSENSOR)) {
                                 //Both paths are valid, so will go for setting the shortest
                                 int distance = startlBlock.getBlockHopCount(destinationLBlock.getBlock(), protectLBlock.getBlock());
                                 int distance2 = getFacing().getBlockHopCount(destinationLBlock.getBlock(), srcProLBlock.getBlock());
@@ -1090,7 +1123,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                                 List<LayoutBlock> blocks = new ArrayList<>();
                                 String errorMessage = "";
                                 try {
-                                    blocks = InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.NONE);
+                                    blocks = InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.NONE);
                                 } catch (Exception e) {
                                     //can be considered normal if no free route is found
                                     errorMessage = e.getMessage();
@@ -1102,7 +1135,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                                 List<LayoutBlock> blocks = new ArrayList<>();
                                 String errorMessage = "";
                                 try {
-                                    blocks = InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.NONE);
+                                    blocks = InstanceManager.getDefault(LayoutBlockManager.class).getLayoutBlockConnectivityTools().getLayoutBlocks(startlBlock, destinationLBlock, protectLBlock, false, LayoutBlockConnectivityTools.Routing.NONE);
                                 } catch (Exception e) {
                                     //can be considered normal if no free route is found
                                     errorMessage = e.getMessage();
@@ -1111,10 +1144,10 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                                 toadd.setErrorMessage(errorMessage);
                                 pathList.add(toadd);
                             }
-                        } catch (jmri.JmriException ex) {
+                        } catch (JmriException ex) {
                             log.error("Exception {}", ex.getMessage());  // NOI18N
                             if (showMessage) {
-                                JOptionPane.showMessageDialog(null, ex.getMessage());
+                                JmriJOptionPane.showMessageDialog(null, ex.getMessage());
                             }
                             src.pd.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
                             point.setNXButtonState(EntryExitPairs.NXBUTTONINACTIVE);
@@ -1174,12 +1207,12 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
                 if (log.isDebugEnabled()) {
                     log.debug("Route details:");
                     for (LayoutBlock blk : routeDetails) {
-                        log.debug("  {}", blk.getDisplayName());
+                        log.debug(" block {}", blk.getDisplayName());
                     }
                 }
 
                 if (getEntryExitType() == EntryExitPairs.FULLINTERLOCK) {
-                    setActiveEntryExit(true);
+                    setActiveEntryExit(true, reverseDirection);
                 }
                 setRoute(true);
             }
@@ -1193,16 +1226,16 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             Object[] options = {
                     Bundle.getMessage("ButtonYes"),  // NOI18N
                     Bundle.getMessage("ButtonNo")};  // NOI18N
-            int ans = JOptionPane.showOptionDialog(null,
+            int ans = JmriJOptionPane.showOptionDialog(null,
                     message + "\n" + Bundle.getMessage("StackRouteAsk"), Bundle.getMessage("RouteNotClear"), // NOI18N
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
+                    JmriJOptionPane.DEFAULT_OPTION,
+                    JmriJOptionPane.QUESTION_MESSAGE,
                     null,
                     options,
                     options[1]);
-            if (ans == 0) {
+            if (ans == 0) { // array position 0 Yes
                 opt = EntryExitPairs.OVERLAP_STACK;
-            } else {
+            } else { // array position 1 or Dialog closed
                 opt = EntryExitPairs.OVERLAP_CANCEL;
             }
         }
@@ -1215,8 +1248,8 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         }
 
         // Set memory value if requested
-        jmri.MemoryManager mgr = InstanceManager.getDefault(jmri.MemoryManager.class);
-        jmri.Memory nxMem = mgr.getMemory(manager.getMemoryOption());
+        MemoryManager mgr = InstanceManager.getDefault(MemoryManager.class);
+        Memory nxMem = mgr.getMemory(manager.getMemoryOption());
         if (nxMem != null) {
             String optString = (opt == EntryExitPairs.OVERLAP_STACK)
                     ? Bundle.getMessage("StackRoute")       // NOI18N
@@ -1250,6 +1283,7 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
             lastSeenActiveBlockObject = null;
         }
         disposed = true;
+        super.dispose();
     }
 
     @Override
@@ -1264,13 +1298,26 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         return activeEntryExit;
     }
 
+    public boolean isReversed() {
+        return activeEntryExitReversed;
+    }
+
+    public boolean isUniDirection() {
+        return uniDirection;
+    }
+
     @Override
     public void setState(int state) {
     }
 
     protected void setActiveEntryExit(boolean boo) {
+        setActiveEntryExit(boo, false);
+    }
+
+    protected void setActiveEntryExit(boolean boo, boolean reversed) {
         int oldvalue = getState();
         activeEntryExit = boo;
+        activeEntryExitReversed = reversed;
         src.setMenuEnabled(boo);
         firePropertyChange("active", oldvalue, getState());  // NOI18N
     }
@@ -1295,6 +1342,6 @@ public class DestinationPoints extends jmri.implementation.AbstractNamedBean {
         return report;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DestinationPoints.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DestinationPoints.class);
 
 }

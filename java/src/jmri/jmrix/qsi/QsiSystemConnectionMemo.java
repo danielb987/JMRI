@@ -26,7 +26,7 @@ public class QsiSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
     public QsiSystemConnectionMemo(QsiTrafficController st) {
         super("Q", "Quantum Programmer");
         this.st = st;
-        InstanceManager.store(this, QsiSystemConnectionMemo.class); // also register as specific type
+        InstanceManager.store(QsiSystemConnectionMemo.this, QsiSystemConnectionMemo.class); // also register as specific type
         InstanceManager.store(cf = new jmri.jmrix.qsi.swing.QsiComponentFactory(this),
         jmri.jmrix.swing.ComponentFactory.class);
     }
@@ -34,7 +34,7 @@ public class QsiSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
     public QsiSystemConnectionMemo() {
         super("Q", "Quantum Programmer"); // "Quantum Programmer"
         register(); // registers general type
-        InstanceManager.store(this, QsiSystemConnectionMemo.class); // also register as specific type
+        InstanceManager.store(QsiSystemConnectionMemo.this, QsiSystemConnectionMemo.class); // also register as specific type
 
         InstanceManager.store(cf = new jmri.jmrix.qsi.swing.QsiComponentFactory(this),
         jmri.jmrix.swing.ComponentFactory.class);
@@ -64,17 +64,10 @@ public class QsiSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
     }
 
     /**
-     * Configure the programming manager and "command station" objects
-     * @deprecated since 4.21.1
-     */
-    @Deprecated
-    public void configureCommandStation() {
-    }
-
-    /**
      * Configure the common managers for Qsi connections. This puts the common
      * manager config in one place.
      */
+    @Override
     public void configureManagers() {
         store(getProgrammerManager(), jmri.AddressedProgrammerManager.class);
         InstanceManager.store(getProgrammerManager(), jmri.AddressedProgrammerManager.class);
@@ -84,7 +77,7 @@ public class QsiSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
     }
 
     public DefaultProgrammerManager getProgrammerManager() {
-        return (DefaultProgrammerManager) classObjectMap.computeIfAbsent(DefaultProgrammerManager.class,(Class c) -> new DefaultProgrammerManager(new QsiProgrammer(this),this));
+        return (DefaultProgrammerManager) classObjectMap.computeIfAbsent(DefaultProgrammerManager.class,(Class<?> c) -> new DefaultProgrammerManager(new QsiProgrammer(this),this));
     }
 
     public void setProgrammerManager(DefaultProgrammerManager p) {

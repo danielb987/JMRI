@@ -1,11 +1,10 @@
 package jmri.jmrix.can.adapters.gridconnect.sproggen5.serialdriver;
 
 import jmri.jmrix.can.ConfigurationManager;
+import jmri.jmrix.can.ConfigurationManager.ProgModeSwitch;
 import jmri.jmrix.can.TrafficController;
 import jmri.jmrix.can.adapters.gridconnect.GcSerialDriverAdapter;
 import jmri.jmrix.can.adapters.gridconnect.canrs.MergTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements SerialPortAdapter for SPROG Generation 5.
@@ -15,13 +14,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Crosland Copyright (C) 2008
  * @author Bob Jacobsen Copyright (C) 2009
- * @author Andrew Crosland 2019
+ * @author Andrew Crosland Copyright (C) 2019, 2021
  */
 public class Sprog3PlusSerialDriverAdapter extends GcSerialDriverAdapter {
 
     public Sprog3PlusSerialDriverAdapter() {
-        super("S");
+        super("S", FlowControl.RTSCTS);  // enable RTS/CTS flow control
+        option2Name = "CANID";
+        options.put(option2Name, new Option(Bundle.getMessage("JMRICANID"), new String[]{"127", "126", "125", "124", "123", "122", "121", "120"}));
+        _progMode = ConfigurationManager.ProgModeSwitch.SPROG3PLUS;
     }
+
+    protected ProgModeSwitch _progMode;
 
     /**
      * Set up all of the other objects to operate with a SPROG Gen 5
@@ -31,12 +35,11 @@ public class Sprog3PlusSerialDriverAdapter extends GcSerialDriverAdapter {
     public void configure() {
 
         // Register the CAN traffic controller being used for this connection
-        // This connection has no actual CAN interface so set a fixed CAN ID
         TrafficController tc = new MergTrafficController();
         try {
-            tc.setCanId(127);
+            tc.setCanId(Integer.parseInt(getOptionState(option2Name)));
         } catch (Exception e) {
-            log.error("Cannot parse CAN ID - check your preference settings {}", e);
+            log.error("Cannot parse CAN ID - check your preference settings", e);
             log.error("Now using default CAN ID");
         }
 
@@ -47,10 +50,12 @@ public class Sprog3PlusSerialDriverAdapter extends GcSerialDriverAdapter {
         tc.connectPort(this);
 
         this.getSystemConnectionMemo().setProtocol(getOptionState(option1Name));
-        this.getSystemConnectionMemo().setSubProtocol(ConfigurationManager.SubProtocol.NONE);
-        this.getSystemConnectionMemo().setProgModeSwitch(ConfigurationManager.ProgModeSwitch.SPROG3PLUS);
+        this.getSystemConnectionMemo().setSubProtocol(ConfigurationManager.SubProtocol.CBUS);
+        this.getSystemConnectionMemo().setProgModeSwitch(_progMode);
+        this.getSystemConnectionMemo().setSupportsCVHints(true);
+        this.getSystemConnectionMemo().setPowerOnArst(false);
 
-        // do central protocol-specific configuration    
+        // do central protocol-specific configuration
         //jmri.jmrix.can.ConfigurationManager.configure(getOptionState(option1Name));
         this.getSystemConnectionMemo().configureManagers();
     }
@@ -60,7 +65,7 @@ public class Sprog3PlusSerialDriverAdapter extends GcSerialDriverAdapter {
      */
     @Override
     public String[] validBaudRates() {
-        return new String[]{Bundle.getMessage("Baud115200")};
+        return new String[]{Bundle.getMessage("Baud460800")};
     }
 
     /**
@@ -68,7 +73,7 @@ public class Sprog3PlusSerialDriverAdapter extends GcSerialDriverAdapter {
      */
     @Override
     public int[] validBaudNumbers() {
-        return new int[]{115200};
+        return new int[]{460800};
     }
 
     @Override
@@ -76,6 +81,6 @@ public class Sprog3PlusSerialDriverAdapter extends GcSerialDriverAdapter {
         return 0;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(Sprog3PlusSerialDriverAdapter.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Sprog3PlusSerialDriverAdapter.class);
 
 }

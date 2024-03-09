@@ -1,9 +1,10 @@
 package jmri.jmrit.logix.configurexml;
 
+import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
-import javax.swing.JOptionPane;
+
 import jmri.BeanSetting;
 import jmri.InstanceManager;
 import jmri.NamedBean;
@@ -15,11 +16,10 @@ import jmri.jmrit.logix.OBlockManager;
 import jmri.jmrit.logix.OPath;
 import jmri.jmrit.logix.Portal;
 import jmri.jmrit.logix.PortalManager;
-import jmri.jmrit.logix.WarrantTableAction;
+import jmri.util.swing.JmriJOptionPane;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides the abstract base and store functionality for configuring the
@@ -242,11 +242,6 @@ public class OBlockManagerXml // extends XmlFile
         for (Element bl : blockList) {
             loadBlock(bl);
         }
-        // Build data structure for blocks to know with whom they share turnouts.
-        // check whether any turnouts are shared between two blocks;
-        for (OBlock oblock : _manager.getNamedBeanSet()) {
-            WarrantTableAction.getDefault().checkSharedTurnouts(oblock);
-        }
         return true;
     }
 
@@ -279,7 +274,7 @@ public class OBlockManagerXml // extends XmlFile
             block.setMetricUnits(false);
         }
         if (elem.getAttribute("length") != null) {
-            block.setLength(Float.valueOf(elem.getAttribute("length").getValue()).floatValue());
+            block.setLength(Float.parseFloat(elem.getAttribute("length").getValue()));
         }
         if (elem.getAttribute("curve") != null) {
             block.setCurvature(Integer.parseInt((elem.getAttribute("curve")).getValue()));
@@ -309,7 +304,7 @@ public class OBlockManagerXml // extends XmlFile
                     block.setReporter(rep);
                 }
             } catch (Exception ex) {
-                log.error("No Reporter named \"{}\" found. threw exception: {}", name,  ex);
+                log.error("No Reporter named \"{}\" found. threw exception", name,  ex);
             }
             if (reporter.getAttribute("reportCurrent") != null) {
                 block.setReportingCurrent(reporter.getAttribute("reportCurrent").getValue().equals("true"));
@@ -326,7 +321,10 @@ public class OBlockManagerXml // extends XmlFile
             try {
                 block.setBlockSpeed(elem.getAttribute("speedNotch").getValue());
             } catch (jmri.JmriException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage() + "\n" + elem.getAttribute("speedNotch").getValue());
+                log.error("Error setting SpeedNotch {} threw exception", elem.getAttribute("speedNotch").getValue(),  ex);
+                if (!GraphicsEnvironment.isHeadless()) {
+                    JmriJOptionPane.showMessageDialog(null, ex.getMessage() + "\n" + elem.getAttribute("speedNotch").getValue());
+                }
             }
         }
 
@@ -531,6 +529,6 @@ public class OBlockManagerXml // extends XmlFile
         return InstanceManager.getDefault(OBlockManager.class).getXMLOrder();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(OBlockManagerXml.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OBlockManagerXml.class);
 
 }

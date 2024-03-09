@@ -29,6 +29,7 @@ import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
 import jmri.swing.PreferencesPanel;
 import jmri.util.gui.GuiLafPreferencesManager;
+import jmri.util.swing.JComboBoxUtil;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -73,6 +74,8 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
     public JCheckBox graphicStateDisplay;
     public JCheckBox tabbedOblockEditor;
     public JCheckBox editorUseOldLocSizeDisplay;
+    public ButtonGroup fileChooserGroup= new ButtonGroup();
+    public JCheckBox force100percentScaling;
 
     public GuiLafConfigPane() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -81,6 +84,8 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
         add(p);
         doFontSize(p = new JPanel());
         add(p);
+        doFileChooserLayoutType(p = new JPanel());
+        add(p);
         doClickSelection(p = new JPanel());
         add(p);
         doGraphicState(p = new JPanel());
@@ -88,6 +93,10 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
         doTabbedOblockEditor(p = new JPanel());
         add(p);
         doEditorUseOldLocSize(p = new JPanel());
+        add(p);
+        doForce100percentScaling(p = new JPanel());
+        add(p);
+        doMaxComboRows(p = new JPanel());
         add(p);
         doToolTipDismissDelay(p = new JPanel());
         add(p);
@@ -104,9 +113,8 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
 
     void doGraphicState(JPanel panel) {
         panel.setLayout(new FlowLayout());
-        graphicStateDisplay = new JCheckBox(ConfigBundle.getMessage("GUITabbedOblockEditor"));
+        graphicStateDisplay = new JCheckBox(ConfigBundle.getMessage("GUIGraphicTableState"));
         graphicStateDisplay.setSelected(InstanceManager.getDefault(GuiLafPreferencesManager.class).isGraphicTableState());
-        graphicStateDisplay.setToolTipText(ConfigBundle.getMessage("GUIToolTipTabbedEdit"));
         graphicStateDisplay.addItemListener((ItemEvent e) -> {
             InstanceManager.getDefault(GuiLafPreferencesManager.class).setGraphicTableState(graphicStateDisplay.isSelected());
         });
@@ -115,8 +123,9 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
 
     void doTabbedOblockEditor(JPanel panel) {
         panel.setLayout(new FlowLayout());
-        tabbedOblockEditor = new JCheckBox(ConfigBundle.getMessage("GUIGraphicTableState"));
+        tabbedOblockEditor = new JCheckBox(ConfigBundle.getMessage("GUITabbedOblockEditor"));
         tabbedOblockEditor.setSelected(InstanceManager.getDefault(GuiLafPreferencesManager.class).isOblockEditTabbed());
+        tabbedOblockEditor.setToolTipText(ConfigBundle.getMessage("GUIToolTipTabbedEdit"));
         tabbedOblockEditor.addItemListener((ItemEvent e) -> {
             InstanceManager.getDefault(GuiLafPreferencesManager.class).setOblockEditTabbed(tabbedOblockEditor.isSelected());
         });
@@ -131,6 +140,63 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
             InstanceManager.getDefault(GuiLafPreferencesManager.class).setEditorUseOldLocSize(editorUseOldLocSizeDisplay.isSelected());
         });
         panel.add(editorUseOldLocSizeDisplay);
+    }
+
+    void doFileChooserLayoutType(JPanel panel) {
+        panel.setLayout(new FlowLayout());
+        JLabel fileChooserLabel = new JLabel(ConfigBundle.getMessage("GUIJChooserUseOption"));
+        panel.add(fileChooserLabel);
+                // make the radio buttons
+        JRadioButton jButDefault = new JRadioButton(ConfigBundle.getMessage("GUIJChooserUseDefault"));
+        panel.add(jButDefault);
+        fileChooserGroup.add(jButDefault);
+        jButDefault.addActionListener((ActionEvent e) -> {
+            if (((JRadioButton)e.getSource()).isSelected() ) {
+                InstanceManager.getDefault(GuiLafPreferencesManager.class).setJFileChooserFormat(0);
+            }
+        });
+        JRadioButton jButList = new JRadioButton(ConfigBundle.getMessage("GUIJChooserUseList"));
+        panel.add(jButList);
+        fileChooserGroup.add(jButList);
+        jButList.addActionListener((ActionEvent e) -> {
+            if (((JRadioButton)e.getSource()).isSelected() ) {
+                InstanceManager.getDefault(GuiLafPreferencesManager.class).setJFileChooserFormat(1);
+            }
+        });
+        JRadioButton jButDetail = new JRadioButton(ConfigBundle.getMessage("GUIJChooserUseDetail"));
+        panel.add(jButDetail);
+        fileChooserGroup.add(jButDetail);
+        jButDetail.addActionListener((ActionEvent e) -> {
+            if (((JRadioButton)e.getSource()).isSelected() ) {
+                InstanceManager.getDefault(GuiLafPreferencesManager.class).setJFileChooserFormat(2);
+            }
+        });
+        switch (InstanceManager.getDefault(GuiLafPreferencesManager.class).getJFileChooserFormat()) {
+            case 0:
+                jButDefault.setSelected(true);
+                break;
+            case 1:
+                jButList.setSelected(true);
+                break;
+            case 2:
+                jButDetail.setSelected(true);
+                break;
+            default:
+                jButDefault.setSelected(true);
+        }
+    }
+
+    void doForce100percentScaling(JPanel panel) {
+        jmri.util.EarlyInitializationPreferences eip =
+                jmri.util.EarlyInitializationPreferences.getInstance();
+
+        panel.setLayout(new FlowLayout());
+        force100percentScaling = new JCheckBox(ConfigBundle.getMessage("GUIForce100percentScaling"));
+        force100percentScaling.setSelected(eip.getGUIForce100percentScaling());
+        force100percentScaling.addItemListener((ItemEvent e) -> {
+            eip.setGUIForce100percentScaling(force100percentScaling.isSelected());
+        });
+        panel.add(force100percentScaling);
     }
 
     void doLAF(JPanel panel) {
@@ -170,6 +236,7 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
         // add JComboBoxen for language and country
         panel.setLayout(new FlowLayout());
         panel.add(localeBox);
+        JComboBoxUtil.setupComboBoxMaxRows(localeBox);
 
         // create object to find locales in new Thread
         Runnable r = () -> {
@@ -229,6 +296,8 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
         panel.add(fontSizeUoM);
         panel.add(resetButton);
 
+        JComboBoxUtil.setupComboBoxMaxRows(fontSizeComboBox);
+
         fontSizeComboBox.addActionListener((ActionEvent e) -> {
             manager.setFontSize((int) fontSizeComboBox.getSelectedItem());
         });
@@ -237,6 +306,21 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
                 fontSizeComboBox.setSelectedItem(manager.getDefaultFontSize());
             }
         });
+    }
+
+    private JSpinner maxComboRowsSpinner;
+
+    public void doMaxComboRows(JPanel panel) {
+        GuiLafPreferencesManager manager = InstanceManager.getDefault(GuiLafPreferencesManager.class);
+        JLabel maxComboRowsLabel = new JLabel(ConfigBundle.getMessage("GUIMaxComboRows"));
+        maxComboRowsSpinner = new JSpinner(new SpinnerNumberModel(manager.getMaxComboRows(), 0, 999, 1));
+        this.maxComboRowsSpinner.addChangeListener((ChangeEvent e) -> {
+            manager.setMaxComboRows((int) maxComboRowsSpinner.getValue());
+        });
+        this.maxComboRowsSpinner.setToolTipText(ConfigBundle.getMessage("GUIMaxComboRowsToolTip"));
+        maxComboRowsLabel.setToolTipText(this.maxComboRowsSpinner.getToolTipText());
+        panel.add(maxComboRowsLabel);
+        panel.add(maxComboRowsSpinner);
     }
 
     private JSpinner toolTipDismissDelaySpinner;

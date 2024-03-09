@@ -18,17 +18,6 @@ public class SRCPTurnoutManager extends jmri.managers.AbstractTurnoutManager {
     }
 
     /**
-     *
-     * @param memo the associated SystemConnectionMemo
-     * @param bus the bus ID configured for this connection
-     * @deprecated since 4.18 use {@link SRCPBusConnectionMemo#getBus()}
-     */
-    @Deprecated
-    public SRCPTurnoutManager(SRCPBusConnectionMemo memo, int bus) {
-        this(memo);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -37,13 +26,20 @@ public class SRCPTurnoutManager extends jmri.managers.AbstractTurnoutManager {
         return (SRCPBusConnectionMemo) memo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
     @Override
-    public Turnout createNewTurnout(@Nonnull String systemName, String userName) {
-        Turnout t;
-        int addr = Integer.parseInt(systemName.substring(getSystemPrefix().length() + 1));
-        t = new SRCPTurnout(addr, getMemo());
+    protected Turnout createNewTurnout(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+        int addr;
+        try {
+            addr = Integer.parseInt(systemName.substring(getSystemPrefix().length() + 1));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Failed to convert systemName '"+systemName+"' to a Turnout address");
+        }
+        Turnout t = new SRCPTurnout(addr, getMemo());
         t.setUserName(userName);
-
         return t;
     }
 
@@ -51,7 +47,7 @@ public class SRCPTurnoutManager extends jmri.managers.AbstractTurnoutManager {
     public boolean allowMultipleAdditions(@Nonnull String systemName) {
         return true;
     }
-    
+
     /**
      * Validates to only numeric.
      * {@inheritDoc}

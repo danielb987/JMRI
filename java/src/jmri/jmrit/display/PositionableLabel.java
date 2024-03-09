@@ -8,10 +8,14 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyVetoException;
+import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
@@ -21,12 +25,19 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+
+import jmri.InstanceManager;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.display.palette.IconItemPanel;
 import jmri.jmrit.display.palette.ItemPanel;
 import jmri.jmrit.display.palette.TextItemPanel;
+import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.tools.swing.DeleteBean;
 import jmri.util.MathUtil;
 import jmri.util.SystemType;
+import jmri.util.ThreadingUtil;
+import jmri.util.swing.JmriMouseEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +55,9 @@ public class PositionableLabel extends JLabel implements Positionable {
 
     protected Editor _editor;
 
+    private String _id;            // user's Id or null if no Id
+    private final Set<String> _classes = new HashSet<>(); // user's classes
+
     protected boolean _icon = false;
     protected boolean _text = false;
     protected boolean _control = false;
@@ -56,11 +70,15 @@ public class PositionableLabel extends JLabel implements Positionable {
     protected boolean _viewCoordinates = true;
     protected boolean _controlling = true;
     protected boolean _hidden = false;
+    protected boolean _emptyHidden = false;
     protected int _displayLevel;
 
     protected String _unRotatedText;
     protected boolean _rotateText = false;
     private int _degrees;
+
+    private LogixNG _logixNG;
+    private String _logixNG_SystemName;
 
     /**
      * Create a new Positionable Label.
@@ -85,6 +103,49 @@ public class PositionableLabel extends JLabel implements Positionable {
         _namedIcon = s;
         log.debug("PositionableLabel ctor (icon) {}", s != null ? s.getName() : null);
         setPopupUtility(new PositionablePopupUtil(this, this));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setId(String id) throws Positionable.DuplicateIdException {
+        if (Objects.equals(this._id, id)) return;
+        _editor.positionalIdChange(this, id);
+        this._id = id;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getId() {
+        return _id;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addClass(String className) {
+        _editor.positionalAddClass(this, className);
+        _classes.add(className);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeClass(String className) {
+        _editor.positionalRemoveClass(this, className);
+        _classes.remove(className);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeAllClasses() {
+        for (String className : _classes) {
+            _editor.positionalRemoveClass(this, className);
+        }
+        _classes.clear();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getClasses() {
+        return java.util.Collections.unmodifiableSet(_classes);
     }
 
     public final boolean isIcon() {
@@ -173,6 +234,16 @@ public class PositionableLabel extends JLabel implements Positionable {
         }
     }
 
+    @Override
+    public void setEmptyHidden(boolean hide) {
+        _emptyHidden = hide;
+    }
+
+    @Override
+    public boolean isEmptyHidden() {
+        return _emptyHidden;
+    }
+
     /**
      * Delayed setDisplayLevel for DnD.
      *
@@ -215,6 +286,12 @@ public class PositionableLabel extends JLabel implements Positionable {
     @Override
     public ToolTip getToolTip() {
         return _tooltip;
+    }
+
+    @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_PositionableLabel");
     }
 
     @Override
@@ -303,31 +380,31 @@ public class PositionableLabel extends JLabel implements Positionable {
 
     // overide where used - e.g. momentary
     @Override
-    public void doMousePressed(MouseEvent event) {
+    public void doMousePressed(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseReleased(MouseEvent event) {
+    public void doMouseReleased(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseClicked(MouseEvent event) {
+    public void doMouseClicked(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseDragged(MouseEvent event) {
+    public void doMouseDragged(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseMoved(MouseEvent event) {
+    public void doMouseMoved(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseEntered(MouseEvent event) {
+    public void doMouseEntered(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseExited(MouseEvent event) {
+    public void doMouseExited(JmriMouseEvent event) {
     }
 
     @Override
@@ -487,10 +564,12 @@ public class PositionableLabel extends JLabel implements Positionable {
     }
 
     public void updateIcon(NamedIcon s) {
-        _namedIcon = s;
-        super.setIcon(_namedIcon);
-        updateSize();
-        repaint();
+        ThreadingUtil.runOnLayoutEventually(() -> {
+            _namedIcon = s;
+            super.setIcon(_namedIcon);
+            updateSize();
+            repaint();
+        });
     }
 
     /*
@@ -845,9 +924,11 @@ public class PositionableLabel extends JLabel implements Positionable {
                 } else if (_text) {     // update text only icon image
                     _namedIcon = makeTextIcon(_unRotatedText);
                 }
-                _namedIcon.rotate(deg, this);
-                super.setIcon(_namedIcon);
-                setOpaque(false);   // rotations cannot be opaque
+                if (_namedIcon != null) {
+                    _namedIcon.rotate(deg, this);
+                    super.setIcon(_namedIcon);
+                    setOpaque(false);   // rotations cannot be opaque
+                }
             }
         } else {  // first time text or icon is rotated from horizontal
             if (_text && _icon) {   // text overlays icon  e.g. LocoIcon
@@ -864,8 +945,10 @@ public class PositionableLabel extends JLabel implements Positionable {
             if (_popupUtil != null) {
                 _popupUtil.setBorder(false);
             }
-            _namedIcon.rotate(deg, this);
-            super.setIcon(_namedIcon);
+            if (_namedIcon != null) { // it is possible that the icon did not get created yet.
+                _namedIcon.rotate(deg, this);
+                super.setIcon(_namedIcon);
+            }
         }
         updateSize();
         repaint();
@@ -951,14 +1034,6 @@ public class PositionableLabel extends JLabel implements Positionable {
         }
 
         g2d.drawImage(icon.getImage(), AffineTransform.getTranslateInstance(hOffset, vOffset + 1), this);
-
-        if (false) {    //TODO: dead-strip this; the string is now drawn in paintComponent
-            g2d.setFont(getFont());
-            hOffset = Math.max((width - textWidth) / 2, 0);
-            vOffset = Math.max((height - textHeight) / 2, 0) + getFontMetrics(getFont()).getAscent();
-            g2d.setColor(getForeground());
-            g2d.drawString(text, hOffset, vOffset);
-        }
 
         icon = new NamedIcon(bufIm);
         g2d.dispose();
@@ -1061,6 +1136,35 @@ public class PositionableLabel extends JLabel implements Positionable {
      */
     @Override
     public void remove() {
+        // If this Positionable has an Inline LogixNG, that LogixNG might be in use.
+        LogixNG logixNG = getLogixNG();
+        if (logixNG != null) {
+            DeleteBean<LogixNG> deleteBean = new DeleteBean<>(
+                    InstanceManager.getDefault(LogixNG_Manager.class));
+
+            boolean hasChildren = logixNG.getNumConditionalNGs() > 0;
+
+            deleteBean.delete(logixNG, hasChildren, (t)->{deleteLogixNG(t);},
+                    (t,list)->{logixNG.getListenerRefsIncludingChildren(list);},
+                    jmri.jmrit.logixng.LogixNG_UserPreferences.class.getName());
+        } else {
+            doRemove();
+        }
+    }
+
+    private void deleteLogixNG(LogixNG logixNG) {
+        logixNG.setEnabled(false);
+        try {
+            InstanceManager.getDefault(LogixNG_Manager.class).deleteBean(logixNG, "DoDelete");
+            setLogixNG(null);
+            doRemove();
+        } catch (PropertyVetoException e) {
+            //At this stage the DoDelete shouldn't fail, as we have already done a can delete, which would trigger a veto
+            log.error("{} : Could not Delete.", e.getMessage());
+        }
+    }
+
+    private void doRemove() {
         if (_editor.removeFromContents(this)) {
             // Modified to support conditional delete for NX sensors
             // remove from persistance by flagging inactive
@@ -1087,9 +1191,22 @@ public class PositionableLabel extends JLabel implements Positionable {
 
     @Override
     public void setText(String text) {
+        if (this instanceof BlockContentsIcon || this instanceof MemoryIcon || this instanceof GlobalVariableIcon) {
+            if (_editor != null && !_editor.isEditable()) {
+                if (isEmptyHidden()) {
+                    log.debug("label setText: {} :: {}", text, getNameString());
+                    if (text == null || text.isEmpty()) {
+                        setVisible(false);
+                    } else {
+                        setVisible(true);
+                    }
+                }
+            }
+        }
+
         _unRotatedText = text;
         _text = (text != null && text.length() > 0);  // when "" is entered for text, and a font has been specified, the descender distance moves the position
-        if (/*_rotateText &&*/!isIcon() && _namedIcon != null) {
+        if (/*_rotateText &&*/!isIcon() && (_namedIcon != null || _degrees != 0)) {
             log.debug("setText calls rotate({})", _degrees);
             rotate(_degrees);  //this will change text label as a icon with a new _namedIcon.
         } else {
@@ -1161,7 +1278,7 @@ public class PositionableLabel extends JLabel implements Positionable {
                     g2d.transform(AffineTransform.getQuadrantRotateInstance(1));
                     g2d.translate(0, -getSize().getWidth());
                     break;
-                case 0: 
+                case 0:
                     // routine value (not initialized) for no change
                     break;
                 default:
@@ -1215,6 +1332,37 @@ public class PositionableLabel extends JLabel implements Positionable {
     @Override
     public jmri.NamedBean getNamedBean() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LogixNG getLogixNG() {
+        return _logixNG;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLogixNG(LogixNG logixNG) {
+        this._logixNG = logixNG;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLogixNG_SystemName(String systemName) {
+        this._logixNG_SystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setupLogixNG() {
+        _logixNG = InstanceManager.getDefault(LogixNG_Manager.class)
+                .getBySystemName(_logixNG_SystemName);
+        if (_logixNG == null) {
+            throw new RuntimeException(String.format(
+                    "LogixNG %s is not found for positional %s in panel %s",
+                    _logixNG_SystemName, getNameString(), getEditor().getName()));
+        }
+        _logixNG.setInlineLogixNG(this);
     }
 
     private final static Logger log = LoggerFactory.getLogger(PositionableLabel.class);

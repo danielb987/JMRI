@@ -2,8 +2,7 @@ package jmri.implementation;
 
 import java.beans.PropertyChangeListener;
 
-import jmri.Light;
-import jmri.LightControl;
+import jmri.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.Assert;
@@ -19,7 +18,6 @@ public abstract class AbstractLightTestBase {
 
     // implementing classes must provide these abstract members:
     //
-    @BeforeEach
     abstract public void setUp();       // load t with actual object; create scaffolds as needed
 
     abstract public int numListeners(); // return number of listeners registered with the TrafficController
@@ -30,7 +28,7 @@ public abstract class AbstractLightTestBase {
 
     protected Light t = null; // holds objects under test
 
-    static protected boolean listenerResult = false;
+    private boolean listenerResult = false;
 
     protected class Listen implements PropertyChangeListener {
 
@@ -134,7 +132,6 @@ public abstract class AbstractLightTestBase {
     // add a LightControl
     @Test
     public void testAddLightControls() {
-
         Assert.assertEquals("0 controls attached", 0, t.getLightControlList().size());
         LightControl lc = new jmri.implementation.DefaultLightControl(t);
         lc.setControlType(Light.SENSOR_CONTROL);
@@ -149,7 +146,6 @@ public abstract class AbstractLightTestBase {
                 t.getLightControlList().get(1));
         t.clearLightControls();
         Assert.assertEquals("0 controls attached", 0, t.getLightControlList().size());
-
     }
 
 }

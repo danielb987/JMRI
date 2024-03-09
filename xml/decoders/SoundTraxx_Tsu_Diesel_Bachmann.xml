@@ -11,7 +11,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <version author="Alain Le Marchand" version="9" lastUpdated="20150125"/>
   <version author="Alain Le Marchand" version="9.1" lastUpdated="20150524"/>
   <version author="Alain Le Marchand" version="9.2" lastUpdated="20180103"/>
@@ -467,7 +467,7 @@
       <!-- begin exchangeable function groups -->
       <variables>
         <qualifier>
-          <variableref>Function Group 2 and 3 Exchange</variableref>
+          <variableref>Function Map Option 1</variableref>
           <relation>eq</relation>
           <value>0</value>
         </qualifier>
@@ -734,7 +734,7 @@
       </variables>
       <variables>
         <qualifier>
-          <variableref>Function Group 2 and 3 Exchange</variableref>
+          <variableref>Function Map Option 1</variableref>
           <relation>eq</relation>
           <value>1</value>
         </qualifier>

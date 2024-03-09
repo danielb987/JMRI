@@ -6,7 +6,6 @@ import jmri.JmriException;
 import jmri.Sensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.temporal.ChronoUnit;
 import java.time.Instant;
 
 /**
@@ -40,7 +39,7 @@ public class LnSensorManager extends jmri.managers.AbstractSensorManager impleme
      */
     private volatile Instant lastSensTurnInterrog;
 
-    public LnSensorManager(LocoNetSystemConnectionMemo memo) {
+    public LnSensorManager(LocoNetSystemConnectionMemo memo, boolean interrogateAtStart) {
         super(memo);
         this.restingTime = 1250;
         tc = memo.getLnTrafficController();
@@ -54,10 +53,12 @@ public class LnSensorManager extends jmri.managers.AbstractSensorManager impleme
         // ctor has to register for LocoNet events
         tc.addLocoNetListener(~0, this);
 
-        // start the update sequence. Until JMRI 2.9.4, this waited
-        // until files have been read, but starts automatically
-        // since 2.9.5 for multi-system support.
-        updateAll();
+        if (interrogateAtStart) {
+            // start the update sequence. Until JMRI 2.9.4, this waited
+            // until files have been read, but starts automatically
+            // since 2.9.5 for multi-system support.
+            updateAll();
+        }
     }
 
     /** {@inheritDoc} */
@@ -91,7 +92,7 @@ public class LnSensorManager extends jmri.managers.AbstractSensorManager impleme
     /** {@inheritDoc} */
     @Override
     @Nonnull
-    public Sensor createNewSensor(@Nonnull String systemName, String userName) {
+    protected Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         return new LnSensor(systemName, userName, tc, getSystemPrefix());
     }
 
@@ -224,6 +225,7 @@ public class LnSensorManager extends jmri.managers.AbstractSensorManager impleme
                     curAddress, iName);
         } else {
             // Entered in using the old format
+            log.debug("LnSensorManager creating system name for {}", curAddress);
             try {
                 iName = Integer.parseInt(curAddress);
             } catch (NumberFormatException ex) {

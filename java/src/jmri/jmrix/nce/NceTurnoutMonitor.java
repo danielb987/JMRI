@@ -1,9 +1,10 @@
 package jmri.jmrix.nce;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jmri.Turnout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jmri.Turnout;
 
 /**
  * Polls NCE Command Station for turnout discrepancies
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * This implementation reads the NCE Command Station (CS) memory that stores the
  * state of all accessories thrown by cabs or through the com port using the new
  * binary switch command. The accessory states are stored in 256 byte array
- * starting at address 0xEC00.
+ * starting at address 0xEC00 (PH5 0x5400).
  * <p>
  * byte 0, bit 0 = ACCY 1, bit 1 = ACCY 2 byte 1, bit 0 = ACCY 9, bit 1 = ACCY
  * 10
@@ -26,11 +27,11 @@ import org.slf4j.LoggerFactory;
  * is modified to match the CS.
  *
  * @author Daniel Boudreau (C) 2007
+ * @author Ken Cameron Copyright (C) 2023
  */
 public class NceTurnoutMonitor implements NceListener, java.beans.PropertyChangeListener {
 
     // scope constants
-    public static final int CS_ACCY_MEMORY = 0xEC00; // Address of start of CS accessory memory
     private static final int NUM_BLOCK = 16; // maximum number of memory blocks
     private static final int BLOCK_LEN = 16; // number of bytes in a block
     private static final int REPLY_LEN = BLOCK_LEN; // number of bytes read
@@ -152,7 +153,7 @@ public class NceTurnoutMonitor implements NceListener, java.beans.PropertyChange
                 log.trace("found turnouts block {}", currentBlock);
 
                 // Read NCE CS memory
-                int nceAccAddress = CS_ACCY_MEMORY + currentBlock * BLOCK_LEN;
+                int nceAccAddress = tc.csm.getAccyMemAddr() + currentBlock * BLOCK_LEN;
                 byte[] bl = NceBinaryCommand.accMemoryRead(nceAccAddress);
                 NceMessage m = NceMessage.createBinaryMessage(tc, bl, REPLY_LEN);
                 return m;
@@ -225,7 +226,7 @@ public class NceTurnoutMonitor implements NceListener, java.beans.PropertyChange
                                     // MSB isn't used and the bit map is skewed
                                     // by one bit, ie accy num 2 is in bit 0,
                                     // should have been in bit 1.
-                                    if (NceConnectionStatus.isNceEpromMarch2007()) {
+                                    if (tc.isNceEpromMarch2007() && !tc.isSimulatorRunning()) {
                                         // bit 3 is shared by two accessories!!!!
                                         if (i == 3) {
                                             monitorActionCommanded(NTnum - 3,
@@ -269,7 +270,7 @@ public class NceTurnoutMonitor implements NceListener, java.beans.PropertyChange
                                     // MSB isn't used and the bit map is skewed
                                     // by one bit, ie accy num 2 is in bit 0,
                                     // should have been in bit 1.
-                                    if (NceConnectionStatus.isNceEpromMarch2007()) {
+                                    if (tc.isNceEpromMarch2007() && !tc.isSimulatorRunning()) {
                                         if (!sentWarnMessage) {
                                             log.warn(
                                                     "The installed NCE Command Station EPROM has problems when using turnout MONITORING feedback");

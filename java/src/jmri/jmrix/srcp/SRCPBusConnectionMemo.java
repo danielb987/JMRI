@@ -59,6 +59,7 @@ public class SRCPBusConnectionMemo extends DefaultSystemConnectionMemo implement
      * Configure the common managers for Internal connections. This puts the
      * common manager config in one place.
      */
+    @Override
     @SuppressFBWarnings(value = "UW_UNCOND_WAIT", justification="false postive, guarded by while statement")
     public void configureManagers() {
         while(!configured){
@@ -91,7 +92,7 @@ public class SRCPBusConnectionMemo extends DefaultSystemConnectionMemo implement
      * @return programmer manager.
      */
     public SRCPProgrammerManager getProgrammerManager() {
-        return get(GlobalProgrammerManager.class);
+        return (SRCPProgrammerManager)get(GlobalProgrammerManager.class);
     }
 
     public void setProgrammerManager(SRCPProgrammerManager p) {
@@ -170,7 +171,7 @@ public class SRCPBusConnectionMemo extends DefaultSystemConnectionMemo implement
 
     @Override
     public void dispose() {
-        if(et != null) {
+        if (et != null) {
             et = null;
         }
         InstanceManager.deregister(this, SRCPBusConnectionMemo.class);

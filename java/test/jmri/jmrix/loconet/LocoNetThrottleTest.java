@@ -6,7 +6,6 @@ import jmri.SpeedStepMode;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 
 public class LocoNetThrottleTest extends jmri.jmrix.AbstractThrottleTest {
 
@@ -134,20 +133,35 @@ public class LocoNetThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     public void testGetSpeed_float() {
         // set speed step mode to 128.
         instance.setSpeedStepMode(jmri.SpeedStepMode.NMRA_DCC_128);
-        Assert.assertEquals("Full Speed", 127, ((LocoNetThrottle)instance).intSpeed(1.0F));
-        float incre = 0.007874016f;
+        super.testGetSpeed_float();
+        
+        // set speed step mode to 28
+        instance.setSpeedStepMode(jmri.SpeedStepMode.NMRA_DCC_28);
+        Assert.assertEquals("Idle", 0, ((LocoNetThrottle)instance).intSpeed(0.0F));
+        Assert.assertEquals("Emergency", 1, ((LocoNetThrottle)instance).intSpeed(-1.0F));
+        Assert.assertEquals("Emergency", 1, ((LocoNetThrottle)instance).intSpeed(-0.001F));
+        Assert.assertEquals("Full Speed", 124, ((LocoNetThrottle)instance).intSpeed(1.0F)); // 124 from class source
+
+        float incre = 1.F/111F;
         float speed = incre;
-        // Cannot get speeedStep 1. range is 2 to 127
-        int i = 2;
-        while (speed < 0.999f) {
+        for ( int i=1; i < 112; i++ ) {
             int result = ((LocoNetThrottle)instance).intSpeed(speed);
-            Assert.assertEquals("speed step ", i++, result);
+            // System.out.println("speed="+speed+" step="+result+" i="+i);
+            Assert.assertNotSame(speed + "(28 steps) should not idle", 0, result);
+            Assert.assertNotSame(speed + "(28 steps) should not eStop", 1, result);
+            Assert.assertTrue(speed + " should be 16 or larger ", result >= 16);
+            if(i>4)
+            {
+                Assert.assertEquals("loconet speed from " + speed, i+12, result);
+            }
+            else
+            {
+                Assert.assertEquals("loconet speed from " + speed, 16, result);
+            }
             speed += incre;
         }
+
     }
-
-
-
 
     /**
      * Test of setF0 method, of class AbstractThrottle.
@@ -627,6 +641,22 @@ public class LocoNetThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         Assert.assertEquals(f28, instance.getF28());
     }
 
+    @Test
+    public void testSendFunctionF29() {
+        lnis.outbound.clear();
+        lnis.resetStatistics();
+        int func = 29;
+        LocoNetMessage funcOnMess = new LocoNetMessage(new int[] {0xED, 0x0B, 0x7f, 0x33, 0x02, 0x00, 0x58, 0x01, 0x00, 0x00, 0x00});
+        LocoNetMessage funcOffMess = new LocoNetMessage(new int [] {0xED, 0x0B, 0x7F, 0x33, 0x02, 0x00, 0x58, 0x00, 0x00, 0x00, 0x00});
+        Assert.assertEquals("check send of function exp f" + func, 0, lnis.outbound.size());
+        instance.setFunction(func,true);
+        Assert.assertEquals("check send of function" + func, 1, lnis.outbound.size());
+        Assert.assertTrue("check opcode",funcOnMess.equals(lnis.outbound.get(0)));
+        instance.setFunction(func,false);
+        Assert.assertEquals("check send OFF function" + func, 2, lnis.outbound.size());
+        Assert.assertTrue("check opcode",funcOffMess.equals(lnis.outbound.get(1)));
+    }
+
     /**
      * Test of sendFunctionGroup1 method, of class AbstractThrottle.
      */
@@ -884,6 +914,8 @@ public class LocoNetThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     public void setUp() throws Exception {
         JUnitUtil.setUp();
         // prepare an interface
+        maxFns = 69;
+
         lnis = new LocoNetInterfaceScaffold();
         slotmanager = new SlotManager(lnis);
 
@@ -913,7 +945,7 @@ public class LocoNetThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     @AfterEach
     @Override
     public void tearDown() {
-        ((LnThrottleManager)memo.getThrottleManager()).dispose();
+        memo.getThrottleManager().dispose();
         memo.dispose();
         lnis = null;
         JUnitUtil.tearDown();

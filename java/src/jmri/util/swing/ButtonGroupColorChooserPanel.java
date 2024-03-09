@@ -2,7 +2,6 @@ package jmri.util.swing;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.util.Enumeration;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.Icon;
 import javax.swing.ButtonGroup;
@@ -34,7 +33,7 @@ public class ButtonGroupColorChooserPanel extends AbstractColorChooserPanel {
         for(int i = 0;i< numColors;i++){
             if(color.equals(colorCode[i])){
                String buttonLabel = Bundle.getMessage(colorText[i]);
-               Enumeration e = colorButtonGroup.getElements();
+               var e = colorButtonGroup.getElements();
                while(e.hasMoreElements()) {
                   JRadioButton button = (JRadioButton)e.nextElement();
                   if(buttonLabel.equals(button.getText())){
@@ -52,7 +51,7 @@ public class ButtonGroupColorChooserPanel extends AbstractColorChooserPanel {
         // build the combo box.
         colorButtonGroup  = new ButtonGroup();
         for (int i = 0; i < numColors; i++) {
-            addButton(colorButtonGroup,colorCode[i],Bundle.getMessage(colorText[i]));   
+            addButton(colorButtonGroup,colorCode[i],Bundle.getMessage(colorText[i]));
         }
     }
 

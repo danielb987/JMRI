@@ -41,18 +41,12 @@ public class SerialAddressTwoSystemTest {
         // create 1st nodes
         c10 = new SerialNode(10, SerialNode.SMINI, stcs1);
         c18 = new SerialNode(18, SerialNode.SMINI, stcs1);
+        Assertions.assertNotNull(c10);
+        Assertions.assertNotNull(c18);
         // create and register the 1st manager objects
-        jmri.TurnoutManager l1 = new SerialTurnoutManager(memo1) {
-            @Override
-            public void notifyTurnoutCreationError(String conflict, int bitNum) {
-            }
-        };
+        jmri.TurnoutManager l1 = new SerialTurnoutManager(memo1);
         jmri.InstanceManager.setTurnoutManager(l1);
-        jmri.LightManager lgt1 = new SerialLightManager(memo1) {
-            @Override
-            public void notifyLightCreationError(String conflict, int bitNum) {
-            }
-        };
+        jmri.LightManager lgt1 = new SerialLightManager(memo1);
         jmri.InstanceManager.setLightManager(lgt1);
         jmri.SensorManager s1 = new SerialSensorManager(memo1);
         jmri.InstanceManager.setSensorManager(s1);
@@ -64,18 +58,12 @@ public class SerialAddressTwoSystemTest {
         // create 2nd nodes
         k10 = new SerialNode(10, SerialNode.SMINI, stcs2);
         k20 = new SerialNode(20, SerialNode.SMINI, stcs2);
+        Assertions.assertNotNull(k10);
+        Assertions.assertNotNull(k20);
         // create and register the 1st manager objects
-        jmri.TurnoutManager l2 = new SerialTurnoutManager(memo2) {
-            @Override
-            public void notifyTurnoutCreationError(String conflict, int bitNum) {
-            }
-        };
+        jmri.TurnoutManager l2 = new SerialTurnoutManager(memo2);
         jmri.InstanceManager.setTurnoutManager(l2);
-        jmri.LightManager lgt2 = new SerialLightManager(memo2) {
-            @Override
-            public void notifyLightCreationError(String conflict, int bitNum) {
-            }
-        };
+        jmri.LightManager lgt2 = new SerialLightManager(memo2);
         jmri.InstanceManager.setLightManager(lgt2);
         jmri.SensorManager s2 = new SerialSensorManager(memo2);
         jmri.InstanceManager.setSensorManager(s2);
@@ -392,15 +380,15 @@ public class SerialAddressTwoSystemTest {
         // create a new turnout, controlled by two output bits
         jmri.TurnoutManager tMgr = jmri.InstanceManager.turnoutManagerInstance();
         jmri.Turnout t1 = tMgr.newTurnout("CT18034", "userT34");
-        t1.setNumberOutputBits(2);
+        t1.setNumberControlBits(2);
         // check that turnout was created correctly
         Assert.assertEquals("create CT18034 check 1", "CT18034", t1.getSystemName());
-        Assert.assertEquals("create CT18034 check 2", 2, t1.getNumberOutputBits());
+        Assert.assertEquals("create CT18034 check 2", 2, t1.getNumberControlBits());
         // create a new turnout, controlled by one output bit
         jmri.Turnout t2 = tMgr.newTurnout("CT18032", "userT32");
         // check that turnout was created correctly
         Assert.assertEquals("create CT18032 check 1", "CT18032", t2.getSystemName());
-        Assert.assertEquals("create CT18032 check 2", 1, t2.getNumberOutputBits());
+        Assert.assertEquals("create CT18032 check 2", 1, t2.getNumberControlBits());
         // create two new lights
         jmri.LightManager lMgr = jmri.InstanceManager.lightManagerInstance();
         jmri.Light lgt1 = lMgr.newLight("CL18036", "userL36");

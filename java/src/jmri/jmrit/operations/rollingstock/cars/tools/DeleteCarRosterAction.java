@@ -1,48 +1,56 @@
 package jmri.jmrit.operations.rollingstock.cars.tools;
 
 import java.awt.event.ActionEvent;
-import java.text.MessageFormat;
 
 import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
-import jmri.jmrit.operations.rollingstock.cars.Car;
-import jmri.jmrit.operations.rollingstock.cars.CarManager;
-import jmri.jmrit.operations.rollingstock.cars.CarsTableFrame;
+import jmri.jmrit.operations.rollingstock.cars.*;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
- * This routine will remove all cars from the operation database,
- * or remove all cars sitting on a track.
+ * This routine will delete all cars from the operation database, or delete all
+ * cars at a location, or sitting on a track.
  *
- * @author Dan Boudreau Copyright (C) 2007, 2016
+ * @author Dan Boudreau Copyright (C) 2007, 2016, 2022
  */
 public class DeleteCarRosterAction extends AbstractAction {
 
     CarsTableFrame _carsTableFrame;
 
     public DeleteCarRosterAction(CarsTableFrame carsTableFrame) {
-        super(carsTableFrame.carsTableModel.trackName == null ?
-                Bundle.getMessage("MenuItemDelete") :
-                MessageFormat.format(Bundle.getMessage("MenuDeleteCarsTrack"), new Object[]{carsTableFrame.carsTableModel.trackName}));
+        super(Bundle.getMessage("MenuItemDelete"));
+        // delete all cars on a track or location
+        if (carsTableFrame.carsTableModel.trackName != null) {
+            String actionName = Bundle.getMessage("MenuDeleteCarsTrack",
+                    carsTableFrame.carsTableModel.trackName);
+            putValue(NAME, actionName);
+        } else if (carsTableFrame.carsTableModel.locationName != null) {
+            String actionName = Bundle.getMessage("MenuDeleteCarsLocation",
+                    carsTableFrame.carsTableModel.locationName);
+            putValue(NAME, actionName);
+        }
         _carsTableFrame = carsTableFrame;
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (_carsTableFrame.carsTableModel.trackName == null) {
-            if (JOptionPane.showConfirmDialog(null, Bundle.getMessage("carSureDelete"),
-                    Bundle.getMessage("carDeleteAll"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        if (_carsTableFrame.carsTableModel.trackName == null && _carsTableFrame.carsTableModel.locationName == null) {
+            if (JmriJOptionPane.showConfirmDialog(null, Bundle.getMessage("carSureDelete"),
+                    Bundle.getMessage("carDeleteAll"), JmriJOptionPane.OK_CANCEL_OPTION) == JmriJOptionPane.OK_OPTION) {
                 log.debug("removing all cars from roster");
                 InstanceManager.getDefault(CarManager.class).deleteAll();
             }
         } else {
-            if (JOptionPane.showConfirmDialog(null, MessageFormat.format(Bundle.getMessage("carDeleteCarsTrack"),
-                    new Object[]{_carsTableFrame.carsTableModel.trackName}),
-                    Bundle.getMessage("carDeleteAll"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            // delete all cars on track or location
+            String message = Bundle.getMessage("carDeleteCarsTrack",
+                    _carsTableFrame.carsTableModel.trackName);
+            if (_carsTableFrame.carsTableModel.trackName == null) {
+                message = Bundle.getMessage("carDeleteCarsLocation",
+                        _carsTableFrame.carsTableModel.locationName);
+            }
+            if (JmriJOptionPane.showConfirmDialog(null, message,
+                    Bundle.getMessage("carDeleteAll"), JmriJOptionPane.OK_CANCEL_OPTION) == JmriJOptionPane.OK_OPTION) {
                 for (Car car : _carsTableFrame.carsTableModel.getSelectedCarList()) {
                     InstanceManager.getDefault(CarManager.class).deregister(car);
                 }
@@ -50,5 +58,5 @@ public class DeleteCarRosterAction extends AbstractAction {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DeleteCarRosterAction.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DeleteCarRosterAction.class);
 }

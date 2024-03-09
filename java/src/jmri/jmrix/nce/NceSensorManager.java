@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
  * NceTrafficController, see nextAiuPoll()
  *
  * @author Bob Jacobsen Copyright (C) 2003
+ * @author Ken Cameron (C) 2023
  */
 public class NceSensorManager extends jmri.managers.AbstractSensorManager
         implements NceListener {
@@ -82,16 +83,22 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
      */
     @Override
     @Nonnull
-    public Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+    protected Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+
         int number = 0;
+        String normName;
         try {
-            number = Integer.parseInt(systemName.substring(getSystemPrefix().length() + 1));
-        } catch (NumberFormatException e) {
+            // see if this is a valid address
+            String address = systemName.substring(getSystemPrefix().length() + 1);
+            normName = createSystemName(address, getSystemPrefix());
+            // parse converted system name
+            number = Integer.parseInt(normName.substring(getSystemPrefix().length() + 1));
+        } catch (NumberFormatException | JmriException e) {
             throw new IllegalArgumentException("Unable to convert " +  // NOI18N
                     systemName.substring(getSystemPrefix().length() + 1) +
                     " to NCE sensor address"); // NOI18N
         }
-        Sensor s = new NceSensor(systemName);
+        Sensor s = new NceSensor(normName);
         s.setUserName(userName);
 
         // ensure the AIU exists
@@ -119,6 +126,7 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
     NceListener listener;
 
     // polling parameters and variables
+    private boolean loggedAiuNotSupported = false;  // set after logging that AIU isn't supported on this config
     private final int shortCycleInterval = 200;
     private final int longCycleInterval = 10000;  // when we know async messages are flowing
     private final long maxSilentInterval = 30000;  // max slow poll time without hearing an async message
@@ -136,31 +144,39 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
      *
      */
     /* Some logic notes
-     * 
+     *
      * Sensor polling normally happens on a short cycle - the NCE round-trip
      * response time (normally 50mS, set by the serial line timeout) plus
      * the "shortCycleInterval" defined above. If an async sensor message is received,
      * we switch to the longCycleInterval since really we don't need to poll at all.
-     * 
+     *
      * We use the long poll only if the following conditions are satisified:
-     * 
+     *
      * -- there have been at least two poll cycle completions since the last change
      * to the list of active sensor - this means at least one complete poll cycle,
      * so we are sure we know the states of all the sensors to begin with
-     * 
+     *
      * -- we have received an async message in the last maxSilentInterval, so that
      * if the user turns off async messages (possible, though dumb in mid session)
      * the system will stumble back to life
-     * 
+     *
      * The interaction between buildActiveAIUs and pollManager is designed so that
      * no explicit sync or locking is needed when the former changes the list of active
      * AIUs used by the latter. At worst, there will be one cycle which polls the same
      * sensor twice.
-     * 
+     *
      * Be VERY CAREFUL if you change any of this.
-     * 
+     *
      */
     private void buildActiveAIUs() {
+        if ((getMemo().getNceTrafficController().getCmdGroups() & NceTrafficController.CMDS_AUI_READ) 
+                != NceTrafficController.CMDS_AUI_READ) {
+            if (!loggedAiuNotSupported) {
+                log.info("AIU not supported in this configuration");
+                loggedAiuNotSupported = true;
+                return;
+            }
+        }
         activeAIUMax = 0;
         for (int a = MINAIU; a <= MAXAIU; ++a) {
             if (aiuArray[a] != null) {
@@ -191,10 +207,11 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
     }
 
     public NceMessage makeAIUPoll(int aiuNo) {
-        // use old 4 byte read command if not USB
         if (getMemo().getNceTrafficController().getUsbSystem() == NceTrafficController.USB_SYSTEM_NONE) {
+            // use old 4 byte read command if not USB
             return makeAIUPoll4ByteReply(aiuNo);
         } else {
+            // use new 2 byte read command if USB
             return makeAIUPoll2ByteReply(aiuNo);
         }
     }
@@ -238,48 +255,56 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
      * one poll of each sensor before squelching active polls.
      */
     private void pollManager() {
-        while (!stopPolling) {
-            for (int a = 0; a < activeAIUMax; ++a) {
-                int aiuNo = activeAIUs[a];
-                currentAIU = aiuArray[aiuNo];
-                if (currentAIU != null) {    // in case it has gone away
-                    NceMessage m = makeAIUPoll(aiuNo);
-                    synchronized (this) {
-                        log.debug("queueing poll request for AIU {}", aiuNo);
-                        getMemo().getNceTrafficController().sendNceMessage(m, this);
-                        awaitingReply = true;
-                        try {
-                            wait(pollTimeout);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt(); // retain if needed later
-                            return;
+        if ((getMemo().getNceTrafficController().getCmdGroups() & NceTrafficController.CMDS_AUI_READ) 
+                != NceTrafficController.CMDS_AUI_READ) {
+            if (!loggedAiuNotSupported) {
+                log.info("AIU not supported in this configuration");
+                loggedAiuNotSupported = true;
+            }
+        } else {
+            while (!stopPolling) {
+                for (int a = 0; a < activeAIUMax; ++a) {
+                    int aiuNo = activeAIUs[a];
+                    currentAIU = aiuArray[aiuNo];
+                    if (currentAIU != null) {    // in case it has gone away
+                        NceMessage m = makeAIUPoll(aiuNo);
+                        synchronized (this) {
+                            log.debug("queueing poll request for AIU {}", aiuNo);
+                            getMemo().getNceTrafficController().sendNceMessage(m, this);
+                            awaitingReply = true;
+                            try {
+                                wait(pollTimeout);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt(); // retain if needed later
+                                return;
+                            }
                         }
-                    }
-                    int delay = shortCycleInterval;
-                    if (aiuCycleCount >= 2
-                            && lastMessageReceived >= System.currentTimeMillis() - maxSilentInterval) {
-                        delay = longCycleInterval;
-                    }
-                    synchronized (this) {
-                        if (awaitingReply && !stopPolling) {
-                            log.warn("timeout awaiting poll response for AIU {}", aiuNo);
-                            // slow down the poll since we're not getting responses
-                            // this lets NceConnectionStatus to do its thing
-                            delay = pollTimeout;
+                        int delay = shortCycleInterval;
+                        if (aiuCycleCount >= 2
+                                && lastMessageReceived >= System.currentTimeMillis() - maxSilentInterval) {
+                            delay = longCycleInterval;
                         }
-                        try {
-                            awaitingDelay = true;
-                            wait(delay);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt(); // retain if needed later
-                            return;
-                        } finally {
-                            awaitingDelay = false;
+                        synchronized (this) {
+                            if (awaitingReply && !stopPolling) {
+                                log.warn("timeout awaiting poll response for AIU {}", aiuNo);
+                                // slow down the poll since we're not getting responses
+                                // this lets NceConnectionStatus to do its thing
+                                delay = pollTimeout;
+                            }
+                            try {
+                                awaitingDelay = true;
+                                wait(delay);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt(); // retain if needed later
+                                return;
+                            } finally {
+                                awaitingDelay = false;
+                            }
                         }
                     }
                 }
+                ++aiuCycleCount;
             }
-            ++aiuCycleCount;
         }
     }
 
@@ -343,15 +368,8 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
                 }
 
                 if (log.isDebugEnabled()) {
-                    String msg = "Handling sensor message \"" + r.toString() + "\" for ";
-                    msg += s.getSystemName();
-
-                    if (newState == Sensor.ACTIVE) {
-                        msg += ": ACTIVE";
-                    } else {
-                        msg += ": INACTIVE";
-                    }
-                    log.debug(msg);
+                    log.debug("Handling sensor message \"{}\" for {} {}",
+                        r, s.getSystemName(), s.describeState(newState) );
                 }
                 aiuArray[index].sensorChange(sensorNo, newState);
             }
@@ -404,32 +422,6 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
     int aiucab = 0;
     int pin = 0;
     int iName = 0;
-
-    @Override
-    public String getNextValidAddress(@Nonnull String curAddress, @Nonnull String prefix, boolean ignoreInitialExisting) throws JmriException {
-
-        String tmpSName = createSystemName(curAddress, prefix);
-
-        // Check to determine if the systemName is in use, return null if it is,
-        // otherwise return the next valid address.
-        Sensor s = getBySystemName(tmpSName);
-        if (s != null || ignoreInitialExisting) {
-            for (int x = 1; x < 10; x++) {
-                iName = iName + 1;
-                pin = pin + 1;
-                if (pin > MAXPIN) {
-                    throw new JmriException("Unable to increment "+curAddress+" pin "+pin+" is greater than "+MAXPIN);
-                }
-                s = getBySystemName(prefix + typeLetter() + iName);
-                if (s == null) {
-                    return Integer.toString(iName);
-                }
-            }
-            throw new JmriException(Bundle.getMessage("InvalidNextValidTenInUse",getBeanTypeHandled(true),curAddress,iName));
-        } else {
-            return Integer.toString(iName);
-        }
-    }
 
     /**
      * {@inheritDoc}
@@ -486,7 +478,7 @@ public class NceSensorManager extends jmri.managers.AbstractSensorManager
         }
         return name;
     }
-    
+
     /**
      * {@inheritDoc}
      */

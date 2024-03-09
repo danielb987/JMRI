@@ -1,48 +1,36 @@
 package jmri.jmrit.operations.locations;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.text.MessageFormat;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jmri.InstanceManager;
-import jmri.Reporter;
-import jmri.ReporterManager;
+import jmri.*;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.OperationsXml;
-import jmri.jmrit.operations.locations.schedules.ScheduleManager;
 import jmri.jmrit.operations.locations.tools.*;
-import jmri.jmrit.operations.rollingstock.cars.CarLoads;
-import jmri.jmrit.operations.rollingstock.cars.CarRoads;
-import jmri.jmrit.operations.rollingstock.cars.CarTypes;
+import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.EngineTypes;
 import jmri.jmrit.operations.routes.Route;
-import jmri.jmrit.operations.routes.RouteLocation;
 import jmri.jmrit.operations.routes.RouteManager;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
-import jmri.jmrit.operations.trains.Train;
-import jmri.jmrit.operations.trains.TrainCommon;
-import jmri.jmrit.operations.trains.TrainManager;
+import jmri.jmrit.operations.trains.*;
 import jmri.swing.NamedBeanComboBox;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
- * Frame for user edit of tracks
+ * Frame for user edit of tracks. Base for edit of all track types.
  *
- * @author Dan Boudreau Copyright (C) 2008, 2010, 2011, 2012, 2013
+ * @author Dan Boudreau Copyright (C) 2008, 2010, 2011, 2012, 2013, 2023
  */
-public class TrackEditFrame extends OperationsFrame implements java.beans.PropertyChangeListener {
+public abstract class TrackEditFrame extends OperationsFrame implements java.beans.PropertyChangeListener {
+
+    // where in the tool menu new items are inserted
+    protected static final int TOOL_MENU_OFFSET = 4;
 
     // Managers
-    // LocationManagerXml managerXml = InstanceManager.getDefault(LocationManagerXml.class);
     TrainManager trainManager = InstanceManager.getDefault(TrainManager.class);
     RouteManager routeManager = InstanceManager.getDefault(RouteManager.class);
 
@@ -63,13 +51,15 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
 
     // Alternate tool buttons
     JButton loadOptionButton = new JButton(Bundle.getMessage("AcceptsAllLoads"));
-    JButton shipLoadOptionButton = new JButton(Bundle.getMessage("ShipAll"));
+    JButton shipLoadOptionButton = new JButton(Bundle.getMessage("ShipsAllLoads"));
     JButton roadOptionButton = new JButton(Bundle.getMessage("AcceptsAllRoads"));
     JButton destinationOptionButton = new JButton();
 
     // major buttons
     JButton clearButton = new JButton(Bundle.getMessage("ClearAll"));
     JButton setButton = new JButton(Bundle.getMessage("SelectAll"));
+    JButton autoSelectButton = new JButton(Bundle.getMessage("AutoSelect"));
+    
     JButton saveTrackButton = new JButton(Bundle.getMessage("SaveTrack"));
     JButton deleteTrackButton = new JButton(Bundle.getMessage("DeleteTrack"));
     JButton addTrackButton = new JButton(Bundle.getMessage("AddTrack"));
@@ -130,9 +120,11 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
     public static final String DISPOSE = "dispose"; // NOI18N
     public static final int MAX_NAME_LENGTH = Control.max_len_string_track_name;
 
-    public TrackEditFrame() {
-        super();
+    public TrackEditFrame(String title) {
+        super(title);
     }
+
+    protected abstract void initComponents(Track track);
 
     public void initComponents(Location location, Track track) {
         _location = location;
@@ -141,8 +133,8 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         // tool tips
         autoDropCheckBox.setToolTipText(Bundle.getMessage("TipAutoTrack"));
         autoPickupCheckBox.setToolTipText(Bundle.getMessage("TipAutoTrack"));
-        trackLengthTextField.setToolTipText(MessageFormat.format(Bundle.getMessage("TipTrackLength"),
-                new Object[]{Setup.getLengthUnit().toLowerCase()}));
+        trackLengthTextField.setToolTipText(Bundle.getMessage("TipTrackLength",
+                Setup.getLengthUnit().toLowerCase()));
 
         // property changes
         _location.addPropertyChangeListener(this);
@@ -150,6 +142,7 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         InstanceManager.getDefault(CarRoads.class).addPropertyChangeListener(this);
         InstanceManager.getDefault(CarLoads.class).addPropertyChangeListener(this);
         InstanceManager.getDefault(CarTypes.class).addPropertyChangeListener(this);
+        InstanceManager.getDefault(Setup.class).addPropertyChangeListener(this);
         trainManager.addPropertyChangeListener(this);
         routeManager.addPropertyChangeListener(this);
 
@@ -161,8 +154,6 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         panels.setLayout(new BoxLayout(panels, BoxLayout.Y_AXIS));
         JScrollPane pane = new JScrollPane(panels);
 
-        // Set up the panels
-        // Layout the panel by rows
         // row 1
         JPanel p1 = new JPanel();
         p1.setLayout(new BoxLayout(p1, BoxLayout.X_AXIS));
@@ -197,13 +188,15 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         p1.add(pLength);
         p1.add(panelTrainDir);
 
-        // row 4
+        // row 2
+        paneCheckBoxes.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TypesTrack")));
         panelCheckBoxes.setLayout(new GridBagLayout());
 
         // status panel for roads and loads
         JPanel panelRoadAndLoadStatus = new JPanel();
         panelRoadAndLoadStatus.setLayout(new BoxLayout(panelRoadAndLoadStatus, BoxLayout.X_AXIS));
 
+        // row 3
         JPanel pRoadOption = new JPanel();
         pRoadOption.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("RoadOption")));
         pRoadOption.add(roadOptionButton);
@@ -220,7 +213,7 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
 
         pDestinationOption.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Destinations")));
         pDestinationOption.add(destinationOptionButton);
-        destinationOptionButton.addActionListener(new TrackDestinationEditAction(_track));
+        destinationOptionButton.addActionListener(new TrackDestinationEditAction(this));
 
         panelRoadAndLoadStatus.add(pRoadOption);
         panelRoadAndLoadStatus.add(pLoadOption);
@@ -232,8 +225,7 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         // only classification/interchange tracks use the destination option
         pDestinationOption.setVisible(false);
 
-        // row 10
-        // order panel
+        // row 4, order panel
         panelOrder.setLayout(new GridBagLayout());
         panelOrder.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("PickupOrder")));
         panelOrder.add(orderNormal);
@@ -245,15 +237,15 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         orderGroup.add(orderFIFO);
         orderGroup.add(orderLIFO);
 
-        // drop panel
+        // row 5, drop panel
         dropPanel.setLayout(new GridBagLayout());
         dropPanel.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TrainsOrRoutesDrops")));
 
-        // pickup panel
+        // row 6, pickup panel
         pickupPanel.setLayout(new GridBagLayout());
         pickupPanel.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TrainsOrRoutesPickups")));
 
-        // row 11
+        // row 9
         JPanel panelComment = new JPanel();
         panelComment.setLayout(new GridBagLayout());
         panelComment.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Comment")));
@@ -262,7 +254,7 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         // adjust text area width based on window size
         adjustTextAreaColumnWidth(commentScroller, commentTextArea);
 
-        // reader row
+        // row 10, reader row
         JPanel readerPanel = new JPanel();
         if (Setup.isRfidEnabled()) {
             readerPanel.setLayout(new GridBagLayout());
@@ -275,16 +267,13 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
             readerPanel.setVisible(false);
         }
 
-        // row 12
+        // row 11
         JPanel panelButtons = new JPanel();
         panelButtons.setLayout(new GridBagLayout());
 
-        // row 13
         addItem(panelButtons, deleteTrackButton, 0, 0);
         addItem(panelButtons, addTrackButton, 1, 0);
         addItem(panelButtons, saveTrackButton, 2, 0);
-
-        paneCheckBoxes.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TypesTrack")));
 
         panels.add(p1Pane);
         panels.add(paneCheckBoxes);
@@ -332,9 +321,12 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         addRadioButtonAction(excludeTrainPickup);
         addRadioButtonAction(excludeRoutePickup);
 
-        //  addComboBoxAction(comboBoxTypes);
+        // addComboBoxAction(comboBoxTypes);
         addCheckBoxAction(autoDropCheckBox);
         addCheckBoxAction(autoPickupCheckBox);
+
+        autoDropCheckBox.setSelected(true);
+        autoPickupCheckBox.setSelected(true);
 
         // load fields and enable buttons
         if (_track != null) {
@@ -352,17 +344,22 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
 
         // build menu
         JMenuBar menuBar = new JMenuBar();
+        _toolMenu.add(new TrackCopyAction(_track, _location));
         _toolMenu.add(new TrackLoadEditAction(this));
         _toolMenu.add(new TrackRoadEditAction(this));
-        _toolMenu.add(new TrackEditCommentsAction(this));
         _toolMenu.add(new PoolTrackAction(this));
+        _toolMenu.add(new IgnoreUsedTrackAction(this));
+        // spurs, interchanges, yards, and staging insert menu items here
+        _toolMenu.add(new TrackEditCommentsAction(this));
+        _toolMenu.addSeparator();
+        _toolMenu.add(new ShowCarsByLocationAction(false, _location, _track));
+        _toolMenu.add(new ShowTrainsServingLocationAction(_location, _track));
 
         menuBar.add(_toolMenu);
         setJMenuBar(menuBar);
 
         // load
         updateCheckboxes();
-        //  updateTypeComboBoxes();
         updateTrainDir();
         updateCarOrder();
         updateDropOptions();
@@ -370,6 +367,8 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         updateRoadOption();
         updateLoadOption();
         updateDestinationOption();
+        updateTrainComboBox();
+        updateRouteComboBox();
 
         setMinimumSize(new Dimension(Control.panelWidth500, Control.panelHeight600));
     }
@@ -377,30 +376,25 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
     // Save, Delete, Add
     @Override
     public void buttonActionPerformed(java.awt.event.ActionEvent ae) {
+        if (ae.getSource() == addTrackButton) {
+            addNewTrack();
+        }
+        if (_track == null) {
+            return; // not possible
+        }
         if (ae.getSource() == saveTrackButton) {
-            log.debug("track save button activated");
-            if (_track != null) {
-                if (!checkUserInputs(_track)) {
-                    return;
-                }
-                saveTrack(_track);
-                checkTrackPickups(_track); // warn user if there are car types that will be stranded
-            } else {
-                addNewTrack();
+            if (!checkUserInputs(_track)) {
+                return;
             }
+            saveTrack(_track);
+            checkTrackPickups(_track); // warn user if there are car types that
+                                       // will be stranded
             if (Setup.isCloseWindowOnSaveEnabled()) {
                 dispose();
             }
         }
         if (ae.getSource() == deleteTrackButton) {
-            log.debug("track delete button activated");
             deleteTrack();
-        }
-        if (ae.getSource() == addTrackButton) {
-            addNewTrack();
-        }
-        if (_track == null) {
-            return;
         }
         if (ae.getSource() == setButton) {
             selectCheckboxes(true);
@@ -409,99 +403,119 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
             selectCheckboxes(false);
         }
         if (ae.getSource() == addDropButton) {
-            String id = "";
-            if (trainDrop.isSelected() || excludeTrainDrop.isSelected()) {
-                if (comboBoxDropTrains.getSelectedItem() == null) {
-                    return;
-                }
-                Train train = ((Train) comboBoxDropTrains.getSelectedItem());
-                Route route = train.getRoute();
-                id = train.getId();
-                if (!checkRoute(route)) {
-                    JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("TrackNotByTrain"),
-                            new Object[]{train.getName()}), Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                selectNextItemComboBox(comboBoxDropTrains);
-            } else {
-                if (comboBoxDropRoutes.getSelectedItem() == null) {
-                    return;
-                }
-                Route route = ((Route) comboBoxDropRoutes.getSelectedItem());
-                id = route.getId();
-                if (!checkRoute(route)) {
-                    JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("TrackNotByRoute"),
-                            new Object[]{route.getName()}), Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                selectNextItemComboBox(comboBoxDropRoutes);
-            }
-            _track.addDropId(id);
+            addDropId();
         }
         if (ae.getSource() == deleteDropButton) {
-            String id = "";
-            if (trainDrop.isSelected() || excludeTrainDrop.isSelected()) {
-                if (comboBoxDropTrains.getSelectedItem() == null) {
-                    return;
-                }
-                id = ((Train) comboBoxDropTrains.getSelectedItem()).getId();
-                selectNextItemComboBox(comboBoxDropTrains);
-            } else {
-                if (comboBoxDropRoutes.getSelectedItem() == null) {
-                    return;
-                }
-                id = ((Route) comboBoxDropRoutes.getSelectedItem()).getId();
-                selectNextItemComboBox(comboBoxDropRoutes);
-            }
-            _track.deleteDropId(id);
+            deleteDropId();
         }
         if (ae.getSource() == addPickupButton) {
-            String id = "";
-            if (trainPickup.isSelected() || excludeTrainPickup.isSelected()) {
-                if (comboBoxPickupTrains.getSelectedItem() == null) {
-                    return;
-                }
-                Train train = ((Train) comboBoxPickupTrains.getSelectedItem());
-                Route route = train.getRoute();
-                id = train.getId();
-                if (!checkRoute(route)) {
-                    JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("TrackNotByTrain"),
-                            new Object[]{train.getName()}), Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                selectNextItemComboBox(comboBoxPickupTrains);
-            } else {
-                if (comboBoxPickupRoutes.getSelectedItem() == null) {
-                    return;
-                }
-                Route route = ((Route) comboBoxPickupRoutes.getSelectedItem());
-                id = route.getId();
-                if (!checkRoute(route)) {
-                    JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("TrackNotByRoute"),
-                            new Object[]{route.getName()}), Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                selectNextItemComboBox(comboBoxPickupRoutes);
-            }
-            _track.addPickupId(id);
+            addPickupId();
         }
         if (ae.getSource() == deletePickupButton) {
-            String id = "";
-            if (trainPickup.isSelected() || excludeTrainPickup.isSelected()) {
-                if (comboBoxPickupTrains.getSelectedItem() == null) {
-                    return;
-                }
-                id = ((Train) comboBoxPickupTrains.getSelectedItem()).getId();
-                selectNextItemComboBox(comboBoxPickupTrains);
-            } else {
-                if (comboBoxPickupRoutes.getSelectedItem() == null) {
-                    return;
-                }
-                id = ((Route) comboBoxPickupRoutes.getSelectedItem()).getId();
-                selectNextItemComboBox(comboBoxPickupRoutes);
-            }
-            _track.deletePickupId(id);
+            deletePickupId();
         }
+    }
+
+    private void addDropId() {
+        String id = "";
+        if (trainDrop.isSelected() || excludeTrainDrop.isSelected()) {
+            if (comboBoxDropTrains.getSelectedItem() == null) {
+                return;
+            }
+            Train train = ((Train) comboBoxDropTrains.getSelectedItem());
+            Route route = train.getRoute();
+            id = train.getId();
+            if (!checkRoute(route)) {
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("TrackNotByTrain", train.getName()),
+                        Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            selectNextItemComboBox(comboBoxDropTrains);
+        } else {
+            if (comboBoxDropRoutes.getSelectedItem() == null) {
+                return;
+            }
+            Route route = ((Route) comboBoxDropRoutes.getSelectedItem());
+            id = route.getId();
+            if (!checkRoute(route)) {
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("TrackNotByRoute", route.getName()),
+                        Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            selectNextItemComboBox(comboBoxDropRoutes);
+        }
+        _track.addDropId(id);
+    }
+
+    private void deleteDropId() {
+        String id = "";
+        if (trainDrop.isSelected() || excludeTrainDrop.isSelected()) {
+            if (comboBoxDropTrains.getSelectedItem() == null) {
+                return;
+            }
+            id = ((Train) comboBoxDropTrains.getSelectedItem()).getId();
+            selectNextItemComboBox(comboBoxDropTrains);
+        } else {
+            if (comboBoxDropRoutes.getSelectedItem() == null) {
+                return;
+            }
+            id = ((Route) comboBoxDropRoutes.getSelectedItem()).getId();
+            selectNextItemComboBox(comboBoxDropRoutes);
+        }
+        _track.deleteDropId(id);
+    }
+
+    private void addPickupId() {
+        String id = "";
+        if (trainPickup.isSelected() || excludeTrainPickup.isSelected()) {
+            if (comboBoxPickupTrains.getSelectedItem() == null) {
+                return;
+            }
+            Train train = ((Train) comboBoxPickupTrains.getSelectedItem());
+            Route route = train.getRoute();
+            id = train.getId();
+            if (!checkRoute(route)) {
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("TrackNotByTrain", train.getName()),
+                        Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            selectNextItemComboBox(comboBoxPickupTrains);
+        } else {
+            if (comboBoxPickupRoutes.getSelectedItem() == null) {
+                return;
+            }
+            Route route = ((Route) comboBoxPickupRoutes.getSelectedItem());
+            id = route.getId();
+            if (!checkRoute(route)) {
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("TrackNotByRoute", route.getName()),
+                        Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            selectNextItemComboBox(comboBoxPickupRoutes);
+        }
+        _track.addPickupId(id);
+    }
+
+    private void deletePickupId() {
+        String id = "";
+        if (trainPickup.isSelected() || excludeTrainPickup.isSelected()) {
+            if (comboBoxPickupTrains.getSelectedItem() == null) {
+                return;
+            }
+            id = ((Train) comboBoxPickupTrains.getSelectedItem()).getId();
+            selectNextItemComboBox(comboBoxPickupTrains);
+        } else {
+            if (comboBoxPickupRoutes.getSelectedItem() == null) {
+                return;
+            }
+            id = ((Route) comboBoxPickupRoutes.getSelectedItem()).getId();
+            selectNextItemComboBox(comboBoxPickupRoutes);
+        }
+        _track.deletePickupId(id);
     }
 
     protected void addNewTrack() {
@@ -543,14 +557,15 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         // save location file
         OperationsXml.save();
     }
-    
+
     protected void deleteTrack() {
         if (_track != null) {
             int rs = _track.getNumberRS();
             if (rs > 0) {
-                if (JOptionPane.showConfirmDialog(this, MessageFormat.format(Bundle.getMessage("ThereAreCars"),
-                        new Object[]{Integer.toString(rs)}), Bundle.getMessage("deleteTrack?"),
-                        JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+                if (JmriJOptionPane.showConfirmDialog(this,
+                        Bundle.getMessage("ThereAreCars", Integer.toString(rs)),
+                        Bundle.getMessage("deleteTrack?"),
+                        JmriJOptionPane.YES_NO_OPTION) != JmriJOptionPane.YES_OPTION) {
                     return;
                 }
             }
@@ -568,20 +583,12 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         if (route == null) {
             return false;
         }
-        RouteLocation rl = null;
-        rl = route.getLastLocationByName(_location.getName());
-        if (rl == null) {
-            return false;
-        }
-        return true;
+        return route.getLastLocationByName(_location.getName()) != null;
     }
 
     protected void saveTrack(Track track) {
-
         saveTrackDirections(track);
-
         track.setName(trackNameTextField.getText());
-
         track.setComment(commentTextArea.getText());
 
         if (Setup.isRfidEnabled()) {
@@ -639,23 +646,30 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
     }
 
     /**
-     *
      * @return true if name is less than 26 characters
      */
     private boolean checkName(String s) {
-        if (trackNameTextField.getText().trim().isEmpty()) {
+        String trackName = trackNameTextField.getText().trim();
+        if (trackName.isEmpty()) {
             log.debug("Must enter a track name");
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("MustEnterName"), MessageFormat.format(Bundle
-                    .getMessage("CanNotTrack"), new Object[]{s}), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("MustEnterName"),
+                    Bundle.getMessage("CanNotTrack", s),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (TrainCommon.splitString(trackNameTextField.getText()).length() > MAX_NAME_LENGTH) {
-            log.error("Track name must be less than {} charaters", Integer.toString(MAX_NAME_LENGTH + 1)); // NOI18N
-            JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("TrackNameLengthMax"),
-                    new Object[]{Integer.toString(MAX_NAME_LENGTH + 1)}),
-                    MessageFormat.format(Bundle
-                            .getMessage("CanNotTrack"), new Object[]{s}),
-                    JOptionPane.ERROR_MESSAGE);
+        String[] check = trackName.split(TrainCommon.HYPHEN);
+        if (check.length == 0) {
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("HyphenFeature"),
+                    Bundle.getMessage("CanNotTrack", s),
+                    JmriJOptionPane.ERROR_MESSAGE);
+
+            return false;
+        }
+        if (TrainCommon.splitString(trackName).length() > MAX_NAME_LENGTH) {
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("TrackNameLengthMax", Integer.toString(MAX_NAME_LENGTH + 1)),
+                    Bundle.getMessage("CanNotTrack", s),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -671,8 +685,8 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
                 int feet = (int) (inches * Setup.getScaleRatio() / 12);
                 length = Integer.toString(feet);
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("CanNotConvertFeet"), Bundle
-                        .getMessage("ErrorTrackLength"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("CanNotConvertFeet"),
+                        Bundle.getMessage("ErrorTrackLength"), JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -683,9 +697,9 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
                 int meter = (int) (cm * Setup.getScaleRatio() / 100);
                 length = Integer.toString(meter);
             } catch (NumberFormatException e) {
-                //                log.error("Can not convert from cm to meters");
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("CanNotConvertMeter"), Bundle
-                        .getMessage("ErrorTrackLength"), JOptionPane.ERROR_MESSAGE);
+                // log.error("Can not convert from cm to meters");
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("CanNotConvertMeter"),
+                        Bundle.getMessage("ErrorTrackLength"), JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -694,30 +708,32 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         try {
             trackLength = Integer.parseInt(length);
             if (length.length() > Control.max_len_string_track_length_name) {
-                JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("TrackMustBeLessThan"),
-                        new Object[]{Math.pow(10, Control.max_len_string_track_length_name),
-                                Setup.getLengthUnit().toLowerCase()}),
-                        Bundle.getMessage("ErrorTrackLength"),
-                        JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("TrackMustBeLessThan",
+                                Math.pow(10, Control.max_len_string_track_length_name),
+                                Setup.getLengthUnit().toLowerCase()),
+                        Bundle.getMessage("ErrorTrackLength"), JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } catch (NumberFormatException e) {
-            //            log.error("Track length not an integer");
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("TrackMustBeNumber"), Bundle
-                    .getMessage("ErrorTrackLength"), JOptionPane.ERROR_MESSAGE);
+            // log.error("Track length not an integer");
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("TrackMustBeNumber"),
+                    Bundle.getMessage("ErrorTrackLength"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
-        // track length can not be less than than the sum of used and reserved length
+        // track length can not be less than than the sum of used and reserved
+        // length
         if (trackLength != track.getLength() && trackLength < track.getUsedLength() + track.getReserved()) {
-            //            log.warn("Track length should not be less than used and reserved");
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("TrackMustBeGreater"), Bundle
-                    .getMessage("ErrorTrackLength"), JOptionPane.ERROR_MESSAGE);
+            // log.warn("Track length should not be less than used and
+            // reserved");
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("TrackMustBeGreater"),
+                    Bundle.getMessage("ErrorTrackLength"), JmriJOptionPane.ERROR_MESSAGE);
             // does the user want to force the track length?
-            if (JOptionPane.showConfirmDialog(this, MessageFormat.format(Bundle.getMessage("TrackForceLength"),
-                    new Object[]{track.getLength(), trackLength, Setup.getLengthUnit().toLowerCase()}),
-                    Bundle
-                            .getMessage("ErrorTrackLength"),
-                    JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(this,
+                    Bundle.getMessage("TrackForceLength", track.getLength(), trackLength,
+                            Setup.getLengthUnit().toLowerCase()),
+                    Bundle.getMessage("ErrorTrackLength"),
+                    JmriJOptionPane.YES_NO_OPTION) != JmriJOptionPane.YES_OPTION) {
                 return false;
             }
         }
@@ -730,14 +746,14 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         // check train and route restrictions
         if ((trainDrop.isSelected() || routeDrop.isSelected()) && track.getDropIds().length == 0) {
             log.debug("Must enter trains or routes for this track");
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("UseAddTrainsOrRoutes"), Bundle
-                    .getMessage("SetOutDisabled"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("UseAddTrainsOrRoutes"),
+                    Bundle.getMessage("SetOutDisabled"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         if ((trainPickup.isSelected() || routePickup.isSelected()) && track.getPickupIds().length == 0) {
             log.debug("Must enter trains or routes for this track");
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("UseAddTrainsOrRoutes"), Bundle
-                    .getMessage("PickUpsDisabled"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("UseAddTrainsOrRoutes"),
+                    Bundle.getMessage("PickUpsDisabled"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -747,17 +763,16 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         // check to see if all car types can be pulled from this track
         String status = track.checkPickups();
         if (!status.equals(Track.PICKUP_OKAY) && !track.getPickupOption().equals(Track.ANY)) {
-            JOptionPane.showMessageDialog(this, status, Bundle.getMessage("ErrorStrandedCar"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, status, Bundle.getMessage("ErrorStrandedCar"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
     }
 
     private void reportTrackExists(String s) {
-        log.info("Can not {}, track already exists", s);
-        JOptionPane.showMessageDialog(this, Bundle.getMessage("TrackAlreadyExists"), MessageFormat.format(Bundle
-                .getMessage("CanNotTrack"), new Object[]{s}), JOptionPane.ERROR_MESSAGE);
+        JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("TrackAlreadyExists"),
+                Bundle.getMessage("CanNotTrack", s), JmriJOptionPane.ERROR_MESSAGE);
     }
 
     protected void enableButtons(boolean enabled) {
@@ -788,9 +803,9 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         orderFIFO.setEnabled(enabled);
         orderLIFO.setEnabled(enabled);
         enableCheckboxes(enabled);
-        if(readerSelector!=null) {
-           // enable readerSelect.
-           readerSelector.setEnabled(enabled && Setup.isRfidEnabled());
+        if (readerSelector != null) {
+            // enable readerSelect.
+            readerSelector.setEnabled(enabled && Setup.isRfidEnabled());
         }
     }
 
@@ -1014,9 +1029,9 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
 
     // filter all trains not serviced by this track
     private void autoTrainComboBox(JComboBox<Train> box) {
-        for (int i = 1; i < box.getItemCount(); i++) {
+        for (int i = 0; i < box.getItemCount(); i++) {
             Train train = box.getItemAt(i);
-            if (!checkRoute(train.getRoute())) {
+            if (train == null || !checkRoute(train.getRoute())) {
                 box.removeItemAt(i--);
             }
         }
@@ -1035,7 +1050,7 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
 
     // filter out all routes not serviced by this track
     private void autoRouteComboBox(JComboBox<Route> box) {
-        for (int i = 1; i < box.getItemCount(); i++) {
+        for (int i = 0; i < box.getItemCount(); i++) {
             Route route = box.getItemAt(i);
             if (!checkRoute(route)) {
                 box.removeItemAt(i--);
@@ -1062,21 +1077,29 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
             }
         }
     }
-
+    
     // car and loco types
     private void updateCheckboxes() {
-        //  log.debug("Update all checkboxes");
+        // log.debug("Update all checkboxes");
         checkBoxes.clear();
         panelCheckBoxes.removeAll();
+        numberOfCheckBoxes = getNumberOfCheckboxesPerLine();
         x = 0;
         y = 0; // vertical position in panel
         loadTypes(InstanceManager.getDefault(CarTypes.class).getNames());
+
+        // add space between car and loco types
+        checkNewLine();
+
         loadTypes(InstanceManager.getDefault(EngineTypes.class).getNames());
         enableCheckboxes(_track != null);
 
         JPanel p = new JPanel();
         p.add(clearButton);
         p.add(setButton);
+        if (_track != null && _track.isSpur()) {
+            p.add(autoSelectButton);
+        }
         GridBagConstraints gc = new GridBagConstraints();
         gc.gridwidth = getNumberOfCheckboxesPerLine() + 1;
         gc.gridy = ++y;
@@ -1090,22 +1113,27 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
     int y = 0; // vertical position in panel
 
     private void loadTypes(String[] types) {
-        int numberOfCheckboxes = getNumberOfCheckboxesPerLine();
         for (String type : types) {
             if (_location.acceptsTypeName(type)) {
                 JCheckBox checkBox = new JCheckBox();
                 checkBoxes.add(checkBox);
                 checkBox.setText(type);
                 addCheckBoxAction(checkBox);
-                addItemLeft(panelCheckBoxes, checkBox, x++, y);
+                addItemLeft(panelCheckBoxes, checkBox, x, y);
                 if (_track != null && _track.isTypeNameAccepted(type)) {
                     checkBox.setSelected(true);
                 }
+                checkNewLine();
             }
-            if (x > numberOfCheckboxes) {
-                y++;
-                x = 0;
-            }
+        }
+    }
+
+    int numberOfCheckBoxes;
+
+    private void checkNewLine() {
+        if (++x > numberOfCheckBoxes) {
+            y++;
+            x = 0;
         }
     }
 
@@ -1123,18 +1151,14 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
     }
 
     private void updateTrainDir() {
-        northCheckBox
-                .setVisible(((Setup.getTrainDirection() & Setup.NORTH) &
-                        (_location.getTrainDirections() & Location.NORTH)) == Location.NORTH);
-        southCheckBox
-                .setVisible(((Setup.getTrainDirection() & Setup.SOUTH) &
-                        (_location.getTrainDirections() & Location.SOUTH)) == Location.SOUTH);
-        eastCheckBox
-                .setVisible(((Setup.getTrainDirection() & Setup.EAST) &
-                        (_location.getTrainDirections() & Location.EAST)) == Location.EAST);
-        westCheckBox
-                .setVisible(((Setup.getTrainDirection() & Setup.WEST) &
-                        (_location.getTrainDirections() & Location.WEST)) == Location.WEST);
+        northCheckBox.setVisible(((Setup.getTrainDirection() & Setup.NORTH) &
+                (_location.getTrainDirections() & Location.NORTH)) == Location.NORTH);
+        southCheckBox.setVisible(((Setup.getTrainDirection() & Setup.SOUTH) &
+                (_location.getTrainDirections() & Location.SOUTH)) == Location.SOUTH);
+        eastCheckBox.setVisible(((Setup.getTrainDirection() & Setup.EAST) &
+                (_location.getTrainDirections() & Location.EAST)) == Location.EAST);
+        westCheckBox.setVisible(((Setup.getTrainDirection() & Setup.WEST) &
+                (_location.getTrainDirections() & Location.WEST)) == Location.WEST);
 
         if (_track != null) {
             northCheckBox.setSelected((_track.getTrainDirections() & Track.NORTH) == Track.NORTH);
@@ -1155,9 +1179,6 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         }
         JCheckBox b = (JCheckBox) ae.getSource();
         log.debug("checkbox change {}", b.getText());
-        if (_location == null) {
-            return;
-        }
         if (b.isSelected()) {
             _track.addTypeName(b.getText());
         } else {
@@ -1185,14 +1206,12 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
                         Bundle.getMessage("Destinations"));
             } else if (_track.getDestinationOption().equals(Track.EXCLUDE_DESTINATIONS)) {
                 pDestinationOption.setVisible(true);
-                destinationOptionButton.setText(
-                        Bundle.getMessage("Exclude") +
-                                " " +
-                                (InstanceManager.getDefault(LocationManager.class).getNumberOfLocations() -
-                                        _track
-                                                .getDestinationListSize()) +
-                                " " +
-                                Bundle.getMessage("Destinations"));
+                destinationOptionButton.setText(Bundle.getMessage("Exclude") +
+                        " " +
+                        (InstanceManager.getDefault(LocationManager.class).getNumberOfLocations() -
+                                _track.getDestinationListSize()) +
+                        " " +
+                        Bundle.getMessage("Destinations"));
             } else {
                 destinationOptionButton.setText(Bundle.getMessage("AcceptAll"));
             }
@@ -1210,7 +1229,6 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
         InstanceManager.getDefault(CarRoads.class).removePropertyChangeListener(this);
         InstanceManager.getDefault(CarLoads.class).removePropertyChangeListener(this);
         InstanceManager.getDefault(CarTypes.class).removePropertyChangeListener(this);
-        InstanceManager.getDefault(ScheduleManager.class).removePropertyChangeListener(this);
         trainManager.removePropertyChangeListener(this);
         routeManager.removePropertyChangeListener(this);
         super.dispose();
@@ -1219,16 +1237,17 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (Control.SHOW_PROPERTY) {
-            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(), e
-                    .getNewValue());
+            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(),
+                    e.getNewValue());
         }
         if (e.getPropertyName().equals(Location.TYPES_CHANGED_PROPERTY) ||
                 e.getPropertyName().equals(CarTypes.CARTYPES_CHANGED_PROPERTY) ||
                 e.getPropertyName().equals(Track.TYPES_CHANGED_PROPERTY)) {
             updateCheckboxes();
         }
-        if (e.getPropertyName().equals(Location.TRAINDIRECTION_CHANGED_PROPERTY) ||
-                e.getPropertyName().equals(Track.TRAINDIRECTION_CHANGED_PROPERTY)) {
+        if (e.getPropertyName().equals(Location.TRAIN_DIRECTION_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Track.TRAIN_DIRECTION_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Setup.TRAIN_DIRECTION_PROPERTY_CHANGE)) {
             updateTrainDir();
         }
         if (e.getPropertyName().equals(TrainManager.LISTLENGTH_CHANGED_PROPERTY)) {
@@ -1260,7 +1279,10 @@ public class TrackEditFrame extends OperationsFrame implements java.beans.Proper
                 e.getPropertyName().equals(Track.DESTINATION_OPTIONS_CHANGED_PROPERTY)) {
             updateDestinationOption();
         }
+        if (e.getPropertyName().equals(Track.LENGTH_CHANGED_PROPERTY)) {
+            trackLengthTextField.setText(Integer.toString(_track.getLength()));
+        }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(TrackEditFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TrackEditFrame.class);
 }

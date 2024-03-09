@@ -3,6 +3,7 @@ package jmri.jmrit.logix;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jmri.InstanceManager;
 import jmri.implementation.AbstractShutDownTask;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * the end of a session. Locos running warrants have had their speeds measured
  * and this new data may or may not be merged into any existing SpeedProfiles in
  * the Roster.
- * <p>
  *
  * @author Pete cressman Copyright (C) 2017
  */
@@ -84,32 +84,22 @@ public class WarrantShutdownTask extends AbstractShutDownTask {
         if (_mergeProfiles == null || _mergeProfiles.isEmpty()) {
             return false;
         }
-        HashMap<String, RosterSpeedProfile> sessionProfiles = manager.getSessionProfiles();
-        if (sessionProfiles == null || sessionProfiles.isEmpty()) {
-            return false;
-        }
-        boolean allEmpty = true;
-        Iterator<RosterSpeedProfile> it = sessionProfiles.values().iterator();
-        while(it.hasNext()) {
-            RosterSpeedProfile profile = it.next();
-            if (profile.hasForwardSpeeds() || profile.hasReverseSpeeds()) {
-                allEmpty = false;
-                break;
-            }
-        }
-        if (allEmpty) {
-            return false;
-        }
         _anomalies = new HashMap<>();
         _mergeCandidates = new HashMap<>();
         Iterator<java.util.Map.Entry<String, RosterSpeedProfile>> iter = _mergeProfiles.entrySet().iterator();
         while (iter.hasNext()) {
             java.util.Map.Entry<String, RosterSpeedProfile> entry = iter.next();
             Map<Integer, Boolean> anomaly = MergePrompt.validateSpeedProfile(entry.getValue());
-            if (anomaly.size() > 0) {
+            if (anomaly != null && anomaly.size() > 0) {
                 _anomalies.put(entry.getKey(), anomaly);
             }
-            _mergeCandidates.put(entry.getKey(), true);
+            String rosterId = entry.getKey();
+            if (Roster.getDefault().getEntryForId(rosterId) != null) {
+                _mergeCandidates.put(rosterId, true);
+            }
+        }
+        if (_mergeCandidates.isEmpty()) {
+            return false;
         }
         return true;
     }
@@ -119,8 +109,9 @@ public class WarrantShutdownTask extends AbstractShutDownTask {
     }
 
     private void merge() {
-        _mergeCandidates.forEach((id, merge) -> {
-            if (merge) {
+        for (Entry<String, Boolean> entry : _mergeCandidates.entrySet()) {
+            if (entry.getValue()) {
+                String id = entry.getKey();
                 RosterEntry rosterEntry = Roster.getDefault().entryFromTitle(id);
                 if (rosterEntry != null) {
                     rosterEntry.setSpeedProfile(_mergeProfiles.get(id));
@@ -129,9 +120,9 @@ public class WarrantShutdownTask extends AbstractShutDownTask {
                     log.debug("Unable to Write SpeedProfile to Roster. No RosterEntry for {}", id);
                 }
             } else {
-                log.debug("SpeedProfile not merged to Roster. id= {}", id);
+                log.debug("SpeedProfile not merged to Roster. id= {}", entry.getKey());
             }
-        });
+        }
         Roster.getDefault().writeRoster();
     }
 

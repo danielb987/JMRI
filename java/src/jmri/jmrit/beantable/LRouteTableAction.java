@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
@@ -14,8 +15,10 @@ import javax.swing.table.TableColumnModel;
 import jmri.Conditional.Operator;
 import jmri.*;
 import jmri.implementation.DefaultConditionalAction;
+import jmri.script.swing.ScriptFileChooser;
 import jmri.util.FileUtil;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Swing action to create and register groups of Logix Condtionals to perform a
@@ -63,7 +66,8 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
 
     class LBeanTableDataModel extends BeanTableDataModel<Logix> {
 
-        // overlay the state column with the edit column
+        // overlay the value column with the enable column
+        // overlay the delete column with the edit column
         static public final int ENABLECOL = VALUECOL;
         static public final int EDITCOL = DELETECOL;
         protected String enabledString = Bundle.getMessage("ColumnHeadEnabled");
@@ -96,61 +100,56 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
 
         @Override
         public String getColumnName(int col) {
-            if (col == EDITCOL) {
-                return ""; // no heading on "Edit"
-            }
-            if (col == ENABLECOL) {
-                return enabledString;
-            } else {
-                return super.getColumnName(col);
+            switch (col) {
+                case EDITCOL:
+                    return ""; // no heading on "Edit"
+                case ENABLECOL:
+                    return enabledString;
+                default:
+                    return super.getColumnName(col);
             }
         }
 
         @Override
         public Class<?> getColumnClass(int col) {
-            if (col == EDITCOL) {
-                return JButton.class;
-            }
-            if (col == ENABLECOL) {
-                return Boolean.class;
-            } else {
-                return super.getColumnClass(col);
+            switch (col) {
+                case EDITCOL:
+                    return JButton.class;
+                case ENABLECOL:
+                    return Boolean.class;
+                default:
+                    return super.getColumnClass(col);
             }
         }
 
         @Override
         public int getPreferredWidth(int col) {
             // override default value for SystemName and UserName columns
-            if (col == SYSNAMECOL) {
-                return new JTextField(20).getPreferredSize().width;
-            }
-            if (col == USERNAMECOL) {
-                return new JTextField(25).getPreferredSize().width;
-            }
-            // not actually used due to the configDeleteColumn, setColumnToHoldButton, configureButton
-            if (col == EDITCOL) {
-                return new JTextField(10).getPreferredSize().width;
-            }
-            // not actually used due to the configValueColumn, setColumnToHoldButton, configureButton
-            if (col == ENABLECOL) {
-                return new JTextField(5).getPreferredSize().width;
-            }
-            if (col == COMMENTCOL) {
-                return new JTextField(25).getPreferredSize().width;
-            } else {
-                return super.getPreferredWidth(col);
+            switch (col) {
+                case SYSNAMECOL:
+                    return new JTextField(20).getPreferredSize().width;
+                case USERNAMECOL:
+                case COMMENTCOL:
+                    return new JTextField(25).getPreferredSize().width;
+                case EDITCOL:
+                    // not actually used due to the configDeleteColumn, setColumnToHoldButton, configureButton
+                    return new JTextField(Bundle.getMessage("ButtonEdit")).getPreferredSize().width+4;
+                case ENABLECOL:
+                    // not actually used due to the configValueColumn, setColumnToHoldButton, configureButton
+                    return new JTextField(5).getPreferredSize().width;
+                default:
+                    return super.getPreferredWidth(col);
             }
         }
 
         @Override
         public boolean isCellEditable(int row, int col) {
-            if (col == EDITCOL) {
-                return true;
-            }
-            if (col == ENABLECOL) {
-                return true;
-            } else {
-                return super.isCellEditable(row, col);
+            switch (col) {
+                case EDITCOL:
+                case ENABLECOL:
+                    return true;
+                default:
+                    return super.isCellEditable(row, col);
             }
         }
 
@@ -192,7 +191,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
          * Deactivate the Logix and remove its conditionals.
          */
         @Override
-        void doDelete(Logix logix) {
+        protected void doDelete(Logix logix) {
             if (logix != null) {
                 logix.deActivateLogix();
                 // delete the Logix and all its Conditionals
@@ -215,12 +214,12 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
         }
 
         @Override
-        public Logix getBySystemName(String name) {
+        public Logix getBySystemName(@Nonnull String name) {
             return _logixManager.getBySystemName(name);
         }
 
         @Override
-        public Logix getByUserName(String name) {
+        public Logix getByUserName(@Nonnull String name) {
             return _logixManager.getByUserName(name);
         }
 
@@ -249,10 +248,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             return "";
         }
 
-        // typical to get right width
+        // typical to get correct width
         @Override
         protected void configDeleteColumn(JTable table) {
-            // have the delete column hold a button
+            // have the DELETECOL = EDITCOL column hold a button
             setColumnToHoldButton(table, DELETECOL,
                     new JButton(Bundle.getMessage("ButtonEdit")));
         }
@@ -323,6 +322,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
     JButton updateButton = new JButton(Bundle.getMessage("ButtonUpdate"));
 
     boolean routeDirty = false;  // true to fire reminder to save work
+    private boolean checkEnabled = jmri.InstanceManager.getDefault(jmri.configurexml.ShutdownPreferences.class).isStoreCheckEnabled();
 
     ArrayList<RouteInputElement> _inputList;
     private HashMap<String, RouteInputElement> _inputMap;
@@ -558,10 +558,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                         soundFile.setText(action.getActionString());
                         continue;
                     default:
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 _addFrame, java.text.MessageFormat.format(rbx.getString("TypeWarn"),
                                         new Object[]{action.toString(), c.getSystemName()}),
-                                rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                         continue;
                 }
                 String name = action.getDeviceName();
@@ -571,10 +571,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                     elt = _outputMap.get(key);
                 }
                 if (elt == null) {
-                    JOptionPane.showMessageDialog(
+                    JmriJOptionPane.showMessageDialog(
                             _addFrame, java.text.MessageFormat.format(rbx.getString("TypeWarn"),
                                     new Object[]{action.toString(), c.getSystemName()}),
-                            rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                            rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                 } else {
                     elt.setIncluded(true);
                     elt.setState(action.getActionData());
@@ -582,10 +582,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                     if (k == 0) {
                         onChange = change;
                     } else if (change != onChange) {
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 _addFrame, java.text.MessageFormat.format(rbx.getString("OnChangeWarn"),
                                         new Object[]{action.toString(), c.getSystemName()}),
-                                rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -633,10 +633,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                         break;
                     default:
                         if (!getLogixInitializer().equals(variable.getName())) {
-                            JOptionPane.showMessageDialog(
+                            JmriJOptionPane.showMessageDialog(
                                     _addFrame, java.text.MessageFormat.format(rbx.getString("TypeWarnVar"),
                                             new Object[]{variable.toString(), c.getSystemName()}),
-                                    rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                    rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                         }
                         continue;
                 }
@@ -656,10 +656,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                 }
                 if (elt == null) {
                     if (!getLogixInitializer().equals(name)) {
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 _addFrame, java.text.MessageFormat.format(rbx.getString("TypeWarnVar"),
                                         new Object[]{variable.toString(), c.getSystemName()}),
-                                rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                     }
                 } else {
                     elt.setIncluded(true);
@@ -682,10 +682,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             for (int k = 0; k < actionList.size(); k++) {
                 ConditionalAction action = actionList.get(k);
                 if (action.getType() != Conditional.Action.SET_SENSOR) {
-                    JOptionPane.showMessageDialog(
+                    JmriJOptionPane.showMessageDialog(
                             _addFrame, java.text.MessageFormat.format(rbx.getString("AlignWarn1"),
                                     new Object[]{action.toString(), c.getSystemName()}),
-                            rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                            rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                 } else {
                     String name = action.getDeviceName();
                     String key = SENSOR_TYPE + name;
@@ -694,16 +694,16 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                         element = _alignMap.get(key);
                     }
                     if (element == null) {
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 _addFrame, java.text.MessageFormat.format(rbx.getString("TypeWarn"),
                                         new Object[]{action.toString(), c.getSystemName()}),
-                                rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
 
                     } else if (!name.equals(action.getDeviceName())) {
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 _addFrame, java.text.MessageFormat.format(rbx.getString("AlignWarn2"),
                                         new Object[]{action.toString(), action.getDeviceName(), c.getSystemName()}),
-                                rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
 
                     } else {
                         element.setIncluded(true);
@@ -744,10 +744,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                         break;
                     default:
                         if (!getLogixInitializer().equals(variable.getName())) {
-                            JOptionPane.showMessageDialog(
+                            JmriJOptionPane.showMessageDialog(
                                     _addFrame, java.text.MessageFormat.format(rbx.getString("TypeWarnVar"),
                                             new Object[]{variable.toString(), c.getSystemName()}),
-                                    rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                    rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                         }
                         continue;
                 }
@@ -778,19 +778,19 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             ArrayList<RouteOutputElement> tList = makeTurnoutLockList();
             List<ConditionalAction> actionList = c.getCopyOfActions();
             if (actionList.size() != tList.size()) {
-                JOptionPane.showMessageDialog(
+                JmriJOptionPane.showMessageDialog(
                         _addFrame, java.text.MessageFormat.format(rbx.getString("LockWarn1"),
                                 new Object[]{Integer.toString(tList.size()), c.getSystemName(),
                                     Integer.toString(actionList.size())}),
-                        rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                        rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
             }
             for (int k = 0; k < actionList.size(); k++) {
                 ConditionalAction action = actionList.get(k);
                 if (action.getType() != Conditional.Action.LOCK_TURNOUT) {
-                    JOptionPane.showMessageDialog(
+                    JmriJOptionPane.showMessageDialog(
                             _addFrame, java.text.MessageFormat.format(rbx.getString("LockWarn2"),
                                     new Object[]{action.getDeviceName(), c.getSystemName()}),
-                            rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                            rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                 } else {
                     String name = action.getDeviceName();
                     boolean found = false;
@@ -803,10 +803,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                         }
                     }
                     if (!found) {
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 _addFrame, java.text.MessageFormat.format(rbx.getString("LockWarn3"),
                                         new Object[]{name, c.getSystemName()}),
-                                rbx.getString("EditDiff"), JOptionPane.WARNING_MESSAGE);
+                                rbx.getString("EditDiff"), JmriJOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -839,6 +839,9 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
         _systemName.setEnabled(true);
         _userName.setEnabled(true);
         _addFrame.setTitle(rbx.getString("LRouteAddTitle"));
+
+        _addFrame.setEscapeKeyClosesWindow(true);
+        _addFrame.getRootPane().setDefaultButton(createButton);
     }
 
     /**
@@ -1116,6 +1119,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
     }
 
     void showReminderMessage() {
+        if (checkEnabled) return;
         InstanceManager.getDefault(jmri.UserPreferencesManager.class).
             showInfoMessage(Bundle.getMessage("ReminderTitle"), Bundle.getMessage("ReminderSaveString", Bundle.getMessage("BeanNameLRoute")),
                     getClassName(),
@@ -1234,9 +1238,9 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
 
     void showMessage(String msg) {
 
-        JOptionPane.showMessageDialog(
+        JmriJOptionPane.showMessageDialog(
                 _addFrame, rbx.getString(msg), Bundle.getMessage("WarningTitle"),
-                JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.WARNING_MESSAGE);
     }
 
     boolean checkNewNamesOK() {
@@ -1258,7 +1262,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
         }
         String uName = _userName.getText();
         // check if a Route with the same user name exists
-        if (!uName.equals("")) {
+        if (!uName.isEmpty()) {
             if (_logixManager.getByUserName(uName) != null) {
                 // Route with this user name already exists
                 showMessage("DuplicateUser");
@@ -1308,7 +1312,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
      */
     void setSoundPressed() {
         if (soundChooser == null) {
-            soundChooser = new JFileChooser(FileUtil.getUserFilesPath());
+            soundChooser = new jmri.util.swing.JmriJFileChooser(FileUtil.getUserFilesPath());
             soundChooser.setFileFilter(new jmri.util.NoArchiveFileFilter());
         }
         soundChooser.rescanCurrentDirectory();
@@ -1318,19 +1322,19 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             try {
                 soundFile.setText(FileUtil.getPortableFilename(soundChooser.getSelectedFile().getCanonicalPath()));
             } catch (java.io.IOException e) {
-                log.error("exception setting sound file: {}", e);
+                log.error("exception setting sound file", e);
             }
         }
     }
 
-    JFileChooser scriptChooser = null;
+    ScriptFileChooser scriptChooser = null;
 
     /**
      * Set the script file
      */
     void setScriptPressed() {
         if (scriptChooser == null) {
-            scriptChooser = jmri.jmrit.XmlFile.userFileChooser("Python script files", "py");
+            scriptChooser = new ScriptFileChooser();
         }
         scriptChooser.rescanCurrentDirectory();
         int retVal = scriptChooser.showOpenDialog(null);
@@ -1339,7 +1343,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             try {
                 scriptFile.setText(FileUtil.getPortableFilename(scriptChooser.getSelectedFile().getCanonicalPath()));
             } catch (java.io.IOException e) {
-                log.error("exception setting script file: {}", e);
+                log.error("exception setting script file", e);
             }
         }
     }
@@ -1498,9 +1502,9 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
                 }
             }
             if (actionList.isEmpty()) {
-                JOptionPane.showMessageDialog(
+                JmriJOptionPane.showMessageDialog(
                         _addFrame, rbx.getString("noAction"),
-                        rbx.getString("addErr"), JOptionPane.ERROR_MESSAGE);
+                        rbx.getString("addErr"), JmriJOptionPane.ERROR_MESSAGE);
                 return;
             }
         } else {
@@ -1563,9 +1567,9 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             }
         }
         if (numConds == 1) {
-            JOptionPane.showMessageDialog(
+            JmriJOptionPane.showMessageDialog(
                     _addFrame, rbx.getString("noVars"),
-                    rbx.getString("addErr"), JOptionPane.ERROR_MESSAGE);
+                    rbx.getString("addErr"), JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1702,10 +1706,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
             if (vList.size() > 0) {
                 numConds = makeAlignConditional(numConds, aList, vList, logix, sName, uName);
             } else {
-                JOptionPane.showMessageDialog(
+                JmriJOptionPane.showMessageDialog(
                         _addFrame, java.text.MessageFormat.format(rbx.getString("NoAlign"),
                                 new Object[]{name, sensor.getAlignType()}),
-                        Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                        Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
             }
         }
         ///////////////// Make Lock Conditional //////////////////////////
@@ -1847,10 +1851,10 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
     }
 
     void handleCreateException(String sysName) {
-        JOptionPane.showMessageDialog(_addFrame,
+        JmriJOptionPane.showMessageDialog(_addFrame,
                 Bundle.getMessage("ErrorLRouteAddFailed", sysName) + "\n" + Bundle.getMessage("ErrorAddFailedCheck"),
                 Bundle.getMessage("ErrorTitle"),
-                JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -1868,7 +1872,7 @@ public class LRouteTableAction extends AbstractTableAction<Logix> {
     int makeAlignConditional(int numConds, ArrayList<ConditionalAction> actionList,
             ArrayList<ConditionalVariable> triggerList,
             Logix logix, String sName, String uName) {
-        if (triggerList.size() == 0) {
+        if (triggerList.isEmpty()) {
             return numConds;
         }
         String cSystemName = sName + numConds + "A";

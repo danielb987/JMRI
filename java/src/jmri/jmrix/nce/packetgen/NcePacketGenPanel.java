@@ -1,13 +1,14 @@
 package jmri.jmrix.nce.packetgen;
 
 import java.awt.Dimension;
-import javax.swing.BoxLayout;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+
 import jmri.jmrix.nce.NceMessage;
 import jmri.jmrix.nce.NceReply;
 import jmri.jmrix.nce.NceSystemConnectionMemo;
 import jmri.jmrix.nce.NceTrafficController;
 import jmri.util.StringUtil;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user input of Nce messages.
@@ -19,6 +20,7 @@ import jmri.util.StringUtil;
 public class NcePacketGenPanel extends jmri.jmrix.nce.swing.NcePanel implements jmri.jmrix.nce.NceListener {
 
     javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+    javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
     javax.swing.JButton sendButton = new javax.swing.JButton();
     javax.swing.JTextField packetTextField = new javax.swing.JTextField(20);
     javax.swing.JCheckBox checkBoxBinCmd = new javax.swing.JCheckBox();
@@ -73,53 +75,63 @@ public class NcePacketGenPanel extends jmri.jmrix.nce.swing.NcePanel implements 
         this.tc = m.getNceTrafficController();
 
         // the following code sets the frame's initial state
-        jLabel1.setText("Command: ");
+        jLabel1.setText(Bundle.getMessage("CommandLabel"));
         jLabel1.setVisible(true);
 
-        sendButton.setText("Send");
+        sendButton.setText(Bundle.getMessage("MenuItemSendCommand"));
         sendButton.setVisible(true);
-        sendButton.setToolTipText("Send packet");
+        sendButton.setToolTipText(Bundle.getMessage("TooltipSendPacket"));
 
         packetTextField.setText("");
-        packetTextField.setToolTipText("Enter command");
+        packetTextField.setToolTipText(Bundle.getMessage("EnterHexToolTip"));
         packetTextField.setMaximumSize(new Dimension(packetTextField
                 .getMaximumSize().width, packetTextField.getPreferredSize().height));
 
-        checkBoxBinCmd.setText("Binary");
+        checkBoxBinCmd.setText(Bundle.getMessage("Binary"));
         checkBoxBinCmd.setVisible(true);
-        checkBoxBinCmd.setToolTipText("Check to enable binary commands");
+        checkBoxBinCmd.setToolTipText(Bundle.getMessage("TooltipBinary"));
         checkBoxBinCmd.setSelected(true);
+
+        jLabel2.setText(Bundle.getMessage("BytesLabel"));
+        jLabel2.setVisible(true);
 
         replyLenTextField.setVisible(true);
         replyLenTextField.setMaximumSize(new Dimension(50, replyLenTextField.getPreferredSize().height));
-        replyLenTextField.setToolTipText("Enter number of expected bytes, will override internal defaults");
+        replyLenTextField.setToolTipText(Bundle.getMessage("TooltipExpectedBytes"));
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setPreferredSize(new Dimension(300, 150));
 
-        add(jLabel1);
-        add(packetTextField);
-        add(sendButton);
-        add(checkBoxBinCmd);
-        add(replyLenTextField);
+        JPanel command = new JPanel();
+        command.setLayout(new BoxLayout(command, BoxLayout.X_AXIS));
+        command.add(jLabel1);
+        command.add(packetTextField);
 
-        sendButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                sendButtonActionPerformed(e);
-            }
-        });
+        JPanel bytes = new JPanel();
+        bytes.setLayout(new BoxLayout(bytes, BoxLayout.X_AXIS));
+        bytes.add(jLabel2);
+        bytes.add(replyLenTextField);
+
+        add(command);
+        add(checkBoxBinCmd);
+        add(bytes);
+        add(sendButton);
+
+        sendButton.addActionListener(this::sendButtonActionPerformed);
     }
 
     public void sendButtonActionPerformed(java.awt.event.ActionEvent e) {
+        String input = packetTextField.getText();
+        // TODO check input + feedback on error. Too easy to cause NPE
         if (checkBoxBinCmd.isSelected()) {
             // Binary selected, convert ASCII to hex
 
-            NceMessage m = createPacket(packetTextField.getText());
+            NceMessage m = createPacket(input);
             if (m == null) {
-                JOptionPane.showMessageDialog(NcePacketGenPanel.this,
-                        "Enter hexadecimal numbers only", "NCE Binary Command",
-                        JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(NcePacketGenPanel.this,
+                        Bundle.getMessage("DialogHexOnly"),
+                        Bundle.getMessage("BinaryTitle"),
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return;
             }
             m.setBinary(true);
@@ -133,9 +145,9 @@ public class NcePacketGenPanel extends jmri.jmrix.nce.swing.NcePanel implements 
         } else {
             // ASCII Mode selected
 
-            NceMessage m = new NceMessage(packetTextField.getText().length());
-            for (int i = 0; i < packetTextField.getText().length(); i++) {
-                m.setElement(i, packetTextField.getText().charAt(i));
+            NceMessage m = new NceMessage(input.length());
+            for (int i = 0; i < input.length(); i++) {
+                m.setElement(i, input.charAt(i));
             }
 
             tc.sendNceMessage(m, this);
@@ -158,7 +170,7 @@ public class NcePacketGenPanel extends jmri.jmrix.nce.swing.NcePanel implements 
 
     NceMessage createPacket(String s) {
         // gather bytes in result
-        byte b[];
+        byte[] b;
         try {
             b = StringUtil.bytesFromHexString(s);
         } catch (NumberFormatException e) {
@@ -187,7 +199,7 @@ public class NcePacketGenPanel extends jmri.jmrix.nce.swing.NcePanel implements 
 
     // gets the expected number of bytes returned
     private int getMessageLength(int opcode) {
-        int replyLen = 1;
+        int replyLen;
         switch (opcode & 0xFF) {
 
             case 0xAB:

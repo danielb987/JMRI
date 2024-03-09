@@ -1,10 +1,9 @@
 package jmri.implementation.swing;
 
 import java.awt.Component;
-import javax.swing.JOptionPane;
+
 import jmri.implementation.AbstractShutDownTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Provides a base for using Swing to ask if shutdown should conditionally
@@ -47,13 +46,12 @@ public class SwingShutDownTask extends AbstractShutDownTask {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * This implementation displays a dialog allowing a user continue stopping
      * the app, abort stopping the app, or take a custom action. Closing the
      * dialog without choosing any button is treated as aborting stopping the
      * app.
-       * 
-     * @see #doClose()
+     *
      * @see #didPrompt()
      * @see #doPrompt()
      */
@@ -71,11 +69,11 @@ public class SwingShutDownTask extends AbstractShutDownTask {
                     Bundle.getMessage("ButtonAbort")};
             }
 
-            int selectedValue = JOptionPane.showOptionDialog(component,
+            int selectedValue = JmriJOptionPane.showOptionDialog(component,
                     warning,
                     Bundle.getMessage("ShutDownWarningTitle"),
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.WARNING_MESSAGE, null,
+                    JmriJOptionPane.DEFAULT_OPTION,
+                    JmriJOptionPane.WARNING_MESSAGE, null,
                     possibleValues, possibleValues[possibleValues.length - 1]);
             switch (selectedValue) {
                 case 1:
@@ -100,7 +98,7 @@ public class SwingShutDownTask extends AbstractShutDownTask {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * This implementation calls {@link #didPrompt()} if the user took the
      * prompt action.
      */
@@ -145,18 +143,6 @@ public class SwingShutDownTask extends AbstractShutDownTask {
         return true;
     }
 
-    /**
-     * Provide a subclass-specific method to handle the case where the user has
-     * chosen the close window option.
-     *
-     * @return true if ready to shutdown, false to end shutdown
-     * @deprecated since 4.21.1 without replacement
-     */
-    @Deprecated
-    protected boolean doClose() {
-        return true;
-    }
-
-    private final static Logger log = LoggerFactory.getLogger(SwingShutDownTask.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SwingShutDownTask.class);
 
 }

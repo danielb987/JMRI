@@ -4,12 +4,11 @@ import java.awt.GraphicsEnvironment;
 import java.text.MessageFormat;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.*;
 import org.junit.Assume;
+import org.junit.jupiter.api.Test;
 
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationEditFrame;
 import jmri.jmrit.operations.locations.Track;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
@@ -24,11 +23,9 @@ public class TrackCopyFrameTest extends OperationsTestCase {
     @Test
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        LocationEditFrame f = new LocationEditFrame(null);
-        TrackCopyFrame t = new TrackCopyFrame(f);
+        TrackCopyFrame t = new TrackCopyFrame(null, null);
         Assert.assertNotNull("exists",t);
         JUnitUtil.dispose(t);
-        JUnitUtil.dispose(f);
     }
     
     @Test
@@ -36,24 +33,25 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Location acton = JUnitOperationsUtil.createOneNormalLocation("Acton");
-        LocationEditFrame f = new LocationEditFrame(acton);
-        TrackCopyFrame tcf = new TrackCopyFrame(f);
+        TrackCopyFrame tcf = new TrackCopyFrame(null, acton);
         Assert.assertNotNull("exists",tcf);
         tcf.setVisible(true);
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, MessageFormat.format(Bundle
                 .getMessage("CanNotTrack"), new Object[]{Bundle.getMessage("ButtonCopy")}), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
         
         // enter a name for the new track
         tcf.trackNameTextField.setText("Test track name");
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, Bundle.getMessage("SelectTrackToCopy"), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
         
         // select a track to copy
         tcf.locationBox.setSelectedIndex(1);
@@ -64,7 +62,6 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(tcf.copyButton);
         Assert.assertNotNull(acton.getTrackByName("Test track name", Track.INTERCHANGE));
 
-        JUnitUtil.dispose(f);
         JUnitUtil.dispose(tcf);
     }
     
@@ -76,7 +73,7 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         JUnitOperationsUtil.createOneNormalLocation("Acton");
         Location boston = JUnitOperationsUtil.createOneNormalLocation("Boston");
         
-        TrackCopyFrame tcf = new TrackCopyFrame(null);
+        TrackCopyFrame tcf = new TrackCopyFrame(null, null);
         Assert.assertNotNull("exists",tcf);
         tcf.setVisible(true);
         
@@ -89,19 +86,21 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         // confirm that copy button is enabled
         Assert.assertTrue(tcf.copyButton.isEnabled());
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, MessageFormat.format(Bundle
                 .getMessage("CanNotTrack"), new Object[]{Bundle.getMessage("ButtonCopy")}), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
         
         // enter a name for the new track
         tcf.trackNameTextField.setText("Test track name");
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, Bundle.getMessage("SelectTrackToCopy"), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
         
         // select a track to copy
         tcf.locationBox.setSelectedIndex(1);
@@ -120,28 +119,26 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Location acton = JUnitOperationsUtil.createOneNormalLocation("Acton");
-        LocationEditFrame f = new LocationEditFrame(acton);
-        TrackCopyFrame tcf = new TrackCopyFrame(f);
+        TrackCopyFrame tcf = new TrackCopyFrame(null, acton);
         Assert.assertNotNull("exists",tcf);
         tcf.setVisible(true);
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
-        
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, MessageFormat.format(Bundle
                 .getMessage("CanNotTrack"), new Object[]{Bundle.getMessage("ButtonCopy")}), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
         
         // enter a name for the new track to fail longer than 25 characters
         tcf.trackNameTextField.setText("Very Long Test Track Name X");
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
-        
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, MessageFormat.format(Bundle
                 .getMessage("CanNotTrack"), new Object[]{Bundle.getMessage("ButtonCopy")}), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
+        
         Assert.assertNull(acton.getTrackByName("Very Long Test Track Name X", null));
-
-        JUnitUtil.dispose(f);
         JUnitUtil.dispose(tcf);
     }
     
@@ -150,27 +147,24 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Location acton = JUnitOperationsUtil.createOneNormalLocation("Acton");
-        LocationEditFrame f = new LocationEditFrame(acton);
-        TrackCopyFrame tcf = new TrackCopyFrame(f);
+        TrackCopyFrame tcf = new TrackCopyFrame(null, acton);
         Assert.assertNotNull("exists",tcf);
         tcf.setVisible(true);
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
-        
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, MessageFormat.format(Bundle
                 .getMessage("CanNotTrack"), new Object[]{Bundle.getMessage("ButtonCopy")}), Bundle.getMessage("ButtonOK"));
+        JemmyUtil.waitFor(tcf);
         
         // enter the same name
         tcf.trackNameTextField.setText(acton.getTracksList().get(2).getName());
         
-        JemmyUtil.enterClickAndLeave(tcf.copyButton);
-        
+        JemmyUtil.enterClickAndLeaveThreadSafe(tcf.copyButton);
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tcf, MessageFormat.format(Bundle
                 .getMessage("CanNotTrack"), new Object[]{Bundle.getMessage("ButtonCopy")}), Bundle.getMessage("ButtonOK"));
-
-        JUnitUtil.dispose(f);
+        JemmyUtil.waitFor(tcf);
         JUnitUtil.dispose(tcf);
     }
     
@@ -179,14 +173,11 @@ public class TrackCopyFrameTest extends OperationsTestCase {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         
         Location acton = JUnitOperationsUtil.createOneNormalLocation("Acton");
-        LocationEditFrame f = new LocationEditFrame(acton);
-        TrackCopyFrame tcf = new TrackCopyFrame(f);
+        TrackCopyFrame tcf = new TrackCopyFrame(null, acton);
         Assert.assertNotNull("exists",tcf);
         tcf.setVisible(true);
         
         JemmyUtil.enterClickAndLeave(tcf.saveButton);
-
-        JUnitUtil.dispose(f);
         JUnitUtil.dispose(tcf);
     }
 

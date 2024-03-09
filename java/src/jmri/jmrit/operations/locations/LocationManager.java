@@ -1,10 +1,7 @@
 package jmri.jmrit.operations.locations;
 
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.JComboBox;
 
@@ -12,14 +9,10 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jmri.InstanceManager;
-import jmri.InstanceManagerAutoDefault;
-import jmri.InstanceManagerAutoInitialize;
-import jmri.Reporter;
+import jmri.*;
 import jmri.beans.PropertyChangeSupport;
 import jmri.jmrit.operations.rollingstock.cars.CarLoad;
 import jmri.jmrit.operations.setup.OperationsSetupXml;
-import jmri.jmrit.operations.trains.TrainCommon;
 
 /**
  * Manages locations.
@@ -30,6 +23,8 @@ import jmri.jmrit.operations.trains.TrainCommon;
 public class LocationManager extends PropertyChangeSupport implements InstanceManagerAutoDefault, InstanceManagerAutoInitialize, PropertyChangeListener {
 
     public static final String LISTLENGTH_CHANGED_PROPERTY = "locationsListLength"; // NOI18N
+    
+    protected boolean _showId = false; // when true show location ids 
 
     public LocationManager() {
     }
@@ -71,6 +66,28 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
     }
     
     /**
+     * Used to determine if a division name has been assigned to a location
+     * @return true if a location has a division name
+     */
+    public boolean hasDivisions() {
+        for (Location location : getList()) {
+            if (location.getDivision() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean hasWork() {
+        for (Location location : getList()) {
+            if (location.hasWork()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Used to determine if a reporter has been assigned to a location
      * @return true if a location has a RFID reporter
      */
@@ -82,6 +99,14 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
         }
         return false;
     }
+    
+    public void setShowIdEnabled(boolean showId) {
+        _showId = showId;
+    }
+    
+    public boolean isShowIdEnabled() {
+        return _showId;
+    }
 
     /**
      * Request a location associated with a given reporter.
@@ -91,13 +116,10 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
      */
     public Location getLocationByReporter(Reporter r) {
         for (Location location : _locationHashTable.values()) {
-            try {
+            if (location.getReporter() != null) {
                 if (location.getReporter().equals(r)) {
                     return location;
                 }
-            } catch (java.lang.NullPointerException npe) {
-                // it's valid for a reporter to be null (no reporter
-                // at a given location.
             }
         }
         return null;
@@ -111,13 +133,10 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
      */
     public Track getTrackByReporter(Reporter r) {
         for (Track track : getTracks(null)) {
-            try {
+            if (track.getReporter() != null) {
                 if (track.getReporter().equals(r)) {
                     return track;
                 }
-            } catch (java.lang.NullPointerException npe) {
-                // it's valid for a reporter to be null (no reporter
-                // at a given location.
             }
         }
         return null;
@@ -199,7 +218,36 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
             }
         }
         return out;
-
+    }
+    
+    /**
+     * Get unique locations list by location name.
+     *
+     * @return list of locations ordered by name. Locations with "similar" names
+     *         to the primary location are not returned. Also checks and updates
+     *         the primary location for any changes to the other "similar"
+     *         locations.
+     */
+    public List<Location> getUniqueLocationsByNameList() {
+        List<Location> locations = getLocationsByNameList();
+        List<Location> out = new ArrayList<Location>();
+        Location mainLocation = null;
+        
+        // also update the primary location for locations with similar names
+        for (Location location : locations) {
+            String name = location.getSplitName();
+            if (mainLocation != null && mainLocation.getSplitName().equals(name)) {
+                location.setSwitchListEnabled(mainLocation.isSwitchListEnabled());
+                if (mainLocation.isSwitchListEnabled() && location.getStatus().equals(Location.MODIFIED)) {
+                    mainLocation.setStatus(Location.MODIFIED); // we need to update the primary location
+                    location.setStatus(Location.UPDATED); // and clear the secondaries
+                }
+                continue;
+            }
+            mainLocation = location;
+            out.add(location);
+        }
+        return out;
     }
 
     /**
@@ -295,6 +343,9 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
         return moveList;
     }
 
+    /**
+     * Sets move count to 0 for all tracks
+     */
     public void resetMoves() {
         List<Location> locations = getList();
         for (Location loc : locations) {
@@ -303,7 +354,7 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
     }
 
     /**
-     *
+     * Returns a JComboBox with locations sorted alphabetically.
      * @return locations for this railroad
      */
     public JComboBox<Location> getComboBox() {
@@ -312,6 +363,10 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
         return box;
     }
 
+    /**
+     * Updates JComboBox alphabetically with a list of locations.
+     * @param box The JComboBox to update.
+     */
     public void updateComboBox(JComboBox<Location> box) {
         box.removeAllItems();
         box.addItem(null);
@@ -320,6 +375,13 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
         }
     }
 
+    /**
+     * Replace all track car load names for a given type of car
+     * 
+     * @param type type of car
+     * @param oldLoadName load name to replace
+     * @param newLoadName new load name
+     */
     public void replaceLoad(String type, String oldLoadName, String newLoadName) {
         List<Location> locs = getList();
         for (Location loc : locs) {
@@ -392,6 +454,8 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
         return _maxLocationAndTrackNameLength;
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SLF4J_FORMAT_SHOULD_BE_CONST",
+            justification = "I18N of Info Message")
     private void calculateMaxNameLengths() {
         if (_maxLocationNameLength != 0) // only do this once
         {
@@ -402,27 +466,31 @@ public class LocationManager extends PropertyChangeSupport implements InstanceMa
         String maxLocationName = "";
         String maxLocationAndTrackName = "";
         for (Track track : getTracks(null)) {
-            if (TrainCommon.splitString(track.getName()).length() > _maxTrackNameLength) {
+            if (track.getSplitName().length() > _maxTrackNameLength) {
                 maxTrackName = track.getName();
                 maxLocNameForTrack = track.getLocation().getName();
-                _maxTrackNameLength = TrainCommon.splitString(track.getName()).length();
+                _maxTrackNameLength = track.getSplitName().length();
             }
-            if (TrainCommon.splitString(track.getLocation().getName()).length() > _maxLocationNameLength) {
+            if (track.getLocation().getSplitName().length() > _maxLocationNameLength) {
                 maxLocationName = track.getLocation().getName();
-                _maxLocationNameLength = TrainCommon.splitString(track.getLocation().getName()).length();
+                _maxLocationNameLength = track.getLocation().getSplitName().length();
             }
-            if (TrainCommon.splitString(track.getLocation().getName()).length()
-                    + TrainCommon.splitString(track.getName()).length() > _maxLocationAndTrackNameLength) {
+            if (track.getLocation().getSplitName().length()
+                    + track.getSplitName().length() > _maxLocationAndTrackNameLength) {
                 maxLocationAndTrackName = track.getLocation().getName() + ", " + track.getName();
-                _maxLocationAndTrackNameLength = TrainCommon.splitString(track.getLocation().getName()).length()
-                        + TrainCommon.splitString(track.getName()).length();
+                _maxLocationAndTrackNameLength = track.getLocation().getSplitName().length()
+                        + track.getSplitName().length();
             }
         }
-        log.info("Max track name ({}) at ({}) length {}", maxTrackName, maxLocNameForTrack, _maxTrackNameLength);
-        log.info("Max location name ({}) length {}", maxLocationName, _maxLocationNameLength);
-        log.info("Max location and track name ({}) length {}", maxLocationAndTrackName, _maxLocationAndTrackNameLength);
+        log.info(Bundle.getMessage("InfoMaxTrackName", maxTrackName, _maxTrackNameLength, maxLocNameForTrack));
+        log.info(Bundle.getMessage("InfoMaxLocationName", maxLocationName, _maxLocationNameLength));
+        log.info(Bundle.getMessage("InfoMaxLocAndTrackName", maxLocationAndTrackName, _maxLocationAndTrackNameLength));
     }
 
+    /**
+     * Load the locations from a xml file.
+     * @param root xml file
+     */
     public void load(Element root) {
         if (root.getChild(Xml.LOCATIONS) != null) {
             List<Element> locs = root.getChild(Xml.LOCATIONS).getChildren(Xml.LOCATION);

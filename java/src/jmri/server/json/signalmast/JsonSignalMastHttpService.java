@@ -36,7 +36,7 @@ public class JsonSignalMastHttpService extends JsonNamedBeanHttpService<SignalMa
 
     @Override
     public ObjectNode doGet(SignalMast signalMast, String name, String type, JsonRequest request) throws JsonException {
-        ObjectNode root = this.getNamedBean(signalMast, name, type, request); // throws if signalMast is null
+        ObjectNode root = this.getNamedBean(signalMast, name, getType(), request); // throws if signalMast is null
         ObjectNode data = root.with(DATA);
         String aspect = signalMast.getAspect();
         if (aspect == null) {
@@ -66,12 +66,19 @@ public class JsonSignalMastHttpService extends JsonNamedBeanHttpService<SignalMa
                 if (signalMast.getHeld()) {
                     signalMast.setHeld(false);
                 }
-                if (signalMast.getAspect() == null || !signalMast.getAspect().equals(aspect)) {
+                String thisAspect = signalMast.getAspect();
+                if (thisAspect == null || !thisAspect.equals(aspect)) {
                     signalMast.setAspect(aspect);
                 }
             } else {
                 throw new JsonException(400, Bundle.getMessage(request.locale, "ErrorUnknownState", SIGNAL_MAST, aspect), request.id);
             }
+        }
+        if (data.path(LIT).isTextual()) {
+            signalMast.setLit(data.path(LIT).asBoolean());
+        }
+        if (data.path(TOKEN_HELD).isTextual()) {
+            signalMast.setHeld(data.path(TOKEN_HELD).asBoolean());
         }
         return this.doGet(signalMast, name, type, request);
     }
@@ -97,7 +104,7 @@ public class JsonSignalMastHttpService extends JsonNamedBeanHttpService<SignalMa
     }
 
     @Override
-    protected ProvidingManager<SignalMast> getManager() {
+    protected ProvidingManager<SignalMast> getProvidingManager() {
         return InstanceManager.getDefault(SignalMastManager.class);
     }
 }

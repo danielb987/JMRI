@@ -3,14 +3,12 @@ package jmri.jmrit.operations.locations.tools;
 import java.awt.GraphicsEnvironment;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.*;
 import org.junit.Assume;
+import org.junit.jupiter.api.Test;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
+import jmri.jmrit.operations.locations.*;
 import jmri.jmrit.operations.rollingstock.cars.CarRoads;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
@@ -59,14 +57,14 @@ public class TrackRoadEditFrameTest extends OperationsTestCase {
         Assert.assertTrue(tlef.isVisible());
 
         JemmyUtil.enterClickAndLeave(tlef.roadNameInclude);
-        JemmyUtil.enterClickAndLeave(tlef.saveTrackButton);
-
+        JemmyUtil.enterClickAndLeaveThreadSafe(tlef.saveButton);
         // error dialog window show appear
         JemmyUtil.pressDialogButton(tlef, Bundle.getMessage("ErrorNoRoads"), Bundle.getMessage("ButtonOK"));
-
+        JemmyUtil.waitFor(tlef);
+        
         // only road "AA" is to be accepted
         JemmyUtil.enterClickAndLeave(tlef.addRoadButton);
-        JemmyUtil.enterClickAndLeave(tlef.saveTrackButton);
+        JemmyUtil.enterClickAndLeave(tlef.saveButton);
 
         Assert.assertTrue(track.isRoadNameAccepted("AA"));
 
@@ -78,7 +76,16 @@ public class TrackRoadEditFrameTest extends OperationsTestCase {
         }
 
         JUnitUtil.dispose(tlef);
-
+    }
+    
+    @Test
+    public void testCloseWindowOnSave() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Location loc = JUnitOperationsUtil.createOneNormalLocation("Test Location");
+        Track track = loc.addTrack("Yard", Track.YARD);
+        TrackRoadEditFrame f = new TrackRoadEditFrame();
+        f.initComponents(loc, track);
+        JUnitOperationsUtil.testCloseWindowOnSave(f.getTitle());
     }
 
     // private final static Logger log = LoggerFactory.getLogger(TrackRoadEditFrameTest.class);

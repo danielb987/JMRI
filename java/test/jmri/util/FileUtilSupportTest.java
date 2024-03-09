@@ -219,8 +219,8 @@ public class FileUtilSupportTest {
 
     @Test
     public void testCopyFile() throws FileNotFoundException {
-        File src = instance.getFile(instance.getAbsoluteFilename("program:default.lcf"));
-        File dest = new File(instance.getAbsoluteFilename("program:fileUtilTest.lcf"));
+        File src = instance.getFile(instance.getAbsoluteFilename("program:default_lcf.xml"));
+        File dest = new File(instance.getAbsoluteFilename("program:fileUtilTest_lcf.xml"));
         ArrayList<String> sl = new ArrayList<>();
         ArrayList<String> dl = new ArrayList<>();
         try {
@@ -250,6 +250,8 @@ public class FileUtilSupportTest {
         instance.copy(src, dest);
         String[] destFiles = dest.list();
         String[] srcFiles = src.list();
+        Assertions.assertNotNull(destFiles);
+        Assertions.assertNotNull(srcFiles);
         Arrays.sort(destFiles);
         Arrays.sort(srcFiles);
         instance.delete(dest);
@@ -259,7 +261,7 @@ public class FileUtilSupportTest {
     @Test
     public void testDeleteFile() throws IOException {
         File file = File.createTempFile("FileUtilTest", null);
-        instance.copy(instance.getFile(instance.getAbsoluteFilename("program:default.lcf")), file);
+        instance.copy(instance.getFile(instance.getAbsoluteFilename("program:default_lcf.xml")), file);
         instance.delete(file);
         assertFalse(file.exists());
     }
@@ -331,18 +333,18 @@ public class FileUtilSupportTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        jmri.util.JUnitUtil.setUp();
+        JUnitUtil.setUp();
         JUnitUtil.resetProfileManager();
         this.instance = new FileUtilSupport();
         this.programTestFile = new File(UUID.randomUUID().toString());
-        this.programTestFile.createNewFile();
+        Assertions.assertTrue(this.programTestFile.createNewFile());
         JUnitUtil.waitFor(() -> {
             return this.programTestFile.exists();
         }, "Create program test file");
         File profile = new File(instance.getProfilePath());
-        profile.mkdir();
+        Assertions.assertFalse(profile.mkdir(),"directory should exist");
         this.preferencesTestFile = new File(profile, UUID.randomUUID().toString());
-        this.preferencesTestFile.createNewFile();
+        Assertions.assertTrue(this.preferencesTestFile.createNewFile());
         JUnitUtil.waitFor(() -> {
             return this.preferencesTestFile.exists();
         }, "Create program test file");
@@ -350,14 +352,14 @@ public class FileUtilSupportTest {
 
     @AfterEach
     public void tearDown() {
-        this.programTestFile.delete();
+        Assertions.assertTrue(this.programTestFile.delete());
         JUnitUtil.waitFor(() -> {
             return !this.programTestFile.exists();
         }, "Remove program test file");
-        this.preferencesTestFile.delete();
+        Assertions.assertTrue(this.preferencesTestFile.delete());
         JUnitUtil.waitFor(() -> {
             return !this.preferencesTestFile.exists();
         }, "Remove program test file");
-        jmri.util.JUnitUtil.tearDown();
+        JUnitUtil.tearDown();
     }
 }

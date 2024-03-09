@@ -27,13 +27,7 @@ public class DCCppInitializationManager {
 
         log.debug("Starting DCC++ Initialization Process");
 
-        DCCppCommandStation cs = systemMemo.getDCCppTrafficController().getCommandStation();
-
-        jmri.InstanceManager.store(systemMemo.getPowerManager(), jmri.PowerManager.class);
-        log.debug("PowerManager: {}", jmri.InstanceManager.getDefault(jmri.PowerManager.class));
-
         jmri.InstanceManager.setThrottleManager(systemMemo.getThrottleManager());
-
         systemMemo.setProgrammerManager(new DCCppProgrammerManager(new DCCppProgrammer(systemMemo.getDCCppTrafficController()), systemMemo));
         if (systemMemo.getProgrammerManager().isAddressedModePossible()) {
             jmri.InstanceManager.store(systemMemo.getProgrammerManager(), jmri.AddressedProgrammerManager.class);
@@ -49,20 +43,14 @@ public class DCCppInitializationManager {
         jmri.InstanceManager.setLightManager(systemMemo.getLightManager());
         systemMemo.setSensorManager(new jmri.jmrix.dccpp.DCCppSensorManager(systemMemo));
         jmri.InstanceManager.setSensorManager(systemMemo.getSensorManager());
+        jmri.InstanceManager.store(systemMemo.getPowerManager(), jmri.PowerManager.class);
+        log.debug("PowerManager: {}", jmri.InstanceManager.getDefault(jmri.PowerManager.class));
+        systemMemo.setClockControl(new DCCppClockControl(systemMemo));
         predefinedMeters = new DCCppPredefinedMeters(systemMemo);
 
         systemMemo.register();
 
-        String base_station = "Unknown";
-        String code_build   = "Unknown";
-        String version      = "Unknown";
-        if (cs != null) {
-            base_station    = cs.getStationType();
-            code_build      = cs.getBuild();
-            version         = cs.getVersion();
-        }
-        
-        log.info("DCC++ Initialization Complete with station type '{}', version '{}' and build '{}'", base_station, version, code_build);
+        log.info("DCC++ Initialization Complete");
     }
 
     private final static Logger log = LoggerFactory.getLogger(DCCppInitializationManager.class);

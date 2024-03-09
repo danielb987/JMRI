@@ -6,6 +6,7 @@ import java.awt.GraphicsDevice;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;//
 import javax.swing.ButtonGroup;
@@ -14,7 +15,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -22,16 +22,17 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
+
 import jmri.InstanceManager;
 import jmri.Sensor;
 import jmri.SensorManager;
 import jmri.NamedBean.DisplayOptions;
 import jmri.jmrit.display.Editor;
+import jmri.jmrit.display.Positionable;
 import jmri.jmrit.display.controlPanelEditor.ControlPanelEditor;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.swing.JmriColorChooser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame to create/edit a Control Panel shape PositionableShape object.
@@ -185,8 +186,8 @@ abstract public class DrawFrame extends jmri.util.JmriJFrame {
             String msg = _shape.setControlSensor(_sensorBox.getSelectedItemDisplayName());
             log.debug("Setting sensor to {} after action", _sensorBox.getSelectedItemDisplayName());
             if (msg != null) {
-                JOptionPane.showMessageDialog(null, msg, Bundle.getMessage("ErrorSensor"),
-                        JOptionPane.INFORMATION_MESSAGE); // NOI18N
+                JmriJOptionPane.showMessageDialog(panel, msg, Bundle.getMessage("ErrorSensor"),
+                        JmriJOptionPane.INFORMATION_MESSAGE); // NOI18N
                 _sensorBox.setSelectedItem(null);
             }
             updateShape();
@@ -429,7 +430,12 @@ abstract public class DrawFrame extends jmri.util.JmriJFrame {
             if (cancel) {
                 _shape.remove();
                 if (_originalShape != null) {
-                    _originalShape.getEditor().putItem(_originalShape);
+                    try {
+                        _originalShape.getEditor().putItem(_originalShape);
+                    } catch (Positionable.DuplicateIdException e) {
+                        // This should never happen
+                        log.error("Editor.putItem() with has thrown DuplicateIdException", e);
+                    }
                     _originalShape.setListener();
                 }
             } else {
@@ -457,8 +463,8 @@ abstract public class DrawFrame extends jmri.util.JmriJFrame {
                 return i;
             }
         } catch (NumberFormatException nfe) {
-            JOptionPane.showMessageDialog(this, nfe,
-                    Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, nfe,
+                    Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
         }
         field.setText(Integer.toString(value));
         return value;
@@ -480,5 +486,6 @@ abstract public class DrawFrame extends jmri.util.JmriJFrame {
 
     abstract protected PositionableShape makeFigure(Rectangle r, Editor ed); 
 
-    private final static Logger log = LoggerFactory.getLogger(DrawFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DrawFrame.class);
+
 }

@@ -2,7 +2,6 @@ package jmri.jmrix.mqtt;
 
 import jmri.util.*;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
 /**
@@ -10,54 +9,45 @@ import org.junit.jupiter.api.*;
  * @author Bob Jacobsen Coyright (C) 2020
  */
 public class MqttSensorTest extends jmri.implementation.AbstractSensorTestBase {
-    
+
     @Override
     public int numListeners() {return 0;}
 
     @Override
     public void checkStatusRequestMsgSent() {}
 
+    private MqttAdapterScaffold a = null;
 
-    MqttAdapter a;
-    String saveTopic;
-    byte[] savePayload;
-    
     @Override
     @BeforeEach
     public void setUp() {
-        jmri.util.JUnitUtil.setUp();
+        JUnitUtil.setUp();
         JUnitUtil.initDefaultUserMessagePreferences();
         // prepare an interface
-        saveTopic = null;
-        savePayload = null;
-        a = new MqttAdapter(){
-                @Override
-                public void publish(String topic, byte[] payload) {
-                    saveTopic = topic;
-                    savePayload = payload;
-                }
-            };
+        a = new MqttAdapterScaffold(true);
         t = new MqttSensor(a, "MS1", "track/sensor/1", "track/sensor/1");
-        JUnitAppender.assertWarnMessage("Trying to subscribe before connect/configure is done");
+        Assertions.assertEquals( 1, a.getPublishCount());
+        Assertions.assertNotEquals( "track/sensor/1", a.getLastTopic(),"topic");
     }
 
     @Override
     @AfterEach
     public void tearDown() {
         t.dispose();
+        a.dispose();
         JUnitUtil.tearDown();
     }
 
     @Override
-    public void checkOnMsgSent() {
-        Assert.assertEquals("topic", "track/turnout/2", saveTopic);
-        Assert.assertEquals("topic", "THROWN", new String(savePayload));
+    public void checkActiveMsgSent() {
+        Assertions.assertEquals( "track/sensor/1", a.getLastTopic(), "topic");
+        Assertions.assertEquals("ACTIVE", new String(a.getLastPayload()), "payload");
     }
 
     @Override
-    public void checkOffMsgSent() {
-        Assert.assertEquals("topic", "track/turnout/2", saveTopic);
-        Assert.assertEquals("topic", "CLOSED", new String(savePayload));
+    public void checkInactiveMsgSent() {
+        Assertions.assertEquals( "track/sensor/1", a.getLastTopic(),"topic");
+        Assertions.assertEquals("INACTIVE", new String(a.getLastPayload()), "payload");
     }
 
     // private final static Logger log = LoggerFactory.getLogger(MqttSensorTest.class);

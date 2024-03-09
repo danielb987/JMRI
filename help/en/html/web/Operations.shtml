@@ -1,58 +1,42 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.17), see www.w3.org">
+  <meta name="generator" content="HTML Tidy for HTML5 for Apple macOS version 5.8.0">
   <!-- Copyright 2015 -->
 
-  <title>JMRI: Operations web functions</title>
-  <!-- Style -->
-  <meta http-equiv="Content-Type" content=
-  "text/html; charset=us-ascii">
-  <link rel="stylesheet" type="text/css" href="/css/default.css"
-  media="screen">
-  <link rel="stylesheet" type="text/css" href="/css/print.css"
-  media="print">
-  <link rel="icon" href="/images/jmri.ico" type="image/png">
-  <link rel="home" title="Home" href="/">
-  <!-- /Style -->
+  <title>JMRI: Operations web functions</title><!--#include virtual="/help/en/parts/Style.shtml" -->
 </head>
-
 <body>
-  <!--#include virtual="/Header.shtml" -->
+  <!--#include virtual="/help/en/parts/Header.shtml" -->
+
   <div id="mBody">
     <!--#include virtual="Sidebar.shtml" -->
-    <div id="mainContent">
 
+    <div id="mainContent">
       <h1>JMRI: Operations web functions</h1>
 
-      <p><a href=
-      "../../package/jmri/jmrit/operations/Operations.shtml">JMRI
-      Operations</a> is a feature-rich area of <a href=
-      "https://jmri.org">JMRI</a>. You can learn more about JMRI
-      Operations in the <a class="help" href=
-      "../../manual/JMRI_OPS_UsersGuide/index.shtml">User
-      Guide</a>.</p>
+      <p>JMRI OperationsPro&trade; provides many features to support operating sessions. You can learn
+      more about <a href="../apps/OperationsPro/index.shtml">JMRI OperationsPro here</a>.</p>
 
-      <p>Providing access to these Operations features from mobile
-      devices and web browsers is still under development.<br>
-      With JMRI running on your network and the <a href=
-      "index.shtml#Start">Web Server</a> active, the current
-      functionality can be accessed by visiting the <a href=
-      "http://localhost:12080/operations">http://localhost:12080/operations</a>
-      URL.</p>
+      <p>With JMRI running on your network and the <a href="index.shtml#Start">Web Server</a> active,
+      the current functionality can be accessed by visiting the <a href=
+      "http://localhost:12080/operations">http://localhost:12080/operations</a> URL.</p>
+      
+      <p>You can view a list of available <b>Trains</b> under <b>Operations</b>, <b>Trains</b>. For each train, there are two options, 
+      <b>Manifest</b> and <b>Conductor</b>. These provide a browser-friendly experience very similar to their respective 
+      windows in JMRI: (<a href="../../package/jmri/jmrit/operations/Operations.shtml#Trains">Trains</a>,
+       <a href="../../package/jmri/jmrit/operations/Operations.shtml#PrintingManifests">Manifest</a>, 
+       <a href="../../package/jmri/jmrit/operations/Operations.shtml#TrainConductor">Conductor</a>)
+       <h3>Screenshots:</h3>
+       <h4>Example Trains page:</h4><img src="images/WebServerOperationsTrainsExample.jpg">
+       <h4>Example Manifest page:</h4><img src="images/WebServerOperationsTrainsManifestExample.jpg">
+       <h4>Example Conductor page:</h4><img src="images/WebServerOperationsTrainsConductorExample.jpg">
 
-      <p>Under the Operations tab, that web page lists all
-      available trains, with a link to the Manifest page for each
-      Train.<br>
-      From each Manifest page, you can view the Locations to be
-      visited, and the current status of the Train.<br>
-      You can click on each location and the status line to display
-      additional details about the pickups, set outs, and cars on
-      the train.</p><!--#include virtual="/Footer.shtml" -->
-    </div><!-- closes #mainContent-->
-  </div><!-- closes #mBody-->
+      <!--#include virtual="/help/en/parts/Footer.shtml" -->
+    </div>
+    <!-- closes #mainContent-->
+  </div>
+  <!-- closes #mBody-->
+  <script src="/js/help.js"></script>
 </body>
 </html>

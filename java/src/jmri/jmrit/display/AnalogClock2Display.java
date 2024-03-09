@@ -1,6 +1,7 @@
 package jmri.jmrit.display;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -9,21 +10,21 @@ import java.awt.Image;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
+
+import javax.annotation.Nonnull;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import jmri.InstanceManager;
-import jmri.Timebase;
-import jmri.TimebaseRateException;
+
+import jmri.*;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.util.swing.JmriColorChooser;
+import jmri.util.swing.JmriMouseEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,6 +191,12 @@ public class AnalogClock2Display extends PositionableJComponent implements Linki
     }
 
     @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_");
+    }
+
+    @Override
     public String getNameString() {
         return "Clock";
     }
@@ -231,7 +238,7 @@ public class AnalogClock2Display extends PositionableJComponent implements Linki
                     clock.userSetRate(r);
                     rate = r;
                 } catch (TimebaseRateException t) {
-                    log.error("TimebaseRateException for rate= {}. {}", r, t);
+                    log.error("TimebaseRateException for rate= {}", r, t);
                 }
             }
         });
@@ -378,7 +385,7 @@ public class AnalogClock2Display extends PositionableJComponent implements Linki
      scaleFace();
      }
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     public void update() {
         Date now = clock.getTime();
         if (runMenu != null) {
@@ -389,15 +396,30 @@ public class AnalogClock2Display extends PositionableJComponent implements Linki
         minuteAngle = minutes * 6.;
         hourAngle = hours * 30. + 30. * minuteAngle / 360.;
         if (hours < 12) {
-            amPm = "AM " + (int) clock.userGetRate() + ":1";
+            amPm = Bundle.getMessage("ClockAM");
         } else {
-            amPm = "PM " + (int) clock.userGetRate() + ":1";
+            amPm = Bundle.getMessage("ClockPM");
         }
         if (hours == 12 && minutes == 0) {
-            amPm = "Noon";
+            amPm = Bundle.getMessage("ClockNoon");
         }
         if (hours == 0 && minutes == 0) {
-            amPm = "Midnight";
+            amPm = Bundle.getMessage("ClockMidnight");
+        }
+
+        // show either "Stopped" or rate, depending on state
+        if (! clock.getRun()) {
+            amPm = amPm + " "+Bundle.getMessage("ClockStopped");
+        } else {
+            // running, display rate
+            String rate = ""+(int)clock.userGetRate();
+            if (Math.floor(clock.userGetRate()) != clock.userGetRate()) {
+                var format = new java.text.DecimalFormat("0.###");  // no trailing zeros
+                rate = format.format(clock.userGetRate());
+            }
+
+            // add rate to amPm string for display
+            amPm = amPm + " " + rate + ":1";
         }
         repaint();
     }
@@ -439,7 +461,7 @@ public class AnalogClock2Display extends PositionableJComponent implements Linki
     }
 
     @Override
-    public void doMouseClicked(MouseEvent event) {
+    public void doMouseClicked(JmriMouseEvent event) {
         log.debug("click to {}", _url);
         if (_url == null || _url.trim().length() == 0) {
             return;
@@ -454,9 +476,9 @@ public class AnalogClock2Display extends PositionableJComponent implements Linki
                     jframe.repaint();
                 });
             } else {
-                jmri.util.ExternalLinkContentViewerUI.activateURL(new java.net.URL(_url));
+                jmri.util.HelpUtil.openWebPage(_url);
             }
-        } catch (IOException | URISyntaxException t) {
+        } catch (JmriException t) {
             log.error("Error handling link", t);
         }
         super.doMouseClicked(event);

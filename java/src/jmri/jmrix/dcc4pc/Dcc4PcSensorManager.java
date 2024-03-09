@@ -9,9 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import jmri.JmriException;
 import jmri.Sensor;
-import jmri.ShutDownTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implement SensorManager for Dcc4Pc systems. The Manager handles all the state
@@ -28,8 +25,8 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
     public Dcc4PcSensorManager(Dcc4PcTrafficController tc, Dcc4PcSystemConnectionMemo memo) {
         super(memo);
         this.tc = tc;
-        this.reportManager = memo.get(jmri.ReporterManager.class);
-        jmri.InstanceManager.store(this, Dcc4PcSensorManager.class);
+        this.reportManager = (Dcc4PcReporterManager) memo.get(jmri.ReporterManager.class);
+        jmri.InstanceManager.store(Dcc4PcSensorManager.this, Dcc4PcSensorManager.class);
         this.boardManager = new Dcc4PcBoardManager(tc, this);
         // Finally, create and register a shutdown task to ensure clean exit
         this.pollShutDownTask = this::stopPolling;
@@ -62,7 +59,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
      */
     @Override
     @Nonnull
-    public Sensor createNewSensor(@Nonnull String systemName, String userName) {
+    protected Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         Sensor s = new Dcc4PcSensor(systemName, userName);
         s.setUserName(userName);
         extractBoardID(systemName);
@@ -101,8 +98,8 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
     public String createSystemName(@Nonnull String curAddress, @Nonnull String prefix) throws JmriException {
         String iName;
         if (curAddress.contains(":")) {
-            board = 0;
-            channel = 0;
+            int board = 0;
+            int channel;
             // Address format passed is in the form of board:channel or T:turnout address
             int seperator = curAddress.indexOf(":");
             try {
@@ -125,35 +122,6 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
             throw new JmriException("Unable to convert "+curAddress+" into the cab and channel format of nn:xx");
         }
         return prefix + typeLetter() + iName;
-    }
-
-    private int board;
-    private int channel;
-
-    @Override
-    public String getNextValidAddress(@Nonnull String curAddress, @Nonnull String prefix, boolean ignoreInitialExisting) throws JmriException {
-
-        String tmpSName = createSystemName(curAddress, prefix);
-        //Check to determine if the systemName is in use, return null if it is,
-        //otherwise return the next valid address.
-        Sensor s = getBySystemName(tmpSName);
-        if (s != null || ignoreInitialExisting) {
-            for (int x = 1; x < 10; x++) {
-                if (channel < 16) {
-                    channel++;
-                } else {
-                    board++;
-                    channel = 1;
-                }
-                s = getBySystemName(prefix + typeLetter() + board + ":" + channel);
-                if (s == null) {
-                    return board + ":" + channel;
-                }
-            }
-            throw new JmriException(Bundle.getMessage("InvalidNextValidTenInUse",getBeanTypeHandled(true),curAddress,board + ":" + channel));
-        } else {
-            return curAddress;
-        }
     }
 
     public void notifyReply(Dcc4PcReply m) {
@@ -181,19 +149,14 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
         }
     }
 
-    protected void startPolling() {
+    final protected void startPolling() {
         if (stopPolling && pollThread != null) {
             pollThread = null;
         }
         stopPolling = false;
 
         if (pollThread == null) {
-            pollThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    pollManager();
-                }
-            }, "DCC4PC Sensor Poll");
+            pollThread = new Thread(this::pollManager, "DCC4PC Sensor Poll");
             pollThread.start();
         }
     }
@@ -253,7 +216,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
                 try {
                     thr.start();
                 } catch (java.lang.IllegalThreadStateException ex) {
-                    log.error(ex.toString());
+                    log.error("Exception {} {}", thr.getName(), ex.getMessage());
                 }
             } else {
                 log.error("Do not know who this board message is for");
@@ -388,11 +351,11 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
     public final static int CONSIST_ADDRESS = 0x08;
 
     /**
-     * Determining if the railcommdata is duplicated. If it is then this
-     * instructs the rc input to move things about.
-     * @param value Railcommand data
+     * Determine if the Railcom data is duplicated.
+     * If it is then this instructs the Reporter to move things about.
+     * @param value Railcom data
      * @param seq message sequence number
-     * @param rc RailCommand to request action(s) from
+     * @param rc Reporter to request action(s) from
      * @return value calculated locally
      */
     int decodeDuplicatePacket(int value, int seq, Dcc4PcReporter rc) {
@@ -446,13 +409,9 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
             } else {
                 for (int boardAddress : activeBoards.keySet()) {
                     if (!activeBoards.get(boardAddress).doNotPoll()) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Poll board {}", boardAddress);
-                        }
+                        log.debug("Poll board {}", boardAddress);
                         Dcc4PcMessage m = Dcc4PcMessage.pollBoard(boardAddress);
-                        if (log.isDebugEnabled()) {
-                            log.debug("queueing poll request for board {}", boardAddress);
-                        }
+                        log.debug("queueing poll request for board {}", boardAddress);
                         tc.sendDcc4PcMessage(m, this);
                         synchronized (this) {
                             awaitingReply = true;
@@ -477,9 +436,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
                             }
                         }
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Board set to Do Not Poll {}", boardAddress);
-                        }
+                        log.debug("Board set to Do Not Poll {}", boardAddress);
                     }
                     synchronized (this) {
                         if (stopPolling) {
@@ -493,7 +450,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
         }
     }
 
-    ConcurrentHashMap<Integer, ActiveBoard> activeBoards = new ConcurrentHashMap<Integer, ActiveBoard>(5);
+    ConcurrentHashMap<Integer, ActiveBoard> activeBoards = new ConcurrentHashMap<>(5);
 
     /**
      * Generate all the sensor and reporter details based upon
@@ -531,9 +488,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
 
     @Override
     public void handleTimeout(Dcc4PcMessage m) {
-        if (log.isDebugEnabled()) {
-            log.debug("timeout received to our last message {}", m.toString());
-        }
+        log.debug("timeout received to our last message {}", m);
         if (!stopPolling) {
             synchronized (this) {
                 awaitingReply = false;
@@ -621,7 +576,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
             return doNotPoll;
         }
 
-        HashMap<Integer, Dcc4PcSensor> inputPorts = new HashMap<Integer, Dcc4PcSensor>(16);
+        HashMap<Integer, Dcc4PcSensor> inputPorts = new HashMap<>(16);
 
         void addSensor(int port, Dcc4PcSensor sensor) {
             inputPorts.put(port, sensor);
@@ -651,7 +606,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
             return inputPorts.size();
         }
 
-        HashMap<Integer, Dcc4PcReporter> inputReportersPorts = new HashMap<Integer, Dcc4PcReporter>(16);
+        HashMap<Integer, Dcc4PcReporter> inputReportersPorts = new HashMap<>(16);
 
         void addReporter(int port, Dcc4PcReporter reporter) {
             inputReportersPorts.put(port, reporter);
@@ -667,7 +622,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
         synchronized void processInputPacket(Dcc4PcReply r) {
             if (log.isDebugEnabled()) {
                 log.debug("==== Process Packet ====");
-                log.debug(r.toHexString());
+                log.debug("hex = {}", r.toHexString());
             }
             int packetTypeCmd = 0x00;
             int currentByteLocation = 0;
@@ -690,7 +645,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
                     for (int i = oldstart; i < currentByteLocation; i++) {
                         buf.append(Integer.toHexString(r.getElement(i) & 0xff)).append(",");
                     }
-                    log.debug(buf.toString());
+                    log.debug("olstart - current hex {}", buf.toString());
                     log.debug("--- finish packet {} ---", (currentByteLocation - 1));
                 }
             }
@@ -717,7 +672,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
             try {
                 decodeDCCPacket(dcc_Data);
             } catch (Exception ex) {
-                log.error(ex.toString(), ex);
+                log.error("decodeDCCPacket Exception", ex);
             }
 
             if (packetType == 0x02) {
@@ -725,7 +680,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
                 currentByteLocation = currentByteLocation + 4;
             }
 
-            ArrayList<Dcc4PcReporter> railCommDataForSensor = new ArrayList<Dcc4PcReporter>();
+            ArrayList<Dcc4PcReporter> railCommDataForSensor = new ArrayList<>();
             for (int i = 1; i < getNumEnabledSensors() + 1; i++) {
                 if (getReporterAtIndex(i).getRailComState() >= Dcc4PcSensor.ORIENTA) {
                     if (log.isDebugEnabled()) {
@@ -800,9 +755,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
             }
             // re-use the variable to gather the size of each railcom input data
             railComDupPacket = (int) Math.ceil((railCommDataForSensor.size()) / 2.0f);
-            if (log.isDebugEnabled()) {
-                log.debug("We have {} size byte(s) to read on data", railComDupPacket);
-            }
+            log.debug("We have {} size byte(s) to read on data", railComDupPacket);
 
             // This now becomes the length bytes for the rail comm information
             j = 0;
@@ -820,7 +773,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
                 currentByteLocation++;
             }
             for (int i = 0; i < railCommDataForSensor.size(); i++) {
-                log.debug("{} {}", railCommDataForSensor.get(i).getDisplayName(), railCommDataForSensor.get(i).getPacketLength());
+                log.debug("railCommDataForSensor {} {}", railCommDataForSensor.get(i).getDisplayName(), railCommDataForSensor.get(i).getPacketLength());
                 int[] arraytemp = new int[railCommDataForSensor.get(i).getPacketLength()];
                 for (j = 0; j < railCommDataForSensor.get(i).getPacketLength(); j++) {
                     arraytemp[j] = 0xFF & r.getElement(currentByteLocation);
@@ -1042,7 +995,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
     }
 
     public List<Integer> getBoards() {
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Integer> list = new ArrayList<>();
         Enumeration<Integer> keys = activeBoards.keys();
         while (keys.hasMoreElements()) {
             Integer key = keys.nextElement();
@@ -1080,10 +1033,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
     }
 
     protected boolean isBoardCreated(int address) {
-        if (activeBoards.containsKey(address)) {
-            return true;
-        }
-        return false;
+        return activeBoards.containsKey(address);
     }
 
     protected void addActiveBoard(int address, String version, int inputs, int encoding) {
@@ -1118,7 +1068,7 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
         try {
             thr.start();
         } catch (java.lang.IllegalThreadStateException ex) {
-            log.error(ex.toString());
+            log.error("Exception {} {}", thr.getName(), ex.getMessage());
         }
     }
 
@@ -1133,13 +1083,13 @@ public class Dcc4PcSensorManager extends jmri.managers.AbstractSensorManager
     public String validateSystemNameFormat(@Nonnull String name, @Nonnull java.util.Locale locale) throws jmri.NamedBean.BadSystemNameException {
         return validateTrimmedMin1NumberSystemNameFormat(name,locale);
     }
-    
+
     @Override
     public void dispose() {
         stopPolling();
         super.dispose();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(Dcc4PcSensorManager.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Dcc4PcSensorManager.class);
 
 }

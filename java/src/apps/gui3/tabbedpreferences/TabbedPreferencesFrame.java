@@ -1,19 +1,20 @@
 package apps.gui3.tabbedpreferences;
 
 import java.awt.event.WindowEvent;
-import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
+
 import jmri.InstanceManager;
 import jmri.ShutDownManager;
 import jmri.swing.PreferencesPanel;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Support displaying {@link TabbedPreferences} in a window.
  *<p>
  * The {@link TabbedPreferences} object is requested from the InstanceManager, and
  * if need-be created and initialized in the process of doing that.
- * 
+ *
  * @author Kevin Dickerson Copyright 2010
  * @author Bob Jacobsen Copyright 2019
  */
@@ -45,12 +46,12 @@ public class TabbedPreferencesFrame extends JmriJFrame {
         if (!getTabbedPreferences().isPreferencesValid() && !sdm.isShuttingDown()) {
             for (PreferencesPanel panel : getTabbedPreferences().getPreferencesPanels().values()) {
                 if (!panel.isPreferencesValid()) {
-                    switch (JOptionPane.showConfirmDialog(this,
+                    switch (JmriJOptionPane.showConfirmDialog(this,
                             Bundle.getMessage("InvalidPreferencesMessage", panel.getTabbedPreferencesTitle()),
                             Bundle.getMessage("InvalidPreferencesTitle"),
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.ERROR_MESSAGE)) {
-                        case JOptionPane.YES_OPTION:
+                            JmriJOptionPane.YES_NO_OPTION,
+                            JmriJOptionPane.ERROR_MESSAGE)) {
+                        case JmriJOptionPane.YES_OPTION:
                             // abort window closing and return to broken preferences
                             getTabbedPreferences().gotoPreferenceItem(panel.getPreferencesItem(), panel.getTabbedPreferencesTitle());
                             return;
@@ -62,19 +63,23 @@ public class TabbedPreferencesFrame extends JmriJFrame {
             }
         }
         if (getTabbedPreferences().isDirty()) {
-            switch (JOptionPane.showConfirmDialog(this,
+            var buttons = JmriJOptionPane.YES_NO_CANCEL_OPTION;
+            if (sdm.isShuttingDown()) {
+                buttons = JmriJOptionPane.YES_NO_OPTION;
+            }
+            switch (JmriJOptionPane.showConfirmDialog(this,
                     Bundle.getMessage("UnsavedChangesMessage", getTabbedPreferences().getTitle()), // NOI18N
                     Bundle.getMessage("UnsavedChangesTitle"), // NOI18N
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE)) {
-                case JOptionPane.YES_OPTION:
+                    buttons,
+                    JmriJOptionPane.QUESTION_MESSAGE)) {
+                case JmriJOptionPane.YES_OPTION:
                     // save preferences
                     getTabbedPreferences().savePressed(getTabbedPreferences().invokeSaveOptions());
                     break;
-                case JOptionPane.NO_OPTION:
+                case JmriJOptionPane.NO_OPTION:
                     // do nothing
                     break;
-                case JOptionPane.CANCEL_OPTION:
+                case JmriJOptionPane.CANCEL_OPTION:
                 default:
                     // abort window closing
                     return;

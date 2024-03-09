@@ -10,7 +10,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <version author="Peter Ulvestad" version="6" lastUpdated="20100809"/>
   <version author="Peter Ulvestad" version="5" lastUpdated="20100807"/>
   <version author="Howard G. Penny" version="4" lastUpdated="20051117"/>
@@ -38,6 +38,21 @@
       <model model="Life Like 2-8-4 Berkshire w/Mars" lowVersionID="6" numFns="14" numOuts="14" productID="317"/>
       <model model="Life Like 2-8-4 Berkshire wo/Mars" lowVersionID="6" numFns="14" numOuts="14" productID="318"/>
       <model model="Walthers 0-6-0 Switcher" lowVersionID="6" numFns="14" numOuts="14" productID="319"/>
+      <functionlabels>
+        <functionlabel num="0" lockable="true">Light</functionlabel>
+        <functionlabel num="1" lockable="true">Bell</functionlabel>
+        <functionlabel num="2" lockable="false">Whistle</functionlabel>
+        <functionlabel num="3" lockable="true">Coupler</functionlabel>
+        <functionlabel num="4" lockable="true">Steam Blow Down</functionlabel>
+        <functionlabel num="5" lockable="true">Dynamic</functionlabel>
+        <functionlabel num="6" lockable="true">Doppler/Startup</functionlabel>
+        <functionlabel num="7" lockable="true">Brake Squeal</functionlabel>
+        <functionlabel num="8" lockable="true">Mute</functionlabel>
+        <functionlabel num="9" lockable="true">Short Air Let-off / Shutdown</functionlabel>
+        <functionlabel num="10" lockable="true">Status</functionlabel>
+        <functionlabel num="11" lockable="true">Number Board</functionlabel>
+        <functionlabel num="12" lockable="true">Cab Light</functionlabel>
+      </functionlabels>
     </family>
     <programming direct="yes" paged="yes" register="yes" ops="yes">
       <capability>
@@ -65,7 +80,7 @@
         <label xml:lang="it">Volt Massimi (0-255):</label>
         <label xml:lang="de">Höchstgeschwindigkeit</label>
       </variable>
-      <variable CV="7" readOnly="yes" item="Decoder Version">
+      <variable CV="7" item="Decoder Version" readOnly="yes">
         <decVal/>
         <label>Manufacturer Version No</label>
         <label xml:lang="it">Versione Decoder: </label>

@@ -5,13 +5,13 @@ import java.io.File;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+
 import jmri.InstanceManager;
 import jmri.jmrit.XmlFile;
+import jmri.util.swing.JmriJOptionPane;
+
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Load throttles from XML
@@ -63,13 +63,16 @@ public class LoadXmlThrottlesLayoutAction extends AbstractAction {
             Object[] possibleValues = {Bundle.getMessage("LabelMerge"),
                 Bundle.getMessage("LabelReplace"),
                 Bundle.getMessage("ButtonCancel")};
-            int selectedValue = JOptionPane.showOptionDialog(null,
+            int selectedValue = JmriJOptionPane.showOptionDialog(null,
                     Bundle.getMessage("DialogMergeOrReplace"),
                     Bundle.getMessage("OptionLoadingThrottles"),
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE, null, possibleValues,
+                    JmriJOptionPane.DEFAULT_OPTION,
+                    JmriJOptionPane.INFORMATION_MESSAGE, null, possibleValues,
                     possibleValues[0]);
-            if (selectedValue == JOptionPane.NO_OPTION) {
+            if (selectedValue == 2 || selectedValue == JmriJOptionPane.CLOSED_OPTION ) {
+                return; // array position 2 ButtonCancel or Dialog closed
+            }
+            if (selectedValue == 1 ) { // array position 1, LabelReplace
                 // replace chosen - close all then load
                 InstanceManager.getDefault(ThrottleFrameManager.class).requestAllThrottleWindowsDestroyed();
             }
@@ -90,6 +93,7 @@ public class LoadXmlThrottlesLayoutAction extends AbstractAction {
     public boolean loadThrottlesLayout(java.io.File f) throws java.io.IOException {
         try {
             ThrottlePrefs prefs = new ThrottlePrefs();
+            prefs.setValidate(XmlFile.Validate.CheckDtdThenSchema);
             Element root = prefs.rootFromFile(f);
             List<Element> throttles = root.getChildren("ThrottleFrame");
             ThrottleFrameManager tfManager = InstanceManager.getDefault(ThrottleFrameManager.class);
@@ -105,9 +109,7 @@ public class LoadXmlThrottlesLayoutAction extends AbstractAction {
                 throttles = root.getChildren("ThrottleWindow");
                 for (Element e : throttles) {
                     SwingUtilities.invokeLater(() -> {
-                        ThrottleWindow tw = tfManager.createThrottleWindow();
-                        tw.setXml(e);
-                        tw.setVisible(true);
+                        tfManager.createThrottleWindow(e).setVisible(true);
                     });
                 }
                 Element tlp = root.getChild("ThrottlesListPanel");
@@ -117,6 +119,9 @@ public class LoadXmlThrottlesLayoutAction extends AbstractAction {
             }
         } catch (org.jdom2.JDOMException ex) {
             log.warn("Loading Throttles exception", ex);
+            jmri.configurexml.ConfigXmlManager.creationErrorEncountered(
+                    null, "parsing file " + f.getName(),
+                    "Parse error", null, null, ex);
             return false;
         }
         return true;
@@ -130,7 +135,6 @@ public class LoadXmlThrottlesLayoutAction extends AbstractAction {
     static class ThrottlePrefs extends XmlFile {
     }
 
-    // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(LoadXmlThrottlesLayoutAction.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LoadXmlThrottlesLayoutAction.class);
 
 }

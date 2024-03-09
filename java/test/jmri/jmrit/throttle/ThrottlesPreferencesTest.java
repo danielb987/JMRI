@@ -2,7 +2,6 @@ package jmri.jmrit.throttle;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.*;
-import org.junit.Assume;
 
 import java.awt.Dimension;
 
@@ -16,30 +15,28 @@ public class ThrottlesPreferencesTest {
 
     @Test
     public void testCtor() {
-        Assert.assertNotNull("exists", preferences);
-        Assert.assertFalse("default preferences not dirty", preferences.isDirty());
+        Assertions.assertNotNull( preferences, "exists");
+        Assertions.assertFalse( preferences.isDirty(), "default preferences not dirty");
     }
 
     @Test
-    public void testIsUsingIcons() {
-        Assume.assumeNotNull(preferences);
-        Assume.assumeFalse(preferences.isDirty());
+    public void testIsUsingFunctionIcons() {
+        Assertions.assertNotNull( preferences, "exists");
+        Assertions.assertFalse( preferences.isDirty(), "default preferences not dirty");
 
         Assert.assertTrue("default using extended throttle", preferences.isUsingExThrottle());
-        Assert.assertFalse("default not using icons", preferences.isUsingIcons());
+        Assert.assertTrue("default using icons", preferences.isUsingFunctionIcon());
 
         preferences.setUsingFunctionIcon(true);
         Assert.assertTrue("preferences dirty after setting icons", preferences.isDirty());
-        Assert.assertTrue("use icons after setting setUsingFunctionIcon", preferences.isUsingIcons());
+        Assert.assertTrue("use icons after setting setUsingFunctionIcon", preferences.isUsingExThrottle());
 
-        preferences.setUseExThrottle(false);
-        Assert.assertFalse("don't use icons after disabled extended throttle", preferences.isUsingIcons());
     }
 
     @Test
     public void testWindowDimension() {
-        Assume.assumeNotNull(preferences);
-        Assume.assumeFalse(preferences.isDirty());
+        Assertions.assertNotNull( preferences, "exists");
+        Assertions.assertFalse( preferences.isDirty(), "default preferences not dirty");
 
         Dimension d = new Dimension(800, 600);
         Assert.assertEquals("default window dimensions", preferences.getWindowDimension(), d);
@@ -57,8 +54,8 @@ public class ThrottlesPreferencesTest {
 
     @Test
     public void testUseExThrottle() {
-        Assume.assumeNotNull(preferences);
-        Assume.assumeFalse(preferences.isDirty());
+        Assertions.assertNotNull( preferences, "exists");
+        Assertions.assertFalse( preferences.isDirty(), "default preferences not dirty");
 
         Assert.assertTrue("default extended throttle to true", preferences.isUsingExThrottle());
 
@@ -70,8 +67,8 @@ public class ThrottlesPreferencesTest {
 
     @Test
     public void testUsingToolbar() {
-        Assume.assumeNotNull(preferences);
-        Assume.assumeFalse(preferences.isDirty());
+        Assertions.assertNotNull( preferences, "exists");
+        Assertions.assertFalse( preferences.isDirty(), "default preferences not dirty");
 
         Assert.assertTrue("default is using toolbar to true", preferences.isUsingToolBar());
 
@@ -79,6 +76,12 @@ public class ThrottlesPreferencesTest {
 
         Assert.assertFalse("using toolbar setting was updated", preferences.isUsingToolBar());
         Assert.assertTrue("preferences dirty after toolbar setting update", preferences.isDirty());
+    }
+
+    @Test
+    public void testAutoInstance() {
+        Assertions.assertNotNull( jmri.InstanceManager.getDefault(ThrottlesPreferences.class)
+            , "Instance should be created by call to getDefault");
     }
 
     @BeforeEach

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.*;
  * Test for the jmri.jmrix.nce.NceConsist class
  *
  * @author Paul Bender Copyright (C) 2016,2017
+ * @author Ken Cameron Copyright (C) 2023
  */
 
 public class NceConsistTest extends jmri.implementation.AbstractConsistTestBase {
@@ -78,12 +79,14 @@ public class NceConsistTest extends jmri.implementation.AbstractConsistTestBase 
         Assert.assertFalse("Direction in Advanced Consist",c.getLocoDirection(B));
     }
 
+    @Override
     @Test
     @Disabled("Remove requires response from command station")
     @ToDo("re-write parent class test here and include simulated command station response") 
     public void checkRemoveWithGetRosterIDAdvanced(){
     }
 
+    @Override
     @Test
     @Disabled("Remove requires response from command station")
     @ToDo("re-write parent class test here and include simulated command station response") 
@@ -101,6 +104,8 @@ public class NceConsistTest extends jmri.implementation.AbstractConsistTestBase 
         nnis = new NceInterfaceScaffold();
         memo = new NceSystemConnectionMemo();
         memo.setNceTrafficController(nnis);
+        nnis.csm = new NceCmdStationMemory();
+
         c = new NceConsist(3,memo){
            @Override
            void killConsist(int address, boolean isLong){

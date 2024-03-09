@@ -1,21 +1,20 @@
 package jmri.jmrix.tams.swing.packetgen;
 
 import java.awt.Dimension;
+
 import javax.swing.BoxLayout;
-import javax.swing.JOptionPane;
+
 import jmri.jmrix.tams.TamsConstants;
-import jmri.jmrix.tams.TamsListener;
 import jmri.jmrix.tams.TamsMessage;
-import jmri.jmrix.tams.TamsReply;
-import jmri.jmrix.tams.TamsSystemConnectionMemo;
 import jmri.util.StringUtil;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user input of Tams messages Based on work by Bob Jacobsen and Kevin Dickerson
  *
  * @author Jan Boen
  */
-public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel implements TamsListener {
+public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel {
 
     // member declarations
     javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
@@ -58,12 +57,7 @@ public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel implements T
             add(checkBoxBinCmd);
             add(sendButton);
 
-            sendButton.addActionListener(new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    sendButtonActionPerformed(e);
-                }
-            });
+            sendButton.addActionListener(this::sendButtonActionPerformed);
         }
     }
 
@@ -77,21 +71,16 @@ public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel implements T
         return "Send Tams command";
     }
 
-    @Override
-    public void initComponents(TamsSystemConnectionMemo memo) {
-        super.initComponents(memo);
-
-        memo.getTrafficController().addTamsListener(this);
-    }
-
     public void sendButtonActionPerformed(java.awt.event.ActionEvent e) {
         TamsMessage m;
+        String input = packetTextField.getText();
+        // TODO check input + feedback on error. Too easy to cause NPE
         if (checkBoxBinCmd.isSelected()) {//Binary TamsMessage to be sent
-            m = createPacket(packetTextField.getText());
+            m = createPacket(input);
             if (m == null) {
-                JOptionPane.showMessageDialog(PacketGenPanel.this,
+                JmriJOptionPane.showMessageDialog(this,
                         "Enter hexadecimal numbers only", "Tams Binary Command",
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return;
             }
             //Set replyType to unknown just in case
@@ -117,9 +106,9 @@ public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel implements T
                 m = TamsMessage.getXEvtTrn();
             }*/
         } else {//ASCII TamsMessage to be sent
-            m = new TamsMessage(packetTextField.getText().length());
-            for (int i = 0; i < packetTextField.getText().length(); i++) {
-                m.setElement(i, packetTextField.getText().charAt(i));
+            m = new TamsMessage(input.length());
+            for (int i = 0; i < input.length(); i++) {
+                m.setElement(i, input.charAt(i));
             }
             //Set replyType to unknown just in case
             m.setReplyType('M');
@@ -135,7 +124,9 @@ public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel implements T
                 m.setReplyType('S');
             }*/
         }
-        memo.getTrafficController().sendTamsMessage(m, this);
+        if ( memo != null ) {
+            memo.getTrafficController().sendTamsMessage(m, null);
+        }
     }
 
     TamsMessage createPacket(String s) {
@@ -155,13 +146,5 @@ public class PacketGenPanel extends jmri.jmrix.tams.swing.TamsPanel implements T
         }
         return m;
     }
-
-    @Override
-    public void message(TamsMessage m) {
-    }  // ignore replies
-
-    @Override
-    public void reply(TamsReply r) {
-    } // ignore replies
 
 }

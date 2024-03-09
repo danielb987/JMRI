@@ -28,6 +28,14 @@ speedEStopSpeed = -1
 valueSpeedTimerRepeat = 25 # repeat time in ms for speed set task
 valueSpeedIncrement = 0.01
 
+depErr="""Required dependency must be installed!
+
+ You need to install WiiRemoteJ library :
+       https://github.com/micromu/WiiRemoteJ/raw/master/WiiRemoteJ.jar
+
+ Copy the jar file your JMRI lib folder. 
+    """
+
 import java
 import java.awt
 import java.awt.event
@@ -44,10 +52,16 @@ import javax.swing.SwingUtilities as SwingUtilities
 import thread
 import jmri.jmrit.throttle.AddressListener as AddressListener
 import jmri.jmrit.jython.Jynstrument as Jynstrument
-import wiiremotej.event.WiiRemoteListener as WiiRemoteListener
-import wiiremotej.event.WiiDeviceDiscoveryListener as WiiDeviceDiscoveryListener
-import wiiremotej.WiiRemoteJ as WiiRemoteJ
-import wiiremotej.event.WRButtonEvent as WRButtonEvent
+import javax.swing.JOptionPane as JOptionPane
+import javax.swing.JTextArea as JTextArea
+import javax.swing.JFrame as JFrame
+try:
+    import wiiremotej.event.WiiRemoteListener as WiiRemoteListener
+    import wiiremotej.event.WiiDeviceDiscoveryListener as WiiDeviceDiscoveryListener
+    import wiiremotej.WiiRemoteJ as WiiRemoteJ
+    import wiiremotej.event.WRButtonEvent as WRButtonEvent
+except:
+    JOptionPane.showMessageDialog(JFrame(), JTextArea(depErr), "Missing dependency", JOptionPane.ERROR_MESSAGE);
 
 
 class WiimoteThrottle2(Jynstrument, PropertyChangeListener, AddressListener, WiiDeviceDiscoveryListener, WiiRemoteListener, Runnable):
@@ -166,20 +180,20 @@ class WiimoteThrottle2(Jynstrument, PropertyChangeListener, AddressListener, Wii
             # Home : F0            
             if ( evt.wasReleased(WRButtonEvent.HOME) ):  # LIGHTS
                 if not ((self.addressPanel.getRosterEntry() != None) and (self.advFunctions.call(self.addressPanel.getRosterEntry(), "0", False, self.throttle) != None)):
-                   self.throttle.setF0( not self.throttle.getF0() )
+                   self.throttle.setFunction(0, not self.throttle.getFunction(0) )
             # Wiimote 1 & 2 buttons
             if (evt.isPressed(WRButtonEvent.ONE)):
                 if not ((self.addressPanel.getRosterEntry() != None) and (self.advFunctions.call(self.addressPanel.getRosterEntry(), "1", True, self.throttle) != None)):
                     pass # default F1 not momentary (switch only on Release, do nothing here)
             if (evt.wasReleased(WRButtonEvent.ONE)):
                 if not ((self.addressPanel.getRosterEntry() != None) and (self.advFunctions.call(self.addressPanel.getRosterEntry(), "1", False, self.throttle) != None)):
-                    self.throttle.setF1( not self.throttle.getF1() )  # default F1 not momentary              
+                    self.throttle.setFunction(1, not self.throttle.getFunction(1) )  # default F1 not momentary              
             if (evt.isPressed(WRButtonEvent.TWO)):
                 if not ((self.addressPanel.getRosterEntry() != None) and (self.advFunctions.call(self.addressPanel.getRosterEntry(), "2", True, self.throttle) != None)):
-                    self.throttle.setF2( True )  # default F2 momentary
+                    self.throttle.setFunction(2, True )  # default F2 momentary
             if (evt.wasReleased(WRButtonEvent.TWO)):
                 if not ((self.addressPanel.getRosterEntry() != None) and (self.advFunctions.call(self.addressPanel.getRosterEntry(), "2", False, self.throttle) != None)):
-                    self.throttle.setF2( False )
+                    self.throttle.setFunction(2, False )
 
     def disconnected(self):
         self.wiiDevice = None

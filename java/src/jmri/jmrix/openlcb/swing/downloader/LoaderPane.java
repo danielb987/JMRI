@@ -1,6 +1,5 @@
 package jmri.jmrix.openlcb.swing.downloader;
 
-import java.awt.FlowLayout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import jmri.jmrit.MemoryContents;
 import jmri.jmrix.can.CanSystemConnectionMemo;
+import jmri.util.swing.WrapLayout;
 import org.openlcb.Connection;
 import org.openlcb.LoaderClient;
 import org.openlcb.LoaderClient.LoaderStatusReporter;
@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Pane for downloading firmware files files to OpenLCB devices which support
  * firmware updates according to the Firmware Upgrade Protocol.
- * <p>
  *
  * @author Bob Jacobsen Copyright (C) 2005, 2015 (from the LocoNet version by B.
  * Milhaupt Copyright (C) 2013, 2014) David R Harris (C) 2016 Balazs Racz (C)
@@ -58,7 +57,7 @@ public class LoaderPane extends jmri.jmrix.AbstractLoaderPane
         this.mcs = memo.get(MemoryConfigurationService.class);
         this.dcs = memo.get(DatagramService.class);
         this.store = memo.get(MimicNodeStore.class);
-        this.nodeSelector = new NodeSelector(store);
+        this.nodeSelector = new NodeSelector(store, Integer.MAX_VALUE);  // display all ID terms available
         this.loaderClient = memo.get(LoaderClient.class);
         this.nid = memo.get(NodeID.class);
         // We can add to GUI here
@@ -67,13 +66,13 @@ public class LoaderPane extends jmri.jmrix.AbstractLoaderPane
         JPanel p;
 
         p = new JPanel();
-        p.setLayout(new FlowLayout());
+        p.setLayout(new WrapLayout());
         p.add(new JLabel("Target Node ID: "));
         p.add(nodeSelector);
         selectorPane.add(p);
 
         p = new JPanel();
-        p.setLayout(new FlowLayout());
+        p.setLayout(new WrapLayout());
         p.add(new JLabel("Address Space: "));
 
         spaceField = new JTextField("" + 0xEF);
@@ -82,7 +81,7 @@ public class LoaderPane extends jmri.jmrix.AbstractLoaderPane
         spaceField.setToolTipText("The decimal number of the address space, e.g. 239");
 
         p = new JPanel();
-        p.setLayout(new FlowLayout());
+        p.setLayout(new WrapLayout());
         lockNode = new JCheckBox("Lock Node");
         p.add(lockNode);
         selectorPane.add(p);
@@ -97,6 +96,9 @@ public class LoaderPane extends jmri.jmrix.AbstractLoaderPane
 
     @Override
     public void doRead(JFileChooser chooser) {
+        // has a file been selected? Might not been if Chooser was cancelled
+        if (chooser == null || chooser.getSelectedFile() == null) return;
+
         String fn = chooser.getSelectedFile().getPath();
         readFile(fn);
         bar.setValue(0);
@@ -113,6 +115,9 @@ public class LoaderPane extends jmri.jmrix.AbstractLoaderPane
 
     @Override
     public String getTitle() {
+        if (memo != null) {
+            return (memo.getUserName() + " Firmware Downloader");
+        }
         return getTitle(Bundle.getMessage("TitleLoader"));
     }
 
@@ -142,6 +147,8 @@ public class LoaderPane extends jmri.jmrix.AbstractLoaderPane
                 updateGUI(Math.round(percent));
             }
 
+            @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value = "SLF4J_FORMAT_SHOULD_BE_CONST",
+                justification = "message String also used in status JLabel")
             @Override
             public void onDone(int errorCode, String errorString) {
                 if (errorCode == 0) {

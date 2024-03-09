@@ -11,20 +11,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * LocoNet Monitor pane displaying (and logging) LocoNet messages on a given TrafficController.
- * TODO display messages sent while using the hexfile Simulator.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2008, 2010
  */
 public class LocoMonPane extends jmri.jmrix.AbstractMonPane implements LocoNetListener, LnPanelInterface {
-    private final static Logger log = LoggerFactory.getLogger(LocoMonPane.class);
 
     private String systemConnectionPrefix;
     LocoNetSystemConnectionMemo memo;
 
     public LocoMonPane() {
         super();
-        // Temporarily pre-initialize the system connection prefix based on the 
-        // default turnout manager's system name prefix.  This will be replaced 
+        // Temporarily pre-initialize the system connection prefix based on the
+        // default turnout manager's system name prefix.  This will be replaced
         // with the correct style in #initComponents(LocoNetSystemConnectionMemo)
         // but is needed here for Unit Testing
         systemConnectionPrefix = InstanceManager.getDefault(TurnoutManager.class).getSystemPrefix();
@@ -87,6 +85,7 @@ public class LocoMonPane extends jmri.jmrix.AbstractMonPane implements LocoNetLi
     public synchronized void message(LocoNetMessage l) { // receive a LocoNet message and log it
         // send the raw data, to display if requested
         String raw = l.toString();
+        log.debug("message received");
         // format the message text, expect it to provide consistent \n after each line
         String formatted = l.toMonitorString(systemConnectionPrefix);
 
@@ -94,7 +93,9 @@ public class LocoMonPane extends jmri.jmrix.AbstractMonPane implements LocoNetLi
         nextLine(formatted, raw);
 
         // include LocoNet monitoring in session.log if TRACE enabled
-        if (log.isTraceEnabled()) log.trace(formatted.substring(0, formatted.length() - 1));  // remove trailing newline
+        if (log.isTraceEnabled()) {
+            log.trace("message: {}", formatted.substring(0, formatted.length() - 1)); // removes trailing newline
+        }
     }
 
     /**
@@ -113,20 +114,6 @@ public class LocoMonPane extends jmri.jmrix.AbstractMonPane implements LocoNetLi
         }
     }
 
-    /**
-     * Nested class to create one of these using old-style defaults.
-     * @deprecated since 4.19.7; use {@link LocoMonPaneAction} instead
-     */
-    @Deprecated
-    static public class Default extends jmri.jmrix.loconet.swing.LnNamedPaneAction {
-
-        public Default() {
-            super(Bundle.getMessage("MenuItemLocoNetMonitor"),
-                    new jmri.util.swing.sdi.JmriJFrameInterface(),
-                    LocoMonPane.class.getName(),
-                    jmri.InstanceManager.getDefault(LocoNetSystemConnectionMemo.class));
-        }
-    }
-
+    private final static Logger log = LoggerFactory.getLogger(LocoMonPane.class);
 
 }

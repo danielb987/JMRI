@@ -13,7 +13,7 @@
 
 <!-- include for QUAD-LN_S -->
 <!-- turnout group choices  v1,0 -->
-<enumVal xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<enumVal xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <enumChoice choice="0"/>
   <enumChoice choice="1"/>
   <enumChoice choice="2"/>
@@ -30,22 +30,6 @@
   <enumChoice choice="13"/>
   <enumChoice choice="14"/>
   <enumChoice choice="15"/>
-  <enumChoice choice="16"/>
-  <enumChoice choice="17"/>
-  <enumChoice choice="18"/>
-  <enumChoice choice="19"/>
-  <enumChoice choice="20"/>
-  <enumChoice choice="21"/>
-  <enumChoice choice="22"/>
-  <enumChoice choice="23"/>
-  <enumChoice choice="24"/>
-  <enumChoice choice="25"/>
-  <enumChoice choice="26"/>
-  <enumChoice choice="27"/>
-  <enumChoice choice="28"/>
-  <enumChoice choice="29"/>
-  <enumChoice choice="30"/>
-  <enumChoice choice="31"/>
 </enumVal>
 
       

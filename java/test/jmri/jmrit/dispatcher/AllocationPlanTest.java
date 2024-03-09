@@ -1,7 +1,7 @@
 package jmri.jmrit.dispatcher;
 
 import java.awt.GraphicsEnvironment;
-
+import java.util.ArrayList;
 import jmri.InstanceManager;
 import jmri.util.JUnitUtil;
 
@@ -19,10 +19,8 @@ public class AllocationPlanTest {
     public void testCTor() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         OptionsFile.setDefaultFileName("java/test/jmri/jmrit/dispatcher/dispatcheroptions.xml");  // exist?
-
         DispatcherFrame d = InstanceManager.getDefault(DispatcherFrame.class);
-        AutoAllocate aa = new AutoAllocate(d);
-        jmri.util.JUnitAppender.assertErrorMessage("null LayoutEditor when constructing AutoAllocate");
+        AutoAllocate aa = new AutoAllocate(d, new ArrayList<>() );
         AllocationPlan t = new AllocationPlan(aa,1);
         Assert.assertNotNull("exists",t);
         JUnitUtil.dispose(d);

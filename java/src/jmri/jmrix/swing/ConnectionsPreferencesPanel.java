@@ -12,17 +12,18 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import jmri.InstanceManager;
 import jmri.jmrix.ConnectionConfig;
 import jmri.jmrix.ConnectionConfigManager;
@@ -32,9 +33,9 @@ import jmri.profile.ProfileManager;
 import jmri.swing.ManagingPreferencesPanel;
 import jmri.swing.PreferencesPanel;
 import jmri.util.FileUtil;
+import jmri.util.swing.JmriJOptionPane;
+
 import org.openide.util.lookup.ServiceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectionsPreferencesPanel extends JTabbedPane implements ManagingPreferencesPanel {
 
     private static final ResourceBundle rb = ResourceBundle.getBundle("apps.AppsConfigBundle"); // for some items // NOI18N
-    private static final Logger log = LoggerFactory.getLogger(ConnectionsPreferencesPanel.class);
+    
 
     private final ImageIcon deleteIcon;
     private final ImageIcon deleteIconRollOver;
@@ -76,11 +77,13 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
         }
         ccm.addPropertyChangeListener(ConnectionConfigManager.CONNECTIONS, (PropertyChangeEvent evt) -> {
             int i = ((IndexedPropertyChangeEvent) evt).getIndex();
-            if (evt.getNewValue() == null
-                    && i < configPanes.size()
-                    && evt.getOldValue().equals(configPanes.get(i).getCurrentObject())) {
-                removeTab(null, i);
-            } else if (evt.getOldValue() == null) {
+            log.debug("PrefPanel ChangeListener of tab index i = {} of {} list", i+1, configPanes.size());
+            //if (evt.getNewValue() == null
+            //        && i < configPanes.size()
+            //        && evt.getOldValue().equals(configPanes.get(i).getCurrentObject())) {
+            //    //removeTab(null, i); // called same method removeTab again, conn tab was already removed by the user click
+            //} else
+            if ((evt.getOldValue() == null) && (evt.getNewValue() != null)) {
                 for (JmrixConfigPane pane : this.configPanes) {
                     if (pane.getCurrentObject() == null ) {
                         log.error("did not expect pane.getCurrentObject()==null here for {} {} {}", i, evt.getNewValue(), configPanes);
@@ -189,7 +192,7 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
         this.add(p);
         this.setTabComponentAt(tabPosition, tabTitle);
 
-        tabCloseButton.addActionListener((ActionEvent e) -> {
+        tabCloseButton.addActionListener((ActionEvent e) -> { // initial user Delete conn click
             removeTab(e, this.indexOfTabComponent(tabTitle));
         });
 
@@ -220,22 +223,22 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
 
     private void removeTab(ActionEvent e, int x) {
         int i;
-
         i = x; // copy x for handling
 
         if (i != -1) {
             // only prompt if triggered by action event
             if (e != null) {
-                int n = JOptionPane.showConfirmDialog(null, MessageFormat.format(
+                int n = JmriJOptionPane.showConfirmDialog(null, MessageFormat.format(
                         rb.getString("MessageDoDelete"),
                         new Object[]{this.getTitleAt(i)}),
                         rb.getString("MessageDeleteConnection"),
-                        JOptionPane.YES_NO_OPTION);
-                if (n != JOptionPane.YES_OPTION) {
+                        JmriJOptionPane.YES_NO_OPTION);
+                if (n != JmriJOptionPane.YES_OPTION) {
                     return;
                 }
             }
 
+            log.debug("i = {}, this.getTabCount() = {}, configPanes.size()={}", i, this.getTabCount(), configPanes.size());
             JmrixConfigPane configPane = this.configPanes.get(i);
             this.removeChangeListener(addTabListener);
             this.remove(i);
@@ -243,11 +246,12 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
             try {
                 JmrixConfigPane.dispose(configPane);
             } catch (NullPointerException ex) {
-                log.error("Caught Null Pointer Exception while removing connection tab");
+                log.error("Caught Null Pointer Exception while removing connection tab {}", i);
             }
-            log.debug("connection #{} successfully disposed", i);
-            this.configPanes.remove(i);
-            if (this.getTabCount() == 1) {
+            log.debug("connection tab #{} successfully disposed. configPanes.size() = {}", i+1, configPanes.size());
+            this.configPanes.remove(i); // on delete of connection a loop (listener) called this method 2x
+            restartRequired = true;
+            if (this.getTabCount() == 1) { // normally not required, stays in place while adding or deleting
                 addConnectionTab();
             }
             if (x != 0) {
@@ -302,22 +306,25 @@ public class ConnectionsPreferencesPanel extends JTabbedPane implements Managing
 
     @Override
     public boolean isDirty() {
-        return this.configPanes.stream().anyMatch((panel) -> (panel.isDirty()));
+        return this.configPanes.stream().anyMatch(JmrixConfigPane::isDirty);
     }
 
     @Override
     public boolean isRestartRequired() {
         return this.restartRequired
-                || this.configPanes.stream().anyMatch((panel) -> (panel.isRestartRequired()));
+                || this.configPanes.stream().anyMatch(JmrixConfigPane::isRestartRequired);
     }
 
     @Override
     public boolean isPreferencesValid() {
-        return this.configPanes.stream().allMatch((panel) -> (panel.isPreferencesValid()));
+        return this.configPanes.stream().allMatch(JmrixConfigPane::isPreferencesValid);
     }
 
     @Override
     public List<PreferencesPanel> getPreferencesPanels() {
         return new ArrayList<>(this.configPanes);
     }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConnectionsPreferencesPanel.class);
+
 }

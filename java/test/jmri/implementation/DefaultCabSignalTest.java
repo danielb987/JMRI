@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
 /**
- * Unit tests for the DefaultCabSignal 
+ * Unit tests for the DefaultCabSignal
  *
  * @author Paul Bender Copyright (C) 2019
  */

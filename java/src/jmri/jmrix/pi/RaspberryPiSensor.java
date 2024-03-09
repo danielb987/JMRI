@@ -10,10 +10,10 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+
 import jmri.Sensor;
 import jmri.implementation.AbstractSensor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.jmrix.pi.simulator.GpioSimulator;
 
 /**
  * Sensor interface for RaspberryPi GPIO pins.
@@ -27,40 +27,24 @@ public class RaspberryPiSensor extends AbstractSensor implements GpioPinListener
     private PinPullResistance pull = PinPullResistance.PULL_DOWN;
 
     public RaspberryPiSensor(String systemName, String userName) {
-        this(systemName, userName, GpioFactory.getInstance(), PinPullResistance.PULL_DOWN);
+        super(systemName, userName);
+        // default pull is Pull Down
+        init(systemName, PinPullResistance.PULL_DOWN);
     }
 
     public RaspberryPiSensor(String systemName, String userName, PinPullResistance p) {
-        this(systemName, userName, GpioFactory.getInstance(), p);
+        super(systemName, userName);
+        init(systemName, p);
     }
 
     public RaspberryPiSensor(String systemName) {
-        this(systemName, GpioFactory.getInstance(), PinPullResistance.PULL_DOWN);
+        super(systemName);
+        init(systemName, PinPullResistance.PULL_DOWN);
     }
 
     public RaspberryPiSensor(String systemName, PinPullResistance p) {
-        this(systemName, GpioFactory.getInstance(), p);
-    }
-
-    public RaspberryPiSensor(String systemName, String userName, GpioController _gpio) {
-        super(systemName, userName);
-        // default pull is Pull Down
-        init(systemName, _gpio, PinPullResistance.PULL_DOWN);
-    }
-
-    public RaspberryPiSensor(String systemName, String userName, GpioController _gpio, PinPullResistance p) {
-        super(systemName, userName);
-        init(systemName, _gpio, p);
-    }
-
-    public RaspberryPiSensor(String systemName, GpioController _gpio) {
         super(systemName);
-        init(systemName, _gpio, PinPullResistance.PULL_DOWN);
-    }
-
-    public RaspberryPiSensor(String systemName, GpioController _gpio, PinPullResistance p) {
-        super(systemName);
-        init(systemName, _gpio, p);
+        init(systemName, p);
     }
 
     /**
@@ -68,10 +52,14 @@ public class RaspberryPiSensor extends AbstractSensor implements GpioPinListener
      * <p>
      * Compare {@link RaspberryPiTurnout}
      */
-    private void init(String systemName, GpioController _gpio, PinPullResistance pRes){
+    private void init(String systemName, PinPullResistance pRes){
         log.debug("Provisioning sensor {}", systemName);
         if (gpio == null) {
-            gpio = _gpio;
+            if (!RaspberryPiAdapter.isSimulator()) {
+                gpio = GpioFactory.getInstance();
+            } else {
+                gpio = GpioSimulator.getInstance();
+            }
         }
         pull = pRes;
         int address = Integer.parseInt(systemName.substring(systemName.lastIndexOf("S") + 1));
@@ -105,33 +93,24 @@ public class RaspberryPiSensor extends AbstractSensor implements GpioPinListener
      */
     @Override
     public void requestUpdateFromLayout() {
-       if (pin.isHigh())
-          setOwnState(Sensor.ACTIVE);
-       else setOwnState(Sensor.INACTIVE);
-    }
-
-    @Override
-    public void dispose() {
-        try {
-            gpio.unprovisionPin(pin);
-            // will remove all listeners and triggers from pin and remove it from the <GpioPin> pins list in _gpio
-        } catch ( com.pi4j.io.gpio.exception.GpioPinNotProvisionedException npe ){
-            log.trace("Pin not provisioned, was this sensor already disposed?");
-        }
-        super.dispose();
+        setStateBeforeInvert(pin.isHigh());
     }
 
     @Override
     public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event){
-       // log pin state change
-       log.debug("GPIO PIN STATE CHANGE: {} = {}", event.getPin(), event.getState());
-       if (event.getPin() == pin){
-          if (event.getState().isHigh()) {
-             setOwnState(!getInverted() ? Sensor.ACTIVE : Sensor.INACTIVE);
-          } else {
-             setOwnState(!getInverted() ? Sensor.INACTIVE : Sensor.ACTIVE);
-          }
+        // log pin state change
+        log.debug("GPIO PIN STATE CHANGE: {} = {}", event.getPin(), event.getState());
+        if (event.getPin() == pin){
+            setStateBeforeInvert(event.getState().isHigh());
        }
+    }
+
+    private void setStateBeforeInvert(boolean high) {
+        if ( high ) {
+            setOwnState(!getInverted() ? Sensor.ACTIVE : Sensor.INACTIVE);
+        } else {
+            setOwnState(!getInverted() ? Sensor.INACTIVE : Sensor.ACTIVE);
+        }
     }
 
     /**
@@ -179,6 +158,17 @@ public class RaspberryPiSensor extends AbstractSensor implements GpioPinListener
        }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(RaspberryPiSensor.class);
+    @Override
+    public void dispose() {
+        try {
+            gpio.unprovisionPin(pin);
+            // will remove all listeners and triggers from pin and remove it from the <GpioPin> pins list in _gpio
+        } catch ( com.pi4j.io.gpio.exception.GpioPinNotProvisionedException npe ){
+            log.trace("Pin not provisioned, was this sensor already disposed?");
+        }
+        super.dispose();
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RaspberryPiSensor.class);
 
 }

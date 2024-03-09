@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
-import javax.swing.JOptionPane;
+import javax.annotation.Nonnull;
 
 import jmri.Conditional;
 import jmri.ConditionalAction;
@@ -17,9 +17,9 @@ import jmri.Logix;
 import jmri.implementation.DefaultConditional;
 import jmri.implementation.DefaultConditionalAction;
 import jmri.managers.DefaultConditionalManager;
+import jmri.util.swing.JmriJOptionPane;
+
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides the functionality for configuring ConditionalManagers.
@@ -162,7 +162,7 @@ public class DefaultConditionalManagerXml extends jmri.managers.configurexml.Abs
      * @return true if successful
      */
     @Override
-    public boolean load(Element sharedConditionals, Element perNodeConditionals) {
+    public boolean load(@Nonnull Element sharedConditionals, Element perNodeConditionals) {
         // create the master object
         replaceConditionalManager();
         // load individual logixs
@@ -284,12 +284,8 @@ public class DefaultConditionalManagerXml extends jmri.managers.configurexml.Abs
                     variable.setOpern(operator);
                 }
                 if (cvar.getAttribute("negated") != null) {  // NOI18N
-                    if ("yes".equals(cvar
-                            .getAttribute("negated").getValue())) {  // NOI18N
-                        variable.setNegation(true);
-                    } else {
-                        variable.setNegation(false);
-                    }
+                    // NOI18N
+                    variable.setNegation("yes".equals(cvar.getAttribute("negated").getValue()));
                 }
                 variable.setType(Conditional.Type.getOperatorFromIntValue(
                         Integer.parseInt(cvar.getAttribute("type").getValue())));  // NOI18N
@@ -330,7 +326,7 @@ public class DefaultConditionalManagerXml extends jmri.managers.configurexml.Abs
             //    log.warn("No actions found for conditional {}", sysName);
             //}
             List<ConditionalAction> actionList = ((DefaultConditional)c).getActionList();
-            org.jdom2.Attribute attr = null;
+            org.jdom2.Attribute attr;
             for (Element cact : conditionalActionList) {
                 ConditionalAction action = new DefaultConditionalAction();
                 attr = cact.getAttribute("option");  // NOI18N
@@ -409,10 +405,10 @@ public class DefaultConditionalManagerXml extends jmri.managers.configurexml.Abs
             // for notifying users of multiple changes that can be silenced as part of
             // normal operations
             if (!GraphicsEnvironment.isHeadless() && !Boolean.getBoolean("jmri.test.no-dialogs")) {
-                JOptionPane.showMessageDialog(null,
+                JmriJOptionPane.showMessageDialog(null,
                         Bundle.getMessage(namesChanged > 1 ? "ConditionalManager.SystemNamesChanged.Message" : "ConditionalManager.SystemNameChanged.Message", namesChanged),
                         Bundle.getMessage("Manager.SystemNamesChanged.Title", namesChanged, cm.getBeanTypeHandled(namesChanged > 1)),
-                        JOptionPane.WARNING_MESSAGE);
+                        JmriJOptionPane.WARNING_MESSAGE);
             }
             log.warn("System names for {} Conditionals changed; this may have operational impacts.", namesChanged);
         }
@@ -446,6 +442,6 @@ public class DefaultConditionalManagerXml extends jmri.managers.configurexml.Abs
         return InstanceManager.getDefault(jmri.ConditionalManager.class).getXMLOrder();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultConditionalManagerXml.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultConditionalManagerXml.class);
 
 }

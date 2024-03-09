@@ -3,10 +3,7 @@ package jmri.jmrit.logix;
 import jmri.swing.PreferencesPanelTestBase;
 import jmri.util.JUnitUtil;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Paul Bender Copyright (C) 2017
@@ -25,7 +22,6 @@ public class WarrantPreferencesPanelTest extends PreferencesPanelTestBase<Warran
     @AfterEach
     public void tearDown() {
         prefsPanel = null;
-        JUnitUtil.clearShutDownManager(); // should be converted to check of scheduled ShutDownActions
         JUnitUtil.tearDown();
     }
 

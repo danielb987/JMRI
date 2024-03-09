@@ -99,8 +99,8 @@ public class DccSpeedProfile {
     public static void printHeading(@Nonnull CSVPrinter p, int address) throws IOException {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault());
         String today = formatter.format(new Date());
-        // title 
-        String annotate = "Bachrus MTS-DCC " + Bundle.getMessage("ProfileFor") + " "
+        // title
+        String annotate = Bundle.getMessage("ProfileFor") + " "
                 + address + " " + Bundle.getMessage("CreatedOn")
                 + " " + today;
         // should this be printComment instead?
@@ -162,7 +162,7 @@ public class DccSpeedProfile {
     }
 
     private static File openExportFile() {
-        JFileChooser fileChooser = new JFileChooser(FileUtil.getUserFilesPath());
+        JFileChooser fileChooser = new jmri.util.swing.JmriJFileChooser(FileUtil.getUserFilesPath());
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             return fileChooser.getSelectedFile();
         }
@@ -186,8 +186,8 @@ public class DccSpeedProfile {
         for (int i = 2; i < dccProfileData.size(); i++) {
             try {
                 String value = dccProfileData.get(i).get(1);
-                float speed = Float.valueOf(value);
-                // speed values from the speedometer are calc'd and stored in 
+                float speed = Float.parseFloat(value);
+                // speed values from the speedometer are calc'd and stored in
                 // the DccSpeedProfile object as KPH so need to convert
                 // if the file was in MPH
                 if (secondLine.contains("MPH")) {
@@ -196,7 +196,7 @@ public class DccSpeedProfile {
 
                 setPoint(i - 2, speed);
             } catch (NullPointerException | NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-                log.error("Bad data or format in reference speed profile file: {}", ex);
+                log.error("Bad data or format in reference speed profile file", ex);
                 clear();
                 return -1;
             }
@@ -205,14 +205,14 @@ public class DccSpeedProfile {
     }
 
     private void openImportFile() {
-        JFileChooser fileChooser = new JFileChooser(FileUtil.getUserFilesPath());
+        JFileChooser fileChooser = new jmri.util.swing.JmriJFileChooser(FileUtil.getUserFilesPath());
 
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try {
                 dccProfileData = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.DEFAULT).getRecords();
             } catch (IOException ex) {
-                log.error("Failed to read reference profile file {}", ex);
+                log.error("Failed to read reference profile file", ex);
             }
         }
     }

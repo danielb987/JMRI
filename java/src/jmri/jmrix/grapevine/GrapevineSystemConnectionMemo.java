@@ -80,6 +80,7 @@ public class GrapevineSystemConnectionMemo extends DefaultSystemConnectionMemo i
     * Configure the common managers for Grapevine connections. This puts the
     * common manager config in one place.
     */
+    @Override
     public void configureManagers() {
         setTurnoutManager(new SerialTurnoutManager(this));
         InstanceManager.setTurnoutManager(getTurnoutManager());
@@ -100,7 +101,7 @@ public class GrapevineSystemConnectionMemo extends DefaultSystemConnectionMemo i
      * @return sensor manager.
      */
     public SensorManager getSensorManager() {
-        log.debug(get(SensorManager.class) != null ? "getSensorManager OK": "getSensorManager returned NULL");
+        log.debug("getSensorManager {}", get(SensorManager.class) != null ? "OK": "returned NULL");
         return get(SensorManager.class);
     }
 
@@ -116,7 +117,7 @@ public class GrapevineSystemConnectionMemo extends DefaultSystemConnectionMemo i
      * @return turnout manager.
      */
     public TurnoutManager getTurnoutManager() {
-        log.debug(get(TurnoutManager.class) != null ? "getTurnoutManager OK": "getTurnoutManager returned NULL");
+        log.debug("getTurnoutManager {}", get(TurnoutManager.class) != null ? "OK": "returned NULL");
         return get(TurnoutManager.class);
     }
 
@@ -132,7 +133,7 @@ public class GrapevineSystemConnectionMemo extends DefaultSystemConnectionMemo i
      * @return light manager.
      */
     public LightManager getLightManager() {
-        log.debug(get(LightManager.class) != null ? "getLightManager OK": "getLightManager returned NULL");
+        log.debug("getLightManager {}", get(LightManager.class) != null ? "OK": "returned NULL");
         return get(LightManager.class);
 
     }

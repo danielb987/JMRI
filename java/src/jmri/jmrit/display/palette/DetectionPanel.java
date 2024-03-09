@@ -3,6 +3,7 @@ package jmri.jmrit.display.palette;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -10,15 +11,16 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 import jmri.InstanceManager;
 import jmri.Sensor;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OPath;
 import jmri.jmrit.picker.PickListModel;
 import jmri.jmrit.picker.PickPanel;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Panel for Occupancy and Error detection.
@@ -86,7 +88,7 @@ public class DetectionPanel extends JPanel {
         JPanel blurb = new JPanel();
         blurb.setLayout(new BoxLayout(blurb, BoxLayout.Y_AXIS));
         blurb.add(Box.createVerticalStrut(ItemPalette.STRUT_SIZE));
-        blurb.add(new JLabel(Bundle.getMessage("DectectorNote")));
+        blurb.add(new JLabel(Bundle.getMessage("DetectorNote")));
         blurb.add(Box.createVerticalStrut(ItemPalette.STRUT_SIZE));
         _sensorBlurbPanel.add(blurb);
         add(_sensorBlurbPanel);
@@ -111,6 +113,7 @@ public class DetectionPanel extends JPanel {
         return panel;
     }
 
+//    @SuppressWarnings("raw")
     void openPickList() {
         _pickFrame = new JFrame();
         JPanel content = new JPanel();
@@ -120,13 +123,13 @@ public class DetectionPanel extends JPanel {
         blurb.setLayout(new BoxLayout(blurb, BoxLayout.Y_AXIS));
         blurb.add(Box.createVerticalStrut(ItemPalette.STRUT_SIZE));
         blurb.add(new JLabel(Bundle.getMessage("DragOccupancyName", Bundle.getMessage("OccupancySensor"))));
-        blurb.add(new JLabel(Bundle.getMessage("DectectorNote")));
+        blurb.add(new JLabel(Bundle.getMessage("DetectorNote")));
 //        blurb.add(new JLabel(Bundle.getMessage("DragErrorName", Bundle.getMessage("ErrorSensor"))));
         blurb.add(Box.createVerticalStrut(ItemPalette.STRUT_SIZE));
         JPanel panel = new JPanel();
         panel.add(blurb);
         content.add(panel);
-        PickListModel[] models = {PickListModel.oBlockPickModelInstance(),
+        PickListModel<?>[] models = {PickListModel.oBlockPickModelInstance(),
             PickListModel.sensorPickModelInstance()
         };
         content.add(new PickPanel(models));
@@ -254,9 +257,9 @@ public class DetectionPanel extends JPanel {
            } else {
                 Sensor sensor = InstanceManager.sensorManagerInstance().getSensor(name);
                 if (sensor == null) {
-                    JOptionPane.showMessageDialog(_parent._frame,
+                    JmriJOptionPane.showMessageDialog(_parent._frame,
                             Bundle.getMessage("InvalidOccDetector", name),
-                            Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                            Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
                     _occDetectorName.setText(null);
                 }
                 showPanels(false);

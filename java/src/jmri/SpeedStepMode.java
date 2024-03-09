@@ -48,6 +48,11 @@ public enum SpeedStepMode {
     public final float increment;
     public final String description;
 
+    /**
+     * Get a locale friendly Step Mode Description.
+     * For just "128" use name()
+     * @return e.g. "128 SS"
+     */
     @Override
     public String toString() {
         return description;
@@ -61,8 +66,8 @@ public enum SpeedStepMode {
      * @throws IllegalArgumentException if name does not correspond to a valid speed step mode.
      */
     static public SpeedStepMode getByName(String name) {
-        for(SpeedStepMode s : SpeedStepMode.values()) {
-            if(s.name.equals(name)) {
+        for (SpeedStepMode s : SpeedStepMode.values()) {
+            if (s.name.equals(name)) {
                 return s;
             }
         }
@@ -77,8 +82,8 @@ public enum SpeedStepMode {
      * @throws IllegalArgumentException if name does not correspond to a valid speed step mode.
      */
     static public SpeedStepMode getByDescription(String name) {
-        for(SpeedStepMode s : SpeedStepMode.values()) {
-            if(s.description.equals(name)) {
+        for (SpeedStepMode s : SpeedStepMode.values()) {
+            if (s.description.equals(name)) {
                 return s;
             }
         }

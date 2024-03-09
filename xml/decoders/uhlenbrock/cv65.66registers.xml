@@ -11,7 +11,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <copyright xmlns="http://docbook.org/ns/docbook">
     <year>2014</year>
     <holder>JMRI</holder>
@@ -32,7 +32,7 @@
       <revremark>Initial version as separate file from Uhlenbrock_73400.xml v2</revremark>
     </revision>
   </revhistory>
-  <variable label="Offset Register" CV="65" default="0" readOnly="yes">
+  <variable item="Offset Register" CV="65" default="0" readOnly="yes">
     <decVal/>
     <label>Offset Register</label>
     <label xml:lang="it">Registro Indice</label>
@@ -40,7 +40,7 @@
     <tooltip xml:lang="de">für die CV Progr. mit einer Motorolazentrale</tooltip>
     <tooltip xml:lang="it">Per programmare le CV con una centrale Motorola</tooltip>
   </variable>
-  <variable label="Page Register" CV="66" default="0" readOnly="yes">
+  <variable item="Page Register" CV="66" default="0" readOnly="yes">
     <decVal/>
     <label>Page Register</label>
     <label xml:lang="it">Registro Pagine</label>

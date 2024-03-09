@@ -74,7 +74,7 @@ public class SetupExcelProgramFrame extends OperationsFrame {
         addHelpMenu("package.jmri.jmrit.operations.Operations_SetupExcelProgram", true); // NOI18N
         setTitle(Bundle.getMessage("MenuItemSetupExcelProgram"));
 
-        initMinimumSize(new Dimension(Control.panelWidth400, Control.panelHeight300));
+        initMinimumSize(new Dimension(Control.panelWidth500, Control.panelHeight300));
     }
 
     /**
@@ -85,7 +85,7 @@ public class SetupExcelProgramFrame extends OperationsFrame {
      *
      */
     protected File selectFile(String directoryName) {
-        JFileChooser fc = new JFileChooser(InstanceManager.getDefault(OperationsManager.class).getFile(directoryName));
+        JFileChooser fc = new jmri.util.swing.JmriJFileChooser(InstanceManager.getDefault(OperationsManager.class).getFile(directoryName));
         fc.setFileFilter(new FileNameExtensionFilter(Bundle.getMessage("ExcelProgramFiles"), "xls", "xlsm")); // NOI18N
         fc.setDialogTitle(Bundle.getMessage("FindDesiredExcelFile"));
         int retVal = fc.showOpenDialog(null);

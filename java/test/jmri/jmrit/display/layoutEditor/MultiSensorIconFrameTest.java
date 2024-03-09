@@ -12,7 +12,7 @@ import org.junit.jupiter.api.*;
  * @author Paul Bender Copyright (C) 2016
  */
 public class MultiSensorIconFrameTest extends jmri.util.JmriJFrameTestBase {
-        
+
     private LayoutEditor e;
 
     @BeforeEach
@@ -24,7 +24,7 @@ public class MultiSensorIconFrameTest extends jmri.util.JmriJFrameTestBase {
            e = new LayoutEditor();
            frame = new MultiSensorIconFrame(e);
         }
-        
+
     }
 
     @AfterEach

@@ -46,11 +46,6 @@ public class Mx1Packetizer extends Mx1TrafficController {
         return (ostream != null && istream != null);
     }
 
-    public final static boolean ASCII = false;
-    public final static boolean BINARY = true;
-
-    boolean protocol = ASCII;
-
     /**
      * Synchronized list used as a transmit queue
      */
@@ -380,11 +375,11 @@ public class Mx1Packetizer extends Mx1TrafficController {
                         log.debug("EOFException, is serial I/O using timeouts?");
                     } catch (java.io.IOException e) {
                         // fired when write-end of HexFile reaches end
-                        log.debug("IOException, should only happen with HexFIle: {}", e);
+                        log.debug("IOException, should only happen with HexFile", e);
                         disconnectPort(controller);
                         return;
                     } catch (RuntimeException e) {
-                        log.warn("run: unexpected exception: {}", e);
+                        log.warn("run: unexpected exception", e);
                     }
                 } // end of permanent loop
             }
@@ -576,7 +571,7 @@ public class Mx1Packetizer extends Mx1TrafficController {
                                 xmtHandler.notify();
                             }
                         } else {
-                            //Using a linked list, so if the first packet we come too isn't 
+                            //Using a linked list, so if the first packet we come too isn't
                             break;
                         }
                     }

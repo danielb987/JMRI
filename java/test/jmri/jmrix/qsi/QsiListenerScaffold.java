@@ -1,12 +1,11 @@
 package jmri.jmrix.qsi;
 
-
 /**
- * Stands in for the QsiTrafficController class
+ * Stands in for a QsiListener class
  *
  * @author Bob Jacobsen
  */
-class QsiListenerScaffold implements QsiListener {
+public class QsiListenerScaffold implements QsiListener {
 
     public QsiListenerScaffold() {
         rcvdReply = null;

@@ -4,14 +4,15 @@ import java.awt.GraphicsEnvironment;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.*;
 import org.junit.Assume;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.netbeans.jemmy.operators.*;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
+import jmri.jmrit.operations.locations.*;
+import jmri.jmrit.operations.locations.schedules.ScheduleManager;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
@@ -79,6 +80,7 @@ public class CarsTableFrameTest extends OperationsTestCase {
         Assert.assertEquals("c1 destination", Track.OKAY, c1.setDestination(boxford, boxfordJacobson));
         c1.setFinalDestination(westford);
         c1.setReturnWhenEmptyDestination(boxford);
+        c1.setReturnWhenLoadedDestination(boxford);
 
         Car c2 = cManager.getByRoadAndNumber("UP", "22");
         Assert.assertNotNull(c2);
@@ -91,6 +93,8 @@ public class CarsTableFrameTest extends OperationsTestCase {
         Assert.assertEquals("c3 destination", Track.OKAY, c3.setDestination(boxford, boxfordYard));
         c3.setFinalDestination(westford);
         c3.setReturnWhenEmptyDestination(westford);
+        c3.setReturnWhenLoadedDestination(boxford);
+        c3.setReturnWhenLoadedDestTrack(boxfordHood);
 
         Car c4 = cManager.getByRoadAndNumber("SP", "2");
         Assert.assertNotNull(c4);
@@ -100,6 +104,8 @@ public class CarsTableFrameTest extends OperationsTestCase {
         c4.setFinalDestination(boxford);
         c4.setReturnWhenEmptyDestination(boxford);
         c4.setReturnWhenEmptyDestTrack(boxfordHood);
+        c4.setReturnWhenLoadedDestination(westford);
+        c4.setReturnWhenLoadedDestTrack(westfordSpur);
 
         Car c5 = cManager.getByRoadAndNumber("NH", "5");
 
@@ -225,6 +231,14 @@ public class CarsTableFrameTest extends OperationsTestCase {
         Assert.assertEquals("4th car in sort by FD list", c3, cars.get(3));
         Assert.assertEquals("5th car in sort by FD list", c5, cars.get(4));
         
+        JemmyUtil.enterClickAndLeave(ctf.sortByRwl);
+        cars = ctf.carsTableModel.getSelectedCarList();
+        Assert.assertEquals("1st car in sort by FD list", c2, cars.get(0));
+        Assert.assertEquals("2nd car in sort by FD list", c5, cars.get(1));
+        Assert.assertEquals("3rd car in sort by FD list", c1, cars.get(2));
+        Assert.assertEquals("4th car in sort by FD list", c3, cars.get(3));
+        Assert.assertEquals("5th car in sort by FD list", c4, cars.get(4));
+        
         JemmyUtil.enterClickAndLeave(ctf.sortByFinalDestination);
         cars = ctf.carsTableModel.getSelectedCarList();
         Assert.assertEquals("1st car in sort by FD list", c5, cars.get(0));
@@ -244,6 +258,9 @@ public class CarsTableFrameTest extends OperationsTestCase {
         
         JemmyUtil.enterClickAndLeave(ctf.sortByLast);
         //TODO add last moved date
+        
+        JemmyUtil.enterClickAndLeave(ctf.sortByComment);
+        //TODO add comment
 
         // test sort by type
         JemmyUtil.enterClickAndLeave(ctf.sortByType);
@@ -266,12 +283,123 @@ public class CarsTableFrameTest extends OperationsTestCase {
         JemmyUtil.enterClickAndLeave(ctf.addButton);
 
         JUnitUtil.dispose(ctf);
+        JUnitOperationsUtil.checkOperationsShutDownTask();
     }
+    
+    @Test
+    public void carsTableEditButton() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        loadCars();
+        CarsTableFrame ctf = new CarsTableFrame(true, null, null);
+        
+        JFrameOperator jfo = new JFrameOperator(ctf);
+        JTableOperator tbl = new JTableOperator(jfo);
+        tbl.clickOnCell(0, tbl.findColumn(Bundle.getMessage("ButtonEdit"))); // Edit button
+        
+        // for test coverage
+        tbl.clickOnCell(0, tbl.findColumn(Bundle.getMessage("ButtonEdit"))); // Edit button
+        
+        JFrameOperator jfoc = new JFrameOperator(Bundle.getMessage("TitleCarEdit"));
+        JButtonOperator jbo = new JButtonOperator(jfoc, Bundle.getMessage("ButtonDelete"));
+        jbo.doClick();
 
+        jfo.dispose(); // also clears the edit car window
+        JUnitOperationsUtil.checkOperationsShutDownTask();
+    }
+    
+    @Test
+    public void carsTableSetButton() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        loadCars();
+        CarsTableFrame ctf = new CarsTableFrame(true, null, null);
+        
+        JFrameOperator jfo = new JFrameOperator(ctf);
+        JTableOperator tbl = new JTableOperator(jfo);
+        tbl.clickOnCell(0, tbl.findColumn(Bundle.getMessage("ButtonSet"))); // Set button
+        
+        // for test coverage
+        tbl.clickOnCell(0, tbl.findColumn(Bundle.getMessage("ButtonSet"))); // Set button
+        
+        JFrameOperator jfoc = new JFrameOperator(Bundle.getMessage("TitleCarSet"));
+        JButtonOperator jbo = new JButtonOperator(jfoc, Bundle.getMessage("ButtonSave"));
+        jbo.doClick();
+
+        jfo.dispose(); // also clears the set car window
+        JUnitOperationsUtil.checkOperationsShutDownTask();
+    }
+    
+    @Test
+    public void carsTableMoves() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        loadCars();
+        CarManager cManager = InstanceManager.getDefault(CarManager.class);
+        Car c1 = cManager.getByRoadAndNumber("NH", "1");
+        Assert.assertEquals("Moves", 55, c1.getMoves());
+        
+        CarsTableFrame ctf = new CarsTableFrame(true, null, null);
+        
+        JFrameOperator jfo = new JFrameOperator(ctf);
+        JTableOperator tbl = new JTableOperator(jfo);
+        tbl.setValueAt(5, 0, tbl.findColumn(Bundle.getMessage("Moves"))); // Moves
+        Assert.assertEquals("Moves", 5, c1.getMoves());
+
+        jfo.dispose(); // also clears the set car window
+        JUnitOperationsUtil.checkOperationsShutDownTask();
+    }
+    
+    @Test
+    public void carsTableWait() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        loadCars();
+        CarManager cManager = InstanceManager.getDefault(CarManager.class);
+        Car c1 = cManager.getByRoadAndNumber("NH", "1");
+        Assert.assertEquals("Wait", 0, c1.getWait());
+        c1.setWait(-1); // force to be 1st car in wait sort
+        
+        // wait only appears if there are schedules
+        ScheduleManager sm = InstanceManager.getDefault(ScheduleManager.class);
+        sm.newSchedule("Test Schedule");
+        
+        CarsTableFrame ctf = new CarsTableFrame(true, null, null);
+        
+        JFrameOperator jfo = new JFrameOperator(ctf);
+        JRadioButtonOperator jbo = new JRadioButtonOperator(jfo, Bundle.getMessage("Wait"));
+        jbo.doClick();
+        JTableOperator tbl = new JTableOperator(jfo);
+        tbl.setValueAt(5, 0, tbl.findColumn(Bundle.getMessage("Wait"))); // Moves
+        Assert.assertEquals("Wait", 5, c1.getWait());
+
+        jfo.dispose(); // also clears the set car window
+        JUnitOperationsUtil.checkOperationsShutDownTask();
+    }
+    
+    @Test
+    public void carsTableSelectCheckbox() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        loadCars();
+        CarManager cManager = InstanceManager.getDefault(CarManager.class);
+        Car c1 = cManager.getByRoadAndNumber("NH", "1");
+        CarsTableFrame ctf = new CarsTableFrame(true, null, null);
+        
+        Assert.assertFalse("Default not selected", c1.isSelected());
+        JFrameOperator jfo = new JFrameOperator(ctf);
+        JTableOperator tbl = new JTableOperator(jfo);
+        tbl.clickOnCell(0, tbl.findColumn(Bundle.getMessage("ButtonSelect"))); // Select button
+        Assert.assertTrue("Selected", c1.isSelected());
+        
+        tbl.clickOnCell(0, tbl.findColumn(Bundle.getMessage("ButtonSelect"))); // Select button
+        Assert.assertFalse("Not selected", c1.isSelected());
+
+        jfo.dispose();
+        JUnitOperationsUtil.checkOperationsShutDownTask();
+    }
+    
     private void loadCars() {
         CarManager cManager = InstanceManager.getDefault(CarManager.class);
         // add 5 cars to table
-        
+        CarOwners co = InstanceManager.getDefault(CarOwners.class);
+        co.addName("Owner2");
+            
         Car c1 = JUnitOperationsUtil.createAndPlaceCar("NH", "1", Bundle.getMessage("Caboose"), "40", "Owner2", "2009", null, 55);
         c1.setColor("Red");
         c1.setLoadName("L");
@@ -290,7 +418,7 @@ public class CarsTableFrameTest extends OperationsTestCase {
         c2.setLength("50");
         c2.setLoadName("E");
         c2.setMoves(50);
-        c2.setOwner("AT");
+        c2.setOwnerName("AT");
         // make sure the ID tags exist before we
         // try to add it to a car.
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("RFID 2");
@@ -303,7 +431,7 @@ public class CarsTableFrameTest extends OperationsTestCase {
         c3.setLength("30");
         c3.setLoadName("LA");
         c3.setMoves(40);
-        c3.setOwner("AB");
+        c3.setOwnerName("AB");
         // make sure the ID tags exist before we
         // try to add it to a car.
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("RFID 5");
@@ -316,7 +444,7 @@ public class CarsTableFrameTest extends OperationsTestCase {
         c4.setLength("45");
         c4.setLoadName("EA");
         c4.setMoves(30);
-        c4.setOwner("AAA");
+        c4.setOwnerName("AAA");
         // make sure the ID tags exist before we
         // try to add it to a car.
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("RFID 4");
@@ -329,15 +457,12 @@ public class CarsTableFrameTest extends OperationsTestCase {
         c5.setLength("25");
         c5.setLoadName("LL");
         c5.setMoves(25);
-        c5.setOwner("DAB");
+        c5.setOwnerName("DAB");
         // make sure the ID tags exist before we
         // try to add it to a car.
         jmri.InstanceManager.getDefault(jmri.IdTagManager.class).provideIdTag("RFID 1");
         c5.setRfid("RFID 1");
         c5.setTypeName("Coilcar");
-
-        JUnitOperationsUtil.checkOperationsShutDownTask();
-
     }
 
     @Override

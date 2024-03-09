@@ -2,9 +2,7 @@ package jmri.jmrit.operations.setup;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import javax.swing.JComboBox;
 
@@ -12,9 +10,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jmri.Disposable;
-import jmri.InstanceManager;
-import jmri.InstanceManagerAutoDefault;
+import jmri.*;
 import jmri.beans.PropertyChangeSupport;
 import jmri.jmris.AbstractOperationsServer;
 import jmri.jmrit.operations.rollingstock.RollingStockLogger;
@@ -127,6 +123,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     public static final String BUILD_REPORT_DETAILED = "5";
     public static final String BUILD_REPORT_VERY_DETAILED = "7";
 
+    // the following are converted to English spelling when storing to file, see KEYS below
     public static final String ROAD = Bundle.getMessage("Road"); // the supported message format options
     public static final String NUMBER = Bundle.getMessage("Number");
     public static final String TYPE = Bundle.getMessage("Type");
@@ -143,9 +140,11 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     public static final String FINAL_DEST_TRACK = Bundle.getMessage("FD&Track");
     public static final String LOCATION = Bundle.getMessage("Location");
     public static final String CONSIST = Bundle.getMessage("Consist");
+    public static final String DCC_ADDRESS = Bundle.getMessage("DCC_Address");
     public static final String KERNEL = Bundle.getMessage("Kernel");
     public static final String KERNEL_SIZE = Bundle.getMessage("Kernel_Size");
     public static final String OWNER = Bundle.getMessage("Owner");
+    public static final String DIVISION = Bundle.getMessage("Division");
     public static final String RWE = Bundle.getMessage("RWE");
     public static final String COMMENT = Bundle.getMessage("Comment");
     public static final String DROP_COMMENT = Bundle.getMessage("SetOut_Msg");
@@ -155,6 +154,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     public static final String TAB = Bundle.getMessage("Tab"); // used to tab out in tabular mode
     public static final String TAB2 = Bundle.getMessage("Tab2");
     public static final String TAB3 = Bundle.getMessage("Tab3");
+    
     public static final String BOX = " [ ] "; // NOI18N
 
     // these are for the utility printing when using tabs
@@ -174,18 +174,20 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     public static final String FEET_ABV = Bundle.getMessage("FeetAbbreviation");
     public static final String METER_ABV = Bundle.getMessage("MeterAbbreviation");
 
-    private static final String[] CAR_ATTRIBUTES
-            = {ROAD, NUMBER, TYPE, LENGTH, WEIGHT, LOAD, LOAD_TYPE, HAZARDOUS, COLOR, KERNEL, KERNEL_SIZE, OWNER,
-                TRACK, LOCATION, DESTINATION, DEST_TRACK, FINAL_DEST, FINAL_DEST_TRACK, COMMENT, DROP_COMMENT,
-                PICKUP_COMMENT, RWE};
-    private static final String[] ENGINE_ATTRIBUTES = {ROAD, NUMBER, TYPE, MODEL, LENGTH, WEIGHT, CONSIST, OWNER, TRACK,
-        LOCATION, DESTINATION, COMMENT};
+    private static final String[] CAR_ATTRIBUTES = { ROAD, NUMBER, TYPE, LENGTH, WEIGHT, LOAD, LOAD_TYPE, HAZARDOUS,
+            COLOR, KERNEL, KERNEL_SIZE, OWNER, DIVISION, TRACK, LOCATION, DESTINATION, DEST_TRACK, FINAL_DEST, FINAL_DEST_TRACK,
+            COMMENT, DROP_COMMENT, PICKUP_COMMENT, RWE };
+    
+    private static final String[] ENGINE_ATTRIBUTES = { ROAD, NUMBER, TYPE, MODEL, LENGTH, WEIGHT, CONSIST, OWNER,
+            TRACK, LOCATION, DESTINATION, COMMENT, DCC_ADDRESS };
     /*
-     * The print Manifest and switch list user selectable options are stored in the xml file using the English translation.
+     * The print Manifest and switch list user selectable options are stored in the
+     * xml file using the English translations.
      */
-    private static final String[] KEYS = {"Road", "Number", "Type", "Model", "Length", "Weight", "Load", "Load_Type", "Color", // NOI18N
-        "Track", "Destination", "Dest&Track", "Final_Dest", "FD&Track", "Location", "Consist", "Kernel", // NOI18N
-        "Kernel_Size", "Owner", "RWE", "Comment", "SetOut_Msg", "PickUp_Msg", "Hazardous", "Tab", "Tab2", "Tab3"}; // NOI18N
+    private static final String[] KEYS = {"Road", "Number", "Type", "Model", "Length", "Weight", "Load", "Load_Type",
+            "Color", "Track", "Destination", "Dest&Track", "Final_Dest", "FD&Track", "Location", "Consist",
+            "DCC_Address", "Kernel", "Kernel_Size", "Owner", "Division", "RWE", "Comment", "SetOut_Msg", "PickUp_Msg",
+            "Hazardous", "Tab", "Tab2", "Tab3"};
 
     private int scale = HO_SCALE; // Default scale
     private int ratio = HO_RATIO;
@@ -205,25 +207,25 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     private int buildReportFontSize = 10;
     private String manifestOrientation = PORTRAIT;
     private String switchListOrientation = PORTRAIT;
+    private boolean printHeader = true;
     private Color pickupColor = Color.black;
     private Color dropColor = Color.black;
     private Color localColor = Color.black;
-    private String[] pickupEngineMessageFormat = {ROAD, NUMBER, BLANK, MODEL, BLANK, BLANK, LOCATION, COMMENT};
-    private String[] dropEngineMessageFormat = {ROAD, NUMBER, BLANK, MODEL, BLANK, BLANK, DESTINATION, COMMENT};
-    private String[] pickupManifestMessageFormat = {ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, LOCATION,
-        COMMENT, PICKUP_COMMENT};
-    private String[] dropManifestMessageFormat
-            = {ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, DESTINATION,
-                COMMENT, DROP_COMMENT};
-    private String[] localManifestMessageFormat = {ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, LOCATION,
-        DESTINATION, COMMENT};
-    private String[] pickupSwitchListMessageFormat = {ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS,
-        LOCATION, COMMENT, PICKUP_COMMENT};
-    private String[] dropSwitchListMessageFormat = {ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS,
-        DESTINATION, COMMENT, DROP_COMMENT};
-    private String[] localSwitchListMessageFormat = {ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS,
-        LOCATION, DESTINATION, COMMENT};
-    private String[] missingCarMessageFormat = {ROAD, NUMBER, TYPE, LENGTH, COLOR, COMMENT};
+    private String[] pickupEngineMessageFormat = { ROAD, NUMBER, BLANK, MODEL, BLANK, BLANK, LOCATION, COMMENT };
+    private String[] dropEngineMessageFormat = { ROAD, NUMBER, BLANK, MODEL, BLANK, BLANK, DESTINATION, COMMENT };
+    private String[] pickupManifestMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, LOCATION,
+            COMMENT, PICKUP_COMMENT };
+    private String[] dropManifestMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, DESTINATION,
+            COMMENT, DROP_COMMENT };
+    private String[] localManifestMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, LOCATION,
+            DESTINATION, COMMENT };
+    private String[] pickupSwitchListMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, LOCATION,
+            COMMENT, PICKUP_COMMENT };
+    private String[] dropSwitchListMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, DESTINATION,
+            COMMENT, DROP_COMMENT };
+    private String[] localSwitchListMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, LOAD, HAZARDOUS, LOCATION,
+            DESTINATION, COMMENT };
+    private String[] missingCarMessageFormat = { ROAD, NUMBER, TYPE, LENGTH, COLOR, COMMENT };
     private String pickupEnginePrefix = BOX + Bundle.getMessage("PickUpPrefix");
     private String dropEnginePrefix = BOX + Bundle.getMessage("SetOutPrefix");
     private String pickupCarPrefix = BOX + Bundle.getMessage("PickUpPrefix");
@@ -304,7 +306,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
 
     private boolean trainIntoStagingCheck = true; // staging track must accept train's rolling stock types and roads
     private boolean trackImmediatelyAvail = false; // when true staging track is available for other trains
-    private boolean allowCarsReturnStaging = false; // allow cars on a turn to return to staging if necessary (prevent build failure)
+    private boolean allowCarsReturnStaging = false; // allow cars on a turn to return to staging if necessary (prevent
+                                                    // build failure)
     private boolean promptFromStaging = false; // prompt user to specify which departure staging track to use
     private boolean promptToStaging = false; // prompt user to specify which arrival staging track to use
     private boolean tryNormalModeStaging = true; // try normal build if route length failure using aggressive
@@ -333,6 +336,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     public static final String SHOW_TRACK_MOVES_PROPERTY_CHANGE = "setupShowTrackMoves"; // NOI18N
     public static final String SAVE_TRAIN_MANIFEST_PROPERTY_CHANGE = "saveTrainManifestChange"; // NOI18N
     public static final String ALLOW_CARS_TO_RETURN_PROPERTY_CHANGE = "allowCarsToReturnChange"; // NOI18N
+    public static final String TRAIN_DIRECTION_PROPERTY_CHANGE = "setupTrainDirectionChange"; // NOI18N
+    public static final String ROUTING_STAGING_PROPERTY_CHANGE = "setupRoutingStagingChange"; // NOI18N
 
     public static boolean isMainMenuEnabled() {
         InstanceManager.getDefault(OperationsSetupXml.class); // load file
@@ -435,7 +440,9 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     public static void setCarRoutingViaStagingEnabled(boolean enabled) {
+        boolean old = isCarRoutingViaStagingEnabled();
         getDefault().carRoutingStaging = enabled;
+        setDirtyAndFirePropertyChange(ROUTING_STAGING_PROPERTY_CHANGE, old, enabled);
     }
 
     public static boolean isForwardToYardEnabled() {
@@ -455,8 +462,9 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     /**
-     * When true, router checks that the car's destination is serviced by departure track.
-     * Very restrictive, not recommended.
+     * When true, router checks that the car's destination is serviced by departure
+     * track. Very restrictive, not recommended.
+     * 
      * @return true if enabled.
      */
     public static boolean isCheckCarDestinationEnabled() {
@@ -507,18 +515,18 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         getDefault().allowLocalSpurMoves = enabled;
     }
 
-    public static boolean isTrainIntoStagingCheckEnabled() {
+    public static boolean isStagingTrainCheckEnabled() {
         return getDefault().trainIntoStagingCheck;
     }
 
     /**
-     * Controls staging track selection, when true, the terminus staging track
-     * has to have the same characteristics as the train.
+     * Controls staging track selection, when true, the terminus staging track has
+     * to have the same characteristics as the train.
      *
-     * @param enabled when true, the terminal staging track must service the
-     *            same car types, loads, etc. as the train
+     * @param enabled when true, the terminal staging track must service the same
+     *                car types, loads, etc. as the train
      */
-    public static void setTrainIntoStagingCheckEnabled(boolean enabled) {
+    public static void setStagingTrainCheckEnabled(boolean enabled) {
         getDefault().trainIntoStagingCheck = enabled;
     }
 
@@ -531,36 +539,38 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     /**
-     * allow cars to return to the same staging location if no other options (tracks) are available.
-     * Also available on a per train basis.
-     * @return true if cars are allowed to depart and return to same staging location
+     * allow cars to return to the same staging location if no other options
+     * (tracks) are available. Also available on a per train basis.
+     * 
+     * @return true if cars are allowed to depart and return to same staging
+     *         location
      */
-    public static boolean isAllowReturnToStagingEnabled() {
+    public static boolean isStagingAllowReturnEnabled() {
         return getDefault().allowCarsReturnStaging;
     }
 
-    public static void setAllowReturnToStagingEnabled(boolean enabled) {
+    public static void setStagingAllowReturnEnabled(boolean enabled) {
         boolean old = getDefault().allowCarsReturnStaging;
         getDefault().allowCarsReturnStaging = enabled;
         setDirtyAndFirePropertyChange(ALLOW_CARS_TO_RETURN_PROPERTY_CHANGE, old, enabled);
     }
 
-    public static boolean isPromptFromStagingEnabled() {
+    public static boolean isStagingPromptFromEnabled() {
         return getDefault().promptFromStaging;
     }
 
-    public static void setPromptFromStagingEnabled(boolean enabled) {
+    public static void setStagingPromptFromEnabled(boolean enabled) {
         getDefault().promptFromStaging = enabled;
     }
 
-    public static boolean isPromptToStagingEnabled() {
+    public static boolean isStagingPromptToEnabled() {
         return getDefault().promptToStaging;
     }
 
-    public static void setPromptToStagingEnabled(boolean enabled) {
+    public static void setStagingPromptToEnabled(boolean enabled) {
         getDefault().promptToStaging = enabled;
     }
-    
+
     public static boolean isStagingTryNormalBuildEnabled() {
         return getDefault().tryNormalModeStaging;
     }
@@ -635,7 +645,11 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     public static void setTrainDirection(int direction) {
+        int old = getDefault().traindir;
         getDefault().traindir = direction;
+        if (old != direction) {
+            setDirtyAndFirePropertyChange(TRAIN_DIRECTION_PROPERTY_CHANGE, old, direction);
+        }
     }
 
     public static int getTrainDirection() {
@@ -685,9 +699,10 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     public static String getLengthUnit() {
         return getDefault().lengthUnit;
     }
-    
+
     /**
      * Abbreviation unit of length
+     * 
      * @return symbol for feet or meter
      */
     public static String getLengthUnitAbv() {
@@ -753,7 +768,9 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
 
     /**
      * Sets the report level for the car router.
-     * @param level BUILD_REPORT_NORMAL, BUILD_REPORT_DETAILED, BUILD_REPORT_VERY_DETAILED
+     * 
+     * @param level BUILD_REPORT_NORMAL, BUILD_REPORT_DETAILED,
+     *              BUILD_REPORT_VERY_DETAILED
      */
     public static void setRouterBuildReportLevel(String level) {
         getDefault().routerBuildReportLevel = level;
@@ -803,11 +820,11 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         return getDefault().switchListSameManifest;
     }
 
-    public static void setTrackSummaryEnabled(boolean b) {
+    public static void setPrintTrackSummaryEnabled(boolean b) {
         getDefault().trackSummary = b;
     }
 
-    public static boolean isTrackSummaryEnabled() {
+    public static boolean isPrintTrackSummaryEnabled() {
         return getDefault().trackSummary;
     }
 
@@ -836,9 +853,9 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     /**
-     * When true switch list shows all trains visiting a location, even if the
-     * train doesn't have any work at that location. When false, switch lists
-     * only report a train if it has work at the location.
+     * When true switch list shows all trains visiting a location, even if the train
+     * doesn't have any work at that location. When false, switch lists only report
+     * a train if it has work at the location.
      *
      * @return When true show all trains visiting a location.
      */
@@ -847,9 +864,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     /**
-     * Used to determine if there's spaces or form feed between trains and
-     * locations when printing switch lists. see
-     * getSwitchListPageFormatComboBox()
+     * Used to determine if there's spaces or form feed between trains and locations
+     * when printing switch lists. see getSwitchListPageFormatComboBox()
      *
      * @param format PAGE_NORMAL, PAGE_PER_TRAIN, or PAGE_PER_VISIT
      */
@@ -861,11 +877,11 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         return getDefault().switchListPageFormat;
     }
 
-    public static void setTruncateManifestEnabled(boolean b) {
+    public static void setPrintTruncateManifestEnabled(boolean b) {
         getDefault().manifestTruncated = b;
     }
 
-    public static boolean isTruncateManifestEnabled() {
+    public static boolean isPrintTruncateManifestEnabled() {
         return getDefault().manifestTruncated;
     }
 
@@ -931,6 +947,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
 
     /**
      * when true manifest work is sorted by track names.
+     * 
      * @return true if work at a location is to be sorted by track names.
      */
     public static boolean isSortByTrackNameEnabled() {
@@ -1051,6 +1068,14 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         getDefault().manifestFontSize = size;
     }
 
+    public static boolean isPrintPageHeaderEnabled() {
+        return getDefault().printHeader;
+    }
+
+    public static void setPrintPageHeaderEnabled(boolean enable) {
+        getDefault().printHeader = enable;
+    }
+
     public static int getBuildReportFontSize() {
         return getDefault().buildReportFontSize;
     }
@@ -1117,6 +1142,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
 
     /**
      * Sets the format for manifests
+     * 
      * @param format STANDARD_FORMAT, TWO_COLUMN_FORMAT, or TWO_COLUMN_TRACK_FORMAT
      */
     public static void setManifestFormat(String format) {
@@ -1363,36 +1389,36 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     /**
-     * Gets the manifest format for utility cars. The car's road, number, and
-     * color are not printed.
+     * Gets the manifest format for utility cars. The car's road, number, and color
+     * are not printed.
      *
      * @return Utility car format
      */
     public static String[] getPickupUtilityManifestMessageFormat() {
-        return getDefault().createUitlityCarMessageFormat(getPickupManifestMessageFormat());
+        return createUitlityCarMessageFormat(getPickupManifestMessageFormat());
     }
 
     public static String[] getDropUtilityManifestMessageFormat() {
-        return getDefault().createUitlityCarMessageFormat(getDropManifestMessageFormat());
+        return createUitlityCarMessageFormat(getDropManifestMessageFormat());
     }
 
     public static String[] getLocalUtilityManifestMessageFormat() {
-        return getDefault().createUitlityCarMessageFormat(getLocalManifestMessageFormat());
+        return createUitlityCarMessageFormat(getLocalManifestMessageFormat());
     }
 
     public static String[] getPickupUtilitySwitchListMessageFormat() {
-        return getDefault().createUitlityCarMessageFormat(getPickupSwitchListMessageFormat());
+        return createUitlityCarMessageFormat(getPickupSwitchListMessageFormat());
     }
 
     public static String[] getDropUtilitySwitchListMessageFormat() {
-        return getDefault().createUitlityCarMessageFormat(getDropSwitchListMessageFormat());
+        return createUitlityCarMessageFormat(getDropSwitchListMessageFormat());
     }
 
     public static String[] getLocalUtilitySwitchListMessageFormat() {
-        return getDefault().createUitlityCarMessageFormat(getLocalSwitchListMessageFormat());
+        return createUitlityCarMessageFormat(getLocalSwitchListMessageFormat());
     }
 
-    private String[] createUitlityCarMessageFormat(String[] format) {
+    private static String[] createUitlityCarMessageFormat(String[] format) {
         // remove car's road, number, color
         for (int i = 0; i < format.length; i++) {
             if (format[i].equals(ROAD)) {
@@ -1407,14 +1433,14 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     public static String[] getPickupTruncatedManifestMessageFormat() {
-        return getDefault().createTruncatedManifestMessageFormat(getPickupManifestMessageFormat());
+        return createTruncatedManifestMessageFormat(getPickupManifestMessageFormat());
     }
 
     public static String[] getDropTruncatedManifestMessageFormat() {
-        return getDefault().createTruncatedManifestMessageFormat(getDropManifestMessageFormat());
+        return createTruncatedManifestMessageFormat(getDropManifestMessageFormat());
     }
 
-    private String[] createTruncatedManifestMessageFormat(String[] format) {
+    public static String[] createTruncatedManifestMessageFormat(String[] format) {
         // remove car's destination and location
         for (int i = 0; i < format.length; i++) {
             if (format[i].equals(DESTINATION)) {
@@ -1431,22 +1457,22 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     public static String[] getPickupTwoColumnByTrackManifestMessageFormat() {
-        return getDefault().createTwoColumnByTrackPickupMessageFormat(getPickupManifestMessageFormat());
+        return createTwoColumnByTrackPickupMessageFormat(getPickupManifestMessageFormat());
     }
 
     public static String[] getPickupTwoColumnByTrackSwitchListMessageFormat() {
-        return getDefault().createTwoColumnByTrackPickupMessageFormat(getPickupSwitchListMessageFormat());
+        return createTwoColumnByTrackPickupMessageFormat(getPickupSwitchListMessageFormat());
     }
 
     public static String[] getPickupTwoColumnByTrackUtilityManifestMessageFormat() {
-        return getDefault().createTwoColumnByTrackPickupMessageFormat(getPickupUtilityManifestMessageFormat());
+        return createTwoColumnByTrackPickupMessageFormat(getPickupUtilityManifestMessageFormat());
     }
 
     public static String[] getPickupTwoColumnByTrackUtilitySwitchListMessageFormat() {
-        return getDefault().createTwoColumnByTrackPickupMessageFormat(getPickupUtilitySwitchListMessageFormat());
+        return createTwoColumnByTrackPickupMessageFormat(getPickupUtilitySwitchListMessageFormat());
     }
 
-    private String[] createTwoColumnByTrackPickupMessageFormat(String[] format) {
+    private static String[] createTwoColumnByTrackPickupMessageFormat(String[] format) {
         for (int i = 0; i < format.length; i++) {
             if (format[i].equals(LOCATION)) {
                 format[i] = BLANK;
@@ -1458,22 +1484,22 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     public static String[] getDropTwoColumnByTrackManifestMessageFormat() {
-        return getDefault().createTwoColumnByTrackDropMessageFormat(getDropManifestMessageFormat());
+        return createTwoColumnByTrackDropMessageFormat(getDropManifestMessageFormat());
     }
 
     public static String[] getDropTwoColumnByTrackSwitchListMessageFormat() {
-        return getDefault().createTwoColumnByTrackDropMessageFormat(getDropSwitchListMessageFormat());
+        return createTwoColumnByTrackDropMessageFormat(getDropSwitchListMessageFormat());
     }
 
     public static String[] getDropTwoColumnByTrackUtilityManifestMessageFormat() {
-        return getDefault().createTwoColumnByTrackDropMessageFormat(getDropUtilityManifestMessageFormat());
+        return createTwoColumnByTrackDropMessageFormat(getDropUtilityManifestMessageFormat());
     }
 
     public static String[] getDropTwoColumnByTrackUtilitySwitchListMessageFormat() {
-        return getDefault().createTwoColumnByTrackDropMessageFormat(getDropUtilitySwitchListMessageFormat());
+        return createTwoColumnByTrackDropMessageFormat(getDropUtilitySwitchListMessageFormat());
     }
 
-    private String[] createTwoColumnByTrackDropMessageFormat(String[] format) {
+    private static String[] createTwoColumnByTrackDropMessageFormat(String[] format) {
         for (int i = 0; i < format.length; i++) {
             if (format[i].equals(DESTINATION)) {
                 format[i] = BLANK;
@@ -1716,8 +1742,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
 
     /**
      *
-     * @return JComboBox loaded with the strings (North, South, East, West)
-     *         showing the available train directions for this railroad
+     * @return JComboBox loaded with the strings (North, South, East, West) showing
+     *         the available train directions for this railroad
      */
     public static JComboBox<String> getTrainDirectionComboBox() {
         JComboBox<String> box = new JComboBox<>();
@@ -1882,7 +1908,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         values.setAttribute(Xml.PAGE_FORMAT, format);
 
         values.setAttribute(Xml.PRINT_ROUTE_LOCATION, isSwitchListRouteLocationCommentEnabled() ? Xml.TRUE : Xml.FALSE);
-        values.setAttribute(Xml.TRACK_SUMMARY, isTrackSummaryEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.TRACK_SUMMARY, isPrintTrackSummaryEnabled() ? Xml.TRUE : Xml.FALSE);
 
         e.addContent(values = new Element(Xml.SWITCH_LIST_PICKUP_CAR_FORMAT));
         storeXmlMessageFormat(values, getSwitchListPickupCarPrefix(), getPickupSwitchListMessageFormat());
@@ -1927,8 +1953,9 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         values.setAttribute(Xml.USE12HR_FORMAT, is12hrFormatEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.PRINT_VALID, isPrintValidEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.SORT_BY_TRACK, isSortByTrackNameEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.PRINT_PAGE_HEADER, isPrintPageHeaderEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.PRINT_HEADERS, isPrintHeadersEnabled() ? Xml.TRUE : Xml.FALSE);
-        values.setAttribute(Xml.TRUNCATE, isTruncateManifestEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.TRUNCATE, isPrintTruncateManifestEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.USE_DEPARTURE_TIME, isUseDepartureTimeEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.USE_EDITOR, isManifestEditorEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.PRINT_CABOOSE_LOAD, isPrintCabooseLoadEnabled() ? Xml.TRUE : Xml.FALSE);
@@ -1965,11 +1992,11 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         values.setAttribute(Xml.ALLOW_LOCAL_SPUR, isLocalSpurMovesEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.ALLOW_LOCAL_YARD, isLocalYardMovesEnabled() ? Xml.TRUE : Xml.FALSE);
 
-        values.setAttribute(Xml.STAGING_RESTRICTION_ENABLED, isTrainIntoStagingCheckEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.STAGING_RESTRICTION_ENABLED, isStagingTrainCheckEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.STAGING_TRACK_AVAIL, isStagingTrackImmediatelyAvail() ? Xml.TRUE : Xml.FALSE);
-        values.setAttribute(Xml.ALLOW_RETURN_STAGING, isAllowReturnToStagingEnabled() ? Xml.TRUE : Xml.FALSE);
-        values.setAttribute(Xml.PROMPT_STAGING_ENABLED, isPromptFromStagingEnabled() ? Xml.TRUE : Xml.FALSE);
-        values.setAttribute(Xml.PROMPT_TO_STAGING_ENABLED, isPromptToStagingEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.ALLOW_RETURN_STAGING, isStagingAllowReturnEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.PROMPT_STAGING_ENABLED, isStagingPromptFromEnabled() ? Xml.TRUE : Xml.FALSE);
+        values.setAttribute(Xml.PROMPT_TO_STAGING_ENABLED, isStagingPromptToEnabled() ? Xml.TRUE : Xml.FALSE);
         values.setAttribute(Xml.STAGING_TRY_NORMAL, isStagingTryNormalBuildEnabled() ? Xml.TRUE : Xml.FALSE);
 
         values.setAttribute(Xml.GENERATE_CSV_MANIFEST, isGenerateCsvManifestEnabled() ? Xml.TRUE : Xml.FALSE);
@@ -2022,8 +2049,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
 
         // Save CATS setting
         e.addContent(values = new Element(Xml.CATS));
-        values.setAttribute(Xml.EXACT_LOCATION_NAME, AbstractOperationsServer.isExactLoationNameEnabled() ? Xml.TRUE
-                : Xml.FALSE);
+        values.setAttribute(Xml.EXACT_LOCATION_NAME,
+                AbstractOperationsServer.isExactLoationNameEnabled() ? Xml.TRUE : Xml.FALSE);
         return e;
     }
 
@@ -2045,19 +2072,20 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
         Element operations = e.getChild(Xml.OPERATIONS);
         org.jdom2.Attribute a;
 
-        if ((operations.getChild(Xml.RAIL_ROAD) != null)
-                && (a = operations.getChild(Xml.RAIL_ROAD).getAttribute(Xml.NAME)) != null) {
+        if ((operations.getChild(Xml.RAIL_ROAD) != null) &&
+                (a = operations.getChild(Xml.RAIL_ROAD).getAttribute(Xml.NAME)) != null) {
             String name = a.getValue();
             log.debug("railroadName: {}", name);
-            // code before 4.11 "useJmriRailroadName" when using the preferences railroad name.
+            // code before 4.11 "useJmriRailroadName" when using the preferences railroad
+            // name.
             // here for backwards compatibility
             if (!name.equals(Xml.USE_JMRI_RAILROAD_NAME)) {
                 getDefault().railroadName = name; // don't set the dirty bit
             }
         }
 
-        if ((operations.getChild(Xml.SETUP) != null)
-                && (a = operations.getChild(Xml.SETUP).getAttribute(Xml.COMMENT)) != null) {
+        if ((operations.getChild(Xml.SETUP) != null) &&
+                (a = operations.getChild(Xml.SETUP).getAttribute(Xml.COMMENT)) != null) {
             String comment = a.getValue();
             log.debug("setup comment: {}", comment);
             getDefault().setupComment = comment;
@@ -2078,7 +2106,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
                 String dir = a.getValue();
                 log.debug("direction: {}", dir);
                 try {
-                    setTrainDirection(Integer.parseInt(dir));
+                    getDefault().traindir = Integer.parseInt(dir);
                 } catch (NumberFormatException ee) {
                     log.error("Train direction ({}) isn't a valid number", a.getValue());
                 }
@@ -2222,6 +2250,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
                 String setting = a.getValue();
                 log.debug("pickupEngFormat: {}", setting);
                 String[] keys = setting.split(",");
+                xmlAttributeToKeyConversion(keys);
                 keyToStringConversion(keys);
                 setPickupEngineMessageFormat(keys);
             }
@@ -2234,6 +2263,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
                 String setting = a.getValue();
                 log.debug("dropEngFormat: {}", setting);
                 String[] keys = setting.split(",");
+                xmlAttributeToKeyConversion(keys);
                 keyToStringConversion(keys);
                 setDropEngineMessageFormat(keys);
             }
@@ -2335,7 +2365,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
             if ((a = operations.getChild(Xml.SWITCH_LIST).getAttribute(Xml.TRACK_SUMMARY)) != null) {
                 String b = a.getValue();
                 log.debug("track summary: {}", b);
-                setTrackSummaryEnabled(b.equals(Xml.TRUE));
+                setPrintTrackSummaryEnabled(b.equals(Xml.TRUE));
             }
         }
         if (operations.getChild(Xml.SWITCH_LIST_PICKUP_CAR_FORMAT) != null) {
@@ -2397,14 +2427,14 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
                 setTrainIconAppendEnabled(enable.equals(Xml.TRUE));
             }
         }
-        if ((operations.getChild(Xml.FONT_NAME) != null)
-                && (a = operations.getChild(Xml.FONT_NAME).getAttribute(Xml.NAME)) != null) {
+        if ((operations.getChild(Xml.FONT_NAME) != null) &&
+                (a = operations.getChild(Xml.FONT_NAME).getAttribute(Xml.NAME)) != null) {
             String font = a.getValue();
             log.debug("fontName: {}", font);
             setFontName(font);
         }
-        if ((operations.getChild(Xml.FONT_SIZE) != null)
-                && (a = operations.getChild(Xml.FONT_SIZE).getAttribute(Xml.SIZE)) != null) {
+        if ((operations.getChild(Xml.FONT_SIZE) != null) &&
+                (a = operations.getChild(Xml.FONT_SIZE).getAttribute(Xml.SIZE)) != null) {
             String size = a.getValue();
             log.debug("fontsize: {}", size);
             try {
@@ -2512,6 +2542,11 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
                 log.debug("manifest sortByTrack: {}", enable);
                 setSortByTrackNameEnabled(enable.equals(Xml.TRUE));
             }
+            if ((a = operations.getChild(Xml.MANIFEST).getAttribute(Xml.PRINT_PAGE_HEADER)) != null) {
+                String enable = a.getValue();
+                log.debug("manifest printPageHeader: {}", enable);
+                setPrintPageHeaderEnabled(enable.equals(Xml.TRUE));
+            }
             if ((a = operations.getChild(Xml.MANIFEST).getAttribute(Xml.PRINT_HEADERS)) != null) {
                 String enable = a.getValue();
                 log.debug("manifest print headers: {}", enable);
@@ -2520,7 +2555,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
             if ((a = operations.getChild(Xml.MANIFEST).getAttribute(Xml.TRUNCATE)) != null) {
                 String enable = a.getValue();
                 log.debug("manifest truncate: {}", enable);
-                setTruncateManifestEnabled(enable.equals(Xml.TRUE));
+                setPrintTruncateManifestEnabled(enable.equals(Xml.TRUE));
             }
             if ((a = operations.getChild(Xml.MANIFEST).getAttribute(Xml.USE_DEPARTURE_TIME)) != null) {
                 String enable = a.getValue();
@@ -2611,8 +2646,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
                 String enable = a.getValue();
                 log.debug("allowLocalSpurMoves: {}", enable);
                 setLocalSpurMovesEnabled(enable.equals(Xml.TRUE));
-            }
-            else if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.ALLOW_LOCAL_SIDING)) != null) {
+            } else if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.ALLOW_LOCAL_SIDING)) != null) {
                 String enable = a.getValue();
                 log.debug("allowLocalSidingMoves: {}", enable);
                 setLocalSpurMovesEnabled(enable.equals(Xml.TRUE));
@@ -2625,7 +2659,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
             if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.STAGING_RESTRICTION_ENABLED)) != null) {
                 String enable = a.getValue();
                 log.debug("stagingRestrictionEnabled: {}", enable);
-                setTrainIntoStagingCheckEnabled(enable.equals(Xml.TRUE));
+                setStagingTrainCheckEnabled(enable.equals(Xml.TRUE));
             }
             if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.STAGING_TRACK_AVAIL)) != null) {
                 String enable = a.getValue();
@@ -2640,12 +2674,12 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
             if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.PROMPT_STAGING_ENABLED)) != null) {
                 String enable = a.getValue();
                 log.debug("promptStagingEnabled: {}", enable);
-                setPromptFromStagingEnabled(enable.equals(Xml.TRUE));
+                setStagingPromptFromEnabled(enable.equals(Xml.TRUE));
             }
             if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.PROMPT_TO_STAGING_ENABLED)) != null) {
                 String enable = a.getValue();
                 log.debug("promptToStagingEnabled: {}", enable);
-                setPromptToStagingEnabled(enable.equals(Xml.TRUE));
+                setStagingPromptToEnabled(enable.equals(Xml.TRUE));
             }
             if ((a = operations.getChild(Xml.BUILD_OPTIONS).getAttribute(Xml.STAGING_TRY_NORMAL)) != null) {
                 String enable = a.getValue();
@@ -2755,8 +2789,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
             }
         }
 
-        if ((operations.getChild(Xml.OWNER) != null)
-                && (a = operations.getChild(Xml.OWNER).getAttribute(Xml.NAME)) != null) {
+        if ((operations.getChild(Xml.OWNER) != null) &&
+                (a = operations.getChild(Xml.OWNER).getAttribute(Xml.NAME)) != null) {
             String owner = a.getValue();
             log.debug("owner: {}", owner);
             setOwnerName(owner);
@@ -2898,7 +2932,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
             try {
                 keys[i] = Bundle.getMessage(keys[i]);
             } catch (Exception e) {
-                log.debug("Key {}: ({}) not found", i, keys[i]);
+                log.warn("Key {}: ({}) not found", i, keys[i]);
             }
         }
     }
@@ -2909,8 +2943,7 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
      */
     private static void stringToTagConversion(String[] strings) {
         for (int i = 0; i < strings.length; i++) {
-            String old = strings[i];
-            if (old.equals(BLANK)) {
+            if (strings[i].equals(BLANK)) {
                 continue;
             }
             for (String key : KEYS) {
@@ -2924,8 +2957,8 @@ public class Setup extends PropertyChangeSupport implements InstanceManagerAutoD
     }
 
     /*
-     * The xml attributes stored using the English translation. This converts
-     * the attribute to the appropriate key for language conversion.
+     * The xml attributes stored using the English translation. This converts the
+     * attribute to the appropriate key for language conversion.
      */
     private static void xmlAttributeToKeyConversion(String[] format) {
         for (int i = 0; i < format.length; i++) {

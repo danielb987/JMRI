@@ -3,15 +3,11 @@ package jmri.jmrit.operations.trains;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.ProcessingInstruction;
+import org.jdom2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jmri.InstanceManager;
-import jmri.InstanceManagerAutoDefault;
-import jmri.InstanceManagerAutoInitialize;
+import jmri.*;
 import jmri.jmrit.operations.OperationsManager;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.automation.AutomationManager;
@@ -41,8 +37,8 @@ public class TrainManagerXml extends OperationsXml implements InstanceManagerAut
     static final String BUILD_STATUS = "buildstatus"; // NOI18N
     static final String MANIFESTS = "manifests"; // NOI18N
     static final String SWITCH_LISTS = "switchLists"; // NOI18N
-    static final String CSV_MANIFESTS = "csvManifests"; // NOI18N
-    static final String CSV_SWITCH_LISTS = "csvSwitchLists"; // NOI18N
+    public static final String CSV_MANIFESTS = "csvManifests"; // NOI18N
+    public static final String CSV_SWITCH_LISTS = "csvSwitchLists"; // NOI18N
     static final String JSON_MANIFESTS = "jsonManifests"; // NOI18N
     static final String MANIFESTS_BACKUPS = "manifestsBackups"; // NOI18N
     static final String SWITCH_LISTS_BACKUPS = "switchListsBackups"; // NOI18N
@@ -109,9 +105,6 @@ public class TrainManagerXml extends OperationsXml implements InstanceManagerAut
         // now load train icons on panels
         InstanceManager.getDefault(TrainManager.class).loadTrainIcons();
 
-        // loading complete run startup scripts
-        InstanceManager.getDefault(TrainManager.class).runStartUpScripts();
-
         log.debug("Trains have been loaded!");
         InstanceManager.getDefault(TrainLogger.class).enableTrainLogging(Setup.isTrainLoggerEnabled());
         
@@ -121,7 +114,12 @@ public class TrainManagerXml extends OperationsXml implements InstanceManagerAut
                 train.reset();
             }
         }
+        
         setDirty(false); // clear dirty flag
+        
+        // loading complete run startup scripts
+        InstanceManager.getDefault(TrainManager.class).runStartUpScripts();       
+        InstanceManager.getDefault(AutomationManager.class).runStartupAutomation();
     }
 
     public boolean isTrainFileLoaded() {
@@ -334,7 +332,7 @@ public class TrainManagerXml extends OperationsXml implements InstanceManagerAut
      * @return CSV switch list File.
      */
     public File createCsvSwitchListFile(String name) {
-        return createFile(getDefaultCsvSwitchListFileName(name), false); // don't backup
+        return createFile(getDefaultCsvSwitchListFileName(name), true); // create backup
     }
 
     public File getCsvSwitchListFile(String name) {
@@ -346,7 +344,7 @@ public class TrainManagerXml extends OperationsXml implements InstanceManagerAut
         return getDefaultCsvSwitchListDirectoryName() + SWITCH_LIST_FILE_NAME + name + FILE_TYPE_CSV;
     }
 
-    private String getDefaultCsvSwitchListDirectoryName() {
+    public String getDefaultCsvSwitchListDirectoryName() {
         return OperationsXml.getFileLocation()
                 + OperationsXml.getOperationsDirectoryName()
                 + File.separator

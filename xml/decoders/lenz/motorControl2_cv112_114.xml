@@ -11,7 +11,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <copyright xmlns="http://docbook.org/ns/docbook">
     <year>2012</year>
     <holder>JMRI</holder>
@@ -66,9 +66,9 @@
 	<label xml:lang="de">Motor Timeout bei nicht vorhandenem DCC</label>
 	<comment xml:lang="de">Wertebereich 0-255</comment>
 	<tooltip xml:lang="de">Motor Timeout t = Wert * 16 ms</tooltip>
-	<label xml:lang="cs">Timeout motoru při ztrátě DCC</label>
+	<label xml:lang="cs">Časový limit motoru při ztrátě DCC</label>
 	<comment xml:lang="cs">Meze 0-255</comment>
-	<tooltip xml:lang="cs">Timeout motoru t = hodnota * 16 ms</tooltip>
+	<tooltip xml:lang="cs">Časový limit motoru t = hodnota * 16 ms</tooltip>
 	<label xml:lang="ca">Timeout del Motor per manca de DCC</label>
 	<comment xml:lang="ca">Rang 0-255</comment>
 	<tooltip xml:lang="ca">Timeout del motor t = Valor * 16 ms</tooltip>

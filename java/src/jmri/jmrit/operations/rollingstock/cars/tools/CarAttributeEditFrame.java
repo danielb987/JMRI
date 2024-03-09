@@ -1,13 +1,7 @@
 package jmri.jmrit.operations.rollingstock.cars.tools;
 
-import java.text.MessageFormat;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
@@ -18,6 +12,7 @@ import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.EngineManager;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.trains.tools.TrainsByCarTypeFrame;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for editing a car attribute.
@@ -28,15 +23,11 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
 
     CarManager carManager = InstanceManager.getDefault(CarManager.class);
 
-    // valid attributes for this frame
-    public static final String ROAD = Bundle.getMessage("Road");
-    public static final String TYPE = Bundle.getMessage("Type");
-    public static final String COLOR = Bundle.getMessage("Color");
-    public static final String LENGTH = Bundle.getMessage("Length");
-    public static final String OWNER = Bundle.getMessage("Owner");
-    public static final String KERNEL = Bundle.getMessage("Kernel");
+    // incremental attributes for this frame
+    public static final String COLOR = "Color";
+    public static final String KERNEL = "Kernel";
 
-    public CarAttributeEditFrame() {
+    public CarAttributeEditFrame(){
     }
 
     /**
@@ -56,10 +47,8 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
     public void initComponents(String attribute, String name) {
         super.initComponents(attribute, name);
 
-        setTitle(MessageFormat.format(Bundle.getMessage("TitleCarEditAtrribute"), new Object[] { attribute }));
+        setTitle(Bundle.getMessage("TitleCarEditAtrribute", attribute));
         carManager.addPropertyChangeListener(this);
-        
-        addComboBoxAction(comboBox);
 
         // build menu
         JMenuBar menuBar = new JMenuBar();
@@ -70,12 +59,6 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
         setJMenuBar(menuBar);
         // add help menu to window
         addHelpMenu("package.jmri.jmrit.operations.Operations_EditCarAttributes", true); // NOI18N
-    }
-
-    @Override
-    protected void comboBoxActionPerformed(java.awt.event.ActionEvent ae) {
-        log.debug("Combo box action");
-        updateCarQuanity();
     }
 
     @Override
@@ -91,7 +74,7 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
             InstanceManager.getDefault(CarLengths.class).deleteName(deleteItem);
         }
         if (_attribute.equals(KERNEL)) {
-            carManager.deleteKernel(deleteItem);
+            InstanceManager.getDefault(KernelManager.class).deleteKernel(deleteItem);
         }
     }
 
@@ -102,28 +85,29 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
         if (_attribute.equals(TYPE)) {
             InstanceManager.getDefault(CarTypes.class).addName(addItem);
             if (showDialogBox) {
-                int results = JOptionPane.showOptionDialog(this, Bundle.getMessage("AddNewCarType"),
-                        Bundle.getMessage("ModifyLocations"), JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, new Object[] { Bundle.getMessage("ButtonYes"),
+                int results = JmriJOptionPane.showOptionDialog(this, Bundle.getMessage("AddNewCarType"),
+                        Bundle.getMessage("ModifyLocations"), JmriJOptionPane.DEFAULT_OPTION,
+                        JmriJOptionPane.QUESTION_MESSAGE, null,
+                        new Object[] { Bundle.getMessage("ButtonYes"),
                                 Bundle.getMessage("ButtonNo"), Bundle.getMessage("ButtonDontShow") },
                         Bundle.getMessage("ButtonNo"));
-                if (results == JOptionPane.YES_OPTION) {
+                if (results == 0 ) { // array position 0, ButtonYes
                     LocationsByCarTypeFrame lf = new LocationsByCarTypeFrame();
                     lf.initComponents(addItem);
                 }
-                if (results == JOptionPane.CANCEL_OPTION) {
+                if (results == 2 ) { // array position 2, ButtonDontShow
                     showDialogBox = false;
                 }
-                results = JOptionPane.showOptionDialog(this, Bundle.getMessage("AddNewCarType"),
-                        Bundle.getMessage("ModifyTrains"), JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, new Object[] { Bundle.getMessage("ButtonYes"),
+                results = JmriJOptionPane.showOptionDialog(this, Bundle.getMessage("AddNewCarType"),
+                        Bundle.getMessage("ModifyTrains"), JmriJOptionPane.DEFAULT_OPTION,
+                        JmriJOptionPane.QUESTION_MESSAGE, null, new Object[] { Bundle.getMessage("ButtonYes"),
                                 Bundle.getMessage("ButtonNo"), Bundle.getMessage("ButtonDontShow") },
                         Bundle.getMessage("ButtonNo"));
-                if (results == JOptionPane.YES_OPTION) {
+                if (results == 0 ) { // array position 0, ButtonYes
                     TrainsByCarTypeFrame lf = new TrainsByCarTypeFrame();
                     lf.initComponents(addItem);
                 }
-                if (results == JOptionPane.CANCEL_OPTION) {
+                if (results == 2 ) { // array position 2, ButtonDontShow
                     showDialogBox = false;
                 }
             }
@@ -132,14 +116,11 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
             InstanceManager.getDefault(CarColors.class).addName(addItem);
         }
         if (_attribute.equals(LENGTH)) {
-            String length = convertLength(addItem);
-            if (!length.equals(FAILED)) {
-                InstanceManager.getDefault(CarLengths.class).addName(length);
-                comboBox.setSelectedItem(length);
-            }
+            InstanceManager.getDefault(CarLengths.class).addName(addItem);
+            comboBox.setSelectedItem(addItem);
         }
         if (_attribute.equals(KERNEL)) {
-            carManager.newKernel(addItem);
+            InstanceManager.getDefault(KernelManager.class).newKernel(addItem);
         }
         if (_attribute.equals(OWNER)) {
             InstanceManager.getDefault(CarOwners.class).addName(addItem);
@@ -151,7 +132,7 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
         super.replaceItem(oldItem, newItem);
         // replace kernel
         if (_attribute.equals(KERNEL)) {
-            carManager.replaceKernelName(oldItem, newItem);
+            InstanceManager.getDefault(KernelManager.class).replaceKernelName(oldItem, newItem);
         }
         // now adjust cars, locations and trains
         if (_attribute.equals(TYPE)) {
@@ -182,17 +163,13 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
             InstanceManager.getDefault(CarLengths.class).addPropertyChangeListener(this);
         }
         if (_attribute.equals(KERNEL)) {
-            comboBox = carManager.getKernelComboBox();
+            comboBox = InstanceManager.getDefault(KernelManager.class).getComboBox();
+            InstanceManager.getDefault(KernelManager.class).addPropertyChangeListener(this);
         }
     }
 
-    public void toggleShowQuanity() {
-        showQuanity = !showQuanity;
-        quanity.setVisible(showQuanity);
-        updateCarQuanity();
-    }
-
-    private void updateCarQuanity() {
+    @Override
+    protected void updateAttributeQuanity() {
         if (!showQuanity) {
             return;
         }
@@ -221,7 +198,7 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
                 }
             }
             if (_attribute.equals(OWNER)) {
-                if (car.getOwner().equals(item)) {
+                if (car.getOwnerName().equals(item)) {
                     number++;
                 }
             }
@@ -246,60 +223,30 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
             // need to check if an engine is using the road name
             if (_attribute.equals(OWNER)) {
                 for (RollingStock rs : InstanceManager.getDefault(EngineManager.class).getList()) {
-                    if (rs.getOwner().equals(item)) {
+                    if (rs.getOwnerName().equals(item)) {
                         log.info("Engine ({} {}) is assigned owner name ({})", rs.getRoadName(), rs.getNumber(), item); // NOI18N
                         return;
                     }
                 }
             }
             // confirm that attribute is to be deleted
-            if (!cancel) {
-                int results = JOptionPane.showOptionDialog(null,
-                        MessageFormat
-                                .format(Bundle.getMessage("ConfirmDeleteAttribute"), new Object[] { _attribute, item }),
-                        Bundle.getMessage("DeleteAttribute?"), JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, new Object[] { Bundle.getMessage("ButtonYes"),
-                                Bundle.getMessage("ButtonNo"), Bundle.getMessage("ButtonCancel") },
-                        Bundle.getMessage("ButtonYes"));
-                if (results == JOptionPane.YES_OPTION) {
-                    deleteAttributeName((String) comboBox.getSelectedItem());
-                }
-                if (results == JOptionPane.CANCEL_OPTION || results == JOptionPane.CLOSED_OPTION) {
-                    cancel = true;
-                }
-            }
+            confirmDelete(item);
         }
     }
 
-    boolean deleteUnused = false;
-    boolean cancel = false;
-
-    public void deleteUnusedAttributes() {
-        if (!showQuanity) {
-            toggleShowQuanity();
-        }
-        deleteUnused = true;
-        cancel = false;
-        int items = comboBox.getItemCount() - 1;
-        for (int i = items; i >= 0; i--) {
-            comboBox.setSelectedIndex(i);
-        }
-        deleteUnused = false; // done
-        comboBox.setSelectedIndex(0);
-    }
 
     @Override
     public void dispose() {
         InstanceManager.getDefault(CarTypes.class).removePropertyChangeListener(this);
         InstanceManager.getDefault(CarColors.class).removePropertyChangeListener(this);
         InstanceManager.getDefault(CarLengths.class).removePropertyChangeListener(this);
+        InstanceManager.getDefault(KernelManager.class).removePropertyChangeListener(this);
         carManager.removePropertyChangeListener(this);
         super.dispose();
     }
 
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
-        super.propertyChange(e);
         if (Control.SHOW_PROPERTY) {
             log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(),
                     e.getNewValue());
@@ -313,13 +260,14 @@ public class CarAttributeEditFrame extends RollingStockAttributeEditFrame {
         if (e.getPropertyName().equals(CarLengths.CARLENGTHS_CHANGED_PROPERTY)) {
             InstanceManager.getDefault(CarLengths.class).updateComboBox(comboBox);
         }
-        if (e.getPropertyName().equals(CarManager.KERNEL_LISTLENGTH_CHANGED_PROPERTY)) {
-            carManager.updateKernelComboBox(comboBox);
+        if (e.getPropertyName().equals(KernelManager.LISTLENGTH_CHANGED_PROPERTY)) {
+            InstanceManager.getDefault(KernelManager.class).updateComboBox(comboBox);
         }
         if (e.getPropertyName().equals(CarManager.LISTLENGTH_CHANGED_PROPERTY)) {
-            updateCarQuanity();
+            updateAttributeQuanity();
         }
+        super.propertyChange(e);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(CarAttributeEditFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CarAttributeEditFrame.class);
 }

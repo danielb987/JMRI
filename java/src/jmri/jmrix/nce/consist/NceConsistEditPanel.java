@@ -7,39 +7,30 @@ import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
+
 import jmri.DccLocoAddress;
 import jmri.InstanceManager;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.roster.swing.RosterEntryComboBox;
 import jmri.jmrit.throttle.ThrottleFrameManager;
-import jmri.jmrix.nce.NceBinaryCommand;
-import jmri.jmrix.nce.NceCmdStationMemory;
-import jmri.jmrix.nce.NceMessage;
-import jmri.jmrix.nce.NceReply;
-import jmri.jmrix.nce.NceSystemConnectionMemo;
-import jmri.jmrix.nce.NceTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.jmrix.nce.*;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Pane for user edit of NCE Consists
  *
  * NCE Consists are stored in Command Station (CS) memory starting at address
- * xF500 and ending xFAFF. NCE supports up to 127 consists, numbered 1 to 127.
+ * xF500 and ending xFAFF (PH5 0x4E00 - 0x53FF). NCE supports up to 127 consists, numbered 1 to 127.
  * They track the lead loco, rear loco, and four mid locos in the consist file.
  * NCE cabs start at consist 127 when building and reviewing consists, so we
  * also start with 127. Consist lead locos are stored in memory locations xF500
- * through xF5FF. Consist rear locos are stored in memory locations xF600
- * through xF6FF. Mid consist locos (four max) are stored in memory locations
- * xF700 through xFAFF. If a long address is in use, bits 6 and 7 of the high
+ * through xF5FF (PH5 0x4E00 - 0x4EFF). Consist rear locos are stored in memory locations xF600
+ * through xF6FF (PH5 0x4F00 - 0x4FFF). Mid consist locos (four max) are stored in memory locations
+ * xF700 through xFAFF (PH5 0x500 - 0x53FF). If a long address is in use, bits 6 and 7 of the high
  * byte are set. Example: Long address 3 = 0xc0 0x03 Short address 3 = 0x00 0x03
  *
  * NCE file format:
@@ -57,15 +48,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dan Boudreau Copyright (C) 2007 2008 Cloned from NceConsistEditFrame
  * by
- * @author kcameron Copyright (C) 2010
+ * @author kcameron Copyright (C) 2010, 2023
  */
 public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implements
         jmri.jmrix.nce.NceListener {
     
     NceConsistRoster nceConsistRoster = InstanceManager.getDefault(NceConsistRoster.class);
 
-    private static final int CONSIST_MIN = 1;    // NCE doesn't use consist 0
-    private static final int CONSIST_MAX = 127;
+    private int CONSIST_MIN = 1;    // NCE doesn't use consist 0
+    private int CONSIST_MAX = 127;
     private static final int LOC_ADR_MIN = 0;    // loco address range
     private static final int LOC_ADR_MAX = 9999; // max range for NCE
     private static final int LOC_ADR_REPLACE = 0x3FFF;  // dummy loco address
@@ -105,6 +96,8 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
     private int consistCount = 0;      // search count not to exceed CONSIST_MAX
 
     private boolean refresh = false;     // when true, refresh loco info from CS
+    
+    private static int DELAY_AFTER_CLEAR = 1000;    // number of mSec to wait after sending a del loco
 
     // member declarations
     JLabel textConsist = new JLabel();
@@ -217,7 +210,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             try {
                 initComponents((NceSystemConnectionMemo) context);
             } catch (Exception e) {
-                log.error("NceConsistEdit initContext failed");
+                log.error("NceConsistEdit initContext failed"); // NOI18N
             }
         }
     }
@@ -239,7 +232,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         if (memo != null) {
             x.append(memo.getUserName());
         } else {
-            x.append("NCE_");
+            x.append("NCE_"); // NOI18N
         }
         x.append(": ");
         x.append(Bundle.getMessage("NceConsistEditTitle"));
@@ -250,10 +243,12 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
      * {@inheritDoc}
      */
     @Override
+    @Nonnull
     public List<JMenu> getMenus() {
         // build menu
-        JMenu toolMenu = new JMenu("Tools");
-        toolMenu.add(new NceConsistRosterMenu("Roster", jmri.jmrit.roster.swing.RosterMenu.MAINMENU, this));
+        JMenu toolMenu = new JMenu(Bundle.getMessage("MenuTools"));
+        toolMenu.add(new NceConsistRosterMenu(Bundle.getMessage("RosterTitle"),
+                jmri.jmrit.roster.swing.RosterMenu.MAINMENU, this));
         List<JMenu> l = new ArrayList<>();
         l.add(toolMenu);
         return l;
@@ -266,6 +261,8 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
     public void initComponents(NceSystemConnectionMemo m) {
         this.memo = m;
         this.tc = m.getNceTrafficController();
+        CONSIST_MIN = tc.csm.getConsistMin();
+        CONSIST_MAX = tc.csm.getConsistMax();
         // the following code sets the frame's initial state
 
         textConsist.setText(Bundle.getMessage("L_Consist"));
@@ -284,7 +281,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         getButton.setToolTipText(Bundle.getMessage("ToolTipGet"));
 
         consistTextField.setText(Integer.toString(CONSIST_MAX));
-        consistTextField.setToolTipText(MessageFormat.format(Bundle.getMessage("ToolTipConsist"), new Object[] {CONSIST_MIN, CONSIST_MAX}));
+        consistTextField.setToolTipText(MessageFormat.format(Bundle.getMessage("ToolTipConsist"), CONSIST_MIN, CONSIST_MAX));
         consistTextField.setMaximumSize(new Dimension(consistTextField
                 .getMaximumSize().width,
                 consistTextField.getPreferredSize().height));
@@ -441,9 +438,9 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             jmri.jmrit.throttle.ThrottleFrame tf
                     = InstanceManager.getDefault(ThrottleFrameManager.class).createThrottleFrame();
             tf.getAddressPanel().setAddress(consistNum, false); // use consist address
-            if (JOptionPane.showConfirmDialog(null,
+            if (JmriJOptionPane.showConfirmDialog(null,
                     Bundle.getMessage("DIALOG_Funct2Lead"), Bundle.getMessage("DIALOG_NceThrottle"),
-                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                 tf.getAddressPanel().setAddress(locoAddr, isLong);  // use lead loco address
             }
             tf.toFront();
@@ -496,11 +493,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
 
         // delete button
         if (ae.getSource() == deleteButton) {
-            if (JOptionPane.showConfirmDialog(null,
-                    Bundle.getMessage("DIALOG_ConfirmDel1") + " "
-                    + conRosterBox.getSelectedItem().toString()
-                    + " " + Bundle.getMessage("DIALOG_ConfirmDel2"), Bundle.getMessage("DIALOG_NceDelete"),
-                    JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(null,
+                    Bundle.getMessage("DIALOG_ConfirmDelete", Objects.requireNonNull(conRosterBox.getSelectedItem())),
+                    Bundle.getMessage("DIALOG_NceDelete"),
+                    JmriJOptionPane.OK_CANCEL_OPTION) != JmriJOptionPane.OK_OPTION) {
                 return;
             }
             deleteRoster();
@@ -603,9 +599,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             return;
         }
         if (locoTextField.getText().equals("")) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("DIALOG_EnterLocoB4AddrChg"),
-                    Bundle.getMessage("DIALOG_NceConsist"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("DIALOG_NceConsist"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         } else {
             if (adrButton.getText().equals(Bundle.getMessage("KeyLONG"))) {
@@ -655,9 +652,9 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             return;
         }
         if (locoTextField.getText().equals("")) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("DIALOG_EnterLocoB4DirChg"),
-                    Bundle.getMessage("DIALOG_NceConsist"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("DIALOG_NceConsist"), JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         cmdButton.setEnabled(true);
@@ -763,6 +760,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         newConsist = true;
         int consistNumber = validConsist(consistTextField.getText());
         if (consistNumber == CONSIST_ERROR) {
+            consistStatus.setText(Bundle.getMessage("EditStateERROR"));
             consistSearchPrevious = false;
             consistSearchNext = false;
             return consistNumber;
@@ -799,9 +797,9 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         int consistNumber = validConsist(consistTextField.getText());
         if (consistNumber == CONSIST_ERROR) {
             consistStatus.setText(Bundle.getMessage("EditStateERROR"));
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     MessageFormat.format(Bundle.getMessage("ToolTipConsist"), new Object[] {CONSIST_MIN, CONSIST_MAX}), Bundle.getMessage("DIALOG_NceConsist"),
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -816,6 +814,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             return CONSIST_ERROR;
         }
         if (consistNumber < CONSIST_MIN || consistNumber > CONSIST_MAX) {
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_ConsistOutOfRange", s, CONSIST_MIN, CONSIST_MAX),
+                    Bundle.getMessage("DIALOG_NceConsist"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return CONSIST_ERROR;
         } else {
             return consistNumber;
@@ -834,9 +836,9 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             locoAddress = ADDRESS_ERROR;
         }
         if (locoAddress < LOC_ADR_MIN || locoAddress > LOC_ADR_MAX) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("DIALOG_AddrRange"), Bundle.getMessage("DIALOG_NceConsist"),
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return ADDRESS_ERROR;
         } else {
             return locoAddress;
@@ -846,9 +848,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
     // check to see if user modified consist number
     private boolean consistChanged() {
         if (consistNum != validConsist(consistTextField.getText())) {
-            JOptionPane.showMessageDialog(this,
-                    Bundle.getMessage("DIALOG_PressRead"), Bundle.getMessage("DIALOG_NceConsist"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_PressRead", Bundle.getMessage("KeyGET")),
+                    Bundle.getMessage("DIALOG_NceConsist"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return true;
         } else {
             newConsist = false;
@@ -862,12 +865,12 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
      */
     private void readConsistMemory(int consistNum, int engPosition) {
         locoPosition = engPosition;
-        int nceMemAddr = (consistNum * 2) + NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM;
+        int nceMemAddr = (consistNum * 2) + tc.csm.getConsistHeadAddr();
         if (locoPosition == REAR) {
-            nceMemAddr = (consistNum * 2) + NceCmdStationMemory.CabMemorySerial.CS_CON_MEM_REAR;
+            nceMemAddr = (consistNum * 2) + tc.csm.getConsistTailAddr();
         }
         if (locoPosition == MID) {
-            nceMemAddr = (consistNum * 8) + NceCmdStationMemory.CabMemorySerial.CS_CON_MEM_MID;
+            nceMemAddr = (consistNum * 8) + tc.csm.getConsistMidAddr();
         }
         log.debug("Read consist ({}) position ({}) NCE memory address ({})", consistNum, engPosition, Integer.toHexString(nceMemAddr));
         byte[] bl = NceBinaryCommand.accMemoryRead(nceMemAddr);
@@ -895,7 +898,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                 loadFullRoster(nceConsistRosterEntry);
                 saveLoadButton.setEnabled(false);
             } else {
-                log.error("roster consist number is out of range: {}", consistNum);
+                JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_ConsistOutOfRange", CONSIST_MIN, CONSIST_MAX, consistNum),
+                    Bundle.getMessage("DIALOG_NceConsist"),
+                    JmriJOptionPane.ERROR_MESSAGE);
                 consistStatus.setText(Bundle.getMessage("EditStateERROR"));
             }
         }
@@ -1059,9 +1065,9 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                 null, null, null, null, null, null, null, id);
         // if consist doesn't exist in roster ask user if they want to create one
         if (consistList.isEmpty()) {
-            if (JOptionPane.showConfirmDialog(null, Bundle.getMessage("DIALOG_ConfirmAdd1") + " " + id
-                    + " " + Bundle.getMessage("DIALOG_ConfirmAdd2"), Bundle.getMessage("DIALOG_NceSave"),
-                    JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(null, Bundle.getMessage("DIALOG_ConfirmAdd", id),
+                    Bundle.getMessage("DIALOG_NceSave"),
+                    JmriJOptionPane.YES_NO_OPTION) != JmriJOptionPane.YES_OPTION) {
                 return false;
             }
             nceConsistRosterEntry = new NceConsistRosterEntry();
@@ -1077,9 +1083,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                             locoTextField6.getText(), id);
             // if it doesn't match, do we want to modify it?
             if (consistList.isEmpty()) {
-                if (JOptionPane.showConfirmDialog(null, Bundle.getMessage("DIALOG_ConfirmUpd1") + " " + id
-                        + " " + Bundle.getMessage("DIALOG_ConfirmUpd2") + getRosterText(nceConsistRosterEntry),
-                        Bundle.getMessage("DIALOG_NceUpdate"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                if (JmriJOptionPane.showConfirmDialog(null,
+                        Bundle.getMessage("DIALOG_ConfirmUpdate", id, getRosterText(nceConsistRosterEntry)),
+                        Bundle.getMessage("DIALOG_NceUpdate"),
+                        JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.NO_OPTION ) {
                     // update consist if command was to clear
                     if (consistNumber.equals(Bundle.getMessage("CLEARED"))) {
                         nceConsistRosterEntry.setConsistNumber(consistNumber);
@@ -1309,7 +1316,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             return;
         }
         int locoAddr = getLocoAddr(locoTextField1, adrButton1);
-        sendNceBinaryCommand(locoAddr, NceBinaryCommand.LOCO_CMD_KILL_CONSIST,
+        sendNceBinaryCommand(locoAddr, NceMessage.LOCO_CMD_KILL_CONSIST,
                 (byte) 0);
     }
 
@@ -1346,7 +1353,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             // Looking for proper response
             int recChar = nceReply.getElement(0);
             log.debug("command reply: {}", recChar);
-            if (recChar == '!') {
+            if (recChar == NceMessage.NCE_OKAY) {
                 if (locoSearch && waiting == 0) {
                     readConsistMemory(consistNumVerify, LEAD);
                     consistStatus.setText(Bundle.getMessage("EditStateVERIFY"));
@@ -1413,11 +1420,11 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                             }
                         } else if (verifyType == VERIFY_MID_FWD) {
                             sendNceBinaryCommand(locoVerifyList[0],
-                                    NceBinaryCommand.LOCO_CMD_FWD_CONSIST_MID,
+                                    NceMessage.LOCO_CMD_FWD_CONSIST_MID,
                                     (byte) consistNum);
                         } else if (verifyType == VERIFY_MID_REV) {
                             sendNceBinaryCommand(locoVerifyList[0],
-                                    NceBinaryCommand.LOCO_CMD_REV_CONSIST_MID,
+                                    NceMessage.LOCO_CMD_REV_CONSIST_MID,
                                     (byte) consistNum);
                         } else if (verifyType == VERIFY_ALL) {
                             fullLoad();
@@ -1646,7 +1653,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         }
     }
 
-    // modify loco fields because an add, replace, delete button has been pressed
+    // modify loco fields because an Add, Replace, Delete button has been pressed
     private void modifyLocoFields(JComboBox<Object> locoRosterBox,
             JTextField locoTextField, JButton adrButton, JButton dirButton,
             JButton cmdButton) {
@@ -1658,9 +1665,10 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             return;
         }
         if (locoTextField.getText().equals("")) {
-            JOptionPane.showMessageDialog(this,
-                    Bundle.getMessage("DIALOG_EnterLocoB4Add"), Bundle.getMessage("DIALOG_NceConsist"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_EnterLocoB4Add"),
+                    Bundle.getMessage("DIALOG_NceConsist"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         // set reflesh flag to update panel
@@ -1669,7 +1677,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
 
         if (cmdButton.getText().equals(Bundle.getMessage("KeyDELETE"))) {
             sendNceBinaryCommand(locoAddr,
-                    NceBinaryCommand.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
+                    NceMessage.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
 
         } else if (cmdButton.getText().equals(Bundle.getMessage("KeyREPLACE"))) {
 
@@ -1692,23 +1700,23 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             if (locoTextField == locoTextField1) {
                 // replace lead loco
                 sendNceBinaryCommand(LOC_ADR_REPLACE,
-                        NceBinaryCommand.LOCO_CMD_FWD_CONSIST_LEAD, consistNumber);
+                        NceMessage.LOCO_CMD_FWD_CONSIST_LEAD, consistNumber);
                 // no lead loco so we can't kill the consist
                 clearCancelButton.setEnabled(false);
             } else {
                 // replace rear loco
                 sendNceBinaryCommand(LOC_ADR_REPLACE,
-                        NceBinaryCommand.LOCO_CMD_FWD_CONSIST_REAR, consistNumber);
+                        NceMessage.LOCO_CMD_FWD_CONSIST_REAR, consistNumber);
             }
             // now delete lead or rear loco from layout
             sendNceBinaryCommand(locoAddr,
-                    NceBinaryCommand.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
+                    NceMessage.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
         } else {
             // ADD button has been pressed
             if (dirButton.getText().equals(Bundle.getMessage("KeyQUESTION"))) {
-                JOptionPane.showMessageDialog(this,
+                JmriJOptionPane.showMessageDialog(this,
                         Bundle.getMessage("DIALOG_SetDirB4Consist"),
-                        Bundle.getMessage("DIALOG_NceConsist"), JOptionPane.ERROR_MESSAGE);
+                        Bundle.getMessage("DIALOG_NceConsist"), JmriJOptionPane.ERROR_MESSAGE);
 
                 // kill refresh flag, no update if Add button is enabled
                 // and loco direction isn't known (lead, rear, replacement)
@@ -1717,8 +1725,13 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             }
             // delete loco from any existing consists
             sendNceBinaryCommand(locoAddr,
-                    NceBinaryCommand.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
-
+                    NceMessage.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
+            synchronized (this) {
+                try {
+                    wait(DELAY_AFTER_CLEAR);  // needed for booster to reset
+                } catch (InterruptedException ignored) {
+                }
+            }
             // check to see if loco is already a lead or rear in another consist
             verifyLocoAddr(locoAddr);
 
@@ -1727,21 +1740,21 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             if (locoTextField == locoTextField1) {
                 if (dirButton.getText().equals(Bundle.getMessage("KeyFWD"))) {
                     sendNceBinaryCommand(locoAddr,
-                            NceBinaryCommand.LOCO_CMD_FWD_CONSIST_LEAD, consistNumber);
+                            NceMessage.LOCO_CMD_FWD_CONSIST_LEAD, consistNumber);
                 }
                 if (dirButton.getText().equals(Bundle.getMessage("KeyREV"))) {
                     sendNceBinaryCommand(locoAddr,
-                            NceBinaryCommand.LOCO_CMD_REV_CONSIST_LEAD, consistNumber);
+                            NceMessage.LOCO_CMD_REV_CONSIST_LEAD, consistNumber);
                 }
                 // rear loco?
             } else if (locoTextField == locoTextField2) {
                 if (dirButton.getText().equals(Bundle.getMessage("KeyFWD"))) {
                     sendNceBinaryCommand(locoAddr,
-                            NceBinaryCommand.LOCO_CMD_FWD_CONSIST_REAR, consistNumber);
+                            NceMessage.LOCO_CMD_FWD_CONSIST_REAR, consistNumber);
                 }
                 if (dirButton.getText().equals(Bundle.getMessage("KeyREV"))) {
                     sendNceBinaryCommand(locoAddr,
-                            NceBinaryCommand.LOCO_CMD_REV_CONSIST_REAR, consistNumber);
+                            NceMessage.LOCO_CMD_REV_CONSIST_REAR, consistNumber);
                 }
                 // must be mid loco
             } else {
@@ -1756,11 +1769,11 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                 } else {
                     if (dirButton.getText().equals(Bundle.getMessage("KeyFWD"))) {
                         sendNceBinaryCommand(locoAddr,
-                                NceBinaryCommand.LOCO_CMD_FWD_CONSIST_MID, consistNumber);
+                                NceMessage.LOCO_CMD_FWD_CONSIST_MID, consistNumber);
                     }
                     if (dirButton.getText().equals(Bundle.getMessage("KeyREV"))) {
                         sendNceBinaryCommand(locoAddr,
-                                NceBinaryCommand.LOCO_CMD_REV_CONSIST_MID, consistNumber);
+                                NceMessage.LOCO_CMD_REV_CONSIST_MID, consistNumber);
                     }
                 }
             }
@@ -1805,51 +1818,57 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
 
         // ADD loco to consist
         if (dirButton.getText().equals(Bundle.getMessage("KeyQUESTION"))) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("DIALOG_SetDirB4Consist"), Bundle.getMessage("DIALOG_NceConsist"),
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // delete loco from any existing consists
         sendNceBinaryCommand(locoAddr,
-                NceBinaryCommand.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
+                NceMessage.LOCO_CMD_DELETE_LOCO_CONSIST, (byte) 0);
+        synchronized (this) {
+            try {
+                wait(DELAY_AFTER_CLEAR);  // needed for booster to reset
+            } catch (InterruptedException ignored) {
+            }
+        }
         // now we need to determine if lead, rear, or mid loco
         // lead loco?
         if (locoTextField == locoTextField1) {
             // kill the consist first to clear NCE CS memory
             sendNceBinaryCommand(locoAddr,
-                    NceBinaryCommand.LOCO_CMD_FWD_CONSIST_LEAD, cN);
-            sendNceBinaryCommand(locoAddr, NceBinaryCommand.LOCO_CMD_KILL_CONSIST,
+                    NceMessage.LOCO_CMD_FWD_CONSIST_LEAD, cN);
+            sendNceBinaryCommand(locoAddr, NceMessage.LOCO_CMD_KILL_CONSIST,
                     (byte) 0);
             // now load
             if (dirButton.getText().equals(Bundle.getMessage("KeyFWD"))) {
                 sendNceBinaryCommand(locoAddr,
-                        NceBinaryCommand.LOCO_CMD_FWD_CONSIST_LEAD, cN);
+                        NceMessage.LOCO_CMD_FWD_CONSIST_LEAD, cN);
             }
             if (dirButton.getText().equals(Bundle.getMessage("KeyREV"))) {
                 sendNceBinaryCommand(locoAddr,
-                        NceBinaryCommand.LOCO_CMD_REV_CONSIST_LEAD, cN);
+                        NceMessage.LOCO_CMD_REV_CONSIST_LEAD, cN);
             }
             // rear loco?
         } else if (locoTextField == locoTextField2) {
             if (dirButton.getText().equals(Bundle.getMessage("KeyFWD"))) {
                 sendNceBinaryCommand(locoAddr,
-                        NceBinaryCommand.LOCO_CMD_FWD_CONSIST_REAR, cN);
+                        NceMessage.LOCO_CMD_FWD_CONSIST_REAR, cN);
             }
             if (dirButton.getText().equals(Bundle.getMessage("KeyREV"))) {
                 sendNceBinaryCommand(locoAddr,
-                        NceBinaryCommand.LOCO_CMD_REV_CONSIST_REAR, cN);
+                        NceMessage.LOCO_CMD_REV_CONSIST_REAR, cN);
             }
             // must be mid loco
         } else {
             if (dirButton.getText().equals(Bundle.getMessage("KeyFWD"))) {
                 sendNceBinaryCommand(locoAddr,
-                        NceBinaryCommand.LOCO_CMD_FWD_CONSIST_MID, cN);
+                        NceMessage.LOCO_CMD_FWD_CONSIST_MID, cN);
             }
             if (dirButton.getText().equals(Bundle.getMessage("KeyREV"))) {
                 sendNceBinaryCommand(locoAddr,
-                        NceBinaryCommand.LOCO_CMD_REV_CONSIST_MID, cN);
+                        NceMessage.LOCO_CMD_REV_CONSIST_MID, cN);
             }
         }
     }
@@ -2014,17 +2033,17 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
 
     // initialize loco fields
     private void initLocoFields() {
-        initLocoRow(1, "Lead", textLoco1, locoTextField1, locoRosterBox1,
+        initLocoRow(1, Bundle.getMessage("LeadLabel"), textLoco1, locoTextField1, locoRosterBox1,
                 adrButton1, dirButton1, cmdButton1);
-        initLocoRow(2, "Rear", textLoco2, locoTextField2, locoRosterBox2,
+        initLocoRow(2, Bundle.getMessage("RearLabel"), textLoco2, locoTextField2, locoRosterBox2,
                 adrButton2, dirButton2, cmdButton2);
-        initLocoRow(3, "Mid 1", textLoco3, locoTextField3, locoRosterBox3,
+        initLocoRow(3, Bundle.getMessage("MidLabel", "1"), textLoco3, locoTextField3, locoRosterBox3,
                 adrButton3, dirButton3, cmdButton3);
-        initLocoRow(4, "Mid 2", textLoco4, locoTextField4, locoRosterBox4,
+        initLocoRow(4, Bundle.getMessage("MidLabel", "2"), textLoco4, locoTextField4, locoRosterBox4,
                 adrButton4, dirButton4, cmdButton4);
-        initLocoRow(5, "Mid 3", textLoco5, locoTextField5, locoRosterBox5,
+        initLocoRow(5, Bundle.getMessage("MidLabel", "3"), textLoco5, locoTextField5, locoRosterBox5,
                 adrButton5, dirButton5, cmdButton5);
-        initLocoRow(6, "Mid 4", textLoco6, locoTextField6, locoRosterBox6,
+        initLocoRow(6, Bundle.getMessage("MidLabel", "4"), textLoco6, locoTextField6, locoRosterBox6,
                 adrButton6, dirButton6, cmdButton6);
     }
 
@@ -2038,7 +2057,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         adrButton.setText(Bundle.getMessage("KeyLONG"));
         adrButton.setVisible(true);
         adrButton.setEnabled(false);
-        adrButton.setToolTipText("Press to change address type");
+        adrButton.setToolTipText(Bundle.getMessage("ToolTipAddressType"));
         adrButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -2048,7 +2067,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
 
         locoRosterBox.setVisible(true);
         locoRosterBox.setEnabled(false);
-        locoRosterBox.setToolTipText("Select loco from roster");
+        locoRosterBox.setToolTipText(Bundle.getMessage("ToolTipSelectLoco"));
         locoRosterBox.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -2059,7 +2078,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         dirButton.setText(Bundle.getMessage("KeyQUESTION"));
         dirButton.setVisible(true);
         dirButton.setEnabled(false);
-        dirButton.setToolTipText("Press to change loco direction");
+        dirButton.setToolTipText(Bundle.getMessage("ToolTipDirection"));
         dirButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -2071,16 +2090,11 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         cmdButton.setVisible(true);
         cmdButton.setEnabled(false);
         cmdButton.setToolTipText(Bundle.getMessage("ToolTipAdd"));
-        cmdButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                buttonActionCmdPerformed(e);
-            }
-        });
+        cmdButton.addActionListener(this::buttonActionCmdPerformed);
 
         locoTextField.setText("");
         locoTextField.setEnabled(false);
-        locoTextField.setToolTipText("Enter loco address");
+        locoTextField.setToolTipText(Bundle.getMessage("ToolTipEnterLoco"));
         locoTextField.setMaximumSize(new Dimension(
                 locoTextField.getMaximumSize().width, locoTextField
                 .getPreferredSize().height));
@@ -2093,13 +2107,8 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         conRosterBox.setSelectedIndex(0);
         conRosterBox.setVisible(true);
         conRosterBox.setEnabled(false);
-        conRosterBox.setToolTipText("Select consist from roster");
-        conRosterBox.addActionListener(consistRosterListener = new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                consistRosterSelected(e);
-            }
-        });
+        conRosterBox.setToolTipText(Bundle.getMessage("ToolTipSelectConsist"));
+        conRosterBox.addActionListener(consistRosterListener = this::consistRosterSelected);
     }
 
     private static final int ERROR_LOCO_IN_USE = 1;
@@ -2116,7 +2125,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
             return;
         }
         this.errorCode = errorCode;
-        // Bad to stop receive thread with JOptionPane error message
+        // Bad to stop receive thread with JmriJOptionPane error message
         // so start up a new thread to report error
         Thread errorThread = new Thread(new Runnable() {
             @Override
@@ -2124,7 +2133,7 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                 reportError();
             }
         });
-        errorThread.setName("Report Error");
+        errorThread.setName("Report Error"); // NOI18N
         errorThread.start();
     }
 
@@ -2132,30 +2141,31 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         switch (errorCode) {
 
             case ERROR_LOCO_IN_USE:
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("DIALOG_LocoInUse1") + " "
-                        + locoNumInUse + " " + Bundle.getMessage("DIALOG_LocoInUse2") + " " + consistNumVerify,
-                        Bundle.getMessage("DIALOG_NceConsist"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("DIALOG_LocoInUse", locoNumInUse, consistNumVerify),
+                        Bundle.getMessage("DIALOG_NceConsist"),
+                        JmriJOptionPane.ERROR_MESSAGE);
                 break;
 
             case ERROR_NO_EMPTY_CONSIST:
-                JOptionPane.showMessageDialog(this,
+                JmriJOptionPane.showMessageDialog(this,
                         Bundle.getMessage("DIALOG_NoEmptyConsist"),
-                        Bundle.getMessage("DIALOG_NceConsist"), JOptionPane.ERROR_MESSAGE);
+                        Bundle.getMessage("DIALOG_NceConsist"),
+                        JmriJOptionPane.ERROR_MESSAGE);
                 break;
 
             case ERROR_CONSIST_DOESNT_MATCH:
-                if (JOptionPane.showConfirmDialog(null,
+                if (JmriJOptionPane.showConfirmDialog(null,
                         Bundle.getMessage("DIALOG_RosterNotMatch") + " "
                         + getRosterText(nceConsistRosterEntry),
                         Bundle.getMessage("DIALOG_NceContinue"),
-                        JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
-                    if (JOptionPane.showConfirmDialog(null,
-                            Bundle.getMessage("DIALOG_RosterNotMatch1") + " " + nceConsistRosterEntry.getId()
-                            + " " + Bundle.getMessage("DIALOG_RosterNotMatch2")
-                            + " " + nceConsistRosterEntry.getConsistNumber()
-                            + "\n " + Bundle.getMessage("DIALOG_RosterNotMatch3"),
+                        JmriJOptionPane.YES_NO_OPTION) != JmriJOptionPane.YES_OPTION) {
+                    if (JmriJOptionPane.showConfirmDialog(null,
+                            Bundle.getMessage("DIALOG_RosterNotMatch1",
+                                    nceConsistRosterEntry.getId(), nceConsistRosterEntry.getConsistNumber())
+                            + "\n " + Bundle.getMessage("DIALOG_RosterNotMatch2"),
                             Bundle.getMessage("DIALOG_NceReset"),
-                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                            JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                         nceConsistRosterEntry.setConsistNumber(Bundle.getMessage("CLEARED"));
                     }
                     changeButtons(false);
@@ -2167,12 +2177,16 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
                 saveLoadButton.setEnabled(canLoad());
                 break;
             case WARN_CONSIST_ALREADY_LOADED:
-                JOptionPane.showMessageDialog(this,
+                JmriJOptionPane.showMessageDialog(this,
                         Bundle.getMessage("DIALOG_ConsistWasLoaded"),
-                        Bundle.getMessage("DIALOG_NceConsist"), JOptionPane.WARNING_MESSAGE);
+                        Bundle.getMessage("DIALOG_NceConsist"), JmriJOptionPane.WARNING_MESSAGE);
                 break;
             default:
-                log.error("Error code out of range");
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("DIALOG_ErrorUnknown", errorCode),
+                        Bundle.getMessage("DIALOG_NceConsist"),
+                        JmriJOptionPane.ERROR_MESSAGE);
+                log.error("Error code out of range: {}", errorCode);
         }
         errorCode = 0;
     }
@@ -2221,6 +2235,6 @@ public class NceConsistEditPanel extends jmri.jmrix.nce.swing.NcePanel implement
         }
     }
 
-    private final static Logger log = LoggerFactory
-            .getLogger(NceConsistEditPanel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NceConsistEditPanel.class);
+
 }

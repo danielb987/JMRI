@@ -5,12 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
 
-import org.junit.Test;
-
 import jmri.jmrix.ipocs.protocol.enums.RqPointsLockState;
+import jmri.util.JUnitUtil;
+
+import org.junit.jupiter.api.*;
 
 public class ElectricalPointsLockStatusPacketTest {
-  private byte[] testPacket = { RqPointsLockState.LockedRight.value };
+  private final byte[] testPacket = { RqPointsLockState.LockedRight.value };
 
   @Test
   public void getIdTest() {
@@ -30,4 +31,14 @@ public class ElectricalPointsLockStatusPacketTest {
     pkt.setState(RqPointsLockState.LockedRight);
     assertArrayEquals(testPacket, pkt.serializeSpecific());
   }
+
+    @BeforeEach
+    public void setUp() {
+        JUnitUtil.setUp();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        JUnitUtil.tearDown();
+    }
 }

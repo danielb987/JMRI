@@ -52,18 +52,29 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
     private int functionGroup3 = 0;
     private int functionGroup4 = 0;
     private int functionGroup5 = 0;
+    //private int functionGroup6 = 0;
+    //private int functionGroup7 = 0;
+    //private int functionGroup8 = 0;
+    //private int functionGroup9 = 0;
+    //private int functionGroup10 = 0;
+
     private int momentaryGroup1 = 0;
     private int momentaryGroup2 = 0;
     private int momentaryGroup3 = 0;
     private int momentaryGroup4 = 0;
     private int momentaryGroup5 = 0;
-    
+    //private int momentaryGroup6 = 0;
+    //private int momentaryGroup7 = 0;
+    //private int momentaryGroup8 = 0;
+    //private int momentaryGroup9 = 0;
+    //private int momentaryGroup10 = 0;
+
     /**
      * Accessory state cache. A "1" bit means THROWN, "0" means
-     * CLOSED. 
+     * CLOSED.
      */
     private final BitSet accessoryState = new BitSet(1024);
-    
+
     /**
      * Bit is set if the accessory was operated.
      */
@@ -79,7 +90,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
             outpipe = new DataOutputStream(tempPipeO);
             pin = new DataInputStream(new PipedInputStream(tempPipeO));
         } catch (java.io.IOException e) {
-            log.error("init (pipe): Exception: {}",e);
+            log.error("init (pipe): Exception",e);
             return;
         }
         csStatus = CS_NORMAL_MODE;
@@ -131,7 +142,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
         XNetTrafficController packets = new XNetPacketizer(new LenzCommandStation());
         configure(packets);
     }
-    
+
     protected void configure(XNetTrafficController packets) {
         packets.connectPort(this);
 
@@ -269,6 +280,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
                         currentSpeedStep = m.getElement(4);
                         reply = okReply();
                         break;
+
                     case XNetConstants.LOCO_SET_FUNC_GROUP1:
                         functionGroup1 = m.getElement(4);
                         reply = okReply();
@@ -289,26 +301,70 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
                         functionGroup5 = m.getElement(4);
                         reply = okReply();
                         break;
-                    case XNetConstants.LOCO_SET_FUNC_Group1:
+
+                    case XNetConstants.LOCO_SET_FUNC_GROUP1_MOMENTARY:
                         momentaryGroup1 = m.getElement(4);
                         reply = okReply();
                         break;
-                    case XNetConstants.LOCO_SET_FUNC_Group2:
+                    case XNetConstants.LOCO_SET_FUNC_GROUP2_MOMENTARY:
                         momentaryGroup2 = m.getElement(4);
                         reply = okReply();
                         break;
-                    case XNetConstants.LOCO_SET_FUNC_Group3:
+                    case XNetConstants.LOCO_SET_FUNC_GROUP3_MOMENTARY:
                         momentaryGroup3 = m.getElement(4);
                         reply = okReply();
                         break;
-                    case XNetConstants.LOCO_SET_FUNC_Group4:
+                    case XNetConstants.LOCO_SET_FUNC_GROUP4_MOMENTARY:
                         momentaryGroup4 = m.getElement(4);
                         reply = okReply();
                         break;
-                    case XNetConstants.LOCO_SET_FUNC_Group5:
+                    case XNetConstants.LOCO_SET_FUNC_GROUP5_MOMENTARY:
                         momentaryGroup5 = m.getElement(4);
                         reply = okReply();
                         break;
+
+
+                    case XNetConstants.LOCO_SET_FUNC_GROUP6:
+                        //functionGroup6 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP7:
+                        //functionGroup7 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP8:
+                        //functionGroup8 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP9:
+                        //functionGroup9 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP10:
+                        //functionGroup10 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP6_MOMENTARY:
+                        //momentaryGroup6 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP7_MOMENTARY:
+                        //momentaryGroup7 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP8_MOMENTARY:
+                        //momentaryGroup8 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP9_MOMENTARY:
+                        //momentaryGroup9 = m.getElement(4);
+                        //reply = okReply();
+                        //break;
+                    case XNetConstants.LOCO_SET_FUNC_GROUP10_MOMENTARY:
+                        //momentaryGroup10 = m.getElement(4);
+                        reply = okReply();
+                        break;
+
                     case XNetConstants.LOCO_ADD_MULTI_UNIT_REQ:
                     case XNetConstants.LOCO_REM_MULTI_UNIT_REQ:
                     case XNetConstants.LOCO_IN_MULTI_UNIT_REQ_FORWARD:
@@ -463,7 +519,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
         XNetReply reply = new XNetReply();
         reply.setOpCode(XNetConstants.CS_SERVICE_MODE_RESPONSE);
         reply.setElement(1, XNetConstants.CS_SOFTWARE_VERSION);
-        reply.setElement(2, 0x36); // indicate we are version 3.6
+        reply.setElement(2, 0x40); // indicate we are version 4.0
         reply.setElement(3, 0x00 ); // indicate we are an LZ100
         reply.setElement(4, 0x00); // set the parity byte to 0
         reply.setParity();
@@ -493,11 +549,11 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
     protected int getTurnoutFeedbackType() {
         return 0x01;
     }
-    
+
     /**
      * Returns accessory state, in the Operation Info Reply bit format. If the
      * accessory has not been operated yet, returns 00 (not operated).
-     * 
+     *
      * @param a accessory number
      * @return two bits representing the accessory state.
      */
@@ -519,7 +575,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
             return accInfoReply(ba, nibble);
         }
     }
-    
+
     protected XNetReply feedbackInfoReply(XNetMessage m) {
         XNetReply reply = new XNetReply();
        reply.setOpCode(XNetConstants.ACC_INFO_RESPONSE);
@@ -562,7 +618,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
         r.setParity();
         return r;
     }
-    
+
     /**
      * Generate reply to accessory request command.
      * The returned XNetReply is the first to be returned by this simulated command station.
@@ -593,7 +649,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
     }
 
     /**
-     * Creates a reply for the specific turnout dcc address. 
+     * Creates a reply for the specific turnout dcc address.
      * @param dccTurnoutAddress the turnout address
      * @return a reply packet
      */
@@ -617,7 +673,7 @@ public class XNetSimulatorAdapter extends XNetSimulatorPortController implements
         log.debug("Received command {} ... {}", m, m.toMonitorString());
         return generateAccRequestReply(address, output, on, oldState);
     }
-    
+
     private void writeReply(XNetReply r) {
         int i;
         int len = (r.getElement(0) & 0x0f) + 2;  // opCode+Nbytes+ECC

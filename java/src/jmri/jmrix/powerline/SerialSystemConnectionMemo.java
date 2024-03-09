@@ -46,6 +46,17 @@ public class SerialSystemConnectionMemo extends jmri.jmrix.DefaultSystemConnecti
     }
 
     /**
+     * Provide access to the serial port for this connection
+     * @return SerialPort
+     */
+    public com.fazecast.jSerialComm.SerialPort getActiveSerialPort() {
+        return serialPort;
+    }
+    private com.fazecast.jSerialComm.SerialPort serialPort;
+    public void setActiveSerialPort(com.fazecast.jSerialComm.SerialPort sp) {
+        serialPort = sp;
+    }
+    /**
      * Provide access to a serialAddress for this particular connection
      *
      * @return serialAddress
@@ -63,21 +74,42 @@ public class SerialSystemConnectionMemo extends jmri.jmrix.DefaultSystemConnecti
      * Configure the common managers for Powerline connections. This puts the
      * common manager config in one place.
      */
+    @Override
     public void configureManagers() {
         // now does nothing here, it's done by the specific class
         register(); // registers general type
     }
+    
+    // menu support parts
+    // subclasses can override to change menu items
+
+    public static class MenuItem {
+        MenuItem(String name, String load) {
+            this.name = name;
+            this.load = load;
+        }
+        public String name;
+        public String load;
+    }
+    private final MenuItem[] panelItems = new MenuItem[]{
+        new MenuItem("MenuItemCommandMonitor", "jmri.jmrix.powerline.swing.serialmon.SerialMonPane"),
+        new MenuItem("MenuItemSendCommand", "jmri.jmrix.powerline.swing.packetgen.SerialPacketGenPane")
+    };
+    
+    public MenuItem[] provideMenuItemList() {
+        return panelItems;
+    }
 
     public SerialTurnoutManager getTurnoutManager() {
-        return get(TurnoutManager.class);
+        return (SerialTurnoutManager)get(TurnoutManager.class);
     }
 
     public SerialLightManager getLightManager() {
-        return get(LightManager.class);
+        return (SerialLightManager)get(LightManager.class);
     }
 
     public SerialSensorManager getSensorManager() {
-        return get(SensorManager.class);
+        return (SerialSensorManager)get(SensorManager.class);
     }
 
     public void setTurnoutManager(SerialTurnoutManager m) {

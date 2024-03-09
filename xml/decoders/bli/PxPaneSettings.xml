@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pane xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<pane xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
     <name>Settings</name>
     <column>
       <display item="GSC1 bit 7"/>
@@ -26,6 +26,14 @@
       </label>
       <display item="Smoke Unit"/>
       <display item="Smoke Unit Logic"/>
+      <label>
+        <text> </text>
+      </label>
+      <display item="Promode"/>
+      <display item="Keep Alive"/>
+      <display item="Go-Pack Time-Out Value"/>
+      <display item="Electric"/>
+      <display item="No Electric in DC"/>
     </column>
     <column>
       <row>

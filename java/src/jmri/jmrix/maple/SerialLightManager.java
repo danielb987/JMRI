@@ -4,8 +4,6 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import jmri.Light;
 import jmri.managers.AbstractLightManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implement LightManager for Maple serial systems.
@@ -37,50 +35,38 @@ public class SerialLightManager extends AbstractLightManager {
      * {@inheritDoc}
      */
     @Override
-    public Light createNewLight(@Nonnull String systemName, String userName) {
-        Light lgt = null;
+    @Nonnull
+    protected Light createNewLight(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+        
         // check if the output bit is available
         int bitNum = SerialAddress.getBitFromSystemName(systemName, getSystemPrefix());
         if (bitNum == 0) {
-            return (null);
+            throw new IllegalArgumentException("Invalid Bit from System Name: " + systemName);
         }
-        String conflict = "";
-        conflict = SerialAddress.isOutputBitFree(bitNum, getSystemPrefix());
-        if (!conflict.equals("")) {
+        String conflict = SerialAddress.isOutputBitFree(bitNum, getSystemPrefix());
+        if (!conflict.isEmpty()) {
             log.error("Assignment conflict with '{}'. Light not created.", conflict);
-            notifyLightCreationError(conflict, bitNum);
-            return (null);
+            throw new IllegalArgumentException("The output bit, " + bitNum + ", is currently assigned to " + conflict);
         }
         // Validate the System Name
         String sysName = SerialAddress.normalizeSystemName(systemName, getSystemPrefix());
-        if (sysName.equals("")) {
+        if (sysName.isEmpty()) {
             log.error("error when normalizing system name {}", systemName);
-            return null;
+            throw new IllegalArgumentException("Error when normalizing system name: "+systemName);
         }
         if (SerialAddress.validSystemNameFormat(systemName, 'L', getSystemPrefix()) == NameValidity.VALID) {
-            lgt = new SerialLight(sysName, userName, getMemo());
+            Light lgt = new SerialLight(sysName, userName, getMemo());
             if (!SerialAddress.validSystemNameConfig(sysName, 'L', getMemo())) {
                 log.warn("Light system Name '{}' does not refer to configured hardware.", sysName);
-                javax.swing.JOptionPane.showMessageDialog(null, "WARNING - The Light just added, " + sysName
+                jmri.util.swing.JmriJOptionPane.showMessageDialog(null, "WARNING - The Light just added, " + sysName
                         + ", refers to an unconfigured output bit.", "Configuration Warning",
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE, null);
+                        jmri.util.swing.JmriJOptionPane.INFORMATION_MESSAGE);
             }
+            return lgt;
         } else {
             log.error("Invalid Light system Name format: {}", systemName);
+            throw new IllegalArgumentException("Invalid Light system Name format: " + systemName);
         }
-        return lgt;
-    }
-
-    /**
-     * Public method to notify user of Light creation error.
-     * @param conflict human readable name of conflicting light.
-     * @param bitNum bit number of conflicting light.
-     */
-    public void notifyLightCreationError(String conflict, int bitNum) {
-        javax.swing.JOptionPane.showMessageDialog(null, "The output bit, " + bitNum
-                + ", is currently assigned to " + conflict + ". Light cannot be created as "
-                + "you specified.", "Assignment Conflict",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE, null);
     }
 
     /**
@@ -116,6 +102,6 @@ public class SerialLightManager extends AbstractLightManager {
         return Bundle.getMessage("AddOutputEntryToolTip");
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SerialLightManager.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SerialLightManager.class);
 
 }

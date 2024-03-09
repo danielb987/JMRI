@@ -5,36 +5,28 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import jmri.InstanceManager;
+
 import jmri.util.PortNameMapper;
 import jmri.util.PortNameMapper.SerialPortFriendlyName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import purejavacomm.CommPortIdentifier;
+import jmri.util.swing.JComboBoxUtil;
 
 /**
  * Abstract base class for common implementation of the SerialConnectionConfig.
@@ -83,60 +75,12 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
             return;
         }
 
-        baudBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adapter.configureBaudRate((String) baudBox.getSelectedItem());
-                p.setComboBoxLastSelection(adapter.getClass().getName() + ".baud", (String) baudBox.getSelectedItem()); // NOI18N
-            }
+        baudBox.addActionListener(e -> {
+            adapter.configureBaudRate((String) baudBox.getSelectedItem());
+            p.setComboBoxLastSelection(adapter.getClass().getName() + ".baud", (String) baudBox.getSelectedItem()); // NOI18N
         });
 
-        if (adapter.getSystemConnectionMemo() != null) {
-            systemPrefixField.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (!adapter.getSystemConnectionMemo().setSystemPrefix(systemPrefixField.getText())) {
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionPrefixDialog", systemPrefixField.getText()));
-                        systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
-                    }
-                }
-            });
-            systemPrefixField.addFocusListener(new FocusListener() {
-                @Override
-                public void focusLost(FocusEvent e) {
-                    if (!adapter.getSystemConnectionMemo().setSystemPrefix(systemPrefixField.getText())) {
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionPrefixDialog", systemPrefixField.getText()));
-                        systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
-                    }
-                }
-
-                @Override
-                public void focusGained(FocusEvent e) {
-                }
-            });
-            connectionNameField.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (!adapter.getSystemConnectionMemo().setUserName(connectionNameField.getText())) {
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionNameDialog", connectionNameField.getText()));
-                        connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
-                    }
-                }
-            });
-            connectionNameField.addFocusListener(new FocusListener() {
-                @Override
-                public void focusLost(FocusEvent e) {
-                    if (!adapter.getSystemConnectionMemo().setUserName(connectionNameField.getText())) {
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionNameDialog", connectionNameField.getText()));
-                        connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
-                    }
-                }
-
-                @Override
-                public void focusGained(FocusEvent e) {
-                }
-            });
-        }
+        addNameEntryCheckers(adapter);
 
         portBox.addFocusListener(new FocusListener() {
             @Override
@@ -150,12 +94,7 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         });
 
         // set/change delay interval between (actually before) output (Turnout) commands
-        outputIntervalSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                adapter.getSystemConnectionMemo().setOutputInterval((Integer) outputIntervalSpinner.getValue());
-            }
-        });
+        outputIntervalSpinner.addChangeListener(e -> adapter.getSystemConnectionMemo().setOutputInterval((Integer) outputIntervalSpinner.getValue()));
 
         for (Map.Entry<String, Option> entry : options.entrySet()) {
             final String item = entry.getKey();
@@ -163,6 +102,7 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
                 ((JComboBox<?>) entry.getValue().getComponent()).addActionListener((ActionEvent e) -> {
                     adapter.setOptionState(item, options.get(item).getItem());
                 });
+                JComboBoxUtil.setupComboBoxMaxRows((JComboBox<?>) entry.getValue().getComponent());
             }
         }
 
@@ -179,7 +119,7 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         }
 
         if (adapter.getSystemConnectionMemo() != null && !adapter.getSystemConnectionMemo().setSystemPrefix(systemPrefixField.getText())) {
-            systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
+            systemPrefixField.setText(adapter.getSystemConnectionMemo().getSystemPrefix());
             connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
         }
     }
@@ -191,13 +131,13 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
     protected JLabel baudBoxLabel;
     protected String[] baudList;
 
-    private SpinnerNumberModel intervalSpinner = new SpinnerNumberModel(250, 0, 10000, 1); // 10 sec max seems long enough
+    private final SpinnerNumberModel intervalSpinner = new SpinnerNumberModel(250, 0, 10000, 1); // 10 sec max seems long enough
     // the following items are protected so they can be hidden when not applicable from a specific ConnectionConfig (ie. Simulator) implementation
     protected JSpinner outputIntervalSpinner = new JSpinner(intervalSpinner);
     protected JLabel outputIntervalLabel;
     protected JButton outputIntervalReset = new JButton(Bundle.getMessage("ButtonReset"));
 
-    protected jmri.jmrix.SerialPortAdapter adapter = null;
+    protected jmri.jmrix.SerialPortAdapter adapter;
 
     /**
      * {@inheritDoc}
@@ -218,13 +158,13 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         return JmrixConfigPane.NONE;
     }
 
-    @SuppressWarnings("UseOfObsoleteCollectionType")
+//    @SuppressWarnings("UseOfObsoleteCollectionType")
     Vector<String> v;
-    @SuppressWarnings("UseOfObsoleteCollectionType")
+//    @SuppressWarnings("UseOfObsoleteCollectionType")
     Vector<String> originalList;
     String invalidPort = null;
 
-    @SuppressWarnings("UseOfObsoleteCollectionType")
+//    @SuppressWarnings("UseOfObsoleteCollectionType")
     public void refreshPortBox() {
         if (!init) {
             v = getPortNames();
@@ -282,6 +222,7 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
             }
         }
         updateSerialPortNames(portName, portBox, v);
+        JComboBoxUtil.setupComboBoxMaxRows(portBox);
 
         // If there's no name selected, select one that seems most likely
         boolean didSetName = false;
@@ -311,13 +252,11 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         });
     }
 
-    String value;
-
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("UseOfObsoleteCollectionType")
+//    @SuppressWarnings("UseOfObsoleteCollectionType")
     public void loadDetails(final JPanel details) {
         _details = details;
         setInstance();
@@ -355,12 +294,12 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         } catch (java.lang.UnsatisfiedLinkError e1) {
             log.error("UnsatisfiedLinkError - the serial library has not been installed properly");
             log.error("java.library.path={}", System.getProperty("java.library.path", "<unknown>"));
-            javax.swing.JOptionPane.showMessageDialog(null, "Failed to load comm library.\nYou have to fix that before setting preferences.");
+            jmri.util.swing.JmriJOptionPane.showMessageDialog(null, "Failed to load comm library.\nYou have to fix that before setting preferences.");
             return;
         }
 
         if (adapter.getSystemConnectionMemo() != null) {
-            systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
+            systemPrefixField.setText(adapter.getSystemConnectionMemo().getSystemPrefix());
             connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
             NUMOPTIONS = NUMOPTIONS + 2;
         }
@@ -656,7 +595,7 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
      * @param portCombo The combo box that's displaying the available ports
      * @param portList The list of valid (unfriendly) port names
      */
-    @SuppressWarnings("UseOfObsoleteCollectionType")
+//    @SuppressWarnings("UseOfObsoleteCollectionType")
     protected synchronized static void updateSerialPortNames(String portName, JComboBox<String> portCombo, Vector<String> portList) {
         for (Map.Entry<String, SerialPortFriendlyName> en : PortNameMapper.getPortNameMap().entrySet()) {
             en.getValue().setValidPort(false);
@@ -676,24 +615,17 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         }
     }
 
-    @SuppressWarnings("UseOfObsoleteCollectionType")
+    /**
+     * Provide a vector of valid port names, each a String.
+     * This may be implemented differently in subclasses 
+     * that e.g. do loopback or use a custom port-access library.
+     * @return Valid port names in the form used to select them later.
+     */
+//    @SuppressWarnings("UseOfObsoleteCollectionType") // historical interface
     protected Vector<String> getPortNames() {
-        //reloadDriver(); // Refresh the list of communication ports
-        // first, check that the comm package can be opened and ports seen
-        Vector<String> portNameVector = new Vector<>();
-        Enumeration<CommPortIdentifier> portIDs = CommPortIdentifier.getPortIdentifiers();
-        // find the names of suitable ports
-        while (portIDs.hasMoreElements()) {
-            CommPortIdentifier id = portIDs.nextElement();
-            // filter out line printers
-            if (id.getPortType() != CommPortIdentifier.PORT_PARALLEL) // accumulate the names in a vector
-            {
-                portNameVector.addElement(id.getName());
-            }
-        }
-        return portNameVector;
+        return AbstractSerialPortController.getActualPortNames();
     }
-
+        
     /**
      * This provides a method to return potentially meaningful names that are
      * used in OS to help identify ports against Hardware.
@@ -714,24 +646,6 @@ abstract public class AbstractSerialConnectionConfig extends AbstractConnectionC
         return null;
     }
 
-    /**
-     *
-     * @deprecated since 4.19.7 without direct replacement
-     */
-    @Deprecated
-    protected final void addToActionList() {
-        // nothing to do
-    }
-
-    /**
-     *
-     * @deprecated since 4.19.7 without direct replacement
-     */
-    @Deprecated
-    protected void removeFromActionList() {
-        // nothing to do
-    }
-
-    private final static Logger log = LoggerFactory.getLogger(AbstractSerialConnectionConfig.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractSerialConnectionConfig.class);
 
 }

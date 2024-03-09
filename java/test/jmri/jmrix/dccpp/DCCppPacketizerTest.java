@@ -1,5 +1,6 @@
 package jmri.jmrix.dccpp;
 
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
 import org.junit.Assert;
@@ -20,15 +21,10 @@ public class DCCppPacketizerTest extends DCCppTrafficControllerTest {
     /**
      * Local test class to make DCCppPacketizer more felicitous to test
      */
-    class StoppingDCCppPacketizer extends DCCppPacketizer {
+    private static class StoppingDCCppPacketizer extends DCCppPacketizer {
 
         public StoppingDCCppPacketizer(jmri.jmrix.dccpp.DCCppCommandStation p) {
             super(p);
-        }
-
-        public void stop() {
-            xmtThread.stop();
-            rcvThread.stop();
         }
 
         // methods removed for testing
@@ -56,7 +52,7 @@ public class DCCppPacketizerTest extends DCCppTrafficControllerTest {
         m.setTimeout(1);  // don't want to wait a long time
         c.sendDCCppMessage(m, null);
         log.debug("Message = {} length = {}", m.toString(), m.getNumDataElements());
-        jmri.util.JUnitUtil.releaseThread(this); // Allow time for other threads to send 4 characters
+        JUnitUtil.waitFor(JUnitUtil.WAITFOR_DEFAULT_DELAY); // Allow time for other threads to send 4 characters
         //Assert.assertEquals("total length ", 8, p.tostream.available());
         Assert.assertEquals("Char 0", '<', p.tostream.readByte() & 0xff);
         Assert.assertEquals("Char 1", 'T', p.tostream.readByte() & 0xff);
@@ -111,7 +107,7 @@ public class DCCppPacketizerTest extends DCCppTrafficControllerTest {
         // wait for reply (normally, done by callback; will check that later)
         int i = 0;
         while (l.rcvdRply == null && i++ < 100) {
-            jmri.util.JUnitUtil.releaseThread(this);
+            JUnitUtil.waitFor(JUnitUtil.WAITFOR_DEFAULT_DELAY);
         }
         if (log.isDebugEnabled()) {
             log.debug("past loop, i={} reply={}", i, l.rcvdRply);
@@ -120,6 +116,13 @@ public class DCCppPacketizerTest extends DCCppTrafficControllerTest {
             log.warn("waitForReply saw an immediate return; is threading right?");
         }
         return i < 100;
+    }
+
+    @Test
+    @Override
+    public void testPortReadyToSendNullController() {
+        super.testPortReadyToSendNullController();
+        JUnitAppender.suppressWarnMessageStartsWith("DCC++ port not ready to send");
     }
 
     @BeforeEach

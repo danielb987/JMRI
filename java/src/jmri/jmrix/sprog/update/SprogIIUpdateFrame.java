@@ -3,12 +3,11 @@ package jmri.jmrix.sprog.update;
 import static jmri.jmrix.sprog.SprogConstants.TC_BOOT_REPLY_TIMEOUT;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import javax.swing.JOptionPane;
+
 import jmri.jmrix.sprog.SprogConstants.SprogState;
 import jmri.jmrix.sprog.SprogMessage;
 import jmri.jmrix.sprog.SprogSystemConnectionMemo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for SPROG II firmware update utility.
@@ -40,19 +39,6 @@ public class SprogIIUpdateFrame
         
         // Get the SPROG version
         _memo.getSprogVersionQuery().requestVersion(this);
-    }
-    
-    
-    /** 
-     * {@inheritDoc}
-     * Also ensures timers are no longer running
-     */
-    @Override
-    public void dispose() {
-        // kill any timers still running 
-        stopTimer();
-            
-        super.dispose();
     }
 
     int bootVer = 0;
@@ -98,8 +84,8 @@ public class SprogIIUpdateFrame
         // If SPROG II is in boot mode, check message framing and checksum
         if ((bootState != BootState.RESETSENT) && tc.isSIIBootMode() && !reply.strip()) {
             stopTimer();
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("ErrorFrameDialogString"),
-                    Bundle.getMessage("ErrorFrameDialogTitle"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("ErrorFrameDialogString"),
+                    Bundle.getMessage("ErrorFrameDialogTitle"), JmriJOptionPane.ERROR_MESSAGE);
             log.error("Malformed bootloader reply");
             statusBar.setText(Bundle.getMessage("StatusMalformedbootLoaderReply"));
             bootState = BootState.IDLE;
@@ -121,8 +107,8 @@ public class SprogIIUpdateFrame
         // A reply to the enter bootloader command means the firmware is locked.
         bootState = BootState.IDLE;
         tc.setSprogState(SprogState.NORMAL);
-        JOptionPane.showMessageDialog(this, Bundle.getMessage("ErrorFirmwareLocked"),
-                Bundle.getMessage("SprogXFirmwareUpdate"), JOptionPane.ERROR_MESSAGE);
+        JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("ErrorFirmwareLocked"),
+                Bundle.getMessage("SprogXFirmwareUpdate"), JmriJOptionPane.ERROR_MESSAGE);
         statusBar.setText(Bundle.getMessage("ErrorFirmwareLocked"));
     }
     
@@ -164,8 +150,8 @@ public class SprogIIUpdateFrame
             log.error("Bad reply to RD_VER request");
             bootState = BootState.IDLE;
             tc.setSprogState(SprogState.NORMAL);
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("StatusUnableToConnectBootloader"),
-                    Bundle.getMessage("SprogXFirmwareUpdate"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("StatusUnableToConnectBootloader"),
+                    Bundle.getMessage("SprogXFirmwareUpdate"), JmriJOptionPane.ERROR_MESSAGE);
             statusBar.setText(Bundle.getMessage("StatusUnableToConnectBootloader"));
         }
     }
@@ -187,8 +173,8 @@ public class SprogIIUpdateFrame
             }
         } else {
             // Houston, we have a problem
-//            JOptionPane.showMessageDialog(this, Bundle.getMessage("StatusBadReplyWriteRequest"),
-//                                        Bundle.getMessage("SprogXFirmwareUpdate", " II"), JOptionPane.ERROR_MESSAGE);
+//            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("StatusBadReplyWriteRequest"),
+//                                        Bundle.getMessage("SprogXFirmwareUpdate", " II"), JmriJOptionPane.ERROR_MESSAGE);
             log.error("Bad reply to write request");
             statusBar.setText(Bundle.getMessage("StatusBadReplyWriteRequest"));
             bootState = BootState.IDLE;
@@ -227,8 +213,8 @@ public class SprogIIUpdateFrame
             }
         } else {
             // Houston, we have a problem
-//        JOptionPane.showMessageDialog(this, Bundle.getMessage("StatusBadReplyErase"),
-//                                        Bundle.getMessage("SprogXFirmwareUpdate", " II"), JOptionPane.ERROR_MESSAGE);
+//        JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("StatusBadReplyErase"),
+//                                        Bundle.getMessage("SprogXFirmwareUpdate", " II"), JmriJOptionPane.ERROR_MESSAGE);
             log.error("Bad reply to erase request");
             bootState = BootState.IDLE;
             tc.setSprogState(SprogState.NORMAL);
@@ -252,8 +238,8 @@ public class SprogIIUpdateFrame
             startLongTimer();
         } else {
             // Houston, we have a problem
-//        JOptionPane.showMessageDialog(this, Bundle.getMessage("StatusBadReplyModeRequest"),
-//                                        Bundle.getMessage("SprogXFirmwareUpdate", " II"), JOptionPane.ERROR_MESSAGE);
+//        JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("StatusBadReplyModeRequest"),
+//                                        Bundle.getMessage("SprogXFirmwareUpdate", " II"), JmriJOptionPane.ERROR_MESSAGE);
             log.error("Bad reply to SPROG Mode request");
             bootState = BootState.IDLE;
             tc.setSprogState(SprogState.NORMAL);
@@ -313,7 +299,7 @@ public class SprogIIUpdateFrame
             }
             msg = SprogMessage.getWriteFlash(hexFile.getAddress(), hexFile.getData(), blockLen);
             if (log.isDebugEnabled()) {
-                log.debug(msg.toString(true));
+                log.debug("msg: {}", msg.toString(true));
             }
         } else {
             // Do nothing
@@ -397,6 +383,18 @@ public class SprogIIUpdateFrame
         startLongTimer();
     }
 
-    private final static Logger log = LoggerFactory
-            .getLogger(SprogIIUpdateFrame.class);
+    /**
+     * Removes SprogVersionListener.
+     * Calls Super to stop Timer.
+     * {@inheritDoc}
+     */
+    @Override
+    public void dispose(){
+        if (_memo !=null) {
+            _memo.getSprogVersionQuery().removeSprogVersionListener(this);
+        }
+        super.dispose();
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SprogIIUpdateFrame.class);
 }

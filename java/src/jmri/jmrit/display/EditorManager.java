@@ -2,15 +2,12 @@ package jmri.jmrit.display;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.beans.Bean;
 
@@ -37,6 +34,29 @@ public class EditorManager extends Bean implements PropertyChangeListener, Insta
 
     public EditorManager() {
         super(false);
+    }
+
+    /**
+     * Set the title for the Preferences / Messages tab.
+     * Called by JmriUserPreferencesManager.
+     * @return the title string.
+     */
+    public String getClassDescription() {
+        return Bundle.getMessage("TitlePanelDialogs");  // NOI18N
+    }
+
+    /**
+     * Set the details for Preferences / Messages tab.
+     * Called by JmriUserPreferencesManager.
+     * <p>
+     * The dialogs are in jmri.configurexml.LoadXmlConfigAction and jmri.jmrit.display.Editor.
+     * They are anchored here since the preferences system appears to need a class that can instantiated.
+     */
+    public void setMessagePreferencesDetails() {
+        InstanceManager.getDefault(jmri.UserPreferencesManager.class).setPreferenceItemDetails(
+                "jmri.jmrit.display.EditorManager", "skipHideDialog", Bundle.getMessage("PanelHideSkip"));  // NOI18N
+        InstanceManager.getDefault(jmri.UserPreferencesManager.class).setPreferenceItemDetails(
+                "jmri.jmrit.display.EditorManager", "skipDupLoadDialog", Bundle.getMessage("DuplicateLoadSkip"));  // NOI18N
     }
 
     /**
@@ -90,6 +110,18 @@ public class EditorManager extends Bean implements PropertyChangeListener, Insta
     }
 
     /**
+     * Get the editor with the given title.
+     *
+     * @param title the title of the editor
+     * @return the editor with the given title or null if no editor by that title
+     * exists
+     */
+    @CheckForNull
+    public Editor get(@Nonnull String title) {
+        return getAll().stream().filter(e -> e.getTitle().equals(title)).findFirst().orElse(null);
+    }
+
+    /**
      * Get the editor with the given name.
      *
      * @param name the name of the editor
@@ -97,8 +129,23 @@ public class EditorManager extends Bean implements PropertyChangeListener, Insta
      * exists
      */
     @CheckForNull
-    public Editor get(@Nonnull String name) {
-        return getAll().stream().filter(e -> e.getTitle().equals(name)).findFirst().orElse(null);
+    public Editor getByName(@Nonnull String name) {
+        return getAll().stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    /**
+     * Get the editor with the given name or the editor with the given target frame name.
+     *
+     * @param name the name of the editor or target frame
+     * @return the editor or null
+     */
+    @CheckForNull
+    public Editor getTargetFrame(@Nonnull String name) {
+        Editor editor = get(name);
+        if (editor != null) {
+            return editor;
+        }
+        return getAll().stream().filter(e -> e.getTargetFrame().getTitle().equals(name)).findFirst().orElse(null);
     }
 
     /**
@@ -175,77 +222,5 @@ public class EditorManager extends Bean implements PropertyChangeListener, Insta
     @Nonnull
     public <T extends Editor> List<T> getList(@Nonnull Class<T> type) {
         return new ArrayList<>(getAll(type));
-    }
-
-    /**
-     * Get a List of the currently-existing Editor objects. The returned list is
-     * a copy made at the time of the call, so it can be manipulated as needed
-     * by the caller.
-     *
-     * @return a List of Editors
-     * @deprecated since 4.19.6; use {@link #getAll()} instead
-     */
-    @Deprecated
-    synchronized public List<Editor> getEditorsList() {
-        return new ArrayList<>(getAll());
-    }
-
-    /**
-     * Get a list of currently-existing Editor objects that are specific
-     * sub-classes of Editor.
-     * <p>
-     * The returned list is a copy made at the time of the call, so it can be
-     * manipulated as needed by the caller.
-     *
-     * @param <T> the type of Editor
-     * @param type the Class the list should be limited to.
-     * @return a List of Editors.
-     * @deprecated since 4.19.6; use {@link #getAll(java.lang.Class)} instead
-     */
-    @Deprecated
-    public <T extends Editor> List<T> getEditorsList(@Nonnull Class<T> type) {
-        return new ArrayList<>(getAll(type));
-    }
-
-    /**
-     * Get an Editor of a particular name. If more than one exists, there's no
-     * guarantee as to which is returned.
-     *
-     * @param name the editor to get
-     * @return the first matching Editor or null if no matching Editor could be
-     * found
-     * @deprecated since 4.19.6; use {@link #get(java.lang.String)} instead
-     */
-    @Deprecated
-    public Editor getEditor(String name) {
-        return get(name);
-    }
-
-    /**
-     * Add an Editor to the set of Editors. This only changes the set of Editors
-     * if the Editor is not already in the set.
-     *
-     * @param editor the editor to add
-     * @return true if the set was changed; false otherwise
-     * @deprecated since 4.19.6; use {@link #add(jmri.jmrit.display.Editor)}
-     * instead
-     */
-    @Deprecated
-    public boolean addEditor(@Nonnull Editor editor) {
-        return set.add(editor);
-    }
-
-    /**
-     * Add an Editor from the set of Editors. This only changes the set of
-     * Editors if the Editor is in the set.
-     *
-     * @param editor the editor to remove
-     * @return true if the set was changed; false otherwise
-     * @deprecated since 4.19.6; use {@link #remove(jmri.jmrit.display.Editor)}
-     * instead
-     */
-    @Deprecated
-    public boolean removeEditor(@Nonnull Editor editor) {
-        return set.remove(editor);
     }
 }

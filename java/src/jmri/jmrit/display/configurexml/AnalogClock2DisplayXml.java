@@ -1,10 +1,11 @@
 package jmri.jmrit.display.configurexml;
 
 import java.awt.Color;
-import jmri.configurexml.AbstractXmlAdapter;
-import jmri.jmrit.display.AnalogClock2Display;
-import jmri.jmrit.display.Editor;
+
+import jmri.configurexml.JmriConfigureXmlException;
+import jmri.jmrit.display.*;
 import jmri.util.ColorUtil;
+
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author Howard G. Penny Copyright (c) 2005
  */
 public class AnalogClock2DisplayXml
-        extends AbstractXmlAdapter {
+        extends PositionableLabelXml {
 
     public AnalogClock2DisplayXml() {
     }
@@ -37,6 +38,7 @@ public class AnalogClock2DisplayXml
         Element element = new Element("fastclock");
 
         // include contents
+        if (p.getId() != null) element.setAttribute("id", p.getId());
         element.setAttribute("x", "" + p.getX());
         element.setAttribute("y", "" + p.getY());
         element.setAttribute("scale", "" + p.getScale());
@@ -48,6 +50,8 @@ public class AnalogClock2DisplayXml
 
         element.setAttribute("class",
                 "jmri.jmrit.display.configurexml.AnalogClock2DisplayXml");
+
+        storeLogixNG_Data(p, element);
 
         return element;
     }
@@ -63,9 +67,11 @@ public class AnalogClock2DisplayXml
      *
      * @param element Top level Element to unpack.
      * @param o       an Editor as an Object
+     * @throws JmriConfigureXmlException when a error prevents creating the objects as as
+     *                   required by the input XML
      */
     @Override
-    public void load(Element element, Object o) {
+    public void load(Element element, Object o) throws JmriConfigureXmlException {
         // get object class and create the clock object
         Editor ed = (Editor) o;
         AnalogClock2Display l = new AnalogClock2Display(ed);
@@ -76,6 +82,13 @@ public class AnalogClock2DisplayXml
         double scale = 1.0;
         Color color = Color.black;
         try {
+            if (element.getAttribute("id") != null) {
+                try {
+                    l.setId(element.getAttribute("id").getValue());
+                } catch (Positionable.DuplicateIdException e) {
+                    throw new JmriConfigureXmlException("Positionable id is not unique", e);
+                }
+            }
             x = element.getAttribute("x").getIntValue();
             y = element.getAttribute("y").getIntValue();
             if (element.getAttribute("scale") != null) {
@@ -104,7 +117,13 @@ public class AnalogClock2DisplayXml
 
         // add the clock to the panel
         l.setDisplayLevel(Editor.CLOCK);
-        ed.putItem(l);
+        try {
+            ed.putItem(l);
+        } catch (Positionable.DuplicateIdException e) {
+            throw new JmriConfigureXmlException("Positionable id is not unique", e);
+        }
+
+        loadLogixNG_Data(l, element);
     }
 
     private static final Logger log = LoggerFactory.getLogger(AnalogClock2DisplayXml.class);

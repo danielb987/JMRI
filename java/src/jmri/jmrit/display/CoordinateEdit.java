@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.text.MessageFormat;
+
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -15,9 +16,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeListener;
+
 import jmri.util.JmriJFrame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Displays and allows user to modify {@literal x & y} coordinates of
@@ -97,7 +98,7 @@ public class CoordinateEdit extends JmriJFrame {
     //////////////////////////////////////////////////////////////
 
     public static AbstractAction getToolTipEditAction(final Positionable pos) {
-        return new AbstractAction(Bundle.getMessage("SetTooltip", "...")) {
+        return new AbstractAction(Bundle.getMessage("SetCustomTooltip", "...")) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CoordinateEdit f = new CoordinateEdit();
@@ -183,6 +184,42 @@ public class CoordinateEdit extends JmriJFrame {
                 f.addHelpMenu("package.jmri.jmrit.display.CoordinateEdit", true);
                 f.init(Bundle.getMessage("Rescale", ""), pos, true);
                 f.initScale();
+                f.setVisible(true);
+                f.setLocationRelativeTo((Component) pos);
+            }
+        };
+    }
+    //////////////////////////////////////////////////////////////
+
+    public static AbstractAction getIdEditAction(
+            final Positionable pos, final String title, final Editor editor) {
+
+        return new AbstractAction(Bundle.getMessage(title) + "...") {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CoordinateEdit f = new CoordinateEdit();
+                f.addHelpMenu("package.jmri.jmrit.display.CoordinateEdit", true);
+                f.init(Bundle.getMessage(title), pos, false);
+                f.initId(editor);
+                f.setVisible(true);
+                f.setLocationRelativeTo((Component) pos);
+            }
+        };
+    }
+    //////////////////////////////////////////////////////////////
+
+    public static AbstractAction getClassesEditAction(
+            final Positionable pos, final String title, final Editor editor) {
+
+        return new AbstractAction(Bundle.getMessage(title) + "...") {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CoordinateEdit f = new CoordinateEdit();
+                f.addHelpMenu("package.jmri.jmrit.display.CoordinateEdit", true);
+                f.init(Bundle.getMessage(title), pos, false);
+                f.initClasses(editor);
                 f.setVisible(true);
                 f.setLocationRelativeTo((Component) pos);
             }
@@ -581,6 +618,93 @@ public class CoordinateEdit extends JmriJFrame {
         pack();
     }
 
+    public void initId(final Editor editor) {
+        PositionableLabel pLabel = (PositionableLabel) pl;
+        oldStr = pLabel.getId();
+        textX = new JLabel();
+        textX.setText(Bundle.getMessage("EnterId") + ":");
+        textX.setVisible(true);
+
+        xTextField = new JTextField(15);
+        xTextField.setText(pLabel.getId());
+        xTextField.setToolTipText(Bundle.getMessage("TooltipEnterId"));
+
+        getContentPane().setLayout(new GridBagLayout());
+        addTextItems();
+
+        okButton.addActionListener(e -> {
+            PositionableLabel pp = (PositionableLabel) pl;
+            String t = xTextField.getText();
+            boolean hasText = (t != null && t.length() > 0);
+            if (hasText) {
+                try {
+                    pp.setId(t);
+                    pp.updateSize();
+                    dispose();
+                } catch (Positionable.DuplicateIdException ignore) {
+                    JmriJOptionPane.showMessageDialog(editor,
+                            Bundle.getMessage("ErrorIdNotUnique"),
+                            Bundle.getMessage("ErrorDialog"),
+                            JmriJOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                try {
+                    pp.setId(null);
+                    pp.updateSize();
+                    dispose();
+                } catch (Positionable.DuplicateIdException ex) {
+                    // This should never happen
+                    log.error("Positionable.setId(null) has thrown DuplicateIdException", ex);
+                }
+            }
+        });
+        okButton.getRootPane().setDefaultButton(okButton);
+        cancelButton.addActionListener(e -> {
+            PositionableLabel pp = (PositionableLabel) pl;
+//            pp.setId(oldStr);
+            pp.updateSize();
+            dispose();
+        });
+        pack();
+    }
+
+    public void initClasses(final Editor editor) {
+        PositionableLabel pLabel = (PositionableLabel) pl;
+        oldStr = String.join(",", pLabel.getClasses());
+        textX = new JLabel();
+        textX.setText(Bundle.getMessage("EnterClasses") + ":");
+        textX.setVisible(true);
+
+        xTextField = new JTextField(15);
+        xTextField.setText(oldStr);
+        xTextField.setToolTipText(Bundle.getMessage("TooltipEnterClasses"));
+
+        getContentPane().setLayout(new GridBagLayout());
+        addTextItems();
+
+        okButton.addActionListener(e -> {
+            PositionableLabel pp = (PositionableLabel) pl;
+            pp.removeAllClasses();
+            String t = xTextField.getText();
+            if (t != null && t.length() > 0) {
+                for (String className : t.split(",")) {
+                    if (!className.isBlank()) {
+                        pp.addClass(className.trim());
+                    }
+                }
+            }
+            pp.updateSize();
+            dispose();
+        });
+        okButton.getRootPane().setDefaultButton(okButton);
+        cancelButton.addActionListener(e -> {
+            PositionableLabel pp = (PositionableLabel) pl;
+            pp.updateSize();
+            dispose();
+        });
+        pack();
+    }
+
     public void initText() {
         PositionableLabel pLabel = (PositionableLabel) pl;
         oldStr = pLabel.getUnRotatedText();
@@ -763,5 +887,6 @@ public class CoordinateEdit extends JmriJFrame {
         getContentPane().add(c, gc);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(CoordinateEdit.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateEdit.class);
+
 }

@@ -5,11 +5,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+
+import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
 
 import jmri.InstanceManager;
 import jmri.ShutDownManager;
-import jmri.ShutDownTask;
 
 /**
  * Abstract base for TrafficControllers in a Message/Reply protocol.
@@ -21,15 +22,15 @@ import jmri.ShutDownTask;
  * The constructor registers a shutdown task to
  * trigger the necessary cleanup code
  * <p>
- * The internal state machine handles changes of mode, automatic retry of 
+ * The internal state machine handles changes of mode, automatic retry of
  * certain messages, time outs, and sending poll messages when otherwise idle.
  * <p>
- * "Mode" refers to the state of the command station communications. "Normal" 
+ * "Mode" refers to the state of the command station communications. "Normal"
  * and "Programming" are the two modes, used if the command station requires
  * messages to go back and forth between them. <br>
  *
  * <img src="doc-files/AbstractMRTrafficController-StateDiagram.png" alt="UML State diagram">
- * 
+ *
  * <p>
  * The key methods for the basic operation are:
  * <ul>
@@ -41,13 +42,13 @@ import jmri.ShutDownTask;
  *  <li>{@link #forwardMessage(AbstractMRListener, AbstractMRMessage)} and {@link #forwardReply(AbstractMRListener, AbstractMRReply) } handle forwarding of specific types of objects
  * </ul>
  * <p>
- * If your command station requires messages to go in and out of 
- * "programming mode", those should be provided by 
+ * If your command station requires messages to go in and out of
+ * "programming mode", those should be provided by
  * {@link #enterProgMode()} and {@link #enterNormalMode()}.
  * <p>
  * If you want to poll for information when the line is otherwise idle,
  * implement {@link #pollMessage()} and {@link #pollReplyHandler()}.
- * 
+ *
  * @author Bob Jacobsen Copyright (C) 2003
  * @author Paul Bender Copyright (C) 2004-2010
  */
@@ -58,24 +59,24 @@ import jmri.ShutDownTask;
     [*] --> IDLESTATE
     IDLESTATE --> NOTIFIEDSTATE : sendMessage()
     NOTIFIEDSTATE --> IDLESTATE : queue empty
-    
+
     NOTIFIEDSTATE --> WAITMSGREPLYSTATE : transmitLoop()\nwake, send message
-    
+
     WAITMSGREPLYSTATE --> WAITREPLYINPROGMODESTATE : transmitLoop()\nnot in PROGRAMINGMODE,\nmsg for PROGRAMINGMODE
     WAITMSGREPLYSTATE --> WAITREPLYINNORMMODESTATE : transmitLoop()\nnot in NORMALMODE,\nmsg for NORMALMODE
-    
+
     WAITMSGREPLYSTATE --> NOTIFIEDSTATE : handleOneIncomingReply()
 
     WAITREPLYINPROGMODESTATE --> OKSENDMSGSTATE : handleOneIncomingReply()\nentered PROGRAMINGMODE
     WAITREPLYINNORMMODESTATE --> OKSENDMSGSTATE : handleOneIncomingReply()\nentered NORMALMODE
     OKSENDMSGSTATE --> WAITMSGREPLYSTATE : send original pended message
-    
+
     IDLESTATE --> POLLSTATE : transmitLoop()\nno work
     POLLSTATE --> WAITMSGREPLYSTATE : transmitLoop()\npoll msg exists, send it
     POLLSTATE --> IDLESTATE : transmitLoop()\nno poll msg to send
-    
+
     WAITMSGREPLYSTATE --> AUTORETRYSTATE : handleOneIncomingReply()\nwhen tagged as error reply
-    AUTORETRYSTATE --> IDLESTATE : to drive a repeat of a message 
+    AUTORETRYSTATE --> IDLESTATE : to drive a repeat of a message
 
 NOTIFIEDSTATE : Transmit thread wakes up and processes
 POLLSTATE : Transient while deciding to send poll
@@ -107,15 +108,15 @@ public abstract class AbstractMRTrafficController {
 
         // We use a shutdown task here to make sure the connection is left
         // in a clean state prior to exiting.  This is required on systems
-        // which have a service mode to ensure we don't leave the system 
+        // which have a service mode to ensure we don't leave the system
         // in an unusable state. Once the shutdown task executes, the connection
         // must be considered permanently closed.
-        
+
         InstanceManager.getDefault(ShutDownManager.class).register(shutDownTask);
     }
 
     private boolean synchronizeRx = true;
-    
+
     protected void setSynchronizeRx(boolean val) {
         synchronizeRx = val;
     }
@@ -128,6 +129,10 @@ public abstract class AbstractMRTrafficController {
 
     protected final Vector<AbstractMRListener> cmdListeners = new Vector<>();
 
+    /**
+     * Add a Listener to the Listener list.
+     * @param l The Listener to be added, not null.
+     */
     protected synchronized void addListener(AbstractMRListener l) {
         // add only if not already registered
         if (l == null) {
@@ -138,6 +143,24 @@ public abstract class AbstractMRTrafficController {
         }
     }
 
+    /**
+     * Add a Listener to start of the Listener list.
+     * Intended for use only by system Consoles which may prefer notification
+     * before other objects have processed a Message and sent a Reply.
+     * @param l The Listener to be added, not null.
+     */
+    protected synchronized void addConsoleListener(@Nonnull AbstractMRListener l){
+        // add only if not already registered
+        if (!cmdListeners.contains(l)) {
+            cmdListeners.insertElementAt(l, 0);
+        }
+    }
+
+    /**
+     * Remove a Listener from the Listener list.
+     * The Listener will receive no further notifications.
+     * @param l The Listener to be removed.
+     */
     protected synchronized void removeListener(AbstractMRListener l) {
         if (cmdListeners.contains(l)) {
             cmdListeners.removeElement(l);
@@ -164,7 +187,7 @@ public abstract class AbstractMRTrafficController {
         for (int i = 0; i < cnt; i++) {
             AbstractMRListener client = v.elementAt(i);
             if (notMe != client) {
-                log.debug("notify client: {}", client);
+                log.debug("notify message, client: {}", client);
                 try {
                     forwardMessage(client, m);
                 } catch (RuntimeException e) {
@@ -281,7 +304,7 @@ public abstract class AbstractMRTrafficController {
         int cnt = v.size();
         for (int i = 0; i < cnt; i++) {
             AbstractMRListener client = v.elementAt(i);
-            log.debug("notify client: {}", client);
+            log.debug("notify reply, client: {}", client);
             try {
                 //skip dest for now, we'll send the message to there last.
                 if (dest != client) {
@@ -296,6 +319,7 @@ public abstract class AbstractMRTrafficController {
         // this is done _second_ so monitoring can have already stored the reply
         // before a response is sent
         if (dest != null) {
+            log.debug("notify reply, dest: {}", dest);
             forwardReply(dest, r);
         }
     }
@@ -472,7 +496,7 @@ public abstract class AbstractMRTrafficController {
                     AbstractMRMessage msg = pollMessage();
                     if (msg != null) {
                         // yes, send that
-                        log.debug("Sending poll, wait time {}", Long.toString(waitTimePoll));
+                        log.debug("Sending poll, wait time {}", waitTimePoll);
                         mCurrentState = WAITMSGREPLYSTATE;
                         forwardToPort(msg, pollReplyHandler());
                         // wait for reply
@@ -571,22 +595,26 @@ public abstract class AbstractMRTrafficController {
         return timeoutFlag;
     }
 
-    private boolean timeoutFlag = false;
-    private int timeouts = 0;
+    protected boolean timeoutFlag = false;
+    protected int timeouts = 0;
     protected boolean flushReceiveChars = false;
 
     protected void handleTimeout(AbstractMRMessage msg, AbstractMRListener l) {
         //log.debug("Timeout mCurrentState: {}", mCurrentState);
-        String[] packages = this.getClass().getName().split("\\.");
-        String name = (packages.length>=2 ? packages[packages.length-2]+"." :"")
-                +(packages.length>=1 ? packages[packages.length-1] :"");
-
-        log.warn("Timeout on reply to message: {} consecutive timeouts = {} in {}", msg, timeouts, name);
+        warnOnTimeout(msg, l);
         timeouts++;
         timeoutFlag = true;
         flushReceiveChars = true;
     }
 
+    protected void warnOnTimeout(AbstractMRMessage msg, AbstractMRListener l) {
+        String[] packages = this.getClass().getName().split("\\.");
+        String name = (packages.length>=2 ? packages[packages.length-2]+"." :"")
+                +(packages.length>=1 ? packages[packages.length-1] :"");
+
+        log.warn("Timeout on reply to message: {} consecutive timeouts = {} in {}", msg, timeouts, name);
+    }
+    
     protected void resetTimeout(AbstractMRMessage msg) {
         if (timeouts > 0) {
             log.debug("Reset timeout after {} timeouts", timeouts);
@@ -657,6 +685,7 @@ public abstract class AbstractMRTrafficController {
         // forward the message to the registered recipients,
         // which includes the communications monitor, except the sender.
         // Schedule notification via the Swing event queue to ensure order
+        log.trace("about to start XmtNotifier for {} last: {}", m, mLastSender, new Exception("traceback"));
         Runnable r = new XmtNotifier(m, mLastSender, this);
         SwingUtilities.invokeLater(r);
 
@@ -682,11 +711,11 @@ public abstract class AbstractMRTrafficController {
         try {
             if (ostream != null) {
                 if (log.isDebugEnabled()) {
-                    StringBuilder f = new StringBuilder("formatted message: ");
+                    StringBuilder f = new StringBuilder();
                     for (int i = 0; i < msg.length; i++) {
                         f.append(String.format("%02X ",0xFF & msg[i]));
                     }
-                    log.debug(f.toString());
+                    log.debug("formatted message: {}", f.toString() );
                 }
                 while (m.getRetries() >= 0) {
                     if (portReadyToSend(controller)) {
@@ -774,7 +803,7 @@ public abstract class AbstractMRTrafficController {
                     public void run() {
                         try {
                             transmitLoop();
-                        } catch(ThreadDeath td) {
+                        } catch (ThreadDeath td) {
                             if (!threadStopRequest) log.error("Transmit thread terminated prematurely by: {}", td, td);
                             // ThreadDeath must be thrown per Java API Javadocs
                             throw td;
@@ -783,7 +812,7 @@ public abstract class AbstractMRTrafficController {
                         }
                 }
             });
-            
+
             String[] packages = this.getClass().getName().split("\\.");
             xmtThread.setName(
                 (packages.length>=2 ? packages[packages.length-2]+"." :"")
@@ -809,7 +838,7 @@ public abstract class AbstractMRTrafficController {
             rcvThread.setPriority(Thread.MAX_PRIORITY);      //bump up the priority
             rcvThread.setDaemon(true);
             rcvThread.start();
-            
+
         } catch (RuntimeException e) {
             log.error("Failed to start up communications. Error was: ", e);
             log.debug("Full trace:", e);
@@ -838,7 +867,7 @@ public abstract class AbstractMRTrafficController {
             log.warn("disconnectPort: disconnect called from non-connected AbstractPortController");
         }
         controller = null;
-        threadStopRequest=true;
+        threadStopRequest = true;
     }
 
     /**
@@ -895,7 +924,8 @@ public abstract class AbstractMRTrafficController {
         }
         if (!threadStopRequest) { // if e.g. unexpected end
             ConnectionStatus.instance().setConnectionState(controller.getUserName(), controller.getCurrentPortName(), ConnectionStatus.CONNECTION_DOWN);
-            log.error("Exit from rcv loop in {}", this.getClass());
+            log.debug("Exit from rcv loop in {}", this.getClass());
+            log.info("Exiting receive loop");
             recovery(); // see if you can restart
         }
     }
@@ -939,8 +969,7 @@ public abstract class AbstractMRTrafficController {
     /**
      * Read a single byte, protecting against various timeouts, etc.
      * <p>
-     * When a port is set to have a receive timeout (via the
-     * {@link purejavacomm.SerialPort#enableReceiveTimeout(int)} method), some will return
+     * When a port is set to have a receive timeout, some will return
      * zero bytes or an EOFException at the end of the timeout. In that case, the read
      * should be repeated to get the next real character.
      *
@@ -1031,7 +1060,7 @@ public abstract class AbstractMRTrafficController {
                 SwingUtilities.invokeLater(r);
             }
         } catch (InterruptedException ie) {
-            if(threadStopRequest) return;
+            if (threadStopRequest) return;
             log.error("Unexpected exception in invokeAndWait: {}{}", ie, ie.toString());
         } catch (java.lang.reflect.InvocationTargetException| RuntimeException e) {
             log.error("Unexpected exception in invokeAndWait: {}{}", e, e.toString());
@@ -1061,7 +1090,7 @@ public abstract class AbstractMRTrafficController {
         loadChars(msg, istream);
 
         if (threadStopRequest) return;
-        
+
         // message is complete, dispatch it !!
         replyInDispatch = true;
         log.debug("dispatch reply of length {} contains \"{}\", state {}", msg.getNumDataElements(), msg, mCurrentState);
@@ -1186,20 +1215,6 @@ public abstract class AbstractMRTrafficController {
         return mLastSender;
     }
 
-    // Override the finalize method for this class
-    // to request termination, which might have happened
-    // before in any case
-    /**
-     * finalize deprecated in Java 9, but not yet removed
-     * @deprecated since Java 9
-     */
-    @Override
-    @Deprecated
-    protected final void finalize() throws Throwable {
-        terminate();
-        super.finalize();
-    }
-
     protected void terminate() {
         log.debug("Cleanup Starts");
         if (ostream == null) {
@@ -1294,7 +1309,7 @@ public abstract class AbstractMRTrafficController {
                 // interrupted during cleanup.
             }
         }
-        
+
         if (rcvThread != null) {
             rcvThread.interrupt();
             try {
@@ -1302,16 +1317,16 @@ public abstract class AbstractMRTrafficController {
             } catch (InterruptedException ie){
                 // interrupted during cleanup.
             }
-        }    
-        // we also need to remove the shutdown task. 
+        }
+        // we also need to remove the shutdown task.
         InstanceManager.getDefault(ShutDownManager.class).deregister(shutDownTask);
     }
-    
+
     /**
      * Flag that threads should terminate as soon as they can.
      */
     protected volatile boolean threadStopRequest = false;
-    
+
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractMRTrafficController.class);
 
 }

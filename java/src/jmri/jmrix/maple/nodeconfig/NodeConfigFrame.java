@@ -2,20 +2,22 @@ package jmri.jmrix.maple.nodeconfig;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
+
 import jmri.jmrix.maple.InputBits;
 import jmri.jmrix.maple.MapleSystemConnectionMemo;
 import jmri.jmrix.maple.OutputBits;
 import jmri.jmrix.maple.SerialNode;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user configuration of Maple panel nodes.
@@ -53,6 +55,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
 
     protected boolean changedNode = false;  // true if a node was changed, deleted, or added
     protected boolean editMode = false;     // true if in edit mode
+    private boolean checkEnabled = jmri.InstanceManager.getDefault(jmri.configurexml.ShutdownPreferences.class).isStoreCheckEnabled();
 
     protected SerialNode curNode = null;    // Serial Node being editted
     protected int nodeAddress = 0;          // Node address
@@ -368,11 +371,11 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
             return;
         }
         // confirm deletion with the user
-        if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(
+        if (JmriJOptionPane.OK_OPTION == JmriJOptionPane.showConfirmDialog(
                 this, Bundle.getMessage("ConfirmDelete1") + " " + nodeAddress + "?",
                 Bundle.getMessage("ConfirmDeleteTitle"),
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.WARNING_MESSAGE)) {
+                JmriJOptionPane.OK_CANCEL_OPTION,
+                JmriJOptionPane.WARNING_MESSAGE)) {
             // delete this node
             _memo.getTrafficController().deleteNode(nodeAddress);
             // provide user feedback
@@ -392,7 +395,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
      */
     public void doneButtonActionPerformed() {
         if (editMode) {
-            // Reset 
+            // Reset
             editMode = false;
             curNode = null;
             // Switch buttons
@@ -405,12 +408,12 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
             nodeAddrSpinner.setVisible(true);
             nodeAddrStatic.setVisible(false);
         }
-        if (changedNode) {
+        if (changedNode && !checkEnabled) {
             // Remind user to Save new configuration
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("ReminderNode1") + "\n" + Bundle.getMessage("Reminder2"),
                     Bundle.getMessage("ReminderTitle"),
-                    JOptionPane.INFORMATION_MESSAGE);
+                    JmriJOptionPane.INFORMATION_MESSAGE);
         }
         setVisible(false);
         dispose();
@@ -447,7 +450,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
         doneButton.setVisible(true);
         updateButton.setVisible(false);
         cancelButton.setVisible(false);
-        // make node address editable again 
+        // make node address editable again
         nodeAddrSpinner.setVisible(true);
         nodeAddrStatic.setVisible(false);
         // refresh notes panel
@@ -463,7 +466,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
      * Handle Cancel button.
      */
     public void cancelButtonActionPerformed() {
-        // Reset 
+        // Reset
         editMode = false;
         curNode = null;
         // Switch buttons
@@ -473,7 +476,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
         doneButton.setVisible(true);
         updateButton.setVisible(false);
         cancelButton.setVisible(false);
-        // make node address editable again 
+        // make node address editable again
         nodeAddrSpinner.setVisible(true);
         nodeAddrStatic.setVisible(false);
         // refresh notes panel
@@ -708,7 +711,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
 //     */
 //    protected boolean readPulseWidth() {
 //        // get the pulse width
-//        try 
+//        try
 //        {
 //            pulseWidth = Integer.parseInt(pulseWidthField.getText());
 //        }

@@ -29,7 +29,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     // Test the string constructor.
     @Test
     public void testStringCtor() {
-        msg = DCCppMessage.parseDCCppMessage("T 42 1");
+        msg = new DCCppMessage("T 42 1");
         Assert.assertEquals("length", 6, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'T', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -42,7 +42,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr1ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(1, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 7, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -56,7 +56,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr1ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(1, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 7, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -70,7 +70,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr4ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(4, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 7, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -84,7 +84,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr4ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(4, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 7, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -98,7 +98,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr5ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(5, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 7, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -112,7 +112,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr5ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(5, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 7, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -126,7 +126,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr40ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(40, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -141,7 +141,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr40ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(40, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -156,7 +156,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr41ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(41, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -171,7 +171,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr41ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(41, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -186,7 +186,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr2040ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(2040, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 9, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -202,7 +202,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr2040ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(2040, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 9, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -218,7 +218,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr2041ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(2041, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 9, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -234,7 +234,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr2041ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(2041, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 9, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -250,7 +250,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr2044ActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(2044, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 9, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -266,7 +266,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMakeAccessoryDecoderMsgAddr2044ActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(2044, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 9, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -283,7 +283,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetAccessoryDecoderMsgActivateTrue() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(23, 2, true);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -298,7 +298,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetAccessoryDecoderMsgActivateFalse() {
         msg = DCCppMessage.makeAccessoryDecoderMsg(23, 2, false);
-        log.debug("accessory decoder message = {}", msg.toString());
+        log.debug("accessory decoder message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'a', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -323,9 +323,27 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     }
 
     @Test
+    public void testMakesAndMonitors() {
+        msg = new DCCppMessage("F 123 22 1");
+        Assert.assertEquals("Monitor string", "Function Cmd: CAB: 123, FUNC: 22, State: 1", msg.toMonitorString());
+        msg = DCCppMessage.makeFunctionV4Message(123, 4, true);
+        Assert.assertEquals("Monitor string", "Function Cmd: CAB: 123, FUNC: 4, State: 1", msg.toMonitorString());
+        msg = DCCppMessage.makeFunctionV4Message(123, 5, false);
+        Assert.assertEquals("Monitor string", "Function Cmd: CAB: 123, FUNC: 5, State: 0", msg.toMonitorString());
+        msg = DCCppMessage.makeForgetCabMessage(1234);
+        Assert.assertEquals("Monitor string", "Forget Cab: CAB: 1234, (No Reply Expected)", msg.toMonitorString());
+        msg = new DCCppMessage("- 1234");
+        Assert.assertEquals("Monitor string", "Forget Cab: CAB: 1234, (No Reply Expected)", msg.toMonitorString());
+        msg = new DCCppMessage("-");
+        Assert.assertEquals("Monitor string", "Forget Cab: CAB: [ALL], (No Reply Expected)", msg.toMonitorString());
+        msg = DCCppMessage.makeForgetCabMessage(12345);
+        Assert.assertNull("null on invalid address", msg);
+    }
+
+    @Test
     public void testGetTurnoutCommandMsgThrown() {
         msg = DCCppMessage.makeTurnoutCommandMsg(23, true);
-        log.debug("turnout message = {}", msg.toString());
+        log.debug("turnout message = '{}'", msg);
         Assert.assertEquals("length", 6, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'T', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -338,7 +356,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetTurnoutCommandMsgClosed() {
         msg = DCCppMessage.makeTurnoutCommandMsg(23, false);
-        log.debug("turnout message = {}", msg.toString());
+        log.debug("turnout message = '{}'", msg);
         Assert.assertEquals("length", 6, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'T', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -351,19 +369,44 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMonitorStringTurnoutCommandMsgThrown() {
         msg = DCCppMessage.makeTurnoutCommandMsg(23, true);
-        Assert.assertEquals("Monitor string", "Turnout Cmd: T/O ID: 23, State: THROWN", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Turnout Cmd: ID: 23, State: THROWN", msg.toMonitorString());
     }
 
     @Test
     public void testMonitorStringTurnoutCommandMsgClosed() {
         msg = DCCppMessage.makeTurnoutCommandMsg(23, false);
-        Assert.assertEquals("Monitor string", "Turnout Cmd: T/O ID: 23, State: CLOSED", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Turnout Cmd: ID: 23, State: CLOSED", msg.toMonitorString());
+    }
+
+    @Test
+    public void testTurnoutAddCommands() { /* test turnout add commands (new in DCC++EX 3.1.7) */
+        msg = new DCCppMessage("T 23 DCC 5 0");
+        Assert.assertEquals("Monitor string", "Add Turnout DCC: ID:23, Address:5, Subaddr:0", msg.toMonitorString());
+        msg = new DCCppMessage("T 24 SERVO 100 410 205 2");
+        Assert.assertEquals("Monitor string", "Add Turnout Servo: ID:24, Pin:100, ThrownPos:410, ClosedPos:205, Profile:2"
+                , msg.toMonitorString());
+        msg = new DCCppMessage("T 25 VPIN 50");
+        Assert.assertEquals("Monitor string", "Add Turnout Vpin: ID:25, Pin:50", msg.toMonitorString());
+        msg = new DCCppMessage("T 23 DCC 5 T");
+        Assert.assertEquals("Monitor string", "Unmatched Turnout Cmd: T 23 DCC 5 T", msg.toMonitorString());
+    }
+
+    @Test
+    public void testDiagAndControlCommands() { /* test diagnostic and control commands (new in DCC++EX 3.1.7) */
+        msg = new DCCppMessage("D EXRAIL ON");
+        Assert.assertEquals("Monitor string", "Diag Cmd: 'D EXRAIL ON'",       msg.toMonitorString());
+        msg = new DCCppMessage("/START 1224 4");
+        Assert.assertEquals("Monitor string", "Control Cmd: '/START 1224 4'",  msg.toMonitorString());
+        msg = new DCCppMessage("/ START 1224 4");
+        Assert.assertEquals("Monitor string", "Control Cmd: '/ START 1224 4'", msg.toMonitorString());
+        msg = new DCCppMessage("/PAUSE");
+        Assert.assertEquals("Monitor string", "Control Cmd: '/PAUSE'",         msg.toMonitorString());
     }
 
     @Test
     public void testGetWriteDirectCVMsg() {
         msg = DCCppMessage.makeWriteDirectCVMsg(29, 12, 1, 2);
-        log.debug("write cv message = {}", msg.toString());
+        log.debug("write cv message = '{}'", msg);
         Assert.assertEquals("length", 11, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'W', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -381,13 +424,19 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMonitorStringWriteDirectCVMsg() {
         msg = DCCppMessage.makeWriteDirectCVMsg(29, 12, 1, 2);
-        Assert.assertEquals("Monitor string", "Prog Write Byte Cmd: CV : 29, Value: 12, Callback Num: 1, Callback Sub: 2", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Prog Write Byte Cmd: CV: 29, Value: 12, Callback Num: 1, Sub: 2", msg.toMonitorString());
+    }
+
+    @Test
+    public void testMonitorStringWriteDirectCVMsgV4() {
+        msg = DCCppMessage.makeWriteDirectCVMsgV4(29, 12);
+        Assert.assertEquals("Monitor string", "Prog Write Byte Cmd: CV: 29, Value: 12", msg.toMonitorString());
     }
 
     @Test
     public void testGetBitWriteDirectCVMsg() {
         msg = DCCppMessage.makeBitWriteDirectCVMsg(17, 4, 1, 3, 4);
-        log.debug("write cv bit message = {}", msg.toString());
+        log.debug("write cv bit message = '{}'", msg);
         Assert.assertEquals("length", 12, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'B', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -406,13 +455,19 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMonitorStringBitWriteDirectCVMsg() {
         msg = DCCppMessage.makeBitWriteDirectCVMsg(17, 4, 1, 3, 4);
-        Assert.assertEquals("Monitor string", "Prog Write Bit Cmd: CV : 17, Bit : 4, Value: 1, Callback Num: 3, Callback Sub: 4", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Prog Write Bit Cmd: CV: 17, Bit: 4, Value: 1, Callback Num: 3, Sub: 4", msg.toMonitorString());
+    }
+
+    @Test
+    public void testMonitorStringBitWriteDirectCVMsgV4() {
+        msg = DCCppMessage.makeBitWriteDirectCVMsgV4(17, 4, 1);
+        Assert.assertEquals("Monitor string", "Prog Write Bit Cmd: CV: 17, Bit: 4, Value: 1", msg.toMonitorString());
     }
 
     @Test
     public void testGetReadDirectCVMsg() {
         msg = DCCppMessage.makeReadDirectCVMsg(17, 4, 3);
-        log.debug("read cv message = {}", msg.toString());
+        log.debug("read cv message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'R', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -427,13 +482,26 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMonitorStringReadDirectCVMsg() {
         msg = DCCppMessage.makeReadDirectCVMsg(17, 4, 3);
-        Assert.assertEquals("Monitor string", "Prog Read Cmd: CV: 17, Callback Num: 4, Callback Sub: 3", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Prog Read Cmd: CV: 17, Callback Num: 4, Sub: 3", msg.toMonitorString());
+    }
+
+    @Test
+    public void testMonitorStringReadCVV4Msg() {
+        msg = new DCCppMessage("R 123");
+        Assert.assertEquals("Monitor string", "Prog Read CV: CV:123", msg.toMonitorString());
+    }
+
+    @Test
+    public void testMonitorStringReadLocoIDMsg() {
+        msg = new DCCppMessage("R");
+        Assert.assertEquals("Monitor string", "Prog Read LocoID Cmd", msg.toMonitorString());
     }
 
     @Test
     public void testGetWriteOpsModeCVMsg() {
         msg = DCCppMessage.makeWriteOpsModeCVMsg(17, 4, 3);
-        log.debug("write ops cv message = {}", msg.toString());
+        Assertions.assertNotNull(msg);
+        log.debug("write ops cv message = '{}'", msg);
         Assert.assertEquals("length", 8, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'w', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -448,13 +516,44 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMonitorStringWriteOpsModeCVMsg() {
         msg = DCCppMessage.makeWriteOpsModeCVMsg(17, 4, 3);
+        Assertions.assertNotNull(msg);
         Assert.assertEquals("Monitor string", "Ops Write Byte Cmd: Address: 17, CV: 4, Value: 3", msg.toMonitorString());
+    }
+
+    @Test
+    public void testMonitorStringVarious() {
+        msg = new DCCppMessage("=");
+        Assert.assertEquals("Monitor string", "Request TrackManager Config: '='", msg.toMonitorString());
+        msg = DCCppMessage.makeTrackManagerRequestMsg();
+        Assert.assertEquals("Monitor string", "Request TrackManager Config: '='", msg.toMonitorString());
+    }
+
+    @Test
+    public void testMonitorStringThrottleCommandsMsg() {
+        msg = new DCCppMessage("J T");
+        Assert.assertEquals("Monitor string", "Request Turnout ID list", msg.toMonitorString());
+        msg = DCCppMessage.makeTurnoutIDsMsg();
+        Assert.assertEquals("Monitor string", "Request Turnout ID list", msg.toMonitorString());
+        msg = new DCCppMessage("J T 145");
+        Assert.assertEquals("Monitor string", "Request details for Turnout 145", msg.toMonitorString());
+        msg = DCCppMessage.makeTurnoutIDMsg(145);
+        Assert.assertEquals("Monitor string", "Request details for Turnout 145", msg.toMonitorString());
+        msg = new DCCppMessage("T 145 X");
+        Assert.assertEquals("Monitor string", "Request implementation for Turnout 145", msg.toMonitorString());
+        msg = new DCCppMessage("J C");
+        Assert.assertEquals("Monitor string", "Request clock update from CS", msg.toMonitorString());
+        msg = DCCppMessage.makeClockRequestTimeMsg();
+        Assert.assertEquals("Monitor string", "Request clock update from CS", msg.toMonitorString());
+        msg = new DCCppMessage("J C 234 12");
+        Assert.assertEquals("Monitor string", "FastClock Send: 03:54, Rate:12", msg.toMonitorString());
+        msg = DCCppMessage.makeClockSetMsg(234, 12);
+        Assert.assertEquals("Monitor string", "FastClock Send: 03:54, Rate:12", msg.toMonitorString());
     }
 
     @Test
     public void testGetBitWriteOpsModeCVMsg() {
         msg = DCCppMessage.makeBitWriteOpsModeCVMsg(17, 4, 3, 1);
-        log.debug("write ops bit cv message = {}", msg.toString());
+        log.debug("write ops bit cv message = '{}'", msg);
         Assert.assertEquals("length", 10, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'b', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -477,12 +576,12 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testSetTrackPowerMsg() {
         msg = DCCppMessage.makeSetTrackPowerMsg(true);
-        log.debug("track power on message = {}", msg.toString());
+        log.debug("track power on message = '{}'", msg);
         Assert.assertEquals("length", 1, msg.getNumDataElements());
         Assert.assertEquals("0th byte", '1', msg.getElement(0) & 0xFF);
 
         msg = DCCppMessage.makeSetTrackPowerMsg(false);
-        log.debug("track power off message = {}", msg.toString());
+        log.debug("track power off message = '{}'", msg);
         Assert.assertEquals("length", 1, msg.getNumDataElements());
         Assert.assertEquals("0th byte", '0', msg.getElement(0) & 0xFF);
     }
@@ -496,7 +595,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testReadTrackCurrentMsg() {
         msg = DCCppMessage.makeReadTrackCurrentMsg();
-        log.debug("read track current message = {}", msg.toString());
+        log.debug("read track current message = '{}'", msg);
         Assert.assertEquals("length", 1, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'c', msg.getElement(0) & 0xFF);
     }
@@ -510,7 +609,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetCSStatusMsg() {
         msg = DCCppMessage.makeCSStatusMsg();
-        log.debug("get status message = {}", msg.toString());
+        log.debug("get status message = '{}'", msg);
         Assert.assertEquals("length", 1, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 's', msg.getElement(0) & 0xFF);
     }
@@ -524,7 +623,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetAddressedEmergencyStopMsg() {
         msg = DCCppMessage.makeAddressedEmergencyStop(5, 24);
-        log.debug("emergency stop message = {}", msg.toString());
+        log.debug("emergency stop message = '{}'", msg);
         Assert.assertEquals("length", 11, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 't', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -540,15 +639,25 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     }
 
     @Test
+    public void testEStopAllMsg() {
+        msg = DCCppMessage.makeEmergencyStopAllMsg();
+        log.debug("eStop All message = '{}'", msg);
+        Assert.assertEquals("length", 1, msg.getNumDataElements());
+        Assert.assertEquals("0th byte", '!', msg.getElement(0) & 0xFF);
+    }
+
+    @Test
     public void testMonitorStringAddressedEmergencyStopMsg() {
         msg = DCCppMessage.makeAddressedEmergencyStop(5, 24);
         Assert.assertEquals("Monitor string", "Throttle Cmd: Register: 5, Address: 24, Speed: -1, Direction: Forward", msg.toMonitorString());
+        msg = DCCppMessage.makeAddressedEmergencyStop(24);
+        Assert.assertEquals("Monitor string", "Throttle Cmd: Address: 24, Speed: -1, Direction: Forward", msg.toMonitorString());
     }
 
     @Test
     public void testGetSpeedAndDirectionMsg() {
         msg = DCCppMessage.makeSpeedAndDirectionMsg(5, 24, 0.5f, false);
-        log.debug("Speed message 1 = {}", msg.toString());
+        log.debug("Speed message 1 = '{}'", msg);
         Assert.assertEquals("length", 11, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 't', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -563,7 +672,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
         Assert.assertEquals("10th byte", '0', msg.getElement(10) & 0xFF);
 
         msg = DCCppMessage.makeSpeedAndDirectionMsg(5, 24, 1.0f, true);
-        log.debug("Speed message 2 = {}", msg.toString());
+        log.debug("Speed message 2 = '{}'", msg);
         Assert.assertEquals("length", 12, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 't', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -579,7 +688,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
         Assert.assertEquals("11th byte", '1', msg.getElement(11) & 0xFF);
 
         msg = DCCppMessage.makeSpeedAndDirectionMsg(5, 24, -1, true);
-        log.debug("Speed message 3 = {}", msg.toString());
+        log.debug("Speed message 3 = '{}'", msg);
         Assert.assertEquals("length", 11, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 't', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -595,16 +704,28 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     }
 
     @Test
-    public void testMonitorStringSpeedAndDirectionMsg() {
+    public void testMonitorStringSpeedAndDirectionMsg() { 
         msg = DCCppMessage.makeSpeedAndDirectionMsg(5, 24, 0.5f, false);
-        Assert.assertEquals("Monitor string", "Throttle Cmd: Register: 5, Address: 24, Speed: 63, Direction: Reverse", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Throttle Cmd: Register: 5, Address: 24, Speed: 63, Direction: Reverse", msg.toMonitorString());        
+        //newer version without register
+        msg = DCCppMessage.makeSpeedAndDirectionMsg(24, 0.5f, false);
+        Assert.assertEquals("Monitor string", "Throttle Cmd: Address: 24, Speed: 63, Direction: Reverse", msg.toMonitorString());        
+    }
+
+    @Test
+    public void testMonitorMakeAddressedEmergencyStop() { 
+        msg = DCCppMessage.makeAddressedEmergencyStop(5, 24);
+        Assert.assertEquals("Monitor string", "Throttle Cmd: Register: 5, Address: 24, Speed: -1, Direction: Forward", msg.toMonitorString());        
+        //newer version without register
+        msg = DCCppMessage.makeAddressedEmergencyStop(24);
+        Assert.assertEquals("Monitor string", "Throttle Cmd: Address: 24, Speed: -1, Direction: Forward", msg.toMonitorString());        
     }
 
     @Test
     public void testgetWriteDCCPacketMainMsg() {
         byte packet[] = {(byte) 0xC4, (byte) 0xD2, (byte) 0x12, (byte) 0x0C, (byte) 0x08};
         msg = DCCppMessage.makeWriteDCCPacketMainMsg(0, 5, packet);
-        log.debug("DCC packet main message = {}", msg.toString());
+        log.debug("DCC packet main message = '{}'", msg);
         Assert.assertEquals("length", 18, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'M', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -637,7 +758,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     public void testgetWriteDCCPacketProgMsg() {
         byte packet[] = {(byte) 0xC4, (byte) 0xD2, (byte) 0x12, (byte) 0x0C, (byte) 0x08};
         msg = DCCppMessage.makeWriteDCCPacketProgMsg(0, 5, packet);
-        log.debug("DCC packet main message = {}", msg.toString());
+        log.debug("DCC packet main message = '{}'", msg);
         Assert.assertEquals("length", 18, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'P', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -669,7 +790,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetOutputCmdMsgOn() {
         msg = DCCppMessage.makeOutputCmdMsg(23, true);
-        log.debug("turnout message = {}", msg.toString());
+        log.debug("turnout message = '{}'", msg);
         Assert.assertEquals("length", 6, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'Z', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -682,7 +803,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testGetOutputCmdMsgOff() {
         msg = DCCppMessage.makeOutputCmdMsg(23, false);
-        log.debug("turnout message = {}", msg.toString());
+        log.debug("turnout message = '{}'", msg);
         Assert.assertEquals("length", 6, msg.getNumDataElements());
         Assert.assertEquals("0th byte", 'Z', msg.getElement(0) & 0xFF);
         Assert.assertEquals("1st byte", ' ', msg.getElement(1) & 0xFF);
@@ -695,13 +816,13 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
     @Test
     public void testMonitorStringOutputCmdMsgOn() {
         msg = DCCppMessage.makeOutputCmdMsg(23, true);
-        Assert.assertEquals("Monitor string", "Output Cmd: Output ID: 23, State: HIGH", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Output Cmd: ID: 23, State: HIGH", msg.toMonitorString());
     }
 
     @Test
     public void testMonitorStringOutputCmdMsgOff() {
         msg = DCCppMessage.makeOutputCmdMsg(23, false);
-        Assert.assertEquals("Monitor string", "Output Cmd: Output ID: 23, State: LOW", msg.toMonitorString());
+        Assert.assertEquals("Monitor string", "Output Cmd: ID: 23, State: LOW", msg.toMonitorString());
     }
 
     @BeforeEach
@@ -711,6 +832,7 @@ public class DCCppMessageTest extends jmri.jmrix.AbstractMessageTestBase {
         m = msg = new DCCppMessage("T 42 1");
     }
 
+    @Override
     @AfterEach
     public void tearDown() {
         m = msg = null;

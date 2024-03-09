@@ -29,7 +29,9 @@ public class XpaThrottle extends AbstractThrottle {
         this.address = address.getNumber();
         this.speedStepMode = SpeedStepMode.INCREMENTAL;
         this.isForward = true;
-        this.speedSetting = 0;
+        synchronized(this) {
+            this.speedSetting = 0;
+        }
         // Functions default to false
         this.speedvalue = 0;
         tc = t;
@@ -46,9 +48,12 @@ public class XpaThrottle extends AbstractThrottle {
     @Override
     public void setSpeedSetting(float speed) {
         super.setSpeedSetting(speed);
-        int value = (int) ((127) * speed);
+        int value = Math.round((127) * speed);
         if (value > 127) {
             value = 127;    // max possible speed
+        }
+        if (speed > 0 && value == 0) {
+            value = 1;
         }
         if (this.speedvalue != value) {
             XpaMessage m;
@@ -71,7 +76,9 @@ public class XpaThrottle extends AbstractThrottle {
                 tc.sendXpaMessage(m, null);
             }
         }
-        this.speedSetting = speed;
+        synchronized(this) {
+            this.speedSetting = speed;
+        }
         this.speedvalue = value;
     }
 
@@ -137,7 +144,7 @@ public class XpaThrottle extends AbstractThrottle {
      * {@inheritDoc}
      */
     @Override
-    protected void throttleDispose() {
+    public void throttleDispose() {
         finishRecord();
     }
 

@@ -100,10 +100,10 @@ public class NamedIcon extends ImageIcon {
                 log.warn("NamedIcon can't scan {} for animated status", pUrl);
                 return;
             }
-            
+
             ImageInputStream iis = ImageIO.createImageInputStream(is);
             gifReader.setInput(iis, false);
-            
+
             ImageReaderSpi spiProv = gifReader.getOriginatingProvider();
             if (spiProv != null && spiProv.canDecodeInput(iis)) {
 
@@ -163,7 +163,7 @@ public class NamedIcon extends ImageIcon {
 
     static private final String DEFAULTURL = "resources/icons/misc/X-red.gif";
     static private URL substituteDefaultUrl(String pUrl) {
-        URL url = FileUtil.findURL(pUrl);
+        URL url = FileUtil.findURL(pUrl, FileUtil.Location.ALL);
         if (url == null) {
             url = FileUtil.findURL(DEFAULTURL);
             log.error("Did not find \"{}\" for NamedIcon, substitute {}", pUrl, url);
@@ -180,8 +180,8 @@ public class NamedIcon extends ImageIcon {
     public NamedIcon(URL pUrl, String pName) {
         this(pUrl.toString(), pName);
     }
-    
-    
+
+
     /**
      * Create a named icon from an Image. N.B. NamedIcon's create
      * using this constructor can NOT be animated GIFs
@@ -580,22 +580,17 @@ public class NamedIcon extends ImageIcon {
         int width = (int) Math.ceil(Math.abs(h * _scale * Math.sin(rad)) + Math.abs(w * _scale * Math.cos(rad)));
         int heigth = (int) Math.ceil(Math.abs(h * _scale * Math.cos(rad)) + Math.abs(w * _scale * Math.sin(rad)));
         AffineTransform t;
-        if (false) {
-            // TODO: Test to see if the "else" case is necessary
-            t = AffineTransform.getTranslateInstance(
-                h * Math.sin(rad) - w * Math.cos(rad),
-                -w * Math.sin(rad) - h * Math.cos(rad));
-        } else {
-            if (_degrees < 90) {
-                t = AffineTransform.getTranslateInstance(h * Math.sin(rad), 0.0);
-            } else if (_degrees < 180) {
-                t = AffineTransform.getTranslateInstance(h * Math.sin(rad) - w * Math.cos(rad), -h * Math.cos(rad));
-            } else if (_degrees < 270) {
-                t = AffineTransform.getTranslateInstance(-w * Math.cos(rad), -w * Math.sin(rad) - h * Math.cos(rad));
-            } else /* if (_degrees < 360) */ {
-                t = AffineTransform.getTranslateInstance(0.0, -w * Math.sin(rad));
-            }
+
+        if (_degrees < 90) {
+            t = AffineTransform.getTranslateInstance(h * Math.sin(rad), 0.0);
+        } else if (_degrees < 180) {
+            t = AffineTransform.getTranslateInstance(h * Math.sin(rad) - w * Math.cos(rad), -h * Math.cos(rad));
+        } else if (_degrees < 270) {
+            t = AffineTransform.getTranslateInstance(-w * Math.cos(rad), -w * Math.sin(rad) - h * Math.cos(rad));
+        } else /* if (_degrees < 360) */ {
+            t = AffineTransform.getTranslateInstance(0.0, -w * Math.sin(rad));
         }
+
         if (Math.abs(_scale - 1.0) > .00001) {
             t.preConcatenate(_transformS);
         }

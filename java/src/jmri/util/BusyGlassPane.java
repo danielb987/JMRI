@@ -7,10 +7,13 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.List;
+
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
+
+import jmri.util.swing.JmriMouseEvent;
 
 /**
  * Used to intercept inputs and to display a busy cursor during reads and
@@ -103,6 +106,7 @@ public class BusyGlassPane extends JComponent {
             inDrag = false;
         }
 
+        @SuppressWarnings("deprecation") // InputEvent.getModifiers
         private void redispatchMouseEvent(MouseEvent e) {
             boolean inButton = false;
             Point glassPanePoint = e.getPoint();
@@ -145,21 +149,21 @@ public class BusyGlassPane extends JComponent {
                         glassPanePoint,
                         component);
                 parentFrame.setCursor(Cursor.getDefaultCursor());
-                
+
                 component.dispatchEvent(new MouseEvent(component,
                         eventID,
                         e.getWhen(),
-                        
-                        // The Java8 Javadoc 
+
+                        // The Java8 Javadoc
                         //  https://docs.oracle.com/javase/8/docs/api/java/awt/event/MouseEvent.html#MouseEvent-java.awt.Component-int-long-int-int-int-int-boolean-
                         // says the following should reference
                         // getModifiersEx()
                         // but that makes it impossible to cancel
                         // ReadAll, WriteAll etc in DecoderPro.
                         // When it fails, getModifier is 0x10 BUTTON1_MASK
-                        // and 
+                        // and
                         // getModifierEx is 0x400 BUTTON1_DOWN_MASK
-                        
+
                         e.getModifiers(),
                         componentPoint.x,
                         componentPoint.y,
@@ -172,7 +176,7 @@ public class BusyGlassPane extends JComponent {
         }
 
         private void testForDrag(int eventID) {
-            if (eventID == MouseEvent.MOUSE_PRESSED) {
+            if (eventID == JmriMouseEvent.MOUSE_PRESSED) {
                 inDrag = true;
             }
         }

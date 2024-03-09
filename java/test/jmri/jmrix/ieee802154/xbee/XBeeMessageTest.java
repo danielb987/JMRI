@@ -1,5 +1,6 @@
 package jmri.jmrix.ieee802154.xbee;
 
+import com.digi.xbee.api.packet.GenericXBeePacket;
 import jmri.util.JUnitUtil;
 
 import org.junit.Assert;
@@ -20,6 +21,16 @@ public class XBeeMessageTest extends jmri.jmrix.AbstractMessageTestBase {
         Assert.assertEquals("length", 3, m.getNumDataElements());
     }
 
+    @Test
+    public void testByteArrayRetrieval(){
+        byte a[]= { (byte)0xFF,(byte)0x00,(byte)0x12,(byte)0x9C,(byte)0xF1,(byte)0x54,(byte)0x00,(byte)0x00,
+                   (byte)0x00,(byte)0x01,(byte)0x11,(byte)0x2A,(byte)0x00,(byte)0x00,(byte)0x0A,(byte)0x00,
+                   (byte)0x00,(byte)0x00};
+        m = new XBeeMessage(GenericXBeePacket.createPacket(a));
+        for(int i=0;i<a.length;i++)
+           Assert.assertEquals("payload element " + i,a[i],(byte)m.getElement(i));
+    }
+
     @Override
     @BeforeEach
     public void setUp() {
@@ -27,6 +38,7 @@ public class XBeeMessageTest extends jmri.jmrix.AbstractMessageTestBase {
         m = new XBeeMessage(3);
     }
 
+    @Override
     @AfterEach
     public void tearDown() {
         m = null;

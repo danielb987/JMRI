@@ -1,10 +1,20 @@
 package jmri.jmrit.display;
 
-import java.awt.event.MouseEvent;
+import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+
+import jmri.InstanceManager;
+import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.util.swing.JmriMouseEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +27,9 @@ public class PositionableJComponent extends JComponent implements Positionable {
 
     protected Editor _editor = null;
 
+    private String _id;            // user's Id or null if no Id
+    private final Set<String> _classes = new HashSet<>(); // user's classes
+
     private ToolTip _tooltip;
     private boolean _showTooltip = true;
     private boolean _editable = true;
@@ -24,11 +37,15 @@ public class PositionableJComponent extends JComponent implements Positionable {
     private boolean _viewCoordinates = false;
     private boolean _controlling = true;
     private boolean _hidden = false;
+    private boolean _emptyHidden = false;
     private int _displayLevel;
     private double _scale;         // user's scaling factor
 
     JMenuItem lock = null;
     JCheckBoxMenuItem showTooltipItem = null;
+
+    private LogixNG _logixNG;
+    private String _logixNG_SystemName;
 
     public PositionableJComponent(Editor editor) {
         _editor = editor;
@@ -52,6 +69,49 @@ public class PositionableJComponent extends JComponent implements Positionable {
         pos.setEditable(isEditable());
         pos.updateSize();
         return pos;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setId(String id) throws Positionable.DuplicateIdException {
+        if (Objects.equals(this._id, id)) return;
+        _editor.positionalIdChange(this, id);
+        this._id = id;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getId() {
+        return _id;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addClass(String className) {
+        _editor.positionalAddClass(this, className);
+        _classes.add(className);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeClass(String className) {
+        _editor.positionalRemoveClass(this, className);
+        _classes.remove(className);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeAllClasses() {
+        for (String className : _classes) {
+            _editor.positionalRemoveClass(this, className);
+        }
+        _classes.clear();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getClasses() {
+        return java.util.Collections.unmodifiableSet(_classes);
     }
 
     @Override
@@ -125,6 +185,16 @@ public class PositionableJComponent extends JComponent implements Positionable {
         }
     }
 
+    @Override
+    public void setEmptyHidden(boolean hide) {
+        _emptyHidden = hide;
+    }
+
+    @Override
+    public boolean isEmptyHidden() {
+        return _emptyHidden;
+    }
+
     /**
      * Delayed setDisplayLevel for DnD.
      *
@@ -190,6 +260,12 @@ public class PositionableJComponent extends JComponent implements Positionable {
     }
 
     @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_PositionableJComponent");
+    }
+
+    @Override
     public String getNameString() {
         return getName();
     }
@@ -206,31 +282,31 @@ public class PositionableJComponent extends JComponent implements Positionable {
 
     // overide where used - e.g. momentary
     @Override
-    public void doMousePressed(MouseEvent event) {
+    public void doMousePressed(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseReleased(MouseEvent event) {
+    public void doMouseReleased(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseClicked(MouseEvent event) {
+    public void doMouseClicked(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseDragged(MouseEvent event) {
+    public void doMouseDragged(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseMoved(MouseEvent event) {
+    public void doMouseMoved(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseEntered(MouseEvent event) {
+    public void doMouseEntered(JmriMouseEvent event) {
     }
 
     @Override
-    public void doMouseExited(MouseEvent event) {
+    public void doMouseExited(JmriMouseEvent event) {
     }
 
     @Override
@@ -340,6 +416,37 @@ public class PositionableJComponent extends JComponent implements Positionable {
     @Override
     public jmri.NamedBean getNamedBean() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LogixNG getLogixNG() {
+        return _logixNG;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLogixNG(LogixNG logixNG) {
+        this._logixNG = logixNG;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLogixNG_SystemName(String systemName) {
+        this._logixNG_SystemName = systemName;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setupLogixNG() {
+        _logixNG = InstanceManager.getDefault(LogixNG_Manager.class)
+                .getBySystemName(_logixNG_SystemName);
+        if (_logixNG == null) {
+            throw new RuntimeException(String.format(
+                    "LogixNG %s is not found for positional %s in panel %s",
+                    _logixNG_SystemName, getNameString(), getEditor().getName()));
+        }
+        _logixNG.setInlineLogixNG(this);
     }
 
     private final static Logger log = LoggerFactory.getLogger(PositionableJComponent.class);

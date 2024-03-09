@@ -1,6 +1,7 @@
 package jmri.jmrit.beantable.oblock;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 
 import java.util.*;
@@ -16,8 +17,7 @@ import jmri.jmrit.logix.Portal;
 import jmri.jmrit.logix.PortalManager;
 import jmri.util.IntlUtilities;
 import jmri.util.gui.GuiLafPreferencesManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * GUI to define the Signals within an OBlock.
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Pete Cressman (C) 2010
  * @author Egbert Broerse (C) 2020
  */
-public class SignalTableModel extends AbstractTableModel {
+public class SignalTableModel extends AbstractTableModel implements PropertyChangeListener {
 
     public static final int NAME_COLUMN = 0;
     public static final int FROM_BLOCK_COLUMN = 1;
@@ -152,7 +152,6 @@ public class SignalTableModel extends AbstractTableModel {
     // Rebuild _signalList CopyOnWriteArrayList<SignalRow>, copying Signals from Portal table
     private void makeList() {
         //CopyOnWriteArrayList<SignalRow> tempList = new CopyOnWriteArrayList<>();
-        //_signalList.clear(); // EBR try to fix +1 rows bug
         SignalArray tempList = new SignalArray();
         Collection<Portal> portals = _portalMgr.getPortalSet();
         for (Portal portal : portals) {
@@ -333,7 +332,6 @@ public class SignalTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        //log.debug("_signalList.numberOfSignals = {}", _signalList.numberOfSignals()); // EBR debug
         return _signalList.numberOfSignals() + (_tabbed ? 0 : 1); // + 1 row in _desktop to create entry row
         // +1 adds the extra empty row at the bottom of the table display, causes IOB when called externally when _tabbed
     }
@@ -449,8 +447,8 @@ public class SignalTableModel extends AbstractTableModel {
                         _tempLen *= 25.4f;                            
                     }
                 } catch (ParseException e) {
-                    JOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", tempRow[LENGTHCOL]),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);                    
+                    JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", tempRow[LENGTHCOL]),
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);                    
                 }
                 return;
             }
@@ -719,8 +717,8 @@ public class SignalTableModel extends AbstractTableModel {
         }
 
         if (msg != null) {
-            JOptionPane.showMessageDialog(null, msg,
-                    Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, msg,
+                    Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
             // doesn't close by clicking OK after DnD as focus lost, only Esc in JMRI 4.21.2 on macOS
         }
     }
@@ -799,11 +797,11 @@ public class SignalTableModel extends AbstractTableModel {
             case FROM_BLOCK_COLUMN:
             case PORTAL_COLUMN:
             case TO_BLOCK_COLUMN:
-                return new JTextField(11).getPreferredSize().width;
+                return new JTextField(12).getPreferredSize().width;
             case LENGTHCOL:
-                return new JTextField(5).getPreferredSize().width;
+                return new JTextField(6).getPreferredSize().width;
             case UNITSCOL:
-                return new JTextField(4).getPreferredSize().width;
+                return new JTextField(5).getPreferredSize().width;
             case DELETE_COL:
                 return new JButton("DELETE").getPreferredSize().width; // NOI18N
             case EDIT_COL:
@@ -823,6 +821,7 @@ public class SignalTableModel extends AbstractTableModel {
         inEditMode = editing;
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
         String property = e.getPropertyName();
         if (property.equals("length") || property.equals("portalCount")
@@ -832,6 +831,6 @@ public class SignalTableModel extends AbstractTableModel {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SignalTableModel.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SignalTableModel.class);
 
 }

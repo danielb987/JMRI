@@ -1,20 +1,15 @@
 package jmri.jmrit.operations.setup;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import jmri.jmrit.XmlFile;
-import jmri.jmrit.operations.OperationsXml;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jmri.jmrit.XmlFile;
+import jmri.jmrit.operations.OperationsXml;
 
 /**
  * Base class for backing up and restoring Operations working files. Derived
@@ -94,14 +89,15 @@ public abstract class BackupBase {
      *
      * @param setName The name of the new backup set
      * @throws java.io.IOException Due to trouble writing files
+     * @throws IllegalArgumentException  if string null or empty
      */
-    public void backupFilesToSetName(String setName) throws IOException {
+    public void backupFilesToSetName(String setName) throws IOException, IllegalArgumentException {
         validateNotNullOrEmpty(setName);
 
         copyBackupSet(getOperationsRoot(), new File(getBackupRoot(), setName));
     }
 
-    private void validateNotNullOrEmpty(String s) {
+    private void validateNotNullOrEmpty(String s) throws IllegalArgumentException {
         if (s == null || s.trim().length() == 0) {
             throw new IllegalArgumentException(
                     "string cannot be null or empty."); // NOI18N
@@ -132,7 +128,7 @@ public abstract class BackupBase {
     public String[] getBackupSetList() {
         String[] setList = getBackupRoot().list();
         // no guarantee of order, so we need to sort
-        java.util.Arrays.sort(setList);
+        Arrays.sort(setList);
         return setList;
     }
 
@@ -170,9 +166,9 @@ public abstract class BackupBase {
      */
     public boolean checkIfBackupSetExists(String setName) {
         // This probably needs to be simplified, but leave for now.
-        validateNotNullOrEmpty(setName);
 
         try {
+            validateNotNullOrEmpty(setName);
             File file = new File(getBackupRoot(), setName);
 
             if (file.exists()) {
@@ -217,9 +213,11 @@ public abstract class BackupBase {
      *
      * @throws java.io.IOException Due to trouble reading or writing
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+            justification="I18N of Info Message")
     public void copyBackupSet(File sourceDir, File destDir) throws IOException {
         log.debug("copying backup set from: {} to: {}", sourceDir, destDir);
-        log.info("Saving copy of operations files to: {}", destDir);
+        log.info(Bundle.getMessage("InfoSavingCopy", destDir));
 
         if (!sourceDir.exists()) // This throws an exception, as the dir should
         // exist.

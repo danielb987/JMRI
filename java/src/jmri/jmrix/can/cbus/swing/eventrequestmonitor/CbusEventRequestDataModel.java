@@ -2,9 +2,10 @@ package jmri.jmrix.can.cbus.swing.eventrequestmonitor;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
+
 import java.util.ArrayList;
 import java.util.Date;
+
 import jmri.jmrix.can.CanListener;
 import jmri.jmrix.can.CanMessage;
 import jmri.jmrix.can.CanReply;
@@ -15,16 +16,14 @@ import jmri.jmrix.can.cbus.CbusOpCodes;
 import jmri.jmrix.can.TrafficController;
 import jmri.jmrix.can.cbus.CbusEvent;
 import jmri.util.swing.TextAreaFIFO;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.ThreadingUtil;
-
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
 
 /**
  * Table data model for display of Cbus request events
  *
  * @author Steve Young (c) 2018
- * 
+ *
  */
 public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableModel implements CanListener {
 
@@ -34,16 +33,16 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
     protected String _context; // event table pane console text
     private final int _defaultfeedbackdelay = 4000;
     private static final int MAX_LINES = 500; // tablefeedback screen log size
-    
+
     protected ArrayList<CbusEventRequestMonitorEvent> _mainArray;
     private final CbusNameService nameService;
     protected TextAreaFIFO tablefeedback;
     // private CanSystemConnectionMemo _memo;
     private final TrafficController tc;
-    
+
     // column order needs to match list in column tooltips
-    static public final int EVENT_COLUMN = 0; 
-    static public final int NODE_COLUMN = 1; 
+    static public final int EVENT_COLUMN = 0;
+    static public final int NODE_COLUMN = 1;
     static public final int NAME_COLUMN = 2;
     static public final int LATEST_TIMESTAMP_COLUMN = 3;
     static public final int STATUS_REQUEST_BUTTON_COLUMN = 4;
@@ -54,11 +53,11 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
     static public final int FEEDBACKEVENT_COLUMN = 9;
     static public final int FEEDBACKNODE_COLUMN = 10;
     static public final int DELETE_BUTTON_COLUMN = 11;
-    
+
     static public final int MAX_COLUMN = 12;
 
     CbusEventRequestDataModel(CanSystemConnectionMemo memo, int row, int column) {
-        
+
         _mainArray = new ArrayList<>();
         tablefeedback = new TextAreaFIFO(MAX_LINES);
         // _memo = memo;
@@ -68,13 +67,13 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
     }
 
     // order needs to match column list top of dtabledatamodel
-    static protected final String[] columnToolTips = {
+    static final String[] columnToolTips = {
         Bundle.getMessage("EventColTip"),
         Bundle.getMessage("NodeColTip"),
         Bundle.getMessage("NameColTip"),
         Bundle.getMessage("ColumnLastHeard") + Bundle.getMessage("TypeColTip"),
         Bundle.getMessage("ColumnRequestStatusTip"),
-        Bundle.getMessage("FBLastTip"),        
+        Bundle.getMessage("FBLastTip"),
         Bundle.getMessage("FBOutstandingTip"),
         Bundle.getMessage("FBNumTip"),
         Bundle.getMessage("FBTimeoutTip"),
@@ -83,7 +82,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
         Bundle.getMessage("ColumnEventDeleteTip")
 
     }; // Length = number of items in array should (at least) match number of columns
-    
+
     /**
      * Return the number of rows to be displayed.
      */
@@ -96,7 +95,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
     public int getColumnCount() {
         return MAX_COLUMN;
     }
-    
+
     /**
      * Returns String of column name from column int
      * used in table header
@@ -118,7 +117,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
             case LATEST_TIMESTAMP_COLUMN:
                 return Bundle.getMessage("ColumnLastHeard");
             case LASTFEEDBACK_COLUMN:
-                return Bundle.getMessage("FBLast");                
+                return Bundle.getMessage("FBLast");
             case FEEDBACKREQUIRED_COLUMN:
                 return Bundle.getMessage("FBRequired");
             case FEEDBACKOUTSTANDING_COLUMN:
@@ -136,7 +135,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
 
     /**
     * Returns column class type.
-    * {@inheritDoc} 
+    * {@inheritDoc}
     */
     @Override
     public Class<?> getColumnClass(int col) {
@@ -162,10 +161,10 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
                 return null;
         }
     }
-    
+
     /**
     * Boolean return to edit table cell or not
-    * {@inheritDoc} 
+    * {@inheritDoc}
     * @return boolean
     */
     @Override
@@ -219,7 +218,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
                 return null;
         }
     }
-    
+
     /**
      * Capture new comments or node names.
      * Button events
@@ -269,10 +268,10 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
                 break;
         }
     }
-    
+
     private void updateGui(int row, int col){
         ThreadingUtil.runOnGUIEventually( ()->{
-            fireTableCellUpdated(row, col); 
+            fireTableCellUpdated(row, col);
         });
     }
 
@@ -291,7 +290,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
             processEvent( CbusMessage.getNodeNumber(m) , CbusMessage.getEvent(m) );
         }
     }
-    
+
     // incoming cbus message
     // handled the same as outgoing
     @Override
@@ -305,7 +304,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
 
     // called when event heard as CanReply / CanMessage
     private void processEvent( int nn, int en ){
-        
+
         int existingRow = eventRow( nn, en);
         int fbRow = extraFeedbackRow( nn, en);
         if ( existingRow > -1 ) {
@@ -316,19 +315,19 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
             _mainArray.get(fbRow).setResponseReceived();
         }
     }
-    
+
     // called when request heard as CanReply / CanMessage
     private void processEvRequest( int nn, int en ) {
-        
+
         int existingRow = eventRow( nn, en);
         if (existingRow<0) {
-            addEvent(nn,en,CbusEventRequestMonitorEvent.EvState.REQUEST,null); 
+            addEvent(nn,en,CbusEventRequestMonitorEvent.EvState.REQUEST,null);
         }
         existingRow = eventRow( nn, en);
         _mainArray.get(existingRow).setRequestReceived();
-        
+
     }
-    
+
     protected int eventRow(int nn, int en) {
         return _mainArray.indexOf(new CbusEvent(nn,en));
     }
@@ -343,13 +342,13 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
     }
 
     public void addEvent(int node, int event, CbusEventRequestMonitorEvent.EvState state, Date timestamp) {
-        
+
         CbusEventRequestMonitorEvent newmonitor = new CbusEventRequestMonitorEvent(
-            node, event, state, timestamp, _defaultfeedbackdelay, 
+            node, event, state, timestamp, _defaultfeedbackdelay,
             _defaultFeedback, this );
-        
+
         _mainArray.add(newmonitor);
-        
+
         ThreadingUtil.runOnGUI( ()->{ fireTableRowsInserted((getRowCount()-1), (getRowCount()-1)); });
         addToLog(1,newmonitor.toString() + Bundle.getMessage("AddedToTable"));
     }
@@ -358,14 +357,14 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
      * Remove Row from table
      * @see #buttonDeleteClicked
      * @param row int row number
-     */    
+     */
     private void removeRow(int row) {
         _context = _mainArray.get(row).toString() + Bundle.getMessage("TableConfirmDelete");
         _mainArray.remove(row);
         ThreadingUtil.runOnGUI( ()->{ fireTableRowsDeleted(row,row); });
         addToLog(3,_context);
     }
-    
+
     /**
      * Delete Button Clicked
      * See whether to display confirm popup
@@ -376,14 +375,14 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
         if (sessionConfirmDeleteRow) {
             // confirm deletion with the user
             JCheckBox checkbox = new JCheckBox(Bundle.getMessage("PopupSessionConfirmDel"));
-            String message = Bundle.getMessage("DelConfirmOne") + "\n"   
+            String message = Bundle.getMessage("DelConfirmOne") + "\n"
             + Bundle.getMessage("DelConfirmTwo");
             Object[] params = {message, checkbox};
-            
-            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(
-                    null, params, Bundle.getMessage("DelEvPopTitle"), 
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE)) {
+
+            if (JmriJOptionPane.OK_OPTION == JmriJOptionPane.showConfirmDialog(
+                    null, params, Bundle.getMessage("DelEvPopTitle"),
+                    JmriJOptionPane.OK_CANCEL_OPTION,
+                    JmriJOptionPane.WARNING_MESSAGE)) {
                     boolean dontShow = checkbox.isSelected();
                     if (dontShow) {
                         sessionConfirmDeleteRow=false;
@@ -395,14 +394,14 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
             removeRow(row);
         }
     }
-    
+
     /**
      * Add to Event Table Console Log
      * @param cbuserror int
      * @param cbustext String console message
      */
     public void addToLog(int cbuserror, String cbustext){
-        ThreadingUtil.runOnGUI( ()->{  
+        ThreadingUtil.runOnGUI( ()->{
             if (cbuserror==3) {
             tablefeedback.append ("\n * * * * * * * * * * * * * * * * * * * * * * " + cbustext);
             } else {
@@ -410,7 +409,7 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
             }
         });
     }
-        
+
     /**
      * disconnect from the CBUS
      */
@@ -421,15 +420,16 @@ public class CbusEventRequestDataModel extends javax.swing.table.AbstractTableMo
             _mainArray.get(i).stopTheTimer();
         }
         _mainArray = null;
-        
+
         tablefeedback.dispose();
         tc.removeCanListener(this);
-        
+
     }
 
     protected TextAreaFIFO tablefeedback(){
         return tablefeedback;
     }
-    
-    // private final static Logger log = LoggerFactory.getLogger(CbusEventRequestDataModel.class);
+
+    // private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CbusEventRequestDataModel.class);
+
 }

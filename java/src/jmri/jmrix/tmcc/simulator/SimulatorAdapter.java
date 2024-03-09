@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public class SimulatorAdapter extends SerialPortController implements Runnable {
 
     // private control members
-    private boolean opened = false;
     private Thread sourceThread;
 
     final static int SENSOR_MSG_RATE = 10;
@@ -120,15 +119,6 @@ public class SimulatorAdapter extends SerialPortController implements Runnable {
         sourceThread.start();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void connect() throws java.io.IOException {
-        log.debug("connect called");
-        super.connect();
-    }
-
     // Base class methods for the SerialPortController simulated interface
 
     /**
@@ -210,11 +200,11 @@ public class SimulatorAdapter extends SerialPortController implements Runnable {
             SerialMessage m = readMessage();
             SerialReply r;
             if (log.isDebugEnabled()) {
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 buf.append("TMCC Simulator Thread received message: ");
                 if (m != null) {
                     for (int i = 0; i < m.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & m.getElement(i)) + " ");
+                        buf.append(Integer.toHexString(0xFF & m.getElement(i))).append(" ");
                     }
                 } else {
                     buf.append("null message buffer");
@@ -224,13 +214,12 @@ public class SimulatorAdapter extends SerialPortController implements Runnable {
             if (m != null) {
                 r = generateReply(m);
                 writeReply(r);
-                if (log.isDebugEnabled() && r != null) {
-                    StringBuffer buf = new StringBuffer();
-                    buf.append("TMCC Simulator Thread sent reply: ");
+                if (log.isDebugEnabled()) {
+                    StringBuilder buf = new StringBuilder();
                     for (int i = 0; i < r.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & r.getElement(i)) + " ");
+                        buf.append(Integer.toHexString(0xFF & r.getElement(i))).append(" ");
                     }
-                    log.debug(buf.toString());
+                    log.debug("TMCC Simulator Thread sent reply: {}", buf );
                 }
             }
         }

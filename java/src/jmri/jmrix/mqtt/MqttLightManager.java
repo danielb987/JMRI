@@ -26,9 +26,9 @@ public class MqttLightManager extends jmri.managers.AbstractLightManager {
     }
     
     @Nonnull
-    public String sendTopicPrefix = "yard/light/";
+    public String sendTopicPrefix = "track/light/";
     @Nonnull
-    public String rcvTopicPrefix  = "yard/light/";
+    public String rcvTopicPrefix  = "track/light/";
 
     /**
      * {@inheritDoc}
@@ -40,7 +40,8 @@ public class MqttLightManager extends jmri.managers.AbstractLightManager {
     }
 
     @Override
-    public Light createNewLight(@Nonnull String systemName, String userName) {
+    @Nonnull
+    protected Light createNewLight(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         String suffix = systemName.substring(getSystemNamePrefix().length());
 
         String sendTopic = java.text.MessageFormat.format(

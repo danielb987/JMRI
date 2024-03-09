@@ -1,38 +1,38 @@
 package jmri.jmrit.display.controlPanelEditor;
 
-import java.awt.GraphicsEnvironment;
 
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OBlockManager;
 import jmri.util.JUnitUtil;
 
-import org.junit.jupiter.api.*;
 import org.junit.Assert;
-import org.junit.Assume;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
+@DisabledIfSystemProperty(named = "java.awt.headless", matches = "true")
 public class EditCircuitFrameTest {
 
     OBlockManager blkMgr;
 
     @Test
     public void testCTor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+
         ControlPanelEditor fr = new ControlPanelEditor("EditCircuitFrameTest");
         fr.makeCircuitMenu(true);
         CircuitBuilder cb = fr.getCircuitBuilder();
         OBlock ob1 = blkMgr.createNewOBlock("OB1", "a");
         EditCircuitFrame cFrame = new EditCircuitFrame("Edit Circuit Frame", cb, ob1);
         Assert.assertNotNull("exists", cFrame);
-        
+
         JUnitUtil.dispose(cFrame);
         JUnitUtil.dispose(fr);
     }
 
-    
+
     @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
@@ -44,6 +44,7 @@ public class EditCircuitFrameTest {
 
     @AfterEach
     public void tearDown() {
+        blkMgr.dispose();
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }

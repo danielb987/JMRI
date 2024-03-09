@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import jmri.jmrix.*;
-import jmri.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -468,7 +467,7 @@ public class Z21TrafficController extends jmri.jmrix.AbstractMRTrafficController
     public void terminateThreads() {
         threadStopRequest = true;
         // ensure socket closed to end pending operations
-        if ( controller!=null && ((Z21Adapter) controller).getSocket()!=null) ((Z21Adapter) controller).getSocket().close();
+        if ( controller != null && ((Z21Adapter) controller).getSocket() != null) ((Z21Adapter) controller).getSocket().close();
         
         // usual stop process
         super.terminateThreads();

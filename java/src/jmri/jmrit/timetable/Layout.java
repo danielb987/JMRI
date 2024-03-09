@@ -43,7 +43,7 @@ public class Layout implements VetoableChangeListener {
     TimeTableDataManager _dm = TimeTableDataManager.getDataManager();
 
     private final int _layoutId;
-    private String _layoutName = "New Layout";  // NOI18N
+    private String _layoutName = Bundle.getMessage("NewLayoutName");  // NOI18N
     private Scale _scale = ScaleManager.getScale("HO");  // NOI18N
     private int _fastClock = 4;
     private int _throttles = 0;
@@ -51,6 +51,20 @@ public class Layout implements VetoableChangeListener {
 
     private double _ratio = 87.1;
     private double _scaleMK;          // Scale mile (real feet) or km (real meter)
+
+    /**
+     * Make a copy of the layout.
+     * @return a new layout instance.
+     */
+    public Layout getCopy() {
+        Layout copy = new Layout();
+        copy.setLayoutName(Bundle.getMessage("DuplicateCopyName", _layoutName));
+        copy.setScale(_scale);
+        copy.setFastClock(_fastClock);
+        copy.setThrottles(_throttles);
+        copy.setMetric(_metric);
+        return copy;
+    }
 
     /**
      * Calculate the length of a scale mile or scale kilometer.

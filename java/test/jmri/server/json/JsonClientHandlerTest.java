@@ -57,7 +57,7 @@ public class JsonClientHandlerTest {
 
     /**
      * Test of onMessage method, of class JsonClientHandler.
-     * 
+     *
      * @throws IOException if unable to pass message
      */
     @Test
@@ -96,7 +96,7 @@ public class JsonClientHandlerTest {
 
     /**
      * Test of onMessage method, of class JsonClientHandler.
-     * 
+     *
      * @throws IOException if unable to pass message
      */
     @Test
@@ -325,7 +325,7 @@ public class JsonClientHandlerTest {
         }
         JUnitAppender.assertErrorMessage("Unable to create handler for version v4");
     }
-    
+
     private static class TestJsonClientHandler extends JsonClientHandler {
 
         public TestJsonClientHandler(JsonConnection connection) {

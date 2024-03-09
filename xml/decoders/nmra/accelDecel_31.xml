@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../XSLT/decoder.xsl"?>
 <!-- Copyright (C) JMRI 2001, 2005, 2007, 2-009, 2010 All rights reserved -->
-<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <copyright xmlns="http://docbook.org/ns/docbook">
     <year>2010</year>
     <holder>JMRI</holder>
@@ -40,7 +40,7 @@
       <revremark>Revision in original 0NMRA.xml file</revremark>
     </revision>
   </revhistory>
-  <variable CV="3" item="Accel">
+  <variable CV="3" item="Accel" tooltip="sets the Acceleration Rate [range 0-31]">
     <decVal max="31"/>
     <label>Acceleration Rate</label>
     <label xml:lang="it">Accellerazione (0-31)</label>
@@ -48,8 +48,9 @@
     <label xml:lang="de">Anfahrverzögerung (0-31)</label>
     <label xml:lang="cs">Míra zrychlení (0-31)</label>
     <label xml:lang="nl">Versnelling (0-31)</label>
+    <label xml:lang="es">Aceleración (0-31)</label>
   </variable>
-  <variable CV="4" item="Decel">
+  <variable CV="4" item="Decel" tooltip="sets the Deceleration Rate [range 0-31]">
     <decVal max="31"/>
     <label>Deceleration Rate</label>
     <label xml:lang="it">Decellerazione (0-31)</label>
@@ -57,5 +58,6 @@
     <label xml:lang="de">Bremszeit (0-31)</label>
     <label xml:lang="cs">Míra zpomalení (0-31)</label>
     <label xml:lang="nl">Remvertraging (0-31)</label>
+    <label xml:lang="es">Desaceleración (0-31)</label>
   </variable>
 </variables>

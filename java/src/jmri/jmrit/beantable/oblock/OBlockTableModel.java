@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -12,13 +13,13 @@ import javax.swing.*;
 import jmri.*;
 import jmri.implementation.SignalSpeedMap;
 import jmri.jmrit.beantable.RowComboBoxPanel;
+import jmri.jmrit.beantable.block.BlockCurvatureJComboBox;
 import jmri.jmrit.logix.*;
 import jmri.util.IntlUtilities;
 import jmri.util.NamedBeanComparator;
-
+import jmri.util.ThreadingUtil;
 import jmri.util.gui.GuiLafPreferencesManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * GUI to define OBlocks.
@@ -38,12 +39,15 @@ import org.slf4j.LoggerFactory;
  */
 public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OBlock> {
 
+    @SuppressWarnings("hiding")     // Field has same name as a field in the super class
     static public final int SYSNAMECOL = 0;
+    @SuppressWarnings("hiding")     // Field has same name as a field in the super class
     static public final int USERNAMECOL = 1;
+    @SuppressWarnings("hiding")     // Field has same name as a field in the super class
     static public final int COMMENTCOL = 2;
     static public final int STATECOL = 3;
     static public final int SENSORCOL = 4;
-    static public final int EDIT_COL = 5;   // Edit / Edit Paths button
+    static public final int EDIT_COL = 5;   // Paths button
     static public final int DELETE_COL = 6;
     static public final int LENGTHCOL = 7;
     static public final int UNITSCOL = 8;
@@ -54,13 +58,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
     static public final int WARRANTCOL = 13;
     static public final int ERR_SENSORCOL = 14;
     static public final int CURVECOL = 15;
-    static public final int NUMCOLS = 16;
-
-    static public final String noneText = Bundle.getMessage("BlockNone");
-    static public final String gradualText = Bundle.getMessage("BlockGradual");
-    static public final String tightText = Bundle.getMessage("BlockTight");
-    static public final String severeText = Bundle.getMessage("BlockSevere");
-    static public final String[] curveOptions = {noneText, gradualText, tightText, severeText};
+    static public final int VALUE = 16;
+    static public final int NUMCOLS = 17;
 
     static String ZEROS = "000000000";      // 9 bits contain the OBlock state info
 
@@ -71,7 +70,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
     private float _tempLen = 0.0f;      // mm for length col of tempRow
     TableFrames _parent;
     private final boolean _tabbed; // updated from prefs (restart required)
-
+    private boolean _isMetric = false;
     public OBlockTableModel(@Nonnull TableFrames parent) {
         super();
         _parent = parent;
@@ -102,7 +101,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
         }
         tempRow[LENGTHCOL] = twoDigit.format(0.0);
         tempRow[UNITSCOL] = Bundle.getMessage("in");
-        tempRow[CURVECOL] = noneText;
+        tempRow[CURVECOL] = BlockCurvatureJComboBox.getStringFromCurvature(Block.NONE);
         tempRow[REPORT_CURRENTCOL] = Bundle.getMessage("Current");
         tempRow[PERMISSIONCOL] = Bundle.getMessage("Permissive");
         tempRow[SPEEDCOL] = "";
@@ -132,6 +131,19 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
 
     @Override
     public void clickOn(OBlock t) {
+    }
+
+    protected boolean isMetric() {
+        return _isMetric;
+    }
+
+    protected void changeUnits() {
+        _isMetric = !_isMetric;
+        SortedSet<OBlock> oblockList = _manager.getNamedBeanSet();
+        for (OBlock block : oblockList) {
+           block.setMetricUnits(_isMetric);
+        }
+        fireTableDataChanged();
     }
 
     /**
@@ -263,7 +275,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                     int state = b.getState();
                     int num = Integer.numberOfLeadingZeros(state) - 23;
                     if (num >= 0) {
-                        return ZEROS.substring(0, num) + Integer.toBinaryString(state);                        
+                        return ZEROS.substring(0, num) + Integer.toBinaryString(state);
                     }
                 }
                 return ZEROS;
@@ -300,17 +312,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 return tempRow[UNITSCOL].equals(Bundle.getMessage("cm"));
             case CURVECOL:
                 if (b != null) {
-                    String c = "";
-                    if (b.getCurvature() == Block.NONE) {
-                        c = noneText;
-                    } else if (b.getCurvature() == Block.GRADUAL) {
-                        c = gradualText;
-                    } else if (b.getCurvature() == Block.TIGHT) {
-                        c = tightText;
-                    } else if (b.getCurvature() == Block.SEVERE) {
-                        c = severeText;
-                    }
-                    return c;
+                    return BlockCurvatureJComboBox.getStringFromCurvature(b.getCurvature());
                 }
                 return tempRow[col];
             case ERR_SENSORCOL:
@@ -353,7 +355,19 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 if (b != null) {
                     Warrant w = b.getWarrant();
                     if (w != null) {
-                        return w.getDisplayName();                        
+                        return w.getDisplayName();
+                    }
+                }
+                return tempRow[col];
+            case VALUE:
+                if (b != null) {
+                    Object obj = b.getValue();
+                    if (obj != null) {
+                        return obj;
+                    } else if ((b.getState() & OBlock.OCCUPIED) != 0) {
+                        return Bundle.getMessage("BlockUnknown");
+                    } else {
+                        return null;
                     }
                 }
                 return tempRow[col];
@@ -384,6 +398,11 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
         if (!_tabbed && (super.getRowCount() == row)) { // editing tempRow
             switch (col) {
                 case SYSNAMECOL:
+                    if (!_manager.isValidSystemNameFormat((String) value)) {
+                        JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("BadNameOBlock"),
+                                Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
                     OBlock block = _manager.createNewOBlock((String) value, tempRow[USERNAMECOL]);
                     if (block == null) { // an OBlock with the same systemName or userName already exists
                         block = _manager.getOBlock(tempRow[USERNAMECOL]);
@@ -396,14 +415,14 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                                 name = block.getDisplayName();
                             }
                         }
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("CreateDuplBlockErr", name),
-                                Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                        JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("CreateDuplBlockErr", name),
+                                Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                         return;
                     }
                     if (tempRow[SENSORCOL] != null) {
                         if (!sensorExists(tempRow[SENSORCOL])) {
-                            JOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", tempRow[SENSORCOL]),
-                                    Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", tempRow[SENSORCOL]),
+                                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                         }
                     }
                     block.setComment(tempRow[COMMENTCOL]);
@@ -411,8 +430,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                     try {
                         len = IntlUtilities.floatValue(tempRow[LENGTHCOL]);
                     } catch (ParseException e) {
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", tempRow[LENGTHCOL]),
-                                Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);                    
+                        JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", tempRow[LENGTHCOL]),
+                                Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                     }
                     if (tempRow[UNITSCOL].equals(Bundle.getMessage("cm"))) {
                         block.setLength(len * 10.0f);
@@ -421,23 +440,15 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                         block.setLength(len * 25.4f);
                         block.setMetricUnits(false);
                     }
-                    if (tempRow[CURVECOL].equals(noneText)) {
-                        block.setCurvature(Block.NONE);
-                    } else if (tempRow[CURVECOL].equals(gradualText)) {
-                        block.setCurvature(Block.GRADUAL);
-                    } else if (tempRow[CURVECOL].equals(tightText)) {
-                        block.setCurvature(Block.TIGHT);
-                    } else if (tempRow[CURVECOL].equals(severeText)) {
-                        block.setCurvature(Block.SEVERE);
-                    }
+                    block.setCurvature(BlockCurvatureJComboBox.getCurvatureFromString(tempRow[CURVECOL]));
                     block.setPermissiveWorking(tempRow[PERMISSIONCOL].equals(Bundle.getMessage("Permissive")));
                     block.setBlockSpeedName(tempRow[SPEEDCOL]);
-                    
+
                     if (tempRow[ERR_SENSORCOL] != null) {
                         if (tempRow[ERR_SENSORCOL].trim().length() > 0) {
                             if (!sensorExists(tempRow[ERR_SENSORCOL])) {
-                                JOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", tempRow[ERR_SENSORCOL]),
-                                        Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                                JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", tempRow[ERR_SENSORCOL]),
+                                        Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                             }
                         }
                     }
@@ -450,11 +461,11 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                                 block.setReportingCurrent(tempRow[REPORT_CURRENTCOL].equals(Bundle.getMessage("Current")));
                             }
                         } catch (Exception ex) {
-                            log.error("No Reporter named \"{}\" found. threw exception: {}", tempRow[REPORTERCOL], ex);
+                            log.error("No Reporter named \"{}\" found. threw exception", tempRow[REPORTERCOL], ex);
                         }
                         if (rep == null) {
-                            JOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchReporterErr", tempRow[REPORTERCOL]),
-                                    Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchReporterErr", tempRow[REPORTERCOL]),
+                                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                         }
                         block.setReporter(rep);
                     }
@@ -471,11 +482,11 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                         if (tempRow[UNITSCOL].equals(Bundle.getMessage("cm"))) {
                             _tempLen *= 10f;
                         } else {
-                            _tempLen *= 25.4f;                            
+                            _tempLen *= 25.4f;
                         }
                     } catch (ParseException e) {
-                        JOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", tempRow[LENGTHCOL]),
-                                Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);                    
+                        JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", tempRow[LENGTHCOL]),
+                                Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                     }
                     return;
                 case UNITSCOL:
@@ -519,8 +530,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
             case USERNAMECOL:
                 OBlock b = _manager.getOBlock((String) value);
                 if (b != null) {
-                    JOptionPane.showMessageDialog(null, Bundle.getMessage("CreateDuplBlockErr", block.getDisplayName()),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("CreateDuplBlockErr", block.getDisplayName()),
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 block.setUserName((String) value);
@@ -530,12 +541,10 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 block.setComment((String) value);
                 fireTableRowsUpdated(row, row);
                 return;
-            case STATECOL:
-                return;     //  STATECOL is not editable
             case SENSORCOL:
                 if (!block.setSensor((String) value)) {
-                    JOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", value),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", value),
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 }
                 fireTableRowsUpdated(row, row);
                 return;
@@ -547,10 +556,10 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                     } else {
                         block.setLength(len * 25.4f);
                     }
-                    fireTableRowsUpdated(row, row);                    
+                    fireTableRowsUpdated(row, row);
                 } catch (ParseException e) {
-                    JOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", value),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);                    
+                    JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("BadNumber", value),
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 }
                 return;
             case UNITSCOL:
@@ -562,15 +571,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 if (cName == null) {
                     return;
                 }
-                if (cName.equals(noneText)) {
-                    block.setCurvature(Block.NONE);
-                } else if (cName.equals(gradualText)) {
-                    block.setCurvature(Block.GRADUAL);
-                } else if (cName.equals(tightText)) {
-                    block.setCurvature(Block.TIGHT);
-                } else if (cName.equals(severeText)) {
-                    block.setCurvature(Block.SEVERE);
-                }
+                block.setCurvature(BlockCurvatureJComboBox.getCurvatureFromString(cName));
                 fireTableRowsUpdated(row, row);
                 return;
             case ERR_SENSORCOL:
@@ -584,11 +585,11 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                         fireTableRowsUpdated(row, row);
                     }
                 } catch (Exception ex) {
-                    log.error("getSensor({}) threw exception: {}", value, ex);
+                    log.error("getSensor({}) threw exception", value, ex);
                 }
                 if (!ok) {
-                    JOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", value),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchSensorErr", value),
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 }
                 fireTableRowsUpdated(row, row);
                 return;
@@ -601,11 +602,11 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                         fireTableRowsUpdated(row, row);
                     }
                 } catch (Exception ex) {
-                    log.error("No Reporter named \"{}\" found. threw exception: {}", value, ex);
+                    log.error("No Reporter named \"{}\" found. threw exception", value, ex);
                 }
                 if (rep == null) {
-                    JOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchReporterErr", tempRow[REPORTERCOL]),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("NoSuchReporterErr", tempRow[REPORTERCOL]),
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 }
                 block.setReporter(rep);
                 fireTableRowsUpdated(row, row);
@@ -618,23 +619,6 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 return;
             case PERMISSIONCOL:
                 block.setPermissiveWorking((Boolean) value); // compare to REPORT_CURRENTCOL
-                fireTableRowsUpdated(row, row);
-                return;
-            case WARRANTCOL:
-                Warrant warrant = block .getWarrant();
-                jmri.jmrit.logix.WarrantManager mgr = InstanceManager
-                            .getDefault(jmri.jmrit.logix.WarrantManager.class);
-                Warrant newWarrant = mgr.getWarrant((String)value);
-                if (warrant != null && !warrant.equals(newWarrant)) {
-                    block.deAllocate(warrant);
-                    if (newWarrant != null) {
-                        String msg = block.allocate(newWarrant);
-                        if (msg != null) {
-                            JOptionPane.showMessageDialog(null, msg,
-                                    Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);                    
-                        }                    
-                    }
-                }
                 fireTableRowsUpdated(row, row);
                 return;
             case SPEEDCOL:
@@ -676,11 +660,11 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
             case LENGTHCOL:
                 return Bundle.getMessage("BlockLengthColName");
             case UNITSCOL:
-                return " "; // make each unique yet without a label
+                return Bundle.getMessage("UnitsCol");
             case EDIT_COL:
-                return "  ";
+                return Bundle.getMessage("MenuPaths");
             case DELETE_COL:
-                return "   ";
+                return Bundle.getMessage("ColumnDelete");
             case ERR_SENSORCOL:
                 return Bundle.getMessage("ErrorSensorCol");
             case REPORTERCOL:
@@ -691,6 +675,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 return Bundle.getMessage("PermissionCol");
             case WARRANTCOL:
                 return Bundle.getMessage("WarrantCol");
+            case VALUE:
+                return Bundle.getMessage("ValueCol");
             case SPEEDCOL:
                 return Bundle.getMessage("SpeedCol");
             default:
@@ -704,8 +690,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
     void deleteBean(OBlock bean) {
         StringBuilder sb = new StringBuilder(Bundle.getMessage("DeletePrompt", bean.getSystemName()));
         for (PropertyChangeListener listener : bean.getPropertyChangeListeners()) {
-            if (!(listener instanceof OBlockTableModel) && 
-                    !(listener instanceof BlockPathTableModel) && 
+            if (!(listener instanceof OBlockTableModel) &&
+                    !(listener instanceof BlockPathTableModel) &&
                     !(listener instanceof PathTurnoutTableModel) &&
                     !(listener instanceof jmri.jmrit.picker.PickListModel) &&
                     !(listener instanceof OBlockManager)) {
@@ -754,20 +740,21 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
             case ERR_SENSORCOL:
             case REPORTERCOL:
             case WARRANTCOL:
-                return new JTextField(10).getPreferredSize().width;
+                return new JTextField(12).getPreferredSize().width;
+            case VALUE:
             case CURVECOL:
             case REPORT_CURRENTCOL:
             case PERMISSIONCOL:
             case SPEEDCOL:
-                return new JTextField(8).getPreferredSize().width;
+                return new JTextField(10).getPreferredSize().width;
             case LENGTHCOL:
-                return new JTextField(5).getPreferredSize().width;
+                return new JTextField(6).getPreferredSize().width;
             case UNITSCOL:
-                return new JTextField(4).getPreferredSize().width;
+                return new JTextField(5).getPreferredSize().width;
             case EDIT_COL:
-                return new JButton("EDIT").getPreferredSize().width;
+                return new JButton(Bundle.getMessage("ButtonEditPath")).getPreferredSize().width+4;
             case DELETE_COL:
-                return new JButton("DELETE").getPreferredSize().width;
+                return new JButton(Bundle.getMessage("ButtonDelete")).getPreferredSize().width+4;
             default:
                 // fall through
                 break;
@@ -777,10 +764,22 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        if (super.getRowCount() == row) {
-            return true; // the new entry/bottom row is editable in all cells
+        switch (col) {
+            case SYSNAMECOL:
+                if (super.getRowCount() == row) {
+                    return true; // the new entry/bottom row is editable in all cells
+                } else {
+                    return false;
+                }
+            case STATECOL:
+            case WARRANTCOL:
+            case VALUE:
+                return false;
+            default:
+                // fall through
+                break;
         }
-        return (col != SYSNAMECOL && col != STATECOL);
+        return true;
     }
 
     //*********************** combo box cell editors *********************************/
@@ -827,14 +826,13 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
      * CellEditor. When not yet present, create, store and return a new one.
      *
      * @param row Index number (in TableDataModel)
-     * @return A combobox containing the valid aspect names for this mast
+     * @return A JCombobox containing the valid curvature names.
      */
     static JComboBox<String> getCurveEditorBox(int row) {
         // create dummy comboBox, override in extended classes for each bean
-        JComboBox<String> editCombo = new JComboBox<>(curveOptions);
-        editCombo.putClientProperty("JComponent.sizeVariant", "small");
-        editCombo.putClientProperty("JComboBox.buttonType", "square");
-        return editCombo;
+        BlockCurvatureJComboBox j = new BlockCurvatureJComboBox();
+        j.setJTableCellClientProperties();
+        return j;
     }
 
     /**
@@ -897,6 +895,9 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
     static JComboBox<String> getSpeedEditorBox(int row) {
         // create dummy comboBox, override in extended classes for each bean
         JComboBox<String> editCombo = new JComboBox<>(jmri.InstanceManager.getDefault(SignalSpeedMap.class).getValidSpeedNames());
+        // item to reset speed notch to default, i.e. continue at current speed requirement.
+        javax.swing.DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)editCombo.getModel();
+        model.addElement("");
         editCombo.putClientProperty("JComponent.sizeVariant", "small");
         editCombo.putClientProperty("JComboBox.buttonType", "square");
         return editCombo;
@@ -920,19 +921,22 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
         super.propertyChange(e);
         String property = e.getPropertyName();
         if (log.isDebugEnabled()) log.debug("PropertyChange = {}", property);
+        if (property.equals("length") || property.equals("UserName") || property.equals("state")) {
+            ThreadingUtil.runOnGUIEventually(()-> {
+                _parent.updateOBlockTablesMenu();
+                fireTableDataChanged();
+            });
+        }
         _parent.getPortalXRefTableModel().propertyChange(e);
         _parent.getSignalTableModel().propertyChange(e);
         _parent.getPortalTableModel().propertyChange(e);
 
-        if (property.equals("length") || property.equals("UserName")) {
-            _parent.updateOBlockTablesMenu();
-        }
     }
 
     protected String getClassName() {
         return jmri.jmrit.beantable.OBlockTableAction.class.getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(OBlockTableModel.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OBlockTableModel.class);
 
 }

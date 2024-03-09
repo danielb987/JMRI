@@ -1,7 +1,5 @@
 package jmri.jmrix.loconet;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +16,6 @@ public abstract class LnPortController extends jmri.jmrix.AbstractSerialPortCont
         super(connectionMemo);
         setManufacturer(LnConnectionTypeList.DIGITRAX);
     }
-
-    // returns the InputStream from the port
-    @Override
-    public abstract DataInputStream getInputStream();
-
-    // returns the outputStream to the port
-    @Override
-    public abstract DataOutputStream getOutputStream();
 
     /**
      * Check that this object is ready to operate. This is a question of
@@ -50,13 +40,17 @@ public abstract class LnPortController extends jmri.jmrix.AbstractSerialPortCont
 
     protected boolean mTurnoutNoRetry = false;
     protected boolean mTurnoutExtraSpace = false;
-
+    protected boolean mInterrogateAtStart = true;
     protected boolean mTranspondingAvailable = false;
+
+    protected boolean mLoconetProtocolAutoDetect = true;
 
     protected LnCommandStationType[] commandStationTypes = {
         LnCommandStationType.COMMAND_STATION_DCS100,
         LnCommandStationType.COMMAND_STATION_DCS240,
+        LnCommandStationType.COMMAND_STATION_DCS240PLUS,
         LnCommandStationType.COMMAND_STATION_DCS210,
+        LnCommandStationType.COMMAND_STATION_DCS210PLUS,
         LnCommandStationType.COMMAND_STATION_DCS200,
         LnCommandStationType.COMMAND_STATION_DCS050,
         LnCommandStationType.COMMAND_STATION_DCS051,
@@ -78,7 +72,7 @@ public abstract class LnPortController extends jmri.jmrix.AbstractSerialPortCont
     }
 
     // There are also "PR3 standalone programmer" and "Stand-alone LocoNet" in pr3/PR3Adapter
-    // and "PR2 standalone programmer" in pr2/Pr2Adaper
+    // and "PR2 standalone programmer" in pr2/Pr2Adapter
     /**
      * Set config info from a name, which needs to be one of the valid ones.
      * @param name the name of the command station type
@@ -117,7 +111,19 @@ public abstract class LnPortController extends jmri.jmrix.AbstractSerialPortCont
         mTranspondingAvailable = (value.equals("Yes") || value.equals(Bundle.getMessage("ButtonYes")));
         log.debug("transponding available: {}", mTranspondingAvailable); // NOI18N
     }
+
+    public void setLoconetProtocolAutoDetect(String value) {
+        // default (most common state) is off, so just check for Yes
+        mLoconetProtocolAutoDetect = (value.equals("Yes") || value.equals(Bundle.getMessage("LoconetProtocolAutoDetect")));
+        log.debug("Loconet XPSlots: {}", mLoconetProtocolAutoDetect); // NOI18N
+    }
     
+    public void setInterrogateOnStart(String value) {
+        // default (most common state) is on, so just check for No
+        mInterrogateAtStart = !(value.equals("No") || value.equals(Bundle.getMessage("ButtonNo")));
+        log.debug("tInterrogate on Start: {}", mInterrogateAtStart); // NOI18N
+    }
+
     @Override
     public LocoNetSystemConnectionMemo getSystemConnectionMemo() {
         return (LocoNetSystemConnectionMemo) super.getSystemConnectionMemo();

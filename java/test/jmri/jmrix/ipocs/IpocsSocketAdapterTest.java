@@ -6,7 +6,9 @@ import static org.mockito.Mockito.mock;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 
-import org.junit.Test;
+import jmri.util.JUnitUtil;
+
+import org.junit.jupiter.api.*;
 
 public class IpocsSocketAdapterTest {
   
@@ -16,6 +18,7 @@ public class IpocsSocketAdapterTest {
     AsynchronousServerSocketChannel serverSocket = mock(AsynchronousServerSocketChannel.class);
     assertNotNull(new IpocsSocketAcceptor(portController, serverSocket));
   }
+
   @Test
   public void completedTest() {
     IpocsPortController portController = mock(IpocsPortController.class);
@@ -34,4 +37,14 @@ public class IpocsSocketAdapterTest {
     acceptor.failed(new Exception(), null);
     jmri.util.JUnitAppender.suppressErrorMessage("Unable to accept socket");
   }
+
+    @BeforeEach
+    public void setUp() {
+        JUnitUtil.setUp();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        JUnitUtil.tearDown();
+    }
 }

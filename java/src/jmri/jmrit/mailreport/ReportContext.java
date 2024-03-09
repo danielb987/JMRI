@@ -5,7 +5,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
@@ -24,11 +23,9 @@ import jmri.util.PortNameMapper;
 import jmri.util.PortNameMapper.SerialPortFriendlyName;
 import jmri.util.zeroconf.ZeroConfService;
 import jmri.util.zeroconf.ZeroConfServiceManager;
-import purejavacomm.CommPortIdentifier;
 
 /**
  * Provide the JMRI context info.
- * <p>
  *
  * @author Bob Jacobsen Copyright (C) 2007, 2009
  * @author Matt Harris Copyright (C) 2008, 2009
@@ -47,6 +44,9 @@ public class ReportContext {
     public String getReport(boolean reportNetworkInfo) {
 
         addString("JMRI Version: " + jmri.Version.name() + "   ");
+
+        addEarlyInitializationPreferences();
+
         addString("JMRI configuration file name: "
                 + System.getProperty("org.jmri.apps.Apps.configFilename") + "   (from org.jmri.apps.Apps.configFilename system property)");
         if (!jmri.util.JmriJFrame.getFrameList().isEmpty() && jmri.util.JmriJFrame.getFrameList().get(0) != null) {
@@ -60,11 +60,9 @@ public class ReportContext {
         ConnectionConfigManager cm = InstanceManager.getNullableDefault(ConnectionConfigManager.class);
         if (cm != null) {
             ConnectionConfig[] connList = cm.getConnections();
-            if (connList != null) {
-                for (int x = 0; x < connList.length; x++) {
-                    ConnectionConfig conn = connList[x];
-                    addString("Connection " + x + ": " + conn.getManufacturer() + " connected via " + conn.name() + " on " + conn.getInfo() + " Disabled " + conn.getDisabled() + "   ");
-                }
+            for (int x = 0; x < connList.length; x++) {
+                ConnectionConfig conn = connList[x];
+                addString("Connection " + x + ": " + conn.getManufacturer() + " connected via " + conn.name() + " on " + conn.getInfo() + " Disabled " + conn.getDisabled() + "   ");
             }
         } else {
             addString("No connections present");
@@ -168,6 +166,15 @@ public class ReportContext {
 
     void addProperty(String prop) {
         addString(prop + ": " + System.getProperty(prop) + "   ");
+    }
+
+    void addEarlyInitializationPreferences() {
+        jmri.util.EarlyInitializationPreferences eip =
+                jmri.util.EarlyInitializationPreferences.getInstance();
+
+        for (String pref : eip.getStartupPreferences()) {
+            addString(pref + "   ");
+        }
     }
 
     /**
@@ -292,33 +299,19 @@ public class ReportContext {
      * Add communication port information
      */
     private void addCommunicationPortInfo() {
-        Enumeration<CommPortIdentifier> portIDs = CommPortIdentifier.getPortIdentifiers();
+        var portNames = jmri.jmrix.AbstractSerialPortController.getActualPortNames();
 
-        ArrayList<CommPortIdentifier> ports = new ArrayList<>();
-
-        // find the names of suitable ports
-        while (portIDs.hasMoreElements()) {
-            CommPortIdentifier id = portIDs.nextElement();
-            // filter out line printers 
-            if (id.getPortType() != CommPortIdentifier.PORT_PARALLEL) {
-                ports.add(id);
-            }
-        }
-
-        addString(String.format(" Found %s serial ports", ports.size()));
+        addString(String.format(" Found %s serial ports", portNames.size()));
 
         // now output the details
-        for (CommPortIdentifier id : ports) {
+        for (String name : portNames) {
             // output details
-            SerialPortFriendlyName port = PortNameMapper.getPortNameMap().get(id.getName());
+            SerialPortFriendlyName port = PortNameMapper.getPortNameMap().get(name);
             if (port == null) {
-                port = new SerialPortFriendlyName(id.getName(), null);
-                PortNameMapper.getPortNameMap().put(id.getName(), port);
+                port = new SerialPortFriendlyName(name, null);
+                PortNameMapper.getPortNameMap().put(name, port);
             }
-            addString(" Port: " + port.getDisplayName()
-                    + (id.isCurrentlyOwned()
-                            ? " - in use by: " + id.getCurrentOwner()
-                            : " - not in use") + "   ");
+            addString(" Port: " + name);
         }
     }
 

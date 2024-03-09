@@ -4,8 +4,6 @@ import jmri.*;
 import jmri.implementation.DefaultMeter;
 import jmri.implementation.MeterUpdateTask;
 import jmri.jmrix.loconet.duplexgroup.swing.LnIPLImplementation;
-import java.util.TimerTask;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +120,7 @@ public class LnPredefinedMeters implements LocoNetListener {
             try {
                 newMeter.setCommandedAnalogValue(value);
             } catch (JmriException e) {
-                log.debug("Exception setting {}Meter {} to value {}: {}",
+                log.debug("Exception setting {}Meter {} to value {}",
                         (typeVolt?"volt":"current"), // NOI18N
                         sysName, value, e);
             }
@@ -134,7 +132,7 @@ public class LnPredefinedMeters implements LocoNetListener {
             try {
                 m.setCommandedAnalogValue(value);
             } catch (JmriException e) {
-                log.debug("Exception setting {}Meter {} to value {}: {}",
+                log.debug("Exception setting {}Meter {} to value {}",
                         (typeVolt?"volt":"current"), // NOI18N
                         sysName, value, e);
             }

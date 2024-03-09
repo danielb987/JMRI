@@ -27,12 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * Allows user to decide if (and which) SpeedProfiles to write to the Roster at 
+ *
+ * Allows user to decide if (and which) SpeedProfiles to write to the Roster at
  * the end of a session.  Locos running warrants have had their speeds measured
  * and this new data may or may not be merged into any existing SpeedProfiles
  * in the Roster.
- * <p>
  *
  * @author Pete cressman Copyright (C) 2017
  */
@@ -42,8 +41,8 @@ public class SpeedProfilePanel extends JPanel {
     JScrollPane _scrollPane;
     static java.awt.Color myRed = new java.awt.Color(255, 120, 120);
     static String entryFlavorType =  DataFlavor.javaJVMLocalObjectMimeType + ";class=java.util.AbstractMap";
-    DataFlavor _entryFlavor; 
-    
+    DataFlavor _entryFlavor;
+
     /**
      * @param speedProfile a RosterSpeedProfile
      * @param editable allow editing.
@@ -63,7 +62,7 @@ public class SpeedProfilePanel extends JPanel {
             _table.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent ke) {
-                    char ch = ke.getKeyChar(); 
+                    char ch = ke.getKeyChar();
                     if (ch == KeyEvent.VK_DELETE || ch == KeyEvent.VK_X) {
                         deleteRow();
                     } else if (ch == KeyEvent.VK_ENTER) {
@@ -95,14 +94,15 @@ public class SpeedProfilePanel extends JPanel {
         try {
             _entryFlavor = new DataFlavor(entryFlavorType);
             if (editable) {
-                _table.setTransferHandler(new ImportEntryTranferHandler());                    
+                _table.setTransferHandler(new ImportEntryTranferHandler());
                 _table.setDragEnabled(true);
+                _scrollPane.setTransferHandler(new ImportEntryTranferHandler());
             } else {
-                _table.setTransferHandler(new ExportEntryTranferHandler());                    
+                _table.setTransferHandler(new ExportEntryTranferHandler());
                 _table.setDragEnabled(true);
             }
         } catch (ClassNotFoundException cnfe) {
-            log.error("SpeedProfilePanel unable to Drag and Drop {}",cnfe);
+            log.error("SpeedProfilePanel unable to Drag and Drop",cnfe);
         }
         add(_scrollPane);
         if (anomalies != null) {
@@ -152,9 +152,9 @@ public class SpeedProfilePanel extends JPanel {
 
             SpeedTableModel model = (SpeedTableModel) table.getModel();
             Map<Integer, Boolean> anomalies = model.getAnomalies();
-  
+
             if (anomalies == null || anomalies.size() == 0) {
-                c.setBackground(table.getBackground());                                
+                c.setBackground(table.getBackground());
                 return c;
             }
             Map.Entry<Integer, SpeedStep> entry = model.getRowEntry(row);
@@ -165,7 +165,7 @@ public class SpeedProfilePanel extends JPanel {
             }
             boolean dir =  direction.booleanValue();
             if ( dir && col == SpeedTableModel.FORWARD_SPEED_COL) {
-                c.setBackground(myRed);                
+                c.setBackground(myRed);
             } else if (!dir && col == SpeedTableModel.REVERSE_SPEED_COL){
                 c.setBackground(myRed);
             }
@@ -187,13 +187,13 @@ public class SpeedProfilePanel extends JPanel {
         static final int FORWARD_SPEED_COL = 2;
         static final int REVERSE_SPEED_COL = 3;
         static final int NUMCOLS = 4;
-        
+
         java.text.DecimalFormat threeDigit = new java.text.DecimalFormat("0.000");
         ArrayList<Map.Entry<Integer, SpeedStep>> speedArray = new  ArrayList<>();
         RosterSpeedProfile _profile;
         Boolean _editable;
         Map<Integer, Boolean> _anomaly;
-        
+
         SpeedTableModel(RosterSpeedProfile sp, boolean editable, Map<Integer, Boolean> anomalies) {
             _profile = sp;
             _editable = editable; // allow mergeProfile editing
@@ -222,7 +222,7 @@ public class SpeedProfilePanel extends JPanel {
         }
 
         Map.Entry<Integer, SpeedStep> getRowEntry(int row) {
-            return speedArray.get(row); 
+            return speedArray.get(row);
         }
 
         Map.Entry<Integer, SpeedStep> getKeyEntry(Integer key) {
@@ -231,13 +231,13 @@ public class SpeedProfilePanel extends JPanel {
                     return entry;
                 }
             }
-            return null; 
+            return null;
         }
 
         TreeMap<Integer, SpeedStep> getProfileSpeeds() {
             return _profile.getProfileSpeeds();
         }
-        
+
         void addEntry( Map.Entry<Integer, SpeedStep> entry) {
             SpeedStep ss = entry.getValue();
             Integer key = entry.getKey();
@@ -273,7 +273,7 @@ public class SpeedProfilePanel extends JPanel {
                 case STEP_COL:
                     return Bundle.getMessage("step");
                 case THROTTLE_COL:
-                    return Bundle.getMessage("throttlesetting");
+                    return Bundle.getMessage("throttle");
                 case FORWARD_SPEED_COL:
                     return Bundle.getMessage("forward");
                 case REVERSE_SPEED_COL:
@@ -294,17 +294,16 @@ public class SpeedProfilePanel extends JPanel {
                 case STEP_COL:
                     return new JTextField(3).getPreferredSize().width;
                 case THROTTLE_COL:
-                    return new JTextField(5).getPreferredSize().width;
+                    return new JTextField(6).getPreferredSize().width;
                 case FORWARD_SPEED_COL:
                 case REVERSE_SPEED_COL:
                     return new JTextField(8).getPreferredSize().width;
                 default:
-                    // fall out
                     break;
             }
             return new JTextField(8).getPreferredSize().width;
         }
-        
+
         @Override
         public boolean isCellEditable(int row, int col) {
             return (_editable && (col == FORWARD_SPEED_COL || col == REVERSE_SPEED_COL));
@@ -340,10 +339,10 @@ public class SpeedProfilePanel extends JPanel {
             try {
             switch (col) {
                 case FORWARD_SPEED_COL:
-                    entry.getValue().setForwardSpeed(Float.parseFloat((String)value));
+                    entry.getValue().setForwardSpeed(Float.parseFloat(((String)value).replace(',', '.')));
                     return;
                 case REVERSE_SPEED_COL:
-                    entry.getValue().setReverseSpeed(Float.parseFloat((String)value));
+                    entry.getValue().setReverseSpeed(Float.parseFloat(((String)value).replace(',', '.')));
                     return;
                 default:
                     // fall out
@@ -400,17 +399,18 @@ public class SpeedProfilePanel extends JPanel {
                 return false;
             }
             if (!support.isDrop()) {
-                return false;            
+                return false;
             }
-            TransferHandler.DropLocation loc = support.getDropLocation();
+/*            TransferHandler.DropLocation loc = support.getDropLocation();
             if (!(loc instanceof JTable.DropLocation)) {
                 return false;
             }
             Component comp = support.getComponent();
             if (!(comp instanceof JTable)) {
-                return false;            
-            }       
-            JTable table = (JTable)comp;
+                return false;
+            }
+            JTable table = (JTable)comp;*/
+            JTable table = _table;
             try {
                 Transferable trans = support.getTransferable();
                 Object obj = trans.getTransferData(_entryFlavor);
@@ -446,7 +446,7 @@ public class SpeedProfilePanel extends JPanel {
 
                 return true;
             } catch (UnsupportedFlavorException | IOException ufe) {
-                log.warn("MergeTranferHandler.importData: {}",ufe);
+                log.warn("MergeTranferHandler.importData",ufe);
             }
             return false;
         }

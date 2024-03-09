@@ -1,11 +1,8 @@
 package jmri.jmrit.ctc.editor.gui;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 import jmri.jmrit.ctc.NBHSensor;
 import jmri.jmrit.ctc.editor.code.AwtWindowProperties;
@@ -13,8 +10,8 @@ import jmri.jmrit.ctc.editor.code.CheckJMRIObject;
 import jmri.jmrit.ctc.editor.code.CommonSubs;
 import jmri.jmrit.ctc.ctcserialdata.CTCSerialData;
 import jmri.jmrit.ctc.ctcserialdata.CodeButtonHandlerData;
-import jmri.jmrit.ctc.ctcserialdata.ProjectsCommonSubs;
 import jmri.jmrit.ctc.ctcserialdata.TrafficLockingData;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Maintain the set of traffic locking rules.  There is an east set and a west set
@@ -614,8 +611,8 @@ public class FrmTRL_Rules extends javax.swing.JFrame {
 
         CheckJMRIObject.VerifyClassReturnValue verifyClassReturnValue = _mCheckJMRIObject.verifyClass(trafficLockingData);
         if (verifyClassReturnValue != null) { // Error:
-            JOptionPane.showMessageDialog(this, verifyClassReturnValue.toString(),
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+            JmriJOptionPane.showMessageDialog(this, verifyClassReturnValue.toString(),
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
             return;
         }
 
@@ -669,7 +666,7 @@ public class FrmTRL_Rules extends javax.swing.JFrame {
 
     public static String getRuleEnabledString() { return Bundle.getMessage("TLE_RuleEnabled"); }
 
-    public TrafficLockingData.TRLSwitch getSwitchAllignment(javax.swing.JComboBox userText, javax.swing.JComboBox alignment) {
+    public TrafficLockingData.TRLSwitch getSwitchAllignment(javax.swing.JComboBox<String> userText, javax.swing.JComboBox<String> alignment) {
         TrafficLockingData.TRLSwitch trlSwitch = null;
         int osNumberSelectedIndex = userText.getSelectedIndex();
         if (osNumberSelectedIndex > 0) {

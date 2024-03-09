@@ -1,6 +1,5 @@
 package jmri.jmrit.operations.rollingstock.cars;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.*;
@@ -8,21 +7,17 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.locations.schedules.ScheduleManager;
 import jmri.jmrit.operations.locations.tools.ModifyLocationsAction;
-import jmri.jmrit.operations.rollingstock.cars.tools.PrintCarLoadsAction;
-import jmri.jmrit.operations.rollingstock.cars.tools.ResetCheckboxesCarsTableAction;
-import jmri.jmrit.operations.rollingstock.cars.tools.ShowCheckboxesCarsTableAction;
+import jmri.jmrit.operations.rollingstock.cars.tools.*;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.jmrit.operations.trains.tools.TrainsByCarTypeAction;
 import jmri.swing.JTablePersistenceManager;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for adding and editing the car roster for operations.
@@ -34,7 +29,7 @@ import jmri.swing.JTablePersistenceManager;
 public class CarsTableFrame extends OperationsFrame implements TableModelListener {
 
     public CarsTableModel carsTableModel;
-    JTable carsTable;
+    public JTable carsTable;
     boolean showAllCars;
     String locationName;
     String trackName;
@@ -56,6 +51,8 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
     JRadioButton sortByDestination = new JRadioButton(Bundle.getMessage("Destination"));
     JRadioButton sortByFinalDestination = new JRadioButton(Bundle.getMessage("FD"));
     JRadioButton sortByRwe = new JRadioButton(Bundle.getMessage("RWE"));
+    JRadioButton sortByRwl = new JRadioButton(Bundle.getMessage("RWL"));
+    JRadioButton sortByDivision = new JRadioButton(Bundle.getMessage("Division"));
     JRadioButton sortByTrain = new JRadioButton(Bundle.getMessage("Train"));
     JRadioButton sortByMoves = new JRadioButton(Bundle.getMessage("Moves"));
     JRadioButton sortByBuilt = new JRadioButton(Bundle.getMessage("Built"));
@@ -65,10 +62,11 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
     JRadioButton sortByWait = new JRadioButton(Bundle.getMessage("Wait"));
     JRadioButton sortByPickup = new JRadioButton(Bundle.getMessage("Pickup"));
     JRadioButton sortByLast = new JRadioButton(Bundle.getMessage("Last"));
+    JRadioButton sortByComment = new JRadioButton(Bundle.getMessage("Comment"));
     ButtonGroup group = new ButtonGroup();
 
     // major buttons
-    JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
+    JButton addButton = new JButton(Bundle.getMessage("TitleCarAdd"));
     JButton findButton = new JButton(Bundle.getMessage("Find"));
     JButton saveButton = new JButton(Bundle.getMessage("ButtonSave"));
 
@@ -114,7 +112,9 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         destp.add(sortByDestination);
         destp.add(sortByFinalDestination);
         destp.add(sortByRwe);
+        destp.add(sortByRwl);
         cp1.add(destp);
+        cp1.add(sortByDivision);
         cp1.add(sortByTrain);
 
         JPanel movep = new JPanel();
@@ -133,6 +133,7 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
             movep.add(sortByPickup);
         }
         movep.add(sortByLast);
+        movep.add(sortByComment);
         cp1.add(movep);
 
         // row 2
@@ -141,6 +142,7 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
 
         JPanel cp2Add = new JPanel();
         cp2Add.setBorder(BorderFactory.createTitledBorder(""));
+        addButton.setToolTipText(Bundle.getMessage("TipAddButton"));
         cp2Add.add(numCars);
         cp2Add.add(textCars);
         cp2Add.add(textSep1);
@@ -169,6 +171,7 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         // some tool tips
         sortByFinalDestination.setToolTipText(Bundle.getMessage("FinalDestination"));
         sortByRwe.setToolTipText(Bundle.getMessage("ReturnWhenEmpty"));
+        sortByRwl.setToolTipText(Bundle.getMessage("ReturnWhenLoaded"));
         sortByPickup.setToolTipText(Bundle.getMessage("TipPickup"));
         sortByLast.setToolTipText(Bundle.getMessage("TipLastMoved"));
 
@@ -193,6 +196,8 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         addRadioButtonAction(sortByDestination);
         addRadioButtonAction(sortByFinalDestination);
         addRadioButtonAction(sortByRwe);
+        addRadioButtonAction(sortByRwl);
+        addRadioButtonAction(sortByDivision);
         addRadioButtonAction(sortByTrain);
         addRadioButtonAction(sortByMoves);
         addRadioButtonAction(sortByBuilt);
@@ -202,6 +207,7 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         addRadioButtonAction(sortByWait);
         addRadioButtonAction(sortByPickup);
         addRadioButtonAction(sortByLast);
+        addRadioButtonAction(sortByComment);
 
         group.add(sortByNumber);
         group.add(sortByRoad);
@@ -213,6 +219,8 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         group.add(sortByDestination);
         group.add(sortByFinalDestination);
         group.add(sortByRwe);
+        group.add(sortByRwl);
+        group.add(sortByDivision);
         group.add(sortByTrain);
         group.add(sortByMoves);
         group.add(sortByBuilt);
@@ -222,6 +230,7 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         group.add(sortByWait);
         group.add(sortByPickup);
         group.add(sortByLast);
+        group.add(sortByComment);
 
         // sort by location
         if (!showAllCars) {
@@ -294,6 +303,12 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         if (ae.getSource() == sortByRwe) {
             carsTableModel.setSort(carsTableModel.SORTBY_RWE);
         }
+        if (ae.getSource() == sortByRwl) {
+            carsTableModel.setSort(carsTableModel.SORTBY_RWL);
+        }
+        if (ae.getSource() == sortByDivision) {
+            carsTableModel.setSort(carsTableModel.SORTBY_DIVISION);
+        }
         if (ae.getSource() == sortByTrain) {
             carsTableModel.setSort(carsTableModel.SORTBY_TRAIN);
         }
@@ -321,6 +336,9 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         if (ae.getSource() == sortByLast) {
             carsTableModel.setSort(carsTableModel.SORTBY_LAST);
         }
+        if (ae.getSource() == sortByComment) {
+            carsTableModel.setSort(carsTableModel.SORTBY_COMMENT);
+        }
     }
 
     public List<Car> getSortByList() {
@@ -336,9 +354,9 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         if (ae.getSource() == findButton) {
             int rowindex = carsTableModel.findCarByRoadNumber(findCarTextBox.getText());
             if (rowindex < 0) {
-                JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("carWithRoadNumNotFound"),
-                        new Object[]{findCarTextBox.getText()}), Bundle.getMessage("carCouldNotFind"),
-                        JOptionPane.INFORMATION_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("carWithRoadNumNotFound",
+                        findCarTextBox.getText()), Bundle.getMessage("carCouldNotFind"),
+                        JmriJOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             // clear any sorts by column
@@ -405,6 +423,6 @@ public class CarsTableFrame extends OperationsFrame implements TableModelListene
         numCars.setText(showNumber + "/" + totalNumber);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(CarsTableFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CarsTableFrame.class);
 
 }

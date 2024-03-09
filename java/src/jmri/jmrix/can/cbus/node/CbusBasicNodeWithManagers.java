@@ -1,8 +1,8 @@
 package jmri.jmrix.can.cbus.node;
 
 // import javax.annotation.Nonnull;
-import javax.annotation.Nonnull;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.annotation.*;
+
 import jmri.jmrix.can.CanSystemConnectionMemo;
 
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class CbusBasicNodeWithManagers extends CbusBasicNode {
      * @param connmemo The CAN Connection to use
      * @param nodenumber The Node Number
      */
-    public CbusBasicNodeWithManagers ( CanSystemConnectionMemo connmemo, int nodenumber ){
+    public CbusBasicNodeWithManagers ( @CheckForNull CanSystemConnectionMemo connmemo, int nodenumber ){
         super(connmemo,nodenumber);
         
         
@@ -95,7 +95,6 @@ public class CbusBasicNodeWithManagers extends CbusBasicNode {
     
     /**
      * Get the CbusNodeXml for Node Backup Details and operations
-     * <p>
      * @return the CbusNodeXml instance for the node
      */
     @Nonnull
@@ -105,7 +104,7 @@ public class CbusBasicNodeWithManagers extends CbusBasicNode {
     
     /**
      * Get Node Statistics
-     * <p>
+     *
      * @return the CbusNodeXml instance for the node
      */
     @Nonnull

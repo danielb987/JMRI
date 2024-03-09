@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.ResourceBundle;
+
 import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,8 +21,7 @@ import javax.swing.JPanel;
 import jmri.*;
 import jmri.jmrix.ecos.utilities.GetEcosObjectNumber;
 import jmri.jmrix.ecos.utilities.RemoveObjectFromEcos;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Implement turnout manager for Ecos systems.
@@ -36,6 +36,10 @@ public class EcosTurnoutManager extends jmri.managers.AbstractTurnoutManager
 
     public EcosTurnoutManager(EcosSystemConnectionMemo memo) {
         super(memo);
+        initEtm();
+    }
+    
+    private void initEtm() {
         tc = getMemo().getTrafficController();
 
         // listen for turnout creation
@@ -55,7 +59,7 @@ public class EcosTurnoutManager extends jmri.managers.AbstractTurnoutManager
     EcosTrafficController tc;
 
     // The hash table simply holds the object number against the EcosTurnout ref.
-    private Hashtable<Integer, EcosTurnout> _tecos = new Hashtable<Integer, EcosTurnout>(); // stores known Ecos Object ids to DCC
+    private final Hashtable<Integer, EcosTurnout> _tecos = new Hashtable<>(); // stores known Ecos Object ids to DCC
 
     /**
      * {@inheritDoc}
@@ -66,12 +70,16 @@ public class EcosTurnoutManager extends jmri.managers.AbstractTurnoutManager
         return (EcosSystemConnectionMemo) memo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
     @Override
-    public Turnout createNewTurnout(@Nonnull String systemName, String userName) {
+    protected Turnout createNewTurnout(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         int addr;
         try {
             addr = Integer.parseInt(systemName.substring(getSystemNamePrefix().length()));
-        } catch (java.lang.NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new IllegalArgumentException("failed to convert systemName '"+systemName+"' to an Ecos turnout address");
         }
         Turnout t = new EcosTurnout(addr, getSystemPrefix(), tc, this);
@@ -453,14 +461,14 @@ public class EcosTurnoutManager extends jmri.managers.AbstractTurnoutManager
                                         + rb.getString("ReminderInUse"),
                                         new Object[]{et.getSystemName(), "" + count});
                                 // verify deletion
-                                int val = javax.swing.JOptionPane.showOptionDialog(null,
+                                int val = JmriJOptionPane.showOptionDialog(null,
                                         msg, Bundle.getMessage("WarningTitle"),
-                                        javax.swing.JOptionPane.YES_NO_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null,
+                                        JmriJOptionPane.DEFAULT_OPTION, JmriJOptionPane.QUESTION_MESSAGE, null,
                                         new Object[]{Bundle.getMessage("ButtonYes"),
                                             rb.getString("ButtonYesPlus"),
                                                 Bundle.getMessage("ButtonNo")},
                                         Bundle.getMessage("ButtonNo"));
-                                if (val == 2) {
+                                if (val == 2 || val == JmriJOptionPane.CLOSED_OPTION ) { // array position 2
                                     _tecos.remove(et.getObject());
                                     deregister(et);
                                     dialog.dispose();
@@ -627,10 +635,12 @@ public class EcosTurnoutManager extends jmri.managers.AbstractTurnoutManager
             tc.sendEcosMessage(em, this);
         }
 
-        if (jmri.InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
-            jmri.InstanceManager.getDefault(ConfigureManager.class).deregister(this);
+        if (InstanceManager.getNullableDefault(ConfigureManager.class) != null) {
+            InstanceManager.getDefault(ConfigureManager.class).deregister(this);
         }
         _tecos.clear();
+        tc.removeEcosListener(this); // disconnect from tc
+        super.dispose(); // remove SensorManager and SystemConnectionMemo change listeners
     }
 
     public List<String> getEcosObjectList() {
@@ -705,6 +715,6 @@ public class EcosTurnoutManager extends jmri.managers.AbstractTurnoutManager
         return validateSystemNameFormatOnlyNumeric(name, locale);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(EcosTurnoutManager.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EcosTurnoutManager.class);
 
 }

@@ -93,7 +93,7 @@ public class XpaTrafficController implements XpaInterface, Runnable {
                 try {
                     client.message(m);
                 } catch (Exception e) {
-                    log.warn("notify: During dispatch to {}\nException {}", client, e);
+                    log.warn("notify: During dispatch to {}", client, e);
                 }
             }
         }
@@ -113,13 +113,13 @@ public class XpaTrafficController implements XpaInterface, Runnable {
                 log.debug("notify client: {}", client);
             }
             try {
-                // Skip forwarding the message to the last sender until 
+                // Skip forwarding the message to the last sender until
                 // later.
                 if (lastSender != client) {
                     client.reply(r);
                 }
             } catch (Exception e) {
-                log.warn("notify: During dispatch to {}\nException {}", client, e);
+                log.warn("notify: During dispatch to {}", client, e);
             }
         }
 
@@ -184,7 +184,7 @@ public class XpaTrafficController implements XpaInterface, Runnable {
             log.warn("connectPort: connect called while connected");
         }
         controller = p;
-        // Send the initilization string to the port
+        // Send the initialization string to the port
         this.sendXpaMessage(XpaMessage.getDefaultInitMsg(), null);
     }
 

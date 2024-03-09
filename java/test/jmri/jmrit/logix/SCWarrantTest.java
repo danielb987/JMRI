@@ -1,6 +1,8 @@
 package jmri.jmrit.logix;
 
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import jmri.BeanSetting;
@@ -18,20 +20,20 @@ import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  *
  * @author Paul Bender Copyright (C) 2017
  */
 public class SCWarrantTest extends WarrantTest {
-
     @Test
     public void testIsRouteFree() throws JmriException {
         sEast.setState(Sensor.INACTIVE);
         sWest.setState(Sensor.INACTIVE);
         sSouth.setState(Sensor.INACTIVE);
         sNorth.setState(Sensor.ACTIVE);     // start block of warrant
-        // TODO: use orders in test?
+
         ArrayList<BlockOrder> orders = new ArrayList<>();
         orders.add(new BlockOrder(_OBlockMgr.getOBlock("North"), "NorthToWest", "", "NorthWest"));
         BlockOrder viaOrder = new BlockOrder(_OBlockMgr.getOBlock("West"), "SouthToNorth", "NorthWest", "SouthWest");
@@ -41,6 +43,8 @@ public class SCWarrantTest extends WarrantTest {
 
         assertThat(((SCWarrant) warrant).isRouteFree()).withFailMessage("Route Free").isTrue();
         assertThat(((SCWarrant) warrant).isRouteAllocated()).withFailMessage("Route Allocated").isTrue();
+        assertThat(orders.size()).withFailMessage("Order size not 3").isEqualTo(3);
+        // TODO: use orders in test?
     }
 
     @Test
@@ -68,7 +72,7 @@ public class SCWarrantTest extends WarrantTest {
         warrant.addThrottleCommand(new ThrottleSetting(100, "Speed", "0.3", "South"));
         warrant.addThrottleCommand(new ThrottleSetting(100, "Speed", "0.0", "South"));
 
-        warrant.getSpeedUtil().setDccAddress("999(L)");
+        warrant.getSpeedUtil().setAddress("999(L)");
         warrant.setBlockOrders(orders);
         warrant.setRoute(false, orders);
         warrant.checkStartBlock();
@@ -87,7 +91,7 @@ public class SCWarrantTest extends WarrantTest {
             String m = warrant.getRunningMessage();
             return m.endsWith("IH1 showing appearance 16");
         }, "Train starts to move after 2nd command");
-        jmri.util.JUnitUtil.releaseThread(this, 100); // What should we specifically waitFor?
+        JUnitUtil.waitFor(100); // What should we specifically waitFor?
 
         // confirm one message logged
         //jmri.util.JUnitAppender.assertWarnMessage("Path NorthToWest in block North has length zero. Cannot run NXWarrants or ramp speeds through blocks with zero length.");
@@ -98,35 +102,47 @@ public class SCWarrantTest extends WarrantTest {
                 Assert.fail("Unexpected Exception: " + e);
             }
         });
-        jmri.util.JUnitUtil.releaseThread(this, 100); // What should we specifically waitFor?
+        JUnitUtil.waitFor(100); // What should we specifically waitFor?
 
         jmri.util.ThreadingUtil.runOnLayout(() -> {
             try {
                 sWest.setState(Sensor.INACTIVE);
+            } catch (jmri.JmriException e) {
+                Assert.fail("Unexpected Exception: " + e);
+            }
+        });
+        JUnitUtil.waitFor(100); // What should we specifically waitFor?
+
+        jmri.util.ThreadingUtil.runOnLayout(() -> {
+            try {
                 sSouth.setState(Sensor.ACTIVE);
             } catch (jmri.JmriException e) {
                 Assert.fail("Unexpected Exception: " + e);
             }
         });
-        jmri.util.JUnitUtil.releaseThread(this, 100);
+        JUnitUtil.waitFor(100); // What should we specifically waitFor?
 
         // wait for done
         jmri.util.JUnitUtil.waitFor(() -> {
             return warrant.getRunningMessage().equals("Idle");
         }, "warrant not done");
-
     }
 
     @BeforeEach
     @Override
-    public void setUp() {
-        jmri.util.JUnitUtil.setUp();
+    public void setUp(@TempDir File tempDir) throws IOException  {
+        JUnitUtil.setUp();
+
+        JUnitUtil.resetProfileManager( new jmri.profile.NullProfile( tempDir));
 
         JUnitUtil.initDebugThrottleManager();
         JUnitUtil.initInternalSignalHeadManager();
         JUnitUtil.initRosterConfigManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initInternalTurnoutManager();
 
         // setup the sc warrant preliminaries.
+        WarrantPreferences.getDefault().setSpeedAssistance(0);
         _OBlockMgr = InstanceManager.getDefault(OBlockManager.class);
         bWest = _OBlockMgr.createNewOBlock("OB1", "West");
         bEast = _OBlockMgr.createNewOBlock("OB2", "East");
@@ -217,7 +233,13 @@ public class SCWarrantTest extends WarrantTest {
     @AfterEach
     @Override
     public void tearDown() {
-        JUnitUtil.clearShutDownManager(); // should be converted to check of scheduled ShutDownActions
+        _turnoutMgr.dispose();
+        _turnoutMgr = null;
+        _OBlockMgr.dispose();
+        _OBlockMgr = null;
+        _sensorMgr.dispose();
+        _sensorMgr = null;
+        //JUnitUtil.clearShutDownManager(); // should be converted to check of scheduled ShutDownActions
         super.tearDown();
     }
 

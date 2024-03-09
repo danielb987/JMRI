@@ -25,7 +25,7 @@ public class CoordinateEditTest extends jmri.util.JmriJFrameTestBase {
            ((CoordinateEdit)frame).init("foo",i,false);
         } catch( Exception e) {
             Assert.fail("Exception " + e + " Thrown during init call ");
-        } 
+        }
     }
 
     @BeforeEach

@@ -28,7 +28,7 @@ public class TabbedPreferencesFrameTest {
         JUnitUtil.initConfigureManager();
         JUnitUtil.resetPreferencesProviders();
     }
-    
+
     @AfterEach
     public void tearDown() {
         JUnitUtil.deregisterBlockManagerShutdownTask();

@@ -45,6 +45,8 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
     public static final String VERTICAL_TOOLBAR = "verticalToolBar";
     public static final String SHOW_TOOL_TIP_TIME = "showToolTipDismissDelay";
     public static final String EDITOR_USE_OLD_LOC_SIZE = "editorUseOldLocSize";
+    public static final String JFILECHOOSER_FORMAT = "jfilechooserformat";
+    public static final String MAX_COMBO_ROWS = "maxComboRows";
     /**
      * Smallest font size a user can set the font size to other than zero
      * ({@value}). A font size of 0 indicates that the system default font size
@@ -68,13 +70,15 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
     private Font currentFont = null;
     private Font defaultFont = null;
     private int fontSize = 0;
-    private int defaultFontSize = 0;
+    private int defaultFontSize = 11; 
     private boolean nonStandardMouseEvent = false;
     private boolean graphicTableState = false;
     private boolean oblockEditTabbed = false;
     private boolean editorUseOldLocSize = false;
+    private int jFileChooserFormat = 0;
     private String lookAndFeel = UIManager.getLookAndFeel().getClass().getName();
     private int toolTipDismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
+    private int maxComboRows = 0;
     private boolean dirty = false;
     private boolean restartRequired = false;
 
@@ -87,17 +91,9 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
     private static final Logger log = LoggerFactory.getLogger(GuiLafPreferencesManager.class);
 
     @Override
-    @SuppressWarnings("deprecation") // use of apps.gui.GuiLafPreferencesManager
     public void initialize(Profile profile) throws InitializationException {
         if (!this.initialized) {
-            boolean migrate = false;
             Preferences preferences = ProfileUtils.getPreferences(profile, this.getClass(), true);
-            // if FONT_SIZE == MIN_VALUE, preferences have not been written
-            // using the new structure, so use the old structure
-            if (preferences.getInt(FONT_SIZE, Integer.MIN_VALUE) == Integer.MIN_VALUE) {
-                preferences = ProfileUtils.getPreferences(profile, apps.gui.GuiLafPreferencesManager.class, true);
-                migrate = preferences.getInt(FONT_SIZE, Integer.MIN_VALUE) != Integer.MIN_VALUE;
-            }
             this.setLocale(Locale.forLanguageTag(preferences.get(LOCALE, this.getLocale().toLanguageTag())));
             this.setLookAndFeel(preferences.get(LOOK_AND_FEEL, this.getLookAndFeel()));
 
@@ -117,6 +113,8 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
             this.setGraphicTableState(preferences.getBoolean(GRAPHIC_TABLE_STATE, this.isGraphicTableState()));
             this.setOblockEditTabbed(preferences.getBoolean(OBLOCK_EDIT_TABBED, this.isOblockEditTabbed()));
             this.setEditorUseOldLocSize(preferences.getBoolean(EDITOR_USE_OLD_LOC_SIZE, this.isEditorUseOldLocSize()));
+            this.setJFileChooserFormat(preferences.getInt(JFILECHOOSER_FORMAT, this.getJFileChooserFormat()));
+            this.setMaxComboRows(preferences.getInt(MAX_COMBO_ROWS, this.getMaxComboRows()));
             this.setToolTipDismissDelay(preferences.getInt(SHOW_TOOL_TIP_TIME, this.getToolTipDismissDelay()));
 
             log.debug("About to setDefault Locale");
@@ -125,7 +123,6 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
 
             this.applyLookAndFeel();
             this.applyFontSize();
-            this.setDirty(migrate);
             this.initialized = true;
         }
     }
@@ -176,8 +173,10 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
         }
         preferences.putBoolean(NONSTANDARD_MOUSE_EVENT, this.isNonStandardMouseEvent());
         preferences.putBoolean(GRAPHIC_TABLE_STATE, this.isGraphicTableState());
-        preferences.putBoolean(OBLOCK_EDIT_TABBED, this.isGraphicTableState());
+        preferences.putBoolean(OBLOCK_EDIT_TABBED, this.isOblockEditTabbed());
         preferences.putBoolean(EDITOR_USE_OLD_LOC_SIZE, this.isEditorUseOldLocSize());
+        preferences.putInt(JFILECHOOSER_FORMAT, this.jFileChooserFormat);
+        preferences.putInt(MAX_COMBO_ROWS, this.getMaxComboRows());
         preferences.putInt(SHOW_TOOL_TIP_TIME, this.getToolTipDismissDelay());
         try {
             preferences.sync();
@@ -273,6 +272,9 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
      * @return the currently selected font size
      */
     public int getFontSize() {
+        if (fontSize == 0) {
+            return defaultFontSize;
+        }
         return fontSize;
     }
 
@@ -298,7 +300,7 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
 
     /**
      * Get the default font size for the current Look and Feel.
-     * 
+     *
      * @return the default font size
      */
     public int getDefaultFontSize() {
@@ -366,7 +368,7 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
 
     /**
      * Get the time a tooltip is displayed before being dismissed.
-     * 
+     *
      * @return the delay in seconds
      */
     public int getToolTipDismissDelay() {
@@ -422,6 +424,21 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
     }
 
     /**
+     * @return the number of combo box rows to be displayed.
+     */
+    public int getMaxComboRows() {
+        return maxComboRows;
+    }
+
+    /**
+     * Set a new value for the number of combo box rows to be displayed.
+     * @param maxRows The new value, zero for no limit
+     */
+    public void setMaxComboRows(int maxRows) {
+        maxComboRows = maxRows;
+    }
+
+    /**
      * @return the editorUseOldLocSize value
      */
     public boolean isEditorUseOldLocSize() {
@@ -435,6 +452,23 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
         boolean oldEditorUseOldLocSize = this.editorUseOldLocSize;
         this.editorUseOldLocSize = editorUseOldLocSize;
         firePropertyChange(EDITOR_USE_OLD_LOC_SIZE, oldEditorUseOldLocSize, editorUseOldLocSize);
+    }
+
+    /**
+     * JFileChooser Type
+     * @return 0 default, 1 List 2 Detail
+     */
+    public int getJFileChooserFormat() {
+        return jFileChooserFormat;
+    }
+
+    /**
+     * @param jFileChooserFormat the JFileChooser 0 default, 1 list, 2 detail
+     */
+    public void setJFileChooserFormat( int jFileChooserFormat) {
+        int oldjFileChooserFormat = this.jFileChooserFormat;
+        this.jFileChooserFormat = jFileChooserFormat;
+        firePropertyChange(JFILECHOOSER_FORMAT, oldjFileChooserFormat, jFileChooserFormat);
     }
 
     /**
@@ -568,9 +602,11 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
      * @param dirty true if preferences need to be saved
      */
     private void setDirty(boolean dirty) {
-        boolean oldDirty = this.dirty;
-        this.dirty = dirty;
-        super.firePropertyChange(PROP_DIRTY, oldDirty, dirty);
+        if (this.initialized) {
+            boolean oldDirty = this.dirty;
+            this.dirty = dirty;
+            super.firePropertyChange(PROP_DIRTY, oldDirty, dirty);
+        }
     }
 
     /**

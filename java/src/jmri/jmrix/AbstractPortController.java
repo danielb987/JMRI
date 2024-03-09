@@ -3,13 +3,12 @@ package jmri.jmrix;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.SystemConnectionMemo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provide an abstract base for *PortController classes.
@@ -210,9 +209,19 @@ abstract public class AbstractPortController implements PortAdapter {
     }
 
 
+    @Override
     public boolean isOptionTypeText(String option) {
         if (options.containsKey(option)) {
             return options.get(option).getType() == Option.Type.TEXT;
+        }
+        log.error("did not find option {} for type", option);
+        return false;
+    }
+    
+    @Override
+    public boolean isOptionTypePassword(String option) {
+        if (options.containsKey(option)) {
+            return options.get(option).getType() == Option.Type.PASSWORD;
         }
         log.error("did not find option {} for type", option);
         return false;
@@ -242,7 +251,8 @@ abstract public class AbstractPortController implements PortAdapter {
 
         public enum Type {
             JCOMBOBOX,
-            TEXT
+            TEXT,
+            PASSWORD
         }
         
         String currentValue = null;
@@ -430,7 +440,9 @@ abstract public class AbstractPortController implements PortAdapter {
      * @param retryNum Reconnection attempt number.
      */
     protected void reconnectFromLoop(int retryNum){}
-    
+
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification="I18N of Info Message")
     private class ReconnectWait extends Thread {
         @Override
         public void run() {
@@ -546,12 +558,12 @@ abstract public class AbstractPortController implements PortAdapter {
      * Service method to purge a stream of initial contents
      * while opening the connection.
      * @param serialStream input data
-     * @throws java.io.IOException from underlying operations
+     * @throws IOException if the stream is e.g. closed due to failure to open the port completely
      */
      @SuppressFBWarnings(value = "SR_NOT_CHECKED", justification = "skipping all, don't care what skip() returns")
-     protected void purgeStream(@Nonnull java.io.InputStream serialStream) throws java.io.IOException {
+     protected void purgeStream(@Nonnull java.io.InputStream serialStream) throws IOException {
         int count = serialStream.available();
-         log.debug("input stream shows {} bytes available", count);
+        log.debug("input stream shows {} bytes available", count);
         while (count > 0) {
             serialStream.skip(count);
             count = serialStream.available();
@@ -595,6 +607,6 @@ abstract public class AbstractPortController implements PortAdapter {
         this.connectionMemo = connectionMemo;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(AbstractPortController.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractPortController.class);
 
 }

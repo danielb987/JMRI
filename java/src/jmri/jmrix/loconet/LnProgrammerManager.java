@@ -6,6 +6,8 @@ import jmri.AddressedProgrammer;
 import jmri.ProgrammingMode;
 import jmri.managers.DefaultProgrammerManager;
 
+import javax.annotation.Nonnull;
+
 /**
  * Extend DefaultProgrammerManager to provide programmers on LocoNet.
  *
@@ -51,7 +53,7 @@ public class LnProgrammerManager extends DefaultProgrammerManager {
     /**
      * Programming in Ops mode via the LocoNet cable.
      */
-    static final ProgrammingMode LOCONETOPSBOARD    = new ProgrammingMode("LOCONETOPSBOARD", Bundle.getMessage("LOCONETOPSBOARD"));
+    public static final ProgrammingMode LOCONETOPSBOARD    = new ProgrammingMode("LOCONETOPSBOARD", Bundle.getMessage("LOCONETOPSBOARD"));
 
     /**
      * Programming for LocoNet System Variables using version 1 of the protocol.
@@ -64,6 +66,12 @@ public class LnProgrammerManager extends DefaultProgrammerManager {
     public static final ProgrammingMode LOCONETSV2MODE    = new ProgrammingMode("LOCONETSV2MODE", Bundle.getMessage("LOCONETSV2MODE"));
 
     /**
+     * Programming for Uhlenbrock (LocoNet) LNCV protocol.
+     */
+    public static final ProgrammingMode LOCONETLNCVMODE    = new ProgrammingMode("LOCONETLNCVMODE", Bundle.getMessage("LOCONETLNCVMODE"));
+
+
+    /**
      * Programming via LocoNet messages for Digitrax DS*, PM*, BDL*, SE* boards
      */
     static final ProgrammingMode LOCONETBDOPSWMODE = new ProgrammingMode("LOCONETBDOPSWMODE", Bundle.getMessage("LOCONETBDOPSWMODE"));
@@ -74,15 +82,23 @@ public class LnProgrammerManager extends DefaultProgrammerManager {
     static final ProgrammingMode LOCONETCSOPSWMODE = new ProgrammingMode("LOCONETCSOPSWMODE", Bundle.getMessage("LOCONETCSOPSWMODE"));
 
     /**
+     * Programming via LocoNet messages for Series 7* op switches
+     */
+    static final ProgrammingMode LOCONETBD7OPSWMODE = new ProgrammingMode("LOCONETBD7OPSWMODE", Bundle.getMessage("LOCONETBD7OPSWMODE"));
+
+    /**
      * Types implemented here.
      */
     @Override
+    @Nonnull
     public List<ProgrammingMode> getDefaultModes() {
         List<ProgrammingMode> ret = new ArrayList<ProgrammingMode>();
         ret.add(ProgrammingMode.OPSBYTEMODE);
+        ret.add(LOCONETBD7OPSWMODE);
         ret.add(LOCONETOPSBOARD);
         ret.add(LOCONETSV2MODE);
         ret.add(LOCONETSV1MODE); // they show in the interface in the order listed here
+        ret.add(LOCONETLNCVMODE);
         return ret;
     }
 

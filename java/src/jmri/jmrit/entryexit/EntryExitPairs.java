@@ -13,7 +13,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import jmri.*;
@@ -24,9 +23,7 @@ import jmri.jmrit.display.layoutEditor.LayoutBlockConnectivityTools;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.display.layoutEditor.LayoutEditor;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Implements an Entry Exit based method of setting turnouts, setting up signal
@@ -98,6 +95,7 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
     public final static int FULLINTERLOCK = 0x02;
 
     boolean allocateToDispatcher = false;
+    boolean absSignalMode = false;
 
     public final static int PROMPTUSER = 0x00;
     public final static int AUTOCLEAR = 0x01;
@@ -143,6 +141,14 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
 
     public boolean getDispatcherIntegration() {
         return allocateToDispatcher;
+    }
+
+    public void setAbsSignalMode(boolean absMode) {
+        absSignalMode = absMode;
+    }
+
+    public boolean isAbsSignalMode() {
+        return absSignalMode;
     }
 
     /**
@@ -277,35 +283,6 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
         return getNamedBeanSet().size();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @Nonnull
-    @Deprecated  // will be removed when superclass method is removed due to @Override
-    public List<String> getSystemNameList() {
-        jmri.util.LoggingUtil.deprecationWarning(log, "getSystemNameList");
-        return getEntryExitList();
-    }
-
-    /**
-     * Implemented to support the Conditional combo box name list
-     * @since 4.9.3
-     * @return a list of Destination Point beans
-     */
-    @Override
-    @Nonnull
-    @Deprecated  // will be removed when superclass method is removed due to @Override
-    public List<DestinationPoints> getNamedBeanList() {
-        jmri.util.LoggingUtil.deprecationWarning(log, "getNamedBeanList");
-        List<DestinationPoints> beanList = new ArrayList<>();
-        for (Source e : nxpair.values()) {
-            List<String> uidList = e.getDestinationUniqueId();
-            for (String uid : uidList) {
-                beanList.add(e.getByUniqueId(uid));
-            }
-        }
-        return beanList;
-    }
-
     /**
      * Implemented to support the Conditional combo box name list
      * @since 4.9.3
@@ -434,6 +411,30 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
         }
 
         return total;
+    }
+
+    /**
+     * Set a reversed route between two points.  Special case to support a LogixNG action.
+     * @since 5.5.7
+     * @param nxPair The system or user name of the destination point.
+     */
+    public void setReversedRoute(String nxPair) {
+        DestinationPoints dp = getNamedBean(nxPair);
+        if (dp != null) {
+            String destUUID = dp.getUniqueId();
+            nxpair.forEach((pd, src) -> {
+                for (String srcUUID : src.getDestinationUniqueId()) {
+                    if (destUUID.equals(srcUUID)) {
+                        log.debug("Found the correct reverse route source: src = {}, dest = {}",
+                                pd.getSensor().getDisplayName(), dp.getDestPoint().getSensor().getDisplayName());
+                        refCounter++;
+                        routesToSet.add(new SourceToDest(src, dp, true, refCounter));
+                        processRoutesToSet();
+                        return;
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -747,11 +748,10 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
      * 1) Build a list of affected NX pairs.
      * 2) Check for Conditional references.
      * 3) If no references, do the delete process with user approval.
-     * <p>
      * @since 4.11.2
      * @param sensor The sensor whose pairs should be deleted.
      * @return true if the delete was successful. False if prevented by
-     * Conditional references or user choice.
+     * Conditional/LogixNG references or user choice.
      */
     public boolean deleteNxPair(NamedBean sensor) {
         if (sensor == null) {
@@ -759,8 +759,8 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
             return false;
         }
         createDeletePairList(sensor);
-        if (checkNxPairs()) {
-            // No Conditional references.
+        if (checkNxPairs() && checkLogixNG()) {
+            // No Conditional or LogixNG references.
             if (confirmDeletePairs()) {
                 deleteNxPairs();
                 return true;
@@ -776,25 +776,27 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
      * @param entrySensor The sensor that acts as the entry point.
      * @param exitSensor The sensor that acts as the exit point.
      * @param panel The layout editor panel that contains the entry sensor.
-     * @return true if the delete was successful. False if there are Conditional references.
+     * @return true if the delete was successful. False if there are Conditional/LogixNG references.
      */
     public boolean deleteNxPair(NamedBean entrySensor, NamedBean exitSensor, LayoutEditor panel) {
         if (entrySensor == null || exitSensor == null || panel == null) {
             log.error("deleteNxPair: One or more null inputs");  // NOI18N
             return false;
         }
+
         deletePairList.clear();
         deletePairList.add(new DeletePair(entrySensor, exitSensor, panel));
-        if (checkNxPairs()) {
-            // No Conditional references.
+        if (checkNxPairs() && checkLogixNG()) {
+            // No Conditional or LogixNG references.
             deleteNxPairs();  // Delete with no prompt
             return true;
         }
+
         return false;
     }
 
     /**
-     * Find Logix Conditionals that have Variables or Actions for the affected NX Pairs
+     * Find Logix Conditionals that have Variables or Actions for the affected NX Pairs.
      * If any are found, display a dialog box listing the Conditionals and return false.
      * <p>
      * @since 4.11.2
@@ -843,10 +845,45 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
         for (String ref : conditionalReferences) {
             msg.append("\n    " + ref);  // NOI18N
         }
-        JOptionPane.showMessageDialog(null,
+        JmriJOptionPane.showMessageDialog(null,
                 msg.toString(),
                 Bundle.getMessage("WarningTitle"),  // NOI18N
-                JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.WARNING_MESSAGE);
+
+        return false;
+    }
+
+    /**
+     * Find LogixNG ConditionalNGs that have Expressions or Actions for the affected NX Pairs.
+     * If any are found, display a dialog box listing the details and return false.
+     * <p>
+     * @since 5.5.7
+     * @return true if there are no references.
+     */
+    private boolean checkLogixNG() {
+        List<String> conditionalReferences = new ArrayList<>();
+        for (DeletePair dPair : deletePairList) {
+            if (dPair.dp == null) {
+                continue;
+            }
+            var usage = jmri.jmrit.logixng.util.WhereUsed.whereUsed(dPair.dp);
+            if (!usage.isEmpty()) {
+                conditionalReferences.add(usage);
+            }
+        }
+        if (conditionalReferences.isEmpty()) {
+            return true;
+        }
+
+        conditionalReferences.sort(null);
+        StringBuilder msg = new StringBuilder(Bundle.getMessage("DeleteReferences"));
+        for (String ref : conditionalReferences) {
+            msg.append("\n" + ref);  // NOI18N
+        }
+        JmriJOptionPane.showMessageDialog(null,
+                msg.toString(),
+                Bundle.getMessage("WarningTitle"),  // NOI18N
+                JmriJOptionPane.WARNING_MESSAGE);
 
         return false;
     }
@@ -857,20 +894,20 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
      * @return true if deletion confirmation is Yes.
      */
     private boolean confirmDeletePairs() {
-        if (deletePairList.size() > 0) {
+        if (!deletePairList.isEmpty()) {
             StringBuilder msg = new StringBuilder(Bundle.getMessage("DeletePairs"));  // NOI18N
             for (DeletePair dPair : deletePairList) {
                 if (dPair.dp != null) {
-                    msg.append("\n    " + dPair.dp.getDisplayName());  // NOI18N
+                    msg.append("\n    ").append(dPair.dp.getDisplayName());  // NOI18N
                 }
             }
-            msg.append("\n" + Bundle.getMessage("DeleteContinue"));  // NOI18N
-            int resp = JOptionPane.showConfirmDialog(null,
+            msg.append("\n").append(Bundle.getMessage("DeleteContinue"));  // NOI18N
+            int resp = JmriJOptionPane.showConfirmDialog(null,
                     msg.toString(),
                     Bundle.getMessage("WarningTitle"),  // NOI18N
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
-            if (resp != 0) {
+                    JmriJOptionPane.YES_NO_OPTION,
+                    JmriJOptionPane.QUESTION_MESSAGE);
+            if (resp != JmriJOptionPane.YES_OPTION ) {
                 return false;
             }
         }
@@ -939,7 +976,7 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
      * Rebuild the delete pair list based on the supplied sensor.
      * Find all of the NX pairs that use this sensor as either a source or
      * destination.  They will be candidates for deletion.
-     * <p>
+     *
      * @since 4.11.2
      * @param sensor The sensor being deleted,
      */
@@ -1400,24 +1437,18 @@ public class EntryExitPairs extends VetoableChangeSupport implements Manager<Des
 
     /** {@inheritDoc} */
     @Override
-    @Deprecated
-    @SuppressWarnings("deprecation")
     public void addDataListener(ManagerDataListener<DestinationPoints> e) {
         if (e != null) listeners.add(e);
     }
 
     /** {@inheritDoc} */
     @Override
-    @Deprecated
-    @SuppressWarnings("deprecation")
     public void removeDataListener(ManagerDataListener<DestinationPoints> e) {
         if (e != null) listeners.remove(e);
     }
 
-    @SuppressWarnings("deprecation")
     final List<ManagerDataListener<DestinationPoints>> listeners = new ArrayList<>();
 
-    // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(EntryExitPairs.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EntryExitPairs.class);
 
 }

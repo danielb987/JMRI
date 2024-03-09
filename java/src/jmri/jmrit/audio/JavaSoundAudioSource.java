@@ -102,7 +102,7 @@ public class JavaSoundAudioSource extends AbstractAudioSource {
         return true;
     }
 
-    @SuppressWarnings("SleepWhileInLoop")
+//    @SuppressWarnings("SleepWhileInLoop")
     @Override
     boolean bindAudioBuffer(AudioBuffer audioBuffer) {
         // First check we've been initialised
@@ -322,7 +322,6 @@ public class JavaSoundAudioSource extends AbstractAudioSource {
         if (log.isDebugEnabled()) {
             log.debug("Cleanup JavaSoundAudioSource ({})", this.getSystemName());
         }
-        this.dispose();
     }
 
     /**

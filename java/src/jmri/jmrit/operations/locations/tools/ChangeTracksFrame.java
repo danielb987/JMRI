@@ -2,22 +2,17 @@ package jmri.jmrit.operations.locations.tools;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.text.MessageFormat;
-import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import jmri.jmrit.operations.OperationsFrame;
-import jmri.jmrit.operations.OperationsXml;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationEditFrame;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.setup.Control;
+
+import javax.swing.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jmri.jmrit.operations.OperationsFrame;
+import jmri.jmrit.operations.OperationsXml;
+import jmri.jmrit.operations.locations.*;
+import jmri.jmrit.operations.setup.Control;
+import jmri.jmrit.operations.setup.Setup;
 
 /**
  * Action to change all of tracks at a location to the same type of track. Track
@@ -57,8 +52,7 @@ class ChangeTracksFrame extends OperationsFrame {
         // row 1a
         JPanel p1 = new JPanel();
         p1.setLayout(new GridBagLayout());
-        p1.setBorder(BorderFactory.createTitledBorder(MessageFormat.format(Bundle.getMessage("TrackType"),
-                new Object[]{_location.getName()})));
+        p1.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TrackType", _location.getName())));
         addItem(p1, spurRadioButton, 0, 0);
         addItem(p1, yardRadioButton, 1, 0);
         addItem(p1, interchangeRadioButton, 2, 0);
@@ -101,20 +95,15 @@ class ChangeTracksFrame extends OperationsFrame {
             } else if (stagingRadioButton.isSelected()) {
                 changeTracks(Track.STAGING);
             }
+            if (Setup.isCloseWindowOnSaveEnabled()) {
+                dispose();
+            }
         }
     }
 
     private void changeTracks(String type) {
         log.debug("change tracks to {}", type);
-        List<Track> tracks = _location.getTracksByNameList(null);
-        for (Track track : tracks) {
-            track.setTrackType(type);
-        }
-        if (type.equals(Track.STAGING)) {
-            _location.setLocationOps(Location.STAGING);
-        } else {
-            _location.setLocationOps(Location.NORMAL);
-        }
+        _location.changeTrackType(type);
         OperationsXml.save();
         _lef.dispose();
         dispose();

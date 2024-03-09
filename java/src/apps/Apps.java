@@ -1,5 +1,10 @@
 package apps;
 
+import apps.gui3.tabbedpreferences.TabbedPreferences;
+import apps.gui3.tabbedpreferences.TabbedPreferencesAction;
+import apps.plaf.macosx.Application;
+import apps.util.Log4JUtil;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.awt.*;
@@ -8,44 +13,25 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.EventObject;
-import java.util.Locale;
-
+import java.net.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 
 import jmri.*;
-
-import apps.jmrit.DebugMenu;
-
-import jmri.jmrit.ToolsMenu;
-import jmri.jmrit.decoderdefn.DecoderIndexFile;
-import jmri.jmrit.decoderdefn.PrintDecoderListAction;
-import jmri.jmrit.display.PanelMenu;
 import jmri.jmrit.jython.*;
-import jmri.jmrit.operations.OperationsMenu;
+import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.LogixNGPreferences;
 import jmri.jmrit.revhistory.FileHistory;
-import jmri.jmrit.roster.swing.RosterMenu;
 import jmri.jmrit.throttle.ThrottleFrame;
-import jmri.jmrit.withrottle.WiThrottleCreationAction;
 import jmri.jmrix.*;
-import apps.plaf.macosx.Application;
 import jmri.profile.*;
 import jmri.script.JmriScriptEngineManager;
 import jmri.util.*;
 import jmri.util.iharder.dnd.URIDrop;
 import jmri.util.prefs.JmriPreferencesActionFactory;
-import jmri.util.swing.JFrameInterface;
-import jmri.util.swing.WindowInterface;
-import jmri.util.usb.RailDriverMenuItem;
-import jmri.web.server.WebServerAction;
-
-import apps.gui3.tabbedpreferences.TabbedPreferences;
-import apps.gui3.tabbedpreferences.TabbedPreferencesAction;
-import apps.util.Log4JUtil;
+import jmri.util.swing.*;
 
 /**
  * Base class for JMRI applications.
@@ -110,16 +96,16 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
                 if (ProfileManager.getDefault().migrateToProfiles(configFilename)) { // migration or first use
                     // notify user of change only if migration occurred
                     // TODO: a real migration message
-                    JOptionPane.showMessageDialog(sp,
+                    JmriJOptionPane.showMessageDialog(sp,
                             Bundle.getMessage("ConfigMigratedToProfile"),
                             jmri.Application.getApplicationName(),
-                            JOptionPane.INFORMATION_MESSAGE);
+                            JmriJOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (IOException | IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(sp,
+                JmriJOptionPane.showMessageDialog(sp,
                         ex.getLocalizedMessage(),
                         jmri.Application.getApplicationName(),
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 log.error("Exception migrating configuration to profiles: {}",ex.getMessage());
             }
         }
@@ -151,7 +137,8 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         ConfigureManager cm = InstanceManager.setDefault(ConfigureManager.class, new AppsConfigurationManager());
 
         // record startup
-        InstanceManager.getDefault(FileHistory.class).addOperation("app", nameString, null);
+        String appString = String.format("%s (v%s)", jmri.Application.getApplicationName(), Version.getCanonicalVersion());
+        InstanceManager.getDefault(FileHistory.class).addOperation("app", appString, null);
 
         // Install abstractActionModel
         InstanceManager.store(new apps.CreateButtonModel(), apps.CreateButtonModel.class);
@@ -229,7 +216,7 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
             try {
                 Thread.sleep(sleep);
             } catch (InterruptedException e) {
-                log.error("", e);
+                log.error("uexpected ", e);
             }
         }
 
@@ -245,7 +232,7 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                log.error("",e);
+                log.error("Unexpected:",e);
             }
         }
         // Now load deferred config items
@@ -291,10 +278,10 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
             log.info("New preferences format will be used after JMRI is restarted.");
             if (!GraphicsEnvironment.isHeadless()) {
                 Profile profile = ProfileManager.getDefault().getActiveProfile();
-                JOptionPane.showMessageDialog(sp,
+                JmriJOptionPane.showMessageDialog(sp,
                         Bundle.getMessage("SingleConfigMigratedToSharedConfig", profile),
                         jmri.Application.getApplicationName(),
-                        JOptionPane.INFORMATION_MESSAGE);
+                        JmriJOptionPane.INFORMATION_MESSAGE);
             }
         }
 
@@ -304,24 +291,25 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         InstanceManager.getDefault(jmri.LogixManager.class);
         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class);
 
-        // Initialise the decoderindex file instance within a seperate thread to help improve first use perfomance
-        new Thread(() -> {
-            try {
-                InstanceManager.getDefault(DecoderIndexFile.class);
-            } catch (RuntimeException ex) {
-                log.error("Error in trying to initialize decoder index file {}", ex.getMessage());
-            }
-        }, "initialize decoder index").start();
-
+        // preload script engines if requested
         if (Boolean.getBoolean("org.jmri.python.preload")) {
             new Thread(() -> {
                 try {
                     JmriScriptEngineManager.getDefault().initializeAllEngines();
                 } catch (RuntimeException ex) {
-                    log.error("Error in trying to initialize python interpreter {}", ex.getMessage());
+                    log.error("Error in trying to initialize script interpreters {}", ex.getMessage());
                 }
             }, "initialize python interpreter").start();
         }
+
+        // kick off update of decoder index if needed
+        jmri.util.ThreadingUtil.runOnGUI(() -> {
+            try {
+                jmri.jmrit.decoderdefn.DecoderIndexFile.updateIndexIfNeeded();
+            } catch (org.jdom2.JDOMException| java.io.IOException e) {
+                log.error("Exception trying to pre-load decoderIndex", e);
+            }
+        });
 
         // if the configuration didn't complete OK, pop the prefs frame and help
         log.debug("Config OK? {}, deferred config OK? {}", configOK, configDeferredLoadOK);
@@ -339,7 +327,7 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
 
         Toolkit.getDefaultToolkit().addAWTEventListener((AWTEvent e) -> {
             if (e instanceof MouseEvent) {
-                MouseEvent me = (MouseEvent) e;
+                JmriMouseEvent me = new JmriMouseEvent((MouseEvent) e);
                 if (me.isPopupTrigger() && me.getComponent() instanceof JTextComponent) {
                     final JTextComponent component1 = (JTextComponent) me.getComponent();
                     final JPopupMenu menu = new JPopupMenu();
@@ -364,6 +352,13 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         // do final activation
         InstanceManager.getDefault(jmri.LogixManager.class).activateAllLogixs();
         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).initializeLayoutBlockPaths();
+
+        LogixNG_Manager logixNG_Manager = InstanceManager.getDefault(LogixNG_Manager.class);
+        logixNG_Manager.setupAllLogixNGs();
+        if (InstanceManager.getDefault(LogixNGPreferences.class).getStartLogixNGOnStartup()
+                && InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).isStartLogixNGsOnLoad()) {
+            logixNG_Manager.activateAllLogixNGs();
+        }
 
         log.debug("End constructor");
     }
@@ -406,9 +401,9 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
     protected void setJynstrumentSpace() {
         _jynstrumentSpace = new JPanel();
         _jynstrumentSpace.setLayout(new FlowLayout());
-        new URIDrop(_jynstrumentSpace, (java.net.URI[] uris) -> {
-            for (java.net.URI uri : uris) {
-                ynstrument(uri.getPath());
+        new URIDrop(_jynstrumentSpace, (URI[] uris) -> {
+            for (URI uri : uris ) {
+                ynstrument(new File(uri).getPath());
             }
         });
     }
@@ -434,54 +429,11 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
      * @param wi      WindowInterface where this menu bar will appear
      */
     protected void createMenus(JMenuBar menuBar, WindowInterface wi) {
-        // the debugging statements in the following are
-        // for testing startup time
-        log.debug("start building menus");
-
         if (SystemType.isMacOSX()) {
             Application.getApplication().setQuitHandler((EventObject eo) -> handleQuit());
         }
 
-        fileMenu(menuBar, wi);
-        editMenu(menuBar, wi);
-        toolsMenu(menuBar, wi);
-        rosterMenu(menuBar, wi);
-        panelMenu(menuBar, wi);
-        // check to see if operations in main menu
-        if (jmri.jmrit.operations.setup.Setup.isMainMenuEnabled()) {
-            operationsMenu(menuBar, wi);
-        }
-        systemsMenu(menuBar, wi);
-        debugMenu(menuBar, wi);
-        menuBar.add(new WindowMenu(wi));
-        helpMenu(menuBar, wi);
-        log.debug("end building menus");
-    }
-
-    /**
-     * Create default File menu
-     *
-     * @param menuBar Menu bar to be populated
-     * @param wi      WindowInterface where this menu will appear as part of the
-     *                menu bar
-     */
-    protected void fileMenu(JMenuBar menuBar, WindowInterface wi) {
-        JMenu fileMenu = new JMenu(Bundle.getMessage("MenuFile"));
-        menuBar.add(fileMenu);
-
-        fileMenu.add(new PrintDecoderListAction(Bundle.getMessage("MenuPrintDecoderDefinitions"), wi.getFrame(), false));
-        fileMenu.add(new PrintDecoderListAction(Bundle.getMessage("MenuPrintPreviewDecoderDefinitions"), wi.getFrame(), true));
-
-        // Use Mac OS X native Quit if using Aqua look and feel
-        if (!(SystemType.isMacOSX() && UIManager.getLookAndFeel().isNativeLookAndFeel())) {
-            fileMenu.add(new JSeparator());
-            fileMenu.add(new AbstractAction(Bundle.getMessage("MenuItemQuit")) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    handleQuit();
-                }
-            });
-        }
+        AppsMainMenu.createMenus(menuBar, wi, this, mainWindowHelpID());
     }
 
     /**
@@ -504,144 +456,6 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
      */
     protected void setPrefsFrameHelp(JmriJFrame frame, String location) {
         frame.addHelpMenu(location, true);
-    }
-
-    protected void editMenu(JMenuBar menuBar, WindowInterface wi) {
-
-        JMenu editMenu = new JMenu(Bundle.getMessage("MenuEdit"));
-        menuBar.add(editMenu);
-
-        // cut, copy, paste
-        AbstractAction a;
-        a = new DefaultEditorKit.CutAction();
-        a.putValue(Action.NAME, Bundle.getMessage("MenuItemCut"));
-        editMenu.add(a);
-        a = new DefaultEditorKit.CopyAction();
-        a.putValue(Action.NAME, Bundle.getMessage("MenuItemCopy"));
-        editMenu.add(a);
-        a = new DefaultEditorKit.PasteAction();
-        a.putValue(Action.NAME, Bundle.getMessage("MenuItemPaste"));
-        editMenu.add(a);
-
-        // Put prefs in Apple's prefered area on Mac OS X
-        if (SystemType.isMacOSX()) {
-            Application.getApplication().setPreferencesHandler((EventObject eo) -> {
-                doPreferences();
-            });
-        }
-        // Include prefs in Edit menu if not on Mac OS X or not using Aqua Look and Feel
-        if (!SystemType.isMacOSX() || !UIManager.getLookAndFeel().isNativeLookAndFeel()) {
-            editMenu.addSeparator();
-            if (prefsAction == null) {
-                prefsAction = new TabbedPreferencesAction();
-            }
-            editMenu.add(prefsAction);
-        }
-
-    }
-
-    protected void toolsMenu(JMenuBar menuBar, WindowInterface wi) {
-        menuBar.add(new ToolsMenu(Bundle.getMessage("MenuTools")));
-    }
-
-    protected void operationsMenu(JMenuBar menuBar, WindowInterface wi) {
-        menuBar.add(new OperationsMenu());
-    }
-
-    protected void rosterMenu(JMenuBar menuBar, WindowInterface wi) {
-        menuBar.add(new RosterMenu(Bundle.getMessage("MenuRoster"), RosterMenu.MAINMENU, this));
-    }
-
-    protected void panelMenu(JMenuBar menuBar, WindowInterface wi) {
-        menuBar.add(new PanelMenu());
-    }
-
-    /**
-     * Show only active systems in the menu bar.
-     *
-     * @param menuBar the menu bar to add systems to
-     * @param wi      the containing WindowInterface
-     */
-    protected void systemsMenu(JMenuBar menuBar, WindowInterface wi) {
-        ActiveSystemsMenu.addItems(menuBar);
-    }
-
-    protected void debugMenu(JMenuBar menuBar, WindowInterface wi) {
-        JMenu d = new DebugMenu(this);
-
-        // also add some tentative items from jmrix
-        d.add(new JSeparator());
-        d.add(new jmri.jmrix.pricom.PricomMenu());
-        d.add(new JSeparator());
-
-        d.add(new jmri.jmrix.jinput.treecontrol.TreeAction());
-        d.add(new jmri.jmrix.libusb.UsbViewAction());
-
-        d.add(new JSeparator());
-
-        d.add(new RailDriverMenuItem());
-
-        try {
-            d.add(new RunJythonScript(Bundle.getMessage("MenuRailDriverThrottle"), new File(FileUtil.findURL("jython/RailDriver.py").toURI())));
-        } catch (URISyntaxException | NullPointerException ex) {
-            log.error("Unable to load RailDriver Throttle", ex);
-            JMenuItem i = new JMenuItem(Bundle.getMessage("MenuRailDriverThrottle"));
-            i.setEnabled(false);
-            d.add(i);
-        }
-
-        // also add some tentative items from webserver
-        d.add(new JSeparator());
-        d.add(new WebServerAction());
-
-        d.add(new JSeparator());
-        d.add(new WiThrottleCreationAction());
-
-        d.add(new JSeparator());
-        d.add(new apps.TrainCrew.InstallFromURL());
-
-        // add final to menu bar
-        menuBar.add(d);
-
-    }
-
-    /**
-     * Add a script menu to a window menu bar.
-     *
-     * @param menuBar the menu bar to add the script menu to
-     * @param wi      the window interface containing menuBar
-     * @deprecated since 4.17.5 without direct replacement; appears to have been
-     * empty method since 1.2.3
-     */
-    @Deprecated
-    protected void scriptMenu(JMenuBar menuBar, WindowInterface wi) {
-        // temporarily remove Scripts menu; note that "Run Script"
-        // has been added to the Panels menu
-        // JMenu menu = new JMenu("Scripts");
-        // menuBar.add(menu);
-    }
-
-    protected void developmentMenu(JMenuBar menuBar, WindowInterface wi) {
-        JMenu devMenu = new JMenu("Development");
-        menuBar.add(devMenu);
-        devMenu.add(new jmri.jmrit.symbolicprog.autospeed.AutoSpeedAction("Auto-speed tool"));
-        devMenu.add(new JSeparator());
-        devMenu.add(new jmri.jmrit.automat.SampleAutomatonAction("Sample automaton 1"));
-        devMenu.add(new jmri.jmrit.automat.SampleAutomaton2Action("Sample automaton 2"));
-        devMenu.add(new jmri.jmrit.automat.SampleAutomaton3Action("Sample automaton 3"));
-        //devMenu.add(new JSeparator());
-        //devMenu.add(new jmri.jmrix.serialsensor.SerialSensorAction("Serial port sensors"));
-    }
-
-    protected void helpMenu(JMenuBar menuBar, WindowInterface wi) {
-        // create menu and standard items
-        JMenu helpMenu = HelpUtil.makeHelpMenu(mainWindowHelpID(), true);
-
-        // tell help to use default browser for external types
-        HelpUtil.setContentViewerUI("jmri.util.ExternalLinkContentViewerUI");
-
-        // use as main help menu
-        menuBar.add(helpMenu);
     }
 
     /**
@@ -804,11 +618,11 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
     @Override
     public void windowClosing(WindowEvent e) {
         if (!InstanceManager.getDefault(ShutDownManager.class).isShuttingDown()
-                && JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
+                && JmriJOptionPane.YES_OPTION == JmriJOptionPane.showConfirmDialog(
                         null,
                         Bundle.getMessage("MessageLongCloseWarning"),
                         Bundle.getMessage("MessageShortCloseWarning"),
-                        JOptionPane.YES_NO_OPTION)) {
+                        JmriJOptionPane.YES_NO_OPTION)) {
             handleQuit();
         }
         // if get here, didn't quit, so don't close window
@@ -847,7 +661,7 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
                 log.warn("JMRI property {} already set to {}, skipping reset to {}", key, current, value);
             }
         } catch (RuntimeException e) {
-            log.error("Unable to set JMRI property {} to {} due to execption {}", key, value, e);
+            log.error("Unable to set JMRI property {} to {} due to exception", key, value, e);
         }
     }
 
@@ -889,8 +703,10 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
                             and the if the debugFired hasn't been set, this allows us to ensure that we don't
                             miss the user pressing F8, while we are checking*/
                             debugmsg = true;
-                            if (e.getID() == KeyEvent.KEY_PRESSED && e instanceof KeyEvent && ((KeyEvent) e).getKeyCode() == 119) {
+                            if (e.getID() == KeyEvent.KEY_PRESSED && e instanceof KeyEvent && ((KeyEvent) e).getKeyCode() == 119) {     // F8
                                 startupDebug();
+                            } else if (e.getID() == KeyEvent.KEY_PRESSED && e instanceof KeyEvent && ((KeyEvent) e).getKeyCode() == 120) {  // F9
+                                InstanceManager.getDefault(LogixNG_Manager.class).startLogixNGsOnLoad(false);
                             } else {
                                 debugmsg = false;
                             }
@@ -917,10 +733,14 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
     }
 
     static protected JPanel splashDebugMsg() {
-        JLabel panelLabel = new JLabel(Bundle.getMessage("PressF8ToDebug"));
-        panelLabel.setFont(panelLabel.getFont().deriveFont(9f));
+        JLabel panelLabelDisableLogix = new JLabel(Bundle.getMessage("PressF8ToDebug"));
+        panelLabelDisableLogix.setFont(panelLabelDisableLogix.getFont().deriveFont(9f));
+        JLabel panelLabelDisableLogixNG = new JLabel(Bundle.getMessage("PressF9ToInactivateLogixNG"));
+        panelLabelDisableLogixNG.setFont(panelLabelDisableLogix.getFont().deriveFont(9f));
         JPanel panel = new JPanel();
-        panel.add(panelLabel);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.add(panelLabelDisableLogix);
+        panel.add(panelLabelDisableLogixNG);
         return panel;
     }
 
@@ -930,37 +750,37 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
 
         Object[] options = {"Disable", "Enable"};
 
-        int retval = JOptionPane.showOptionDialog(null, "Start JMRI with Logix enabled or disabled?", "Start Up",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int retval = JmriJOptionPane.showOptionDialog(null,
+                Bundle.getMessage("StartJMRIwithLogixEnabledDisabled"),
+                Bundle.getMessage("StartJMRIwithLogixEnabledDisabledTitle"),
+                JmriJOptionPane.DEFAULT_OPTION,
+                JmriJOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (retval != 0) {
             debugmsg = false;
             return;
         }
         InstanceManager.getDefault(jmri.LogixManager.class).setLoadDisabled(true);
-        log.info("Requested loading with Logixs disabled.");
+        InstanceManager.getDefault(LogixNG_Manager.class).setLoadDisabled(true);
+        log.info("Requested loading with Logixs and LogixNGs disabled.");
         debugmsg = false;
     }
 
     /**
      * The application decided to quit, handle that.
      *
-     * @return true if successfully ran all shutdown tasks and can quit; false
-     *         otherwise
+     * @return always returns false
      */
     static public boolean handleQuit() {
-        return AppsBase.handleQuit();
+        AppsBase.handleQuit();
+        return false;
     }
 
     /**
      * The application decided to restart, handle that.
-     *
-     * @return true if successfully ran all shutdown tasks and can quit; false
-     *         otherwise
      */
-    static public boolean handleRestart() {
-        return AppsBase.handleRestart();
+    static public void handleRestart() {
+        AppsBase.handleRestart();
     }
 
     /**
@@ -1008,7 +828,6 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         return configFilename;
     }
 
-    @SuppressWarnings("deprecation") // JmriPlugin.start(...)
     static protected void createFrame(Apps containedPane, JmriJFrame frame) {
         // create the main frame and menus
         // Create a WindowInterface object based on the passed-in Frame
@@ -1020,9 +839,6 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
         containedPane.createMenus(containedPane.menuBar, wi);
         // connect Help target now that globalHelpBroker has been instantiated
         containedPane.attachHelp();
-
-        // invoke plugin, if any
-        JmriPlugin.start(frame, containedPane.menuBar);
 
         frame.setJMenuBar(containedPane.menuBar);
         frame.getContentPane().add(containedPane);

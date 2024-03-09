@@ -14,12 +14,9 @@ import javax.swing.border.Border;
 import javax.swing.table.*;
 
 import jmri.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jmri.jmrit.sensorgroup.SensorGroupFrame;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.table.ButtonEditor;
 import jmri.util.table.ButtonRenderer;
 
@@ -258,14 +255,21 @@ public class ConditionalListEdit extends ConditionalList {
             return;
         }
         if (_curLogix.getSystemName().equals(SensorGroupFrame.logixSysName)) {
-            JOptionPane.showMessageDialog(_editLogixFrame,
+            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Warn8", SensorGroupFrame.logixUserName, SensorGroupFrame.logixSysName),
                     Bundle.getMessage("WarningTitle"), // NOI18N
-                    JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.WARNING_MESSAGE);
             return;
         }
         _curConditional = makeNewConditional(_curLogix);
         makeEditConditionalWindow();
+    }
+
+    @Override
+    void updateConditionalTableModel() {
+        log.debug("updateConditionalTableModel");
+        _numConditionals = _curLogix.getNumConditionals();
+        conditionalTableModel.fireTableRowsInserted(_numConditionals, _numConditionals);
     }
 
     /**
@@ -363,10 +367,10 @@ public class ConditionalListEdit extends ConditionalList {
                 if (p != null) {
                     // Logix with this user name already exists
                     log.error("Failure to update Logix with Duplicate User Name: {}", uName);
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                    JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Error6"),
                             Bundle.getMessage("ErrorTitle"), // NOI18N
-                            JOptionPane.ERROR_MESSAGE);
+                            JmriJOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -428,19 +432,19 @@ public class ConditionalListEdit extends ConditionalList {
             loadReferenceNames(_conditionalFrame._variableList, _oldTargetNames);
             String[] msgs = _curLogix.deleteConditional(sName);
             if (msgs != null) {
-                JOptionPane.showMessageDialog(_editLogixFrame,
+                JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         Bundle.getMessage("Error11", (Object[]) msgs), // NOI18N
                         Bundle.getMessage("ErrorTitle"),
-                        JOptionPane.ERROR_MESSAGE);  // NOI18N
+                        JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
             }
             conditionalTableModel.fireTableRowsDeleted(_conditionalRowNumber,
                     _conditionalRowNumber);
             if (_numConditionals < 1 && !_suppressReminder) {
                 // warning message - last Conditional deleted
-                JOptionPane.showMessageDialog(_editLogixFrame,
+                JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         Bundle.getMessage("Warn1"),
                         Bundle.getMessage("WarningTitle"), // NOI18N
-                        JOptionPane.WARNING_MESSAGE);
+                        JmriJOptionPane.WARNING_MESSAGE);
             }
         }
         _newConditional = false;
@@ -461,10 +465,10 @@ public class ConditionalListEdit extends ConditionalList {
         if (_conditionalFrame != null) {
             if (_conditionalFrame._dataChanged) {
                 // Already editing a Conditional, ask for completion of that edit
-                JOptionPane.showMessageDialog(_conditionalFrame,
+                JmriJOptionPane.showMessageDialog(_conditionalFrame,
                         Bundle.getMessage("Error34", _curConditional.getSystemName()), // NOI18N
                         Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return true;
             } else {
                 _conditionalFrame.cancelConditionalPressed();
@@ -498,13 +502,13 @@ public class ConditionalListEdit extends ConditionalList {
     /**
      * Make the bottom panel for _conditionalFrame to hold buttons for
      * Update/Save, Cancel, Delete/FullEdit
-     * 
+     *
      * @return the panel
      */
     @Override
     JPanel makeBottomPanel() {
         JPanel panel = new JPanel();
-        
+
         JButton updateButton = new JButton(Bundle.getMessage("ButtonUpdate"));  // NOI18N
         panel.add(updateButton);
         updateButton.addActionListener(new ActionListener() {
@@ -558,10 +562,10 @@ public class ConditionalListEdit extends ConditionalList {
             if (p != null) {
                 // Conditional with this user name already exists
                 log.error("Failure to update Conditional with Duplicate User Name: {}", uName);
-                JOptionPane.showMessageDialog(_conditionalFrame,
+                JmriJOptionPane.showMessageDialog(_conditionalFrame,
                         Bundle.getMessage("Error10"),    // NOI18N
                         Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } // else return false;
@@ -768,10 +772,10 @@ public class ConditionalListEdit extends ConditionalList {
                 if (_inReorderMode) {
                     swapConditional(row);
                 } else if (_curLogix.getSystemName().equals(SensorGroupFrame.logixSysName)) {
-                    JOptionPane.showMessageDialog(_conditionalFrame,
+                    JmriJOptionPane.showMessageDialog(_conditionalFrame,
                             Bundle.getMessage("Warn8", SensorGroupFrame.logixUserName, SensorGroupFrame.logixSysName),
                             Bundle.getMessage("WarningTitle"),
-                            JOptionPane.WARNING_MESSAGE);  // NOI18N
+                            JmriJOptionPane.WARNING_MESSAGE);  // NOI18N
                 } else {
                     // Use separate Runnable so window is created on top
                     class WindowMaker implements Runnable {
@@ -838,5 +842,6 @@ public class ConditionalListEdit extends ConditionalList {
         return ConditionalListEdit.class.getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ConditionalListEdit.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConditionalListEdit.class);
+
 }

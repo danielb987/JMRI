@@ -1,21 +1,14 @@
 package jmri.jmrix.nce.simulator;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
+import java.util.Arrays;
 
-import jmri.jmrix.nce.NceCmdStationMemory;
-import jmri.jmrix.nce.NceMessage;
-import jmri.jmrix.nce.NcePortController;
-import jmri.jmrix.nce.NceReply;
-import jmri.jmrix.nce.NceSystemConnectionMemo;
-import jmri.jmrix.nce.NceTrafficController;
-import jmri.jmrix.nce.NceTurnoutMonitor;
-import jmri.util.ImmediatePipedOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jmri.jmrix.nce.*;
+import jmri.jmrix.nce.NceCmdStationMemory;
+import jmri.util.ImmediatePipedOutputStream;
 
 /**
  * The following was copied from the NCE Power Pro System Reference Manual. It
@@ -95,11 +88,12 @@ import org.slf4j.LoggerFactory;
  * @author Bob Jacobsen Copyright (C) 2001, 2002
  * @author Paul Bender, Copyright (C) 2009
  * @author Daniel Boudreau Copyright (C) 2010
+ * @author Ken Cameron Copyright (C) 2023
  */
 public class SimulatorAdapter extends NcePortController implements Runnable {
 
+    NceTrafficController tc;
     // private control members
-    private boolean opened = false;
     private Thread sourceThread;
 
     // streams to share with user class
@@ -123,6 +117,9 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
      */
     public SimulatorAdapter() {
         super(new NceSystemConnectionMemo());
+        option1Name = "Eprom"; // NOI18N
+        options.put(option1Name, new Option(Bundle.getMessage("EpromLabel"), option1Values, false));
+        setOptionState(option1Name, option1Values[1]);
     }
 
     /**
@@ -144,16 +141,21 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
         return null; // indicates OK return
     }
 
+    // Warning: EPROM revision must match option1Values array index value.
+    String[] option1Values = new String[]{"2006 to Mar 1 2007", "Mar 3 2007 to Jan 24 2008", "Feb 2 2008 to Jan 30 2021", "Feb 22 2021 on"}; // NOI18N
+    int epromRevision = -1;
+
     /**
      * Set up all of the other objects to simulate operation with an NCE command
      * station.
      */
     @Override
     public void configure() {
-        NceTrafficController tc = new NceTrafficController();
+        tc = new NceTrafficController();
         this.getSystemConnectionMemo().setNceTrafficController(tc);
         tc.setAdapterMemo(this.getSystemConnectionMemo());
         tc.connectPort(this);
+        tc.setSimulatorRunning(true);
 
         // setting binary mode
         this.getSystemConnectionMemo().configureCommandStation(NceTrafficController.OPTION_2006);
@@ -167,7 +169,13 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
                 | NceTrafficController.CMDS_ALL_SYS);
         tc.setUsbSystem(NceTrafficController.USB_SYSTEM_NONE);
 
+        epromRevision = Arrays.asList(option1Values).indexOf(getOptionState(option1Name));
+        if (epromRevision == -1) {
+            epromRevision = 1;  // default revision if no match
+        }
+
         this.getSystemConnectionMemo().configureManagers();
+        tc.csm = new NceCmdStationMemory();
 
         // start the simulator
         sourceThread = new Thread(this);
@@ -249,22 +257,20 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
             NceMessage m = readMessage();
             if (log.isDebugEnabled()) {
                 StringBuilder buf = new StringBuilder();
-                buf.append("Nce Simulator Thread received message: ");
                 for (int i = 0; i < m.getNumDataElements(); i++) {
-                    buf.append(Integer.toHexString(0xFF & m.getElement(i))).append(" ");
+                    buf.append(Integer.toHexString(0xFF & m.getElement(i)).toUpperCase()).append(" ");
                 }
-                log.debug(buf.toString());
+                log.debug("Nce simulator received message: {}", buf );
             }
             if (m != null) {
                 NceReply r = generateReply(m);
                 writeReply(r);
                 if (log.isDebugEnabled() && r != null) {
                     StringBuilder buf = new StringBuilder();
-                    buf.append("Nce Simulator Thread sent reply: ");
                     for (int i = 0; i < r.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & r.getElement(i))).append(" ");
+                        buf.append(Integer.toHexString(0xFF & r.getElement(i)).toUpperCase()).append(" ");
                     }
-                    log.debug(buf.toString());
+                    log.debug("Nce simulator sent reply: {}", buf.toString());
                 }
             }
         }
@@ -308,8 +314,7 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
     private NceReply generateReply(NceMessage m) {
         NceReply reply = new NceReply(this.getSystemConnectionMemo().getNceTrafficController());
         int command = m.getElement(0);
-        if (command < 0x80) // NOTE: NCE command station does not respond to
-        {
+        if (command < 0x80) {  // NOTE: NCE command station does not respond to
             return null;      // command less than 0x80 (times out)
         }
         if (command > 0xBF) { // Command is out of range
@@ -317,10 +322,10 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
             return reply;
         }
         switch (command) {
-            case NceMessage.SW_REV_CMD:  // Get Eprom revision
-                reply.setElement(0, 0x06);    // Send Eprom revision 6 2 1
+            case NceMessage.SW_REV_CMD:  // Get EPROM revision
+                reply.setElement(0, 0x06);    // Send EPROM revision based on Preference setting
                 reply.setElement(1, 0x02);
-                reply.setElement(2, 0x01);
+                reply.setElement(2, epromRevision);
                 break;
             case NceMessage.READ_CLOCK_CMD: // Read clock
                 reply.setElement(0, 0x12);   // Return fixed time
@@ -419,8 +424,8 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
      * command station memory.  There are three memory blocks that are
      * supported, turnout status, macros, and consists.  The turnout status
      * memory is 256 bytes and starts at memory address 0xEC00. The macro memory
-     * is 256*20 or 5120 bytes and starts at memory address 0xC800. The consist
-     * memory is 256*6 or 1536 bytes and starts at memory address 0xF500.
+     * is 256*20 or 5120 bytes and starts at memory address 0xC800 (PH5 0x6000). The consist
+     * memory is 256*6 or 1536 bytes and starts at memory address 0xF500 (PH5 0x4E00).
      *
      */
     private NceReply readMemory(NceMessage m, NceReply reply, int num) {
@@ -429,7 +434,7 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
             return null;
         }
         int nceMemoryAddress = getNceAddress(m);
-        if (nceMemoryAddress >= NceTurnoutMonitor.CS_ACCY_MEMORY && nceMemoryAddress < NceTurnoutMonitor.CS_ACCY_MEMORY + 256) {
+        if (nceMemoryAddress >= tc.csm.getAccyMemAddr() && nceMemoryAddress < tc.csm.getAccyMemAddr() + tc.csm.getAccyMemSize()) {
             log.debug("Reading turnout memory: {}", Integer.toHexString(nceMemoryAddress));
             int offset = m.getElement(2);
             for (int i = 0; i < num; i++) {
@@ -437,17 +442,18 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
             }
             return reply;
         }
-        if (nceMemoryAddress >= NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM && nceMemoryAddress < NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM + 256 * 6) {
+        if (nceMemoryAddress >= tc.csm.getConsistHeadAddr() && nceMemoryAddress < tc.csm.getConsistHeadAddr() + tc.csm.getConsistMidSize()) {
             log.debug("Reading consist memory: {}", Integer.toHexString(nceMemoryAddress));
-            int offset = nceMemoryAddress - NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM;
+            int offset = nceMemoryAddress - tc.csm.getConsistHeadAddr();
+
             for (int i = 0; i < num; i++) {
                 reply.setElement(i, consistMemory[offset + i]);
             }
             return reply;
         }
-        if (nceMemoryAddress >= NceCmdStationMemory.CabMemorySerial.CS_MACRO_MEM && nceMemoryAddress < NceCmdStationMemory.CabMemorySerial.CS_MACRO_MEM + 256 * 20) {
+        if (nceMemoryAddress >= tc.csm.getMacroAddr() && nceMemoryAddress < tc.csm.getMacroAddr() + tc.csm.getMacroSize()) {
             log.debug("Reading macro memory: {}", Integer.toHexString(nceMemoryAddress));
-            int offset = nceMemoryAddress - NceCmdStationMemory.CabMemorySerial.CS_MACRO_MEM;
+            int offset = nceMemoryAddress - tc.csm.getMacroAddr();
             log.debug("offset: {}", offset);
             for (int i = 0; i < num; i++) {
                 reply.setElement(i, macroMemory[offset + i]);
@@ -470,23 +476,23 @@ public class SimulatorAdapter extends NcePortController implements Runnable {
         if (skipbyte) {
             byteDataBegins++;
         }
-        if (nceMemoryAddress >= NceTurnoutMonitor.CS_ACCY_MEMORY && nceMemoryAddress < NceTurnoutMonitor.CS_ACCY_MEMORY + 256) {
+        if (nceMemoryAddress >= tc.csm.getMacroAddr() && nceMemoryAddress < tc.csm.getMacroAddr() + 256) {
             log.debug("Writing turnout memory: {}", Integer.toHexString(nceMemoryAddress));
             int offset = m.getElement(2);
             for (int i = 0; i < num; i++) {
                 turnoutMemory[offset + i] = (byte) m.getElement(i + byteDataBegins);
             }
         }
-        if (nceMemoryAddress >= NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM && nceMemoryAddress < NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM + 256 * 6) {
+        if (nceMemoryAddress >= tc.csm.getMacroAddr() && nceMemoryAddress < tc.csm.getMacroAddr() + 256 * 6) {
             log.debug("Writing consist memory: {}", Integer.toHexString(nceMemoryAddress));
-            int offset = nceMemoryAddress - NceCmdStationMemory.CabMemorySerial.CS_CONSIST_MEM;
+            int offset = nceMemoryAddress - tc.csm.getMacroAddr();
             for (int i = 0; i < num; i++) {
                 consistMemory[offset + i] = (byte) m.getElement(i + byteDataBegins);
             }
         }
-        if (nceMemoryAddress >= NceCmdStationMemory.CabMemorySerial.CS_MACRO_MEM && nceMemoryAddress < NceCmdStationMemory.CabMemorySerial.CS_MACRO_MEM + 256 * 20) {
+        if (nceMemoryAddress >= tc.csm.getMacroAddr() && nceMemoryAddress < tc.csm.getMacroAddr() + 256 * 20) {
             log.debug("Writing macro memory: {}", Integer.toHexString(nceMemoryAddress));
-            int offset = nceMemoryAddress - NceCmdStationMemory.CabMemorySerial.CS_MACRO_MEM;
+            int offset = nceMemoryAddress - tc.csm.getMacroAddr();
             log.debug("offset: {}", offset);
             for (int i = 0; i < num; i++) {
                 macroMemory[offset + i] = (byte) m.getElement(i + byteDataBegins);

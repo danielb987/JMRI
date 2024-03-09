@@ -7,8 +7,6 @@ import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.locobuffer.LocoBufferAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import purejavacomm.SerialPort;
-import purejavacomm.UnsupportedCommOperationException;
 
 /**
  * Update the code in jmri.jmrix.loconet.locobuffer so that it refers to the
@@ -29,28 +27,18 @@ public class UsbDcs240Adapter extends LocoBufferAdapter {
 
     }
 
+    @Override
+    protected void reportOpen(String portName) {
+        log.info("Connecting USB DCS240 via {} {}", portName, currentSerialPort);
+    }
+
     /**
-     * Sets up the serial port characteristics.  Always uses flow control, which is
-     * not considered a user-settable option.  Sets the DCS240 USB interface for the appropriate
-     * operating mode, based on the selected "command station type".
-     *
-     * @param activeSerialPort  the port to be configured
+     * Always on flow control
      */
     @Override
-    protected void setSerialPort(SerialPort activeSerialPort) throws UnsupportedCommOperationException {
-        // find the baud rate value, configure comm options
-        int baud = currentBaudNumber(mBaudRate);
-        activeSerialPort.setSerialPortParams(baud, SerialPort.DATABITS_8,
-                SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-
-        // configure flow control to always on
-        int flow = SerialPort.FLOWCONTROL_RTSCTS_OUT;
-        if (getOptionState(option1Name).equals(validOption1[1])) {
-            flow = SerialPort.FLOWCONTROL_NONE;
-        }
-        configureLeadsAndFlowControl(activeSerialPort, flow);
-
-        log.info("USB DCS240 adapter{}{} RTSCTS_OUT=" + SerialPort.FLOWCONTROL_RTSCTS_OUT + " RTSCTS_IN=" + SerialPort.FLOWCONTROL_RTSCTS_IN, activeSerialPort.getFlowControlMode() == SerialPort.FLOWCONTROL_RTSCTS_OUT ? " set hardware flow control, mode=" : " set no flow control, mode=", activeSerialPort.getFlowControlMode());
+    protected void setLocalFlowControl() {
+        FlowControl flow = FlowControl.RTSCTS;
+        setFlowControl(currentSerialPort, flow);
     }
 
     /**
@@ -68,10 +56,10 @@ public class UsbDcs240Adapter extends LocoBufferAdapter {
             // connect to a packetizing traffic controller
             // that does echoing
             //
-            // Note - already created a LocoNetSystemConnectionMemo, so re-use 
+            // Note - already created a LocoNetSystemConnectionMemo, so re-use
             // it when creating a PR2 Packetizer.  (If create a new one, will
             // end up with two "LocoNet" menus...)
-            jmri.jmrix.loconet.pr2.LnPr2Packetizer packets = 
+            jmri.jmrix.loconet.pr2.LnPr2Packetizer packets =
                     new jmri.jmrix.loconet.pr2.LnPr2Packetizer(this.getSystemConnectionMemo());
             packets.connectPort(this);
 
@@ -79,7 +67,7 @@ public class UsbDcs240Adapter extends LocoBufferAdapter {
             this.getSystemConnectionMemo().setLnTrafficController(packets);
             // do the common manager config
             this.getSystemConnectionMemo().configureCommandStation(commandStationType,
-                    mTurnoutNoRetry, mTurnoutExtraSpace, mTranspondingAvailable);  // never transponding!
+                    mTurnoutNoRetry, mTurnoutExtraSpace, mTranspondingAvailable, mInterrogateAtStart, mLoconetProtocolAutoDetect);  // never transponding!
             this.getSystemConnectionMemo().configureManagersPR2();
 
             // start operation
@@ -98,6 +86,8 @@ public class UsbDcs240Adapter extends LocoBufferAdapter {
             // MS100 modes - connecting to a separate command station
             // get transponding option
             setTranspondingAvailable(getOptionState("TranspondingPresent"));
+            setInterrogateOnStart(getOptionState("InterrogateOnStart"));
+            setLoconetProtocolAutoDetect(getOptionState("LoconetProtocolAutoDetect"));
             // connect to a packetizing traffic controller
             LnPacketizer packets = getPacketizer(getOptionState(option4Name));
             packets.connectPort(this);
@@ -106,7 +96,7 @@ public class UsbDcs240Adapter extends LocoBufferAdapter {
             this.getSystemConnectionMemo().setLnTrafficController(packets);
             // do the common manager config
             this.getSystemConnectionMemo().configureCommandStation(commandStationType,
-                    mTurnoutNoRetry, mTurnoutExtraSpace, mTranspondingAvailable);
+                    mTurnoutNoRetry, mTurnoutExtraSpace, mTranspondingAvailable, mInterrogateAtStart, mLoconetProtocolAutoDetect);
 
             this.getSystemConnectionMemo().configureManagersMS100();
 
@@ -161,12 +151,12 @@ public class UsbDcs240Adapter extends LocoBufferAdapter {
      */
     public String[] commandStationOptions() {
         String[] retval = new String[commandStationNames.length + 1];
-        retval[0] = LnCommandStationType.COMMAND_STATION_USB_DCS240_ALONE.getName();
-        retval[1] = LnCommandStationType.COMMAND_STATION_DCS240.getName();
+        retval[0] = LnCommandStationType.COMMAND_STATION_DCS240.getName();
+        retval[1] = LnCommandStationType.COMMAND_STATION_USB_DCS240_ALONE.getName();
         int count = 2;
         for (String commandStationName : commandStationNames) {
             if (!commandStationName.equals(LnCommandStationType.COMMAND_STATION_DCS240.getName())) {
-                // include all but COMMAND_STATION_DCS240, which was forced  to 
+                // include all but COMMAND_STATION_DCS240, which was forced  to
                 // the front of the list (above)
                 retval[count++] = commandStationName;
             }

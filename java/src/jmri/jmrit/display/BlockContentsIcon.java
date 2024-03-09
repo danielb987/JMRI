@@ -3,12 +3,12 @@ package jmri.jmrit.display;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.JTextField;
+
 import jmri.Block;
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
@@ -16,8 +16,8 @@ import jmri.NamedBean.DisplayOptions;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.throttle.ThrottleFrame;
 import jmri.jmrit.throttle.ThrottleFrameManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
+import jmri.util.swing.JmriMouseEvent;
 
 /**
  * An icon to display the value contained within a Block.
@@ -129,6 +129,12 @@ public class BlockContentsIcon extends MemoryIcon {
 
     @Override
     @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_BlockContentsIcon");
+    }
+
+    @Override
+    @Nonnull
     public String getNameString() {
         String name;
         if (namedBlock == null) {
@@ -173,7 +179,7 @@ public class BlockContentsIcon extends MemoryIcon {
                     popup.add(new AbstractAction(Bundle.getMessage("MenuTerminateTrain")) {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            df.terminateActiveTrain(at);
+                            df.terminateActiveTrain(at,true,false);
                         }
                     });
                     popup.add(new AbstractAction(Bundle.getMessage("MenuAllocateExtra")) {
@@ -289,27 +295,19 @@ public class BlockContentsIcon extends MemoryIcon {
     }
 
     @Override
-    public void doMouseClicked(java.awt.event.MouseEvent e) {
+    public void doMouseClicked(JmriMouseEvent e) {
         if (e.getClickCount() == 2) { // double click?
             editBlockValue();
         }
     }
 
     protected void editBlockValue() {
-        JTextField newBlock = new JTextField(20);
-        if (getBlock().getValue() != null) {
-            newBlock.setText(getBlock().getValue().toString());
-        }
-        Object[] options = {Bundle.getMessage("ButtonCancel"), Bundle.getMessage("ButtonOK"), newBlock};
-        int retval = JOptionPane.showOptionDialog(this,
-                Bundle.getMessage("EditCurrentBlockValue"), namedBlock.getName(),
-                0, JOptionPane.INFORMATION_MESSAGE, null,
-                options, options[1]);
 
-        if (retval != 1) {
-            return;
-        }
-        setValue(newBlock.getText());
+        String reval = (String)JmriJOptionPane.showInputDialog(this,
+                                     Bundle.getMessage("EditCurrentBlockValue", namedBlock.getName()),
+                                     getBlock().getValue());
+
+        setValue(reval);
         updateSize();
     }
 
@@ -326,6 +324,6 @@ public class BlockContentsIcon extends MemoryIcon {
         getBlock().setValue(val);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(BlockContentsIcon.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BlockContentsIcon.class);
 
 }

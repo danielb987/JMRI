@@ -68,6 +68,8 @@ public class TurnoutController extends AbstractController implements PropertyCha
      * @param message Command string to be parsed
      * @param deviceServer client to send responses (error messages) back to
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification="I18N of warn Message also sent to deviceServer")
     @Override
     void handleMessage(String message, DeviceServer deviceServer) {
         if (message.charAt(0) == 'A') {
@@ -138,7 +140,7 @@ public class TurnoutController extends AbstractController implements PropertyCha
     /**
      * Send Info on turnouts to devices, not specific to any one turnout.
      * <p>
-     * Format: PTT]\[value}|{turnoutKey]\[value}|{closedKey]\[value}|{thrownKey
+     * Format: PTT]\[turnoutText}|{turnoutKey]\[stateText}|{stateKey]\[stateText}|{stateKey...
      */
     public void sendTitles() {
         if (listeners == null) {
@@ -150,6 +152,8 @@ public class TurnoutController extends AbstractController implements PropertyCha
         labels.append("]\\[").append(Bundle.getMessage("MenuItemTurnoutTable")).append("}|{Turnout");
         labels.append("]\\[").append(manager.getClosedText()).append("}|{2");
         labels.append("]\\[").append(manager.getThrownText()).append("}|{4");
+        labels.append("]\\[").append(Bundle.getMessage("StateUnknown")).append("}|{1");
+        labels.append("]\\[").append(Bundle.getMessage("StateInconsistent")).append("}|{8");
 
         String message = labels.toString();
 

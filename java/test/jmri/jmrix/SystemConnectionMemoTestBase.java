@@ -26,7 +26,7 @@ abstract public class SystemConnectionMemoTestBase<M extends DefaultSystemConnec
 
     protected M scm = null;
 
-    public void getTest(Class m) {
+    public void getTest(Class<?> m) {
         if (scm.provides(m)) {
             // if the manager reports providing the class, make sure it exists.
             Assert.assertNotNull("Provides Class " + m.getName(), scm.get(m));
@@ -83,7 +83,7 @@ abstract public class SystemConnectionMemoTestBase<M extends DefaultSystemConnec
 
     @Test
     public void testProvidesConsistManager() {
-        getTest(jmri.ReporterManager.class);
+        getTest(jmri.ConsistManager.class);
     }
 
     @Test
@@ -119,10 +119,8 @@ abstract public class SystemConnectionMemoTestBase<M extends DefaultSystemConnec
         Assert.assertEquals("Output Interval after set", 50, scm.getOutputInterval());
     }
 
-    @BeforeEach
     abstract public void setUp();
 
-    @AfterEach
     abstract public void tearDown();
 
 }

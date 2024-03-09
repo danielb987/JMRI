@@ -8,14 +8,12 @@ import jmri.jmrit.logix.Portal;
 import jmri.jmrit.logix.PortalManager;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JComboBoxUtil;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Defines a GUI for editing OBlocks - Portal objects in the _tabbed OBlock Table interface.
@@ -46,7 +44,7 @@ public class PortalEditFrame extends JmriJFrame {
     private Portal _portal;
     private boolean _newPortal = false;
 
-    @SuppressWarnings("OverridableMethodCallInConstructor")
+//    @SuppressWarnings("OverridableMethodCallInConstructor")
     public PortalEditFrame(@Nonnull String title, Portal portal, PortalTableModel model) {
         super(title, true, true);
         this.model = model;
@@ -91,6 +89,7 @@ public class PortalEditFrame extends JmriJFrame {
         configGrid.add(fromBlockLabel);
         configGrid.add(fromBlockComboBox);
         fromBlockComboBox.setAllowNull(true);
+        JComboBoxUtil.setupComboBoxMaxRows(fromBlockComboBox);
         // row 3
         toBlockComboBox.addActionListener(e -> {
             if ((toBlockComboBox.getItemCount() > 0) && (fromBlockComboBox.getSelectedItem() != null) &&
@@ -103,6 +102,7 @@ public class PortalEditFrame extends JmriJFrame {
         configGrid.add(toBlockLabel);
         configGrid.add(toBlockComboBox);
         toBlockComboBox.setAllowNull(true);
+        JComboBoxUtil.setupComboBoxMaxRows(toBlockComboBox);
 
         p.add(configGrid);
         p.add(Box.createVerticalGlue());
@@ -127,6 +127,8 @@ public class PortalEditFrame extends JmriJFrame {
 
         main.add(p);
         frame.getContentPane().add(main);
+        frame.setEscapeKeyClosesWindow(true);
+        frame.getRootPane().setDefaultButton(ok);
     }
 
     /**
@@ -227,7 +229,8 @@ public class PortalEditFrame extends JmriJFrame {
                 _portal.setToBlock(block, true);
             }
         } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), Bundle.getMessage("PortalCreateErrorTitle"), JOptionPane.ERROR_MESSAGE);
+            jmri.util.swing.JmriJOptionPane.showMessageDialog(null, ex.getMessage(),
+                Bundle.getMessage("PortalCreateErrorTitle"), jmri.util.swing.JmriJOptionPane.ERROR_MESSAGE);
             status(Bundle.getMessage("AddPortalFailed", user), true);
             return;
         }
@@ -241,6 +244,6 @@ public class PortalEditFrame extends JmriJFrame {
         statusBar.setForeground(warn ? Color.red : Color.gray);
     }
 
-    private static final Logger log = LoggerFactory.getLogger(PortalEditFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PortalEditFrame.class);
 
 }

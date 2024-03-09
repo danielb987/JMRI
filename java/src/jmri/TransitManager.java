@@ -1,8 +1,9 @@
 package jmri;
 
 import java.util.ArrayList;
+
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jmri.managers.AbstractManager;
 
 /**
  * Implementation of a Transit Manager
@@ -27,64 +28,21 @@ import jmri.managers.AbstractManager;
  *
  * @author Dave Duchamp Copyright (C) 2008, 2011
  */
-public class TransitManager extends AbstractManager<Transit> implements InstanceManagerAutoDefault {
-
-    public TransitManager() {
-        super();
-        InstanceManager.getDefault(jmri.SectionManager.class).addVetoableChangeListener(this);
-    }
-
-    @Override
-    public int getXMLOrder() {
-        return Manager.TRANSITS;
-    }
-
-    @Override
-    public char typeLetter() {
-        return 'Z';
-    }
+public interface TransitManager extends Manager<Transit> {
 
     /**
      * Create a new Transit if the Transit does not exist.
+     * This is NOT a provide method.
      *
      * @param systemName the desired system name
      * @param userName   the desired user name
-     * @return a new Transit or null if a Transit with the same systemName or
+     * @return a new Transit
+     * @throws NamedBean.BadNameException if a Transit with the same systemName or
      *         userName already exists, or if there is trouble creating a new
-     *         Transit
+     *         Transit.
      */
-    public Transit createNewTransit(String systemName, String userName) {
-        // check system name
-        if ((systemName == null) || (systemName.length() < 1)) {
-            // no valid system name entered, return without creating
-            return null;
-        }
-        String sysName = systemName;
-        if (!sysName.startsWith(getSystemNamePrefix())) {
-            sysName = makeSystemName(sysName);
-        }
-        // Check that Transit does not already exist
-        Transit z;
-        if (userName != null && !userName.equals("")) {
-            z = getByUserName(userName);
-            if (z != null) {
-                return null;
-            }
-        }
-        z = getBySystemName(sysName);
-        if (z != null) {
-            return null;
-        }
-        // Transit does not exist, create a new Transit
-        z = new Transit(sysName, userName);
-        // save in the maps
-        register(z);
-
-        // Keep track of the last created auto system name
-        updateAutoNumber(systemName);
-
-        return z;
-    }
+    @Nonnull
+    Transit createNewTransit(@CheckForNull String systemName, String userName) throws NamedBean.BadNameException;
 
     /**
      * For use with User GUI, to allow the auto generation of systemNames, where
@@ -95,93 +53,45 @@ public class TransitManager extends AbstractManager<Transit> implements Instance
      * {@code nn} is the first available number.
      *
      * @param userName the desired user name
-     * @return a new Transit or null if userName is already associated with
+     * @return a new Transit
+     * @throws NamedBean.BadNameException if userName is already associated with
      *         another Transit
      */
-    public Transit createNewTransit(String userName) {
-        return createNewTransit(getAutoSystemName(), userName);
-    }
+    @Nonnull
+    Transit createNewTransit(String userName) throws NamedBean.BadNameException;
 
     /**
-     * Get an existing Transit. First looks up assuming that name is a User
-     * Name. If this fails looks up assuming that name is a System Name. If both
-     * fail, returns null.
+     * Get an existing Transit.
+     * First looks up assuming that name is a User
+     * Name. If this fails looks up assuming that name is a System Name.
+     * If both fail, returns null.
      *
      * @param name User name or system name to match
      * @return null if no match found
      */
-    public Transit getTransit(String name) {
-        Transit z = getByUserName(name);
-        if (z != null) {
-            return z;
-        }
-        return getBySystemName(name);
-    }
+    @CheckForNull
+    Transit getTransit(String name);
 
     /**
      * Remove an existing Transit.
      *
      * @param z the transit to remove
      */
-    public void deleteTransit(Transit z) {
-        // delete the Transit
-        deregister(z);
-        z.dispose();
-    }
+    void deleteTransit(Transit z);
 
     /**
      * Get a list of Transits which use a specified Section.
      *
      * @param s the section to check Transits against
-     * @return a list, possibly empty, of Transits using s
+     * @return a list, possibly empty, of Transits using section s.
      */
-    public ArrayList<Transit> getListUsingSection(Section s) {
-        ArrayList<Transit> list = new ArrayList<>();
-        for (Transit tTransit : getNamedBeanSet()) {
-            if (tTransit.containsSection(s)) {
-                // this Transit uses the specified Section
-                list.add(tTransit);
-            }
-        }
-        return list;
-    }
-
-    public ArrayList<Transit> getListUsingBlock(Block b) {
-        ArrayList<Transit> list = new ArrayList<>();
-        for (Transit tTransit : getNamedBeanSet()) {
-            if (tTransit.containsBlock(b)) {
-                // this Transit uses the specified Section
-                list.add(tTransit);
-            }
-        }
-        return list;
-    }
-
-    public ArrayList<Transit> getListEntryBlock(Block b) {
-        ArrayList<Transit> list = new ArrayList<>();
-        for (Transit tTransit : getNamedBeanSet()) {
-            ArrayList<Block> entryBlock = tTransit.getEntryBlocksList();
-            if (entryBlock.contains(b)) {
-                // this Transit uses the specified Section
-                list.add(tTransit);
-            }
-        }
-        return list;
-    }
-    @Override
     @Nonnull
-    public String getBeanTypeHandled(boolean plural) {
-        return Bundle.getMessage(plural ? "BeanNameTransits" : "BeanNameTransit");
-    }
+    ArrayList<Transit> getListUsingSection(Section s);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Class<Transit> getNamedBeanClass() {
-        return Transit.class;
-    }
+    @Nonnull
+    ArrayList<Transit> getListUsingBlock(Block b);
 
-    // private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TransitManager.class);
+    @Nonnull
+    ArrayList<Transit> getListEntryBlock(Block b);
 
 }

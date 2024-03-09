@@ -5,6 +5,11 @@ import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
 import jmri.jmrit.operations.trains.Train;
@@ -12,20 +17,13 @@ import jmri.jmrit.operations.trains.TrainManager;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.JmriJFrame;
-import jmri.util.junit.rules.RetryRule;
 import jmri.util.swing.JemmyUtil;
-
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.jupiter.api.*;
 
 /**
  * @author Paul Bender Copyright (C) 2017
  */
 @Timeout(20)
 public class PrintTrainManifestActionTest extends OperationsTestCase {
-
-    public RetryRule retryRule = new RetryRule(3); // allow 3 retries
 
     @Test
     public void testCTor() {
@@ -55,7 +53,7 @@ public class PrintTrainManifestActionTest extends OperationsTestCase {
         Thread printAction = new Thread(new Runnable() {
             @Override
             public void run() {
-                pa.actionPerformed(new ActionEvent(this, 0, null));
+                pa.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
             }
         });
         printAction.setName("Test Print Action"); // NOI18N

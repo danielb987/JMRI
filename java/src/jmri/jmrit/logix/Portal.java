@@ -12,6 +12,7 @@ import jmri.SignalMast;
 import jmri.implementation.SignalSpeedMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.CheckForNull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import org.slf4j.Logger;
@@ -144,13 +145,13 @@ public class Portal {
         if (newName.equals(oldName)) {
             return null;
         }
-        Portal p = jmri.InstanceManager.getDefault(PortalManager.class).getPortal(newName);
+        Portal p = InstanceManager.getDefault(PortalManager.class).getPortal(newName);
         if (p != null) {
             return Bundle.getMessage("DuplicatePortalName", newName, p.getDescription());
         }
         _name = newName;
         InstanceManager.getDefault(WarrantManager.class).portalNameChange(oldName, newName);
-        
+
         // for some unknown reason, PortalManager firePropertyChange is not read by PortalTableModel
         // so let OBlock do it
         if (_toBlock != null) {
@@ -169,7 +170,7 @@ public class Portal {
 
     /**
      * Set this portal's toBlock. Remove this portal from old toBlock, if any.
-     * Add this portal in the new toBlock's list of portals. 
+     * Add this portal in the new toBlock's list of portals.
      *
      * @param block to be the new toBlock
      * @param changePaths if true, set block in paths. If false,
@@ -216,7 +217,7 @@ public class Portal {
 
     /**
      * Set this portal's fromBlock. Remove this portal from old fromBlock, if any.
-     * Add this portal in the new toBlock's list of portals. 
+     * Add this portal in the new toBlock's list of portals.
      *
      * @param block to be the new fromBlock
      * @param changePaths if true, set block in paths. If false,
@@ -264,8 +265,8 @@ public class Portal {
     /**
      * Set a signal to protect an OBlock. Warrants look ahead for speed changes
      * and change the train speed accordingly.
-     * 
-     * @param signal either a SignalMast or a SignalHead
+     *
+     * @param signal either a SignalMast or a SignalHead. Set to null to remove (previous) signal from Portal
      * @param length offset length in millimeters. This is additional
      *               entrance space for the block. This distance added to or subtracted
      *               from the calculation of the ramp distance when a warrant must slow
@@ -273,7 +274,7 @@ public class Portal {
      * @param protectedBlock OBlock the signal protects
      * @return true if signal is set
      */
-    public boolean setProtectSignal(NamedBean signal, float length, OBlock protectedBlock) {
+    public boolean setProtectSignal(@CheckForNull NamedBean signal, float length, OBlock protectedBlock) {
         if (protectedBlock == null) {
             return false;
         }
@@ -281,13 +282,15 @@ public class Portal {
         if ((_fromBlock != null) && _fromBlock.equals(protectedBlock)) {
             _toSignal = signal;
             _toSignalOffset = length;
-            log.debug("OPortal FromBlock Offset set to {} on signal {}", _toSignalOffset, _toSignal.getDisplayName());
+            log.debug("OPortal FromBlock Offset set to {} on signal {}", _toSignalOffset,
+                    (_toSignal != null ? _toSignal.getDisplayName() : "<removed>"));
             ret = true;
         }
         if ((_toBlock != null) && _toBlock.equals(protectedBlock)) {
             _fromSignal = signal;
             _fromSignalOffset = length;
-            log.debug("OPortal ToBlock Offset set to {} on signal {}", _fromSignalOffset, _fromSignal.getDisplayName());
+            log.debug("OPortal ToBlock Offset set to {} on signal {}", _fromSignalOffset,
+                    (_fromSignal != null ? _fromSignal.getDisplayName() : "<removed>"));
             ret = true;
         }
         if (ret) {
@@ -315,7 +318,7 @@ public class Portal {
     }
 
     /**
-     * Get the block protected by a signal.
+     * Get the OBlock protected by a signal.
      *
      * @param signal is the signal, either a SignalMast or a SignalHead
      * @return Protected OBlock, if it is protected, otherwise null.
@@ -383,7 +386,7 @@ public class Portal {
     }
 
     /**
-     * Get the paths to the portal within the connected Block i.e. the paths in
+     * Get the paths to the portal within the connected OBlock i.e. the paths in
      * this (the param) block through the Portal.
      *
      * @param block OBlock
@@ -402,10 +405,10 @@ public class Portal {
     }
 
     /**
-     * Get the block on the other side of the portal from the block
-     * block.
+     * Get the OBlock on the other side of the Portal from the given
+     * OBlock.
      *
-     * @param block OBlock
+     * @param block starting OBlock
      * @return the opposite block
      */
     public OBlock getOpposingBlock(@Nonnull OBlock block) {
@@ -418,7 +421,7 @@ public class Portal {
     }
 
     /**
-     * Get the paths from the portal in the next connected Block i.e. paths in
+     * Get the paths from the portal in the next connected OBlock i.e. paths in
      * the block on the other side of the portal from this (the param) block.
      *
      * @param block OBlock
@@ -469,20 +472,6 @@ public class Portal {
     }
 
     /**
-     * Check signals, if any, for speed into the block. The signal that protects
-     * the "to" block is the signal facing the "from" Block, i.e. the "from"
-     * signal. (and vice-versa)
-     *
-     * @param block is the direction of entry, "from" block
-     * @return permissible speed, null if no signal
-     * @deprecated since 4.17.5 use getPermissibleSpeed(OBlock, boolean)
-     */
-    @Deprecated
-    public String getPermissibleEntranceSpeed(@Nonnull OBlock block) {
-        return getPermissibleSpeed(block, true);
-    }
-
-    /**
      * Set the distance (plus or minus) in millimeters from the portal gap
      * where the speed change indicated by the signal should be completed.
      *
@@ -520,20 +509,6 @@ public class Portal {
             }
         }
         return 0;
-    }
-
-    /**
-     * Check signals, if any, for speed out of the block. The signal that
-     * protects the "to" block is the signal facing the "from" Block, i.e. the
-     * "from" signal. (and vice-versa)
-     *
-     * @param block is the direction of entry, "from" block
-     * @return permissible speed, null if no signal
-     * @deprecated since 4.17.5 use getPermissibleSpeed(OBlock, boolean)
-     */
-    @Deprecated
-    public String getPermissibleExitSpeed(@Nonnull OBlock block) {
-        return getPermissibleSpeed(block, false);
     }
 
     /**
@@ -586,7 +561,7 @@ public class Portal {
      */
     private static @Nonnull String getPermissibleSignalSpeed(@Nonnull SignalHead signal, boolean entrance) {
         int appearance = signal.getAppearance();
-        String speed = jmri.InstanceManager.getDefault(SignalSpeedMap.class).getAppearanceSpeed(signal.getAppearanceName(appearance));
+        String speed = InstanceManager.getDefault(SignalSpeedMap.class).getAppearanceSpeed(signal.getAppearanceName(appearance));
         // on head, speed is the same for entry and exit
         if (speed == null) {
             log.error("SignalHead \"{}\" has no {} speed specified for appearance \"{}\"! - Restricting Movement!",
@@ -606,12 +581,13 @@ public class Portal {
      * @return permissible speed, Restricted if no speed set on signal
      */
     private static @Nonnull String getPermissibleSignalSpeed(@Nonnull SignalMast signal, boolean entrance) {
-        String aspect = signal.getAspect();
+        String aspect = signal.getAspect(); 
+        String signalAspect = ( aspect == null ? "" : aspect );
         String speed;
         if (entrance) {
-            speed = jmri.InstanceManager.getDefault(SignalSpeedMap.class).getAspectSpeed(aspect, signal.getSignalSystem());
+            speed = InstanceManager.getDefault(SignalSpeedMap.class).getAspectSpeed(signalAspect, signal.getSignalSystem());
         } else {
-            speed = jmri.InstanceManager.getDefault(SignalSpeedMap.class).getAspectExitSpeed(aspect, signal.getSignalSystem());
+            speed = InstanceManager.getDefault(SignalSpeedMap.class).getAspectExitSpeed(signalAspect, signal.getSignalSystem());
         }
         if (speed == null) {
             log.error("SignalMast \"{}\" has no {} speed specified for aspect \"{}\"! - Restricting Movement!",
@@ -623,11 +599,11 @@ public class Portal {
         return speed;
     }
 
-    /*
-     * block is a potential _toBlock and paths are the current _toPaths
-     * or
-     * block is a potential _fromBlock and paths are the current _fromPaths
+    /**
      * Verify that each path has this potential block as its owning block.
+     * Block is a potential _toBlock and Paths are the current _toPaths 
+     * or
+     * Block is a potential _fromBlock and Paths are the current _fromPaths
      */
     private static boolean verify(List<OPath> paths, OBlock block) {
         if (block == null) {
@@ -674,7 +650,7 @@ public class Portal {
 
     /**
      * Check portal has both blocks and they are different blocks.
-     * 
+     *
      * @return true if valid
      */
     public boolean isValid() {

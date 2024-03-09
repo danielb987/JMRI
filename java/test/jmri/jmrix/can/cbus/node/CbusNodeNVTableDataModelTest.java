@@ -5,10 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import jmri.jmrix.can.CanSystemConnectionMemo;
 import jmri.jmrix.can.TrafficControllerScaffold;
 import jmri.util.JUnitUtil;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.*;
 
 /**
  *
@@ -33,14 +31,14 @@ public class CbusNodeNVTableDataModelTest {
         t = new CbusNodeNVTableDataModel(
             memo, 3,CbusNodeNVTableDataModel.MAX_COLUMN);
         
-        assertThat(t.getColumnCount()).isEqualTo(7);
+        assertThat(t.getColumnCount()).isEqualTo(8);
         
         CbusNode myNode = new CbusNode(memo,12345);
         
         t.setNode(myNode);
         
         assertThat(t.getRowCount()).isEqualTo(0);
-        assertThat(t.getColumnCount()).isEqualTo(7);
+        assertThat(t.getColumnCount()).isEqualTo(8);
         
         for (int i = 0; i <t.getColumnCount(); i++) {
             assertThat(t.getColumnName(i)).isNotEmpty();
@@ -178,8 +176,8 @@ public class CbusNodeNVTableDataModelTest {
         myNode.dispose();
     }
     
-    private CanSystemConnectionMemo memo;
-    private TrafficControllerScaffold tcis;
+    private CanSystemConnectionMemo memo = null;
+    private TrafficControllerScaffold tcis = null;
     private CbusNodeNVTableDataModel t;
     
 
@@ -196,8 +194,10 @@ public class CbusNodeNVTableDataModelTest {
     @AfterEach
     public void tearDown() {
         t = null;
+        Assertions.assertNotNull(tcis);
         tcis.terminateThreads();
         tcis = null;
+        Assertions.assertNotNull(memo);
         memo.dispose();
         memo = null;
         

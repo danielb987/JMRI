@@ -33,8 +33,8 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         Assert.assertNotNull(instance);
     }
 
-    // run the throttle through the initilization sequence,
-    // without assertions, so post initilization tests can be
+    // run the throttle through the initialization sequence,
+    // without assertions, so post initialization tests can be
     // performed.
     @Override
     protected void initThrottle(XNetThrottle t,int n){
@@ -54,7 +54,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(4, 0x00);
         m.setElement(5, 0xE0);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
 
         // Sending the reply message should make the throttle change
@@ -85,7 +85,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(1, 0x04);
         m.setElement(2, 0x05);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -115,7 +115,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(1, 0x04);
         m.setElement(2, 0x05);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -145,7 +145,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(1, 0x04);
         m.setElement(2, 0x05);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -175,7 +175,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(1, 0x04);
         m.setElement(2, 0x05);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -204,7 +204,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(1, 0x04);
         m.setElement(2, 0x05);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -238,7 +238,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(7, 0x00);
         m.setElement(8, 0xE4);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -269,7 +269,7 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
         m.setElement(1, 0x04);
         m.setElement(2, 0x05);
 
-        n = tc.outbound.size();
+        // n = tc.outbound.size();
         t.message(m);
         // which sets the status back state back to idle..
     }
@@ -290,9 +290,9 @@ public class Z21XNetThrottleTest extends jmri.jmrix.roco.RocoXNetThrottleTest {
     @Override
     public void tearDown() throws Exception {
         ((Z21XNetThrottle)instance).throttleDispose();
-        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
+        tc.terminateThreads();
+        tc = null;
         JUnitUtil.tearDown();
-
     }
 
 }

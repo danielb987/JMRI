@@ -1,6 +1,7 @@
 package jmri.jmrix.openlcb;
 
 import jmri.DccLocoAddress;
+import jmri.SpeedStepMode;
 import jmri.util.JUnitUtil;
 import jmri.jmrix.can.TestTrafficController;
 
@@ -14,8 +15,8 @@ import org.openlcb.*;
  * @author Bob Jacobsen Copyright 2008, 2010, 2011
  */
 public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
-        
-    private static OlcbSystemConnectionMemo memo;
+
+    private static OlcbSystemConnectionMemoScaffold memo;
     static Connection connection;
     static NodeID nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
     static java.util.ArrayList<Message> messages;
@@ -30,13 +31,13 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         boolean result = instance.getIsForward();
         Assert.assertEquals(expResult, result);
     }
-    
+
     @Test
     @Override
     public void testOutOfRangeSetFunction(){
         instance.setFunction(-1, true);
         jmri.util.JUnitAppender.assertWarnMessageStartingWith("Unhandled update function number: -1");
-        
+
         instance.setFunction(29, true);
         jmri.util.JUnitAppender.assertWarnMessageStartingWith("Unhandled update function number: 29");
     }
@@ -371,6 +372,27 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     public void testSendFunctionGroup5() {
     }
 
+    /**
+     * Test of getSpeedStepMode method, of class OlcbThrottle.
+     */
+    @Test
+    @Override
+    public void testGetSpeedStepMode() {
+        SpeedStepMode expResult = SpeedStepMode.NMRA_DCC_128;
+        SpeedStepMode result = instance.getSpeedStepMode();
+        Assert.assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getSpeedIncrement method, of class OlcbThrottle.
+     */
+    @Test
+    @Override
+    public void testGetSpeedIncrement() {
+        float expResult = SpeedStepMode.NMRA_DCC_128.increment;
+        float result = instance.getSpeedIncrement();
+        Assert.assertEquals(expResult, result, 0.0001);
+    }
 
     @Override
     @BeforeEach
@@ -385,10 +407,10 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     }
 
     @BeforeAll
+    @SuppressWarnings("deprecation") // OlcbInterface(NodeID, Connection)
     static public void preClassInit() {
         JUnitUtil.setUp();
         JUnitUtil.initInternalTurnoutManager();
-        nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
 
         messages = new java.util.ArrayList<>();
         connection = new AbstractConnection() {
@@ -398,7 +420,7 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
             }
         };
 
-        memo = new OlcbSystemConnectionMemo(); // this self-registers as 'M'
+        memo = new OlcbSystemConnectionMemoScaffold(); // this self-registers as 'M'
         memo.setProtocol(jmri.jmrix.can.ConfigurationManager.OPENLCB);
         memo.setInterface(new OlcbInterface(nodeID, connection) {
             @Override
@@ -408,13 +430,13 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         });
         memo.setTrafficController(new TestTrafficController());
         memo.configureManagers();
-    
+
         jmri.util.JUnitUtil.waitFor(()-> (messages.size()>0),"Initialization Complete message");
     }
 
     @AfterAll
     public static void postClassTearDown() {
-        if(memo != null && memo.getInterface() !=null ) {
+        if (memo != null && memo.getInterface() !=null ) {
             memo.getTrafficController().terminateThreads();
             memo.getInterface().dispose();
         }
@@ -423,6 +445,6 @@ public class OlcbThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         nodeID = null;
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
-
     }
+
 }

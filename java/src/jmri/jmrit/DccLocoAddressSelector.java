@@ -36,6 +36,10 @@ public class DccLocoAddressSelector extends JPanel {
     JComboBox<String> box = null;
     JTextField text = new JTextField();
 
+    private static final int FONT_SIZE_MIN = 12;
+    private static final int FONT_SIZE_MAX = 96;
+    private static final int FONT_INCREMENT = 2;
+
     public DccLocoAddressSelector() {
         super();
         if ((InstanceManager.getNullableDefault(jmri.ThrottleManager.class) != null)
@@ -53,8 +57,8 @@ public class DccLocoAddressSelector extends JPanel {
         configureBox(protocols);
     }
 
-    void configureBox(String[] protocols) {
-        box = new JComboBox<String>(protocols);
+    private void configureBox(String[] protocols) {
+        box = new JComboBox<>(protocols);
         box.setSelectedIndex(0);
         text = new JTextField();
         text.setColumns(4);
@@ -84,7 +88,7 @@ public class DccLocoAddressSelector extends JPanel {
      */
     public DccLocoAddress getAddress() {
         // no object if no address
-        if (text.getText().equals("")) {
+        if (text.getText().isEmpty()) {
             return null;
         }
 
@@ -189,29 +193,33 @@ public class DccLocoAddressSelector extends JPanel {
         if (!varFontSize) {
             return;
         }
-        double fieldWidth = text.getSize().width;
-        int stringWidth = text.getFontMetrics(text.getFont()).
-                stringWidth(LONGEST_STRING) + 8;
+        int fieldWidth = text.getSize().width;
+        int stringWidth = text.getFontMetrics(text.getFont()).stringWidth(LONGEST_STRING) + 8;
         int fontSize = text.getFont().getSize();
-        if (stringWidth > fieldWidth) // component has shrunk.
-        {
-            while ((stringWidth > fieldWidth) && (fontSize > 12)) {
-                fontSize -= 2;
+        if (stringWidth > fieldWidth) { // component has shrunk horizontally
+            while ((stringWidth > fieldWidth) && (fontSize >= FONT_SIZE_MIN + FONT_INCREMENT)) {
+                fontSize -= FONT_INCREMENT;
                 Font f = new Font("", Font.PLAIN, fontSize);
                 text.setFont(f);
-                stringWidth = text.getFontMetrics(text.getFont()).
-                        stringWidth(LONGEST_STRING) + 8;
+                stringWidth = text.getFontMetrics(text.getFont()).stringWidth(LONGEST_STRING) + 8;
             }
-        } else // component has grown
-        {
-            while ((fieldWidth - stringWidth > 10) && (fontSize < 48)) {
-                fontSize += 2;
+        } else { // component has grown horizontally
+            while ((fieldWidth - stringWidth > 10) && (fontSize <= FONT_SIZE_MAX - FONT_INCREMENT)) {
+                fontSize += FONT_INCREMENT;
                 Font f = new Font("", Font.PLAIN, fontSize);
                 text.setFont(f);
-                stringWidth = text.getFontMetrics(text.getFont()).
-                        stringWidth(LONGEST_STRING) + 8;
+                stringWidth = text.getFontMetrics(text.getFont()).stringWidth(LONGEST_STRING) + 8;
             }
         }
+        // also fit vertically
+        int fieldHeight = text.getSize().height;
+        int stringHeight = text.getFontMetrics(text.getFont()).getHeight();
+        while ((stringHeight > fieldHeight) && (fontSize >= FONT_SIZE_MIN + FONT_INCREMENT)) {  // component has shrunk vertically
+            fontSize -= FONT_INCREMENT;
+            Font f = new Font("", Font.PLAIN, fontSize);
+            text.setFont(f);
+            stringHeight = text.getFontMetrics(text.getFont()).getHeight();
+        }        
     }
 
     /*
@@ -222,6 +230,7 @@ public class DccLocoAddressSelector extends JPanel {
     public void setEnabled(boolean e) {
         text.setEditable(e);
         text.setEnabled(e);
+        text.setFocusable(e); // to not conflict with the throttle keyboad controls
         box.setEnabled(e);
         if (e) {
             text.setToolTipText(rb.getString("TooltipTextFieldEnabled"));
@@ -257,6 +266,8 @@ public class DccLocoAddressSelector extends JPanel {
         return text;
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification="Error String needs to be evaluated unchanged.")
     void reportError(String msg) {
         log.error(msg, new Exception("traceback"));
     }

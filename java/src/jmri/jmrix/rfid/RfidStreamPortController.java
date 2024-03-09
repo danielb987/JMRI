@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * Abstract base for classes representing a RFID communications port
  * <p>
  * NOTE: This currently only supports the standalone RFID interfaces.
- * <p>
  *
  * @author Paul Bender Copyright (C) 2014
  */
@@ -67,6 +66,7 @@ public class RfidStreamPortController extends AbstractStreamPortController imple
                 // create a Generic Stand-alone port controller
                 log.debug("Create Generic Standalone SpecificTrafficController"); // NOI18N
                 control = new StandaloneTrafficController(this.getSystemConnectionMemo());
+                this.getSystemConnectionMemo().setRfidTrafficController(control);
                 this.getSystemConnectionMemo().configureManagers(
                         new StandaloneSensorManager(this.getSystemConnectionMemo()),
                         new StandaloneReporterManager(this.getSystemConnectionMemo()));

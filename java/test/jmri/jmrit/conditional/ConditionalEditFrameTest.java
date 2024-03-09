@@ -23,14 +23,14 @@ public class ConditionalEditFrameTest {
 
         ConditionalListEdit listedit = new ConditionalListEdit("IX102");
         Assert.assertNotNull(listedit);
-        
+
         Conditional cond = InstanceManager.getDefault(jmri.ConditionalManager.class).getBySystemName("IX102C1");  // NOI18N
         Assert.assertNotNull(cond);
 
         ConditionalEditFrame f = new ConditionalEditFrame("Test ConditionalEditFrame", cond, listedit);  // NOI18N
         Assert.assertNotNull(f);
     }
-    
+
     @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();

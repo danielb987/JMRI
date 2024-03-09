@@ -7,7 +7,7 @@
 <!-- This is just a basic implementation for debugging purposes, without    -->
 <!-- any real attempt at formatting                                         -->
 
-<!-- This file is part of JMRI.  Copyright 2011-2018.                       -->
+<!-- This file is part of JMRI.  Copyright 2011-2023.                       -->
 <!--                                                                        -->
 <!-- JMRI is free software; you can redistribute it and/or modify it under  -->
 <!-- the terms of version 2 of the GNU General Public License as published  -->
@@ -18,14 +18,14 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
- 
+
 <xsl:stylesheet	version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- Define the copyright year for the output page
      In batch work via running Ant, this is defined
      via the build.xml file
 -->
-<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2020')" />
+<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2024')" />
 
 <!-- Need to instruct the XSLT processor to use HTML output rules.
      See http://www.w3.org/TR/xslt#output for more details
@@ -39,7 +39,7 @@
      elements, which is what the apply-templates instruction does.
      We can also pick some stuff out explicitly in the head section using
      value-of instructions.
--->     
+-->
 <xsl:template match='idtagtable'>
 <html>
 <head>
@@ -50,10 +50,10 @@
 <h2>JMRI ID Tag File</h2>
 <xsl:apply-templates/>
 <hr/>
-This page was produced by <a href="http://jmri.org">JMRI</a>.
+This page was produced by <a href="https://www.jmri.org">JMRI</a>.
 <p/>Copyright &#169; <xsl:value-of select="$JmriCopyrightYear" /> JMRI Community.
 <p/>JMRI, DecoderPro, PanelPro, DispatcherPro and associated logos are our trademarks.
-<p/><a href="http://jmri.org/Copyright.html">Additional information on copyright, trademarks and licenses is linked here.</a>
+<p/><a href="https://www.jmri.org/Copyright.html">Additional information on copyright, trademarks and licenses is linked here.</a>
 </body>
 </html>
 </xsl:template>

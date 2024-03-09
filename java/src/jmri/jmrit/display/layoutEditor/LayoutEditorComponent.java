@@ -1,13 +1,6 @@
 package jmri.jmrit.display.layoutEditor;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -60,7 +53,7 @@ class LayoutEditorComponent extends JComponent {
                 }
             }
             // Optional antialising, to eliminate (reduce) staircase on diagonal lines
-            if (layoutEditor.antialiasingOn) {
+            if (layoutEditor.getAntialiasingOn()) {
                 g2.setRenderingHints(antialiasing);
             }
 
@@ -93,6 +86,7 @@ class LayoutEditorComponent extends JComponent {
                 drawShapeEditControls(g2);
 
                 drawMemoryRects(g2);
+                drawGlobalVariableRects(g2);
                 drawBlockContentsRects(g2);
 
                 if (layoutEditor.allControlling()) {
@@ -103,7 +97,11 @@ class LayoutEditorComponent extends JComponent {
 
                 drawTrackSegmentInProgress(g2);
                 drawShapeInProgress(g2);
-            } else if (layoutEditor.turnoutCirclesWithoutEditMode) {
+
+                if (layoutEditor.isDrawLayoutTracksLabel()) {
+                    drawLayoutTracksLabel(g2);
+                }
+            } else if (layoutEditor.getTurnoutCircles()) {
                 if (layoutEditor.allControlling()) {
                     drawTurnoutControls(g2);
                 }
@@ -595,6 +593,13 @@ class LayoutEditorComponent extends JComponent {
         layoutEditor.getMemoryLabelList().forEach((l) -> g2.draw(new Rectangle2D.Double(l.getX(), l.getY(), l.getSize().width, l.getSize().height)));
     }
 
+    private void drawGlobalVariableRects(Graphics2D g2) {
+        g2.setColor(layoutEditor.defaultTrackColor);
+        g2.setStroke(new BasicStroke(1.0F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
+
+        layoutEditor.getGlobalVariableLabelList().forEach((l) -> g2.draw(new Rectangle2D.Double(l.getX(), l.getY(), l.getSize().width, l.getSize().height)));
+    }
+
     private void drawBlockContentsRects(Graphics2D g2) {
         g2.setColor(layoutEditor.defaultTrackColor);
         g2.setStroke(new BasicStroke(1.0F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
@@ -631,6 +636,14 @@ class LayoutEditorComponent extends JComponent {
 
         g.setColor(color);
         g.setStroke(stroke);
+    }
+
+    private void drawLayoutTracksLabel(Graphics2D g) {
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+        g.setColor(Color.red);
+        for (LayoutTrackView layoutTrackView : layoutEditor.getLayoutTrackViews()) {
+            layoutTrackView.drawLayoutTrackText(g);
+        }
     }
 
     /*

@@ -61,7 +61,6 @@ import org.slf4j.LoggerFactory;
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <p>
  *
  * @author Matthew Harris copyright (c) 2009
  */
@@ -451,7 +450,7 @@ public class JoalAudioSource extends AbstractAudioSource {
         }
     }
 
-    @SuppressWarnings("SleepWhileInLoop")
+//    @SuppressWarnings("SleepWhileInLoop")
     @Override
     protected void doStop() {
         log.debug("Stop JoalAudioSource ({})", this.getSystemName());
@@ -539,7 +538,6 @@ public class JoalAudioSource extends AbstractAudioSource {
             this._source = null;
             log.debug("...done cleanup");
         }
-        this.dispose();
     }
 
     @Override

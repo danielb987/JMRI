@@ -2,8 +2,7 @@ package jmri.jmrix.loconet;
 
 import java.io.DataInputStream;
 import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.concurrent.LinkedTransferQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,7 @@ public class LnPacketizer extends LnTrafficController {
     /**
      * Synchronized list used as a transmit queue.
      */
-    protected LinkedList<byte[]> xmtList = new LinkedList<byte[]>();
+    protected LinkedTransferQueue<byte[]> xmtList = new LinkedTransferQueue<>();
 
     /**
      * XmtHandler (a local class) object to implement the transmit thread.
@@ -106,10 +105,7 @@ public class LnPacketizer extends LnTrafficController {
         // But the thread might not be running, in which case the request is just
         // queued up.
         try {
-            synchronized (xmtHandler) {
-                xmtList.addLast(msg);
-                xmtHandler.notifyAll();
-            }
+            xmtList.add(msg);
         } catch (RuntimeException e) {
             log.warn("passing to xmit: unexpected exception: ", e);
         }
@@ -192,7 +188,7 @@ public class LnPacketizer extends LnTrafficController {
         }
     }
     // Defined this way to reduce new object creation
-    private byte[] rcvBuffer = new byte[1];
+    private final byte[] rcvBuffer = new byte[1];
 
     /**
      * Captive class to handle incoming characters. This is a permanent loop,
@@ -311,20 +307,20 @@ public class LnPacketizer extends LnTrafficController {
                     // done with this one
                 } catch (LocoNetMessageException e) {
                     // just let it ride for now
-                    log.warn("run: unexpected LocoNetMessageException: {}", e); // NOI18N
+                    log.warn("run: unexpected LocoNetMessageException", e); // NOI18N
                 } catch (java.io.EOFException e) {
                     // posted from idle port when enableReceiveTimeout used
                     log.trace("EOFException, is LocoNet serial I/O using timeouts?"); // NOI18N
                 } catch (java.io.IOException e) {
                     // fired when write-end of HexFile reaches end
-                    log.debug("IOException, should only happen with HexFIle: {}", e); // NOI18N
+                    log.debug("IOException, should only happen with HexFile", e); // NOI18N
                     log.info("End of file"); // NOI18N
                     disconnectPort(controller);
                     return;
                 } // normally, we don't catch RuntimeException, but in this
                   // permanently running loop it seems wise.
                 catch (RuntimeException e) {
-                    log.warn("run: unexpected Exception: {}", e); // NOI18N
+                    log.warn("run: unexpected Exception", e); // NOI18N
                 }
             } // end of permanent loop
         }
@@ -365,12 +361,10 @@ public class LnPacketizer extends LnTrafficController {
             while (!threadStopRequest) {   // loop until asked to stop
                 // any input?
                 try {
-                    // get content; failure is a NoSuchElementException
+                    // get content; blocks until present
                     log.trace("check for input"); // NOI18N
-                    byte msg[] = null;
-                    synchronized (this) {
-                        msg = xmtList.removeFirst();
-                    }
+
+                    byte msg[] = xmtList.take();
 
                     // input - now send
                     try {
@@ -392,13 +386,10 @@ public class LnPacketizer extends LnTrafficController {
                     } catch (java.io.IOException e) {
                         log.warn("sendLocoNetMessage: IOException: {}", e.toString()); // NOI18N
                     }
-                } catch (NoSuchElementException e) {
-                    // message queue was empty, wait for input
-                    log.trace("start wait"); // NOI18N
-
-                    new jmri.util.WaitHandler(this); // handle synchronization, spurious wake, interruption
-
-                    log.trace("end wait"); // NOI18N
+                } catch (InterruptedException ie) {
+                    return; // ending the thread
+                } catch (RuntimeException rt) {
+                    log.error("Exception on take() call", rt);
                 }
             }
         }
@@ -461,7 +452,9 @@ public class LnPacketizer extends LnTrafficController {
         // make sure that the xmt priority is no lower than the current priority
         int xmtpriority = (Thread.MAX_PRIORITY - 1 > priority ? Thread.MAX_PRIORITY - 1 : Thread.MAX_PRIORITY);
         // start the XmtHandler in a thread of its own
-        xmtThread = new Thread(xmtHandler, "LocoNet transmit handler"); // NOI18N
+        if (xmtThread == null) {
+            xmtThread = new Thread(xmtHandler, "LocoNet transmit handler"); // NOI18N
+        }
         log.debug("Xmt thread starts at priority {}", xmtpriority); // NOI18N
         xmtThread.setDaemon(true);
         xmtThread.setPriority(Thread.MAX_PRIORITY - 1);
@@ -470,13 +463,13 @@ public class LnPacketizer extends LnTrafficController {
         log.info("lnPacketizer Started");
     }
 
-    Thread rcvThread;
-    Thread xmtThread;
+    protected Thread rcvThread;
+    protected Thread xmtThread;
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("deprecation") // stop() is deprecated, but it's not going away
+    @SuppressWarnings("deprecation") // Thread.stop()
     @Override
     public void dispose() {
         if (xmtThread != null) {
@@ -486,7 +479,7 @@ public class LnPacketizer extends LnTrafficController {
             } catch (InterruptedException e) { log.warn("unexpected InterruptedException", e);}
         }
         if (rcvThread != null) {
-            rcvThread.stop(); // interrupt not sufficient, because jtermios hangs in select via purejavacomm.PureJavaSerialPort$2.read
+            rcvThread.stop(); // interrupt not sufficient with the previous serial library. Not known if OK with SerialComm?
             try {
                 rcvThread.join();
             } catch (InterruptedException e) { log.warn("unexpected InterruptedException", e);}

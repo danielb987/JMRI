@@ -1,6 +1,5 @@
 package jmri.jmrix.nce.clockmon;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -9,6 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -19,16 +19,16 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
 import jmri.Timebase;
 import jmri.TimebaseRateException;
-import jmri.jmrix.nce.NceListener;
-import jmri.jmrix.nce.NceMessage;
-import jmri.jmrix.nce.NceReply;
-import jmri.jmrix.nce.NceSystemConnectionMemo;
-import jmri.jmrix.nce.NceTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.jmrix.nce.*;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame displaying and programming a NCE clock monitor.
@@ -61,12 +61,11 @@ import org.slf4j.LoggerFactory;
  * 6. The nce clock must be left running, or it doesn't tic and
  * therefore doesn't go out over the bus.
  *
- * @author Ken Cameron Copyright (C) 2007
+ * @author Ken Cameron Copyright (C) 2007, 2023
  * derived from loconet.clockmonframe by Bob Jacobson Copyright (C) 2003
  */
 public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceListener {
 
-    public static final int CS_CLOCK_MEM_ADDR = 0xDC00;
     public static final int CS_CLOCK_MEM_SIZE = 0x10;
     public static final int CS_CLOCK_SCALE = 0x00;
     public static final int CS_CLOCK_TICK = 0x01;
@@ -84,6 +83,8 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
     public static final int MAX_ERROR_ARRAY = 4;
     public static final double MIN_POLLING_INTERVAL = 1.0;
     public static final double MAX_POLLING_INTERVAL = 120;
+    public static final int CLOCKRATIO_MIN = 0;
+    public static final int CLOCKRATIO_MAX = 15;
     public static final double DEFAULT_POLLING_INTERVAL = 5;
     public static final double TARGET_SYNC_DELAY = 55;
     public static final int SYNCMODE_OFF = 0;    //0 - clocks independent
@@ -197,7 +198,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
             try {
                 initComponents((NceSystemConnectionMemo) context);
             } catch (Exception e) {
-                log.error("NceClockMon initContext failed");
+                log.error("NceClockMon initContext failed"); // NOI18N
             }
         }
     }
@@ -271,10 +272,13 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         pane2.setBorder(pane2Titled);
         pane2.add(new JLabel(Bundle.getMessage("LabelTime")));
         pane2.add(hours);
+        hours.setToolTipText("0 - 23");
         pane2.add(new JLabel(Bundle.getMessage("LabelTimeSep")));
         pane2.add(minutes);
+        minutes.setToolTipText("0 - 59");
         pane2.add(new JLabel(Bundle.getMessage("LabelTimeSep")));
         pane2.add(seconds);
+        seconds.setToolTipText("0 - 59");
         seconds.setEditable(false);
         pane2.add(new JLabel(" "));
         pane2.add(amPm);
@@ -291,6 +295,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         pane2.setBorder(pane2Titled);
         pane2.add(new JLabel(Bundle.getMessage("LabelRatio")));
         pane2.add(rateNce);
+        rateNce.setToolTipText(CLOCKRATIO_MIN + " - "+ CLOCKRATIO_MAX);
         pane2.add(new JLabel(Bundle.getMessage("LabelToOne")));
         pane2.add(setRatioButton);
         add(pane2);
@@ -363,6 +368,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         pane2.add(new JLabel(" "));
         pane2.add(pollingSpeed);
         pollingSpeed.setText("" + pollingInterval);
+        pollingSpeed.setToolTipText(MIN_POLLING_INTERVAL + " - " + MAX_POLLING_INTERVAL);
         pane2.add(new JLabel(" "));
         pane2.add(new JLabel(Bundle.getMessage("InterfaceUpdRateSufix")));
         pane2.add(new JLabel(" "));
@@ -480,7 +486,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         // Create a timebase listener for the Minute change events
         internalClock = InstanceManager.getNullableDefault(jmri.Timebase.class);
         if (internalClock == null) {
-            log.error("No Timebase Instance; clock will not run");
+            log.error("No Timebase Instance; clock will not run"); // NOI18N
             return;
         }
         minuteChangeListener = (PropertyChangeEvent e) -> {
@@ -496,7 +502,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
     @Override
     public void message(NceMessage m) {
         log.error("clockmon message received: {}", m);
-    }
+    } // NOI18N
 
     @Override
     public void reply(NceReply r) {
@@ -519,7 +525,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
                 return;
             } else {
                 waitingForCmdTime = false;
-                if (r.getElement(0) != '!') {
+                if (r.getElement(0) != NceMessage.NCE_OKAY) {
                     log.error("NCE set clock replied: {}", r.getElement(0));
                 }
                 callStateMachines();
@@ -532,7 +538,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         } else {
             if (waitingForCmd1224) {
                 waitingForCmd1224 = false;
-                if (r.getElement(0) != '!') {
+                if (r.getElement(0) != NceMessage.NCE_OKAY) {
                     log.error("NCE set clock 12/24 replied:{}", r.getElement(0));
                 }
                 callStateMachines();
@@ -540,7 +546,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
             }
             if (waitingForCmdRatio) {
                 waitingForCmdRatio = false;
-                if (r.getElement(0) != '!') {
+                if (r.getElement(0) != NceMessage.NCE_OKAY) {
                     log.error("NCE clock ratio cmd replied:{}", r.getElement(0));
                 }
                 callStateMachines();
@@ -548,7 +554,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
             }
             if (waitingForCmdStop) {
                 waitingForCmdStop = false;
-                if (r.getElement(0) != '!') {
+                if (r.getElement(0) != NceMessage.NCE_OKAY) {
                     log.error("NCE clock stop cmd replied:{}", r.getElement(0));
                 }
                 callStateMachines();
@@ -556,7 +562,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
             }
             if (waitingForCmdStart) {
                 waitingForCmdStart = false;
-                if (r.getElement(0) != '!') {
+                if (r.getElement(0) != NceMessage.NCE_OKAY) {
                     log.error("NCE clock start cmd replied:{}", r.getElement(0));
                 }
                 callStateMachines();
@@ -602,9 +608,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         }
         if (clockMode == SYNCMODE_NCE_MASTER) {
             if (priorClockReadPacket != null && priorNceRatio != nceLastRatio) {
-                if (log.isDebugEnabled()) {
-                    log.debug("NCE Change Rate from cab: prior vs last: {} vs {}", priorNceRatio, nceLastRatio);
-                }
+                log.debug("NCE Change Rate from cab: prior vs last: {} vs {}", priorNceRatio, nceLastRatio);
                 rateNce.setText("" + nceLastRatio);
                 nceSyncInitStateCounter = 1;
                 nceSyncInitStates();
@@ -613,9 +617,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         nceLastRunning = r.getElement(CS_CLOCK_STATUS) != 1;
         if (clockMode == SYNCMODE_NCE_MASTER) {
             if (priorClockReadPacket != null && priorNceRunning != nceLastRunning) {
-                if (log.isDebugEnabled()) {
-                    log.debug("NCE Stop/Start: prior vs last: {} vs {}", priorNceRunning, nceLastRunning);
-                }
+                log.debug("NCE Stop/Start: prior vs last: {} vs {}", priorNceRunning, nceLastRunning);
                 if (nceLastRunning) {
                     nceSyncInitStateCounter = 1;
                 } else {
@@ -630,7 +632,10 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
 
     private void alarmDisplayUpdateHandler() {
         if (pollingInterval < MIN_POLLING_INTERVAL || pollingInterval > MAX_POLLING_INTERVAL) {
-            log.error("reseting pollingInterval, invalid value:{}", pollingInterval);
+            JmriJOptionPane.showMessageDialog(this,
+                Bundle.getMessage("DIALOG_PolingIntOutOfRange", MIN_POLLING_INTERVAL, MAX_POLLING_INTERVAL, pollingInterval),
+                Bundle.getMessage("DIALOG_NceClockMon"),
+                JmriJOptionPane.ERROR_MESSAGE);
             pollingInterval = DEFAULT_POLLING_INTERVAL;
         }
         // initialize things if not running
@@ -673,7 +678,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         }
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     private void alarmSyncStart() {
         // initialize things if not running
         Date now = internalClock.getTime();
@@ -763,7 +768,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         return (nceTime);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     private Date getNceDate() {
         Date now = internalClock.getTime();
         if (lastClockReadPacket != null) {
@@ -774,7 +779,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         return (now);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     private double getIntTime() {
         Date now = internalClock.getTime();
         int ms = (int) (now.getTime() % 1000);
@@ -786,15 +791,22 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
     }
 
     private void changeNceClockRatio() {
+        String newRatioStr = rateNce.getText().trim();
         try {
-            int newRatio = Integer.parseInt(rateNce.getText().trim());
+            int newRatio = Integer.parseInt(newRatioStr);
+            if ((newRatio <= CLOCKRATIO_MIN) || (newRatio > CLOCKRATIO_MAX)) {
+                throw new NumberFormatException();
+            }
             issueClockRatio(newRatio);
         } catch (NumberFormatException e) {
-            log.error("Invalid value: {}", rateNce.getText().trim());
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_InvalidRatio", newRatioStr, CLOCKRATIO_MIN, CLOCKRATIO_MAX),
+                    Bundle.getMessage("DIALOG_NceClockMon"),
+                    JmriJOptionPane.ERROR_MESSAGE);
         }
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     private void internalSyncInitStates() {
         Date now = internalClock.getTime();
         int priorState;
@@ -922,12 +934,12 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         } while (priorState != internalSyncInitStateCounter);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     private void internalSyncRunStates() {
         double intTime;
         double nceTime;
         double diffTime;
-        Date now = internalClock.getTime();
+        Date now = internalClock.getTime(); // Date.getTime
         if (internalSyncRunStateCounter != 0) {
             log.trace("internalSyncRunStates: {} @ {}", internalSyncRunStateCounter, now);
         }
@@ -1221,7 +1233,10 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
 
     private void changePollingSpeed(double newInterval) {
         if (newInterval < MIN_POLLING_INTERVAL || newInterval > MAX_POLLING_INTERVAL) {
-            log.error("reseting pollingInterval, invalid value:{}", newInterval);
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_PolingOutOfRange", newInterval, MIN_POLLING_INTERVAL, MAX_POLLING_INTERVAL),
+                    Bundle.getMessage("DIALOG_NceClockMon"),
+                    JmriJOptionPane.ERROR_MESSAGE);
         } else {
             pollingInterval = newInterval;
             pollingSpeed.setText("" + pollingInterval);
@@ -1485,7 +1500,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         nceDisplayStatus.setText(txt);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getTime
     private void updateInternalClockDisplay() {
         String txt = internalClock.getRun() ? Bundle.getMessage("TagRunning") : Bundle.getMessage("TagStopped");
         Date now = internalClock.getTime();
@@ -1511,7 +1526,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
 
     private void issueReadOnlyRequest() {
         if (!waitingForCmdRead) {
-            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(CS_CLOCK_MEM_ADDR);
+            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(tc.csm.getClockAddr());
             NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CS_CLOCK_MEM_SIZE);
             waiting++;
             waitingForCmdRead = true;
@@ -1522,7 +1537,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
 
     private void issueReadAllRequest() {
         if (!waitingForCmdRead) {
-            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(CS_CLOCK_MEM_ADDR);
+            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(tc.csm.getClockAddr());
             NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CS_CLOCK_MEM_SIZE);
             waiting++;
             waitingForCmdRead = true;
@@ -1534,11 +1549,10 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         updateStatusFromRead = true;
     }
 
-    @SuppressWarnings("unused")
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification="was previously marked with @SuppressWarnings, reason unknown")
     private void issueReadTimeRequest() {
         if (!waitingForCmdRead) {
-            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(CS_CLOCK_MEM_ADDR);
+            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(tc.csm.getClockAddr());
             NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CS_CLOCK_MEM_SIZE);
             waiting++;
             waitingForCmdRead = true;
@@ -1547,11 +1561,10 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         updateTimeFromRead = true;
     }
 
-    @SuppressWarnings("unused")
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification="was previously marked with @SuppressWarnings, reason unknown")
     private void issueReadRatioRequest() {
         if (!waitingForCmdRead) {
-            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(CS_CLOCK_MEM_ADDR);
+            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(tc.csm.getClockAddr());
             NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CS_CLOCK_MEM_SIZE);
             waiting++;
             waitingForCmdRead = true;
@@ -1560,11 +1573,10 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         updateRatioFromRead = true;
     }
 
-    @SuppressWarnings("unused")
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification="was previously marked with @SuppressWarnings, reason unknown")
     private void issueReadFormatRequest() {
         if (!waitingForCmdRead) {
-            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(CS_CLOCK_MEM_ADDR);
+            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(tc.csm.getClockAddr());
             NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CS_CLOCK_MEM_SIZE);
             waiting++;
             waitingForCmdRead = true;
@@ -1573,11 +1585,10 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         updateFormatFromRead = true;
     }
 
-    @SuppressWarnings("unused")
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification="was previously marked with @SuppressWarnings, reason unknown")
     private void issueReadStatusRequest() {
         if (!waitingForCmdRead) {
-            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(CS_CLOCK_MEM_ADDR);
+            byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryRead(tc.csm.getClockAddr());
             NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CS_CLOCK_MEM_SIZE);
             waiting++;
             waitingForCmdRead = true;
@@ -1587,6 +1598,27 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
     }
 
     private void issueClockSet(int hh, int mm, int ss) {
+        if ((hh < 0) || (hh > 23)) {
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_BadHour", hh),
+                    Bundle.getMessage("DIALOG_NceClockMon"),
+                    JmriJOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if ((mm < 0) || (mm > 59)) {
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_BadMinute", mm),
+                    Bundle.getMessage("DIALOG_NceClockMon"),
+                    JmriJOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if ((ss < 0) || (ss > 59)) {
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("DIALOG_BadSecond", ss),
+                    Bundle.getMessage("DIALOG_NceClockMon"),
+                    JmriJOptionPane.ERROR_MESSAGE);
+            return;
+        }
         issueClockSetMem(hh, mm, ss);
     }
 
@@ -1595,7 +1627,7 @@ public class ClockMonPanel extends jmri.jmrix.nce.swing.NcePanel implements NceL
         b[0] = (byte) ss;
         b[1] = (byte) mm;
         b[2] = (byte) hh;
-        byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryWriteN(CS_CLOCK_MEM_ADDR + CS_CLOCK_SECONDS, b);
+        byte[] cmd = jmri.jmrix.nce.NceBinaryCommand.accMemoryWriteN(tc.csm.getClockAddr() + CS_CLOCK_SECONDS, b);
         NceMessage cmdNce = jmri.jmrix.nce.NceMessage.createBinaryMessage(tc, cmd, CMD_MEM_SET_REPLY_SIZE);
         waiting++;
         waitingForCmdTime = true;

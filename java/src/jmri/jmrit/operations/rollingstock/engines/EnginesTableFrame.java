@@ -2,14 +2,10 @@ package jmri.jmrit.operations.rollingstock.engines;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
@@ -18,6 +14,7 @@ import jmri.jmrit.operations.rollingstock.engines.tools.NceConsistEngineAction;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.swing.JTablePersistenceManager;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for adding and editing the engine roster for operations.
@@ -52,10 +49,11 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
     public JRadioButton sortByRfid = new JRadioButton(Setup.getRfidLabel());
     JRadioButton sortByDcc = new JRadioButton(Bundle.getMessage("DccAddress"));
     JRadioButton sortByLast = new JRadioButton(Bundle.getMessage("Last"));
+    JRadioButton sortByComment = new JRadioButton(Bundle.getMessage("Comment"));
     ButtonGroup group = new ButtonGroup();
 
     // major buttons
-    JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
+    JButton addButton = new JButton(Bundle.getMessage("TitleEngineAdd"));
     JButton findButton = new JButton(Bundle.getMessage("Find"));
     JButton saveButton = new JButton(Bundle.getMessage("ButtonSave"));
 
@@ -104,6 +102,7 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
         }
         movep.add(sortByDcc);
         movep.add(sortByLast);
+        movep.add(sortByComment);
         cp1.add(movep);
 
         // row 2
@@ -112,6 +111,7 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
 
         JPanel cp2Add = new JPanel();
         cp2Add.setBorder(BorderFactory.createTitledBorder(""));
+        addButton.setToolTipText(Bundle.getMessage("TipAddButton"));
         cp2Add.add(numEngines);
         cp2Add.add(textEngines);
         cp2Add.add(textSep1);
@@ -165,6 +165,7 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
         addRadioButtonAction(sortByRfid);
         addRadioButtonAction(sortByDcc);
         addRadioButtonAction(sortByLast);
+        addRadioButtonAction(sortByComment);
 
         group.add(sortByNumber);
         group.add(sortByRoad);
@@ -180,6 +181,7 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
         group.add(sortByRfid);
         group.add(sortByDcc);
         group.add(sortByLast);
+        group.add(sortByComment);
         
         sortByDcc.setToolTipText(Bundle.getMessage("TipDccAddressFromRoster"));
 
@@ -248,6 +250,9 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
         if (ae.getSource() == sortByDcc) {
             enginesModel.setSort(enginesModel.SORTBY_DCC_ADDRESS);
         }
+        if (ae.getSource() == sortByComment) {
+            enginesModel.setSort(enginesModel.SORTBY_COMMENT);
+        }
     }
 
     public List<Engine> getSortByList() {
@@ -263,9 +268,9 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
         if (ae.getSource() == findButton) {
             int rowindex = enginesModel.findEngineByRoadNumber(findEngineTextBox.getText());
             if (rowindex < 0) {
-                JOptionPane.showMessageDialog(this, MessageFormat.format(
-                        Bundle.getMessage("engineWithRoadNumNotFound"), new Object[]{findEngineTextBox.getText()}),
-                        Bundle.getMessage("engineCouldNotFind"), JOptionPane.INFORMATION_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, 
+                        Bundle.getMessage("engineWithRoadNumNotFound", findEngineTextBox.getText()),
+                        Bundle.getMessage("engineCouldNotFind"), JmriJOptionPane.INFORMATION_MESSAGE);
                 return;
 
             }
@@ -326,5 +331,5 @@ public class EnginesTableFrame extends OperationsFrame implements PropertyChange
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(EnginesTableFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EnginesTableFrame.class);
 }

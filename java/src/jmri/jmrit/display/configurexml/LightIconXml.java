@@ -1,8 +1,11 @@
 package jmri.jmrit.display.configurexml;
 
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.display.Editor;
 import jmri.jmrit.display.LightIcon;
+import jmri.jmrit.display.Positionable;
+
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,8 @@ public class LightIconXml extends PositionableLabelXml {
         elem.addContent(storeIcon("inconsistent", p.getInconsistentIcon()));
         element.addContent(elem);
 
+        storeLogixNG_Data(p, element);
+
         element.setAttribute("class", "jmri.jmrit.display.configurexml.LightIconXml");
 
         return element;
@@ -51,9 +56,11 @@ public class LightIconXml extends PositionableLabelXml {
      *
      * @param element Top level Element to unpack.
      * @param o       Editor as an Object
+     * @throws JmriConfigureXmlException when a error prevents creating the objects as as
+     *                   required by the input XML
      */
     @Override
-    public void load(Element element, Object o) {
+    public void load(Element element, Object o) throws JmriConfigureXmlException {
         // create the objects
         Editor p = (Editor) o;
 
@@ -105,7 +112,15 @@ public class LightIconXml extends PositionableLabelXml {
             }
         }
 
-        p.putItem(l);
+        try {
+            p.putItem(l);
+        } catch (Positionable.DuplicateIdException e) {
+            // This should never happen
+            log.error("Editor.putItem() with null id has thrown DuplicateIdException", e);
+        }
+
+        loadLogixNG_Data(l, element);
+
         // load individual item's option settings after editor has set its global settings
         loadCommonAttributes(l, Editor.LIGHTS, element);
     }

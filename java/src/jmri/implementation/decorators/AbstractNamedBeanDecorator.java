@@ -14,7 +14,6 @@ import java.util.Set;
 
 /**
  * Abstract base for the NamedBean Decorators.
- * <p>
  *
  * @author Bob Jacobsen Copyright (C) 2001
  * @author Paul Bender Copyright (C) 2020
@@ -298,6 +297,12 @@ public abstract class AbstractNamedBeanDecorator implements NamedBean {
             AbstractNamedBeanDecorator b = (AbstractNamedBeanDecorator) obj;
             return this.getSystemName().equals(b.getSystemName());
         }
+
+        if(this.decorated.equals(obj)){
+            // this isn't the same object, but it is decorating the object
+            return true;
+        }
+
         return false;
     }
 

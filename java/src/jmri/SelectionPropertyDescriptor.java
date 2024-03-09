@@ -2,7 +2,8 @@ package jmri;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.swing.JComboBox;
+
+import javax.annotation.Nonnull;
 
 /**
  * Implementation of NamedBeanPropertyDescriptor for multiple choice properties.
@@ -21,23 +22,16 @@ public abstract class SelectionPropertyDescriptor extends NamedBeanPropertyDescr
      * @param optionTips Tool-tips for options of the property in String array.
      * @param defVal Default property value.
      */
-    public SelectionPropertyDescriptor(String key, String[] options, String[] optionTips, String defVal ) {
+    public SelectionPropertyDescriptor(
+            @Nonnull String key,
+            @Nonnull String[] options,
+            @Nonnull String[] optionTips,
+            @Nonnull String defVal ) {
         super(key, defVal );
         values = options;
         valueToolTips = optionTips;
     }
-    
-    /** 
-     * Get the Class of the property.
-     * <p>
-     * SelectionPropertyDescriber uses JComboBox.class
-     * @return JComboBox.class.
-     */
-    @Override
-    public Class<?> getValueClass() {
-        return JComboBox.class;
-    }
-    
+
     /**
      * Get the property options.
      * Should be same length as getOptionToolTips()

@@ -1,6 +1,7 @@
 package jmri.jmrit.operations.rollingstock;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import jmri.InstanceManager;
@@ -78,14 +79,13 @@ public class OperationsRollingStockTest extends OperationsTestCase {
         e.setAttribute(Xml.OUT_OF_SERVICE, Xml.FALSE);
         e.setAttribute(Xml.BLOCKING, "5");
         e.setAttribute(Xml.COMMENT, "Test Comment");
-        try {
+
+        Assertions.assertDoesNotThrow( () ->  {
             Car rs1 = new Car(e);
             Assert.assertNotNull("Xml Element Constructor", rs1);
-        } catch (java.lang.NullPointerException npe) {
-            Assert.fail("Null Pointer Exception while executing Xml Element Constructor");
-        }
+            Assert.assertEquals("Tag 12345", "ID12345", rs1.getRfid() );
+        }, "Exception while executing Xml Element Constructor");
 
-        jmri.util.JUnitAppender.assertErrorMessage("Tag 12345 not found");
     }
 
     // test creation
@@ -103,7 +103,7 @@ public class OperationsRollingStockTest extends OperationsTestCase {
         rs1.setWeight("TESTWEIGHT");
         rs1.setWeightTons("TESTWEIGHTTONS");
         rs1.setBuilt("TESTBUILT");
-        rs1.setOwner("TESTOWNER");
+        rs1.setOwnerName("TESTOWNER");
         rs1.setComment("TESTCOMMENT");
         // make sure the ID tags exist before we
         // try to add it to a car.
@@ -122,7 +122,7 @@ public class OperationsRollingStockTest extends OperationsTestCase {
         Assert.assertEquals("Car WeightTons", "TESTWEIGHTTONS", rs1.getWeightTons());
 
         Assert.assertEquals("Car Built", "TESTBUILT", rs1.getBuilt());
-        Assert.assertEquals("Car Owner", "TESTOWNER", rs1.getOwner());
+        Assert.assertEquals("Car Owner", "TESTOWNER", rs1.getOwnerName());
         Assert.assertEquals("Car Comment", "TESTCOMMENT", rs1.getComment());
         Assert.assertEquals("Car Rfid", "IDTESTRFID", rs1.getRfid());
         Assert.assertEquals("Car Moves", 5, rs1.getMoves());
@@ -151,8 +151,6 @@ public class OperationsRollingStockTest extends OperationsTestCase {
 
         Assert.assertEquals("Car Constant TRACK_CHANGED_PROPERTY", "rolling stock track location",
                 Car.TRACK_CHANGED_PROPERTY);
-        Assert.assertEquals("Car Constant DESTINATION_CHANGED_PROPERTY", "rolling stock destination",
-                Car.DESTINATION_CHANGED_PROPERTY);
         Assert.assertEquals("Car Constant DESTINATIONTRACK_CHANGED_PROPERTY", "rolling stock track destination",
                 Car.DESTINATION_TRACK_CHANGED_PROPERTY);
 

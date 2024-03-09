@@ -27,15 +27,7 @@ public class DirectoryHandlerTest {
         // `new File("foo").toURL().toURI()` does, compare paths of Files from URIs
         assertThat(new File(new URI(t.getResourceBase())).getCanonicalPath()).isEqualTo((new File("foo")).getCanonicalPath());
         assertThat(t.isDirectoriesListed()).isTrue();
-        assertThat(t.getWelcomeFiles()).containsExactly("index.html");
-    }
-
-    @Test
-    public void testDefaultConstructor() {
-        DirectoryHandler t = new DirectoryHandler();
-        assertThat(t.getResourceBase()).isNull();
-        assertThat(t.isDirectoriesListed()).isTrue();
-        assertThat(t.getWelcomeFiles()).containsExactly("index.html");
+        assertThat(t.getWelcomeFiles()).containsExactly("index.shtml", "index.html");
     }
 
     @BeforeEach

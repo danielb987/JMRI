@@ -43,15 +43,15 @@ public class LRouteTableActionTest {
     public void testRouteElementComparator() {
         LRouteTableAction.RouteElement e1 = new LRouteTableAction.RouteElement("ISname1", "B", LRouteTableAction.SENSOR_TYPE);
         LRouteTableAction.RouteElement e2 = new LRouteTableAction.RouteElement("ISname2", "B", LRouteTableAction.SENSOR_TYPE);
-        
+
         LRouteTableAction.RouteElementComparator rc = new LRouteTableAction.RouteElementComparator();
-        
+
         assertTrue("e1 = e1", rc.compare(e1, e1) == 0);
         assertTrue("e2 > e1", rc.compare(e2, e1) > 0);
         assertTrue("e1 < e2", rc.compare(e1, e2) < 0);
-        
+
     }
-    
+
     @Test
     public void testCreate() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());

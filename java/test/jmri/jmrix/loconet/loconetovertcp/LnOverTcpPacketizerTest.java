@@ -2,7 +2,6 @@ package jmri.jmrix.loconet.loconetovertcp;
 
 import jmri.util.JUnitUtil;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
 /**
@@ -12,11 +11,6 @@ import org.junit.jupiter.api.*;
  **/
 
 public class LnOverTcpPacketizerTest {
-
-   @Test
-   public void ConstructorTest(){
-      Assert.assertNotNull("LnOverTcpPacketizer constructor", new LnOverTcpPacketizer());
-   }
 
    @BeforeEach
    public void setUp() {

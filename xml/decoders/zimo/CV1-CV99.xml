@@ -7,19 +7,41 @@
 <!-- version 1.3 18 Jan 2015 Mark Waters -  additional include for CV14 for newer decoder -->
 <!-- version 1.4 14 Dec 2016 Ronald Kuhn -  excludes for Function decoder -->
 <!-- version 1.5 19 Apr 2019 Ronald Kuhn -  some german translations, sorts and default values -->
-<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<!-- version 1.6 10 Mar 2021  Nigel Cliffe -  minor changes to menus called for CV23,24, to improve appearance in panes -->
+<!-- version 1.7 26 Feb 2024 Pierre Billon -  Excluded light boards (179,184) for some CVs -->
+<variables xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <xi:include href="http://jmri.org/xml/decoders/nmra/shortAndLongAddress.xml"/>
   <xi:include href="http://jmri.org/xml/decoders/nmra/accelDecel_255.xml"/>
   <xi:include href="http://jmri.org/xml/decoders/nmra/vStartHighMid.xml"/>
-  <xi:include href="http://jmri.org/xml/decoders/nmra/mfgVersionId.xml"/>
-  <variable item="Motor Frequency and EMF sample Rate" CV="9" default="0" exclude="228,226,232,235,247,MX689_v30">
+  <!--  need to copy mfgVersionId here in order to exclude importing CV7 in SwissMapping allowing overriding its default value-->
+  <!--  <xi:include href="http://jmri.org/xml/decoders/nmra/mfgVersionId.xml"/>-->
+  <variable CV="7" item="Decoder Version" readOnly="yes" exclude="222">
+    <decVal/>
+    <label>Manufacturer Version No: </label>
+    <label xml:lang="cs">Verze dekodéru </label>
+    <label xml:lang="it">Versione Decoder: </label>
+    <label xml:lang="fr">Version décodeur: </label>
+    <label xml:lang="de">Decoderversion: </label>
+    <label xml:lang="nl">Decoderversie: </label>
+  </variable>
+  <variable CV="8" readOnly="yes" item="Manufacturer">
+    <decVal/>
+    <label>Manufacturer ID: </label>
+    <label xml:lang="cs">ID výrobce </label>
+    <label xml:lang="it">ID Costruttore: </label>
+    <label xml:lang="fr">ID constructeur: </label>
+    <label xml:lang="de">Hersteller ID: </label>
+    <label xml:lang="nl">Fabrikant ID: </label>
+  </variable>
+
+  <variable item="Motor Frequency and EMF sample Rate" CV="9" default="0" exclude="179,184,228,226,232,235,247,MX689_v30">
     <decVal/>
     <label>Motor Frequency and EMF sample Rate</label>
     <label xml:lang="it">Frequenza Motore e Freq.Campionamento EMF</label>
     <label xml:lang="cs">Frekvence motoru a EMF vzorkovací míra</label>
     <label xml:lang="de">Motoransteuerungsperiode bzw. – frequenz und EMK-Abtastrate</label>
   </variable>
-  <variable item="EMF Droop Config" CV="10" default="0" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="EMF Droop Config" CV="10" default="0" exclude="179,184,228,226,232,235,247,MX689_v30">
     <decVal max="252"/>
     <label>EMF Feedback Cutoff Speed Step</label>
     <label xml:lang="it">Step velocità taglio EMF</label>
@@ -290,7 +312,7 @@
     <tooltip xml:lang="de">Beschleunigungszeit, die zum Wert in CV #3 addiert oder davon abgezogen werden soll.</tooltip>
   </variable>
   <variable item="Acceleration Trim Sign" CV="23" mask="VXXXXXXX">
-    <xi:include href="http://jmri.org/xml/decoders/parts/enum-AddSubtract.xml"/>
+    <xi:include href="http://jmri.org/xml/decoders/zimo/Choice-AddSubtract.xml"/>
     <label>Acceleration Trim Sign</label>
     <label xml:lang="it">Segno Regolazione fine Accellerazione</label>
     <label xml:lang="cs">Znaménko korekce zrychlení</label>
@@ -305,7 +327,7 @@
     <tooltip xml:lang="de">Bremszeit, die zum Wert in CV #4 addiert oder davon abgezogen werden soll.</tooltip>
   </variable>
   <variable item="Deceleration Trim Sign" CV="24" mask="VXXXXXXX">
-    <xi:include href="http://jmri.org/xml/decoders/parts/enum-AddSubtract2.xml"/>
+    <xi:include href="http://jmri.org/xml/decoders/zimo/Choice-AddSubtract2.xml"/>
     <label>Deceleration Trim Sign</label>
     <label xml:lang="it">Segno Regolazione fine Decellarazione</label>
     <label xml:lang="cs">Znaménko korekce zpomalení</label>
@@ -563,19 +585,19 @@
     <label xml:lang="it">F2 controlla uscita 8</label>
     <label xml:lang="cs">F2 řídí výstup 8</label>
   </variable>
-  <variable item="F3 controls output 4" CV="37" mask="XXXXXXXV" minOut="4" minFn="3" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="F3 controls output 4" CV="37" mask="XXXXXXXV" minOut="4" minFn="3" exclude="179,184,228,226,232,235,247,MX689_v30">
     <xi:include href="http://jmri.org/xml/decoders/parts/enum-NoYes.xml"/>
     <label>F3 controls output 4</label>
     <label xml:lang="it">F3 controlla uscita 4</label>
     <label xml:lang="cs">F3 řídí výstup 4</label>
   </variable>
-  <variable item="F3 controls output 5" CV="37" default="1" mask="XXXXXXVX" minOut="5" minFn="3" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="F3 controls output 5" CV="37" default="1" mask="XXXXXXVX" minOut="5" minFn="3" exclude="179,184,228,226,232,235,247,MX689_v30">
     <xi:include href="http://jmri.org/xml/decoders/parts/enum-NoYes.xml"/>
     <label>F3 controls output 5</label>
     <label xml:lang="it">F3 controlla uscita 5</label>
     <label xml:lang="cs">F3 řídí výstup 5</label>
   </variable>
-  <variable item="F3 controls output 6" CV="37" mask="XXXXXVXX" minOut="6" minFn="3" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="F3 controls output 6" CV="37" mask="XXXXXVXX" minOut="6" minFn="3" exclude="179,184,228,226,232,235,247,MX689_v30">
     <xi:include href="http://jmri.org/xml/decoders/parts/enum-NoYes.xml"/>
     <label>F3 controls output 6</label>
     <label xml:lang="it">F3 controlla uscita 6</label>
@@ -611,19 +633,19 @@
     <label xml:lang="it">F3 controlla uscita 11</label>
     <label xml:lang="cs">F3 řídí výstup 11</label>
   </variable>
-  <variable item="F4 controls output 4" CV="38" mask="XXXXXXXV" minOut="4" minFn="4" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="F4 controls output 4" CV="38" mask="XXXXXXXV" minOut="4" minFn="4" exclude="179,184,228,226,232,235,247,MX689_v30">
     <xi:include href="http://jmri.org/xml/decoders/parts/enum-NoYes.xml"/>
     <label>F4 controls output 4</label>
     <label xml:lang="it">F4 controlla uscita 4</label>
     <label xml:lang="cs">F4 řídí výstup 4</label>
   </variable>
-  <variable item="F4 controls output 5" CV="38" mask="XXXXXXVX" minOut="5" minFn="4" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="F4 controls output 5" CV="38" mask="XXXXXXVX" minOut="5" minFn="4" exclude="179,184,228,226,232,235,247,MX689_v30">
     <xi:include href="http://jmri.org/xml/decoders/parts/enum-NoYes.xml"/>
     <label>F4 controls output 5</label>
     <label xml:lang="it">F4 controlla uscita 5</label>
     <label xml:lang="cs">F4 řídí výstup 5</label>
   </variable>
-  <variable item="F4 controls output 6" CV="38" default="1" mask="XXXXXVXX" minOut="6" minFn="4" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="F4 controls output 6" CV="38" default="1" mask="XXXXXVXX" minOut="6" minFn="4" exclude="179,184,228,226,232,235,247,MX689_v30">
     <xi:include href="http://jmri.org/xml/decoders/parts/enum-NoYes.xml"/>
     <label>F4 controls output 6</label>
     <label xml:lang="it">F4 controlla uscita 6</label>
@@ -1529,9 +1551,9 @@
     <label>Signal Dependent Acceleration</label>
     <label xml:lang="it">Accellerazione dipendente da Segnale</label>
     <label xml:lang="de">Signalabhängige (HLU) Beschleunigung</label>
+    <label xml:lang="cs">Zrychlení závislé na návěstidle</label>
     <comment>Range 0-255</comment>
     <comment xml:lang="it">Valori 0-255</comment>
-    <label xml:lang="cs">Zrychlení závislé na návěstidlech</label>
     <comment xml:lang="cs">Meze 0-255</comment>
   </variable>
   <variable item="Signal Dependent Deceleration" CV="50" default="0" comment="Range 0-255">
@@ -1539,9 +1561,9 @@
     <label>Signal Dependent Deceleration</label>
     <label xml:lang="it">Decellarazione dipendente da Segnale</label>
     <label xml:lang="de">Signalabhängige (HLU) Bremszeit</label>
+    <label xml:lang="cs">Zpomalení závislé na návěstidle</label>
     <comment>Range 0-255</comment>
     <comment xml:lang="it">Valori 0-255</comment>
-    <label xml:lang="cs">Zpomalení závislé na návěstidlech</label>
     <comment xml:lang="cs">Meze 0-255</comment>
   </variable>
   <variable item="-1-" CV="51" default="20" comment="Range 0-252">
@@ -1579,14 +1601,14 @@
     <comment xml:lang="it">Valori 0-252</comment>
     <comment xml:lang="cs">Meze 0-252</comment>
   </variable>
-  <variable item="BEMF config" CV="56" default="0" tooltip="Range 0-199" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="BEMF config" CV="56" default="0" tooltip="Range 0-199" exclude="179,184,228,226,232,235,247,MX689_v30">
     <decVal max="199"/>
     <label>BEMF config</label>
     <label xml:lang="it">Configuarzione BEMF</label>
     <label xml:lang="cs">Konfigurace BEMF</label>
     <label xml:lang="de">&lt;html&gt;P- und I-Wert&lt;br&gt;der EMK-Regelung&lt;/html&gt;</label>
   </variable>
-  <variable item="Dither frequency" CV="57" default="0" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="Dither frequency" CV="57" default="0" exclude="179,184,228,226,232,235,247,MX689_v30">
     <decVal max="255"/>
     <label>Voltage Reference</label>
     <label xml:lang="it">Tensione di Riferimento</label>
@@ -1595,7 +1617,7 @@
     <tooltip>Value divided by 10 is voltage applied to motor at full speed, 0 = automatic adjustment</tooltip>
     <tooltip xml:lang="de">Absolute Motoransteuerungs-Spannung in Zehntel- Volt, die bei voller Fahrt am Motor anliegen soll.</tooltip>
   </variable>
-  <variable item="Dither option" CV="58" default="255" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="Dither option" CV="58" default="255" exclude="179,184,228,226,232,235,247,MX689_v30">
     <decVal/>
     <label>BEMF Intensity</label>
     <label xml:lang="it">Intensità BEMF</label>
@@ -1608,7 +1630,7 @@
     <decVal max="255"/>
     <label>Signal Dependent Reaction Time</label>
     <label xml:lang="it">Tempo di reazione dipendente da Segnale</label>
-    <label xml:lang="cs">Reakční doba závisí na signálu</label>
+    <label xml:lang="cs">Reakční doba závisí na návěstidle</label>
     <label xml:lang="de">Signalabhängige (HLU) Reaktionszeit</label>
     <comment>Range 0-255</comment>
     <comment xml:lang="it">Valori 0-255</comment>
@@ -1624,7 +1646,7 @@
     <comment xml:lang="it">Controlla tensione uscita Funzioni (0-255=alta / 1-254)</comment>
     <comment xml:lang="cs">Řídí napětí funkčního výstupu (0 nebo 255 maximum; 1 - 254 snížení)</comment>
   </variable>
-  <variable item="Special Function Mapping" CV="61" default="0" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="Special Function Mapping" CV="61" default="0" exclude="179,184,228,226,232,235,247,MX689_v30">
     <enumVal>
       <enumChoice choice="NMRA Standard Mapping">
         <choice>NMRA Standard Mapping</choice>
@@ -1667,7 +1689,7 @@
     <tooltip> </tooltip>
     <tooltip xml:lang="de">Zykluszeit (Zehner-), Aus-Verlängerung (Einerstelle)</tooltip>
   </variable>
-  <variable item="Global lighting option 4" CV="64" default="5" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="Global lighting option 4" CV="64" default="5" exclude="179,184,228,226,232,235,247,MX689_v30">
     <decVal min="0" max="9"/>
     <label>Ditch Light Off Time</label>
     <label xml:lang="it">Tempo di Off luci Ditch</label>
@@ -1684,7 +1706,7 @@
     <tooltip>Sub-version Number (read only)</tooltip>
     <tooltip xml:lang="de">Unterversion Nummer (nur lesend)</tooltip>
   </variable>
-  <variable item="Speed Table" CV="67" exclude="228,226,232,235,247,MX689_v30">
+  <variable item="Speed Table" CV="67" exclude="179,184,228,226,232,235,247,MX689_v30">
     <speedTableVal/>
     <label>Speed Table</label>
     <label xml:lang="fr">Speed Table(fr)</label>

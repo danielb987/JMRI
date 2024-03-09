@@ -91,7 +91,9 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
      */
     @Override
     @Nonnull
-    public Sensor createNewSensor(@Nonnull String systemName, String userName) {
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value = "SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification = "passing exception text")
+    protected Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         String addr = systemName.substring(getSystemNamePrefix().length());
         // first, check validity
         try {
@@ -148,8 +150,10 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
     @Override
     @Nonnull
     public String createSystemName(@Nonnull String curAddress, @Nonnull String prefix) throws JmriException {
+        String tmpPrefix = prefix + typeLetter();
+        String tmpSName  = tmpPrefix + curAddress;
         try {
-            OlcbAddress.validateSystemNameFormat(curAddress,Locale.getDefault(),prefix);
+            OlcbAddress.validateSystemNameFormat(tmpSName,Locale.getDefault(),tmpPrefix);
         }
         catch ( jmri.NamedBean.BadSystemNameException ex ){
             throw new JmriException(ex.getMessage());
@@ -159,11 +163,12 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
     }
 
     @Override
-    public String getNextValidAddress(@Nonnull String curAddress, @Nonnull String prefix, boolean ignoreInitialExisting) {
-        // always return this (the current) name without change
-        return curAddress;
+    @javax.annotation.Nonnull
+    @javax.annotation.CheckReturnValue
+    public String getNextValidSystemName(@Nonnull NamedBean currentBean) throws JmriException {
+        throw new jmri.JmriException("getNextValidSystemName should not have been called");
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -185,15 +190,6 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
         // messages come from us
     }
 
-    /**
-     * No mechanism currently exists to request status updates from all layout
-     * sensors.
-     */
-    @Override
-    public void updateAll() {
-        // no current mechanisim to request status updates from all layout sensors
-    }
-    
     /**
      * Validates to OpenLCB format.
      * {@inheritDoc}

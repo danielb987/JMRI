@@ -3,7 +3,7 @@
 <!-- Stylesheet to convert a JMRI decoder definition to -->
 <!-- one line of a CSV file  per decoder -->
 
-<!-- This file is part of JMRI.  Copyright 2007-2011.                       -->
+<!-- This file is part of JMRI.  Copyright 2007-2023.                       -->
 <!--                                                                        -->
 <!-- JMRI is free software; you can redistribute it and/or modify it under  -->
 <!-- the terms of version 2 of the GNU General Public License as published  -->
@@ -22,12 +22,12 @@
      via the build.xml file. We build it by concatenation
      because XPath will evaluate '1997 - 2017' to '20'.
 -->
-<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2020')" />
+<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2024')" />
 
 <!-- Need to instruct the XSLT processor to use text output rules.
      See http://www.w3.org/TR/xslt#output for more details
 -->
-<xsl:output method="text" encoding="ISO-8859-1" 
+<xsl:output method="text" encoding="ISO-8859-1"
 	indent="no"
 	omit-xml-declaration="yes"
 	standalone="no" />
@@ -51,7 +51,7 @@
 				<xsl:value-of select="@num" />
 				<xsl:text>"</xsl:text>
 			</xsl:for-each>
-	
+
 	<xsl:text>
 </xsl:text>  <!-- thats a newline with no whitespace -->
 
@@ -59,7 +59,7 @@
 
 <!-- Find family nodes, and process the files they reference -->
 <xsl:template match="familyList">
-	
+
 	<xsl:for-each select="family">
            <xsl:if test="not( @mfg = 'NMRA' )" >
 		<xsl:variable name="filename" select="@file" />

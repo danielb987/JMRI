@@ -1,17 +1,20 @@
 package jmri.util.swing;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+
 import jmri.util.FileUtil;
 import jmri.util.iharder.dnd.URIDrop;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,14 @@ public class EditableResizableImagePanel extends ResizableImagePanel implements 
         super(imagePath, w, h);
         setDnd(true);
     }
+    
+    /**
+     * Cleanup the DnD from this component
+     *
+     */
+    public void removeDnd() {
+        URIDrop.remove(this);
+    }
 
     /**
      * Enable or disable drag'n drop, dropped files will be copied in latest
@@ -59,65 +70,108 @@ public class EditableResizableImagePanel extends ResizableImagePanel implements 
      *
      * @param dnd true to enable, false to disable
      */
-    public void setDnd(boolean dnd) {
+    public final void setDnd(boolean dnd) {
         if (dnd) {
             new URIDrop(this, this);
             if (myMouseAdapter == null) {
                 myMouseAdapter = new MyMouseAdapter(this);
             }
-            addMouseListener(myMouseAdapter);
+            addMouseListener(JmriMouseListener.adapt(myMouseAdapter));
         } else {
             URIDrop.remove(this);
             if (myMouseAdapter != null) {
-                removeMouseListener(myMouseAdapter);
+                removeMouseListener(JmriMouseListener.adapt(myMouseAdapter));
             }
         }
     }
 
-    //
-    // For contextual menu remove
-    static class MyMouseAdapter implements MouseListener {
+    /**
+     * Add a "open system file browser to path" menu item to the contextual menu
+     *
+     * @param menuEntry the menu entry string
+     * @param path the path to browse to
+     * @return the added menu item
+     */
+     public JMenuItem addMenuItemBrowseFolder(String menuEntry, String path) {
+        if (myMouseAdapter == null) {
+            return null;
+        }
+        JMenuItem  mi = new JMenuItem(menuEntry);
+        mi.addActionListener((ActionEvent e) -> {
+            try {
+                Desktop.getDesktop().open(new File(path));
+            } catch (IOException ex) {
+                log.error("Browse to action {}", ex.getMessage());
+            }
+        });
+        myMouseAdapter.addMenuItem(mi);
+        return mi;
+    }
 
-        private final JPopupMenu popUpMenu;
+    /**
+     * Remove a given menu item from the contextual menu
+     *
+     * @param mi the JMenuItem to remove
+     */
+     public void removeMenuItemBrowseFolder(JMenuItem mi) {
+        if (myMouseAdapter == null) {
+            return ;
+        }
+        myMouseAdapter.removeMenuItem(mi);
+    }
+
+    //
+    // For contextual menu
+    private static class MyMouseAdapter implements JmriMouseListener {
+
+        private JPopupMenu popUpMenu;
         private final JMenuItem removeMenuItem;
 
         public MyMouseAdapter(ResizableImagePanel resizableImagePanel) {
             popUpMenu = new JPopupMenu();
-            removeMenuItem = new JMenuItem("Remove");
+            removeMenuItem = new JMenuItem(Bundle.getMessage("Remove"));
             removeMenuItem.addActionListener((ActionEvent e) -> {
                 resizableImagePanel.setImagePath(null);
             });
             popUpMenu.add(removeMenuItem);
         }
 
-        void setRemoveMenuItemEnable(boolean b) {
-            removeMenuItem.setEnabled(b);
+        public void addMenuItem(JMenuItem item) {
+            if (item != null) {
+                popUpMenu.add(item);
+            }
+        }
+
+        public void removeMenuItem(JMenuItem item) {
+            if (item != null) {
+                popUpMenu.remove(item);
+            }
         }
 
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(JmriMouseEvent e) {
             maybeShowPopup(e);
         }
 
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(JmriMouseEvent e) {
             maybeShowPopup(e);
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(JmriMouseEvent e) {
             maybeShowPopup(e);
         }
 
         @Override
-        public void mouseEntered(MouseEvent e) {
+        public void mouseEntered(JmriMouseEvent e) {
         }
 
         @Override
-        public void mouseExited(MouseEvent e) {
+        public void mouseExited(JmriMouseEvent e) {
         }
 
-        private void maybeShowPopup(MouseEvent e) {
+        private void maybeShowPopup(JmriMouseEvent e) {
             if (e.isPopupTrigger()) {
                 popUpMenu.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -146,38 +200,69 @@ public class EditableResizableImagePanel extends ResizableImagePanel implements 
             return;
         }
         if (uris[0].getPath() == null) {
-            log.error("URIsDropped: not a valid URI path: ",uris[0]);
+            log.error("URIsDropped: not a valid URI path: {}",uris[0]);
             return;
-        }        
+        }
         File src = new File(uris[0].getPath());
         File dest = new File(uris[0].getPath());
         if (dropFolder != null) {
-            dest = new File(dropFolder + File.separatorChar + src.getName());          
+            dest = new File(dropFolder + File.separatorChar + src.getName());
             if (src.getParent().compareTo(dest.getParent()) != 0) {
                 // else case would be droping from dropFolder, so no copy
                 BufferedInputStream in = null;
+                BufferedInputStream out = null;
                 FileOutputStream fileOutputStream = null;
-                try {                    
-                    FileUtil.createDirectory(dest.getParentFile().getPath());                    
+                try {
+                    // prepare source reader
+                    boolean srcIsFile;
+                    FileUtil.createDirectory(dest.getParentFile().getPath());
                     if (uris[0].getScheme() != null && (uris[0].getScheme().equals("content") || uris[0].getScheme().equals("file"))) {
                         in = new BufferedInputStream(uris[0].toURL().openStream());
-                    } else { // let's avoir some 403 by passing a user agent
+                        srcIsFile = true;
+                    } else { // let's avoid some 403 by passing a user agent
                         HttpURLConnection httpcon = (HttpURLConnection) uris[0].toURL().openConnection();
                         httpcon.addRequestProperty("User-Agent", "Mozilla/4.0");
                         in = new BufferedInputStream(httpcon.getInputStream());
-                    }   
-                    // avoid overwrite
+                        srcIsFile = false;
+                    }
+                    // guess destination name and check if does not already exist
                     int i = 0;
                     while (dest.exists()) {
+                        // is it already there?
+                        boolean alreadyThere = false;
+                        if ( (srcIsFile) && (dest.length() == src.length()) ) {
+                            out = new BufferedInputStream( dest.toURI().toURL().openStream() );
+                            byte dataBufferIn[] = new byte[4096];
+                            byte dataBufferOut[] = new byte[4096];
+                            int bytesReadIn;
+                            int bytesReadOut;
+                            alreadyThere = true;
+                            // file comparison loop
+                            while ((bytesReadIn = in.read(dataBufferIn, 0, 4096)) != -1) {
+                                bytesReadOut = out.read(dataBufferOut, 0, 4096);
+                                if ( (bytesReadIn != bytesReadOut) || ( ! Arrays.equals(dataBufferIn, dataBufferOut) ) ) {
+                                    alreadyThere = false;
+                                    break;
+                                }
+                            }
+                            out.close();
+                        }
+                        if (alreadyThere) {
+                            break;
+                        }
+                        // else try next one
                         i++;
-                        dest = new File(dropFolder + File.separatorChar + i+"-"+src.getName());                         
+                        dest = new File(dropFolder + File.separatorChar + i+"-"+src.getName());
                     }
-                    // finally create file and copy data
-                    fileOutputStream = new FileOutputStream(dest);                    
-                    byte dataBuffer[] = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = in.read(dataBuffer, 0, 4096)) != -1) {
-                        fileOutputStream.write(dataBuffer, 0, bytesRead);
+                    // finally, if needed, create file and copy data
+                    if ( ! dest.exists()) {
+                        fileOutputStream = new FileOutputStream(dest);
+                        byte dataBuffer[] = new byte[4096];
+                        int bytesRead;
+                        // file copy loop
+                        while ((bytesRead = in.read(dataBuffer, 0, 4096)) != -1) {
+                            fileOutputStream.write(dataBuffer, 0, bytesRead);
+                        }
                     }
                 } catch (IOException e) {
                     log.error("URIsDropped: error while copying new file, using original file");
@@ -190,20 +275,27 @@ public class EditableResizableImagePanel extends ResizableImagePanel implements 
                             fileOutputStream.close();
                         }
                     } catch (IOException ex) {
-                        log.error("URIsDropped: error while closing copy destination file : ", ex.getMessage());
+                        log.error("URIsDropped: error while closing copy destination file : {}", ex.getMessage());
                     }
                     try {
                         if (in != null) {
-                            in.close(); 
+                            in.close();
                         }
                     } catch (IOException ex) {
-                        log.error("URIsDropped: error while closing copy source file : ", ex.getMessage());
+                        log.error("URIsDropped: error while closing copy source file : {}", ex.getMessage());
+                    }
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                    } catch (IOException ex) {
+                        log.error("URIsDropped: error while closing duplicate check file : {}", ex.getMessage());
                     }
                 }
-            }        
+            }
         }
         setImagePath(dest.getPath());
-    }    
+    }
 
     private final static Logger log = LoggerFactory.getLogger(EditableResizableImagePanel.class);
 }

@@ -1,24 +1,23 @@
 package jmri.jmrit.operations.trains.excel;
 
 import java.io.File;
-import java.text.MessageFormat;
+
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+
 import jmri.InstanceManager;
-import jmri.jmrit.operations.OperationsManager;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.setup.Setup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user edit of the file name of an Excel program used to generate
  * custom manifests.
  *
- * @author Dan Boudreau Copyright (C) 2014
- * 
+ * @author Dan Boudreau Copyright (C) 2014, 2023
  */
 public class SetupExcelProgramManifestFrame extends SetupExcelProgramFrame {
+
+    TrainCustomManifest tcm = InstanceManager.getDefault(TrainCustomManifest.class);
 
     @Override
     public void initComponents() {
@@ -26,33 +25,34 @@ public class SetupExcelProgramManifestFrame extends SetupExcelProgramFrame {
 
         generateCheckBox.setText(rb.getString("GenerateCsvManifest"));
         generateCheckBox.setSelected(Setup.isGenerateCsvManifestEnabled());
-        fileNameTextField.setText(InstanceManager.getDefault(TrainCustomManifest.class).getFileName());
-        pDirectoryName.add(new JLabel(InstanceManager.getDefault(OperationsManager.class).getFile(InstanceManager.getDefault(TrainCustomManifest.class).getDirectoryName()).getPath()));
+        fileNameTextField.setText(tcm.getFileName());
+        pDirectoryName.add(new JLabel(tcm.getDirectoryPathName()));
     }
 
-    // Save and Test
+    // Add, Test and Save buttons
     @Override
     public void buttonActionPerformed(java.awt.event.ActionEvent ae) {
         if (ae.getSource() == addButton) {
-            File f = selectFile(InstanceManager.getDefault(TrainCustomManifest.class).getDirectoryName());
+            File f = selectFile(tcm.getDirectoryName());
             if (f != null) {
                 log.debug("User selected file: {}", f.getName());
                 fileNameTextField.setText(f.getName());
             }
         }
 
-        InstanceManager.getDefault(TrainCustomManifest.class).setFileName(fileNameTextField.getText());
+        tcm.setFileName(fileNameTextField.getText());
 
         if (ae.getSource() == testButton) {
-            if (InstanceManager.getDefault(TrainCustomManifest.class).excelFileExists()) {
-                JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("DirectoryNameFileName"),
-                        new Object[]{InstanceManager.getDefault(TrainCustomManifest.class).getDirectoryName(), InstanceManager.getDefault(TrainCustomManifest.class).getFileName()}),
-                        Bundle.getMessage("ManifestCreatorFound"), JOptionPane.INFORMATION_MESSAGE);
+            if (tcm.excelFileExists()) {
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("DirectoryNameFileName",
+                        tcm.getDirectoryName(), tcm.getFileName()),
+                        Bundle.getMessage("ManifestCreatorFound"), JmriJOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, MessageFormat.format(
-                        Bundle.getMessage("LoadDirectoryNameFileName"), new Object[]{
-                            InstanceManager.getDefault(TrainCustomManifest.class).getDirectoryName(), InstanceManager.getDefault(TrainCustomManifest.class).getFileName()}), Bundle
-                        .getMessage("ManifestCreatorNotFound"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, 
+                        Bundle.getMessage("LoadDirectoryNameFileName",
+                                tcm.getDirectoryPathName(),
+                                tcm.getFileName()),
+                        Bundle.getMessage("ManifestCreatorNotFound"), JmriJOptionPane.ERROR_MESSAGE);
             }
         }
         if (ae.getSource() == saveButton) {
@@ -65,5 +65,5 @@ public class SetupExcelProgramManifestFrame extends SetupExcelProgramFrame {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SetupExcelProgramManifestFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SetupExcelProgramManifestFrame.class);
 }

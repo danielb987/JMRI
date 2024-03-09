@@ -2,9 +2,8 @@ package jmri.jmrix.can.cbus;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Locale;
-import javax.annotation.Nonnull;
-import jmri.JmriException;
-import jmri.Turnout;
+import javax.annotation.*;
+import jmri.*;
 import jmri.jmrix.can.CanSystemConnectionMemo;
 import jmri.managers.AbstractTurnoutManager;
 import org.slf4j.Logger;
@@ -34,15 +33,16 @@ public class CbusTurnoutManager extends AbstractTurnoutManager {
     /**
      * {@inheritDoc}
      */
+    @Nonnull
     @Override
-    protected Turnout createNewTurnout(@Nonnull String systemName, String userName) {
+    protected Turnout createNewTurnout(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         String addr = systemName.substring(getSystemPrefix().length() + 1);
         // first, check validity
         String newAddress;
         try {
             newAddress = CbusAddress.validateSysName(addr);
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            log.error("Unable to create CbusTurnout, {}", e.getMessage());
             throw e;
         }
         // OK, make
@@ -73,15 +73,25 @@ public class CbusTurnoutManager extends AbstractTurnoutManager {
         }
         return prefix + typeLetter() + newAddress;
     }
-    
-    /**
-     * Only increments by 1, which is fine for CBUS Turnouts.
-     * {@inheritDoc}
-     */
-    @Nonnull
+
     @Override
-    protected String getIncrement(String curAddress, int increment) throws JmriException {
-        return CbusAddress.getIncrement(curAddress);
+    @Nonnull
+    @CheckReturnValue
+    public String getNextValidSystemName(@Nonnull NamedBean currentBean) throws JmriException {
+        if (!allowMultipleAdditions(currentBean.getSystemName())) throw new UnsupportedOperationException("Not supported");
+
+        String currentName = currentBean.getSystemName();
+        String suffix = Manager.getSystemSuffix(currentName);
+        String type = Manager.getTypeLetter(currentName);
+        String prefix = Manager.getSystemPrefix(currentName);
+
+        String nextName = CbusAddress.getIncrement(suffix);
+
+        if (nextName==null) {
+            throw new JmriException("No existing number found when incrementing " + currentName);
+        }
+        return prefix+type+nextName;
+
     }
 
     /**
@@ -125,7 +135,7 @@ public class CbusTurnoutManager extends AbstractTurnoutManager {
     public String getEntryToolTip() {
         return Bundle.getMessage("AddOutputEntryToolTip");
     }
-    
+
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         super.propertyChange(e);

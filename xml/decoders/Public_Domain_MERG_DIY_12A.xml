@@ -11,7 +11,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <version author="Len Royles len@len-royles.co.uk" version="2" lastUpdated="20050204"/>
   <!-- This is for the MERG Decod12A decoder, version 133 with the original DIY(13) mfg.  -->
   <decoder>
@@ -59,7 +59,7 @@
         <decVal max="255"/>
         <label>Vmid</label>
       </variable>
-      <variable CV="7" readOnly="yes" item="Decoder Version" default="133">
+      <variable CV="7" item="Decoder Version" readOnly="yes" default="133">
         <decVal/>
         <label>Version ID</label>
         <label xml:lang="it">Versione Decoder: </label>

@@ -1,23 +1,16 @@
 package jmri.jmrit.operations.locations.tools;
 
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.text.MessageFormat;
+import java.awt.*;
 import java.util.List;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.OperationsXml;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.Pool;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.locations.TrackEditFrame;
+import jmri.jmrit.operations.locations.*;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  *
@@ -44,6 +37,7 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
     // labels
     JLabel name = new JLabel(Bundle.getMessage("Name"));
     JLabel minimum = new JLabel(Bundle.getMessage("Minimum"));
+    JLabel maximum = new JLabel(Bundle.getMessage("Maximum"));
     JLabel length = new JLabel(Bundle.getMessage("Length"));
 
     // text field
@@ -52,6 +46,11 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
 
     // combo box
     JComboBox<Pool> comboBoxPools = new JComboBox<>();
+    
+    // train departure order out of staging
+    JRadioButton orderNormal = new JRadioButton(Bundle.getMessage("Normal"));
+    JRadioButton orderFIFO = new JRadioButton(Bundle.getMessage("DescriptiveFIFO"));
+    JRadioButton orderLIFO = new JRadioButton(Bundle.getMessage("DescriptiveLIFO"));
 
     // major buttons
     JButton addButton = new JButton(Bundle.getMessage("Add"));
@@ -134,11 +133,30 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
 
         JPanel minLengthTrack = new JPanel();
         minLengthTrack.setLayout(new GridBagLayout());
-        minLengthTrack.setBorder(BorderFactory.createTitledBorder(MessageFormat.format(Bundle
-                .getMessage("PoolTrackMinimum"), new Object[]{_track.getName()})));
+        minLengthTrack
+                .setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("PoolTrackMinimum", _track.getName())));
         addItem(minLengthTrack, trackMinLengthTextField, 0, 0);
 
         trackMinLengthTextField.setText(Integer.toString(_track.getMinimumLength()));
+        
+        // row 4, train service order panel
+        JPanel panelOrder = new JPanel();
+        panelOrder.setLayout(new GridBagLayout());
+        panelOrder.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TrainPickupOrder")));
+        panelOrder.add(orderNormal);
+        panelOrder.add(orderFIFO);
+        panelOrder.add(orderLIFO);
+        
+        ButtonGroup orderGroup = new ButtonGroup();
+        orderGroup.add(orderNormal);
+        orderGroup.add(orderFIFO);
+        orderGroup.add(orderLIFO);
+        
+        updateRadioButtons();
+        
+        addRadioButtonAction(orderNormal);
+        addRadioButtonAction(orderFIFO);
+        addRadioButtonAction(orderLIFO);
 
         JPanel savePool = new JPanel();
         savePool.setLayout(new GridBagLayout());
@@ -149,6 +167,9 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
         p1.add(poolName);
         p1.add(selectPool);
         p1.add(minLengthTrack);
+        if (_track.isStaging()) {
+            p1.add(panelOrder);
+        }
         p1.add(savePool);
 
         JPanel p2 = new JPanel();
@@ -192,8 +213,9 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
         poolStatus.removeAll();
 
         addItemLeft(poolStatus, name, 0, 0);
-        addItem(poolStatus, minimum, 1, 0);
-        addItem(poolStatus, length, 2, 0);
+        addItem(poolStatus, maximum, 1, 0);
+        addItem(poolStatus, minimum, 2, 0);
+        addItem(poolStatus, length, 3, 0);
 
         String poolName = "";
         if (_track.getPool() != null) {
@@ -206,6 +228,9 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
                 Track track = tracks.get(i);
                 JLabel name = new JLabel();
                 name.setText(track.getName());
+                
+                JLabel maximum = new JLabel();
+                maximum.setText(Integer.toString(pool.getMaxLengthTrack(track)));
 
                 JLabel minimum = new JLabel();
                 minimum.setText(Integer.toString(track.getMinimumLength()));
@@ -216,21 +241,27 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
                 totalLength = totalLength + track.getLength();
 
                 addItemLeft(poolStatus, name, 0, i + 1);
-                addItem(poolStatus, minimum, 1, i + 1);
-                addItem(poolStatus, length, 2, i + 1);
+                addItem(poolStatus, maximum, 1, i + 1);
+                addItem(poolStatus, minimum, 2, i + 1);
+                addItem(poolStatus, length, 3, i + 1);
             }
             // Summary
+            int totalLine = tracks.size() + 1;
             JLabel total = new JLabel(Bundle.getMessage("Totals"));
-            addItem(poolStatus, total, 0, tracks.size() + 1);
+            addItem(poolStatus, total, 0, totalLine);
+            if (totalMinLength > totalLength) {
+                JLabel error = new JLabel(Bundle.getMessage("ErrorMinLen"));
+                error.setForeground(Color.RED);
+                addItem(poolStatus, error, 1, totalLine);
+            }
             JLabel totalMin = new JLabel();
             totalMin.setText(Integer.toString(totalMinLength));
-            addItem(poolStatus, totalMin, 1, tracks.size() + 1);
+            addItem(poolStatus, totalMin, 2, totalLine);
             JLabel totalLen = new JLabel();
             totalLen.setText(Integer.toString(totalLength));
-            addItem(poolStatus, totalLen, 2, tracks.size() + 1);
+            addItem(poolStatus, totalLen, 3, totalLine);
         }
-        poolStatus.setBorder(BorderFactory.createTitledBorder(MessageFormat.format(Bundle.getMessage("PoolTracks"),
-                new Object[]{poolName})));
+        poolStatus.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("PoolTracks", poolName)));
         poolStatus.repaint();
         poolStatus.revalidate();
         setPreferredSize(null); // kill JMRI window size
@@ -248,8 +279,8 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
             try {
                 _track.setMinimumLength(Integer.parseInt(trackMinLengthTextField.getText()));
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("TrackMustBeNumber"), Bundle
-                        .getMessage("ErrorTrackLength"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("TrackMustBeNumber"), Bundle
+                        .getMessage("ErrorTrackLength"), JmriJOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -261,6 +292,7 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
                 _pool.addPropertyChangeListener(this);
             }
             _track.setPool(_pool); // this causes a property change to this frame
+            updateServiceOrder();
 
             // save location file
             OperationsXml.save();
@@ -268,6 +300,42 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
                 dispose();
             }
         }
+    }
+    
+    @Override
+    public void radioButtonActionPerformed(java.awt.event.ActionEvent ae) {
+        log.debug("radio button activated");
+        if (_track.getPool() != null) {
+            for (Track track : _track.getPool().getTracks()) {
+                if (ae.getSource() == orderNormal) {
+                    track.setServiceOrder(Track.NORMAL);
+                }
+                if (ae.getSource() == orderFIFO) {
+                    track.setServiceOrder(Track.FIFO);
+                }
+                if (ae.getSource() == orderLIFO) {
+                    track.setServiceOrder(Track.LIFO);
+                }
+            }
+        }
+    }
+    
+    private void updateServiceOrder() {
+        if (_track.isStaging() && _track.getPool() != null) {
+            for (Track track : _track.getPool().getTracks()) {
+                if (track != _track) {
+                    _track.setServiceOrder(track.getServiceOrder());
+                    updateRadioButtons();
+                    break;
+                }
+            }
+        }
+    }
+    
+    private void updateRadioButtons() {
+        orderNormal.setSelected(_track.getServiceOrder().equals(Track.NORMAL));
+        orderFIFO.setSelected(_track.getServiceOrder().equals(Track.FIFO));
+        orderLIFO.setSelected(_track.getServiceOrder().equals(Track.LIFO));
     }
 
     @Override
@@ -303,5 +371,5 @@ class PoolTrackFrame extends OperationsFrame implements java.beans.PropertyChang
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(PoolTrackFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PoolTrackFrame.class);
 }

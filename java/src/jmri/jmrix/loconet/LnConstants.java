@@ -89,6 +89,7 @@ package jmri.jmrix.loconet;
  * @author John Kabat
  * @author Alain Le Marchand
  * @author B. Milhaupt Copyright (C) 2018
+ * @author Michael Richardson Copyright (C) 2021
  */
 public final class LnConstants {
 
@@ -142,6 +143,7 @@ public final class LnConstants {
     public final static int OPC_MULTI_SENSE_MSG = 0x60; // byte 1
     public final static int OPC_MULTI_SENSE_PRESENT = 0x20; // MSG field: transponder seen
     public final static int OPC_MULTI_SENSE_ABSENT = 0x00; // MSG field: transponder lost
+    public final static int OPC_MULTI_SENSE_RAILCOM_AD = 0x40; // MSG field: RailCom App Dyn
     public final static int OPC_MULTI_SENSE_POWER = 0x60; // MSG field: Power message
 
     public final static int STAT1_SL_SPURGE = 0x80;  /* internal use only, not seen on net */
@@ -361,6 +363,7 @@ public final class LnConstants {
     public final static int OPC_SW_ACK = 0xbd;
     public final static int OPC_LOCO_ADR = 0xbf;
     public final static int OPC_MULTI_SENSE = 0xd0; // Undocumented name
+    public final static int OPC_MULTI_SENSE_LONG = 0xe0; // Undocumented name
     public final static int OPC_PANEL_RESPONSE = 0xd7; // Undocumented name
     public final static int OPC_PANEL_QUERY = 0xdf; // Undocumented name
     public final static int OPC_LISSY_UPDATE = 0xe4; // Undocumented name
@@ -384,18 +387,20 @@ public final class LnConstants {
 
     /* Expanded slot codes */
     public final static int OPC_EXP_REQ_SLOT = 0xbe;
-    public final static int OPC_EXP_SLOT_MOVE = 0xd4;
+    // public final static int OPC_EXP_SLOT_MOVE = 0xd4;
     public final static int OPC_EXP_RD_SL_DATA = 0xe6;
     public final static int OPC_EXP_WR_SL_DATA = 0xee;
-    public final static int OPC_EXP_SEND_SUB_CODE_MASK_SPEED = 0b11110000;
-    public final static int OPC_EXP_SEND_SUB_CODE_MASK_FUNCTION = 0b11111000;
+    // Functions, Speed and directions
     public final static int OPC_EXP_SEND_FUNCTION_OR_SPEED_AND_DIR = 0xd5;
-    public final static int OPC_EXP_SEND_SPEED_AND_DIR_MASK = 0b00010000;
-    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F0F6_MASK = 0b00010000;
-    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F7F13_MASK = 0b00011000;
-    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F14F20_MASK = 0b00100000;
-    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F21F28_F28OFF_MASK = 0b00101000;
-    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F21F28_F28ON_MASK =  0b00110000;
+    public final static int OPC_EXP_SEND_SUB_CODE_MASK_SPEED = 0b11110000;
+    public final static int OPC_EXP_SEND_SPEED_AND_DIR_FWD = 0b00000000;
+    public final static int OPC_EXP_SEND_SPEED_AND_DIR_REV = 0b00001000;
+    public final static int OPC_EXP_SEND_SUB_CODE_MASK_FUNCTION = 0b11111000;
+    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F0F6 =          0b00010000;
+    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F7F13 =         0b00011000;
+    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F14F20 =        0b00100000;
+    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F21F28_F28OFF = 0b00101000;
+    public final static int OPC_EXP_SEND_FUNCTION_GROUP_F21F28_F28ON =  0b00110000;
 
     /**
      * Encode LocoNet Opcode as a string
@@ -428,6 +433,7 @@ public final class LnConstants {
             case OPC_SW_ACK     : return "OPC_SW_ACK"; // NOI18N
             case OPC_LOCO_ADR   : return "OPC_LOCO_ADR"; // NOI18N
             case OPC_MULTI_SENSE: return "OPC_MULTI_SENSE"; // NOI18N
+            case OPC_MULTI_SENSE_LONG: return "OPC_MULTI_SENSE_LONG"; // NOI18N
             case OPC_PANEL_QUERY: return "OPC_PANEL_QUERY"; // NOI18N
             case OPC_PANEL_RESPONSE: return "OPC_PANEL_RESPONSE"; // NOI18N
             case OPC_LISSY_UPDATE: return "OPC_LISSY_UPDATE"; // NOI18N
@@ -442,6 +448,74 @@ public final class LnConstants {
             default: return "<unknown>"; // NOI18N
         }
     }
+    /**
+     * Encode Device IPL code as a string
+     *
+     * @param device code
+     * @return string containing the opcode "name"
+     */
+    public final static String IPL_NAME(int device) {
+        switch (device) {
+            case RE_IPL_DIGITRAX_HOST_LNRP:
+                return "LNRP";
+            case RE_IPL_DIGITRAX_HOST_UT4:
+                return "UT4";
+            case RE_IPL_DIGITRAX_HOST_UT6:
+                return "UT6";
+            case RE_IPL_DIGITRAX_HOST_WTL12:
+                return "WTL12";
+            case RE_IPL_DIGITRAX_HOST_DB210OPTO:
+                return "DB210OPTO";
+            case RE_IPL_DIGITRAX_HOST_DB210:
+                return "DB210";
+            case RE_IPL_DIGITRAX_HOST_DB220:
+                return "DB220";
+            case RE_IPL_DIGITRAX_HOST_DCS210PLUS:
+                return "DCS210PLUS";
+            case RE_IPL_DIGITRAX_HOST_DCS210:
+                return "DCS210";
+            case RE_IPL_DIGITRAX_HOST_DCS240:
+                return "DCS240";
+            case RE_IPL_DIGITRAX_HOST_DCS240PLUS:
+                return "DCS240PLUS";
+            case RE_IPL_DIGITRAX_HOST_DCS52:
+                return "DCS52";
+            case RE_IPL_DIGITRAX_HOST_PR3:
+                return "PR3";
+            case RE_IPL_DIGITRAX_HOST_PR4:
+                return "PR4";
+            case RE_IPL_DIGITRAX_HOST_DT402:
+                return "DT402";
+            case RE_IPL_DIGITRAX_HOST_DT500:
+                return "DT500";
+            case RE_IPL_DIGITRAX_HOST_DT602:
+                return "DT602";
+            case RE_IPL_DIGITRAX_HOST_DCS51:
+                return "DCS51";
+            case RE_IPL_DIGITRAX_HOST_BXPA1:
+                return "BXPA1";
+            case RE_IPL_DIGITRAX_HOST_UR92:
+                return "UR92";
+            case RE_IPL_DIGITRAX_HOST_UR93:
+                return "UR93";
+            case RE_IPL_DIGITRAX_HOST_BXP88:
+                return "BXP88";
+            case RE_IPL_DIGITRAX_HOST_DS74:
+                return "DS74";
+            case RE_IPL_DIGITRAX_HOST_DS78V:
+                return "DS78V";
+            case RE_IPL_DIGITRAX_HOST_LNWI:
+                return "LNWI";
+            case RE_IPL_DIGITRAX_SLAVE_RF24:
+                return "RF24";
+            case RE_IPL_DIGITRAX_HOST_PM74:
+                return "PM74";
+            case RE_IPL_DIGITRAX_HOST_SE74:
+                return "SE74";
+            default: return "<unknown>"; // NOI18N
+        }
+    }
+
 
 // start of values not from llnmon.c
 
@@ -500,6 +574,7 @@ public final class LnConstants {
     public final static int RE_IPL_MFR_ALL = 0x00;
     public final static int RE_IPL_DIGITRAX_HOST_LNRP = 0x01;
     public final static int RE_IPL_DIGITRAX_HOST_UT4 = 0x04;
+    public final static int RE_IPL_DIGITRAX_HOST_UT6 = 0x06;
     public final static int RE_IPL_DIGITRAX_HOST_WTL12 = 0x0c;
     public final static int RE_IPL_DIGITRAX_HOST_DB210OPTO = 0x14;
     public final static int RE_IPL_DIGITRAX_HOST_DB210 = 0x15;
@@ -507,6 +582,7 @@ public final class LnConstants {
     public final static int RE_IPL_DIGITRAX_HOST_DCS210PLUS = 0x1a;
     public final static int RE_IPL_DIGITRAX_HOST_DCS210 = 0x1b;
     public final static int RE_IPL_DIGITRAX_HOST_DCS240 = 0x1c;
+    public final static int RE_IPL_DIGITRAX_HOST_DCS240PLUS = 0x1d;
     public final static int RE_IPL_DIGITRAX_HOST_DCS52 = 0x34;
     public final static int RE_IPL_DIGITRAX_HOST_PR3 = 0x23;
     public final static int RE_IPL_DIGITRAX_HOST_PR4 = 0x24;
@@ -514,9 +590,14 @@ public final class LnConstants {
     public final static int RE_IPL_DIGITRAX_HOST_DT500 = 0x32;
     public final static int RE_IPL_DIGITRAX_HOST_DT602 = 0x3E;
     public final static int RE_IPL_DIGITRAX_HOST_DCS51 = 0x33;
+    public final static int RE_IPL_DIGITRAX_HOST_SE74 = 0x46;
+    public final static int RE_IPL_DIGITRAX_HOST_PM74 = 0x4A;
     public final static int RE_IPL_DIGITRAX_HOST_BXPA1 = 0x51;
     public final static int RE_IPL_DIGITRAX_HOST_UR92 = 0x5C;
+    public final static int RE_IPL_DIGITRAX_HOST_UR93 = 0x5D;
     public final static int RE_IPL_DIGITRAX_HOST_BXP88 = 0x58;
+    public final static int RE_IPL_DIGITRAX_HOST_DS74 = 0x74;
+    public final static int RE_IPL_DIGITRAX_HOST_DS78V = 0x7C;
     public final static int RE_IPL_DIGITRAX_HOST_LNWI = 0x63;
     public final static int RE_IPL_DIGITRAX_HOST_ALL = 0x00;
     public final static int RE_IPL_DIGITRAX_SLAVE_RF24 = 0x18;
@@ -632,7 +713,7 @@ public final class LnConstants {
      *  <FUNC> = functions mask
      */
 // Common to Intellibox-I and -II :
-    public final static int RE_OPC_IB2_SPECIAL = 0xD4; //For functions F13-F28 (IB-II) and by IB-I v2.x ("one") for F0-F28
+    public final static int OPC_EXP_SLOT_MOVE_RE_OPC_IB2_SPECIAL= 0xD4; //For functions F13-F28 (IB-II) and by IB-I v2.x ("one") for F0-F28
     public final static int RE_IB2_SPECIAL_FUNCS_TOKEN = 0x20;
 //Used only by Intellibox-I ("one") version 2.x
     public final static int RE_IB1_SPECIAL_F0_F4_TOKEN = 0x06; //Used by Intellibox-I ("one") version 2.x
@@ -673,7 +754,7 @@ public final class LnConstants {
     public final static int RE_IB2_SPECIAL_F12_MASK = 0x10; //F12 is also controlled with the special F20-F28 command
     public final static int RE_IB2_SPECIAL_F20_MASK = 0x20;
     public final static int RE_IB2_SPECIAL_F28_MASK = 0x40;
-    
+
     public final static String DIGITRAX_STRING = "Digitrax"; // NOI18N
     public final static String RR_CIRKITS_STRING = "RR-CirKits"; // NOI18N
 

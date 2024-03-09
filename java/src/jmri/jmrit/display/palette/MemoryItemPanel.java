@@ -3,11 +3,11 @@ package jmri.jmrit.display.palette;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -15,6 +15,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
+
 import jmri.Memory;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.display.DisplayFrame;
@@ -25,8 +26,7 @@ import jmri.jmrit.display.MemoryInputIcon;
 import jmri.jmrit.display.MemorySpinnerIcon;
 import jmri.jmrit.display.PreviewPanel;
 import jmri.jmrit.picker.PickListModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 public class MemoryItemPanel extends TableItemPanel<Memory> implements ChangeListener {
 
@@ -242,8 +242,8 @@ public class MemoryItemPanel extends TableItemPanel<Memory> implements ChangeLis
         protected boolean okToDrag() {
             Memory bean = getDeviceNamedBean();
             if (bean == null) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("noRowSelected"),
-                        Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("noRowSelected"),
+                        Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 return false;
             }
             return true;
@@ -271,7 +271,7 @@ public class MemoryItemPanel extends TableItemPanel<Memory> implements ChangeLis
                     }
                     numCols = spinModel.getNumber().intValue();
                 } catch (java.text.ParseException pe) {
-                    log.error("MemoryDnD.createTransferable: {}", pe);
+                    log.error("MemoryDnD.createTransferable: ", pe);
                 }
                 switch (_memType) {
                     case READONLY:
@@ -304,16 +304,12 @@ public class MemoryItemPanel extends TableItemPanel<Memory> implements ChangeLis
                         break;
                 }
             } else if (DataFlavor.stringFlavor.equals(flavor)) {
-                StringBuilder sb = new StringBuilder(_itemType);
-                sb.append(" icons for \"");
-                sb.append(bean.getDisplayName());
-                sb.append("\"");
-                return sb.toString();
+                return _itemType + " icons for \"" + bean.getDisplayName() + "\"";
             }
             return null;
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(MemoryItemPanel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MemoryItemPanel.class);
 
 }

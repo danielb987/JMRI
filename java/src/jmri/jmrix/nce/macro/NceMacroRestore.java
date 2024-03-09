@@ -1,28 +1,29 @@
 package jmri.jmrix.nce.macro;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import jmri.jmrix.nce.NceBinaryCommand;
 import jmri.jmrix.nce.NceMessage;
 import jmri.jmrix.nce.NceReply;
 import jmri.jmrix.nce.NceTrafficController;
 import jmri.util.FileUtil;
 import jmri.util.StringUtil;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.swing.TextFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Restores NCE Macros from a text file defined by NCE.
  * <p>
  * NCE "Backup macros" dumps the macros into a text file. Each line contains the
- * contents of one macro. The first macro, 0 starts at address xC800. The last
+ * contents of one macro. The first macro, 0 starts at address xC800 (PH5 0x6000). The last
  * macro 255 is at address xDBEC.
  * <p>
  * NCE file format:
@@ -55,10 +56,11 @@ import org.slf4j.LoggerFactory;
  * appropriate macro address.
  *
  * @author Dan Boudreau Copyright (C) 2007
+ * @author Ken Cameron Copyright (C) 2023
  */
 public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListener {
 
-    private static final int CS_MACRO_MEM = 0xC800; // start of NCE CS Macro memory
+    private int cs_macro_mem; // start of NCE CS Macro memory
     private static final int MACRO_LNTH = 20;  // 20 bytes per macro
     private static final int REPLY_1 = 1;   // reply length of 1 byte expected
     private int replyLen = 0;    // expected byte length
@@ -68,18 +70,19 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
     javax.swing.JLabel textMacro = new javax.swing.JLabel();
     javax.swing.JLabel macroNumber = new javax.swing.JLabel();
 
-    private NceTrafficController tc = null;
+    private final NceTrafficController tc;
 
     public NceMacroRestore(NceTrafficController t) {
         super();
         this.tc = t;
+        cs_macro_mem = tc.csm.getMacroAddr();
     }
 
     @Override
     public void run() {
 
         // Get file to read from
-        JFileChooser fc = new JFileChooser(FileUtil.getUserFilesPath());
+        JFileChooser fc = new jmri.util.swing.JmriJFileChooser(FileUtil.getUserFilesPath());
         fc.addChoosableFileFilter(new TextFilter());
         int retVal = fc.showOpenDialog(null);
         if (retVal != JFileChooser.APPROVE_OPTION) {
@@ -94,7 +97,7 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
 
             // create a status frame
             JPanel ps = new JPanel();
-            jmri.util.JmriJFrame fstatus = new jmri.util.JmriJFrame("Macro Restore");
+            jmri.util.JmriJFrame fstatus = new jmri.util.JmriJFrame(Bundle.getMessage("RestoreTitle"));
             fstatus.setLocationRelativeTo(null);
             fstatus.setSize(200, 100);
             fstatus.getContentPane().add(ps);
@@ -102,7 +105,7 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
             ps.add(textMacro);
             ps.add(macroNumber);
 
-            textMacro.setText("Macro number:");
+            textMacro.setText(Bundle.getMessage("MacroNumberLabel"));
             textMacro.setVisible(true);
             macroNumber.setVisible(true);
 
@@ -110,7 +113,7 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
             waiting = 0;
             fileValid = false;     // in case we break out early
             int macroNum = 0;     // for user status messages
-            int curMacro = CS_MACRO_MEM;  // load the start address of the NCE macro memory
+            int curMacro = cs_macro_mem;  // load the start address of the NCE macro memory
             byte[] macroAccy = new byte[20];  // NCE Macro data
             String line;
 
@@ -124,12 +127,10 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
                 macroNumber.setText(Integer.toString(macroNum++));
 
                 if (line == null) {    // while loop does not break out quick enough
-                    log.error("NCE macro file terminator :0000 not found");
+                    log.error("NCE macro file terminator :0000 not found"); // NOI18N
                     break;
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("macro {}", line);
-                }
+                log.debug("macro {}", line);
                 // check that each line contains the NCE memory address of the macro
                 String macroAddr = ":" + Integer.toHexString(curMacro);
                 String[] macroLine = line.split(" ");
@@ -141,18 +142,19 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
                 }
 
                 if (!macroAddr.equalsIgnoreCase(macroLine[0])) {
-                    log.error("Restore file selected is not a vaild backup file");
-                    log.error("Macro addr in restore file should be {} Macro addr read {}", macroAddr, macroLine[0]);
+                    log.error("Restore file selected is not a vaild backup file"); // NOI18N
+                    log.error("Macro addr in restore file should be {} Macro addr read {}", macroAddr, macroLine[0]); // NOI18N
                     break;
                 }
 
                 // macro file found, give the user the choice to continue
-                if (curMacro == CS_MACRO_MEM) {
-                    if (JOptionPane
+                if (curMacro == cs_macro_mem) {
+                    if (JmriJOptionPane
                             .showConfirmDialog(
                                     null,
-                                    "Restore file found!  Restore can take over a minute, continue?",
-                                    "NCE Macro Restore", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+                                    Bundle.getMessage("dialogRestoreTime"),
+                                    Bundle.getMessage("RestoreTitle"),
+                                    JmriJOptionPane.YES_NO_OPTION) != JmriJOptionPane.YES_OPTION) {
                         break;
                     }
                 }
@@ -163,7 +165,7 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
                 for (int i = 0; i < 10; i++) {
                     int j = i << 1;    // i = word index, j = byte index
 
-                    byte b[] = StringUtil.bytesFromHexString(macroLine[i + 1]);
+                    byte[] b = StringUtil.bytesFromHexString(macroLine[i + 1]);
 
                     macroAccy[j] = b[0];
                     macroAccy[j + 1] = b[1];
@@ -188,7 +190,7 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
                 }
                 // failed
                 if (waiting > 0) {
-                    log.error("timeout waiting for reply");
+                    log.error("timeout waiting for reply"); // NOI18N
                     break;
                 }
             }
@@ -199,17 +201,18 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
             fstatus.dispose();
 
             if (fileValid) {
-                JOptionPane.showMessageDialog(null, "Successful Restore!",
-                        "NCE Macro", JOptionPane.INFORMATION_MESSAGE);
+                JmriJOptionPane.showMessageDialog(null,
+                        Bundle.getMessage("dialogRestoreSuccess"),
+                        Bundle.getMessage("RestoreTitle"),
+                        JmriJOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null,
-                        "Restore failed. Check console for error messages. \r\n"
-                        + "If operating at 19,200 baud, try 9600 baud.",
-                        "NCE Macro", JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(null,
+                        Bundle.getMessage("dialogRestoreFailed"),
+                        Bundle.getMessage("RestoreTitle"),
+                        JmriJOptionPane.ERROR_MESSAGE);
             }
 
-        } catch (IOException e) {
-            return;
+        } catch (IOException ignore) {
         }
     }
 
@@ -249,23 +252,20 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
     @SuppressFBWarnings(value = "NN_NAKED_NOTIFY")
     @Override
     public void reply(NceReply r) {
-        if (log.isDebugEnabled()) {
-            log.debug("waiting for {} responses ", waiting);
-        }
+        log.debug("waiting for {} responses ", waiting);
         if (waiting <= 0) {
-            log.error("unexpected response");
+            log.error("unexpected response"); // NOI18N
             return;
         }
         waiting--;
         if (r.getNumDataElements() != replyLen) {
-            log.error("reply length incorrect");
+            log.error("reply length incorrect"); // NOI18N
             return;
         }
         if (replyLen == REPLY_1) {
             // Looking for proper response
-            int recChar = r.getElement(0);
-            if (recChar != '!') {
-                log.error("reply incorrect");
+            if (r.getElement(0) != NceMessage.NCE_OKAY) {
+                log.error("reply incorrect"); // NOI18N
             }
         }
 
@@ -277,6 +277,6 @@ public class NceMacroRestore extends Thread implements jmri.jmrix.nce.NceListene
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(NceMacroRestore.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NceMacroRestore.class);
 
 }

@@ -66,6 +66,8 @@ public class RouteController extends AbstractController implements PropertyChang
      * @param message Command string to be parsed
      * @param deviceServer client to send responses (error messages) back to
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification="I18N of warn Message also sent to deviceServer")
     @Override
     void handleMessage(String message, DeviceServer deviceServer) {
         String rName = message.substring(2);                
@@ -96,18 +98,21 @@ public class RouteController extends AbstractController implements PropertyChang
     /**
      * Send Info on routes to devices, not specific to any one route.
      * <p>
-     * Format: PRT]\[value}|{routeKey]\[value}|{ActiveKey]\[value}|{InactiveKey
+     * Format: PRT]\[routeText}|{routeKey]\[stateText}|{stateKey]\[stateText}|{stateKey...
      */
     public void sendTitles() {
         if (listeners == null) {
             return;
         }
 
-        StringBuilder labels = new StringBuilder("PRT");    //  Panel Turnout Titles
+        StringBuilder labels = new StringBuilder("PRT");    //  Panel Route Titles
 
         labels.append("]\\[").append(Bundle.getMessage("MenuItemRouteTable")).append("}|{Route"); // should Route be translated?
-        labels.append("]\\[").append("Active").append("}|{2"); // should Active be translated?
-        labels.append("]\\[").append("Inactive").append("}|{4"); // should Inctive be translated?
+        labels.append("]\\[").append(Bundle.getMessage("StateActive")).append("}|{2");
+        labels.append("]\\[").append(Bundle.getMessage("StateInactive")).append("}|{4");
+        labels.append("]\\[").append(Bundle.getMessage("StateUnknown")).append("}|{0");
+        labels.append("]\\[").append(Bundle.getMessage("StateInconsistent")).append("}|{8");
+        labels.append("]\\[").append(Bundle.getMessage("StateUnknown")).append("}|{"); //define no feedback as Unknown
 
         String message = labels.toString();
 

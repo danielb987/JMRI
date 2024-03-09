@@ -19,6 +19,10 @@ import jmri.util.NamedBeanComparator;
  */
 public class MarklinSystemConnectionMemo extends jmri.jmrix.DefaultSystemConnectionMemo implements ConfiguringSystemConnectionMemo {
 
+    // Allow is-a relation between sub types, i.e. CdB and Marklin
+    protected MarklinSystemConnectionMemo(String prefix, String userName) {
+        super(prefix, userName);
+    }
     public MarklinSystemConnectionMemo(MarklinTrafficController et) {
         super("M", "Marklin-CS2");
         this.et = et;
@@ -56,22 +60,23 @@ public class MarklinSystemConnectionMemo extends jmri.jmrix.DefaultSystemConnect
     /**
      * This puts the common manager config in one place.
      */
+    @Override
     public void configureManagers() {
 
         PowerManager powerManager = new MarklinPowerManager(getTrafficController());
-        store(powerManager,PowerManager.class);
+        store(powerManager, PowerManager.class);
         jmri.InstanceManager.store(powerManager, PowerManager.class);
 
         TurnoutManager turnoutManager = new MarklinTurnoutManager(this);
-        store(turnoutManager,TurnoutManager.class);
+        store(turnoutManager, TurnoutManager.class);
         jmri.InstanceManager.setTurnoutManager(turnoutManager);
 
         ThrottleManager throttleManager = new MarklinThrottleManager(this);
-        store(throttleManager,ThrottleManager.class);
+        store(throttleManager, ThrottleManager.class);
         jmri.InstanceManager.setThrottleManager(throttleManager);
 
         SensorManager sensorManager = new jmri.jmrix.marklin.MarklinSensorManager(this);
-        store(sensorManager,SensorManager.class);
+        store(sensorManager, SensorManager.class);
         jmri.InstanceManager.setSensorManager(sensorManager);
 
         register();
@@ -88,19 +93,19 @@ public class MarklinSystemConnectionMemo extends jmri.jmrix.DefaultSystemConnect
     }
 
     public MarklinTurnoutManager getTurnoutManager() {
-        return get(TurnoutManager.class);
+        return (MarklinTurnoutManager)get(TurnoutManager.class);
     }
 
     public MarklinSensorManager getSensorManager() {
-        return get(SensorManager.class);
+        return (MarklinSensorManager)get(SensorManager.class);
     }
 
     public MarklinThrottleManager getThrottleManager() {
-        return get(ThrottleManager.class);
+        return (MarklinThrottleManager)get(ThrottleManager.class);
     }
 
     public MarklinPowerManager getPowerManager() {
-        return get(PowerManager.class);
+        return (MarklinPowerManager)get(PowerManager.class);
     }
 
     @Override

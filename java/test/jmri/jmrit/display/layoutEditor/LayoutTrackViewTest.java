@@ -4,8 +4,6 @@ import jmri.util.JUnitUtil;
 
 import java.awt.GraphicsEnvironment;
 
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.jupiter.api.*;
 
 /**
@@ -17,12 +15,12 @@ public class LayoutTrackViewTest {
 
     // LayoutTrackView is abstract, so there's
     // not much we can do here right now. But we provide a single
-    // LayoutInstance support to all the subtypes.  This is 
+    // LayoutInstance support to all the subtypes.  This is
     // needed because multiple LayoutEditor objects don't always play nice.
-    
+
     public LayoutEditor layoutEditor;
 
-    @BeforeAll
+    @BeforeEach
     @javax.annotation.OverridingMethodsMustInvokeSuper
     public void setUp() {
         JUnitUtil.setUp();
@@ -33,7 +31,7 @@ public class LayoutTrackViewTest {
         }
     }
 
-    @AfterAll
+    @AfterEach
     @javax.annotation.OverridingMethodsMustInvokeSuper
     public void tearDown() {
         if (layoutEditor != null) {

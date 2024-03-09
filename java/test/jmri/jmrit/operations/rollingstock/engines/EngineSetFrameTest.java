@@ -8,9 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
+import jmri.jmrit.operations.locations.*;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
 import jmri.util.JUnitOperationsUtil;
@@ -34,7 +32,7 @@ public class EngineSetFrameTest extends OperationsTestCase {
         f.initComponents();
         EngineManager eManager = InstanceManager.getDefault(EngineManager.class);
         Engine e3 = eManager.getByRoadAndNumber("PC", "5016");
-        f.loadEngine(e3);
+        f.load(e3);
         JUnitUtil.dispose(f);
     }
     
@@ -73,7 +71,7 @@ public class EngineSetFrameTest extends OperationsTestCase {
         Thread load = new Thread(new Runnable() {
             @Override
             public void run() {
-                f.loadEngine(e1);
+                f.load(e1);
             }
         });
         load.setName("engine set frame"); // NOI18N
@@ -91,11 +89,12 @@ public class EngineSetFrameTest extends OperationsTestCase {
             // do nothing
         }
         
+        JemmyUtil.waitFor(f);
         // pressing "Save" when engine has destination and train will cause dialog box to appear
         Assert.assertNotNull("engine has destination", e1.getDestination());
         Assert.assertNotNull("engine has destination track", e1.getDestinationTrack());
 
-        JemmyUtil.enterClickAndLeave(f.saveButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.saveButton);
         JemmyUtil.pressDialogButton(Bundle.getMessage("rsInRoute"), Bundle.getMessage("ButtonNo"));
         
         // Confirm that engine's destination is still there
@@ -103,15 +102,28 @@ public class EngineSetFrameTest extends OperationsTestCase {
         Assert.assertNotNull("engine has destination track", e1.getDestinationTrack());
         
         JemmyUtil.pressDialogButton(Bundle.getMessage("enginePartConsist"), Bundle.getMessage("ButtonYes"));
+        JemmyUtil.waitFor(f);
         
-        JemmyUtil.enterClickAndLeave(f.saveButton);
+        JemmyUtil.enterClickAndLeaveThreadSafe(f.saveButton);
         JemmyUtil.pressDialogButton(Bundle.getMessage("rsInRoute"), Bundle.getMessage("ButtonYes"));
 
         Assert.assertNull("engine has destination removed", e1.getDestination());
         Assert.assertNull("engine has destination track removed", e1.getDestinationTrack());
         
         JemmyUtil.pressDialogButton(Bundle.getMessage("enginePartConsist"), Bundle.getMessage("ButtonYes"));
-        
+        JemmyUtil.waitFor(f);
         JUnitUtil.dispose(f);
+        JUnitOperationsUtil.checkOperationsShutDownTask();
+    }
+    
+    @Test
+    public void testCloseWindowOnSave() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        EngineManager eManager = InstanceManager.getDefault(EngineManager.class);
+        Engine e3 = eManager.newRS("DB", "03");
+        EngineSetFrame f = new EngineSetFrame();
+        f.initComponents();
+        f.load(e3);
+        JUnitOperationsUtil.testCloseWindowOnSave(f.getTitle());
     }
 }

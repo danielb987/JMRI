@@ -30,7 +30,7 @@ public class ControlPanelEditorXml extends AbstractXmlAdapter {
     }
 
     /**
-     * Default implementation for storing the contents of a ControlPanelEditor
+     * Default implementation for storing the contents of a ControlPanelEditor.
      *
      * @param o Object to store, of type ControlPanelEditor
      * @return Element containing the complete info
@@ -55,7 +55,7 @@ public class ControlPanelEditorXml extends AbstractXmlAdapter {
         //panel.setAttribute("showcoordinates", ""+(p.showCoordinates()?"yes":"no"));
         panel.setAttribute("showtooltips", "" + (p.showToolTip() ? "yes" : "no"));
         panel.setAttribute("controlling", "" + (p.allControlling() ? "yes" : "no"));
-        panel.setAttribute("hide", p.isVisible() ? "no" : "yes");
+        panel.setAttribute("hide", p.showHidden() ? "no" : "yes");  // hide=no means showHidden enabled
         panel.setAttribute("panelmenu", p.isPanelMenuVisible() ? "yes" : "no");
         panel.setAttribute("scrollable", p.getScrollable());
         if (p.getBackgroundColor() != null) {
@@ -67,7 +67,7 @@ public class ControlPanelEditorXml extends AbstractXmlAdapter {
         panel.setAttribute("shapeSelect", "" + (p.getShapeSelect() ? "yes" : "no"));
 
         String family = p.getPortalIconFamily();
-        if (family != null) {
+        if (family != null && !family.equals("Standard")) { // don't store the default map name
         Element elem = new Element("icons");
             elem.setAttribute("portalFamily", family);
             panel.addContent(elem);
@@ -109,6 +109,10 @@ public class ControlPanelEditorXml extends AbstractXmlAdapter {
      */
     @Override
     public boolean load(Element shared, Element perNode) {
+        if (java.awt.GraphicsEnvironment.isHeadless()) {
+            return true;
+        }
+
         boolean result = true;
         Attribute a;
         // find coordinates
@@ -200,9 +204,9 @@ public class ControlPanelEditorXml extends AbstractXmlAdapter {
         }
         panel.setAllControlling(value);
 
-        value = false;
+        value = true;
         if ((a = shared.getAttribute("hide")) != null && a.getValue().equals("yes")) {
-            value = true;
+            value = false;
         }
         panel.setShowHidden(value);
 

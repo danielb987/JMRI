@@ -9,33 +9,22 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.UIManager;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsManager;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.util.swing.ExceptionContext;
 import jmri.util.swing.ExceptionDisplayFrame;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.swing.UnexpectedExceptionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RestoreDialog extends JDialog {
 
-    private final static Logger log = LoggerFactory.getLogger(RestoreDialog.class
-            .getName());
+    
 
     private JPanel mainPanel;
     private JPanel contentPanel;
@@ -153,6 +142,9 @@ public class RestoreDialog extends JDialog {
 
         // Start out with Default backups
         defaultBackupsRadioButton.doClick();
+//        pack();
+//        setLocationRelativeTo(null);
+//        setVisible(true);
     }
 
     // Event handlers
@@ -198,8 +190,8 @@ public class RestoreDialog extends JDialog {
 
         // check to see if files are dirty
         if (OperationsXml.areFilesDirty()) {
-            if (JOptionPane.showConfirmDialog(this, Bundle.getMessage("OperationsFilesModified"),
-                    Bundle.getMessage("SaveOperationFiles"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(this, Bundle.getMessage("OperationsFilesModified"),
+                    Bundle.getMessage("SaveOperationFiles"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                 OperationsXml.save();
             }
         }
@@ -223,8 +215,8 @@ public class RestoreDialog extends JDialog {
             // otherwise it is normal to not have the task running
             InstanceManager.getDefault(OperationsManager.class).setShutDownTask(null);
 
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("YouMustRestartAfterRestore"),
-                    Bundle.getMessage("RestoreSuccessful"), JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("YouMustRestartAfterRestore"),
+                    Bundle.getMessage("RestoreSuccessful"), JmriJOptionPane.INFORMATION_MESSAGE);
             dispose();
 
             try {
@@ -237,7 +229,7 @@ public class RestoreDialog extends JDialog {
         catch (IOException ex) {
             ExceptionContext context = new ExceptionContext(ex, Bundle.getMessage("RestoreDialog.restoring")
                     + " " + setName, "Hint about checking valid names, etc."); // NOI18N
-            new ExceptionDisplayFrame(context, this).setVisible(true);
+            ExceptionDisplayFrame.displayExceptionDisplayFrame(this, context);
 
         } catch (Exception ex) {
             log.error("Doing restore from {}", setName, ex);
@@ -245,7 +237,7 @@ public class RestoreDialog extends JDialog {
             UnexpectedExceptionContext context = new UnexpectedExceptionContext(ex,
                     Bundle.getMessage("RestoreDialog.restoring") + " " + setName);
 
-            new ExceptionDisplayFrame(context, this).setVisible(true);
+            ExceptionDisplayFrame.displayExceptionDisplayFrame(this, context);
         }
     }
 
@@ -277,5 +269,7 @@ public class RestoreDialog extends JDialog {
             comboBox.setSelectedIndex(model.getSize() - 1);
         }
     }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RestoreDialog.class);
 
 }

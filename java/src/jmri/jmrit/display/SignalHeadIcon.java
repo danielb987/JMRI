@@ -5,18 +5,22 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.SignalHead;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.display.palette.SignalHeadItemPanel;
 import jmri.jmrit.picker.PickListModel;
+import jmri.util.swing.JmriMouseEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,6 +168,12 @@ public class SignalHeadIcon extends PositionableIcon implements java.beans.Prope
         log.debug("property change: {} current state: {}", e.getPropertyName(), headState());
         displayState(headState());
         _editor.getTargetPanel().repaint();
+    }
+
+    @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_SignalHead");
     }
 
     @Override
@@ -486,7 +496,7 @@ public class SignalHeadIcon extends PositionableIcon implements java.beans.Prope
      * head.
      */
     @Override
-    public void doMouseClicked(java.awt.event.MouseEvent e) {
+    public void doMouseClicked(JmriMouseEvent e) {
         if (!_editor.getFlag(Editor.OPTION_CONTROLS, isControlling())) {
             return;
         }
@@ -499,7 +509,7 @@ public class SignalHeadIcon extends PositionableIcon implements java.beans.Prope
      *
      * @param e the mouse click event
      */
-    public void performMouseClicked(java.awt.event.MouseEvent e) {
+    public void performMouseClicked(JmriMouseEvent e) {
         if (e.isMetaDown() || e.isAltDown()) {
             return;
         }

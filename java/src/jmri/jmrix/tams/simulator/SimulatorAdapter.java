@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 public class SimulatorAdapter extends TamsPortController implements Runnable {
 
     // private control members
-    private boolean opened = false;
     private Thread sourceThread;
 
     // streams to share with user class
@@ -151,29 +150,27 @@ public class SimulatorAdapter extends TamsPortController implements Runnable {
             TamsMessage m = readMessage();
             TamsReply r;
             if (log.isDebugEnabled()) {
-                StringBuffer buf = new StringBuffer();
-                buf.append("Tams Simulator Thread received message: ");
+                StringBuilder buf = new StringBuilder();
                 if (m != null) {
                     for (int i = 0; i < m.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & m.getElement(i)) + " ");
+                        buf.append(Integer.toHexString(0xFF & m.getElement(i))).append(" ");
                     }
                 } else {
                     buf.append("null message buffer");
                 }
-                log.debug(buf.toString());
+                log.debug("Tams Simulator Thread received message: {}", buf );
             }
             if (m != null) {
                 //if(m.isReplyExpected()){
                 r = generateReply(m);
                 writeReply(r);
                 //}
-                if (log.isDebugEnabled() && r != null) {
-                    StringBuffer buf = new StringBuffer();
-                    buf.append("Tams Simulator Thread sent reply: ");
+                if (log.isDebugEnabled()) {
+                    StringBuilder buf = new StringBuilder();
                     for (int i = 0; i < r.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & r.getElement(i)) + " ");
+                        buf.append(Integer.toHexString(0xFF & r.getElement(i))).append(" ");
                     }
-                    log.debug(buf.toString());
+                    log.debug("Tams Simulator Thread sent reply: {}", buf );
                 }
             }
         }

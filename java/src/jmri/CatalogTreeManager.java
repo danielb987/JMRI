@@ -1,6 +1,8 @@
 package jmri;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -35,7 +37,8 @@ public interface CatalogTreeManager extends Manager<CatalogTree> {
      * @param name CatalogTree object to locate
      * @return null if no match found
      */
-    public CatalogTree getCatalogTree(@Nonnull String name);
+    @CheckForNull
+    CatalogTree getCatalogTree(@Nonnull String name);
 
     /**
      * Locate an instance based on a system name. Returns null if no instance
@@ -45,7 +48,8 @@ public interface CatalogTreeManager extends Manager<CatalogTree> {
      * @return requested CatalogTree object or null if none exists
      */
     @Override
-    public CatalogTree getBySystemName(@Nonnull String systemName);
+    @CheckForNull
+    CatalogTree getBySystemName(@Nonnull String systemName);
 
     /**
      * Locate an instance based on a user name. Returns null if no instance
@@ -55,7 +59,8 @@ public interface CatalogTreeManager extends Manager<CatalogTree> {
      * @return requested CatalogTree object or null if none exists
      */
     @Override
-    public CatalogTree getByUserName(@Nonnull String userName);
+    @CheckForNull
+    CatalogTree getByUserName(@Nonnull String userName);
 
     /**
      * Get a CatalogTree instance with the specified system and user names.
@@ -82,29 +87,31 @@ public interface CatalogTreeManager extends Manager<CatalogTree> {
      * @param systemName system name for new CatalogTree
      * @param userName   user name for new CatalogTree
      * @return requested CatalogTree object (never null)
+     * @throws IllegalArgumentException if unable to create.
      */
-    public CatalogTree newCatalogTree(@Nonnull String systemName, String userName);
+    @Nonnull
+    CatalogTree newCatalogTree(@Nonnull String systemName, String userName) throws IllegalArgumentException;
 
-    public void storeImageIndex();
+    void storeImageIndex();
 
-    public void loadImageIndex();
+    void loadImageIndex();
 
-    public boolean isIndexChanged();
+    boolean isIndexChanged();
 
-    public boolean isIndexLoaded();
+    boolean isIndexLoaded();
 
-    public void indexChanged(boolean changed);
+    void indexChanged(boolean changed);
 
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY",
             justification = "with existing code structure, just have to accept these exposed arrays. Someday...")
-    static final String[] IMAGE_FILTER = {"gif", "jpg", "jpeg", "png"};
+    String[] IMAGE_FILTER = {"gif", "jpg", "jpeg", "png"};
 
     @SuppressFBWarnings(value = "MS_OOI_PKGPROTECT",
             justification = "with existing code structure, just have to accept these exposed arrays. Someday...")
-    static final String[] SOUND_FILTER = {"wav"};
+    String[] SOUND_FILTER = {"wav"};
 
     @SuppressFBWarnings(value = "MS_OOI_PKGPROTECT",
             justification = "with existing code structure, just have to accept these exposed arrays. Someday...")
-    static final String[] SCRIPT_FILTER = {"py", "scpt"};
+    String[] SCRIPT_FILTER = {"py", "scpt"};
 
 }

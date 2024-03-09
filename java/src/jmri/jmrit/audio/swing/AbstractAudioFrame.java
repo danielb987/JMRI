@@ -9,6 +9,7 @@ import jmri.Audio;
 import jmri.implementation.AbstractAudio;
 import jmri.jmrit.beantable.AudioTableAction.AudioTableDataModel;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Abstract GUI to edit Audio objects
@@ -112,8 +113,8 @@ abstract public class AbstractAudioFrame extends JmriJFrame {
      */
     protected boolean entryError(String entry, String prefix, String counter) {
         if (!entry.startsWith(prefix)) {
-            JOptionPane.showMessageDialog(null, Bundle.getMessage("AudioCreateError", prefix),
-                    Bundle.getMessage("AudioCreateErrorTitle"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("AudioCreateError", prefix),
+                    Bundle.getMessage("AudioCreateErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
             sysName.setText(prefix + counter);
             return true;
         }
@@ -150,7 +151,6 @@ abstract public class AbstractAudioFrame extends JmriJFrame {
             layoutPanel(title, units);
         }
 
-        @SuppressWarnings("UnnecessaryBoxing")
         private void layoutPanel(String title, String units) {
             this.setLayout(new FlowLayout());
             if (title.length() != 0) {
@@ -219,7 +219,6 @@ abstract public class AbstractAudioFrame extends JmriJFrame {
 
         JSpinner spinner = new JSpinner();
 
-        @SuppressWarnings({"UnnecessaryBoxing", "OverridableMethodCallInConstructor"})
         JPanelSliderf(String title, Float min, Float max, int majorTicks, int minorTicks) {
             super();
             int iMin = Math.round(min * INT_PRECISION);
@@ -234,7 +233,7 @@ abstract public class AbstractAudioFrame extends JmriJFrame {
             slider.setMaximum(Math.round(max * INT_PRECISION));
             slider.setMajorTickSpacing(iInterval);
             slider.setMinorTickSpacing(iInterval / minorTicks);
-            @SuppressWarnings("UseOfObsoleteCollectionType")
+//            @SuppressWarnings("UseOfObsoleteCollectionType")
             // Need to use Hashtable for JSlider labels
             Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
             for (int i = iMin; i <= iMax; i += iInterval) {

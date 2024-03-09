@@ -3,6 +3,7 @@ package jmri.jmrit.symbolicprog.tabbedframe;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
 import jmri.Programmer;
 import jmri.ProgrammingMode;
 import jmri.jmrit.decoderdefn.DecoderFile;
@@ -30,6 +31,7 @@ public class PaneOpsProgFrame extends PaneProgFrame {
     protected JPanel getModePane() {
         if (modePane == null) {
             modePane = new JPanel();
+            modePane.add(new JLabel(Bundle.getMessage("ProgrammingOnMain")));
         }
         return modePane;
     }
@@ -67,10 +69,10 @@ public class PaneOpsProgFrame extends PaneProgFrame {
         if (log.isDebugEnabled()) {
             log.debug("Programmer supports:");
             for (ProgrammingMode m : modes) {
-                log.debug("   {} {}", m.getStandardName(), m.toString());
+                log.debug("  mode: {} {}", m.getStandardName(), m.toString());
             }
         }
-        
+
         // first try specified modes
         for (Element el1 : programming.getChildren("mode")) {
             String name = el1.getText();

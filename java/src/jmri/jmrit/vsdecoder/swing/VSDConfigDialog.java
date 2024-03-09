@@ -10,30 +10,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+
 import jmri.InstanceManager;
-import jmri.Programmer;
 import jmri.jmrit.DccLocoAddressSelector;
 import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.roster.swing.RosterEntrySelectorPanel;
-import jmri.jmrit.symbolicprog.CvTableModel;
-import jmri.jmrit.symbolicprog.VariableTableModel;
 import jmri.jmrit.vsdecoder.LoadVSDFileAction;
 import jmri.jmrit.vsdecoder.VSDConfig;
 import jmri.jmrit.vsdecoder.VSDManagerEvent;
 import jmri.jmrit.vsdecoder.VSDManagerListener;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Configuration dialog for setting up a new VSDecoder
@@ -91,6 +88,7 @@ public class VSDConfigDialog extends JDialog {
 
     private RosterEntry rosterEntrySelected;
     private boolean is_auto_loading;
+    private boolean is_viewing;
 
     /**
      * Constructor
@@ -99,11 +97,13 @@ public class VSDConfigDialog extends JDialog {
      * @param title  title for the dialog
      * @param c      Config object to be set by the dialog
      * @param ial    Is Auto Loading
+     * @param viewing Viewing mode flag
      */
-    public VSDConfigDialog(JPanel parent, String title, VSDConfig c, boolean ial) {
+    public VSDConfigDialog(JPanel parent, String title, VSDConfig c, boolean ial, boolean viewing) {
         super(SwingUtilities.getWindowAncestor(parent), title);
         config = c;
         is_auto_loading = ial;
+        is_viewing = viewing;
         VSDecoderManager.instance().addEventListener(new VSDManagerListener() {
             @Override
             public void eventAction(VSDManagerEvent evt) {
@@ -111,6 +111,7 @@ public class VSDConfigDialog extends JDialog {
             }
         });
         initComponents();
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -141,7 +142,7 @@ public class VSDConfigDialog extends JDialog {
             locoSelectPanel.setToolTipTextAt(locoSelectPanel.indexOfTab(Bundle.getMessage("LocoTabbedPaneManualTab")), Bundle.getMessage("LTPManualTabToolTip"));
             locoSelectPanel.setMnemonicAt(locoSelectPanel.indexOfTab(Bundle.getMessage("LocoTabbedPaneManualTab")), Mnemonics.get("ManualTab"));
         } catch (IndexOutOfBoundsException iobe) {
-            log.debug("Index out of bounds setting up tabbed Pane: {}", iobe);
+            log.debug("Index out of bounds setting up tabbed Pane", iobe);
             // Ignore out-of-bounds exception.  We just won't have mnemonics or tool tips this go round
         }
         // Roster Tab components
@@ -274,7 +275,7 @@ public class VSDConfigDialog extends JDialog {
     private void closeButtonActionPerformed(java.awt.event.ActionEvent ae) {
         if (profileComboBox.getSelectedItem() == null) {
             log.debug("Profile item selected: {}", profileComboBox.getSelectedItem());
-            JOptionPane.showMessageDialog(null, "Please select a valid Profile");
+            JmriJOptionPane.showMessageDialog(null, "Please select a valid Profile");
             rosterSaveButton.setEnabled(false);
             closeButton.setEnabled(false);
         } else {
@@ -335,6 +336,7 @@ public class VSDConfigDialog extends JDialog {
                     || (profileComboBox.getSelectedItem() instanceof NullProfileBoxItem)) {
                 rosterSaveButton.setEnabled(false);
                 closeButton.setEnabled(false);
+                log.warn("No Profile found");
             } else {
                 closeButton.doClick(); // All done
             }
@@ -355,7 +357,7 @@ public class VSDConfigDialog extends JDialog {
 
     private RosterEntry getSelectedRosterItem() {
         // Used by Auto-Load and non Auto-Load
-        if (is_auto_loading && getRosterItem() != null) {
+        if ((is_auto_loading || is_viewing) && getRosterItem() != null) {
             rosterEntrySelected = getRosterItem();
         } else {
             if (rosterSelector.getSelectedRosterEntries().length != 0) {
@@ -383,11 +385,11 @@ public class VSDConfigDialog extends JDialog {
                 log.warn("Path not selected.  Ignore Save button press.");
                 return;
             } else {
-                int value = JOptionPane.showConfirmDialog(null,
+                int value = JmriJOptionPane.showConfirmDialog(null,
                         MessageFormat.format(Bundle.getMessage("UpdateRoster"),
                         new Object[]{r.titleString()}),
-                        Bundle.getMessage("SaveRoster?"), JOptionPane.YES_NO_OPTION);
-                if (value == JOptionPane.YES_OPTION) {
+                        Bundle.getMessage("SaveRoster?"), JmriJOptionPane.YES_NO_OPTION);
+                if (value == JmriJOptionPane.YES_OPTION) {
                     r.putAttribute("VSDecoder_Path", path);
                     r.putAttribute("VSDecoder_Profile", profile);
                     if (r.getAttribute("VSDecoder_LaunchThrottle") == null) {
@@ -526,9 +528,12 @@ public class VSDConfigDialog extends JDialog {
             // This will trigger a PROFILE_LIST_CHANGE event from the VSDecoderManager.
             boolean is_loaded = LoadVSDFileAction.loadVSDFile(vsd_path);
 
-            if (is_loaded && vsd_launch_throttle != null && vsd_launch_throttle.equals("yes")) {
-                // Launch a JMRI Throttle (if setup by the Roster media attribut).
-                jmri.jmrit.throttle.ThrottleFrame tf = 
+            if (is_loaded &&
+                    vsd_launch_throttle != null &&
+                    vsd_launch_throttle.equals("yes") &&
+                    InstanceManager.throttleManagerInstance().getThrottleUsageCount(rosterEntry) == 0) {
+                // Launch a JMRI Throttle (if setup by the Roster media attribut and a throttle not already exists).
+                jmri.jmrit.throttle.ThrottleFrame tf =
                         InstanceManager.getDefault(jmri.jmrit.throttle.ThrottleFrameManager.class).createThrottleFrame();
                 tf.toFront();
                 tf.getAddressPanel().setRosterEntry(Roster.getDefault().entryFromTitle(rosterEntry.getId()));
@@ -542,6 +547,6 @@ public class VSDConfigDialog extends JDialog {
         addressSetButton.setEnabled(true);
     }
 
-    private static final Logger log = LoggerFactory.getLogger(VSDConfigDialog.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(VSDConfigDialog.class);
 
 }

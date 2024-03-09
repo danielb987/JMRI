@@ -76,7 +76,7 @@ public class NceSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
         if (getDisabled()) {
             return null;
         }
-        return (NceProgrammerManager) classObjectMap.computeIfAbsent(NceProgrammerManager.class,(Class c) -> new NceProgrammerManager(this));
+        return (NceProgrammerManager) classObjectMap.computeIfAbsent(NceProgrammerManager.class,(Class<?> c) -> new NceProgrammerManager(this));
     }
 
     public void setProgrammerManager(NceProgrammerManager p) {
@@ -98,6 +98,7 @@ public class NceSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
      * Configure the common managers for NCE connections. This puts the common
      * manager config in one place.
      */
+    @Override
     public void configureManagers() {
         log.trace("configureManagers() with: {} ", getNceUsbSystem());
         PowerManager powerManager = new jmri.jmrix.nce.NcePowerManager(this);
@@ -144,27 +145,27 @@ public class NceSystemConnectionMemo extends DefaultSystemConnectionMemo impleme
     }
 
     public NcePowerManager getPowerManager() {
-        return get(PowerManager.class);
+        return (NcePowerManager)get(PowerManager.class);
     }
 
     public NceTurnoutManager getTurnoutManager() {
-        return get(TurnoutManager.class);
+        return (NceTurnoutManager)get(TurnoutManager.class);
     }
 
     public NceLightManager getLightManager() {
-        return get(LightManager.class);
+        return (NceLightManager)get(LightManager.class);
     }
 
     public NceSensorManager getSensorManager() {
-        return get(SensorManager.class);
+        return (NceSensorManager)get(SensorManager.class);
     }
 
     public NceThrottleManager getThrottleManager() {
-        return get(ThrottleManager.class);
+        return (NceThrottleManager)get(ThrottleManager.class);
     }
 
     public NceClockControl getClockControl() {
-        return get(ClockControl.class);
+        return (NceClockControl)get(ClockControl.class);
     }
 
     /**

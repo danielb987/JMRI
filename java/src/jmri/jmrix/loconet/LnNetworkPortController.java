@@ -1,5 +1,12 @@
 package jmri.jmrix.loconet;
 
+import java.io.IOException;
+
+import jmri.InstanceManager;
+import jmri.ShutDownManager;
+import jmri.ShutDownTask;
+import jmri.implementation.AbstractShutDownTask;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * Base for classes representing a LocoNet communications port.
  *
  * @author Kevin Dickerson Copyright (C) 2011
+ * @author Bob Jacobsen    Copyright (C) 2023
  */
 public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetworkPortController {
 
@@ -25,8 +33,11 @@ public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetwork
 
     protected boolean mTurnoutNoRetry = false;
     protected boolean mTurnoutExtraSpace = false;
+    protected boolean mInterrogateAtStart = true;
 
     protected boolean mTranspondingAvailable = false;
+
+    protected boolean mLoconetProtocolAutoDetect = false;
 
     protected LnCommandStationType[] commandStationTypes = {
         LnCommandStationType.COMMAND_STATION_DCS100,
@@ -40,7 +51,9 @@ public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetwork
         LnCommandStationType.COMMAND_STATION_IBX_TYPE_1,
         LnCommandStationType.COMMAND_STATION_IBX_TYPE_2,
         LnCommandStationType.COMMAND_STATION_LBPS,
-        LnCommandStationType.COMMAND_STATION_MM};
+        LnCommandStationType.COMMAND_STATION_MM,
+        LnCommandStationType.COMMAND_STATION_DCS210PLUS,
+        LnCommandStationType.COMMAND_STATION_DCS240PLUS};
 
     protected String[] commandStationNames;
 
@@ -52,6 +65,28 @@ public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetwork
         }
     }
 
+    /**
+     * While opening, also register a ShutDown item that
+     * makes sure the socket is cleanly closed.
+     */
+    @Override
+    public void connect() throws IOException {
+        super.connect();
+        
+        ShutDownTask shutDownTask = new AbstractShutDownTask("Writing Blocks") {
+            @Override
+            public void run() {
+                log.info("Closing LocoNet network connection");
+                try {
+                    socketConn.close();
+                } catch (IOException ex) {
+                    log.error("Exception closing LocoNet network connection", ex);
+                }
+            }
+        };
+        InstanceManager.getDefault(ShutDownManager.class).register(shutDownTask);
+    }
+    
     // There are also "PR3 standalone programmer" and "Stand-alone LocoNet"
     // in pr3/PR3Adapter
     /**
@@ -109,6 +144,27 @@ public abstract class LnNetworkPortController extends jmri.jmrix.AbstractNetwork
         // default (most common state) is off, so just check for Yes
         mTranspondingAvailable = (value.equals("Yes") || value.equals(Bundle.getMessage("ButtonYes")));
         log.debug("transponding available: {}", mTranspondingAvailable); // NOI18N
+    }
+
+    /**
+     * Set whether to use XP slots if available or not.
+     *
+     * @param value either Bundle.getMessage("LoconetProtocolAutoDetect") or no
+     */
+    public void setLoconetProtocolAutoDetect(String value) {
+        // default (most common state) is off, so just check for Yes
+        mLoconetProtocolAutoDetect = (value.equals("Yes") || value.equals(Bundle.getMessage("LoconetProtocolAutoDetect")));
+        log.debug("Loconet XPSlots: {}", mLoconetProtocolAutoDetect); // NOI18N
+     }
+    /**
+     * Set whether to interrogate at startup
+     *
+     * @param value either yes or no
+     */
+    public void setInterrogateOnStart(String value) {
+        // default (most common state) is on, so just check for No
+        mInterrogateAtStart = !(value.equals("No") || value.equals(Bundle.getMessage("ButtonNo")));
+        log.debug("Interrogate at StartUp: {}", mInterrogateAtStart); // NOI18N
     }
 
     /**

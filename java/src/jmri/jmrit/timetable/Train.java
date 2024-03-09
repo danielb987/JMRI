@@ -40,13 +40,35 @@ public class Train {
     private final int _trainId;
     private final int _scheduleId;
     private int _typeId = 0;
-    private String _trainName = "NT";  // NOI18N
-    private String _trainDesc = "New Train";  // NOI18N
+    private String _trainName = Bundle.getMessage("NewTrainName");  // NOI18N
+    private String _trainDesc = Bundle.getMessage("NewTrainDesc");  // NOI18N
     private int _defaultSpeed = 1;
     private int _startTime = 0;
     private int _throttle = 0;
     private int _routeDuration = 0;
     private String _trainNotes = "";
+
+    /**
+     * Make a copy of the train.
+     * @param schedId The new schedule id, if zero use the current schedule id.
+     * @param typeId The new train type id.  If zero use the current train type id.
+     * @return a new Train instance.
+     */
+    public Train getCopy(int schedId, int typeId) {
+        if (schedId == 0) schedId = getScheduleId();
+        if (typeId == 0) typeId = getTypeId();
+
+        Train copy = new Train(schedId);
+        copy.setTypeId(typeId);
+        copy.setTrainName(Bundle.getMessage("DuplicateCopyName", _trainName));
+        copy.setTrainDesc(Bundle.getMessage("DuplicateCopyName", _trainDesc));
+        copy.setDefaultSpeed(_defaultSpeed);
+        copy.setStartTime(_startTime);
+        copy.setThrottle(_throttle);
+        copy.setRouteDuration(_routeDuration);
+        copy.setTrainNotes(_trainNotes);
+        return copy;
+    }
 
     public int getTrainId() {
         return _trainId;

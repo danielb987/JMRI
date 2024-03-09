@@ -3,7 +3,6 @@ package jmri.jmrit.logix;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import jmri.Block;
 import jmri.InstanceManagerAutoDefault;
 import jmri.ProvidingManager;
 import jmri.managers.AbstractManager;
@@ -24,9 +23,8 @@ import jmri.managers.AbstractManager;
 public class OBlockManager extends AbstractManager<OBlock>
         implements ProvidingManager<OBlock>, InstanceManagerAutoDefault {
 
-    @SuppressWarnings("deprecation")
     public OBlockManager() {
-        super(new jmri.jmrix.ConflictingSystemConnectionMemo("O", "OBlocks")); // NOI18N
+        super(new jmri.jmrix.CaptiveSystemConnectionMemo("O", "OBlocks")); // NOI18N
     }
 
     @Override

@@ -1,24 +1,38 @@
 package jmri.jmrit.throttle;
 
 import java.awt.Color;
+
 import jmri.DccThrottle;
 import jmri.InstanceManager;
 import jmri.LocoAddress;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.util.swing.ResizableImagePanel;
 
+/**
+ * A panel to be used as background for JMRI throttle frames 
+ * 
+ * @author Lionel Jeanson - 2009-
+ * 
+ */
+
 public class BackgroundPanel extends ResizableImagePanel implements AddressListener {
+
+    AddressPanel addressPanel = null;
 
     public BackgroundPanel() {
         super();
+        initGUI();
+        applyPreferences();
+    }
+    
+    private void initGUI() {
         setBackground(Color.GRAY);
         setRespectAspectRatio(true);
-        if (InstanceManager.getDefault(ThrottleFrameManager.class).getThrottlesPreferences().isResizingWindow()) {
-            setResizingContainer(true);
-        }
     }
-
-    AddressPanel addressPanel = null;
+    
+    public void applyPreferences() {
+        setResizingContainer(InstanceManager.getDefault(ThrottlesPreferences.class).isResizingWindow());
+    }
 
     public void setAddressPanel(AddressPanel addressPanel) {
         this.addressPanel = addressPanel;
@@ -55,14 +69,26 @@ public class BackgroundPanel extends ResizableImagePanel implements AddressListe
     }
 
     @Override
-    public void notifyConsistAddressChosen(int newAddress, boolean isLong) {
+    public void notifyConsistAddressChosen(LocoAddress l) {
+        notifyAddressChosen(l);
     }
 
     @Override
-    public void notifyConsistAddressReleased(int address, boolean isLong) {
+    public void notifyConsistAddressReleased(LocoAddress l) {
+         notifyAddressReleased(l);
     }
 
     @Override
-    public void notifyConsistAddressThrottleFound(DccThrottle throttle) {
+    public void notifyConsistAddressThrottleFound(DccThrottle t) {
+        notifyAddressThrottleFound(t);
     }
+
+    public void destroy() {
+        if (addressPanel != null) {
+            addressPanel.removeAddressListener(this);
+            addressPanel = null;
+        }
+    }
+
+    // private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BackgroundPanel.class);    
 }

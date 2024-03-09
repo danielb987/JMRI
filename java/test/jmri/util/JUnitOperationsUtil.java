@@ -1,38 +1,32 @@
 package jmri.util;
 
+import java.awt.GraphicsEnvironment;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.ResourceBundle; // for access operations keys directly.
 
 import org.junit.Assert;
+import org.junit.Assume;
+import org.netbeans.jemmy.operators.JButtonOperator;
+import org.netbeans.jemmy.operators.JFrameOperator;
 
-import jmri.InstanceManager;
-import jmri.ShutDownManager;
-import jmri.ShutDownTask;
+import jmri.*;
 import jmri.jmrit.operations.OperationsXml;
-import jmri.jmrit.operations.automation.Automation;
-import jmri.jmrit.operations.automation.AutomationItem;
-import jmri.jmrit.operations.automation.AutomationManager;
+import jmri.jmrit.operations.automation.*;
 import jmri.jmrit.operations.automation.actions.*;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.LocationManagerXml;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.locations.schedules.Schedule;
-import jmri.jmrit.operations.locations.schedules.ScheduleItem;
-import jmri.jmrit.operations.locations.schedules.ScheduleManager;
+import jmri.jmrit.operations.locations.*;
+import jmri.jmrit.operations.locations.schedules.*;
 import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.*;
+import jmri.jmrit.operations.rollingstock.engines.Consist;
+import jmri.jmrit.operations.rollingstock.engines.ConsistManager;
 import jmri.jmrit.operations.routes.Route;
 import jmri.jmrit.operations.routes.RouteLocation;
 import jmri.jmrit.operations.routes.RouteManager;
 import jmri.jmrit.operations.routes.RouteManagerXml;
 import jmri.jmrit.operations.setup.OperationsSetupXml;
 import jmri.jmrit.operations.setup.Setup;
-import jmri.jmrit.operations.trains.Train;
-import jmri.jmrit.operations.trains.TrainManager;
-import jmri.jmrit.operations.trains.TrainManagerXml;
+import jmri.jmrit.operations.trains.*;
 import jmri.jmrit.operations.trains.schedules.TrainSchedule;
 import jmri.jmrit.operations.trains.schedules.TrainScheduleManager;
 
@@ -50,7 +44,7 @@ public class JUnitOperationsUtil {
 
     /**
      * Setup the operations test file names and test locations.
-     * 
+     *
      */
     public static void setupOperationsTests() {
 
@@ -112,15 +106,14 @@ public class JUnitOperationsUtil {
         co.addName("DAB");
 
         // Set up four engines in two consists
-        Consist con1 = emanager.newConsist("C16");
-
-        Consist con2 = emanager.newConsist("C14");
+        Consist con1 = InstanceManager.getDefault(ConsistManager.class).newConsist("C16");
+        Consist con2 = InstanceManager.getDefault(ConsistManager.class).newConsist("C14");
 
         Engine e1 = new Engine("PC", "5016");
         e1.setModel("GP40");
         e1.setConsist(con1);
         e1.setMoves(123);
-        e1.setOwner("AT");
+        e1.setOwnerName("AT");
         e1.setBuilt("1990");
         emanager.register(e1);
 
@@ -128,21 +121,21 @@ public class JUnitOperationsUtil {
         e2.setModel("GP40");
         e2.setConsist(con1);
         e2.setMoves(321);
-        e2.setOwner("AT");
+        e2.setOwnerName("AT");
         e2.setBuilt("1990");
         emanager.register(e2);
 
         Engine e3 = new Engine("PC", "5524");
         e3.setModel("SD45");
         e3.setConsist(con2);
-        e3.setOwner("DAB");
+        e3.setOwnerName("DAB");
         e3.setBuilt("1980");
         emanager.register(e3);
 
         Engine e4 = new Engine("PC", "5559");
         e4.setModel("SD45");
         e4.setConsist(con2);
-        e4.setOwner("DAB");
+        e4.setOwnerName("DAB");
         e4.setBuilt("1980");
         emanager.register(e4);
 
@@ -269,7 +262,6 @@ public class JUnitOperationsUtil {
 
         Location locationNorthEnd = new Location("1", "North End Staging");
 
-        locationNorthEnd.setLocationOps(Location.STAGING);
         Assert.assertEquals("confirm default", DIRECTION_ALL, locationNorthEnd.getTrainDirections());
 
         locationNorthEnd.setComment("Test comment for location North End");
@@ -295,7 +287,6 @@ public class JUnitOperationsUtil {
         locationNorthEnd.register(l1staging2);
 
         Location locationSouthEnd = new Location("3", "South End Staging");
-        locationSouthEnd.setLocationOps(Location.STAGING);
         lmanager.register(locationSouthEnd);
 
         Track l3s1 = new Track("3s1", "South End 1", Track.STAGING, locationSouthEnd);
@@ -321,7 +312,6 @@ public class JUnitOperationsUtil {
         LocationManager lmanager = InstanceManager.getDefault(LocationManager.class);
 
         Location locationWestEnd = new Location("5", "West End Staging");
-        locationWestEnd.setLocationOps(Location.STAGING);
         lmanager.register(locationWestEnd);
 
         Track l5s1 = new Track("5s1", "West End 1", Track.STAGING, locationWestEnd);
@@ -334,7 +324,6 @@ public class JUnitOperationsUtil {
         locationWestEnd.register(l5s2);
 
         Location locationEastEnd = new Location("7", "East End Staging");
-        locationEastEnd.setLocationOps(Location.STAGING);
         lmanager.register(locationEastEnd);
 
         Track l7s1 = new Track("7s1", "East End 1", Track.STAGING, locationEastEnd);
@@ -370,7 +359,7 @@ public class JUnitOperationsUtil {
     /**
      * Creates a three location route that is also a turn. Train departs North
      * bound and returns South bound.
-     * 
+     *
      * @return Route
      */
     public static Route createThreeLocationTurnRoute() {
@@ -405,24 +394,67 @@ public class JUnitOperationsUtil {
 
     public static Route createFiveLocationRoute() {
 
+        RouteManager rmanager = InstanceManager.getDefault(RouteManager.class);
         LocationManager lmanager = InstanceManager.getDefault(LocationManager.class);
 
-        Route route = createThreeLocationRoute();
+        createSevenNormalLocations();
 
+        Route route = rmanager.newRoute("Route Acton-Boston-Chelmsford-Davers-Essex");
+
+        Location acton = lmanager.getLocationByName("Acton");
+        Location boston = lmanager.getLocationByName("Boston");
+        Location chelmsford = lmanager.getLocationByName("Chelmsford");
         Location danvers = lmanager.getLocationByName("Danvers");
         Location essex = lmanager.getLocationByName("Essex");
 
+        route.addLocation(acton);
+        route.addLocation(boston);
+        route.addLocation(chelmsford);
         route.addLocation(danvers);
         route.addLocation(essex);
 
-        route.setName("Route Acton-Boston-Chelmsford-Davers-Essex");
+        return route;
+    }
+    
+    public static Route createFiveLocationTurnRoute() {
+
+        RouteManager rmanager = InstanceManager.getDefault(RouteManager.class);
+        LocationManager lmanager = InstanceManager.getDefault(LocationManager.class);
+
+        createSevenNormalLocations();
+
+        Route route = rmanager.newRoute("Route Acton-Boston-Chelmsford-Danvers-Essex-Essex-Danvers-Chelmsford-Boston-Acton");
+
+        Location acton = lmanager.getLocationByName("Acton");
+        Location boston = lmanager.getLocationByName("Boston");
+        Location chelmsford = lmanager.getLocationByName("Chelmsford");
+        Location danvers = lmanager.getLocationByName("Danvers");
+        Location essex = lmanager.getLocationByName("Essex");
+
+        route.addLocation(acton);
+        route.addLocation(boston);
+        route.addLocation(chelmsford);
+        route.addLocation(danvers);
+        route.addLocation(essex);
+        
+        RouteLocation rlE = route.addLocation(essex); // enter 2nd time for train reversal
+        rlE.setTrainDirection(RouteLocation.SOUTH);
+        RouteLocation rlD = route.addLocation(danvers);
+        rlD.setTrainDirection(RouteLocation.SOUTH);
+        RouteLocation rlC = route.addLocation(chelmsford);
+        rlC.setTrainDirection(RouteLocation.SOUTH);
+        RouteLocation rlB = route.addLocation(boston);
+        rlB.setTrainDirection(RouteLocation.SOUTH);
+        RouteLocation rlA = route.addLocation(acton);
+        rlA.setTrainDirection(RouteLocation.SOUTH);
+        rlA.setPickUpAllowed(false); // don't include cars at destination
 
         return route;
     }
 
     /**
      * Creates a location with 2 spurs, 2 interchanges, and 2 yards
-     * 
+     *
      * @param name the name of the location and the tracks there.
      * @return the location created
      */
@@ -482,7 +514,7 @@ public class JUnitOperationsUtil {
         Car car = cmanager.newRS(road, number);
         car.setTypeName(type);
         car.setLength(length);
-        car.setOwner(owner);
+        car.setOwnerName(owner);
         car.setBuilt(built);
         car.setMoves(moves);
         car.setColor("Black");
@@ -560,8 +592,11 @@ public class JUnitOperationsUtil {
         Location l3 = lManager.newLocation("Test Loc C");
         l3.setLength(1003);
         Location l4 = lManager.newLocation("Test Loc B");
+        l4.addTrack("Yard Track", Track.YARD);
+        l4.addTrack("Interchange Track", Track.INTERCHANGE);
         l4.setLength(1004);
         Location l5 = lManager.newLocation("Test Loc A");
+        l5.addTrack("Staging Track", Track.STAGING);
         l5.setLength(1005);
     }
 
@@ -607,7 +642,7 @@ public class JUnitOperationsUtil {
         spur1.setScheduleMode(Track.MATCH); // set schedule into match mode
         spur1.setAlternateTrack(alternate);
         spur1.setReservationFactor(60);
-        
+
         spur2.setSchedule(schedule);
         spur2.setScheduleMode(Track.SEQUENTIAL);
         return schedule;
@@ -666,18 +701,38 @@ public class JUnitOperationsUtil {
         return in;
     }
     
+    public static void testCloseWindowOnSave(String title) {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+
+        JFrameOperator jfo = new JFrameOperator(title);
+        Assert.assertNotNull("visible and found", jfo);
+        // confirm window appears
+        JmriJFrame f = JmriJFrame.getFrame(title);
+        Assert.assertNotNull("exists", f);
+        new JButtonOperator(jfo, Bundle.getMessage("ButtonSave")).doClick();
+        f = JmriJFrame.getFrame(title);
+        Assert.assertNotNull("exists", f);
+        // now close window with save button
+        Setup.setCloseWindowOnSaveEnabled(true);
+        new JButtonOperator(jfo, Bundle.getMessage("ButtonSave")).doClick();
+        jfo.waitClosed();
+        // confirm window is closed
+        f = JmriJFrame.getFrame(title);
+        Assert.assertNull("does not exist", f);
+    }
+
     public static void checkOperationsShutDownTask() {
         // remove the operations shut down tasks
         Assert.assertTrue(InstanceManager.containsDefault(ShutDownManager.class));
         ShutDownManager sm = InstanceManager.getDefault(jmri.ShutDownManager.class);
-        List<ShutDownTask> list = sm.tasks();
-        // only one operations shut down task, the other can be NCE shutdown
-        Assert.assertTrue("Two shut down tasks max", list.size() < 3);
+        var list = sm.getRunnables();
+        // only one operations shut down task, the others can be NCE shutdown and EditorManager shutdown.
+        Assert.assertTrue("Two shut down tasks max", list.size() < 4);
         ShutDownTask operationShutdownTask = null;
-        for (ShutDownTask task : list) {
-            if (task.getName().equals("Operations Train Window Check")
-                    || task.getName().equals("Save Operations State")) {
-                operationShutdownTask = task;
+        for (var task : list) {
+            if (((ShutDownTask)task).getName().equals("Operations Train Window Check")
+                    || ((ShutDownTask)task).getName().equals("Save Operations State")) {
+                operationShutdownTask = ((ShutDownTask)task);
             }
         }
         Assert.assertNotNull(operationShutdownTask);

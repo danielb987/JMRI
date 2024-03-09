@@ -2,33 +2,24 @@ package jmri.jmrit.operations.rollingstock;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.text.*;
 import java.util.ResourceBundle;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jmri.IdTag;
-import jmri.IdTagManager;
-import jmri.InstanceManager;
+import jmri.*;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.OperationsXml;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.rollingstock.cars.CarOwners;
-import jmri.jmrit.operations.rollingstock.cars.CarRoads;
-import jmri.jmrit.operations.rollingstock.cars.CarTypes;
+import jmri.jmrit.operations.locations.*;
+import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.Engine;
 import jmri.jmrit.operations.rollingstock.engines.EngineTypes;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
+import jmri.jmrit.operations.trains.TrainCommon;
 import jmri.swing.NamedBeanComboBox;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for edit of rolling stock. The common elements are: road, road number,
@@ -62,7 +53,7 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
 
     public JButton saveButton = new JButton(Bundle.getMessage("ButtonSave"));
     public JButton deleteButton = new JButton(Bundle.getMessage("ButtonDelete"));
-    public JButton addButton = new JButton(Bundle.getMessage("ButtonAdd")); // TODO have button state item to add
+    public JButton addButton = new JButton(); // add car or locomotive
 
     // check boxes
     public JCheckBox autoTrackCheckBox = new JCheckBox(Bundle.getMessage("Auto"));
@@ -104,7 +95,7 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
 
     // panels for engine edit
     public JPanel pModel = new JPanel();
-    public JPanel pHp = new JPanel();
+    public JPanel pPower = new JPanel();
 
     public RollingStockEditFrame(String title) {
         super(title);
@@ -131,14 +122,14 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         deleteButton.setEnabled(false);
         saveButton.setEnabled(false);
 
-        editRoadButton.setToolTipText(MessageFormat.format(Bundle.getMessage("TipAddDeleteReplace"),
-                new Object[] { Bundle.getMessage("road") })); // initial caps for some languages i.e. German
-        editTypeButton.setToolTipText(MessageFormat.format(Bundle.getMessage("TipAddDeleteReplace"),
-                new Object[] { Bundle.getMessage("type") })); // initial caps for some languages i.e. German
-        editLengthButton.setToolTipText(MessageFormat.format(Bundle.getMessage("TipAddDeleteReplace"),
-                new Object[] { Bundle.getMessage("length") })); // initial caps for some languages i.e. German
-        editOwnerButton.setToolTipText(MessageFormat.format(Bundle.getMessage("TipAddDeleteReplace"),
-                new Object[] { Bundle.getMessage("Owner").toLowerCase() }));
+        editRoadButton.setToolTipText(Bundle.getMessage("TipAddDeleteReplace",
+                Bundle.getMessage("road"))); // initial caps for some languages i.e. German
+        editTypeButton.setToolTipText(Bundle.getMessage("TipAddDeleteReplace",
+                Bundle.getMessage("type"))); // initial caps for some languages i.e. German
+        editLengthButton.setToolTipText(Bundle.getMessage("TipAddDeleteReplace",
+                Bundle.getMessage("length"))); // initial caps for some languages i.e. German
+        editOwnerButton.setToolTipText(Bundle.getMessage("TipAddDeleteReplace",
+                Bundle.getMessage("Owner").toLowerCase()));
 
         autoTrackCheckBox.setToolTipText(getRb().getString("rsTipAutoTrack"));
 
@@ -236,8 +227,8 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         pLoad.setVisible(false);
 
         // for engines
-        pOptional.add(pHp);
-        pHp.setVisible(false);
+        pOptional.add(pPower);
+        pPower.setVisible(false);
 
         // row 10
         pGroup.setLayout(new GridBagLayout());
@@ -337,9 +328,9 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
 
         // engines and cars share the same road database
         if (!InstanceManager.getDefault(CarRoads.class).containsName(rs.getRoadName())) {
-            if (JOptionPane.showConfirmDialog(this,
-                    MessageFormat.format(Bundle.getMessage("roadNameNotExist"), new Object[] { rs.getRoadName() }),
-                    Bundle.getMessage("addRoad"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(this,
+                    Bundle.getMessage("roadNameNotExist", rs.getRoadName()),
+                    Bundle.getMessage("addRoad"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                 InstanceManager.getDefault(CarRoads.class).addName(rs.getRoadName());
             }
         }
@@ -348,9 +339,9 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         roadNumberTextField.setText(rs.getNumber());
 
         if (!getTypeManager().containsName(rs.getTypeName())) {
-            if (JOptionPane.showConfirmDialog(this,
-                    MessageFormat.format(Bundle.getMessage("typeNameNotExist"), new Object[] { rs.getTypeName() }),
-                    Bundle.getMessage("addType"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(this,
+                    Bundle.getMessage("typeNameNotExist", rs.getTypeName()),
+                    Bundle.getMessage("addType"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                 getTypeManager().addName(rs.getTypeName());
             }
         }
@@ -358,9 +349,9 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         blockingTextField.setText(Integer.toString(rs.getBlocking()));
 
         if (!getLengthManager().containsName(rs.getLength())) {
-            if (JOptionPane.showConfirmDialog(this,
-                    MessageFormat.format(Bundle.getMessage("lengthNameNotExist"), new Object[] { rs.getLength() }),
-                    Bundle.getMessage("addLength"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(this,
+                    Bundle.getMessage("lengthNameNotExist", rs.getLength()),
+                    Bundle.getMessage("addLength"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                 getLengthManager().addName(rs.getLength());
             }
         }
@@ -375,14 +366,14 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         builtTextField.setText(rs.getBuilt());
 
         // Engines and cars share the owner database
-        if (!InstanceManager.getDefault(CarOwners.class).containsName(rs.getOwner())) {
-            if (JOptionPane.showConfirmDialog(this,
-                    MessageFormat.format(Bundle.getMessage("ownerNameNotExist"), new Object[] { rs.getOwner() }),
-                    Bundle.getMessage("addOwner"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                InstanceManager.getDefault(CarOwners.class).addName(rs.getOwner());
+        if (!InstanceManager.getDefault(CarOwners.class).containsName(rs.getOwnerName())) {
+            if (JmriJOptionPane.showConfirmDialog(this,
+                    Bundle.getMessage("ownerNameNotExist", rs.getOwnerName()),
+                    Bundle.getMessage("addOwner"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
+                InstanceManager.getDefault(CarOwners.class).addName(rs.getOwnerName());
             }
         }
-        ownerComboBox.setSelectedItem(rs.getOwner());
+        ownerComboBox.setSelectedItem(rs.getOwnerName());
 
         commentTextField.setText(rs.getComment());
         valueTextArea.setText(rs.getValue());
@@ -445,7 +436,7 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
             OperationsXml.save();
         }
         if (ae.getSource() == deleteButton) {
-            log.debug("car delete button activated");
+            log.debug("rolling stock delete button activated");
             // disable delete and save buttons
             deleteButton.setEnabled(false);
             saveButton.setEnabled(false);
@@ -477,17 +468,25 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
 
     protected boolean check(RollingStock rs) {
         String roadNum = roadNumberTextField.getText();
-        if (!OperationsXml.checkFileName(roadNum)) { // NOI18N
-            JOptionPane.showMessageDialog(this,
-                    Bundle.getMessage("NameResChar") + NEW_LINE + Bundle.getMessage("ReservedChar"),
-                    Bundle.getMessage("roadNumNG"), JOptionPane.ERROR_MESSAGE);
+        // hyphen feature needs at least one character to work properly        
+        if (roadNum.contains(TrainCommon.HYPHEN) && roadNum.split(TrainCommon.HYPHEN).length == 0) {
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("HyphenFeature"), Bundle.getMessage("roadNumNG"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (roadNum.length() > Control.max_len_string_road_number) {
-            JOptionPane.showMessageDialog(this,
+        // ignore characters after hyphen for field length
+        String rNum = TrainCommon.splitString(roadNum);
+        if (rNum.length() > Control.max_len_string_road_number) {
+            JmriJOptionPane.showMessageDialog(this,
                     MessageFormat.format(getRb().getString("RoadNumMustBeLess"),
                             new Object[] { Control.max_len_string_road_number + 1 }),
-                    getRb().getString("RoadNumTooLong"), JOptionPane.ERROR_MESSAGE);
+                    getRb().getString("RoadNumTooLong"), JmriJOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!OperationsXml.checkFileName(roadNum)) {
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("NameResChar") + NEW_LINE + Bundle.getMessage("ReservedChar"),
+                    Bundle.getMessage("roadNumNG"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         // check rolling stock's weight in tons has proper format
@@ -495,8 +494,8 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
             try {
                 Integer.parseInt(weightTonsTextField.getText());
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, getRb().getString("WeightFormatTon"),
-                        getRb().getString("WeightTonError"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, getRb().getString("WeightFormatTon"),
+                        getRb().getString("WeightTonError"), JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -528,15 +527,16 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
             _rs.setTypeName((String) typeComboBox.getSelectedItem());
         }
 
-        int blocking = 0;
+        int blocking = RollingStock.DEFAULT_BLOCKING_ORDER;
         try {
             blocking = Integer.parseInt(blockingTextField.getText());
-            // only allow numbers between 0 and 100
-            if (blocking < 0 || blocking > 100) {
-                blocking = 0;
+            // only allow numbers between -100 and 100
+            if (blocking < -RollingStock.MAX_BLOCKING_ORDER || blocking > RollingStock.MAX_BLOCKING_ORDER) {
+                blocking = RollingStock.DEFAULT_BLOCKING_ORDER;
             }
         } catch (Exception e) {
-            log.warn("Blocking must be a number between 0 and 100");
+            log.warn("Blocking must be a number between -{} and {}", RollingStock.MAX_BLOCKING_ORDER,
+                    RollingStock.MAX_BLOCKING_ORDER);
         }
         blockingTextField.setText(Integer.toString(blocking));
 
@@ -551,7 +551,7 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         _rs.setWeightTons(weightTonsTextField.getText());
         _rs.setBuilt(builtTextField.getText());
         if (ownerComboBox.getSelectedItem() != null) {
-            _rs.setOwner((String) ownerComboBox.getSelectedItem());
+            _rs.setOwnerName((String) ownerComboBox.getSelectedItem());
         }
         _rs.setComment(commentTextField.getText());
         _rs.setValue(valueTextArea.getText());
@@ -561,16 +561,18 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
             textRfidSystemName.setText(_rs.getRfid());
         }
         autoTrackCheckBox.setEnabled(true);
-
+    }
+    
+    protected void checkAndSetLocationAndTrack(RollingStock rs) {
         if (locationBox.getSelectedItem() != null && trackLocationBox.getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(this, getRb().getString("rsFullySelect"), getRb().getString("rsCanNotLoc"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, getRb().getString("rsFullySelect"), getRb().getString("rsCanNotLoc"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             // update location only if it has changed
-        } else if (_rs.getLocation() == null ||
-                !_rs.getLocation().equals(locationBox.getSelectedItem()) ||
-                _rs.getTrack() == null ||
-                !_rs.getTrack().equals(trackLocationBox.getSelectedItem())) {
-            setLocationAndTrack(_rs);
+        } else if (rs.getLocation() == null ||
+                !rs.getLocation().equals(locationBox.getSelectedItem()) ||
+                rs.getTrack() == null ||
+                !rs.getTrack().equals(trackLocationBox.getSelectedItem())) {
+            setLocationAndTrack(rs);
         }
     }
 
@@ -583,17 +585,17 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
                     (Track) trackLocationBox.getSelectedItem());
             if (!status.equals(Track.OKAY)) {
                 log.debug("Can't set rolling stock's location because of {}", status);
-                JOptionPane.showMessageDialog(this,
+                JmriJOptionPane.showMessageDialog(this,
                         MessageFormat.format(getRb().getString("rsCanNotLocMsg"),
                                 new Object[] { rs.toString(), status }),
-                        getRb().getString("rsCanNotLoc"), JOptionPane.ERROR_MESSAGE);
+                        getRb().getString("rsCanNotLoc"), JmriJOptionPane.ERROR_MESSAGE);
                 // does the user want to force the rolling stock to this track?
-                int results = JOptionPane.showOptionDialog(this,
+                int results = JmriJOptionPane.showOptionDialog(this,
                         MessageFormat.format(getRb().getString("rsForce"),
                                 new Object[] { rs.toString(), (Track) trackLocationBox.getSelectedItem() }),
                         MessageFormat.format(getRb().getString("rsOverride"), new Object[] { status }),
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-                if (results == JOptionPane.YES_OPTION) {
+                        JmriJOptionPane.YES_NO_OPTION, JmriJOptionPane.QUESTION_MESSAGE, null, null, null);
+                if (results == JmriJOptionPane.YES_OPTION) {
                     log.debug("Force rolling stock to track");
                     rs.setLocation((Location) locationBox.getSelectedItem(), (Track) trackLocationBox.getSelectedItem(),
                             RollingStock.FORCE);
@@ -652,7 +654,7 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         if (e.getPropertyName().equals(CarOwners.CAROWNERS_CHANGED_PROPERTY)) {
             InstanceManager.getDefault(CarOwners.class).updateComboBox(ownerComboBox);
             if (_rs != null) {
-                ownerComboBox.setSelectedItem(_rs.getOwner());
+                ownerComboBox.setSelectedItem(_rs.getOwnerName());
             }
         }
         if (e.getPropertyName().equals(LocationManager.LISTLENGTH_CHANGED_PROPERTY) ||
@@ -665,5 +667,5 @@ public abstract class RollingStockEditFrame extends OperationsFrame implements j
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(RollingStockEditFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RollingStockEditFrame.class);
 }

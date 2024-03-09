@@ -3,13 +3,12 @@ package jmri.jmrix.can.cbus.swing.nodeconfig;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.swing.JOptionPane;
-import jmri.jmrix.can.cbus.node.CbusNode;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
+import jmri.jmrix.can.cbus.node.CbusNode;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  *
@@ -31,7 +30,7 @@ abstract public class CbusNodeConfigTab extends jmri.jmrix.can.swing.CanPanel im
         if (main != null ){
             super.initComponents(main.getMemo());
         }
-        this.setLayout(new BorderLayout() );
+        super.setLayout(new BorderLayout() );
         _activeDialogue = false;
     }
     
@@ -109,7 +108,7 @@ abstract public class CbusNodeConfigTab extends jmri.jmrix.can.swing.CanPanel im
      * Remove any update listeners for the node.
      * @param node Node to remove listeners for
      */
-    @OverridingMethodsMustInvokeSuper
+    @OverridingMethodsMustInvokeSuper // to remove Node Property Change Listener
     protected void disposeOfNode(@Nonnull CbusNode node){
         node.removePropertyChangeListener(this);
     }
@@ -120,7 +119,7 @@ abstract public class CbusNodeConfigTab extends jmri.jmrix.can.swing.CanPanel im
      */
     protected int getNodeRow(){
         return getMainPane().nodeTable.convertRowIndexToView(getMainPane().
-            nodeModel.getNodeRowFromNodeNum(nodeOfInterest.getNodeNumber()));
+            getNodeModel().getNodeRowFromNodeNum(nodeOfInterest.getNodeNumber()));
     }
     
     /**
@@ -134,28 +133,29 @@ abstract public class CbusNodeConfigTab extends jmri.jmrix.can.swing.CanPanel im
     
     /**
      * Get a Cancel Edit / Save Edit / Continue Edit Dialog.
-     * @param adviceString Extra text to display in box
+     * @param adviceString Extra text to display in box without opening / closing html tag.
      * @return true to veto, else false to proceed and continue.
      */
     protected boolean getCancelSaveEditDialog(String adviceString){
         setActiveDialog(true);
         resetViewToVeto();
-        int selectedValue = JOptionPane.showOptionDialog(this.getParent(),
+        int selectedValue = JmriJOptionPane.showOptionDialog(this.getParent(),
             "<html>" + adviceString + "<br>" + Bundle.getMessage("ContinueEditQuestion")+"</html>"
             ,Bundle.getMessage("WarningTitle") + " " + nodeOfInterest,
-            JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE, null,
-            new String[]{("Cancel Edit"), ("Save Edit"), ("Continue Editing")},
-            ("Continue Editing")); // default choice
+            JmriJOptionPane.DEFAULT_OPTION,JmriJOptionPane.QUESTION_MESSAGE, null,
+            new String[]{Bundle.getMessage("CancelEdit"), Bundle.getMessage("SaveEdit"), Bundle.getMessage("ContinueEdit")},
+            Bundle.getMessage("ContinueEdit")); // default choice
         
         setActiveDialog(false);
         switch (selectedValue) {
-            case 0:
+            case -1: // Dialog Closed
+            case 0: // array position 0, CancelEdit
                 cancelOption();
                 return false;
-            case 1:
+            case 1: // array position 1, SaveEdit
                 saveOption();
                 return false;
-            default:
+            default: // array position 2, ContinueEdit
                 return true;
         }
     }
@@ -189,6 +189,6 @@ abstract public class CbusNodeConfigTab extends jmri.jmrix.can.swing.CanPanel im
         super.dispose();
     }
     
-    // private final static Logger log = LoggerFactory.getLogger(CbusNodeConfigTab.class);
+    // private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CbusNodeConfigTab.class);
     
 }

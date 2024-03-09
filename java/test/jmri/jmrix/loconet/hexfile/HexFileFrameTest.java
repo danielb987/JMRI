@@ -14,10 +14,11 @@ import org.junit.jupiter.api.*;
 public class HexFileFrameTest {
 
     @Test
+    @SuppressWarnings("deprecation")        // Thread.stop()
     public void testCTor() throws InterruptedException {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         LnHexFilePort p = new LnHexFilePort();
-        
+
         HexFileFrame f = new HexFileFrame();
 
         ThreadingUtil.runOnGUI( ()-> {
@@ -29,12 +30,12 @@ public class HexFileFrameTest {
         ThreadingUtil.runOnGUI( ()-> {
             f.dispose();
        });
-            
+
         p.dispose();
         f.sourceThread.stop();
         f.sourceThread.join();
-        f.dispose();   
- }   
+        f.dispose();
+ }
 
     @BeforeEach
     public void setUp() {
@@ -45,6 +46,9 @@ public class HexFileFrameTest {
 
     @AfterEach
     public void tearDown() {
+        JUnitUtil.removeMatchingThreads("LnPowerManager LnTrackStatusUpdateThread");
+        JUnitUtil.removeMatchingThreads("LnSensorUpdateThread");
+        JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }
 

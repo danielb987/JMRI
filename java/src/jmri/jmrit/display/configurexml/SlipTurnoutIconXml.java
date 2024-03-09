@@ -1,8 +1,9 @@
 package jmri.jmrit.display.configurexml;
 
+import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.catalog.NamedIcon;
-import jmri.jmrit.display.Editor;
-import jmri.jmrit.display.SlipTurnoutIcon;
+import jmri.jmrit.display.*;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -79,6 +80,8 @@ public class SlipTurnoutIconXml extends PositionableLabelXml {
         element.addContent(super.storeIcon("unknown", p.getUnknownIcon()));
         element.addContent(super.storeIcon("inconsistent", p.getInconsistentIcon()));
 
+        storeLogixNG_Data(p, element);
+
         element.setAttribute("class", "jmri.jmrit.display.configurexml.SlipTurnoutIconXml");
 
         return element;
@@ -95,9 +98,11 @@ public class SlipTurnoutIconXml extends PositionableLabelXml {
      *
      * @param element Top level Element to unpack.
      * @param o       Editor as an Object
+     * @throws JmriConfigureXmlException when a error prevents creating the objects as as
+     *                   required by the input XML
      */
     @Override
-    public void load(Element element, Object o) {
+    public void load(Element element, Object o) throws JmriConfigureXmlException {
         // create the objects
         Editor p = (Editor) o;
 
@@ -106,7 +111,7 @@ public class SlipTurnoutIconXml extends PositionableLabelXml {
         try {
             Attribute a = element.getAttribute("rotate");
             rotation = a.getIntValue();
-        } catch (org.jdom2.DataConversionException e) {
+        } catch (org.jdom2.DataConversionException ignored) {
         } catch (NullPointerException e) {  // considered normal if the attributes are not present
         }
 
@@ -183,7 +188,14 @@ public class SlipTurnoutIconXml extends PositionableLabelXml {
         l.setTurnout(nameEast, SlipTurnoutIcon.EAST);
         l.setTurnout(nameWest, SlipTurnoutIcon.WEST);
 
-        p.putItem(l);
+        try {
+            p.putItem(l);
+        } catch (Positionable.DuplicateIdException e) {
+            throw new JmriConfigureXmlException("Positionable id is not unique", e);
+        }
+
+        loadLogixNG_Data(l, element);
+
         // load individual item's option settings after editor has set its global settings
         loadCommonAttributes(l, Editor.TURNOUTS, element);
     }
@@ -239,5 +251,7 @@ public class SlipTurnoutIconXml extends PositionableLabelXml {
             }
         }
     }
+
     private final static Logger log = LoggerFactory.getLogger(SlipTurnoutIconXml.class);
+
 }

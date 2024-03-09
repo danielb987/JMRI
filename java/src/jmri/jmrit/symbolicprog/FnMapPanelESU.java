@@ -12,20 +12,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
 import jmri.jmrit.roster.RosterEntry;
 import jmri.util.CvUtil;
 import jmri.util.FileUtil;
 import jmri.util.jdom.LocaleSelector;
+import jmri.util.swing.JmriJOptionPane;
 
 import org.jdom2.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provide a graphical representation of the ESU mapping table. Each row
@@ -42,6 +40,9 @@ import org.slf4j.LoggerFactory;
  * <dd>&nbsp;</dd>
  * <dt>numOuts</dt>
  * <dd>Number of physical outputs (information only, not used by the code).</dd>
+ * <dd>&nbsp;</dd>
+ * <dt>numOutsFromDefinition</dt>
+ * <dd>Number of physical outputs read from decoder definition.</dd>
  * <dd>&nbsp;</dd>
  * <dt>numFns</dt>
  * <dd>Number of mapping rows to display.</dd>
@@ -166,6 +167,9 @@ public final class FnMapPanelESU extends JPanel {
     int numFns = 1;
     int numRows = 5;
     int numOuts = 2;
+    // numOuts above is used for calculating correct offsets
+    // the following is actually read from the definition
+    int numOutsFromDefinition = numOuts;
     int numStates = 2;
     int numWheelSensors = 1;
     int numReserved = 1;
@@ -303,6 +307,7 @@ public final class FnMapPanelESU extends JPanel {
             currentCol = firstCol;
             int outBlockNum = -1;
             int nextOutBlockStart = 0;
+            int thisOutBlockStart = 0;
             int nextFreeBit = 0;
             // add row shift buttons
             {
@@ -338,6 +343,7 @@ public final class FnMapPanelESU extends JPanel {
                 if (item == nextOutBlockStart) {
                     outBlockNum++;
                     outBlockStartCol[outBlockNum] = item;
+                    thisOutBlockStart = item;
                     nextOutBlockStart = item + outBlockLength[outBlockNum];
                     blockItemsSelectorPanel = new JPanel();
                     siCV = outBlockSiStartCv[outBlockNum] + (iRow / outBlockSiCvModulus[outBlockNum]);
@@ -377,8 +383,12 @@ public final class FnMapPanelESU extends JPanel {
                             savedValue = cvObject.getValue();
                         }
                         String defaultValue = Integer.toString((savedValue & bitValue) >>> (nextFreeBit % BIT_MODULUS));
-
-                        {
+                        
+                        // skip function settings for nonexistant function outputs
+                        if (outBlockNum == 1 && item >= thisOutBlockStart + numOutsFromDefinition && item < thisOutBlockStart + numOuts) {
+                            log.debug("Skipping previous item because function output AUX {} does not exist on this decoder", item - thisOutBlockStart - 2 + 1);
+                        }
+                        else {
                             // create a JDOM tree with some elements to add to varModel
                             Element root = new Element("decoder-config");
                             Document doc = new Document(root);
@@ -450,7 +460,7 @@ public final class FnMapPanelESU extends JPanel {
                             thisVar = null;
                         }
 
-                        int iVar = varModel.findVarIndex(name);  // now pick up the varModel entry we just created
+                        int iVar = varModel.findVarIndex(name, true);  // now pick up the varModel entry we just created
 
                         // hopefully we found it!
                         if (iVar >= 0) {
@@ -464,7 +474,7 @@ public final class FnMapPanelESU extends JPanel {
                             } else if (itemName[item][0].matches("F\\d+")) {
                                 try {
                                     int fn = Integer.parseInt(itemName[item][0].substring(1));
-                                    if (fn <= rosterEntry.getMAXFNNUM()) {
+                                    if (fn <= rosterEntry.getMaxFnNumAsInt()) {
                                         itemLabel[item] = rosterEntry.getFunctionLabel(fn);
                                     }
                                 } catch (NumberFormatException e) {
@@ -555,9 +565,9 @@ public final class FnMapPanelESU extends JPanel {
                     @Override
                     public void actionPerformed(java.awt.event.ActionEvent e) {
                         String params[] = e.getActionCommand().split(",");
-                        JOptionPane.showMessageDialog(
+                        JmriJOptionPane.showMessageDialog(
                                 blockPanel, blockItemsScrollPane, "Row " + (Integer.parseInt(params[0]) + 1) + ", "
-                                + outBlockName[Integer.parseInt(params[1])], JOptionPane.PLAIN_MESSAGE);
+                                + outBlockName[Integer.parseInt(params[1])], JmriJOptionPane.PLAIN_MESSAGE);
                     }
                 });
                 blockPanelCs.anchor = GridBagConstraints.LINE_START;
@@ -705,12 +715,12 @@ public final class FnMapPanelESU extends JPanel {
      */
     void updateSummaryLine(int row, int block) {
         StringBuilder retString = new StringBuilder("");
-        int retState = AbstractValue.SAME;
+        AbstractValue.ValueState retState = AbstractValue.ValueState.SAME;
 
         for (int item = outBlockStartCol[block]; item < (outBlockStartCol[block] + outBlockLength[block]); item++) {
             if (itemIsUsed[item]) {
                 int value = Integer.parseInt(varModel.getValString(iVarIndex[item][row]));
-                int state = varModel.getState(iVarIndex[item][row]);
+                var state = varModel.getState(iVarIndex[item][row]);
                 if ((item == outBlockStartCol[block]) || (priorityValue(state) > priorityValue(retState))) {
                     retState = state;
                 }
@@ -744,7 +754,7 @@ public final class FnMapPanelESU extends JPanel {
             retString.deleteCharAt(0);
         }
 
-        summaryLine[row][block].setBackground(AbstractValue.stateColorFromValue(retState));
+        summaryLine[row][block].setBackground(retState.getColor());
         summaryLine[row][block].setText(retString.toString());
         summaryLine[row][block].setToolTipText(retString.toString());
     }
@@ -756,19 +766,19 @@ public final class FnMapPanelESU extends JPanel {
      * @return the assigned priority value
      */
     @SuppressFBWarnings({"SF_SWITCH_NO_DEFAULT", "SF_SWITCH_FALLTHROUGH"})
-    int priorityValue(int state) {
+    int priorityValue(AbstractValue.ValueState state) {
         int value = 0;
         switch (state) {
-            case AbstractValue.UNKNOWN:
+            case UNKNOWN:
                 value++;
             //$FALL-THROUGH$
-            case AbstractValue.DIFF:
+            case DIFFERENT:
                 value++;
             //$FALL-THROUGH$
-            case AbstractValue.EDITED:
+            case EDITED:
                 value++;
             //$FALL-THROUGH$
-            case AbstractValue.FROMFILE:
+            case FROMFILE:
                 value++;
             //$FALL-THROUGH$
             default:
@@ -958,7 +968,18 @@ public final class FnMapPanelESU extends JPanel {
         } catch (NumberFormatException e) {
             log.error("error handling decoder's numFns value");
         }
-        log.debug("loadModelAttributes numFns={}, numRows={}, numOuts={}, numItems={}, {}", numFns, numRows, numOuts, numItems);
+        
+        a = model.getAttribute("numOuts");
+        try {
+            if (a != null) {
+                numOutsFromDefinition = Integer.parseInt(a.getValue());
+            }
+        } catch (NumberFormatException e) {
+            log.error("error handling decoder's numOuts value");
+        }
+        
+        log.debug("loadModelAttributes numFns={}, numRows={}, numOuts={}, numOutsFromDefinition={}, numItems={}",
+                            numFns, numRows, numOuts, numOutsFromDefinition, numItems);
     }
 
     /**
@@ -1070,7 +1091,6 @@ public final class FnMapPanelESU extends JPanel {
         removeAll();  // JPanel call
     }
 
-    // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(FnMapPanelESU.class
-    );
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FnMapPanelESU.class);
+
 }

@@ -2,25 +2,21 @@ package jmri.jmrit.operations.routes;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.text.MessageFormat;
+import java.util.List;
 
 import javax.swing.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.routes.tools.PrintRouteAction;
-import jmri.jmrit.operations.routes.tools.RouteCopyAction;
-import jmri.jmrit.operations.routes.tools.SetTrainIconRouteAction;
+import jmri.jmrit.operations.routes.tools.*;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.jmrit.operations.trains.Train;
 import jmri.swing.JTablePersistenceManager;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user edit of route
@@ -58,7 +54,7 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
 
     // combo boxes
     JComboBox<Location> locationBox = InstanceManager.getDefault(LocationManager.class).getComboBox();
-    
+
     JMenu toolMenu = new JMenu(Bundle.getMessage("MenuTools"));
 
     public static final String NAME = Bundle.getMessage("Name");
@@ -84,7 +80,7 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
         routePane = new JScrollPane(routeTable);
         routePane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         routePane.setBorder(BorderFactory.createTitledBorder(""));
-        
+
         routeModel.initTable(this, routeTable, _route);
 
         if (_route != null) {
@@ -176,17 +172,17 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
         addButtonAction(addRouteButton);
         addButtonAction(saveRouteButton);
 
-        // setup radio buttons       
+        // setup radio buttons
         ButtonGroup group = new ButtonGroup();
         group.add(addLocAtTop);
         group.add(addLocAtMiddle);
         group.add(addLocAtBottom);
         addLocAtBottom.setSelected(true);
-        
+
         addRadioButtonAction(addLocAtTop); // to clear table row sorting
         addRadioButtonAction(addLocAtMiddle);
         addRadioButtonAction(addLocAtBottom); // to clear table row sorting
-        
+
         ButtonGroup groupTime = new ButtonGroup();
         groupTime.add(showWait);
         groupTime.add(showDepartTime);
@@ -207,9 +203,10 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
         // set frame size and route for display
         initMinimumSize(new Dimension(Control.panelWidth700, Control.panelHeight400));
     }
-    
+
     private void loadToolMenu() {
         toolMenu.removeAll();
+        toolMenu.add(new RouteBlockingOrderEditFrameAction(_route));
         toolMenu.add(new RouteCopyAction(_route));
         toolMenu.add(new SetTrainIconRouteAction(_route));
         toolMenu.addSeparator();
@@ -230,23 +227,23 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
             log.debug("route save button activated");
             Route route = routeManager.getRouteByName(routeNameTextField.getText());
             if (_route == null && route == null) {
-                saveNewRoute();
+                saveNewRoute(); // can't happen, save button is disabled
             } else {
                 if (route != null && route != _route) {
                     reportRouteExists(Bundle.getMessage("save"));
                     return;
                 }
-                saveRoute();
-            }
-            if (Setup.isCloseWindowOnSaveEnabled()) {
-                dispose();
+                if (saveRoute() && Setup.isCloseWindowOnSaveEnabled()) {
+                    dispose();
+                }
             }
         }
         if (ae.getSource() == deleteRouteButton) {
             log.debug("route delete button activated");
-            if (JOptionPane.showConfirmDialog(this, MessageFormat.format(Bundle.getMessage("AreYouSure?"),
-                    new Object[]{routeNameTextField.getText()}), Bundle.getMessage("DeleteRoute?"),
-                    JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(this,
+                    Bundle.getMessage("AreYouSure?",
+                            routeNameTextField.getText()),
+                    Bundle.getMessage("DeleteRoute?"), JmriJOptionPane.YES_NO_OPTION) != JmriJOptionPane.YES_OPTION) {
                 return;
             }
             Route route = routeManager.getRouteByName(routeNameTextField.getText());
@@ -296,7 +293,7 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
                 // we need to reselect the table since the content has changed
                 routeTable.getSelectionModel().setSelectionInterval(row + Route.START, row + Route.START);
             } else {
-                rl = _route.addLocation(l, _route.size()/2 + Route.START);
+                rl = _route.addLocation(l, _route.size() / 2 + Route.START);
             }
         } else {
             // add location to end
@@ -332,20 +329,21 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
         loadToolMenu();
     }
 
-    private void saveRoute() {
-        if (!checkName(Bundle.getMessage("save"))) {
-            return;
-        }
-        _route.setName(routeNameTextField.getText());
-        _route.setComment(commentTextField.getText());
-
+    private boolean saveRoute() {
         if (routeTable.isEditing()) {
             log.debug("route table edit true");
             routeTable.getCellEditor().stopCellEditing();
         }
+        
+        if (!checkName(Bundle.getMessage("save")) || !checkTrainDirections()) {
+            return false;
+        }
+        _route.setName(routeNameTextField.getText());
+        _route.setComment(commentTextField.getText());
 
         // save route file
         OperationsXml.save();
+        return true;
     }
 
     /**
@@ -355,23 +353,44 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
     private boolean checkName(String s) {
         if (routeNameTextField.getText().trim().isEmpty()) {
             log.debug("Must enter a name for the route");
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("MustEnterName"), MessageFormat.format(Bundle
-                    .getMessage("CanNotRoute"), new Object[]{s}), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("MustEnterName"),
+                    Bundle.getMessage("CanNotRoute", s),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         if (routeNameTextField.getText().length() > Control.max_len_string_route_name) {
-            JOptionPane.showMessageDialog(this, MessageFormat.format(Bundle.getMessage("RouteNameLess"),
-                    new Object[]{Control.max_len_string_route_name + 1}), MessageFormat.format(Bundle
-                            .getMessage("CanNotRoute"), new Object[]{s}), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this,
+                    Bundle.getMessage("RouteNameLess",
+                            Control.max_len_string_route_name + 1),
+                    Bundle.getMessage("CanNotRoute", s),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
     }
 
+    /*
+     * Checks to see if user has disabled the saved train directions for this route.
+     */
+    private boolean checkTrainDirections() {
+        // get the valid train directions
+        List<String> directions = Setup.getTrainDirectionList();
+        for (RouteLocation rl : _route.getLocationsBySequenceList()) {
+            if (!directions.contains(rl.getTrainDirectionString())) {
+                JmriJOptionPane.showMessageDialog(this,
+                        Bundle.getMessage("RouteDirection", rl.getId()),
+                        Bundle.getMessage("RouteDirectionError",
+                                rl.getTrainDirectionString()),
+                        JmriJOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void reportRouteExists(String s) {
-        log.info("Can not {}, route already exists", s);
-        JOptionPane.showMessageDialog(this, Bundle.getMessage("ReportExists"), MessageFormat.format(Bundle
-                .getMessage("CanNotRoute"), new Object[]{s}), JOptionPane.ERROR_MESSAGE);
+        JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("ReportExists"),
+                Bundle.getMessage("CanNotRoute", s), JmriJOptionPane.ERROR_MESSAGE);
     }
 
     private void enableButtons(boolean enabled) {
@@ -406,7 +425,8 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
         InstanceManager.getDefault(LocationManager.class).updateComboBox(locationBox);
     }
 
-    // if the route has a departure time in the first location set the showDepartTime radio button
+    // if the route has a departure time in the first location set the
+    // showDepartTime radio button
     private void setTimeWaitRadioButtons() {
         showWait.setSelected(true);
         if (_route != null) {
@@ -421,8 +441,8 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (Control.SHOW_PROPERTY) {
-            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(), e
-                    .getNewValue());
+            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(),
+                    e.getNewValue());
         }
         if (e.getPropertyName().equals(LocationManager.LISTLENGTH_CHANGED_PROPERTY)) {
             updateComboBoxes();
@@ -433,5 +453,5 @@ public class RouteEditFrame extends OperationsFrame implements java.beans.Proper
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(RouteEditFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RouteEditFrame.class);
 }

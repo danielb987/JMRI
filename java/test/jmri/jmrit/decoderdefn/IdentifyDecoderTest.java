@@ -17,9 +17,19 @@ import org.junit.Assert;
  */
 public class IdentifyDecoderTest {
 
-    static int cvRead = -1;
+    private int cvRead = -1;
     private ProgDebugger p;
 
+
+    /** 
+     * Test enum search routine
+     */
+    @Test
+    public void testEnum() {
+        var here = IdentifyDecoder.Manufacturer.DIETZ;
+        var found = IdentifyDecoder.Manufacturer.forValue(115);
+        Assert.assertEquals("found proper value", here, found);
+    }
     /**
      * Test standard decoder without productID.
      */
@@ -52,7 +62,8 @@ public class IdentifyDecoderTest {
         // simulate CV read complete, ending check
         i.programmingOpReply(123, 0);
         Assert.assertEquals("running after 2 ", false, i.isRunning());
-        Assert.assertEquals("found mfg ID ", 0x12, i.mfgID);
+        Assert.assertEquals("found mfg int ID ", 0x12, i.intMfg);
+        Assert.assertEquals("found mfg ID ", null, i.mfgID);
         Assert.assertEquals("found model ID ", 123, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
 
@@ -101,14 +112,14 @@ public class IdentifyDecoderTest {
         i.programmingOpReply(0xCD, 0);
         Assert.assertEquals("running after 5 ", false, i.isRunning());
 
-        Assert.assertEquals("found mfg ID ", 98, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 98, i.mfgID.value);
         Assert.assertEquals("found model ID ", 123, i.modelID);
         Assert.assertEquals("found product ID ", 0xABCD, i.productID);
 
     }
 
     /**
-     * Test Tsunami2 decoder with productID in CV253 and CV256.
+     * Test Tsunami2 decoder with productID in CV253 , CV255 and CV256.
      */
     @Test
     public void testIdentifyTsu2() {
@@ -147,12 +158,71 @@ public class IdentifyDecoderTest {
         Assert.assertEquals("running after 4 ", true, i.isRunning());
 
         // simulate CV read complete on CV256, ends
-        i.programmingOpReply(29, 0);
-        Assert.assertEquals("running after 5 ", false, i.isRunning());
+        i.programmingOpReply(2, 0);
+        Assert.assertEquals("step 5 reads CV ", 255, cvRead);
+        Assert.assertEquals("running after 5 ", true, i.isRunning());
 
-        Assert.assertEquals("found mfg ID ", 141, i.mfgID);
+        // simulate CV read complete on CV255, ends
+        i.programmingOpReply(3, 0);
+        Assert.assertEquals("running after 6 ", false, i.isRunning());
+
+        Assert.assertEquals("found mfg ID ", 141, i.mfgID.value);
         Assert.assertEquals("found model ID ", 71, i.modelID);
-        Assert.assertEquals("found product ID ", 285, i.productID);
+        Assert.assertEquals("found product ID ", 0x0B02, i.productID);
+
+    }
+
+    /**
+     * Test Blunami decoder with productID in CV253 , CV255 and CV256.
+     */
+    @Test
+    public void testIdentifyBlunami() {
+        // create our test object
+        IdentifyDecoder i = new IdentifyDecoder(p) {
+            @Override
+            public void done(int mfgID, int modelID, int productID) {
+            }
+
+            @Override
+            public void message(String m) {
+            }
+
+            @Override
+            public void error() {
+            }
+        };
+
+        i.start();
+        Assert.assertEquals("step 1 reads CV ", 8, cvRead);
+        Assert.assertEquals("running after 1 ", true, i.isRunning());
+
+        // simulate CV read complete on CV8, start 7
+        i.programmingOpReply(141, 0);
+        Assert.assertEquals("step 2 reads CV ", 7, cvRead);
+        Assert.assertEquals("running after 2 ", true, i.isRunning());
+
+        // simulate CV read complete on CV7, start 253
+        i.programmingOpReply(71, 0);
+        Assert.assertEquals("step 3 reads CV ", 253, cvRead);
+        Assert.assertEquals("running after 3 ", true, i.isRunning());
+
+        // simulate CV read complete on CV253, does 256 and ends
+        i.programmingOpReply(1, 0);
+        Assert.assertEquals("step 4 reads CV ", 256, cvRead);
+        Assert.assertEquals("running after 4 ", true, i.isRunning());
+
+        // simulate CV read complete on CV256, ends
+        i.programmingOpReply(2, 0);
+        Assert.assertEquals("step 5 reads CV ", 255, cvRead);
+        Assert.assertEquals("running after 5 ", true, i.isRunning());
+
+        // simulate CV read complete on CV255, ends
+        i.programmingOpReply(3, 0);
+        Assert.assertEquals("running after 6 ", false, i.isRunning());
+
+        Assert.assertEquals("found mfg ID ", 141, i.mfgID.value);
+        Assert.assertEquals("found model ID ", 71, i.modelID);
+        Assert.assertEquals("found product ID ", 0x0B02, i.productID);
 
     }
 
@@ -200,9 +270,61 @@ public class IdentifyDecoderTest {
         i.programmingOpReply(2, 0);
         Assert.assertEquals("running after 5 ", false, i.isRunning());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
         Assert.assertEquals("found model ID ", 4, i.modelID);
         Assert.assertEquals("found product ID ", (2 * 256) + 143, i.productID);
+    }
+
+    /**
+     * Test Hornby HN7000 decoder with CV7=254, then reads 47/48/49
+     */
+    @Test
+    public void testIdentifyHornby7000() {
+        // create our test object
+        IdentifyDecoder i = new IdentifyDecoder(p) {
+            @Override
+            public void done(int mfgID, int modelID, int productID) {
+            }
+
+            @Override
+            public void message(String m) {
+            }
+
+            @Override
+            public void error() {
+            }
+        };
+
+        i.start();
+        Assert.assertEquals("step 1 reads CV ", 8, cvRead);
+        Assert.assertEquals("running after 1 ", true, i.isRunning());
+
+        // simulate CV read complete on CV8, start 7
+        i.programmingOpReply(48, 0);
+        Assert.assertEquals("step 2 reads CV ", 7, cvRead);
+        Assert.assertEquals("running after 2 ", true, i.isRunning());
+
+        // simulate CV read complete on CV7, start 159
+        i.programmingOpReply(254, 0);
+        Assert.assertEquals("step 3 reads CV ", 47, cvRead);
+        Assert.assertEquals("running after 3 ", true, i.isRunning());
+
+        // simulate CV read complete on CV47, does CV48 and ends
+        i.programmingOpReply(1, 0);
+        Assert.assertEquals("step 4 reads CV ", 48, cvRead);
+        Assert.assertEquals("running after 4 ", true, i.isRunning());
+
+        // simulate CV read complete on 48, reads 49
+        i.programmingOpReply(2, 0);
+        Assert.assertEquals("step 5 reads CV ", 49, cvRead);
+        Assert.assertEquals("running after 5 ", true, i.isRunning());
+
+        i.programmingOpReply(3, 0);
+        Assert.assertEquals("running after 6 ", false, i.isRunning());
+
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
+        Assert.assertEquals("found model ID ", 254, i.modelID);
+        Assert.assertEquals("found product ID ", 1*256*256 + 2*256 + 3, i.productID);
     }
 
     /**
@@ -243,7 +365,7 @@ public class IdentifyDecoderTest {
         i.programmingOpReply(142, 0);
         Assert.assertEquals("running after 4 ", false, i.isRunning());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
         Assert.assertEquals("found model ID ", 77, i.modelID);
         Assert.assertEquals("found product ID ", 142, i.productID);
     }
@@ -286,7 +408,7 @@ public class IdentifyDecoderTest {
         i.programmingOpReply(144, 0);
         Assert.assertEquals("running after 4 ", false, i.isRunning());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
         Assert.assertEquals("found model ID ", 88, i.modelID);
         Assert.assertEquals("found product ID ", 144, i.productID);
     }
@@ -312,7 +434,7 @@ public class IdentifyDecoderTest {
             }
         };
 
-        Assert.assertEquals("found mfg ID ", -1, i.mfgID);
+        Assert.assertEquals("found mfg ID ", null, i.mfgID);
         Assert.assertEquals("found model ID ", -1, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
         Assert.assertEquals("Test isOptionalCv() before start", i.isOptionalCv(), false);
@@ -335,7 +457,7 @@ public class IdentifyDecoderTest {
         Assert.assertEquals("Test isOptionalCv() after 2", i.isOptionalCv(), false);
         Assert.assertEquals("Programming mode after 2", ProgrammingMode.PAGEMODE, p.getMode());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", IdentifyDecoder.Manufacturer.HORNBY, i.mfgID);
         Assert.assertEquals("found model ID ", -1, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
 
@@ -348,7 +470,7 @@ public class IdentifyDecoderTest {
         Assert.assertEquals("Test isOptionalCv() after 3", i.isOptionalCv(), true);
         Assert.assertEquals("Programming mode after 3", ProgrammingMode.PAGEMODE, p.getMode());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
         Assert.assertEquals("found model ID ", 88, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
 
@@ -360,7 +482,7 @@ public class IdentifyDecoderTest {
         Assert.assertEquals("Test isOptionalCv() after 4", i.isOptionalCv(), true);
         Assert.assertEquals("Programming mode after 4", ProgrammingMode.DIRECTMODE, p.getMode());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
         Assert.assertEquals("found model ID ", 88, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
 
@@ -390,7 +512,7 @@ public class IdentifyDecoderTest {
             }
         };
 
-        Assert.assertEquals("found mfg ID ", -1, i.mfgID);
+        Assert.assertEquals("found mfg ID ", null, i.mfgID);
         Assert.assertEquals("found model ID ", -1, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
         Assert.assertEquals("Test isOptionalCv() before start", i.isOptionalCv(), false);
@@ -410,7 +532,7 @@ public class IdentifyDecoderTest {
         Assert.assertEquals("Test isOptionalCv() after 2", i.isOptionalCv(), false);
         Assert.assertEquals("Programming mode after 2", ProgrammingMode.DIRECTMODE, p.getMode());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", IdentifyDecoder.Manufacturer.HORNBY, i.mfgID);
         Assert.assertEquals("found model ID ", -1, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
 
@@ -422,12 +544,215 @@ public class IdentifyDecoderTest {
         Assert.assertEquals("running after 2 ", false, i.isRunning());
         Assert.assertEquals("Programming mode after 3", ProgrammingMode.DIRECTMODE, p.getMode());
 
-        Assert.assertEquals("found mfg ID ", 48, i.mfgID);
+        Assert.assertEquals("found mfg ID ", 48, i.mfgID.value);
         Assert.assertEquals("found model ID ", -1, i.modelID);
         Assert.assertEquals("found product ID ", -1, i.productID);
 
         jmri.util.JUnitAppender.assertWarnMessage("Stopping due to error: "
                             + p.decodeErrorCode(2));
+    }
+
+    /**
+     * Test Dietz decoder with productID in CV128.
+     */
+    @Test
+    public void testIdentifyDietz() {
+        // create our test object
+        IdentifyDecoder i = new IdentifyDecoder(p) {
+            @Override
+            public void done(int mfgID, int modelID, int productID) {
+            }
+
+            @Override
+            public void message(String m) {
+            }
+
+            @Override
+            public void error() {
+            }
+        };
+
+        i.start();
+        Assert.assertEquals("step 1 reads CV ", 8, cvRead);
+        Assert.assertEquals("running after 1 ", true, i.isRunning());
+
+        // simulate CV read complete on CV8 with 115
+        i.programmingOpReply(115, 0);
+        Assert.assertEquals("step 2 reads CV ", 7, cvRead);
+        Assert.assertEquals("running after 2 ", true, i.isRunning());
+
+        // simulate CV read complete on CV7 with 88
+        i.programmingOpReply(88, 0);
+        Assert.assertEquals("step 3 reads CV ", 128, cvRead);
+        Assert.assertEquals("running after 3 ", true, i.isRunning());
+
+        // simulate CV read complete on CV128 with 123
+        i.programmingOpReply(123, 0);
+        Assert.assertEquals("running after 4 ", false, i.isRunning());
+
+        Assert.assertEquals("found mfg ID ", 115, i.mfgID.value);
+        Assert.assertEquals("found model ID ", 88, i.modelID);
+        Assert.assertEquals("found product ID ", 123, i.productID);
+    }
+
+
+    /**
+     * Test TCS decoder with 4-digit productID.
+     * Should pass
+     */
+    @Test
+    public void testIdentifyTCSV5() {
+        // create our test object
+        IdentifyDecoder i = new IdentifyDecoder(p) {
+            @Override
+            public void done(int mfgID, int modelID, int productID) {
+            }
+
+            @Override
+            public void message(String m) {
+            }
+
+            @Override
+            public void error() {
+            }
+        };
+
+        i.start();
+        Assert.assertEquals("step 1 reads CV ", 8, cvRead);
+        Assert.assertEquals("running after 1 ", true, i.isRunning());
+
+        // simulate CV read complete on CV8, start 7
+        i.programmingOpReply(153, 0);
+        Assert.assertEquals("step 2 reads CV ", 7, cvRead);
+        Assert.assertEquals("running after 2 ", true, i.isRunning());
+
+        // simulate CV read complete on CV7, start 249
+        i.programmingOpReply(5, 0);
+        Assert.assertEquals("step 3 reads CV ", 249, cvRead);
+        Assert.assertEquals("running after 3 ", true, i.isRunning());
+
+        // simulate CV read complete on CV249, start 248
+        i.programmingOpReply(176, 0);
+        Assert.assertEquals("step 4 reads CV ", 248, cvRead);
+        Assert.assertEquals("running after 4 ", true, i.isRunning());
+
+        // simulate CV read complete on CV248, start 111
+        i.programmingOpReply(1, 0);
+        Assert.assertEquals("step 5 reads CV 111", 111, cvRead);
+        Assert.assertEquals("running after 5 ", true, i.isRunning());
+
+        // simulate CV read complete on CV111, start 110
+        i.programmingOpReply(1, 0);
+        Assert.assertEquals("step 6 reads CV ", 110, cvRead);
+        Assert.assertEquals("running after 6 ", true, i.isRunning());
+
+        // simulate CV read complete on CV110, start end
+        i.programmingOpReply(2, 0);
+
+        Assert.assertEquals("found mfg ID ", 153, i.mfgID.value);
+        Assert.assertEquals("found model ID ", 5, i.modelID);
+        Assert.assertEquals("found product ID ", 33620400, i.productID);
+    }
+
+    /**
+     * Test TCS decoder with single byte, CV249 productID. Sound decoders pre V5
+     * Should pass
+     */
+    @Test
+    public void testIdentifyTCSV4() {
+        // create our test object
+        IdentifyDecoder i = new IdentifyDecoder(p) {
+            @Override
+            public void done(int mfgID, int modelID, int productID) {
+            }
+
+            @Override
+            public void message(String m) {
+            }
+
+            @Override
+            public void error() {
+            }
+        };
+
+        i.start();
+        Assert.assertEquals("step 1 reads CV ", 8, cvRead);
+        Assert.assertEquals("running after 1 ", true, i.isRunning());
+
+        // simulate CV read complete on CV8, start 7
+        i.programmingOpReply(153, 0);
+        Assert.assertEquals("step 2 reads CV ", 7, cvRead);
+        Assert.assertEquals("running after 2 ", true, i.isRunning());
+
+        // simulate CV read complete on CV7, start 249
+        i.programmingOpReply(4, 0);
+        Assert.assertEquals("step 3 reads CV ", 249, cvRead);
+        Assert.assertEquals("running after 3 ", true, i.isRunning());
+
+        // simulate CV read complete on CV249, start 248
+        i.programmingOpReply(176, 0);
+        Assert.assertEquals("step 4 reads CV ", 248, cvRead);
+        Assert.assertEquals("running after 4 ", true, i.isRunning());
+
+        // simulate CV read complete on CV248, start 111
+        i.programmingOpReply(1, 0);
+        Assert.assertEquals("step 5 reads CV 111", 111, cvRead);
+        Assert.assertEquals("running after 5 ", true, i.isRunning());
+
+        // simulate CV read complete on CV111, start 110
+        i.programmingOpReply(1, 0);
+        Assert.assertEquals("step 6 reads CV ", 110, cvRead);
+        Assert.assertEquals("running after 6 ", true, i.isRunning());
+
+        // simulate CV read complete on CV110, start end
+        i.programmingOpReply(2, 0);
+
+        Assert.assertEquals("found mfg ID ", 153, i.mfgID.value);
+        Assert.assertEquals("found model ID ", 4, i.modelID);
+        Assert.assertEquals("found product ID ", 176, i.productID);
+    }
+
+    /**
+     * Test TCS decoder with single byte, CV249 productID. Non-sound decoders only).
+     * Should pass
+     */
+    @Test
+    public void testIdentifyTCSMobile() {
+        // create our test object
+        IdentifyDecoder i = new IdentifyDecoder(p) {
+            @Override
+            public void done(int mfgID, int modelID, int productID) {
+            }
+
+            @Override
+            public void message(String m) {
+            }
+
+            @Override
+            public void error() {
+            }
+        };
+
+        i.start();
+        Assert.assertEquals("step 1 reads CV ", 8, cvRead);
+        Assert.assertEquals("running after 1 ", true, i.isRunning());
+
+        // simulate CV read complete on CV8, start 7
+        i.programmingOpReply(153, 0);
+        Assert.assertEquals("step 2 reads CV ", 7, cvRead);
+        Assert.assertEquals("running after 2 ", true, i.isRunning());
+
+        // simulate CV read complete on CV7, start 249
+        i.programmingOpReply(4, 0);
+        Assert.assertEquals("step 3 reads CV ", 249, cvRead);
+        Assert.assertEquals("running after 3 ", true, i.isRunning());
+
+        // simulate CV read complete on CV249, end
+        i.programmingOpReply(80, 0);
+
+        Assert.assertEquals("found mfg ID ", 153, i.mfgID.value);
+        Assert.assertEquals("found model ID ", 4, i.modelID);
+        Assert.assertEquals("found product ID ", 80, i.productID);
     }
 
     /**
@@ -438,7 +763,7 @@ public class IdentifyDecoderTest {
         JUnitUtil.setUp();
         p = new ProgDebugger() {
             @Override
-            public void readCV(String CV, jmri.ProgListener p) throws jmri.ProgrammerException {
+            public void readCV(String CV, jmri.ProgListener p) throws ProgrammerException {
                 cvRead = Integer.parseInt(CV);
             }
         };

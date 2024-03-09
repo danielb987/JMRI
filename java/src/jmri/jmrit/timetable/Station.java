@@ -35,11 +35,27 @@ public class Station {
 
     private final int _stationId;
     private final int _segmentId;
-    private String _stationName = "New Station";  // NOI18N
+    private String _stationName = Bundle.getMessage("NewStationName");  // NOI18N
     private double _distance = 1.0;
     private boolean _doubleTrack = false;
     private int _sidings = 0;
     private int _staging = 0;
+
+    /**
+     * Make a copy of the station.
+     * @param segmentId The new segmentId, if zero use the current segment id.
+     * @return a new station instance.
+     */
+    public Station getCopy(int segmentId) {
+        if (segmentId == 0) segmentId = getSegmentId();
+        Station copy = new Station(segmentId);
+        copy.setStationName(Bundle.getMessage("DuplicateCopyName", _stationName));
+        copy.setDistance(_distance);
+        copy.setDoubleTrack(_doubleTrack);
+        copy.setSidings(_sidings);
+        copy.setStaging(_staging);
+        return copy;
+    }
 
     public int getStationId() {
         return _stationId;

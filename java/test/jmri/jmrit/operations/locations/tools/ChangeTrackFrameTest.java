@@ -3,15 +3,12 @@ package jmri.jmrit.operations.locations.tools;
 import java.awt.GraphicsEnvironment;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.*;
 import org.junit.Assume;
+import org.junit.jupiter.api.Test;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsTestCase;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.locations.TrackEditFrame;
+import jmri.jmrit.operations.locations.*;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 import jmri.util.swing.JemmyUtil;
@@ -33,7 +30,7 @@ public class ChangeTrackFrameTest extends OperationsTestCase {
 
         Track track = loc.getTrackByName("NI Yard", null);
 
-        TrackEditFrame tf = new TrackEditFrame();
+        YardEditFrame tf = new YardEditFrame();
         tf.initComponents(loc, track);
         Assert.assertNotNull("exists", tf);
 
@@ -55,7 +52,7 @@ public class ChangeTrackFrameTest extends OperationsTestCase {
 
         Track track = loc.getTrackByName("NI Yard", null);
 
-        TrackEditFrame tef = new TrackEditFrame();
+        YardEditFrame tef = new YardEditFrame();
         tef.initComponents(loc, track);
         Assert.assertNotNull("exists", tef);
         
@@ -75,6 +72,25 @@ public class ChangeTrackFrameTest extends OperationsTestCase {
         JUnitUtil.dispose(tef);
 
     }
+    
+    @Test
+    public void testCloseWindowOnSave() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        JUnitOperationsUtil.initOperationsData();
+        LocationManager lmanager = InstanceManager.getDefault(LocationManager.class);
+        Location loc = lmanager.getLocationByName("North Industries");
+        Assert.assertNotNull("exists", loc);
+
+        Track track = loc.getTrackByName("NI Yard", null);
+
+        YardEditFrame tef = new YardEditFrame();
+        tef.initComponents(loc, track);
+        Assert.assertNotNull("exists", tef);
+        
+        ChangeTrackFrame f = new ChangeTrackFrame(tef);
+        JUnitOperationsUtil.testCloseWindowOnSave(f.getTitle());
+    }
+
 
     // private final static Logger log = LoggerFactory.getLogger(ChangeTrackFrameTest.class);
 }

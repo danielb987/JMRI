@@ -9,16 +9,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import jmri.util.FileUtil;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.swing.WindowInterface;
+
 import org.jdom2.Element;
 
 /**
@@ -65,7 +67,7 @@ public class FullBackupImportAction extends ImportRosterItemAction {
         ZipInputStream zipper = null;
         FileInputStream inputfile = null;
 
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new jmri.util.swing.JmriJFileChooser();
 
         String roster_filename_extension = "roster";
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -95,15 +97,16 @@ public class FullBackupImportAction extends ImportRosterItemAction {
             ZipEntry entry;
             acceptAll = false; // skip prompting for each entry and accept all
             acceptAllDup = false;  // skip prompting for dups and accept all
+            SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // NOI18N ISO8601
             
             while ((entry = zipper.getNextEntry()) != null) {
-                log.debug(String.format("Entry: %s len %d (%d) added %TD content: %s",
+                log.debug("Entry: {} len {} ({}) added {} content: {}",
                                         entry.getName(), 
                                         entry.getSize(), 
                                         entry.getCompressedSize(), 
-                                        new Date(entry.getTime()),
+                                        isoDateFormat.format(entry.getTime()),
                                         entry.getComment()
-                        ));
+                        );
 
                 // Once we get the entry from the stream, the stream is
                 // positioned read to read the raw data, and we keep
@@ -171,11 +174,11 @@ public class FullBackupImportAction extends ImportRosterItemAction {
             // see if user wants to do it
             int retval = 2; // accept if acceptall
             if (!acceptAll) {
-                retval = JOptionPane.showOptionDialog(mParent,
+                retval = JmriJOptionPane.showOptionDialog(mParent,
                     Bundle.getMessage("ConfirmImportID", mToID),
                     Bundle.getMessage("ConfirmImport"),
-                    0,
-                    JOptionPane.INFORMATION_MESSAGE,
+                    JmriJOptionPane.DEFAULT_OPTION,
+                    JmriJOptionPane.INFORMATION_MESSAGE,
                     null,
                     new Object[]{Bundle.getMessage("CancelImports"),
                         Bundle.getMessage("Skip"),
@@ -183,16 +186,16 @@ public class FullBackupImportAction extends ImportRosterItemAction {
                         Bundle.getMessage("ButtonAcceptAll")},
                     null);
             }
-            if (retval == 0) {
-                // cancel case
+            if (retval == 0 || retval == JmriJOptionPane.CLOSED_OPTION ) {
+                // array position 0 cancel case, or Dialog closed
                 return false;
             }
             if (retval == 1) {
-                // skip case
+                // array position 1 skip case
                 return true;
             }
             if (retval == 3) {
-                // accept all case
+                // array position 3 accept all case
                 acceptAll = true;
             }
 
@@ -201,11 +204,11 @@ public class FullBackupImportAction extends ImportRosterItemAction {
 
             if (currentEntry != null) {
                 if (!acceptAllDup) {
-                    retval = JOptionPane.showOptionDialog(mParent,
+                    retval = JmriJOptionPane.showOptionDialog(mParent,
                         Bundle.getMessage("ConfirmImportDup", mToID),
                         Bundle.getMessage("ConfirmImport"),
-                        0,
-                        JOptionPane.INFORMATION_MESSAGE,
+                        JmriJOptionPane.DEFAULT_OPTION,
+                        JmriJOptionPane.INFORMATION_MESSAGE,
                         null,
                         new Object[]{Bundle.getMessage("CancelImports"),
                             Bundle.getMessage("Skip"),
@@ -213,16 +216,16 @@ public class FullBackupImportAction extends ImportRosterItemAction {
                             Bundle.getMessage("ButtonAcceptAll")},
                         null);
                 }
-                if (retval == 0) {
-                    // cancel case
+                if (retval == 0 || retval == JmriJOptionPane.CLOSED_OPTION ) {
+                    // array position 0 cancel case or Dialog closed
                     return false;
                 }
                 if (retval == 1) {
-                    // skip case
+                    // array position 1 skip case
                     return true;
                 }
                 if (retval == 3) {
-                    // accept all case
+                    // array position 3 accept all case
                     acceptAllDup = true;
                 }
 

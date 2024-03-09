@@ -5,6 +5,9 @@ import java.util.Set;
 import jmri.InstanceManager;
 import jmri.InstanceManagerAutoDefault;
 import jmri.ScaleManager;
+import jmri.configurexml.AbstractXmlAdapter.EnumIO;
+import jmri.configurexml.AbstractXmlAdapter.EnumIoNamesNumbers;
+import jmri.jmrit.dispatcher.DispatcherFrame.TrainsFrom;
 import jmri.jmrit.display.EditorManager;
 import jmri.jmrit.display.layoutEditor.LayoutEditor;
 import jmri.util.FileUtil;
@@ -41,11 +44,11 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
         super();
     }
 
+    static final EnumIO<DispatcherFrame.TrainsFrom> trainsFromEnumMap = new EnumIoNamesNumbers<>(DispatcherFrame.TrainsFrom.class);
+
     // operational variables
     protected DispatcherFrame dispatcher = null;
     private static String defaultFileName = FileUtil.getUserFilesPath() + "dispatcheroptions.xml";
-    public static final int SIGNALHEAD = 0x00;
-    public static final int SIGNALMAST = 0x01;
 
     public static void setDefaultFileName(String testLocation) {
         defaultFileName = testLocation;
@@ -56,6 +59,8 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
     /**
      * Read Dispatcher Options from a file in the user's preferences directory.
      * If the file containing Dispatcher Options does not exist, this routine returns quietly.
+     * <p>The lename attribute is deprecated at 5.1.3. The current value will be retained.
+     *
      * @param f   The dispatcher instance.
      * @throws org.jdom2.JDOMException  if dispatcher parameter logically incorrect
      * @throws java.io.IOException    if dispatcher parameter not found
@@ -75,7 +80,9 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                     if (options.getAttribute("lename") != null) {
                         // there is a layout editor name selected
                         String leName = options.getAttribute("lename").getValue();
+
                         // get list of Layout Editor panels
+                        // Note: While editor is deprecated, retain the value for backward compatibility.
                         Set<LayoutEditor> layoutEditorList = InstanceManager.getDefault(EditorManager.class).getAll(LayoutEditor.class);
                         if (layoutEditorList.isEmpty()) {
                             log.warn("Dispatcher options specify a Layout Editor panel that is not present.");
@@ -93,9 +100,15 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                         }
                     }
                     if (options.getAttribute("usesignaltype") != null) {
-                        dispatcher.setSignalType(SIGNALHEAD);
-                        if (options.getAttribute("usesignaltype").getValue().equals("signalmast")) {
-                            dispatcher.setSignalType(SIGNALMAST);
+                        switch (options.getAttribute("usesignaltype").getValue()) {
+                            case "signalmast":
+                                dispatcher.setSignalType(DispatcherFrame.SIGNALMAST);
+                                break;
+                            case "sectionsallocated":
+                                dispatcher.setSignalType(DispatcherFrame.SECTIONSALLOCATED);
+                                break;
+                            default:
+                                dispatcher.setSignalType(DispatcherFrame.SIGNALHEAD);
                         }
                     }
                     if (options.getAttribute("useconnectivity") != null) {
@@ -104,28 +117,31 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                             dispatcher.setUseConnectivity(false);
                         }
                     }
-                    if (options.getAttribute("trainsfromroster") != null) {
-                        dispatcher.setTrainsFromRoster(true);
-                        if (options.getAttribute("trainsfromroster").getValue().equals("no")) {
-                            dispatcher.setTrainsFromRoster(false);
-                        }
+                    if (options.getAttribute("trainsfrom") != null) {
+                        dispatcher.setTrainsFrom(trainsFromEnumMap.inputFromAttribute(options.getAttribute("trainsfrom")));
+                    } else {
+                        log.warn("Old Style dispatcheroptions file found - will be converted when saved");
+                    if (options.getAttribute("trainsfromroster") != null &&
+                            options.getAttribute("trainsfromroster").getValue().equals("yes")) {
+                        dispatcher.setTrainsFrom(TrainsFrom.TRAINSFROMROSTER);
+                    } else if (options.getAttribute("trainsfromtrains") != null &&
+                            options.getAttribute("trainsfromtrains").getValue().equals("no")) {
+                        dispatcher.setTrainsFrom(TrainsFrom.TRAINSFROMOPS);
+                    } else if (options.getAttribute("trainsfromuser") != null &&
+                            options.getAttribute("trainsfromuser").getValue().equals("no")) {
+                        dispatcher.setTrainsFrom(TrainsFrom.TRAINSFROMUSER);
                     }
-                    if (options.getAttribute("trainsfromtrains") != null) {
-                        dispatcher.setTrainsFromTrains(true);
-                        if (options.getAttribute("trainsfromtrains").getValue().equals("no")) {
-                            dispatcher.setTrainsFromTrains(false);
-                        }
-                    }
-                    if (options.getAttribute("trainsfromuser") != null) {
-                        dispatcher.setTrainsFromUser(true);
-                        if (options.getAttribute("trainsfromuser").getValue().equals("no")) {
-                            dispatcher.setTrainsFromUser(false);
-                        }
                     }
                     if (options.getAttribute("autoallocate") != null) {
                         dispatcher.setAutoAllocate(false);
                         if (options.getAttribute("autoallocate").getValue().equals("yes")) {
                             dispatcher.setAutoAllocate(true);
+                        }
+                    }
+                    if (options.getAttribute("autorelease") != null) {
+                        dispatcher.setAutoRelease(false);
+                        if (options.getAttribute("autorelease").getValue().equals("yes")) {
+                            dispatcher.setAutoRelease(true);
                         }
                     }
                     if (options.getAttribute("autoturnouts") != null) {
@@ -152,6 +168,12 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                         dispatcher.setHasOccupancyDetection(true);
                         if (options.getAttribute("hasoccupancydetection").getValue().equals("no")) {
                             dispatcher.setHasOccupancyDetection(false);
+                        }
+                    }
+                    if (options.getAttribute("sslcheckdirectionsensors") != null) {
+                        dispatcher.setSetSSLDirectionalSensors(true);
+                        if (options.getAttribute("sslcheckdirectionsensors").getValue().equals("no")) {
+                            dispatcher.setSetSSLDirectionalSensors(false);
                         }
                     }
                     if (options.getAttribute("shortactivetrainnames") != null) {
@@ -203,11 +225,12 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
                     if (options.getAttribute("stoppingspeedname") != null) {
                         dispatcher.setStoppingSpeedName((options.getAttribute("stoppingspeedname")).getValue());
                     }
-                    log.debug("  Options: {}, Detection={}, AutoAllocate={}, AutoTurnouts={}", 
-                            (dispatcher.getSignalType()==SIGNALHEAD?"SignalHeads/SSL":"SignalMasts"),
-                            (dispatcher.getHasOccupancyDetection()?"yes":"no"),
+
+                    log.debug("  Options: {}, Detection={}, AutoAllocate={}, AutoTurnouts={}, SetSSLDirectionSensors={}",
+                            (dispatcher.getSignalTypeString()),
                             (dispatcher.getAutoAllocate()?"yes":"no"),
-                            (dispatcher.getAutoTurnouts()?"yes":"no"));
+                            (dispatcher.getAutoTurnouts()?"yes":"no"),
+                            (dispatcher.getSetSSLDirectionalSensors()?"yes":"no"));
                 }
             }
         } else {
@@ -217,6 +240,7 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
 
     /**
      * Write out Dispatcher options to a file in the user's preferences directory.
+     * <p>The lename attribute is deprecated at 5.1.3.  The current value will be retained.
      * @param f Dispatcher instance.
      * @throws java.io.IOException Thrown if dispatcher option file not found
      */
@@ -240,15 +264,15 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
             options.setAttribute("lename", le.getTitle());
         }
         options.setAttribute("useconnectivity", "" + (dispatcher.getUseConnectivity() ? "yes" : "no"));
-        options.setAttribute("trainsfromroster", "" + (dispatcher.getTrainsFromRoster() ? "yes" : "no"));
-        options.setAttribute("trainsfromtrains", "" + (dispatcher.getTrainsFromTrains() ? "yes" : "no"));
-        options.setAttribute("trainsfromuser", "" + (dispatcher.getTrainsFromUser() ? "yes" : "no"));
+        options.setAttribute("trainsfrom", trainsFromEnumMap.outputFromEnum(dispatcher.getTrainsFrom()));
         options.setAttribute("autoallocate", "" + (dispatcher.getAutoAllocate() ? "yes" : "no"));
+        options.setAttribute("autorelease", "" + (dispatcher.getAutoRelease() ? "yes" : "no"));
         options.setAttribute("autoturnouts", "" + (dispatcher.getAutoTurnouts() ? "yes" : "no"));
         options.setAttribute("trustknownturnouts", "" + (dispatcher.getTrustKnownTurnouts() ? "yes" : "no"));
         options.setAttribute("minthrottleinterval", "" + (dispatcher.getMinThrottleInterval()));
         options.setAttribute("fullramptime", "" + (dispatcher.getFullRampTime()));
         options.setAttribute("hasoccupancydetection", "" + (dispatcher.getHasOccupancyDetection() ? "yes" : "no"));
+        options.setAttribute("sslcheckdirectionsensors", "" + (dispatcher.getSetSSLDirectionalSensors() ? "yes" : "no"));
         options.setAttribute("shortactivetrainnames", "" + (dispatcher.getShortActiveTrainNames() ? "yes" : "no"));
         options.setAttribute("shortnameinblock", "" + (dispatcher.getShortNameInBlock() ? "yes" : "no"));
         options.setAttribute("extracolorforallocated", "" + (dispatcher.getExtraColorForAllocated() ? "yes" : "no"));
@@ -258,10 +282,15 @@ public class OptionsFile extends jmri.jmrit.XmlFile implements InstanceManagerAu
         options.setAttribute("usescalemeters", "" + (dispatcher.getUseScaleMeters() ? "yes" : "no"));
         options.setAttribute("userosterentryinblock", "" + (dispatcher.getRosterEntryInBlock() ? "yes" : "no"));
         options.setAttribute("stoppingspeedname", dispatcher.getStoppingSpeedName());
-        if (dispatcher.getSignalType() == SIGNALHEAD) {
-            options.setAttribute("usesignaltype", "signalhead");
-        } else {
-            options.setAttribute("usesignaltype", "signalmast");
+        switch (dispatcher.getSignalType()) {
+            case DispatcherFrame.SIGNALMAST:
+                options.setAttribute("usesignaltype", "signalmast");
+                break;
+            case DispatcherFrame.SECTIONSALLOCATED:
+                options.setAttribute("usesignaltype", "sectionsallocated");
+                break;
+            default:
+                options.setAttribute("usesignaltype", "signalhead");
         }
         root.addContent(options);
 

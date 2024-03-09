@@ -1,18 +1,12 @@
 package jmri.jmrit.operations.setup;
 
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+
+import javax.swing.*;
+
 import jmri.InstanceManager;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user edit of the build report options
@@ -21,8 +15,6 @@ import jmri.InstanceManager;
  * 
  */
 public class BuildReportOptionPanel extends OperationsPreferencesPanel {
-
-//    private static final Logger log = LoggerFactory.getLogger(OperationsSetupPanel.class);
 
     // major buttons
     JButton saveButton = new JButton(Bundle.getMessage("ButtonSave"));
@@ -118,10 +110,7 @@ public class BuildReportOptionPanel extends OperationsPreferencesPanel {
         setBuildReportRadioButton();
         setBuildReportRouterRadioButton();
 
-        // load font sizes 5 through 14
-        for (int i = 5; i < 15; i++) {
-            fontSizeComboBox.addItem(i);
-        }
+        loadFontSizeComboBox(fontSizeComboBox);
         fontSizeComboBox.setSelectedItem(Setup.getBuildReportFontSize());
 
         addButtonAction(saveButton);
@@ -131,8 +120,6 @@ public class BuildReportOptionPanel extends OperationsPreferencesPanel {
         addRadioButtonAction(buildReportNor);
         addRadioButtonAction(buildReportMax);
         addRadioButtonAction(buildReportVD);
-
-        initMinimumSize(new Dimension(Control.panelWidth500, Control.panelHeight500));
     }
 
     // Save button
@@ -140,8 +127,9 @@ public class BuildReportOptionPanel extends OperationsPreferencesPanel {
     public void buttonActionPerformed(ActionEvent ae) {
         if (ae.getSource() == saveButton) {
             this.savePreferences();
-            if (Setup.isCloseWindowOnSaveEnabled()) {
-                dispose();
+            var topLevelAncestor = getTopLevelAncestor();
+            if (Setup.isCloseWindowOnSaveEnabled() && topLevelAncestor instanceof BuildReportOptionFrame) {
+                ((BuildReportOptionFrame) topLevelAncestor).dispose();
             }
         }
     }
@@ -149,6 +137,10 @@ public class BuildReportOptionPanel extends OperationsPreferencesPanel {
     @Override
     protected void checkBoxActionPerformed(ActionEvent ae) {
         buildReportIndentCheckBox.setEnabled(buildReportCheckBox.isSelected());
+        // use the smallest font to create the longest lines in the build report
+        if (buildReportCheckBox.isSelected()) {
+            fontSizeComboBox.setSelectedItem(7);
+        }
     }
 
     @Override
@@ -214,8 +206,8 @@ public class BuildReportOptionPanel extends OperationsPreferencesPanel {
         }
 
         if (!oldReportLevel.equals(Setup.getRouterBuildReportLevel())) {
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("buildReportRouter"), Bundle
-                    .getMessage("buildReportRouterTitle"), JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("buildReportRouter"), Bundle
+                    .getMessage("buildReportRouterTitle"), JmriJOptionPane.INFORMATION_MESSAGE);
         }
 
         Setup.setBuildReportEditorEnabled(buildReportCheckBox.isSelected());

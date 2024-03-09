@@ -13,27 +13,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import jmri.IdTagManager;
-import jmri.InstanceManager;
-import jmri.ReporterManager;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.LocationManager;
-import jmri.jmrit.operations.locations.Track;
-import jmri.jmrit.operations.rollingstock.cars.Car;
-import jmri.jmrit.operations.rollingstock.cars.CarManager;
-import jmri.jmrit.operations.rollingstock.cars.CarTypes;
-import jmri.jmrit.operations.rollingstock.cars.Kernel;
+import jmri.*;
+import jmri.jmrit.operations.locations.*;
+import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.Engine;
 import jmri.jmrit.operations.rollingstock.engines.EngineManager;
-import jmri.server.json.JSON;
-import jmri.server.json.JsonException;
-import jmri.server.json.JsonHttpServiceTestBase;
-import jmri.server.json.JsonRequest;
+import jmri.server.json.*;
 import jmri.server.json.consist.JsonConsist;
 import jmri.server.json.reporter.JsonReporter;
-import jmri.util.JUnitAppender;
-import jmri.util.JUnitOperationsUtil;
-import jmri.util.JUnitUtil;
+import jmri.util.*;
 
 public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonOperationsHttpService> {
 
@@ -108,23 +96,27 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(result.path(JSON.METHOD).isMissingNode()).isTrue();
         assertEquals(42, result.path(JSON.ID).asInt());
         JsonNode data = result.path(JSON.DATA);
-        assertEquals("Number of properties in Car", 28, data.size());
+        assertEquals("Number of properties in Car", 34, data.size());
         assertEquals(car.getId(), data.path(JSON.NAME).asText());
         assertEquals(car.getRoadName(), data.path(JSON.ROAD).asText());
         assertEquals(car.getNumber(), data.path(JSON.NUMBER).asText());
         assertThat(data.path(JSON.RFID).isValueNode()).isTrue();
         assertEquals(car.getRfid(), data.path(JSON.RFID).asText());
         assertEquals(car.getTypeName(), data.path(JsonOperations.CAR_TYPE).asText());
-        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).asText().isEmpty()).isTrue();
         assertEquals(car.getLengthInteger(), data.path(JSON.LENGTH).asInt());
         assertEquals(Double.parseDouble(car.getWeight()), data.path(JsonOperations.WEIGHT).asDouble(), 0.0);
         assertEquals(Double.parseDouble(car.getWeightTons()), data.path(JsonOperations.WEIGHT_TONS).asDouble(), 0.0);
         assertEquals(car.getColor(), data.path(JSON.COLOR).asText());
-        assertEquals(car.getOwner(), data.path(JSON.OWNER).asText());
+        assertEquals(car.getOwnerName(), data.path(JSON.OWNER).asText());
         assertEquals(car.getComment(), data.path(JSON.COMMENT).asText());
         assertEquals(car.getLocationId(), data.path(JsonOperations.LOCATION).path(JSON.NAME).asText());
         assertEquals(car.getTrackId(),
                 data.path(JsonOperations.LOCATION).path(JsonOperations.TRACK).path(JSON.NAME).asText());
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isValueNode()).isTrue();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertThat(data.path(JsonOperations.DESTINATION).isValueNode()).isTrue();
         assertThat(data.path(JsonOperations.DESTINATION).isNull()).isTrue();
         assertEquals(car.getLoadName(), data.path(JSON.LOAD).asText());
@@ -141,7 +133,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.REMOVE_COMMENT).isValueNode()).isTrue();
         assertThat(data.path(JSON.REMOVE_COMMENT).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.KERNEL).isValueNode()).isTrue();
-        assertThat(data.path(JsonOperations.KERNEL).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.KERNEL).asText().isEmpty()).isTrue();
         assertThat(data.path(JSON.UTILITY).isValueNode()).isTrue();
         assertThat(data.path(JSON.UTILITY).asBoolean()).isFalse();
         assertThat(data.path(JSON.FINAL_DESTINATION).isValueNode()).isTrue();
@@ -150,8 +142,14 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.RETURN_WHEN_EMPTY).isNull()).isTrue();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).isMissingNode()).isFalse();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertThat(data.path(JSON.STATUS).isValueNode()).isTrue();
         assertThat(data.path(JSON.STATUS).asText().isEmpty()).isTrue();
+        assertThat(data.path(JSON.IS_LOCAL).isValueNode()).isTrue();
+        assertThat(data.path(JSON.IS_LOCAL).asBoolean()).isFalse();
         // add (PUT) a car
         data = mapper.createObjectNode().put(JSON.ROAD, "MEC").put(JSON.NUMBER, "31995");
         validateData(JsonOperations.CAR, data, false);
@@ -163,19 +161,19 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(result.path(JSON.METHOD).isMissingNode()).isTrue();
         assertEquals(42, result.path(JSON.ID).asInt());
         data = result.path(JSON.DATA);
-        assertEquals("Number of properties in Car", 28, data.size());
+        assertEquals("Number of properties in Car", 34, data.size());
         assertEquals(car.getId(), data.path(JSON.NAME).asText());
         assertEquals(car.getRoadName(), data.path(JSON.ROAD).asText());
         assertEquals(car.getNumber(), data.path(JSON.NUMBER).asText());
         assertThat(data.path(JSON.RFID).isValueNode()).isTrue();
         assertEquals(car.getRfid(), data.path(JSON.RFID).asText());
         assertEquals(car.getTypeName(), data.path(JsonOperations.CAR_TYPE).asText());
-        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).asText().isEmpty()).isTrue();
         assertEquals(car.getLengthInteger(), data.path(JSON.LENGTH).asInt());
         assertEquals(Double.parseDouble(car.getWeight()), data.path(JsonOperations.WEIGHT).asDouble(), 0.0);
         assertEquals(Double.parseDouble(car.getWeightTons()), data.path(JsonOperations.WEIGHT_TONS).asDouble(), 0.0);
         assertEquals(car.getColor(), data.path(JSON.COLOR).asText());
-        assertEquals(car.getOwner(), data.path(JSON.OWNER).asText());
+        assertEquals(car.getOwnerName(), data.path(JSON.OWNER).asText());
         assertEquals(car.getBuilt(), data.path(JsonOperations.BUILT).asText());
         assertEquals(car.getComment(), data.path(JSON.COMMENT).asText());
         assertEquals(car.getLocationId(), data.path(JsonOperations.LOCATION).path(JSON.NAME).asText());
@@ -197,7 +195,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.REMOVE_COMMENT).isValueNode()).isTrue();
         assertThat(data.path(JSON.REMOVE_COMMENT).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.KERNEL).isValueNode()).isTrue();
-        assertThat(data.path(JsonOperations.KERNEL).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.KERNEL).asText().isEmpty()).isTrue();
         assertThat(data.path(JSON.UTILITY).isValueNode()).isTrue();
         assertThat(data.path(JSON.UTILITY).asBoolean()).isFalse();
         assertThat(data.path(JSON.FINAL_DESTINATION).isValueNode()).isTrue();
@@ -206,8 +204,14 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.RETURN_WHEN_EMPTY).isNull()).isTrue();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).isMissingNode()).isFalse();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertThat(data.path(JSON.STATUS).isValueNode()).isTrue();
         assertThat(data.path(JSON.STATUS).asText().isEmpty()).isTrue();
+        assertThat(data.path(JSON.IS_LOCAL).isValueNode()).isTrue();
+        assertThat(data.path(JSON.IS_LOCAL).asBoolean()).isFalse();
         // delete a car
         data = mapper.createObjectNode().put(JSON.NAME, car.getId());
         validateData(JsonOperations.CAR, data, false);
@@ -245,6 +249,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
                 .put(JsonOperations.FRED, true)
                 .put(JSON.UTILITY, true)
                 .put(JsonOperations.OUT_OF_SERVICE, true)
+                .put(JsonOperations.LOCATION_UNKNOWN, false)
                 .put(JsonOperations.BUILT, "13-1234")
                 .put(JsonOperations.WEIGHT, 1.5)
                 .put(JsonOperations.WEIGHT_TONS, 160)
@@ -261,7 +266,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals(42, result.path(JSON.ID).asInt());
         data = result.path(JSON.DATA);
         // rename not always present
-        assertEquals("Number of properties in Car", 29, data.size());
+        assertEquals("Number of properties in Car", 35, data.size());
         // TODO: verify against car and known values
         assertEquals(car.getId(), data.path(JSON.NAME).asText());
         assertEquals(car.getRoadName(), data.path(JSON.ROAD).asText());
@@ -275,7 +280,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals(Double.parseDouble(car.getWeight()), data.path(JsonOperations.WEIGHT).asDouble(), 0.0);
         assertEquals(Double.parseDouble(car.getWeightTons()), data.path(JsonOperations.WEIGHT_TONS).asDouble(), 0.0);
         assertEquals(car.getColor(), data.path(JSON.COLOR).asText());
-        assertEquals(car.getOwner(), data.path(JSON.OWNER).asText());
+        assertEquals(car.getOwnerName(), data.path(JSON.OWNER).asText());
         assertEquals(car.getComment(), data.path(JSON.COMMENT).asText());
         assertEquals(car.getLocationId(), data.path(JsonOperations.LOCATION).path(JSON.NAME).asText());
         assertEquals(car.getTrackId(),
@@ -296,7 +301,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.REMOVE_COMMENT).isValueNode()).isTrue();
         assertThat(data.path(JSON.REMOVE_COMMENT).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.KERNEL).isValueNode()).isTrue();
-        assertThat(data.path(JsonOperations.KERNEL).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.KERNEL).asText().isEmpty()).isTrue();
         assertThat(data.path(JSON.UTILITY).isValueNode()).isTrue();
         assertThat(data.path(JSON.UTILITY).asBoolean()).isTrue();
         assertThat(data.path(JSON.FINAL_DESTINATION).isValueNode()).isTrue();
@@ -305,8 +310,14 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.RETURN_WHEN_EMPTY).isNull()).isTrue();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).isMissingNode()).isFalse();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isTrue();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertThat(data.path(JSON.STATUS).isValueNode()).isTrue();
-        assertThat(data.path(JSON.STATUS).asText()).as("Out of service status").isEqualTo("<O> ");
+        assertThat(data.path(JSON.STATUS).asText()).as("Out of service status").isEqualTo("&lt;O&gt; ");
+        assertThat(data.path(JSON.IS_LOCAL).isValueNode()).isTrue();
+        assertThat(data.path(JSON.IS_LOCAL).asBoolean()).isFalse();
         // edit a non-existent car
         assertThat(manager.getById("-1")).isNull();
         assertThatCode(() -> service.doPost(JsonOperations.CAR, "-1", NullNode.getInstance(),
@@ -335,19 +346,19 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(result.path(JSON.METHOD).isMissingNode()).isTrue();
         assertEquals(42, result.path(JSON.ID).asInt());
         JsonNode data = result.path(JSON.DATA);
-        assertEquals("Number of properties in Engine", 18, data.size());
+        assertEquals("Number of properties in Engine", 21, data.size());
         assertEquals(engine.getId(), data.path(JSON.NAME).asText());
         assertEquals(engine.getRoadName(), data.path(JSON.ROAD).asText());
         assertEquals(engine.getNumber(), data.path(JSON.NUMBER).asText());
         assertThat(data.path(JSON.RFID).isValueNode()).isTrue();
         assertEquals(engine.getRfid(), data.path(JSON.RFID).asText());
         assertEquals(engine.getTypeName(), data.path(JsonOperations.CAR_TYPE).asText());
-        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).asText().isEmpty()).isTrue();
         assertEquals(engine.getLengthInteger(), data.path(JSON.LENGTH).asInt());
         assertEquals(Double.parseDouble(engine.getWeight()), data.path(JsonOperations.WEIGHT).asDouble(), 0.0);
         assertEquals(Double.parseDouble(engine.getWeightTons()), data.path(JsonOperations.WEIGHT_TONS).asDouble(), 0.0);
         assertEquals(engine.getColor(), data.path(JSON.COLOR).asText());
-        assertEquals(engine.getOwner(), data.path(JSON.OWNER).asText());
+        assertEquals(engine.getOwnerName(), data.path(JSON.OWNER).asText());
         assertEquals(engine.getComment(), data.path(JSON.COMMENT).asText());
         assertEquals(engine.getLocationId(), data.path(JsonOperations.LOCATION).path(JSON.NAME).asText());
         assertEquals(engine.getTrackId(),
@@ -358,6 +369,10 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals("C14", data.path(JsonConsist.CONSIST).asText());
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).isMissingNode()).isFalse();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertThat(data.path(JSON.MODEL).isValueNode()).isTrue();
         assertEquals("SD45", data.path(JSON.MODEL).asText());
         // add (PUT) an engine
@@ -371,14 +386,14 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(result.path(JSON.METHOD).isMissingNode()).isTrue();
         assertEquals(42, result.path(JSON.ID).asInt());
         data = result.path(JSON.DATA);
-        assertEquals("Number of properties in Engine", 18, data.size());
+        assertEquals("Number of properties in Engine", 21, data.size());
         assertEquals(engine.getId(), data.path(JSON.NAME).asText());
         assertEquals(engine.getRoadName(), data.path(JSON.ROAD).asText());
         assertEquals(engine.getNumber(), data.path(JSON.NUMBER).asText());
         assertThat(data.path(JSON.RFID).isValueNode()).isTrue();
         assertEquals(engine.getRfid(), data.path(JSON.RFID).asText());
         assertEquals(engine.getTypeName(), data.path(JsonOperations.CAR_TYPE).asText());
-        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.CAR_SUB_TYPE).asText().isEmpty()).isTrue();
         assertEquals(engine.getLengthInteger(), data.path(JSON.LENGTH).asInt());
         assertEquals(Double.parseDouble(engine.getWeight()), data.path(JsonOperations.WEIGHT).asDouble(), 0.0);
         try {
@@ -388,7 +403,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
             assertEquals(0.0, data.path(JsonOperations.WEIGHT_TONS).asDouble(), 0.0);
         }
         assertEquals(engine.getColor(), data.path(JSON.COLOR).asText());
-        assertEquals(engine.getOwner(), data.path(JSON.OWNER).asText());
+        assertEquals(engine.getOwnerName(), data.path(JSON.OWNER).asText());
         assertEquals(engine.getComment(), data.path(JSON.COMMENT).asText());
         assertEquals(engine.getLocationId(), data.path(JsonOperations.LOCATION).path(JSON.NAME).asText());
         assertEquals(engine.getTrackId(),
@@ -396,9 +411,13 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JsonOperations.DESTINATION).isValueNode()).isTrue();
         assertThat(data.path(JsonOperations.DESTINATION).isNull()).isTrue();
         assertThat(data.path(JsonConsist.CONSIST).isValueNode()).isTrue();
-        assertThat(data.path(JsonConsist.CONSIST).isNull()).isTrue();
+        assertThat(data.path(JsonConsist.CONSIST).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).isMissingNode()).isFalse();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertThat(data.path(JSON.MODEL).isValueNode()).isTrue();
         assertThat(data.path(JSON.MODEL).asText().isEmpty()).isTrue();
         // delete an engine
@@ -434,7 +453,6 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
                 .put(JSON.NUMBER, "216")
                 .put(JSON.RFID, "1234567890AB")
                 .put(JSON.MODEL, "SD 40-2")
-                .put(JsonOperations.OUT_OF_SERVICE, true)
                 .put(JsonOperations.BUILT, "10-1978")
                 .put(JsonOperations.WEIGHT, 5.6)
                 .put(JsonOperations.WEIGHT_TONS, 242)
@@ -453,7 +471,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals(42, result.path(JSON.ID).asInt());
         data = result.path(JSON.DATA);
         // rename not always present
-        assertEquals("Number of properties in Engine", 19, data.size());
+        assertEquals("Number of properties in Engine", 22, data.size());
         assertEquals("BM216", data.path(JSON.NAME).asText());
         assertEquals("BM", data.path(JSON.ROAD).asText());
         assertEquals("216", data.path(JSON.NUMBER).asText());
@@ -466,7 +484,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals(Double.parseDouble(engine.getWeight()), data.path(JsonOperations.WEIGHT).asDouble(), 0.0);
         assertEquals(Double.parseDouble(engine.getWeightTons()), data.path(JsonOperations.WEIGHT_TONS).asDouble(), 0.0);
         assertEquals(engine.getColor(), data.path(JSON.COLOR).asText());
-        assertEquals(engine.getOwner(), data.path(JSON.OWNER).asText());
+        assertEquals(engine.getOwnerName(), data.path(JSON.OWNER).asText());
         assertEquals(engine.getComment(), data.path(JSON.COMMENT).asText());
         assertEquals(engine.getLocationId(), data.path(JsonOperations.LOCATION).path(JSON.NAME).asText());
         assertEquals(engine.getTrackId(),
@@ -474,9 +492,13 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JsonOperations.DESTINATION).isValueNode()).isTrue();
         assertThat(data.path(JsonOperations.DESTINATION).isNull()).isTrue();
         assertThat(data.path(JsonConsist.CONSIST).isValueNode()).isTrue();
-        assertThat(data.path(JsonConsist.CONSIST).isNull()).isTrue();
+        assertThat(data.path(JsonConsist.CONSIST).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.OUT_OF_SERVICE).isMissingNode()).isFalse();
-        assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isTrue();
+        assertThat(data.path(JsonOperations.OUT_OF_SERVICE).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.LOCATION_UNKNOWN).asBoolean()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isMissingNode()).isFalse();
+        assertThat(data.path(JsonOperations.TRAIN_ID).isNull()).isTrue();
         assertEquals("SD 40-2", data.path(JSON.MODEL).asText());
         JUnitAppender.assertErrorMessage("Rolling stock (BM 216) length () is not valid");
         // edit a non-existent car
@@ -512,9 +534,9 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals(location.getId(), data.path(JSON.NAME).asText());
         assertEquals(location.getName(), data.path(JSON.USERNAME).asText());
         assertThat(data.path(JSON.COMMENT).isValueNode()).isTrue();
-        assertEquals(location.getComment(), data.path(JSON.COMMENT).asText());
+        assertEquals(location.getCommentWithColor(), data.path(JSON.COMMENT).asText());
         assertThat(data.path(JsonReporter.REPORTER).isValueNode()).isTrue();
-        assertThat(data.path(JsonReporter.REPORTER).isNull()).isTrue();
+        assertThat(data.path(JsonReporter.REPORTER).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.CAR_TYPE).isArray()).isTrue();
         assertEquals(4, data.path(JsonOperations.CAR_TYPE).size());
         assertEquals("Boxcar", data.path(JsonOperations.CAR_TYPE).path(0).asText());
@@ -526,7 +548,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertEquals("20s1", data.path(JsonOperations.TRACK).path(0).path(JSON.NAME).asText());
         assertEquals("NI Yard", data.path(JsonOperations.TRACK).path(0).path(JSON.USERNAME).asText());
         assertThat(data.path(JsonOperations.TRACK).path(0).path(JsonReporter.REPORTER).isValueNode()).isTrue();
-        assertThat(data.path(JsonOperations.TRACK).path(0).path(JsonReporter.REPORTER).isNull()).isTrue();
+        assertThat(data.path(JsonOperations.TRACK).path(0).path(JsonReporter.REPORTER).asText().isEmpty()).isTrue();
         // add (PUT) a location
         data = mapper.createObjectNode().put(JSON.USERNAME, "Test Site");
         validateData(JsonOperations.LOCATION, data, false);
@@ -665,7 +687,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(data.path(JSON.COMMENT).isValueNode()).isTrue();
         assertEquals(track.getComment(), data.path(JSON.COMMENT).asText());
         assertThat(data.path(JsonReporter.REPORTER).isValueNode()).isTrue();
-        assertThat(data.path(JsonReporter.REPORTER).isNull()).isTrue();
+        assertThat(data.path(JsonReporter.REPORTER).asText().isEmpty()).isTrue();
         assertThat(data.path(JsonOperations.CAR_TYPE).isArray()).isTrue();
         assertEquals(4, data.path(JsonOperations.CAR_TYPE).size());
         assertEquals("Boxcar", data.path(JsonOperations.CAR_TYPE).path(0).asText());
@@ -747,6 +769,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         validateData(JsonOperations.TRACK, data, false);
         result = service.doPost(JsonOperations.TRACK, id, data, new JsonRequest(locale, JSON.V5, JSON.GET, 42));
         track = location.getTrackById(id);
+        assertThat(track).isNotNull();
         assertThat(location).isNotNull();
         validate(result);
         assertEquals(JsonOperations.TRACK, result.path(JSON.TYPE).asText());
@@ -842,7 +865,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
         assertThat(result.isArray()).isTrue();
         assertEquals(4, result.size());
         assertEquals(JsonOperations.CAR_TYPE, result.path(0).path(JSON.TYPE).asText());
-        assertEquals("test1", result.path(0).path(JSON.DATA).path(JSON.NAME).asText());
+        assertEquals("Boxcar", result.path(0).path(JSON.DATA).path(JSON.NAME).asText());
         assertThat(result.path(0).path(JSON.DATA).path(JsonOperations.CARS).isArray()).isTrue();
         assertThat(result.path(0).path(JSON.DATA).path(JsonOperations.LOCATIONS).isArray()).isTrue();
         // rename the added car type
@@ -947,8 +970,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
 
     @Test
     public void testDeleteNonExistantKernel() throws JsonException {
-        CarManager manager = InstanceManager.getDefault(CarManager.class);
-        assertThat(manager.getKernelByName("invalid-name")).isNull();
+        assertThat(InstanceManager.getDefault(KernelManager.class).getKernelByName("invalid-name")).isNull();
         assertThatCode(() -> service.doDelete(JsonOperations.KERNEL, "invalid-name", NullNode.getInstance(),
                 new JsonRequest(locale, JSON.V5, JSON.DELETE, 42)))
                         .isExactlyInstanceOf(JsonException.class)
@@ -958,7 +980,7 @@ public class JsonOperationsHttpServiceTest extends JsonHttpServiceTestBase<JsonO
     @Test
     public void testDeleteInUseKernel() throws JsonException {
         CarManager manager = InstanceManager.getDefault(CarManager.class);
-        Kernel k1 = manager.newKernel("test1");
+        Kernel k1 = InstanceManager.getDefault(KernelManager.class).newKernel("test1");
         Car c1 = manager.newRS("road", "1");
         c1.setLength("40");
         c1.setWeight("1000");

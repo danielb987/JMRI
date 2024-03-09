@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 /**
+ * This class holds a list of throttle setting to make a smooth acceleration or
+ * deceleration. It supplies iterators to cycle through the settings.
+ * Used when speed changes are called for by signaled speeds, block speed limits
+ * or user controls for speed halts and resumes.  Also used to make NXWarrants.
+ *  
+ * @author Pete Cressman Copyright (C) 2019
 */
 
 public class RampData {
@@ -11,47 +17,101 @@ public class RampData {
     private int _timeInterval;
     private float _throttleInterval;
     private ArrayList<Float> _settings;
-    private float _rampLength;
     private boolean _upRamp;
+    private SpeedUtil _speedUtil;
+    private float _fromSpeed;
+    private float _toSpeed;
 
-    static float INCRE_RATE = 1.10f;  // multiplier to increase throttle increments
+    static float INCRE_RATE = 1.085f;  // multiplier to increase throttle increments
 
-    RampData(float throttleIncre, int timeIncre) {
+    RampData(SpeedUtil util, float throttleIncre, int timeIncre, float fromSet, float toSet) {
         _throttleInterval = throttleIncre; 
         _timeInterval = timeIncre;
+        _speedUtil = util;
+        _fromSpeed = fromSet;
+        _toSpeed = toSet;
+        makeThrottleSettings();
     }
     
     protected boolean isUpRamp() {
         return _upRamp;
     }
 
-    protected void makeThrottleSettings(float fromSet, float toSet) {
-        _upRamp = (toSet >= fromSet);
+    private void makeThrottleSettings() {
+        _upRamp = (_toSpeed >= _fromSpeed);
         _settings = new ArrayList<>();
         float lowSetting;
         float highSetting;
-        float throttleIncre = _throttleInterval;
+        float momentumTime;
         if (_upRamp) {
-            lowSetting = fromSet;
-            highSetting = toSet;
+            lowSetting = _fromSpeed;
+            highSetting = _toSpeed;
         } else {
-            lowSetting = toSet;
-            highSetting = fromSet;
+            lowSetting = _toSpeed;
+            highSetting = _fromSpeed;
         }
+        float low = 0.0f;
+        float throttleIncre = _throttleInterval;
+        while (low < lowSetting ) {
+            throttleIncre *= INCRE_RATE;
+            low += throttleIncre;
+        }
+        _settings.add(Float.valueOf(lowSetting));
+        lowSetting += throttleIncre;
         while (lowSetting < highSetting) {
             _settings.add(Float.valueOf(lowSetting));
+            momentumTime = _speedUtil.getMomentumTime(lowSetting, lowSetting + throttleIncre*INCRE_RATE);
+            if (momentumTime <= _timeInterval) {
+                throttleIncre *= INCRE_RATE;
+            }  // if time of momentum change exceeds _throttleInterval, don't increase throttleIncre
             lowSetting += throttleIncre;
-            throttleIncre *= INCRE_RATE;
         }
         _settings.add(Float.valueOf(highSetting));
     }
 
-    protected void setRampLength(float rampLength) {
-        _rampLength =  rampLength;
+    protected float getRampLength() {
+        float rampLength = 0;
+        float nextSetting;
+        float prevSetting;
+        float momentumTime = 0;
+        float dist = 0;
+        if (_upRamp) {
+            ListIterator<Float> iter = speedIterator(true);
+            prevSetting = iter.next(); // first setting is current speed
+            nextSetting = prevSetting;
+            while (iter.hasNext()) {
+                nextSetting = iter.next().floatValue();
+                dist = _speedUtil.getDistanceOfSpeedChange(prevSetting, nextSetting, _timeInterval);
+                rampLength += dist;
+                momentumTime = _speedUtil.getMomentumTime(prevSetting, nextSetting);
+                prevSetting = nextSetting;
+            }
+        } else {
+            ListIterator<Float> iter = speedIterator(false);
+            prevSetting = iter.previous(); // first setting is current speed
+            nextSetting = prevSetting;
+            while (iter.hasPrevious()) {
+                nextSetting = iter.previous().floatValue();
+                dist = _speedUtil.getDistanceOfSpeedChange(prevSetting, nextSetting, _timeInterval);
+                rampLength += dist;
+                momentumTime = _speedUtil.getMomentumTime(prevSetting, nextSetting);
+                prevSetting = nextSetting;
+            }
+        }
+        // distance of the last speed increment is only distance needed for momentum.
+        // _speedUtil.getDistanceOfSpeedChange will not return a distance greater than that needed by momentum
+        if (_timeInterval > momentumTime) {
+            rampLength -= _speedUtil.getTrackSpeed(nextSetting) * (_timeInterval - momentumTime);  
+        }
+        return rampLength;
     }
 
-    protected float getRampLength() {
-        return _rampLength;
+    protected int getNumSteps() {
+        return _settings.size() - 1;
+    }
+
+    protected int getRamptime() {
+        return (_settings.size() - 1) * _timeInterval;
     }
 
     protected float getMaxSpeed() {
@@ -74,4 +134,5 @@ public class RampData {
         return _timeInterval;
     }
 
+//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RampData.class);
 }

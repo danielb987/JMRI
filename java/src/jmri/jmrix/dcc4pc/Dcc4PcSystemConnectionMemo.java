@@ -1,13 +1,11 @@
 package jmri.jmrix.dcc4pc;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import jmri.*;
 import jmri.jmrix.ConfiguringSystemConnectionMemo;
 import jmri.jmrix.DefaultSystemConnectionMemo;
-import jmri.managers.DefaultProgrammerManager;
 import jmri.util.NamedBeanComparator;
 
 /**
@@ -56,6 +54,7 @@ public class Dcc4PcSystemConnectionMemo extends DefaultSystemConnectionMemo impl
      * be referenced from classes that don't inherit, including
      * hexfile.HexFileFrame and locormi.LnMessageClient
      */
+    @Override
     public void configureManagers() {
 
         InstanceManager.setReporterManager(
@@ -67,24 +66,11 @@ public class Dcc4PcSystemConnectionMemo extends DefaultSystemConnectionMemo impl
         register();
     }
 
-    /**
-     * @return the Default RailCom Manager.
-     * @deprecated since 4.21.1.  retrieve from InstanceManager instead.
-     */
-    @Deprecated
-    public RailComManager getRailCommManager() {
-        if (getDisabled()) {
-            return null;
-        }
-        return InstanceManager.getDefault(RailComManager.class);
-    }
-
-
     public Dcc4PcReporterManager getReporterManager() {
         if (getDisabled()) {
             return null;
         }
-        return (Dcc4PcReporterManager) classObjectMap.computeIfAbsent((ReporterManager.class), (Class c) ->
+        return (Dcc4PcReporterManager) classObjectMap.computeIfAbsent((ReporterManager.class), (Class<?> c) ->
             new Dcc4PcReporterManager(getDcc4PcTrafficController(), this));
     }
 
@@ -93,41 +79,7 @@ public class Dcc4PcSystemConnectionMemo extends DefaultSystemConnectionMemo impl
             return null;
         }
         return (Dcc4PcSensorManager) classObjectMap.computeIfAbsent(SensorManager.class,
-                (Class c) -> new Dcc4PcSensorManager(getDcc4PcTrafficController(), this));
-    }
-
-    /**
-     * @return a programmer manager
-     * @deprecated since 4.21.1 use {@link InstanceManager#getDefault(Class)} instead
-     */
-    @Deprecated
-    public Dcc4PcProgrammerManager getProgrammerManager() {
-        if (getDisabled()) {
-            return null;
-        }
-        return (Dcc4PcProgrammerManager) classObjectMap.computeIfAbsent(DefaultProgrammerManager.class, (Class c) -> {
-            DefaultProgrammerManager defaultProgrammer=get(GlobalProgrammerManager.class);
-            if (defaultProgrammer == null) {
-                if (progManager == null) {
-                    return null;
-                }
-                List<SystemConnectionMemo> connList = jmri.InstanceManager.getList(SystemConnectionMemo.class);
-                if (connList.isEmpty()) {
-                    return null;
-                }
-                for (SystemConnectionMemo systemConnectionMemo : connList) {
-                    if (systemConnectionMemo.getUserName().equals(progManager)) {
-                        defaultProgrammer = systemConnectionMemo.get(GlobalProgrammerManager.class);
-                        break;
-                    }
-                }
-            }
-            if(defaultProgrammer != null ) {
-                return new Dcc4PcProgrammerManager(defaultProgrammer);
-            } else {
-                return null;
-            }
-        });
+                (Class<?> c) -> new Dcc4PcSensorManager(getDcc4PcTrafficController(), this));
     }
 
     @Override
@@ -153,11 +105,5 @@ public class Dcc4PcSystemConnectionMemo extends DefaultSystemConnectionMemo impl
     public <T extends AddressedProgrammerManager & GlobalProgrammerManager> void setRealProgramManager(T dpm) {
         store(dpm,GlobalProgrammerManager.class);
         store(dpm, AddressedProgrammerManager.class);
-    }
-
-    private String progManager;
-
-    public void setDefaultProgrammer(String prog) {
-        progManager = prog;
     }
 }

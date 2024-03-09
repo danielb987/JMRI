@@ -45,11 +45,6 @@ public class SerialSensorManager extends jmri.managers.AbstractSensorManager
         return (SecsiSystemConnectionMemo) memo;
     }
 
-    // Free resources when no longer used
-    @Override
-    public void dispose() {
-    }
-
     /**
      * {@inheritDoc}
      * <p>
@@ -59,11 +54,11 @@ public class SerialSensorManager extends jmri.managers.AbstractSensorManager
      */
     @Override
     @Nonnull
-    public Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+    protected Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         Sensor s;
         // validate the system name, and normalize it
         String sName = SerialAddress.normalizeSystemName(systemName, getSystemPrefix());
-        if (sName.equals("")) {
+        if (sName.isEmpty()) {
             // system name is not valid
             throw new IllegalArgumentException("Invalid Secsi Sensor system name - " +  // NOI18N
                     systemName);

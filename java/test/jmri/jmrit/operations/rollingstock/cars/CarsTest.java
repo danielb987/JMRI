@@ -83,9 +83,6 @@ public class CarsTest extends OperationsTestCase {
         e.setAttribute(Xml.WAIT, "0");
         e.setAttribute(Xml.PICKUP_SCHEDULE_ID, "TESTPICKUPSCHEDULE");
         e.setAttribute(Xml.SCHEDULE_ID, "TESTSCHEDULEID");
-        e.setAttribute(Xml.NEXT_LOAD, "TESTLOAD2");
-        e.setAttribute(Xml.NEXT_WAIT, "0");
-        e.setAttribute(Xml.NEXT_PICKUP_SCHEDULE_ID, "TESTNEXTPICKUPSCHEDULEID");
         e.setAttribute(Xml.NEXT_DEST_ID, "TESTNEXTDESTID");
         e.setAttribute(Xml.NEXT_DEST_TRACK_ID, "TESTNEXTDESTTRACKID");
         e.setAttribute(Xml.PREVIOUS_NEXT_DEST_ID, "TESTPREVOIUSNEXTDESTID");
@@ -94,12 +91,10 @@ public class CarsTest extends OperationsTestCase {
         e.setAttribute(Xml.RWE_DEST_ID, "TESTRWEDESTID");
         e.setAttribute(Xml.RWE_LOAD, "TESTRWELOAD");
 
-        try {
+        Assertions.assertDoesNotThrow( () -> {
             Car c1 = new Car(e);
-            Assert.assertNotNull("Xml Element Constructor", c1);
-        } catch (java.lang.NullPointerException npe) {
-            Assert.fail("Null Pointer Exception while executing Xml Element Constructor");
-        }
+            Assertions.assertNotNull(c1, "Xml Element Constructor");
+        } ,"Exception while executing Xml Element Constructor");
 
         jmri.util.JUnitAppender.assertErrorMessage("Kernel TESTKERNEL does not exist");
     }
@@ -111,12 +106,12 @@ public class CarsTest extends OperationsTestCase {
         c1.setTypeName("TESTTYPE");
         c1.setLength("TESTLENGTH");
         c1.setColor("TESTCOLOR");
-        c1.setHazardous(true);
+        c1.setCarHazardous(true);
         c1.setFred(true);
         c1.setCaboose(true);
         c1.setWeight("TESTWEIGHT");
         c1.setBuilt("TESTBUILT");
-        c1.setOwner("TESTOWNER");
+        c1.setOwnerName("TESTOWNER");
         c1.setComment("TESTCOMMENT");
         c1.setMoves(5);
 
@@ -131,7 +126,7 @@ public class CarsTest extends OperationsTestCase {
         Assert.assertTrue("Car Caboose", c1.isCaboose());
         Assert.assertEquals("Car Weight", "TESTWEIGHT", c1.getWeight());
         Assert.assertEquals("Car Built", "TESTBUILT", c1.getBuilt());
-        Assert.assertEquals("Car Owner", "TESTOWNER", c1.getOwner());
+        Assert.assertEquals("Car Owner", "TESTOWNER", c1.getOwnerName());
         Assert.assertEquals("Car Comment", "TESTCOMMENT", c1.getComment());
         Assert.assertEquals("Car Moves", 5, c1.getMoves());
     }

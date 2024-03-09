@@ -1,6 +1,5 @@
 package jmri.jmrix.loconet;
 
-import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,8 @@ public class LnPacketizerStrict extends LnPacketizer {
     private int waitBusy;
     // retry required, lost echo, bad IMM, general busy
     private boolean reTryRequired;
+
+    static public int maxWaitCount = 150; // public for script access
 
     public LnPacketizerStrict(LocoNetSystemConnectionMemo m) {
         super(m);
@@ -179,20 +180,20 @@ public class LnPacketizerStrict extends LnPacketizer {
                     // done with this one
                 } catch (LocoNetMessageException e) {
                     // just let it ride for now
-                    log.warn("run: unexpected LocoNetMessageException: {}", e); // NOI18N
+                    log.warn("run: unexpected LocoNetMessageException", e); // NOI18N
                 } catch (java.io.EOFException e) {
                     // posted from idle port when enableReceiveTimeout used
                     log.trace("EOFException, is LocoNet serial I/O using timeouts?"); // NOI18N
                 } catch (java.io.IOException e) {
                     // fired when write-end of HexFile reaches end
-                    log.debug("IOException, should only happen with HexFIle: {}", e); // NOI18N
+                    log.debug("IOException, should only happen with HexFile", e); // NOI18N
                     log.info("End of file"); // NOI18N
                     disconnectPort(controller);
                     return;
                 } // normally, we don't catch RuntimeException, but in this
                 // permanently running loop it seems wise.
                 catch (RuntimeException e) {
-                    log.warn("run: unexpected Exception: {}", e); // NOI18N
+                    log.warn("run: unexpected Exception", e); // NOI18N
                 }
             } // end of permanent loop
         }
@@ -233,12 +234,11 @@ public class LnPacketizerStrict extends LnPacketizer {
             while (true) { // loop permanently
                 // any input?
                 try {
-                    // get content; failure is a NoSuchElementException
+                    // get content; blocks until present
                     log.trace("check for input"); // NOI18N
-                    byte msg[] = null;
-                    synchronized (this) {
-                        msg = xmtList.removeFirst();
-                    }
+
+                    byte msg[] = xmtList.take();
+
                     // input - now send
                     try {
                         if (ostream != null) {
@@ -282,7 +282,7 @@ public class LnPacketizerStrict extends LnPacketizer {
                                 // minimal sleeps so as to exit fast
                                 waitCount = 0;
                                 // echo as really fast
-                                while ((waitForMsg != null) && waitCount < 20) {
+                                while ((waitForMsg != null) && waitCount < maxWaitCount) {
                                     try {
                                         Thread.sleep(1);
                                     } catch (InterruptedException ee) {
@@ -291,7 +291,7 @@ public class LnPacketizerStrict extends LnPacketizer {
                                     waitCount++;
                                 }
                                 // Oh my lost the echo...
-                                if (waitCount > 19) {
+                                if (waitCount >= maxWaitCount) {
                                     log.warn("Retry Send for Lost Packet [{}] Count[{}]", waitForMsg,
                                                 reTryCount); // NOI18N
                                     if (reTryCount < 5) {
@@ -304,7 +304,7 @@ public class LnPacketizerStrict extends LnPacketizer {
                                     }
                                 } else {
                                     // LACKs / a response can be slow
-                                    while (waitingOnLack && waitCount < 50) {
+                                    while (waitingOnLack && waitCount < 3*maxWaitCount) {
                                         try {
                                             Thread.sleep(1);
                                         } catch (InterruptedException ee) {
@@ -313,7 +313,7 @@ public class LnPacketizerStrict extends LnPacketizer {
                                         waitCount++;
                                     }
                                     // Oh my lost the LACK / response...
-                                    if (waitCount > 49) {
+                                    if (waitCount >= 3*maxWaitCount) {
                                         try {
                                             log.warn("Retry Send for Lost Response Count[{}]", reTryCount); // NOI18N
                                         } catch (NullPointerException npe) {
@@ -338,11 +338,8 @@ public class LnPacketizerStrict extends LnPacketizer {
                     } catch (java.io.IOException e) {
                         log.warn("sendLocoNetMessage: IOException: {}", e.toString()); // NOI18N
                     }
-                } catch (NoSuchElementException e) {
-                    // message queue was empty, wait for input
-                    log.trace("start wait"); // NOI18N
-                    new jmri.util.WaitHandler(this); // handle synchronization, spurious wake, interruption
-                    log.trace("end wait"); // NOI18N
+                } catch (InterruptedException ie) {
+                    return; // ending the thread
                 }
             }
         }

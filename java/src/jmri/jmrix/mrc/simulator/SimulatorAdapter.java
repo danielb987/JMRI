@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 public class SimulatorAdapter extends MrcPortController implements Runnable {
 
     // private control members
-    private boolean opened = false;
     private Thread sourceThread;
 
     // streams to share with user class
@@ -147,15 +146,14 @@ public class SimulatorAdapter extends MrcPortController implements Runnable {
             MrcMessage m = readMessage();
             if (log.isDebugEnabled()) {
                 StringBuffer buf = new StringBuffer();
-                buf.append("Mrc Simulator Thread received message: "); // NOI18N
                 if (m != null) {
                     for (int i = 0; i < m.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & m.getElement(i)) + " ");
+                        buf.append(Integer.toHexString(0xFF & m.getElement(i))).append(" ");
                     }
                 } else {
                     buf.append("null message buffer"); // NOI18N
                 }
-                log.debug(buf.toString());
+                log.debug("Mrc Simulator Thread received message: {}", buf);
             }
             if (m != null && m.getNumDataElements() > 4) {
                 //Send a default good reply message
@@ -171,11 +169,10 @@ public class SimulatorAdapter extends MrcPortController implements Runnable {
                 }
                 if (log.isDebugEnabled()) {
                     StringBuffer buf = new StringBuffer();
-                    buf.append("Mrc Simulator Thread sent reply: "); // NOI18N
                     for (int i = 0; i < r.getNumDataElements(); i++) {
-                        buf.append(Integer.toHexString(0xFF & r.getElement(i)) + " ");
+                        buf.append(Integer.toHexString(0xFF & r.getElement(i))).append(" ");
                     }
-                    log.debug(buf.toString());
+                    log.debug("Mrc Simulator Thread sent reply: {}", buf );
                 }
             } else {
                 if (cab > 8) {

@@ -1,5 +1,7 @@
 package jmri.jmrix.ieee802154.xbee;
 
+import jmri.util.JUnitUtil;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
@@ -16,15 +18,15 @@ public class XBeeSensorTest extends jmri.implementation.AbstractSensorTestBase {
     public int numListeners() {return 0;}
 
     @Override
-    public void checkOnMsgSent() {}
+    public void checkActiveMsgSent() {}
 
     @Override
-    public void checkOffMsgSent() {}
+    public void checkInactiveMsgSent() {}
 
     @Override
     public void checkStatusRequestMsgSent() {}
 
-    XBeeTrafficController tc;
+    private XBeeTrafficController tc = null;
     XBeeConnectionMemo memo;
 
     @Test
@@ -70,7 +72,7 @@ public class XBeeSensorTest extends jmri.implementation.AbstractSensorTestBase {
     @BeforeEach
     @Override
     public void setUp() {
-        jmri.util.JUnitUtil.setUp();
+        JUnitUtil.setUp();
         tc = new XBeeInterfaceScaffold();
         memo = new XBeeConnectionMemo();
         tc.setAdapterMemo(memo);
@@ -93,6 +95,7 @@ public class XBeeSensorTest extends jmri.implementation.AbstractSensorTestBase {
     @Override
     public void tearDown() {
         t.dispose();
+        Assertions.assertNotNull(tc);
         tc.terminate();
         jmri.util.JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
         jmri.util.JUnitUtil.tearDown();

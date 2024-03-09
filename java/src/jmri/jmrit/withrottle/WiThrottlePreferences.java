@@ -26,6 +26,8 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
     private int eStopDelay = 10;
 
     private boolean useMomF2 = true;
+    
+    private boolean exclusiveUseOfAddress = false;
 
     private int port = DEFAULT_PORT;
 
@@ -42,6 +44,8 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
     private int asLoadedEStopDelay = 10;
 
     private boolean asLoadedUseMomF2 = true;
+    
+    private boolean asLoadedExclusive = false;
 
     private int asLoadedPort = 0;
 
@@ -61,18 +65,22 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
     }
 
     @Override
-    public void load(Element child) {
+    public void load(@javax.annotation.Nonnull Element child) {
         Attribute a;
         if ((a = child.getAttribute("isUseEStop")) != null) {
             setUseEStop(a.getValue().equalsIgnoreCase("true"));
             this.asLoadedUseEStop = this.isUseEStop();
+        }
+        if ((a = child.getAttribute("isExclusiveUseOfAddress")) != null) {
+            setExclusiveUseOfAddress(a.getValue().equalsIgnoreCase("true"));
+            this.asLoadedExclusive = this.isExclusiveUseOfAddress();
         }
         if ((a = child.getAttribute("getEStopDelay")) != null) {
             try {
                 setEStopDelay(Integer.parseInt(a.getValue()));
                 this.asLoadedEStopDelay = this.getEStopDelay();
             } catch (NumberFormatException e) {
-                log.debug(e.getLocalizedMessage(), e);
+                log.debug("EStop Delay \"{}\" is invalid.", a.getValue(), e);
             }
         }
         if ((a = child.getAttribute("isUseMomF2")) != null) {
@@ -123,6 +131,7 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
                 return prefs.isUseEStop() != this.isUseEStop()
                 || prefs.getEStopDelay() != this.getEStopDelay()
                 || prefs.isUseMomF2() != this.isUseMomF2()
+                || prefs.isExclusiveUseOfAddress() != this.isExclusiveUseOfAddress()
                 || prefs.getPort() != this.getPort()
                 || prefs.isAllowTrackPower() != this.isAllowTrackPower()
                 || prefs.isAllowTurnout() != this.isAllowTurnout()
@@ -137,6 +146,7 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
         setUseEStop(prefs.isUseEStop());
         setEStopDelay(prefs.getEStopDelay());
         setUseMomF2(prefs.isUseMomF2());
+        setExclusiveUseOfAddress(prefs.isExclusiveUseOfAddress());
         setPort(prefs.getPort());
         setAllowTrackPower(prefs.isAllowTrackPower());
         setAllowTurnout(prefs.isAllowTurnout());
@@ -159,6 +169,8 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
         this.asLoadedEStopDelay = this.getEStopDelay();
         element.setAttribute("isUseMomF2", "" + isUseMomF2());
         this.asLoadedUseMomF2 = this.isUseMomF2();
+        element.setAttribute("isExclusiveUseOfAddress", "" + isExclusiveUseOfAddress());
+        this.asLoadedExclusive = this.isExclusiveUseOfAddress();
         element.setAttribute("getPort", "" + getPort());
         this.asLoadedPort = this.getPort();
         element.setAttribute("isAllowTrackPower", "" + isAllowTrackPower());
@@ -182,6 +194,7 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
         return this.asLoadedUseEStop != this.isUseEStop()
                 || this.asLoadedEStopDelay != this.getEStopDelay()
                 || this.asLoadedUseMomF2 != this.isUseMomF2()
+                || this.asLoadedExclusive != this.isExclusiveUseOfAddress()
                 || this.asLoadedPort == 0
                 || this.asLoadedPort != this.getPort()
                 || this.asLoadedAllowTrackPower != this.isAllowTrackPower()
@@ -219,6 +232,14 @@ public class WiThrottlePreferences extends AbstractWiThrottlePreferences {
 
     public void setUseMomF2(boolean value) {
         useMomF2 = value;
+    }
+
+    public boolean isExclusiveUseOfAddress() {
+        return exclusiveUseOfAddress;
+    }
+
+    public void setExclusiveUseOfAddress(boolean value) {
+        exclusiveUseOfAddress = value;
     }
 
     public int getPort() {

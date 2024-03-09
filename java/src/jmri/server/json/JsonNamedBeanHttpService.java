@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
-import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletResponse;
+import jmri.Manager;
 import jmri.NamedBean;
 import jmri.ProvidingManager;
 
@@ -66,7 +66,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * Override if the implementing class needs to prevent PUT methods from
      * functioning or need to perform additional validation prior to creating
      * the NamedBean.
@@ -75,7 +75,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
     public JsonNode doPut(@Nonnull String type, @Nonnull String name, @Nonnull JsonNode data, @Nonnull JsonRequest request)
             throws JsonException {
         try {
-            getManager().provide(name);
+            getProvidingManager().provide(name);
         } catch (IllegalArgumentException ex) {
             throw new JsonException(HttpServletResponse.SC_BAD_REQUEST,
                     Bundle.getMessage(request.locale, "ErrorInvalidSystemName", name, getType()), request.id);
@@ -172,7 +172,7 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
      * This method must be overridden to allow a bean to be deleted. The
      * simplest overriding method body is:
      * {@code deleteBean(bean, name, type, data, locale, id); }
-     * 
+     *
      * @param bean   the bean to delete
      * @param name   the named of the bean to delete
      * @param type   the type of the bean to delete
@@ -185,52 +185,11 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
     }
 
     /**
-     * Respond to an HTTP POST request for the requested name.
-     *
-     * @param bean   the requested object
-     * @param name   the name of the requested object
-     * @param type   the type of the requested object
-     * @param data   data describing the requested object
-     * @param locale the requesting client's Locale
-     * @param id     the message id set by the client
-     * @return a JSON description of the requested object
-     * @throws JsonException if an error occurs
-     * @deprecated since 4.19.2; use {@link #doPost(String, String, JsonNode, JsonRequest)} instead
-     */
-    @Deprecated
-    @Nonnull
-    protected ObjectNode doPost(T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id)
-            throws JsonException {
-        return doPost(bean, name, type, data, new JsonRequest(locale, JSON.V5, JSON.POST, id));
-    }
-
-    /**
-     * Delete the requested bean.
-     * <p>
-     * This method must be overridden to allow a bean to be deleted. The
-     * simplest overriding method body is:
-     * {@code deleteBean(bean, name, type, data, locale, id); }
-     * 
-     * @param bean   the bean to delete
-     * @param name   the named of the bean to delete
-     * @param type   the type of the bean to delete
-     * @param data   data describing the named bean
-     * @param locale the requesting client's Locale
-     * @param id     the message id set by the client
-     * @throws JsonException if an error occurs
-     * @deprecated since 4.19.2; use {@link #doDelete(NamedBean, String, String, JsonNode, JsonRequest)} instead
-     */
-    @Deprecated
-    protected void doDelete(@CheckForNull T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id) throws JsonException {
-        doDelete(type, name, data, new JsonRequest(locale, JSON.V5, JSON.DELETE, id));
-    }
-
-    /**
      * Delete the requested bean. This is the simplest method to delete a bean,
      * and is likely to become the default implementation of
-     * {@link #doDelete(NamedBean, String, String, JsonNode, Locale, int)} in an
+     * {@link #doDelete} in an
      * upcoming release of JMRI.
-     * 
+     *
      * @param bean   the bean to delete
      * @param name   the named of the bean to delete
      * @param type   the type of the bean to delete
@@ -254,28 +213,8 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
     }
 
     /**
-     * Delete the requested bean. This is the simplest method to delete a bean,
-     * and is likely to become the default implementation of
-     * {@link #doDelete(NamedBean, String, String, JsonNode, Locale, int)} in an
-     * upcoming release of JMRI.
-     * 
-     * @param bean   the bean to delete
-     * @param name   the named of the bean to delete
-     * @param type   the type of the bean to delete
-     * @param data   data describing the named bean
-     * @param locale the requesting client's Locale
-     * @param id     the message id set by the client
-     * @throws JsonException if an error occurs
-     * @deprecated since 4.19.2; use {@link #deleteBean(NamedBean, String, String, JsonNode, JsonRequest)} instead
-     */
-    @Deprecated
-    protected final void deleteBean(@CheckForNull T bean, @Nonnull String name, @Nonnull String type, @Nonnull JsonNode data, @Nonnull Locale locale, int id) throws JsonException {
-        deleteBean(bean, name, type, data, new JsonRequest(locale, JSON.V5, JSON.DELETE, id));
-    }
-
-    /**
      * Get the JSON type supported by this service.
-     * 
+     *
      * @return the JSON type
      */
     @Nonnull
@@ -284,9 +223,22 @@ public abstract class JsonNamedBeanHttpService<T extends NamedBean> extends Json
     /**
      * Get the expected manager for the supported JSON type. This should
      * normally be the default manager.
-     * 
+     *
      * @return the manager
      */
     @Nonnull
-    protected abstract ProvidingManager<T> getManager();
+    protected Manager<T> getManager() {
+        return getProvidingManager();
+    }
+
+    /**
+     * Get the expected providing manager for the supported JSON type. This
+     * should normally be the default manager.
+     *
+     * @return the providing manager
+     * @throws UnsupportedOperationException if a providing manager isn't available
+     */
+    protected abstract ProvidingManager<T> getProvidingManager()
+            throws UnsupportedOperationException;
+
 }

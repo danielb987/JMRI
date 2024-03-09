@@ -3,6 +3,8 @@ package jmri.jmrix.openlcb;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.NamedBean;
 import jmri.Turnout;
+
+import org.openlcb.EventID;
 import org.openlcb.OlcbInterface;
 import org.openlcb.implementations.BitProducerConsumer;
 import org.openlcb.implementations.EventTable;
@@ -108,7 +110,7 @@ public class OlcbTurnout extends jmri.implementation.AbstractTurnout {
         turnoutListener = new VersionedValueListener<Boolean>(pc.getValue()) {
             @Override
             public void update(Boolean value) {
-                int s = value ? THROWN : CLOSED;
+                int s = ((value ^ getInverted()) ? THROWN : CLOSED);
                 if (_activeFeedbackType != DIRECT) {
                     newCommandedState(s);
                     if (_activeFeedbackType == MONITORING) {
@@ -134,13 +136,18 @@ public class OlcbTurnout extends jmri.implementation.AbstractTurnout {
      * @param isThrown true for thrown event, false for closed event
      * @return user-visible string to represent this event.
      */
-    private String getEventName(boolean isThrown) {
+    public String getEventName(boolean isThrown) {
         String name = getUserName();
         if (name == null) name = mSystemName;
         String msgName = isThrown ? "TurnoutThrownEventName": "TurnoutClosedEventName";
         return Bundle.getMessage(msgName, name);
     }
 
+    public EventID getEventID(boolean isThrown) {
+        if (isThrown) return addrThrown.toEventID();
+        else return addrClosed.toEventID();
+    }
+    
     /**
      * Updates event table entries when the user name changes.
      * @param s new user name
@@ -183,12 +190,12 @@ public class OlcbTurnout extends jmri.implementation.AbstractTurnout {
     @Override
     protected void forwardCommandChangeToLayout(int s) {
         if (s == Turnout.THROWN) {
-            turnoutListener.setFromOwnerWithForceNotify(true);
+            turnoutListener.setFromOwnerWithForceNotify(true ^ getInverted());
             if (_activeFeedbackType == MONITORING) {
                 newKnownState(THROWN);
             }
         } else if (s == Turnout.CLOSED) {
-            turnoutListener.setFromOwnerWithForceNotify(false);
+            turnoutListener.setFromOwnerWithForceNotify(false ^ getInverted());
             if (_activeFeedbackType == MONITORING) {
                 newKnownState(CLOSED);
             }
@@ -217,13 +224,9 @@ public class OlcbTurnout extends jmri.implementation.AbstractTurnout {
         // to perform a lockout change on the turnout decoder itself.
     }
 
-    /*
-     * since the events that drive a turnout can be whichever state a user
-     * wants, the order of the event pair determines what is the 'closed' state
-     */
     @Override
     public boolean canInvert() {
-        return false;
+        return true;
     }
 
     @Override
@@ -300,14 +303,14 @@ public class OlcbTurnout extends jmri.implementation.AbstractTurnout {
     }
 
     /**
-     * {@inheritDoc} 
-     * 
+     * {@inheritDoc}
+     *
      * Sorts by decoded EventID(s)
      */
     @CheckReturnValue
     @Override
     public int compareSystemNameSuffix(@Nonnull String suffix1, @Nonnull String suffix2, @Nonnull jmri.NamedBean n) {
-        return OlcbSystemConnectionMemo.compareSystemNameSuffix(suffix1, suffix2);
+        return OlcbAddress.compareSystemNameSuffix(suffix1, suffix2);
     }
 
     private final static Logger log = LoggerFactory.getLogger(OlcbTurnout.class);

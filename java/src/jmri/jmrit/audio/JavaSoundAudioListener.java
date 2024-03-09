@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <p>
  *
  * @author Matthew Harris copyright (c) 2009
  */
@@ -92,7 +91,6 @@ public class JavaSoundAudioListener extends AbstractAudioListener {
         if (log.isDebugEnabled()) {
             log.debug("Cleanup JavaSoundAudioListener ({})", this.getSystemName());
         }
-        this.dispose();
     }
 
     private static final Logger log = LoggerFactory.getLogger(JavaSoundAudioListener.class);

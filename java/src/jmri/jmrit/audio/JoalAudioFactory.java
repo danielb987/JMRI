@@ -217,18 +217,15 @@ public class JoalAudioFactory extends AbstractAudioFactory {
             ALut.alutInit();
             al = ALFactory.getAL();
             al.alGetError();
-            if (log.isInfoEnabled()) {
-                log.info("Initialised JOAL using OpenAL: vendor - {} version - {}", al.alGetString(AL.AL_VENDOR), al.alGetString(AL.AL_VERSION));
-            }
+            log.info("Initialised JOAL using OpenAL: vendor - {} version - {}", al.alGetString(AL.AL_VENDOR), al.alGetString(AL.AL_VERSION));
         } catch (ALException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Error initialising JOAL: {}", e);
-            }
+            log.warn("Error initialising JOAL", jmri.util.LoggingUtil.shortenStacktrace(e));
+            return false;
+        } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
+            log.warn("Error loading OpenAL libraries: {}", e.getMessage());
             return false;
         } catch (RuntimeException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Error initialising OpenAL: {}", e);
-            }
+            log.warn("Error initialising OpenAL", jmri.util.LoggingUtil.shortenStacktrace(e));
             return false;
         }
 
@@ -328,12 +325,13 @@ public class JoalAudioFactory extends AbstractAudioFactory {
 
     @Override
     public String toString() {
+        if (al == null) return "JoalAudioFactory, using null";
         try {
             return "JoalAudioFactory, using OpenAL:"
                     + " vendor - " + al.alGetString(AL.AL_VENDOR)
                     + " version - " + al.alGetString(AL.AL_VERSION);
         } catch (NullPointerException e) {
-            log.error("NPE from JoalAudioFactory: {}",e);
+            log.error("NPE from JoalAudioFactory",e);
             return "JoalAudioFactory, using Null";
         }
     }
@@ -354,8 +352,8 @@ public class JoalAudioFactory extends AbstractAudioFactory {
             if (log.isDebugEnabled()) {
                 log.debug("Removing JoalAudioSource: {}", source.getSystemName());
             }
-            // Cast to JoalAudioSource and cleanup
-            ((JoalAudioSource) source).cleanup();
+            // Includes cleanup
+            source.dispose();
         }
 
         // Now, retrieve list of AudioBuffer objects and remove the buffers
@@ -364,8 +362,8 @@ public class JoalAudioFactory extends AbstractAudioFactory {
             if (log.isDebugEnabled()) {
                 log.debug("Removing JoalAudioBuffer: {}", buffer.getSystemName());
             }
-            // Cast to JoalAudioBuffer and cleanup
-            ((JoalAudioBuffer) buffer).cleanup();
+            // Includes cleanup
+            buffer.dispose();
         }
 
         // Lastly, retrieve list of AudioListener objects and remove listener.
@@ -374,8 +372,8 @@ public class JoalAudioFactory extends AbstractAudioFactory {
             if (log.isDebugEnabled()) {
                 log.debug("Removing JoalAudioListener: {}", listener.getSystemName());
             }
-            // Cast to JoalAudioListener and cleanup
-            ((JoalAudioListener) listener).cleanup();
+            // Includes cleanup
+            listener.dispose();
         }
 
         // Finally, shutdown OpenAL and close the output device

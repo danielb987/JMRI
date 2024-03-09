@@ -1,6 +1,5 @@
 package jmri.util;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 
 /**
@@ -9,10 +8,12 @@ import org.junit.jupiter.api.*;
  */
 public class SystemTypeTest {
 
+    // no testCtor as tested class only supplies static methods
+
     @Test
-    public void testCTor() {
-        SystemType t = new SystemType();
-        Assert.assertNotNull("exists",t);
+    public void testFindsThisSystem() {
+        Assertions.assertNotNull(SystemType.getOSName());
+        Assertions.assertTrue(SystemType.getType() > 0);
     }
 
     @BeforeEach

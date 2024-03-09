@@ -4,7 +4,6 @@ import java.awt.GraphicsEnvironment;
 
 import jmri.util.JUnitUtil;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 import org.junit.Assume;
 
@@ -33,7 +32,7 @@ public class WarrantTableFrameTest {
 
     @AfterEach
     public void tearDown() {
-        JUnitUtil.clearShutDownManager(); // should be converted to check of scheduled ShutDownActions
+        JUnitUtil.clearShutDownManager();
         JUnitUtil.tearDown();
     }
 

@@ -1,9 +1,7 @@
 package jmri.jmrix.sprog.update;
 
-import javax.swing.JOptionPane;
 import jmri.jmrix.sprog.SprogSystemConnectionMemo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Display the firmware version of the attached SPROG hardware.
@@ -40,11 +38,21 @@ public class SprogVersionFrame extends jmri.util.JmriJFrame implements SprogVers
     @Override
     synchronized public void notifyVersion(SprogVersion v) {
         log.debug("Version {} notified", v.toString());
-        JOptionPane.showMessageDialog(null, Bundle.getMessage("SprogVersionDialogString", v.toString()),
-                Bundle.getMessage("SprogVersionTitle"), JOptionPane.INFORMATION_MESSAGE);
+        JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("SprogVersionDialogString", v.toString()),
+                Bundle.getMessage("SprogVersionTitle"), JmriJOptionPane.INFORMATION_MESSAGE);
         setVisible(false);
         dispose();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SprogVersionFrame.class);
+    /**
+     * Removes SprogVersionListener.
+     * {@inheritDoc}
+     */
+    @Override
+    public void dispose() {
+        _memo.getSprogVersionQuery().removeSprogVersionListener(this);
+        super.dispose();
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SprogVersionFrame.class);
 }

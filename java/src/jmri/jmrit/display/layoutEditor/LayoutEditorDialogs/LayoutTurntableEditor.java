@@ -16,12 +16,13 @@ import jmri.*;
 import jmri.jmrit.display.layoutEditor.*;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * MVC Editor component for PositionablePoint objects.
  *
  * @author Bob Jacobsen  Copyright (c) 2020
- * 
+ *
  */
 public class LayoutTurntableEditor extends LayoutTrackEditor {
 
@@ -46,7 +47,7 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
     private final NamedBeanComboBox<Block> editLayoutTurntableBlockNameComboBox = new NamedBeanComboBox<>(
              InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
     private JButton editLayoutTurntableSegmentEditBlockButton;
-     
+
     private JPanel editLayoutTurntableRayPanel;
     private JButton editLayoutTurntableAddRayTrackButton;
     private JCheckBox editLayoutTurntableDccControlledCheckBox;
@@ -122,7 +123,7 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
              editLayoutTurntableSegmentEditBlockButton.addActionListener(this::editLayoutTurntableEditBlockPressed);
              editLayoutTurntableSegmentEditBlockButton.setToolTipText(Bundle.getMessage("EditBlockHint", "")); // empty value for block 1  // NOI18N
              headerPane.add(panel2a);
-             
+
             // setup add ray track button
             JPanel panel3 = new JPanel();
             panel3.setLayout(new FlowLayout());
@@ -148,6 +149,16 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
             JScrollPane rayScrollPane = new JScrollPane(editLayoutTurntableRayPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             contentPane.add(rayScrollPane, BorderLayout.CENTER);
         }
+
+        editLayoutTurntableBlockNameComboBox.setSelectedIndex(-1);
+        LayoutBlock lb = layoutTurntable.getLayoutBlock();
+        if (lb != null) {
+            Block blk = lb.getBlock();
+            if (blk != null) {
+                editLayoutTurntableBlockNameComboBox.setSelectedItem(blk);
+            }
+        }
+
         editLayoutTurntableDccControlledCheckBox.setSelected(layoutTurntable.isTurnoutControlled());
         editLayoutTurntableDccControlledCheckBox.addActionListener((ActionEvent e) -> {
             layoutTurntable.setTurnoutControlled(editLayoutTurntableDccControlledCheckBox.isSelected());
@@ -194,9 +205,9 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
          // check if a block exists to edit
          LayoutBlock blockToEdit = layoutTurntable.getLayoutBlock();
          if (blockToEdit == null) {
-             JOptionPane.showMessageDialog(editLayoutTurntableFrame,
+             JmriJOptionPane.showMessageDialog(editLayoutTurntableFrame,
                      Bundle.getMessage("Error1"), // NOI18N
-                     Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+                     Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
              return;
          }
          blockToEdit.editLayoutBlock(editLayoutTurntableFrame);
@@ -239,9 +250,9 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
         try {
             ang = Float.parseFloat(editLayoutTurntableAngleTextField.getText());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(editLayoutTurntableFrame, Bundle.getMessage("EntryError") + ": " // NOI18N
-                    + e + Bundle.getMessage("TryAgain"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(editLayoutTurntableFrame, Bundle.getMessage("EntryError") + ": "
+                    + e + Bundle.getMessage("TryAgain"), Bundle.getMessage("ErrorTitle"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         layoutTurntable.addRay(ang);
@@ -272,9 +283,9 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
             try {
                 rad = Float.parseFloat(str);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(editLayoutTurntableFrame, Bundle.getMessage("EntryError") + ": " // NOI18N
+                JmriJOptionPane.showMessageDialog(editLayoutTurntableFrame, Bundle.getMessage("EntryError") + ": " // NOI18N
                         + e + Bundle.getMessage("TryAgain"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return;
             }
             layoutTurntable.setRadius(rad);
@@ -345,9 +356,9 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
                     try {
                         Float.parseFloat(rayAngleTextField.getText());
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(editLayoutTurntableFrame, Bundle.getMessage("EntryError") + ": " // NOI18N
+                        JmriJOptionPane.showMessageDialog(editLayoutTurntableFrame, Bundle.getMessage("EntryError") + ": " // NOI18N
                                 + ex + Bundle.getMessage("TryAgain"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                                JOptionPane.ERROR_MESSAGE);
+                                JmriJOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -408,11 +419,11 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
         }
 
         private void delete() {
-            int n = JOptionPane.showConfirmDialog(null,
+            int n = JmriJOptionPane.showConfirmDialog(null,
                     Bundle.getMessage("Question7"), // NOI18N
                     Bundle.getMessage("WarningTitle"), // NOI18N
-                    JOptionPane.YES_NO_OPTION);
-            if (n == JOptionPane.YES_OPTION) {
+                    JmriJOptionPane.YES_NO_OPTION);
+            if (n == JmriJOptionPane.YES_OPTION) {
                 layoutTurntable.deleteRay(rayTrack);
             }
         }
@@ -443,7 +454,7 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
             rayTurnoutStateComboBox.setVisible(vis);
             rayTurnoutStateLabel.setVisible(vis);
         }
-    }    
+    }
 
 
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LayoutTurntableEditor.class);

@@ -31,7 +31,9 @@ public class EasyDccThrottle extends AbstractThrottle {
 
         // cache settings. It would be better to read the
         // actual state, but I don't know how to do this
-        this.speedSetting = 0;
+        synchronized (this) {
+            this.speedSetting = 0;
+        }
         // Functions default to false
         this.address = address;
         this.isForward = true;
@@ -44,9 +46,9 @@ public class EasyDccThrottle extends AbstractThrottle {
     protected void sendFunctionGroup1() {
         byte[] result = jmri.NmraPacket.function0Through4Packet(address.getNumber(),
                 address.isLongAddress(),
-                getF0(), getF1(), getF2(), getF3(), getF4());
+                getFunction(0), getFunction(1), getFunction(2), getFunction(3), getFunction(4));
 
-        /* Format of EasyDcc 'send' command 
+        /* Format of EasyDcc 'send' command
          * S nn xx yy
          * nn = number of times to send - usually 01 is sufficient.
          * xx = Cx for 4 digit or 00 for 2 digit addresses
@@ -75,7 +77,7 @@ public class EasyDccThrottle extends AbstractThrottle {
 
         byte[] result = jmri.NmraPacket.function5Through8Packet(address.getNumber(),
                 address.isLongAddress(),
-                getF5(), getF6(), getF7(), getF8());
+                getFunction(5), getFunction(6), getFunction(7), getFunction(8));
 
         EasyDccMessage m = new EasyDccMessage(4 + 3 * result.length);
         int i = 0;  // message index counter
@@ -100,7 +102,7 @@ public class EasyDccThrottle extends AbstractThrottle {
 
         byte[] result = jmri.NmraPacket.function9Through12Packet(address.getNumber(),
                 address.isLongAddress(),
-                getF9(), getF10(), getF11(), getF12());
+                getFunction(9), getFunction(10), getFunction(11), getFunction(12));
 
         EasyDccMessage m = new EasyDccMessage(4 + 3 * result.length);
         int i = 0;  // message index counter
@@ -127,9 +129,11 @@ public class EasyDccThrottle extends AbstractThrottle {
     @SuppressFBWarnings(value = "FE_FLOATING_POINT_EQUALITY") // OK to compare floating point, notify on any change
     @Override
     public void setSpeedSetting(float speed) {
-        float oldSpeed = this.speedSetting;
-        this.speedSetting = speed;
-
+        float oldSpeed;
+        synchronized (this) {
+            oldSpeed = this.speedSetting;
+            this.speedSetting = speed;
+        }
         byte[] result;
 
         if (super.speedStepMode == SpeedStepMode.NMRA_DCC_128) {
@@ -194,8 +198,9 @@ public class EasyDccThrottle extends AbstractThrottle {
         }
 
         tc.sendEasyDccMessage(m, null);
-
-        firePropertyChange(SPEEDSETTING, oldSpeed, this.speedSetting);
+        synchronized (this) {
+            firePropertyChange(SPEEDSETTING, oldSpeed, this.speedSetting);
+        }
         record(speed);
     }
 
@@ -203,11 +208,13 @@ public class EasyDccThrottle extends AbstractThrottle {
     public void setIsForward(boolean forward) {
         boolean old = isForward;
         isForward = forward;
-        setSpeedSetting(speedSetting);  // send the command
+        synchronized (this) {
+            setSpeedSetting(speedSetting);  // send the command
+        }
         firePropertyChange(ISFORWARD, old, isForward);
     }
 
-    private DccLocoAddress address;
+    private final DccLocoAddress address;
     EasyDccTrafficController tc;
 
     @Override
@@ -216,7 +223,7 @@ public class EasyDccThrottle extends AbstractThrottle {
     }
 
     @Override
-    protected void throttleDispose() {
+    public void throttleDispose() {
         active = false;
         finishRecord();
     }

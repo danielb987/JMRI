@@ -1,14 +1,14 @@
 package jmri.jmrix.ecos;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.awt.HeadlessException;
-import javax.swing.JOptionPane;
+
 import jmri.DccLocoAddress;
 import jmri.LocoAddress;
 import jmri.SpeedStepMode;
 import jmri.jmrix.AbstractThrottle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * An implementation of DccThrottle with code specific to an ECoS connection.
@@ -44,8 +44,9 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         tc = memo.getTrafficController();
         objEcosLocoManager = memo.getLocoAddressManager();
         //The script will go through and read the values from the Ecos
-
-        this.speedSetting = 0;
+        synchronized (this) {
+            this.speedSetting = 0;
+        }
         // Functions 0-31 default to false
         this.address = address;
         this.isForward = true;
@@ -141,14 +142,19 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         if (!_haveControl) {
             return;
         }
-        if (speed == this.speedSetting && speedMessageSent <= 0) {
-            return;
+        synchronized (this) {
+            if (speed == this.speedSetting && speedMessageSent <= 0) {
+                return;
+            }
         }
-        int value = (int) ((127 - 1) * speed);     // -1 for rescale to avoid estop
-        if (value > 128) {
+        int value = Math.round((127 - 1) * speed);     // -1 for rescale to avoid estop
+        if (value == 0 && speed > 0) {                 // make sure to output non-zero speed for non-zero input speed
+            value = 1;
+        }
+        if (value > 126) {
             value = 126;    // max possible speed
         }
-        if ((value > 0) || (value == 0.0)) {
+        if ((value > 0) || (value == 0)) {
             String message = "set(" + this.objectNumber + ", speed[" + value + "])";
             EcosMessage m = new EcosMessage(message);
             tc.sendEcosMessage(m, this);
@@ -162,7 +168,9 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         } else {
             //Not sure if this performs an emergency stop or a normal one.
             String message = "set(" + this.objectNumber + ", stop)";
-            this.speedSetting = 0.0f;
+            synchronized (this) {
+                this.speedSetting = 0.0f;
+            }
             EcosMessage m = new EcosMessage(message);
             tc.sendEcosMessage(m, this);
 
@@ -186,16 +194,18 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         }
 
         String message;
-        if (this.speedSetting > 0.0f) {
-            // Need to send current speed as well as direction, otherwise
-            // speed will be set to zero on direction change
-            int speedValue = (int) ((127 - 1) * this.speedSetting);     // -1 for rescale to avoid estop
-            if (speedValue > 128) {
-                speedValue = 126;    // max possible speed
+        synchronized (this) {
+            if (this.speedSetting > 0.0f) {
+                // Need to send current speed as well as direction, otherwise
+                // speed will be set to zero on direction change
+                int speedValue = (int) ((127 - 1) * this.speedSetting);     // -1 for rescale to avoid estop
+                if (speedValue > 128) {
+                    speedValue = 126;    // max possible speed
+                }
+                message = "set(" + this.objectNumber + ", dir[" + (forward ? 0 : 1) + "], speed[" + speedValue + "])";
+            } else {
+                message = "set(" + this.objectNumber + ", dir[" + (forward ? 0 : 1) + "])";
             }
-            message = "set(" + this.objectNumber + ", dir[" + (forward ? 0 : 1) + "], speed[" + speedValue + "])";
-        } else {
-            message = "set(" + this.objectNumber + ", dir[" + (forward ? 0 : 1) + "])";
         }
         EcosMessage m = new EcosMessage(message);
         tc.sendEcosMessage(m, this);
@@ -215,7 +225,7 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
      * {@inheritDoc} 
      */
     @Override
-    protected void throttleDispose() {
+    public void throttleDispose() {
         String message = "release(" + this.objectNumber + ", control)";
         EcosMessage m = new EcosMessage(message);
         tc.sendEcosMessage(m, this);
@@ -373,8 +383,8 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         } else if (resultCode == 15) {
             log.info("Loco can not be accessed via the Ecos Object Id {}", this.objectNumber);
             try {
-                javax.swing.JOptionPane.showMessageDialog(null, Bundle.getMessage("UnknownLocoDialog", this.address),
-                        Bundle.getMessage("WarningTitle"), javax.swing.JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("UnknownLocoDialog", this.address),
+                        Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
             } catch (HeadlessException he) {
                 // silently ignore inability to display dialog
             }
@@ -440,9 +450,9 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
             int val = 0;
             if (p.getForceControlFromEcos() == 0x00) {
                 try {
-                    val = javax.swing.JOptionPane.showConfirmDialog(null, "UnableToGainDialog",
+                    val = JmriJOptionPane.showConfirmDialog(null, "UnableToGainDialog",
                             Bundle.getMessage("WarningTitle"),
-                            JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
+                            JmriJOptionPane.YES_NO_OPTION, JmriJOptionPane.QUESTION_MESSAGE);
                 } catch (HeadlessException he) {
                     val = 1;
                 }
@@ -490,7 +500,6 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         }
     }
 
-    // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(EcosDccThrottle.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EcosDccThrottle.class);
 
 }

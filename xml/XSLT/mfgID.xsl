@@ -5,7 +5,7 @@
 
 <!-- Used by default when the nmra_mfg_list.xml file is displayed in a web browser-->
 
-<!-- This file is part of JMRI.  Copyright 2007-2020.                       -->
+<!-- This file is part of JMRI.  Copyright 2007-2023.                       -->
 <!--                                                                        -->
 <!-- JMRI is free software; you can redistribute it and/or modify it under  -->
 <!-- the terms of version 2 of the GNU General Public License as published  -->
@@ -16,7 +16,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
- 
+
 <xsl:stylesheet	version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- Define the copyright year for the output page
@@ -24,7 +24,7 @@
      via the build.xml file. We build it by concatenation
      because XPath will evaluate '1997 - 2017' to '20'.
 -->
-<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2020')" />
+<xsl:param name="JmriCopyrightYear" select="concat('1997','-','2024')" />
 
 <!-- Need to instruct the XSLT processor to use HTML output rules.
      See http://www.w3.org/TR/xslt#output for more details
@@ -38,29 +38,29 @@
      elements, which is what the apply-templates instruction does.
      We also pick some stuff out explicitly in the head section using
      value-of instructions.
--->     
+-->
 <xsl:template match='mfgList'>
 
 <html>
 	<head>
 		<title>NMRA Manufacturer IDs</title>
 	</head>
-	
+
 	<body>
 		<h2>NMRA Manufacturer IDs</h2>
 
   These tables are made from
   <a href="https:/jmri.org/index.shtml">JMRI's</a>
-  local cache of the 
-  <a href="http://nmra.org">NMRA</a>'s 
+  local cache of the
+  <a href="http://nmra.org">NMRA</a>'s
   <a href="https://www.nmra.org/sites/default/files/standards/sandrp/pdf/appendix_a_s-9.2.2.pdf">Manufacturer ID definitions</a>.
-  The content is the NMRAs, the formatting is JMRI's. 
+  The content is the NMRAs, the formatting is JMRI's.
   <br/>
-  (And if you're curious why we make that distinction, there's 
+  (And if you're curious why we make that distinction, there's
   <a href="https://www.jmri.org/k/summary.shtml">more info here</a>)
 
   <!-- the following blocks are identical except for title and sort element -->
-  
+
   <h3>By Manufacturer Name</h3>
   <table border="1">
   <tr><th>Name</th><th>ID number</th></tr>
@@ -92,11 +92,11 @@
   </table>
 
 <hr/>
-This page was produced by <a href="http://jmri.org">JMRI</a>.
+This page was produced by <a href="https://www.jmri.org">JMRI</a>.
 <p/>Copyright &#169; <xsl:value-of select="$JmriCopyrightYear" /> JMRI Community.
 
 <p/>JMRI, DecoderPro, PanelPro, DispatcherPro and associated logos are our trademarks.
-<p/><A href="http://jmri.org/Copyright.html">Additional information on copyright, trademarks and licenses is linked here.</A>
+<p/><A href="https://www.jmri.org/Copyright.html">Additional information on copyright, trademarks and licenses is linked here.</A>
 	</body>
 </html>
 

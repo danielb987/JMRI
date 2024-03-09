@@ -2,7 +2,6 @@ package jmri.beans;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.SwingUtilities;
 
 /**
  * If constructed with {@code SwingPropertyChangeListener(listener, true)} this
@@ -42,20 +41,22 @@ public class SwingPropertyChangeListener implements PropertyChangeListener {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * This implementation calls the listener's implementation on the EDT if
      * {@link #isNotifyOnEDT()} is true.
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (!notifyOnEDT || SwingUtilities.isEventDispatchThread()) {
+        if (!notifyOnEDT || jmri.util.ThreadingUtil.isGUIThread()) {
             listener.propertyChange(evt);
         } else {
-            SwingUtilities.invokeLater(() -> listener.propertyChange(evt));
+            jmri.util.ThreadingUtil.runOnGUI(() -> listener.propertyChange(evt));
         }
     }
 
     public boolean isNotifyOnEDT() {
         return notifyOnEDT;
     }
+
+    // private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SwingPropertyChangeListener.class);
 }

@@ -1,9 +1,9 @@
 package jmri.jmrit.operations.locations.schedules;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -11,14 +11,13 @@ import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jmri.InstanceManager;
+import jmri.jmrit.operations.OperationsTableModel;
 import jmri.jmrit.operations.OperationsXml;
 import jmri.jmrit.operations.locations.LocationManager;
 import jmri.jmrit.operations.locations.Track;
 import jmri.jmrit.operations.setup.Control;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.table.ButtonEditor;
 import jmri.util.table.ButtonRenderer;
 
@@ -27,7 +26,7 @@ import jmri.util.table.ButtonRenderer;
  *
  * @author Daniel Boudreau Copyright (C) 2009, 2011, 2013
  */
-public class SchedulesTableModel extends javax.swing.table.AbstractTableModel implements PropertyChangeListener {
+public class SchedulesTableModel extends OperationsTableModel implements PropertyChangeListener {
 
     ScheduleManager scheduleManager; // There is only one manager
 
@@ -80,10 +79,12 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
     }
 
     List<Schedule> sysList = null;
-    JTable table;
+    JTable _table;
 
     public void initTable(SchedulesTableFrame frame, JTable table) {
-        this.table = table;
+        this._table = table;
+        super.initTable(table);
+        
         // Install the button handlers
         TableColumnModel tcm = table.getColumnModel();
         ButtonRenderer buttonRenderer = new ButtonRenderer();
@@ -92,8 +93,6 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
         tcm.getColumn(EDIT_COLUMN).setCellEditor(buttonEditor);
         tcm.getColumn(DELETE_COLUMN).setCellRenderer(buttonRenderer);
         tcm.getColumn(DELETE_COLUMN).setCellEditor(buttonEditor);
-        table.setDefaultRenderer(JComboBox.class, new jmri.jmrit.symbolicprog.ValueRenderer());
-        table.setDefaultEditor(JComboBox.class, new jmri.jmrit.symbolicprog.ValueEditor());
 
         // set column preferred widths
         table.getColumnModel().getColumn(ID_COLUMN).setPreferredWidth(40);
@@ -139,7 +138,8 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
             case EDIT_COLUMN:
                 return Bundle.getMessage("ButtonEdit");
             case DELETE_COLUMN:
-                return Bundle.getMessage("ButtonDelete"); // titles above all columns
+                return Bundle.getMessage("ButtonDelete"); // titles above all
+                                                          // columns
             default:
                 return "unknown"; // NOI18N
         }
@@ -228,6 +228,14 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
                 break;
         }
     }
+    
+    @Override
+    protected Color getForegroundColor(int row) {
+        if (!getScheduleStatus(row).equals(Bundle.getMessage("ButtonOK"))) {
+            return Color.red;
+        }
+        return super.getForegroundColor(row);
+    }
 
     ScheduleEditFrame sef = null;
 
@@ -240,10 +248,9 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
         LocationTrackPair ltp = getLocationTrackPair(row);
         if (ltp == null) {
             log.debug("Need location track pair");
-            JOptionPane.showMessageDialog(null, MessageFormat.format(Bundle.getMessage("AssignSchedule"),
-                    new Object[]{sch.getName()}), MessageFormat.format(Bundle.getMessage("CanNotSchedule"),
-                            new Object[]{Bundle.getMessage("ButtonEdit")}),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("AssignSchedule", sch.getName()),
+                    Bundle.getMessage("CanNotSchedule", Bundle.getMessage("ButtonEdit")),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         // use invokeLater so new window appears on top
@@ -254,11 +261,10 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
 
     private void deleteSchedule(int row) {
         log.debug("Delete schedule");
-        Schedule s = sysList.get(row);
-        if (JOptionPane.showConfirmDialog(null, MessageFormat.format(Bundle.getMessage("DoYouWantToDeleteSchedule"),
-                new Object[]{s.getName()}), Bundle.getMessage("DeleteSchedule?"),
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            scheduleManager.deregister(s);
+        Schedule sch = sysList.get(row);
+        if (JmriJOptionPane.showConfirmDialog(null, Bundle.getMessage("DoYouWantToDeleteSchedule", sch.getName()),
+                Bundle.getMessage("DeleteSchedule?"), JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
+            scheduleManager.deregister(sch);
             OperationsXml.save();
         }
     }
@@ -293,7 +299,7 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
         for (int i = 0; i < box.getItemCount(); i++) {
             LocationTrackPair ltp = (LocationTrackPair) box.getItemAt(i);
             String status = ltp.getTrack().checkScheduleValid();
-            if (!status.equals(Track.SCHEDULE_OKAY)) {
+            if (!status.equals(Schedule.SCHEDULE_OKAY)) {
                 return Bundle.getMessage("ErrorTitle");
             }
         }
@@ -314,8 +320,9 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
 
     protected void comboBoxActionPerformed(ActionEvent ae) {
         log.debug("combobox action");
-        if (table.isEditing()) {
-            table.getCellEditor().stopCellEditing(); // Allows the table contents to update
+        if (_table.isEditing()) {
+            _table.getCellEditor().stopCellEditing(); // Allows the table
+                                                     // contents to update
         }
     }
 
@@ -325,7 +332,7 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
             return "";
         }
         String status = ltp.getTrack().checkScheduleValid();
-        if (!status.equals(Track.SCHEDULE_OKAY)) {
+        if (!status.equals(Schedule.SCHEDULE_OKAY)) {
             return status;
         }
         return Bundle.getMessage("ButtonOK");
@@ -336,11 +343,7 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
         if (ltp == null) {
             return "";
         }
-        String mode = Bundle.getMessage("Sequential");
-        if (ltp.getTrack().getScheduleMode() == Track.MATCH) {
-            mode = Bundle.getMessage("Match");
-        }
-        return mode;
+        return ltp.getTrack().getScheduleModeName();
     }
 
     private void removePropertyChangeSchedules() {
@@ -409,5 +412,5 @@ public class SchedulesTableModel extends javax.swing.table.AbstractTableModel im
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(SchedulesTableModel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SchedulesTableModel.class);
 }

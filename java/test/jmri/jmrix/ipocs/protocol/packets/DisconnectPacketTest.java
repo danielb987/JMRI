@@ -5,12 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
 
-import org.junit.Test;
-
 import jmri.jmrix.ipocs.protocol.enums.RqDisconnect;
+import jmri.util.JUnitUtil;
+
+import org.junit.jupiter.api.*;
 
 public class DisconnectPacketTest {
-  private byte[] testPacket = { RqDisconnect.UnitClosingDown.value };
+  private final byte[] testPacket = { RqDisconnect.UnitClosingDown.value };
 
   @Test
   public void getIdTest() {
@@ -30,4 +31,14 @@ public class DisconnectPacketTest {
     pkt.setReason(RqDisconnect.UnitClosingDown);
     assertArrayEquals(testPacket, pkt.serializeSpecific());
   }
+
+    @BeforeEach
+    public void setUp() {
+        JUnitUtil.setUp();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        JUnitUtil.tearDown();
+    }
 }

@@ -19,6 +19,12 @@ public class CbusSensor extends AbstractSensor implements CanListener, CbusEvent
     private CbusAddress addrActive;    // go to active state
     private CbusAddress addrInactive;  // go to inactive state
 
+    /**
+     * Create a new CbusSensor.
+     * @param prefix Hardware connection system prefix, excluding the S for Sensor..
+     * @param address String form of {@link CbusAddress}
+     * @param tc System Traffic Controller.
+     */
     public CbusSensor(String prefix, String address, TrafficController tc) {
         super(prefix + "S" + address);
         this.tc = tc;
@@ -28,9 +34,7 @@ public class CbusSensor extends AbstractSensor implements CanListener, CbusEvent
     private final TrafficController tc;
 
     /**
-     * Common initialization for both constructors.
-     * <p>
-     *
+     * Common initialization for constructors.
      */
     private void init(String address) {
         // build local addresses
@@ -64,12 +68,13 @@ public class CbusSensor extends AbstractSensor implements CanListener, CbusEvent
 
     /**
      * Request an update on status by sending CBUS request message to active address.
+     * Sends a query message using the active Sensor address.
+     * e.g. for a CBUS address "-7;+5", the query will go to event 7.
      * {@inheritDoc}
      */
     @Override
     public void requestUpdateFromLayout() {
-        CanMessage m;
-        m = addrActive.makeMessage(tc.getCanid());
+        CanMessage m = addrActive.makeMessage(tc.getCanid());
         int opc = CbusMessage.getOpcode(m);
         if (CbusOpCodes.isShortEvent(opc)) {
             m.setOpCode(CbusConstants.CBUS_ASRQ);
@@ -82,40 +87,32 @@ public class CbusSensor extends AbstractSensor implements CanListener, CbusEvent
     }
 
     /**
-     * User request to set the state, which means that we broadcast that to all
-     * listeners by putting it out on CBUS. In turn, the code in this class
+     * User request to set the state.
+     * We broadcast that to all listeners by putting it out on CBUS. 
+     * In turn, the code in this class
      * should use setOwnState to handle internal sets and bean notifies.
-     * Unknown state does not send a message to CBUS but updates 
-     * internal sensor state, enabling user test of Start of Day / Logix.
+     * Unknown / Inconsistent states do not send a message to CBUS,
+     * but do update sensor state.
      * {@inheritDoc}
      */
     @Override
     public void setKnownState(int s) throws jmri.JmriException {
+        setOwnState(s);
         CanMessage m;
-        if (s == Sensor.ACTIVE) {
-            if (getInverted()){
-                m = addrInactive.makeMessage(tc.getCanid());
-                setOwnState(Sensor.ACTIVE);
-            } else {
-                m = addrActive.makeMessage(tc.getCanid());
-                setOwnState(Sensor.ACTIVE);
-            }
-            CbusMessage.setPri(m, CbusConstants.DEFAULT_DYNAMIC_PRIORITY * 4 + CbusConstants.DEFAULT_MINOR_PRIORITY);
-            tc.sendCanMessage(m, this);
-        } else if (s == Sensor.INACTIVE) {
-            if (getInverted()){
-                m = addrActive.makeMessage(tc.getCanid());
-                setOwnState(Sensor.INACTIVE);                
-            } else {
-                m = addrInactive.makeMessage(tc.getCanid());
-                setOwnState(Sensor.INACTIVE);
-            }
-            CbusMessage.setPri(m, CbusConstants.DEFAULT_DYNAMIC_PRIORITY * 4 + CbusConstants.DEFAULT_MINOR_PRIORITY);
-            tc.sendCanMessage(m, this);
+        switch (s) {
+            case Sensor.ACTIVE:
+                m = ( getInverted() ? addrInactive.makeMessage(tc.getCanid()) : 
+                    addrActive.makeMessage(tc.getCanid()));
+                break;
+            case Sensor.INACTIVE:
+                m = ( !getInverted() ? addrInactive.makeMessage(tc.getCanid()) : 
+                    addrActive.makeMessage(tc.getCanid()));
+                break;
+            default:
+                return;
         }
-        if (s == Sensor.UNKNOWN){
-            setOwnState(Sensor.UNKNOWN);
-        }
+        CbusMessage.setPri(m, CbusConstants.DEFAULT_DYNAMIC_PRIORITY * 4 + CbusConstants.DEFAULT_MINOR_PRIORITY);
+        tc.sendCanMessage(m, this);
     }
     
     /**
@@ -197,10 +194,10 @@ public class CbusSensor extends AbstractSensor implements CanListener, CbusEvent
             return;
         }
         // convert response events to normal
-        f = CbusMessage.opcRangeToStl(f);
-        if (addrActive.match(f)) {
+        CanReply opcf = CbusMessage.opcRangeToStl(f);
+        if (addrActive.match(opcf)) {
             setOwnState(!getInverted() ? Sensor.ACTIVE : Sensor.INACTIVE);
-        } else if (addrInactive.match(f)) {
+        } else if (addrInactive.match(opcf)) {
             setOwnState(!getInverted() ? Sensor.INACTIVE : Sensor.ACTIVE);
         }
     }

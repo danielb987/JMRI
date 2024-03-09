@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implement LightManager for XBee connections.
- * <p>
  *
  * @author Paul Bender Copyright (C) 2014
  */
@@ -40,8 +39,9 @@ public class XBeeLightManager extends AbstractLightManager {
     }
 
     @Override
-    public Light createNewLight(@Nonnull String systemName, @Nonnull String userName) {
-        XBeeNode curNode = null;
+    @Nonnull
+    protected Light createNewLight(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+        XBeeNode curNode;
         String name = addressFromSystemName(systemName);
         if ((curNode = (XBeeNode) tc.getNodeFromName(name)) == null) {
             if ((curNode = (XBeeNode) tc.getNodeFromAddress(name)) == null) {
@@ -50,9 +50,7 @@ public class XBeeLightManager extends AbstractLightManager {
                 } catch (java.lang.NumberFormatException nfe) {
                     // if there was a number format exception, we couldn't
                     // find the node.
-                    curNode = null;
-                    log.debug("failed to create light {}", systemName);
-                    return null;
+                    throw new IllegalArgumentException("failed to find node to create Light: " + systemName);
                 }
             }
         }
@@ -62,8 +60,7 @@ public class XBeeLightManager extends AbstractLightManager {
             curNode.setPinBean(pin, new XBeeLight(systemName, userName, tc));
             return (XBeeLight) curNode.getPinBean(pin);
         } else {
-            log.debug("failed to create light {}", systemName);
-            return null;
+            throw new IllegalArgumentException("failed to create Light: " + systemName);
         }
     }
 

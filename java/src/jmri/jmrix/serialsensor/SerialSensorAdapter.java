@@ -12,7 +12,6 @@ import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.Sensor;
 import jmri.jmrix.AbstractSerialPortController;
-import jmri.SystemConnectionMemo;
 import jmri.jmrix.DefaultSystemConnectionMemo;
 
 import org.slf4j.Logger;
@@ -81,8 +80,8 @@ public class SerialSensorAdapter extends AbstractSerialPortController {
 
             // set timeout
             // activeSerialPort.enableReceiveTimeout(1000);
-            log.debug("Serial timeout was observed as: {} {}", activeSerialPort.getReceiveTimeout()
-                    + " " + activeSerialPort.isReceiveTimeoutEnabled());
+            log.debug("Serial timeout was observed as: {} {}", activeSerialPort.getReceiveTimeout(),
+                                    activeSerialPort.isReceiveTimeoutEnabled());
 
             // arrange to notify of sensor changes
             activeSerialPort.addEventListener(new SerialPortEventListener() {
@@ -198,22 +197,13 @@ public class SerialSensorAdapter extends AbstractSerialPortController {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     * This currently does nothing, as there's only one
-     * possible value.
-     */
-    @Override
-    public void configureBaudRate(String rate) {
-    }
-
     // private control members
     private boolean opened = false;
     InputStream serialStream = null;
 
     /**
      * Do a sensor change on the event queue.
-     * @param sensor sensor 
+     * @param sensor sensor
      * @param value true if sensor changes on, else false.
      */
     public void notify(String sensor, boolean value) {

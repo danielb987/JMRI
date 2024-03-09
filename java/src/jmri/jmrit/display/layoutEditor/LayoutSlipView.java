@@ -3,7 +3,6 @@ package jmri.jmrit.display.layoutEditor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.util.List;
 
@@ -16,6 +15,8 @@ import jmri.Turnout;
 import jmri.jmrit.display.layoutEditor.LayoutTurnout.TurnoutType;
 import jmri.jmrit.display.layoutEditor.blockRoutingTable.LayoutBlockRouteTableAction;
 import jmri.util.MathUtil;
+import jmri.util.swing.JmriJOptionPane;
+import jmri.util.swing.JmriMouseEvent;
 
 /**
  * MVC View component for the LayoutSlip class.
@@ -352,7 +353,7 @@ public class LayoutSlipView extends LayoutTurnoutView {
      */
     @Override
     @Nonnull
-    protected JPopupMenu showPopup(@CheckForNull MouseEvent mouseEvent) {
+    protected JPopupMenu showPopup(@Nonnull JmriMouseEvent mouseEvent) {
         if (popup != null) {
             popup.removeAll();
         } else {
@@ -525,7 +526,8 @@ public class LayoutSlipView extends LayoutTurnoutView {
             popup.add(new AbstractAction(Bundle.getMessage("ButtonDelete")) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (canRemove() && layoutEditor.removeLayoutSlip(slip)) {
+                    if (canRemove() && removeInlineLogixNG()
+                            && layoutEditor.removeLayoutSlip(slip)) {
                         // Returned true if user did not cancel
                         remove();
                         dispose();
@@ -544,17 +546,17 @@ public class LayoutSlipView extends LayoutTurnoutView {
                             while (entering) {
                                 // prompt for rotation angle
                                 error = false;
-                                newAngle = JOptionPane.showInputDialog(layoutEditor,
-                                        Bundle.getMessage("MakeLabel", Bundle.getMessage("EnterRotation")));
-                                if (newAngle.isEmpty()) {
+                                newAngle = JmriJOptionPane.showInputDialog(layoutEditor,
+                                        Bundle.getMessage("MakeLabel", Bundle.getMessage("EnterRotation")),"");
+                                if ( newAngle==null || newAngle.isEmpty()) {
                                     return;  // cancelled
                                 }
                                 double rot = 0.0;
                                 try {
                                     rot = Double.parseDouble(newAngle);
                                 } catch (Exception e1) {
-                                    JOptionPane.showMessageDialog(layoutEditor, Bundle.getMessage("Error3")
-                                            + " " + e1, Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                                    JmriJOptionPane.showMessageDialog(layoutEditor, Bundle.getMessage("Error3")
+                                            + " " + e1, Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
                                     error = true;
                                     newAngle = "";
                                 }
@@ -633,9 +635,11 @@ public class LayoutSlipView extends LayoutTurnoutView {
             }
             setAdditionalEditPopUpMenu(popup);
             layoutEditor.setShowAlignmentMenu(popup);
+            addCommonPopupItems(mouseEvent, popup);
             popup.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
         } else if (!viewAdditionalMenu.isEmpty()) {
             setAdditionalViewPopUpMenu(popup);
+            addCommonPopupItems(mouseEvent, popup);
             popup.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
         }
         return popup;
@@ -1095,58 +1099,58 @@ public class LayoutSlipView extends LayoutTurnoutView {
     protected void drawTurnoutControls(Graphics2D g2) {
         if (!isDisabled() && !(isDisabledWhenOccupied() && isOccupied())) {
             // TODO: query user base if this is "acceptable" (can obstruct state)
-            if (false) {
-                int stateA = UNKNOWN;
-                Turnout toA = getTurnout();
-                if (toA != null) {
-                    stateA = toA.getKnownState();
-                }
-
-                Color foregroundColor = g2.getColor();
-                Color backgroundColor = g2.getBackground();
-
-                if (stateA == Turnout.THROWN) {
-                    g2.setColor(backgroundColor);
-                } else if (stateA != Turnout.CLOSED) {
-                    g2.setColor(Color.GRAY);
-                }
-                Point2D rightCircleCenter = getCoordsRight();
-                if (layoutEditor.isTurnoutFillControlCircles()) {
-                    g2.fill(trackControlCircleAt(rightCircleCenter));
-                } else {
-                    g2.draw(trackControlCircleAt(rightCircleCenter));
-                }
-                if (stateA != Turnout.CLOSED) {
-                    g2.setColor(foregroundColor);
-                }
-
-                int stateB = UNKNOWN;
-                Turnout toB = getTurnoutB();
-                if (toB != null) {
-                    stateB = toB.getKnownState();
-                }
-
-                if (stateB == Turnout.THROWN) {
-                    g2.setColor(backgroundColor);
-                } else if (stateB != Turnout.CLOSED) {
-                    g2.setColor(Color.GRAY);
-                }
-                // drawHidden left/right turnout control circles
-                Point2D leftCircleCenter = getCoordsLeft();
-                if (layoutEditor.isTurnoutFillControlCircles()) {
-                    g2.fill(trackControlCircleAt(leftCircleCenter));
-                } else {
-                    g2.draw(trackControlCircleAt(leftCircleCenter));
-                }
-                if (stateB != Turnout.CLOSED) {
-                    g2.setColor(foregroundColor);
-                }
-            } else {
+//             if (false) {
+//                 int stateA = UNKNOWN;
+//                 Turnout toA = getTurnout();
+//                 if (toA != null) {
+//                     stateA = toA.getKnownState();
+//                 }
+//
+//                 Color foregroundColor = g2.getColor();
+//                 Color backgroundColor = g2.getBackground();
+//
+//                 if (stateA == Turnout.THROWN) {
+//                     g2.setColor(backgroundColor);
+//                 } else if (stateA != Turnout.CLOSED) {
+//                     g2.setColor(Color.GRAY);
+//                 }
+//                 Point2D rightCircleCenter = getCoordsRight();
+//                 if (layoutEditor.isTurnoutFillControlCircles()) {
+//                     g2.fill(trackControlCircleAt(rightCircleCenter));
+//                 } else {
+//                     g2.draw(trackControlCircleAt(rightCircleCenter));
+//                 }
+//                 if (stateA != Turnout.CLOSED) {
+//                     g2.setColor(foregroundColor);
+//                 }
+//
+//                 int stateB = UNKNOWN;
+//                 Turnout toB = getTurnoutB();
+//                 if (toB != null) {
+//                     stateB = toB.getKnownState();
+//                 }
+//
+//                 if (stateB == Turnout.THROWN) {
+//                     g2.setColor(backgroundColor);
+//                 } else if (stateB != Turnout.CLOSED) {
+//                     g2.setColor(Color.GRAY);
+//                 }
+//                 // drawHidden left/right turnout control circles
+//                 Point2D leftCircleCenter = getCoordsLeft();
+//                 if (layoutEditor.isTurnoutFillControlCircles()) {
+//                     g2.fill(trackControlCircleAt(leftCircleCenter));
+//                 } else {
+//                     g2.draw(trackControlCircleAt(leftCircleCenter));
+//                 }
+//                 if (stateB != Turnout.CLOSED) {
+//                     g2.setColor(foregroundColor);
+//                 }
+//             } else {
                 Point2D rightCircleCenter = getCoordsRight();
                 g2.draw(trackControlCircleAt(rightCircleCenter));
                 Point2D leftCircleCenter = getCoordsLeft();
                 g2.draw(trackControlCircleAt(leftCircleCenter));
-            }
+//             }
         }
     } // drawTurnoutControls
 

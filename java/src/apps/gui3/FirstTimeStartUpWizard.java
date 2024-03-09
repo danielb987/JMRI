@@ -1,6 +1,7 @@
 package apps.gui3;
 
 import jmri.util.gui.GuiLafPreferencesManager;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -12,20 +13,22 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
+
 import jmri.Application;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
+import jmri.jmrit.logix.WarrantPreferences;
 import jmri.jmrit.roster.RosterConfigManager;
 import jmri.jmrix.AbstractConnectionConfig;
 import jmri.jmrix.ConnectionConfig;
@@ -34,10 +37,10 @@ import jmri.jmrix.PortAdapter;
 import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
 import jmri.util.FileUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.prefs.InitializationException;
+import jmri.util.swing.JmriJOptionPane;
 
-public class FirstTimeStartUpWizard {
+public class FirstTimeStartUpWizard implements Thread.UncaughtExceptionHandler {
 
     Image splashIm;
 
@@ -48,6 +51,9 @@ public class FirstTimeStartUpWizard {
         this.parent = parent;
         this.app = app;
         mainWizardPanel.setLayout(new BorderLayout());
+        
+        localeNames = new String[Locale.getAvailableLocales().length];
+        
         mainWizardPanel.add(createTopBanner(), BorderLayout.NORTH);
 
         mainWizardPanel.add(createHelpPanel(), BorderLayout.WEST);
@@ -134,7 +140,7 @@ public class FirstTimeStartUpWizard {
         p2.add(new JLabel(/*rb.getString("LabelDefaultOwner")*/"Default Owner"));
 
         owner.setText(InstanceManager.getDefault(RosterConfigManager.class).getDefaultOwner());
-        if (owner.getText().equals("")) {
+        if (owner.getText().isEmpty()) {
             owner.setText(System.getProperty("user.name"));
         }
         p2.add(owner);
@@ -244,6 +250,7 @@ public class FirstTimeStartUpWizard {
             Thread connectThread = new Thread(r);
             connectThread.start();
             connectThread.setName("Start-Up Wizard Connect");
+            connectThread.setUncaughtExceptionHandler(this);
         });
 
         buttonPanel.add(previous);
@@ -254,6 +261,27 @@ public class FirstTimeStartUpWizard {
         previous.setEnabled(false);
 
         return buttonPanel;
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        showDialogue(e);
+    }
+
+    private void showDialogue(Throwable ex) {
+        log.error("Exception: ", ex);
+        Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+        parent.setCursor(normalCursor);
+        var conn = connectionConfigPane.getCurrentObject();
+        String connName = ( conn == null ? "No Connection " : conn.getConnectionName()  );
+        jmri.util.ThreadingUtil.runOnGUI(() -> {
+            JmriJOptionPane.showMessageDialog(parent,
+                "<html>An error occurred while trying to connect to " + connName
+                    + ", <br>press the back button and check the connection details.<br>"
+                    + ex.getLocalizedMessage() + "</html>",
+                "Error Opening Connection",
+                JmriJOptionPane.ERROR_MESSAGE);
+        });
     }
 
     //The connection process is placed into its own thread so that it doens't hog the swingthread while waiting for the connections to open.
@@ -275,22 +303,24 @@ public class FirstTimeStartUpWizard {
                     adp.connect();
                     adp.configure();
                 } catch (Exception ex) {
-                    log.error(ex.getLocalizedMessage(), ex);
-                    Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-                    parent.setCursor(normalCursor);
-                    JOptionPane.showMessageDialog(null,
-                            "An error occurred while trying to connect to " + connect.getConnectionName() + ", press the back button and check the connection details",
-                            "Error Opening Connection",
-                            JOptionPane.ERROR_MESSAGE);
+                    showDialogue(ex);
                     return;
                 }
             }
             Profile project = ProfileManager.getDefault().getActiveProfile();
             InstanceManager.getDefault(RosterConfigManager.class).setDefaultOwner(project, owner.getText());
             InstanceManager.getDefault(GuiLafPreferencesManager.class).setLocale(Locale.getDefault());
+            InstanceManager.getDefault(GuiLafPreferencesManager.class).setDefaultFontSize();
+            InstanceManager.getDefault(GuiLafPreferencesManager.class).setFontSize(
+                InstanceManager.getDefault(GuiLafPreferencesManager.class).getDefaultFontSize());
             InstanceManager.getDefault(RosterConfigManager.class).savePreferences(project);
             InstanceManager.getDefault(GuiLafPreferencesManager.class).savePreferences(project);
             connectionConfigPane.savePreferences();
+            try {
+                InstanceManager.getDefault(WarrantPreferences.class).initialize(project);
+            } catch ( InitializationException ex ){
+                log.error("Exception Initialising warrant preferences: ", ex);
+            }
             InstanceManager.getDefault(ConfigureManager.class).storePrefs();
             
             dispose();
@@ -308,8 +338,7 @@ public class FirstTimeStartUpWizard {
 
         // create object to find locales in new Thread
         Runnable r = () -> {
-            Locale[] locales = java.util.Locale.getAvailableLocales();
-            localeNames = new String[locales.length];
+            Locale[] locales = Locale.getAvailableLocales();
             locale = new HashMap<>();
             for (int i = 0; i < locales.length; i++) {
                 locale.put(locales[i].getDisplayName(), locales[i]);
@@ -346,7 +375,7 @@ public class FirstTimeStartUpWizard {
 
     JComboBox<String> localeBox;
     HashMap<String, Locale> locale;
-    String[] localeNames;
+    final String[] localeNames;
 
     JPanel mainWizardPanel = new JPanel();
 
@@ -391,6 +420,6 @@ public class FirstTimeStartUpWizard {
 
     }
 
-    private final static Logger log = LoggerFactory.getLogger(FirstTimeStartUpWizard.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FirstTimeStartUpWizard.class);
 
 }

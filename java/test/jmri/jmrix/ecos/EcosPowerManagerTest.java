@@ -12,10 +12,13 @@ import org.junit.jupiter.api.*;
 public class EcosPowerManagerTest {
 
     @Test
-    public void testCTor() {
+    public void testCTor() throws Exception {
         EcosTrafficController tc = new EcosInterfaceScaffold();
         EcosPowerManager t = new EcosPowerManager(tc);
         Assert.assertNotNull("exists",t);
+
+        t.dispose();
+        tc.terminateThreads();
     }
 
     @BeforeEach
@@ -25,7 +28,6 @@ public class EcosPowerManagerTest {
 
     @AfterEach
     public void tearDown() {
-        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
         JUnitUtil.tearDown();
     }
 

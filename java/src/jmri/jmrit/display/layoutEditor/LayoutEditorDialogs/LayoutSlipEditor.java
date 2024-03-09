@@ -17,12 +17,13 @@ import jmri.jmrit.display.layoutEditor.*;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.JmriJFrame;
 import jmri.util.MathUtil;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * MVC Editor component for LayoutSlip objects.
  *
  * @author Bob Jacobsen  Copyright (c) 2020
- * 
+ *
  */
 public class LayoutSlipEditor extends LayoutTurnoutEditor {
 
@@ -195,7 +196,7 @@ public class LayoutSlipEditor extends LayoutTurnoutEditor {
         showSensorMessage();
     }   // editLayoutSlip
 
-    /* 
+    /*
      * draw the current state (STATE_AC, STATE_BD  et al)
      * with fixed geometry
      */
@@ -223,15 +224,15 @@ public class LayoutSlipEditor extends LayoutTurnoutEditor {
             g2.draw(new Line2D.Double(D, MathUtil.oneThirdPoint(D, A)));
 
             drawSlipStatePart1A(g2,state, A,B,C,D);
-             
+
         } else {
             g2.draw(new Line2D.Double(B, MathUtil.oneThirdPoint(B, D)));
             g2.draw(new Line2D.Double(D, MathUtil.oneThirdPoint(D, B)));
         }
 
         drawSlipStatePart2A(g2,state, A,B,C,D);
-    }  
-    
+    }
+
     protected void drawSlipStatePart1A(Graphics2D g2, int state, Point2D A, Point2D B, Point2D C, Point2D D) {
     }
 
@@ -257,6 +258,9 @@ public class LayoutSlipEditor extends LayoutTurnoutEditor {
         } else if (state == LayoutTurnout.STATE_BD) {
             g2.setColor(Color.red);
             g2.draw(new Line2D.Double(B, D));
+        } else if (state == LayoutTurnout.STATE_BC) {
+            g2.setColor(Color.red);
+            g2.draw(new Line2D.Double(B, C));
         } else {
             g2.draw(new Line2D.Double(B, MathUtil.oneThirdPoint(B, D)));
             g2.draw(new Line2D.Double(D, MathUtil.oneThirdPoint(D, B)));
@@ -389,9 +393,9 @@ public class LayoutSlipEditor extends LayoutTurnoutEditor {
         }
         // check if a block exists to edit
         if (layoutSlip.getLayoutBlock() == null) {
-            JOptionPane.showMessageDialog(editLayoutSlipFrame,
+            JmriJOptionPane.showMessageDialog(editLayoutSlipFrame,
                     Bundle.getMessage("Error1"),
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         layoutSlip.getLayoutBlock().editLayoutBlock(editLayoutSlipFrame);
@@ -441,6 +445,17 @@ public class LayoutSlipEditor extends LayoutTurnoutEditor {
             ts.updateStatesFromCombo();
         }
 
+        // Verify that there are no turnouts or two turnouts.  A single turnout is an error.
+        var turnoutNameA = layoutSlip.getTurnoutName();
+        var turnoutNameB = layoutSlip.getTurnoutBName();
+        if ((turnoutNameA.isEmpty() && !turnoutNameB.isEmpty()) ||
+                (turnoutNameB.isEmpty() && !turnoutNameA.isEmpty())) {
+            JmriJOptionPane.showMessageDialog(editLayoutSlipFrame,
+                    Bundle.getMessage("Error20"),
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         // set hidden
         boolean oldHidden = layoutSlipView.isHidden();
         layoutSlipView.setHidden(editLayoutSlipHiddenBox.isSelected());
@@ -476,7 +491,7 @@ public class LayoutSlipEditor extends LayoutTurnoutEditor {
             editLayoutSlipNeedsRedraw = false;
         }
     }
-    
+
 
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LayoutSlipEditor.class);
 }

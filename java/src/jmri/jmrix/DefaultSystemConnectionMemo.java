@@ -33,10 +33,9 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
     private String userNameAsLoaded;
     protected Map<Class<?>,Object> classObjectMap;
 
-    @SuppressWarnings("deprecation")
     protected DefaultSystemConnectionMemo(@Nonnull String prefix, @Nonnull String userName) {
         classObjectMap = new HashMap<>();
-        if (this instanceof ConflictingSystemConnectionMemo) {
+        if (this instanceof CaptiveSystemConnectionMemo) {
             this.prefix = prefix;
             this.userName = userName;
             return;
@@ -69,6 +68,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * <p>
      * This operation should occur only when the SystemConnectionMemo is ready for use.
      */
+    @Override
     public void register() {
         log.debug("register as SystemConnectionMemo, really of type {}", this.getClass());
         SystemConnectionMemoManager.getDefault().register(this);
@@ -81,6 +81,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      *
      * @return System prefix
      */
+    @Override
     public String getSystemPrefix() {
         return prefix;
     }
@@ -92,6 +93,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * @throws java.lang.NullPointerException if systemPrefix is null
      * @return true if the system prefix could be set
      */
+    @Override
     public final boolean setSystemPrefix(@Nonnull String systemPrefix) {
         Objects.requireNonNull(systemPrefix);
         // return true if systemPrefix is not being changed
@@ -121,6 +123,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      *
      * @return User name of the connection
      */
+    @Override
     public String getUserName() {
         return userName;
     }
@@ -132,6 +135,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * @throws java.lang.NullPointerException if name is null
      * @return true if the user name could be set.
      */
+    @Override
     public final boolean setUserName(@Nonnull String userName) {
         Objects.requireNonNull(userName);
         if (userName.equals(this.userName)) {
@@ -163,6 +167,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * @see #get(java.lang.Class)
      */
     @OverridingMethodsMustInvokeSuper
+    @Override
     public boolean provides(Class<?> c) {
         if (disabled) {
             return false;
@@ -187,7 +192,8 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      */
     @OverridingMethodsMustInvokeSuper
     @SuppressWarnings("unchecked") // dynamic checking done on cast of getConsistManager
-    public <T> T get(Class<?> type) {
+    @Override
+    public <T> T get(Class<T> type) {
         if (disabled) {
             return null;
         }
@@ -198,12 +204,28 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
         }
     }
 
+    /**
+     * Dispose of System Connection.
+     * <p>
+     * Removes objects from classObjectMap after
+     * calling dispose if Disposable.
+     * Removes these objects from InstanceManager.
+     */
+    @Override
     public void dispose() {
         Set<Class<?>> keySet = new HashSet<>(classObjectMap.keySet());
         keySet.forEach(this::removeRegisteredObject);
         SystemConnectionMemoManager.getDefault().deregister(this);
     }
 
+    /**
+     * Remove single class object.
+     * Removes from InstanceManager
+     * Removes from Memo class list
+     * Call object dispose if class implements Disposable
+     * @param <T> class Type
+     * @param c actual class
+     */
     private <T> void removeRegisteredObject(Class<T> c) {
         T object = get(c);
         if (object != null) {
@@ -228,6 +250,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      *
      * @return true if Disabled, else false.
      */
+    @Override
     public boolean getDisabled() {
         return disabled;
     }
@@ -240,6 +263,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      *
      * @param disabled true to disable, false to enable.
      */
+    @Override
     public void setDisabled(boolean disabled) {
         if (this.disabledAsLoaded == null) {
             // only set first time
@@ -261,6 +285,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * @param type the class of NamedBean
      * @return the Comparator
      */
+    @Override
     public abstract <B extends NamedBean> Comparator<B> getNamedBeanComparator(Class<B> type);
 
     /**
@@ -271,6 +296,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * @return the factory
      */
     @Nonnull
+    @Override
     public StartupActionFactory getActionFactory() {
         return new ResourceBundleStartupActionFactory(getActionModelResourceBundle());
     }
@@ -278,37 +304,19 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
     protected abstract ResourceBundle getActionModelResourceBundle();
 
     /**
-     * Add actions to the action list.
-     *
-     * @deprecated since 4.19.7 without direct replacement
-     */
-    @Deprecated
-    protected final void addToActionList() {
-        // do nothing
-    }
-
-    /**
-     * Remove actions from the action list.
-     *
-     * @deprecated since 4.19.7 without direct replacement
-     */
-    @Deprecated
-    protected final void removeFromActionList() {
-        // do nothing
-    }
-
-    /**
      * Get if connection is dirty.
      * Checked fields are disabled, prefix, userName
      *
      * @return true if changed since loaded
      */
+    @Override
     public boolean isDirty() {
         return ((this.disabledAsLoaded == null || this.disabledAsLoaded != this.disabled)
                 || (this.prefixAsLoaded == null || !this.prefixAsLoaded.equals(this.prefix))
                 || (this.userNameAsLoaded == null || !this.userNameAsLoaded.equals(this.userName)));
     }
 
+    @Override
     public boolean isRestartRequired() {
         return this.isDirty();
     }
@@ -320,7 +328,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      *         provide a ConsistManager
      */
     public ConsistManager getConsistManager() {
-        return (ConsistManager) classObjectMap.computeIfAbsent(ConsistManager.class,(Class c) -> { return generateDefaultConsistManagerForConnection(); });
+        return (ConsistManager) classObjectMap.computeIfAbsent(ConsistManager.class,(Class<?> c) -> { return generateDefaultConsistManagerForConnection(); });
     }
 
     private ConsistManager generateDefaultConsistManagerForConnection(){
@@ -337,12 +345,40 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
         jmri.InstanceManager.store(c, ConsistManager.class);
     }
 
+    /**
+     * Store a class object to the system connection memo.
+     * <p>
+     * Does NOT register the class with InstanceManager.
+     * <p>
+     * On memo dispose, each class will be removed from InstanceManager,
+     * and if the class implements disposable, the dispose method is called.
+     * @param <T> Class type obtained from item object.
+     * @param item the class object to store, eg. mySensorManager
+     * @param type Class type, eg. SensorManager.class
+     */
     public <T> void store(@Nonnull T item, @Nonnull Class<T> type){
+        Map<Class<?>,Object> classObjectMapCopy = classObjectMap;
         classObjectMap.put(type,item);
+        if ( !classObjectMapCopy.containsValue(item) ) {
+            propertyChangeSupport.firePropertyChange(STORE, null, item);
+        }
     }
 
+    /**
+     * Remove a class object from the system connection memo classObjectMap.
+     * <p>
+     * Does NOT remove the class from InstanceManager.
+     *
+     * @param <T> Class type obtained from item object.
+     * @param item the class object to store, eg. mySensorManager
+     * @param type Class type, eg. SensorManager.class
+     */
     public <T> void deregister(@Nonnull T item, @Nonnull Class<T> type){
+        Map<Class<?>,Object> classObjectMapCopy = classObjectMap;
         classObjectMap.remove(type,item);
+        if ( classObjectMapCopy.containsValue(item) ) {
+            propertyChangeSupport.firePropertyChange(DEREGISTER, item, null);
+        }
     }
 
     /**
@@ -351,7 +387,7 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * Change from e.g. connection config dialog and scripts using {@link #setOutputInterval(int)}
      */
     private int _interval = getDefaultOutputInterval();
-    
+
     /**
      * Default interval 250ms.
      * {@inheritDoc}
@@ -366,11 +402,13 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
      * are sent, configured in AdapterConfig.
      * Used in {@link jmri.implementation.AbstractTurnout#setCommandedStateAtInterval(int)}.
      */
+    @Override
     public int getOutputInterval() {
         log.debug("Getting interval {}", _interval);
         return _interval;
     }
 
+    @Override
     public void setOutputInterval(int newInterval) {
         log.debug("Setting interval from {} to {}", _interval, newInterval);
         this.propertyChangeSupport.firePropertyChange(INTERVAL, _interval, newInterval);

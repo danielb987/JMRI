@@ -3,22 +3,16 @@ package jmri.jmrit.beantable;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.List;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.SortOrder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.table.TableRowSorter;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import jmri.*;
 import jmri.swing.RowSorterUtil;
 import jmri.util.AlphanumComparator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,38 +32,39 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
         dataPanel = new JPanel();
         dataTabs = new JTabbedPane();
         dataPanel.setLayout(new BorderLayout());
-        if (getManager() instanceof jmri.managers.AbstractProxyManager) {
+        Manager<E> mgr = getManager();
+        if (mgr instanceof jmri.managers.AbstractProxyManager) {
             // build the list, with default at start and internal at end (if present)
-            jmri.managers.AbstractProxyManager<E> proxy = (jmri.managers.AbstractProxyManager<E>) getManager();
+            jmri.managers.AbstractProxyManager<E> proxy = (jmri.managers.AbstractProxyManager<E>) mgr;
 
-            tabbedTableArray.add(new TabbedTableItem<>(Bundle.getMessage("All"), true, getManager(), getNewTableAction("All"))); // NOI18N
+            tabbedTableArray.add(new TabbedTableItem<>(Bundle.getMessage("All"), true, mgr, getNewTableAction("All"))); // NOI18N
 
-            List<jmri.Manager<E>> managerList = proxy.getDisplayOrderManagerList();
-            for (Manager<E> manager : managerList) {
+            proxy.getDisplayOrderManagerList().stream().map(manager -> {
                 String manuName = manager.getMemo().getUserName();
                 TabbedTableItem<E> itemModel = new TabbedTableItem<>(manuName, true, manager, getNewTableAction(manuName)); // connection name to display in Tab
+                return itemModel;
+            }).forEachOrdered(itemModel -> {
                 tabbedTableArray.add(itemModel);
-            }
-            
+            });
+
         } else {
-            String manuName = getManager().getMemo().getUserName();
-            tabbedTableArray.add(new TabbedTableItem<>(manuName, true, getManager(), getNewTableAction(manuName)));
+            Manager<E> man = getManager();
+            String manuName = ( man!=null ? man.getMemo().getUserName() : "Unknown Manager");
+            tabbedTableArray.add(new TabbedTableItem<E>(manuName, true, getManager(), getNewTableAction(manuName)));
         }
         for (int x = 0; x < tabbedTableArray.size(); x++) {
             AbstractTableAction<E> table = tabbedTableArray.get(x).getAAClass();
             table.addToPanel(this);
             dataTabs.addTab(tabbedTableArray.get(x).getItemString(), null, tabbedTableArray.get(x).getPanel(), null);
         }
-        dataTabs.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent evt) {
-                setMenuBar(f);
-            }
+        dataTabs.addChangeListener((ChangeEvent evt) -> {
+            setMenuBar(f);
         });
         dataPanel.add(dataTabs, BorderLayout.CENTER);
         init = true;
     }
 
+    @Override
     abstract protected Manager<E> getManager();
 
     abstract protected AbstractTableAction<E> getNewTableAction(String choice);
@@ -132,7 +127,7 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
         try {
             tabbedTableArray.get(dataTabs.getSelectedIndex()).getDataTable().print(mode, headerFormat, footerFormat);
         } catch (java.awt.print.PrinterException e1) {
-            log.warn("error printing: {}", e1, e1);
+            log.warn("error printing", e1);
         } catch (NullPointerException ex) {
             log.error("Trying to print returned a NPE error");
         }
@@ -146,27 +141,27 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
         super.dispose();
     }
 
-    static protected class TabbedTableItem<E extends NamedBean> {  // E comes from the parent
+    static protected class TabbedTableItem<E extends NamedBean> extends AbstractTableAction.TableItem<E> {  // E comes from the parent
 
-        AbstractTableAction<E> tableAction;
-        String itemText;
-        BeanTableDataModel<E> dataModel;
-        JTable dataTable;
-        JScrollPane dataScroll;
-        Box bottomBox;
-        boolean addToFrameRan = false;
-        Manager<E> manager;
+        final String itemText;
 
-        int bottomBoxIndex; // index to insert extra stuff
-        static final int bottomStrutWidth = 20;
+        private JScrollPane dataScroll;
+        final Box bottomBox;
+        private boolean addToFrameRan = false;
+        final Manager<E> manager;
 
-        boolean standardModel = true;
+        private int bottomBoxIndex; // index to insert extra stuff
+        static final int BOTTOM_STRUT_WIDTH = 20;
+
+        private boolean standardModel = true;
 
         final JPanel dataPanel = new JPanel();
 
-        public TabbedTableItem(String choice, boolean stdModel, Manager<E> manager, AbstractTableAction<E> tableAction) {
+        @SuppressWarnings("unchecked")
+        public TabbedTableItem(String choice, boolean stdModel, Manager<E> manager, @Nonnull AbstractTableAction<E> tableAction) {
 
-            this.tableAction = tableAction;
+            super(tableAction);
+
             itemText = choice;
             standardModel = stdModel;
             this.manager = manager;
@@ -184,12 +179,11 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
             }
         }
 
-        void createDataModel() {
-            if (manager != null) {
-                tableAction.setManager(manager);
-            }
+        @SuppressWarnings("unchecked")
+        final void createDataModel() {
+            tableAction.setManager(manager);
             dataModel = tableAction.getTableDataModel();
-            TableRowSorter<BeanTableDataModel> sorter = new TableRowSorter<>(dataModel);
+            TableRowSorter<BeanTableDataModel<E>> sorter = new TableRowSorter<>(dataModel);
             dataTable = dataModel.makeJTable(dataModel.getMasterClassName() + ":" + getItemString(), dataModel, sorter);
             dataScroll = new JScrollPane(dataTable);
 
@@ -199,6 +193,7 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
             RowSorterUtil.setSortOrder(sorter, BeanTableDataModel.USERNAMECOL, SortOrder.ASCENDING);
 
             dataModel.configureTable(dataTable);
+            tableAction.configureTable(dataTable);
 
             java.awt.Dimension dataTableSize = dataTable.getPreferredSize();
             // width is right, but if table is empty, it's not high
@@ -214,28 +209,14 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
             dataPanel.add(dataScroll, BorderLayout.CENTER);
 
             dataPanel.add(bottomBox, BorderLayout.SOUTH);
-            if (tableAction.includeAddButton()) {
-                JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
-                addToBottomBox(addButton);
-                addButton.addActionListener((ActionEvent e) -> {
-                    tableAction.addPressed(e);
-                });
-            }
-            if (dataModel.getPropertyColumnCount() > 0) {
-                final JCheckBox propertyVisible = new JCheckBox(Bundle.getMessage
-                        ("ShowSystemSpecificProperties"));
-                propertyVisible.setToolTipText(Bundle.getMessage
-                        ("ShowSystemSpecificPropertiesToolTip"));
-                addToBottomBox(propertyVisible);
-                propertyVisible.addActionListener((ActionEvent e) -> {
-                    dataModel.setPropertyColumnsVisible(dataTable, propertyVisible.isSelected());
-                });
-                dataModel.setPropertyColumnsVisible(dataTable, false);
-            }
+
+            includeAddButton(tableAction.includeAddButton());
+
+            includePropertyCheckBox();
 
         }
 
-        void addPanelModel() {
+        final void addPanelModel() {
             dataPanel.add(tableAction.getPanel(), BorderLayout.CENTER);
             dataPanel.add(bottomBox, BorderLayout.SOUTH);
         }
@@ -246,10 +227,6 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
 
         public String getItemString() {
             return itemText;
-        }
-
-        public AbstractTableAction<E> getAAClass() {
-            return tableAction;
         }
 
         public JPanel getPanel() {
@@ -264,28 +241,23 @@ abstract public class AbstractTableTabAction<E extends NamedBean> extends Abstra
             addToFrameRan = true;
         }
 
-        public JTable getDataTable() {
-            return dataTable;
-        }
+        
 
+        @Override
         protected void addToBottomBox(JComponent comp) {
             try {
-                bottomBox.add(Box.createHorizontalStrut(bottomStrutWidth), bottomBoxIndex);
+                bottomBox.add(Box.createHorizontalStrut(BOTTOM_STRUT_WIDTH), bottomBoxIndex);
                 ++bottomBoxIndex;
                 bottomBox.add(comp, bottomBoxIndex);
                 ++bottomBoxIndex;
             } catch (java.lang.IllegalArgumentException ex) {
-                log.error(ex.getLocalizedMessage(), ex);
+                log.error("Could not add to bottom box.", ex);
             }
         }
 
+        @Override
         protected void dispose() {
-            if (dataModel != null) {
-                dataModel.stopPersistingTable(dataTable);
-                dataModel.dispose();
-            }
-            dataModel = null;
-            dataTable = null;
+            super.dispose();
             dataScroll = null;
         }
     }

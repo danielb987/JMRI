@@ -4,6 +4,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
+
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.NamedBeanHandleManager;
@@ -13,6 +16,8 @@ import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.display.palette.IndicatorTOItemPanel;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.picker.PickListModel;
+import jmri.util.ThreadingUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,9 +190,9 @@ public class IndicatorTurnoutIcon extends TurnoutIcon implements IndicatorTrack 
             if (_iconMaps != null) {
                 displayState(turnoutState());
             }
-            setToolTip(new ToolTip(block.getDescription(), 0, 0));
+            setToolTip(new ToolTip(block.getDescription(), 0, 0, this));
         } else {
-            setToolTip(new ToolTip(null, 0, 0));
+            setToolTip(new ToolTip(null, 0, 0, this));
         }
     }
 
@@ -369,6 +374,12 @@ public class IndicatorTurnoutIcon extends TurnoutIcon implements IndicatorTrack 
     }
 
     @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_IndicatorTurnoutIcon");
+    }
+
+    @Override
     public String getNameString() {
         String str = "";
         if (namedOccBlock != null) {
@@ -412,9 +423,12 @@ public class IndicatorTurnoutIcon extends TurnoutIcon implements IndicatorTrack 
 
     private void setStatus(OBlock block, int state) {
         _status = _pathUtil.getStatus(block, state);
+        log.debug("setStatus _status= {} state= {} block= \"{}\"", _status, state, block.getDisplayName());
         if ((state & (OBlock.OCCUPIED | OBlock.RUNNING)) != 0) {
-            _pathUtil.setLocoIcon(block, getLocation(), getSize(), _editor);
-            repaint();
+            ThreadingUtil.runOnLayoutEventually(() -> {
+                _pathUtil.setLocoIcon(block, getLocation(), getSize(), _editor);
+                repaint();
+            });
         }
         if ((block.getState() & OBlock.OUT_OF_SERVICE) != 0) {
             setControlling(false);
@@ -450,7 +464,7 @@ public class IndicatorTurnoutIcon extends TurnoutIcon implements IndicatorTrack 
             }
         }
         _itemPanel.initUpdate(updateAction, iconMaps);
-        
+
         if (namedOccSensor != null) {
             _itemPanel.setOccDetector(namedOccSensor.getBean().getDisplayName());
         }
@@ -460,7 +474,7 @@ public class IndicatorTurnoutIcon extends TurnoutIcon implements IndicatorTrack 
         _itemPanel.setShowTrainName(_pathUtil.showTrain());
         _itemPanel.setPaths(_pathUtil.getPaths());
         _itemPanel.setSelection(getTurnout());  // do after all other params set - calls resize()
-        
+
         initPaletteFrame(_paletteFrame, _itemPanel);
     }
 

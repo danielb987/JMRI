@@ -1,11 +1,12 @@
 package jmri.jmrit.display;
 
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 import javax.swing.JPopupMenu;
+
+import jmri.JmriException;
 import jmri.jmrit.catalog.NamedIcon;
+import jmri.util.swing.JmriMouseEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +65,10 @@ public class LinkingLabel extends PositionableLabel implements LinkingObject {
     }
 
     // overide where used - e.g. momentary
-//    public void doMousePressed(MouseEvent event) {}
-//    public void doMouseReleased(MouseEvent event) {}
+//    public void doMousePressed(JmriMouseEvent event) {}
+//    public void doMouseReleased(JmriMouseEvent event) {}
     @Override
-    public void doMouseClicked(MouseEvent event) {
+    public void doMouseClicked(JmriMouseEvent event) {
         log.debug("click to {}", url);
         try {
             if (url.startsWith("frame:")) {
@@ -88,9 +89,9 @@ public class LinkingLabel extends PositionableLabel implements LinkingObject {
                     log.error("Frame '{}' not found, cannot link to it.", frame);
                 }
             } else if (url.length() > 0) {
-                jmri.util.ExternalLinkContentViewerUI.activateURL(new java.net.URL(url));
+                jmri.util.HelpUtil.openWebPage(url);
             }
-        } catch (IOException | URISyntaxException t) {
+        } catch (JmriException t) {
             log.error("Error handling link", t);
         }
         super.doMouseClicked(event);

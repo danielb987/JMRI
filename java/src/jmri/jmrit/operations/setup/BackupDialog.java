@@ -1,34 +1,25 @@
 package jmri.jmrit.operations.setup;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import jmri.jmrit.operations.OperationsXml;
 import jmri.util.swing.ExceptionContext;
 import jmri.util.swing.ExceptionDisplayFrame;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.swing.UnexpectedExceptionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BackupDialog extends JDialog {
 
-    private final static Logger log = LoggerFactory
-            .getLogger(BackupDialog.class);
+    
 
     private final JPanel contentPanel = new JPanel();
     private JLabel captionLabel;
@@ -179,33 +170,36 @@ public class BackupDialog extends JDialog {
 
             if (!OperationsXml.checkFileName(setName)) { // NOI18N
                 log.error("Back up set name must not contain reserved characters");
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("NameResChar") + "\n" // NOI18N
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("NameResChar") + "\n" // NOI18N
                         + Bundle.getMessage("ReservedChar"), Bundle.getMessage("CanNotUseName"),
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // check to see if files are dirty
             if (OperationsXml.areFilesDirty()) {
-                if (JOptionPane
+                if (Setup.isAutoSaveEnabled()) {
+                    OperationsXml.save();
+                }
+                else if (JmriJOptionPane
                         .showConfirmDialog(
                                 this,
                                 Bundle.getMessage("OperationsFilesModified"),
                                 Bundle.getMessage("SaveOperationFiles"),
-                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                                JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                     OperationsXml.save();
                 }
             }
 
             // check to see if directory already exists
             if (backup.checkIfBackupSetExists(setName)) {
-                int result = JOptionPane.showConfirmDialog(this, MessageFormat
+                int result = JmriJOptionPane.showConfirmDialog(this, MessageFormat
                         .format(Bundle.getMessage("DirectoryAreadyExists"),
                                 new Object[]{setName}),
                         Bundle.getMessage("OverwriteBackupDirectory"),
-                        JOptionPane.OK_CANCEL_OPTION);
+                        JmriJOptionPane.OK_CANCEL_OPTION);
 
-                if (result != JOptionPane.OK_OPTION) {
+                if (result != JmriJOptionPane.OK_OPTION) {
                     return;
                 }
             }
@@ -217,7 +211,7 @@ public class BackupDialog extends JDialog {
                     ex,
                     Bundle.getMessage("BackupDialog.BackingUp") + " " + setName,
                     Bundle.getMessage("BackupDialog.Ensure"));
-            new ExceptionDisplayFrame(context, this).setVisible(true);
+            ExceptionDisplayFrame.displayExceptionDisplayFrame(this, context);
 
         } catch (RuntimeException ex) {
             log.error("Doing backup...", ex);
@@ -225,14 +219,14 @@ public class BackupDialog extends JDialog {
             UnexpectedExceptionContext context = new UnexpectedExceptionContext(
                     ex, Bundle.getMessage("BackupDialog.BackingUp") + " " + setName);
 
-            new ExceptionDisplayFrame(context, this).setVisible(true);
+            ExceptionDisplayFrame.displayExceptionDisplayFrame(this, context);
         } catch (Exception ex) {
             log.error("Doing backup...", ex);
 
             UnexpectedExceptionContext context = new UnexpectedExceptionContext(
                     ex, Bundle.getMessage("BackupDialog.BackingUp") + " " + setName);
 
-            new ExceptionDisplayFrame(context, this).setVisible(true);
+            ExceptionDisplayFrame.displayExceptionDisplayFrame(this, context);
         }
     }
 
@@ -250,4 +244,7 @@ public class BackupDialog extends JDialog {
     protected void do_helpButton_actionPerformed(ActionEvent e) {
         // Not implemented yet.
     }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BackupDialog.class);
+
 }

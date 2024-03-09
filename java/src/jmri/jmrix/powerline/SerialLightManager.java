@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author Dave Duchamp Copyright (C) 2004
  * @author Bob Jacobsen Copyright (C) 2006, 2007, 2008 Converted to multiple
  * connection
- * @author Ken Cameron Copyright (C) 2011
+ * @author Ken Cameron Copyright (C) 2011,2023
  */
 abstract public class SerialLightManager extends AbstractLightManager {
 
@@ -47,9 +47,10 @@ abstract public class SerialLightManager extends AbstractLightManager {
      * that a Light with this system name does not already exist
      */
     @Override
-    public Light createNewLight(@Nonnull String systemName, String userName) {
-        Light lgt = null;
+    @Nonnull
+    protected Light createNewLight(@Nonnull String systemName, String userName) throws IllegalArgumentException {
         // Validate the systemName
+        Light lgt = null; 
         if (tc.getAdapterMemo().getSerialAddress().validSystemNameFormat(systemName, 'L') == NameValidity.VALID) {
             lgt = createNewSpecificLight(systemName, userName);
             if (!tc.getAdapterMemo().getSerialAddress().validSystemNameConfig(systemName, 'L')) {
@@ -57,6 +58,7 @@ abstract public class SerialLightManager extends AbstractLightManager {
             }
         } else {
             log.error("Invalid Light system Name format: {}", systemName);
+            throw new IllegalArgumentException("Invalid System Name: " + systemName);
         }
         return lgt;
     }

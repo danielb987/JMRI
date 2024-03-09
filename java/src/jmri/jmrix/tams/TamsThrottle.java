@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * Kevin Dickerson
  *
  * @author Jan Boen
- *
  */
 public class TamsThrottle extends AbstractThrottle implements TamsListener {
 
@@ -43,7 +42,9 @@ public class TamsThrottle extends AbstractThrottle implements TamsListener {
 
         // cache settings. It would be better to read the
         // actual state, but I don't know how to do this
-        this.speedSetting = 0;
+        synchronized(this) {
+            this.speedSetting = 0;
+        }
         // Functions default to false
         this.address = address;
         this.isForward = true;
@@ -166,11 +167,14 @@ public class TamsThrottle extends AbstractThrottle implements TamsListener {
      */
     @SuppressFBWarnings(value = "FE_FLOATING_POINT_EQUALITY") // OK to compare floating point, notify on any change
     @Override
-    public void setSpeedSetting(float speed) {
+    public synchronized void setSpeedSetting(float speed) {
         float oldSpeed = this.speedSetting;
         this.speedSetting = speed;
 
-        int value = (int) ((127 - 1) * this.speedSetting);     // -1 for rescale to avoid estop
+        int value = Math.round((127 - 1) * this.speedSetting);     // -1 for rescale to avoid estop
+        if (this.speedSetting > 0 && value == 0) {
+            value = 1;          // ensure non-zero input results in non-zero output
+        }
         if (value > 0) {
             value = value + 1;  // skip estop
         }
@@ -207,7 +211,9 @@ public class TamsThrottle extends AbstractThrottle implements TamsListener {
     public void setIsForward(boolean forward) {
         boolean old = isForward;
         isForward = forward;
-        setSpeedSetting(speedSetting);  // send the command
+        synchronized(this) {
+            setSpeedSetting(speedSetting);  // send the command
+        }
         firePropertyChange(ISFORWARD, old, isForward);
     }
 
@@ -221,7 +227,7 @@ public class TamsThrottle extends AbstractThrottle implements TamsListener {
     }
 
     @Override
-    protected void throttleDispose() {
+    public void throttleDispose() {
         active = false;
         TamsMessage tm = TamsMessage.getXEvtLok();
         tc.removePollMessage(tm, this);
@@ -247,6 +253,7 @@ public class TamsThrottle extends AbstractThrottle implements TamsListener {
         } else if (super.speedStepMode == jmri.SpeedStepMode.NMRA_DCC_128) {
             return ((lSpeed - 1) / 126.f);
         } else {
+            // pretty sure this is wrong, it's definitely never going to be < 1.
             return (int) (lSpeed * 27.f + 0.5) + 1;
         }
     }
@@ -308,7 +315,7 @@ public class TamsThrottle extends AbstractThrottle implements TamsListener {
                     appendFuncString(7,sb,((tr.getElement(1) & 0x40) == 0x40));
                     appendFuncString(8,sb,((tr.getElement(1) & 0x80) == 0x80));
                     
-                    log.trace(sb.toString());
+                    log.trace("Functions: {}", sb );
                 } catch (RuntimeException ex) {
                     log.error("Error handling reply from MC", ex);
                 }

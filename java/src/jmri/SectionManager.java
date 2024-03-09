@@ -1,14 +1,6 @@
 package jmri;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import javax.annotation.Nonnull;
-import jmri.jmrit.display.layoutEditor.LayoutEditor;
-import jmri.managers.AbstractManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Basic Implementation of a SectionManager.
@@ -33,86 +25,39 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dave Duchamp Copyright (C) 2008
  */
-public class SectionManager extends AbstractManager<Section> implements InstanceManagerAutoDefault {
+public interface SectionManager extends Manager<Section> {
 
-    public SectionManager() {
-        super();
-        InstanceManager.getDefault(SensorManager.class).addVetoableChangeListener(this);
-        InstanceManager.getDefault(BlockManager.class).addVetoableChangeListener(this);
-    }
-
-    @Override
-    public int getXMLOrder() {
-        return Manager.SECTIONS;
-    }
-
-    @Override
-    public char typeLetter() {
-        return 'Y';
-    }
-
-    @Override
-    public Class<Section> getNamedBeanClass() {
-        return Section.class;
-    }
+    // void addListeners();
 
     /**
      * Create a new Section if the Section does not exist.
      *
      * @param systemName the desired system name
      * @param userName   the desired user name
-     * @return a new Section or null if a Section with the same systemName or
+     * @return a new Section or
+     * @throws IllegalArgumentException if a Section with the same systemName or
      *         userName already exists, or if there is trouble creating a new
      *         Section.
      */
-    public Section createNewSection(@Nonnull String systemName, String userName) {
-        Objects.requireNonNull(systemName, "SystemName cannot be null. UserName was " + ((userName == null) ? "null" : userName));  // NOI18N
-        // check system name
-        if (systemName.length() < 1) {
-            // no valid system name entered, return without creating
-            return null;
-        }
-        String sysName = systemName;
-        if (!sysName.startsWith(getSystemNamePrefix())) {
-            sysName = makeSystemName(sysName);
-        }
-        // Check that Section does not already exist
-        Section y;
-        if (userName != null && !userName.equals("")) {
-            y = getByUserName(userName);
-            if (y != null) {
-                return null;
-            }
-        }
-        y = getBySystemName(sysName);
-        if (y != null) {
-            return null;
-        }
-        // Section does not exist, create a new Section
-        y = new Section(sysName, userName);
-        // save in the maps
-        register(y);
+    @Nonnull
+    Section createNewSection(@Nonnull String systemName, String userName) throws IllegalArgumentException;
 
-        // Keep track of the last created auto system name
-        updateAutoNumber(systemName);
-
-        return y;
-    }
-
-    public Section createNewSection(String userName) {
-        return createNewSection(getAutoSystemName(), userName);
-    }
+    /**
+     * Create a New Section with Auto System Name.
+     * @param userName UserName for new Section
+     * @return new Section with Auto System Name.
+     * @throws IllegalArgumentException if existing Section, or
+     *          unable to create a new Section.
+     */
+    @Nonnull
+    Section createNewSection(String userName) throws IllegalArgumentException;
 
     /**
      * Remove an existing Section.
      *
      * @param y the section to remove
      */
-    public void deleteSection(Section y) {
-        // delete the Section
-        deregister(y);
-        y.dispose();
-    }
+    void deleteSection(Section y);
 
     /**
      * Get an existing Section. First look up assuming that name is a User
@@ -122,128 +67,37 @@ public class SectionManager extends AbstractManager<Section> implements Instance
      *             followed by system names
      * @return the found section of null if no matching Section found
      */
-    public Section getSection(String name) {
-        Section y = getByUserName(name);
-        if (y != null) {
-            return y;
-        }
-        return getBySystemName(name);
-    }
+    Section getSection(String name);
 
     /**
      * Validate all Sections.
      *
-     * @param frame   ignored
-     * @param lePanel the panel containing sections to validate
-     * @return number or validation errors; -2 is returned if there are no
-     *         sections
+     * @return number or validation errors; -2 is returned if there are no sections
      */
-    public int validateAllSections(jmri.util.JmriJFrame frame, LayoutEditor lePanel) {
-        Set<Section> set = getNamedBeanSet();
-        int numSections = 0;
-        int numErrors = 0;
-        if (set.size() <= 0) {
-            return -2;
-        }
-        for (Section section : set) {
-            String s = section.validate(lePanel);
-            if (!s.equals("")) {
-                log.error(s);
-                numErrors++;
-            }
-            numSections++;
-        }
-        log.debug("Validated {} Sections - {} errors or warnings.", numSections, numErrors);
-        return numErrors;
-    }
+    int validateAllSections();
 
     /**
      * Check direction sensors in SSL for signals.
      *
-     * @param lePanel the panel containing direction sensors
-     * @return the number or errors; 0 if no errors; -1 if the panel is null; -2
-     *         if there are no sections
+     * @return the number or errors; 0 if no errors; -1 if the panel is null; -2 if there are no sections
      */
-    public int setupDirectionSensors(LayoutEditor lePanel) {
-        if (lePanel == null) {
-            return -1;
-        }
-        Set<Section> set = getNamedBeanSet();
-        int numSections = 0;
-        int numErrors = 0;
-        if (set.size() <= 0) {
-            return -2;
-        }
-        for (Section section : set) {
-            int errors = section.placeDirectionSensors(lePanel);
-            numErrors = numErrors + errors;
-            numSections++;
-        }
-        log.debug("Checked direction sensors for {} Sections - {} errors or warnings.", numSections, numErrors);
-        return numErrors;
-    }
+    int setupDirectionSensors();
 
     /**
      * Remove direction sensors from SSL for all signals.
      *
-     * @param lePanel the panel containing direction sensors
-     * @return the number or errors; 0 if no errors; -1 if the panel is null; -2
-     *         if there are no sections
+     * @return the number or errors; 0 if no errors; -1 if the panel is null; -2 if there are no sections
      */
-    public int removeDirectionSensorsFromSSL(LayoutEditor lePanel) {
-        if (lePanel == null) {
-            return -1;
-        }
-        jmri.jmrit.display.layoutEditor.ConnectivityUtil cUtil = lePanel.getConnectivityUtil();
-        Set<Section> set = getNamedBeanSet();
-        if (set.size() <= 0) {
-            return -2;
-        }
-        int numErrors = 0;
-        List<String> sensorList = new ArrayList<>();
-        for (Section s : set) {
-            String name = s.getReverseBlockingSensorName();
-            if ((name != null) && (!name.equals(""))) {
-                sensorList.add(name);
-            }
-            name = s.getForwardBlockingSensorName();
-            if ((name != null) && (!name.equals(""))) {
-                sensorList.add(name);
-            }
-        }
-        jmri.SignalHeadManager shManager = InstanceManager.getDefault(jmri.SignalHeadManager.class);
-        for (SignalHead sh : shManager.getNamedBeanSet()) {
-            if (!cUtil.removeSensorsFromSignalHeadLogic(sensorList, sh)) {
-                numErrors++;
-            }
-        }
-        return numErrors;
-    }
+    int removeDirectionSensorsFromSSL();
 
     /**
      * Initialize all blocking sensors that exist - set them to 'ACTIVE'.
      */
-    public void initializeBlockingSensors() {
-        for (Section s : getNamedBeanSet()) {
-            try {
-                if (s.getForwardBlockingSensor() != null) {
-                    s.getForwardBlockingSensor().setState(Sensor.ACTIVE);
-                }
-                if (s.getReverseBlockingSensor() != null) {
-                    s.getReverseBlockingSensor().setState(Sensor.ACTIVE);
-                }
-            } catch (jmri.JmriException reason) {
-                log.error("Exception when initializing blocking Sensors for Section {}", s.getDisplayName(NamedBean.DisplayOptions.USERNAME_SYSTEMNAME));
-            }
-        }
-    }
+    void initializeBlockingSensors();
 
-    @Override
-    @Nonnull
-    public String getBeanTypeHandled(boolean plural) {
-        return Bundle.getMessage(plural ? "BeanNameSections" : "BeanNameSection");
-    }
-
-    private final static Logger log = LoggerFactory.getLogger(SectionManager.class);
+    /**
+     * Generate Block Sections in stubs/sidings. Called after generating signal logic.
+     */
+    void generateBlockSections();
 
 }

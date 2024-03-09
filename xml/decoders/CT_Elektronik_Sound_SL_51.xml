@@ -11,7 +11,7 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <version author="Bob Jacobsen" version="2" lastUpdated="20190727"/> <!-- xinclude for CV19 -->
   <version author="mark.kasprowicz@traindecoder.com" version="1.0 beta" lastUpdated="20040818"/>
   <!-- Based on the contribution of sip@euronet.nl and many others -->
@@ -58,7 +58,7 @@
         <label xml:lang="fr">Vmoy</label>
         <label xml:lang="de">Mittengeschwindigkeit</label>
       </variable>
-      <variable CV="7" default="15" readOnly="yes" item="Decoder Version">
+      <variable CV="7" default="15" item="Decoder Version" readOnly="yes">
         <decVal/>
         <label>Decoder Version</label>
         <label xml:lang="it">Versione Decoder: </label>

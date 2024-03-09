@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import jmri.InstanceManager;
 import jmri.jmrit.XmlFile;
 import jmri.jmrit.symbolicprog.NameFile;
+import jmri.util.swing.JmriJOptionPane;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -85,9 +88,9 @@ public class ProgCheckAction extends AbstractAction {
     void warnMissingNames(File file) {
         String result = checkMissingNames(file);
         if (result.equals("")) {
-            JOptionPane.showMessageDialog(_who, "OK, all variables in file are known");
+            JmriJOptionPane.showMessageDialog(_who, "OK, all variables in file are known");
         } else {
-            JOptionPane.showMessageDialog(_who, result);
+            JmriJOptionPane.showMessageDialog(_who, result);
         }
     }
 
@@ -143,9 +146,9 @@ public class ProgCheckAction extends AbstractAction {
     void warnIncompleteComprehensive(File file) {
         String result = checkIncompleteComprehensive(file);
         if (result.equals("")) {
-            JOptionPane.showMessageDialog(_who, "OK, Comprehensive.xml is complete");
+            JmriJOptionPane.showMessageDialog(_who, "OK, Comprehensive.xml is complete");
         } else {
-            JOptionPane.showMessageDialog(_who, result);
+            JmriJOptionPane.showMessageDialog(_who, result);
         }
     }
 
@@ -231,11 +234,11 @@ public class ProgCheckAction extends AbstractAction {
         return matcher.matches();
     }
     static final String numericRegex = "^F(\\d++) controls output (\\d++)$";
-    static Pattern numericPattern;
+    static volatile Pattern numericPattern;
     static final String ffRegex = "^FL\\(f\\) controls output (\\d++)$";
-    static Pattern ffPattern;
+    static volatile Pattern ffPattern;
     static final String frRegex = "^FL\\(r\\) controls output (\\d++)$";
-    static Pattern frPattern;
+    static volatile Pattern frPattern;
 
     /**
      * Ask SAX to read and verify a file

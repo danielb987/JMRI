@@ -15,7 +15,7 @@ import jmri.util.swing.sdi.JmriJFrameInterface;
  */
 public class RfidMenu extends JMenu {
 
-    @SuppressWarnings("OverridableMethodCallInConstructor")
+//    @SuppressWarnings("OverridableMethodCallInConstructor")
     public RfidMenu(RfidSystemConnectionMemo memo) {
 
         super();
@@ -38,7 +38,8 @@ public class RfidMenu extends JMenu {
     }
 
     Item[] panelItems = new Item[]{
-        new Item(Bundle.getMessage("MonitorXTitle", "RFID"), "jmri.jmrix.rfid.swing.serialmon.SerialMonPane")
+        new Item(Bundle.getMessage("MonitorXTitle", "RFID"), "jmri.jmrix.rfid.swing.serialmon.SerialMonPane"),
+        new Item(Bundle.getMessage("MonitorRFIDTagCars", "RFID"), "jmri.jmrix.rfid.swing.tagcarwin.TagMonitorPane")
     };
 
     static class Item {

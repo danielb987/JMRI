@@ -19,6 +19,7 @@ import jmri.swing.NamedBeanComboBox;
 import jmri.util.JmriJFrame;
 import jmri.util.MathUtil;
 import jmri.util.swing.JmriColorChooser;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.swing.SplitButtonColorChooserPanel;
 
 import org.slf4j.MDC;
@@ -94,6 +95,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
     private int useCount = 0;
     private NamedBeanHandle<Sensor> occupancyNamedSensor = null;
     private NamedBeanHandle<Memory> namedMemory = null;
+    private boolean setSensorFromBlockEnabled = true;     // Controls whether getOccupancySensor should get the sensor from the block
 
     private Block block = null;
 
@@ -111,7 +113,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
     private Color blockOccupiedColor = Color.red;
     private Color blockExtraColor = Color.white;
 
-    /*
+    /**
      * Creates a LayoutBlock object.
      *
      * Note: initializeLayoutBlock() must be called to complete the process. They are split
@@ -124,7 +126,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         super(sName, uName);
     }
 
-    /*
+    /**
      * Completes the creation of a LayoutBlock object by adding a Block to it.
      *
      * The block create process takes into account that the _bean register
@@ -229,7 +231,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         JmriColorChooser.addRecentColor(color);
     }
 
-    // TODO: @Deprecated // Java standard pattern for boolean getters is "UseExtraColor()"
+    // TODO: Java standard pattern for boolean getters is "useExtraColor()"
     public boolean getUseExtraColor() {
         return useExtraColor;
     }
@@ -320,10 +322,10 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         Sensor s = InstanceManager.sensorManagerInstance().getSensor(sensorName);
         if (s == null) {
             // There is no sensor corresponding to this name
-            JOptionPane.showMessageDialog(openFrame,
+            JmriJOptionPane.showMessageDialog(openFrame,
                     java.text.MessageFormat.format(Bundle.getMessage("Error7"),
                             new Object[]{sensorName}),
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -338,10 +340,10 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                 if (b.getUseCount() > 0) {
                     // new sensor is not unique, return to the old one
                     occupancyNamedSensor = savedNamedSensor;
-                    JOptionPane.showMessageDialog(openFrame,
+                    JmriJOptionPane.showMessageDialog(openFrame,
                             java.text.MessageFormat.format(Bundle.getMessage("Error6"),
                                     new Object[]{sensorName, b.getId()}),
-                            Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                            Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
                     return null;
                 } else {
                     // the user is assigning a sensor which is already assigned to
@@ -379,10 +381,10 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         Memory m = InstanceManager.memoryManagerInstance().getMemory(memName);
         if (m == null) {
             // There is no memory corresponding to this name
-            JOptionPane.showMessageDialog(openFrame,
+            JmriJOptionPane.showMessageDialog(openFrame,
                     java.text.MessageFormat.format(Bundle.getMessage("Error16"),
                             new Object[]{memName}),
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
             return null;
         }
         memoryName = memName;
@@ -395,14 +397,14 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                 for (MemoryIcon memIcon : panel.getMemoryLabelList()) {
                     if (memIcon.getLayoutBlock() == this) {
                         if (!updateall && !found) {
-                            int n = JOptionPane.showConfirmDialog(
+                            int n = JmriJOptionPane.showConfirmDialog(
                                     openFrame,
                                     "Would you like to update all memory icons on the panel linked to the block to use the new one?",
                                     "Update Memory Icons",
-                                    JOptionPane.YES_NO_OPTION);
+                                    JmriJOptionPane.YES_NO_OPTION);
                             // TODO I18N in Bundle.properties
                             found = true;
-                            if (n == 0) {
+                            if (n == JmriJOptionPane.YES_OPTION ) {
                                 updateall = true;
                             }
                         }
@@ -514,11 +516,18 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
 
     /**
      * Get occupancy Sensor.
+     * <p>
+     * If a sensor has not been assigned, try getting the sensor from the related
+     * block.
+     * <p>
+     * When setting the layout block sensor from the block itself using the OccupancySensorChange
+     * event, the automatic assignment has to be disabled for the sensor checking performed by
+     * {@link jmri.jmrit.display.layoutEditor.LayoutBlockManager#getBlockWithSensorAssigned}
      *
-     * @return occ sensor name
+     * @return occupancy sensor or null
      */
     public Sensor getOccupancySensor() {
-        if (occupancyNamedSensor == null) {
+        if (occupancyNamedSensor == null && setSensorFromBlockEnabled) {
             if (block != null) {
                 occupancyNamedSensor = block.getNamedSensor();
             }
@@ -602,13 +611,14 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
             }
         }
 
-        if (getOccupancySensor() == null) {
+        Sensor s = getOccupancySensor();
+        if ( s == null) {
             return UNKNOWN;
         }
 
-        if (getOccupancySensor().getKnownState() != occupiedSense) {
+        if (s.getKnownState() != occupiedSense) {
             return EMPTY;
-        } else if (getOccupancySensor().getKnownState() == occupiedSense) {
+        } else if (s.getKnownState() == occupiedSense) {
             return OCCUPIED;
         }
         return UNKNOWN;
@@ -620,7 +630,8 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
     }
 
     /**
-     * Does nothing, do not use. Dummy for completion of NamedBean interface
+     * Does nothing, do not use.Dummy for completion of NamedBean interface
+     * @param i does nothing
      */
     @Override
     public void setState(int i) {
@@ -685,14 +696,15 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                                 LayoutBlockManager.class).warn()
                                 && (!compareConnectivity(c, tPanel.getLEAuxTools().getConnectivityList(this)))) {
                             // send user an error message
-                            int response = JOptionPane.showOptionDialog(null,
-                                    java.text.MessageFormat.format(Bundle.getMessage("Warn1"),
-                                            new Object[]{getUserName(), tPanel.getLayoutName(),
-                                                panel.getLayoutName()}), Bundle.getMessage("WarningTitle"),
-                                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                                    null, new Object[]{Bundle.getMessage("ButtonOK"),
-                                        Bundle.getMessage("ButtonOKPlus")}, Bundle.getMessage("ButtonOK"));
-                            if (response != 0) {    // user elected to disable messages
+                            int response = JmriJOptionPane.showOptionDialog(null,
+                                java.text.MessageFormat.format(Bundle.getMessage("Warn1"),
+                                    new Object[]{getUserName(), tPanel.getLayoutName(), panel.getLayoutName()}),
+                                    Bundle.getMessage("WarningTitle"),
+                                    JmriJOptionPane.DEFAULT_OPTION, JmriJOptionPane.QUESTION_MESSAGE,
+                                    null,
+                                    new Object[]{Bundle.getMessage("ButtonOK"), Bundle.getMessage("ButtonOKPlus")},
+                                    Bundle.getMessage("ButtonOK"));
+                            if (response == 1 ) { // ButtokOKPlus pressed, user elected to disable messages
                                 InstanceManager.getDefault(
                                         LayoutBlockManager.class).turnOffWarning();
                             }
@@ -855,7 +867,8 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
      */
     void handleBlockChange(PropertyChangeEvent e) {
         // Update memory object if there is one
-        if ((getMemory() != null) && (block != null) && !suppressNameUpdate) {
+        Memory m = getMemory();
+        if ((m != null) && (block != null) && !suppressNameUpdate) {
             // copy block value to memory if there is a value
             Object val = block.getValue();
             if (val != null) {
@@ -863,13 +876,32 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                     val = val.toString();
                 }
             }
-            getMemory().setValue(val);
+            m.setValue(val);
         }
+
         if (e.getPropertyName().equals("UserName")) {
             setUserName(e.getNewValue().toString());
-            jmri.InstanceManager.getDefault(jmri.NamedBeanHandleManager.class).
+            InstanceManager.getDefault(NamedBeanHandleManager.class).
                     renameBean(e.getOldValue().toString(), e.getNewValue().toString(), this);
         }
+
+        if (e.getPropertyName().equals("OccupancySensorChange")) {
+            if (e.getNewValue() == null){
+                // Remove Sensor
+                setOccupancySensorName(null);
+            } else {
+                // Set/change sensor
+                Sensor sensor = (Sensor) e.getNewValue();
+                setSensorFromBlockEnabled = false;
+                if (validateSensor(sensor.getSystemName(), null) == null) {
+                    // Sensor change rejected, reset block sensor assignment
+                    Sensor origSensor = (Sensor) e.getOldValue();
+                    block.setSensor(origSensor == null ? "" : origSensor.getSystemName());
+                }
+                setSensorFromBlockEnabled = true;
+            }
+        }
+
         // Redraw all Layout Editor panels using this Layout Block
         redrawLayoutBlockPanels();
 
@@ -913,8 +945,6 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
     private final JTextField metricField = new JTextField(10);
 
     private final JComboBox<String> senseBox = new JComboBox<>();
-
-    private final JCheckBox permissiveCheck = new JCheckBox("Permissive Working Allowed");
 
     // TODO I18N in Bundle.properties
     private int senseActiveIndex;
@@ -968,27 +998,28 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
             }
         }
 
-        if (getOccupancySensor() != null) {
+        Sensor s = getOccupancySensor();
+        if ( s != null) {
             if (sensorDebounceGlobalCheck.isSelected()) {
-                getOccupancySensor().setUseDefaultTimerSettings(true);
+                s.setUseDefaultTimerSettings(true);
             } else {
-                getOccupancySensor().setUseDefaultTimerSettings(false);
+                s.setUseDefaultTimerSettings(false);
                 if (!sensorDebounceInactiveField.getText().trim().isEmpty()) {
-                    getOccupancySensor().setSensorDebounceGoingInActiveTimer(Long.parseLong(sensorDebounceInactiveField.getText().trim()));
+                    s.setSensorDebounceGoingInActiveTimer(Long.parseLong(sensorDebounceInactiveField.getText().trim()));
                 }
                 if (!sensorDebounceActiveField.getText().trim().isEmpty()) {
-                    getOccupancySensor().setSensorDebounceGoingActiveTimer(Long.parseLong(sensorDebounceActiveField.getText().trim()));
+                    s.setSensorDebounceGoingActiveTimer(Long.parseLong(sensorDebounceActiveField.getText().trim()));
                 }
             }
-            Reporter reporter = getOccupancySensor().getReporter();
+            Reporter reporter = s.getReporter();
             if (reporter != null && block != null) {
                 String msg = java.text.MessageFormat.format(
                         Bundle.getMessage("BlockAssignReporter"),
-                        new Object[]{getOccupancySensor().getDisplayName(),
+                        new Object[]{s.getDisplayName(),
                             reporter.getDisplayName()});
-                if (JOptionPane.showConfirmDialog(editLayoutBlockFrame,
+                if (JmriJOptionPane.showConfirmDialog(editLayoutBlockFrame,
                         msg, Bundle.getMessage("BlockAssignReporterTitle"),
-                        JOptionPane.YES_NO_OPTION) == 0) {
+                        JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION ) {
                     block.setReporter(reporter);
                 }
             }
@@ -1047,7 +1078,6 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         if (m != metric) {
             setBlockMetric(m);
         }
-        block.setPermissiveWorking(permissiveCheck.isSelected());
         if (neighbourDir != null) {
             for (int i = 0; i < neighbourDir.size(); i++) {
                 int neigh = neighbourDir.get(i).getSelectedIndex();
@@ -1266,7 +1296,6 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                     if (m != metric) {
                         setBlockMetric(m);
                     }
-                    block.setPermissiveWorking(permissiveCheck.isSelected());
                     if (neighbourDir != null) {
                         for (int i = 0; i < neighbourDir.size(); i++) {
                             int neigh = neighbourDir.get(i).getSelectedIndex();
@@ -1457,14 +1486,15 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                                     warn() && (!compareConnectivity(c, tPanel.getLEAuxTools().getConnectivityList(this)))) {
 
                         // send user an error message
-                        int response = JOptionPane.showOptionDialog(null,
+                        int response = JmriJOptionPane.showOptionDialog(null,
                                 java.text.MessageFormat.format(Bundle.getMessage("Warn1"),
                                         new Object[]{getUserName(), tPanel.getLayoutName(),
                                             panel.getLayoutName()}), Bundle.getMessage("WarningTitle"),
-                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                                null, new Object[]{Bundle.getMessage("ButtonOK"),
-                                    Bundle.getMessage("ButtonOKPlus")}, Bundle.getMessage("ButtonOK"));
-                        if (response != 0) {    // user elected to disable messages
+                                JmriJOptionPane.DEFAULT_OPTION, JmriJOptionPane.QUESTION_MESSAGE,
+                                null,
+                                new Object[]{Bundle.getMessage("ButtonOK"), Bundle.getMessage("ButtonOKPlus")},
+                                Bundle.getMessage("ButtonOK"));
+                        if (response == 1) { // array position 1 ButtonOKPlus pressed, user elected to disable messages
                             InstanceManager.getDefault(LayoutBlockManager.class).turnOffWarning();
                         }
                     }
@@ -1864,13 +1894,13 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
 
     // Might be possible to refactor the removal to use a bit of common code.
     private void removeAdjacency(Path removedPath) {
-        Block block = removedPath.getBlock();
-        if (block != null) {
+        Block ablock = removedPath.getBlock();
+        if (ablock != null) {
             if (enableDeleteRouteLogging) {
-                log.info("From {} Adjacency to be removed {} {}", this.getDisplayName(), block.getDisplayName(), Path.decodeDirection(removedPath.getToBlockDirection()));
+                log.info("From {} Adjacency to be removed {} {}", this.getDisplayName(), ablock.getDisplayName(), Path.decodeDirection(removedPath.getToBlockDirection()));
             }
             LayoutBlock layoutBlock = InstanceManager.getDefault(
-                    LayoutBlockManager.class).getLayoutBlock(block);
+                    LayoutBlockManager.class).getLayoutBlock(ablock);
             if (layoutBlock != null) {
                 removeAdjacency(layoutBlock);
             }
@@ -2377,15 +2407,15 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
                             warn() && (!compareConnectivity(c,
                                     tPanel.getLEAuxTools().getConnectivityList(this)))) {
                         // send user an error message
-                        int response = JOptionPane.showOptionDialog(null,
+                        int response = JmriJOptionPane.showOptionDialog(null,
                                 java.text.MessageFormat.format(Bundle.getMessage("Warn1"),
                                         new Object[]{getUserName(), tPanel.getLayoutName(),
                                             panel.getLayoutName()}), Bundle.getMessage("WarningTitle"),
-                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                                null, new Object[]{Bundle.getMessage("ButtonOK"),
-                                    Bundle.getMessage("ButtonOKPlus")}, Bundle.getMessage("ButtonOK"));
-                        if (response != 0) // user elected to disable messages
-                        {
+                                JmriJOptionPane.DEFAULT_OPTION, JmriJOptionPane.QUESTION_MESSAGE,
+                                null,
+                                new Object[]{Bundle.getMessage("ButtonOK"), Bundle.getMessage("ButtonOKPlus")},
+                                Bundle.getMessage("ButtonOK"));
+                        if (response == 1 ) { // array position 1 ButtonOKPlus pressed, user elected to disable messages
                             InstanceManager.getDefault(LayoutBlockManager.class).turnOffWarning();
                         }
                     }
@@ -4114,7 +4144,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
      * @param i index in route
      * @return true if route is valid
      */
-    // TODO: @Deprecated // Java standard pattern for boolean getters is "isRouteValid()"
+    // TODO: Java standard pattern for boolean getters is "isRouteValid()"
     public boolean getRouteValid(int i) {
         return routes.get(i).isRouteCurrentlyValid();
     }
@@ -4257,6 +4287,10 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
             direction = dir;
             routeMetric = met;
             length = len;
+            init();
+        }
+
+        final void init() {
             validCurrentRoute = checkIsRouteOnValidThroughPath(this);
             firePropertyChange("length", null, null);
             destBlock.addPropertyChangeListener(this);
@@ -4508,6 +4542,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         }
     }
 
+    @Nonnull
     List<Block> getThroughPathSourceByDestination(Block dest) {
         List<Block> a = new ArrayList<>();
 
@@ -4519,6 +4554,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
         return a;
     }
 
+    @Nonnull
     List<Block> getThroughPathDestinationBySource(Block source) {
         List<Block> a = new ArrayList<>();
 

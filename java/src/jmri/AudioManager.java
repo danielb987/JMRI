@@ -1,6 +1,5 @@
 package jmri;
 
-import java.util.List;
 import java.util.SortedSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -43,21 +42,21 @@ public interface AudioManager extends Manager<Audio> {
     /**
      * Define the maximum number of AudioListener objects that can be created
      */
-    public static final int MAX_LISTENERS = 1;
+    int MAX_LISTENERS = 1;
 
     /**
      * Define the maximum number of AudioSource objects that can be created
      */
-    public static final int MAX_SOURCES = 255;
+    int MAX_SOURCES = 255;
 
     /**
      * Define the maximum number of AudioBuffer objects that can be created
      */
-    public static final int MAX_BUFFERS = 255;
+    int MAX_BUFFERS = 255;
 
     /**
      * Get the Audio with the user name, then system name if needed; if that fails, create a
-     * new Audio. 
+     * new Audio.
      * If the name is a valid system name, it will be used for the
      * new Audio. Otherwise, the makeSystemName method will attempt to turn it
      * into a valid system name.
@@ -68,18 +67,18 @@ public interface AudioManager extends Manager<Audio> {
      * @throws AudioException if error occurs during creation
      */
     @Nonnull
-    public Audio provideAudio(@Nonnull String name) throws AudioException;
+    Audio provideAudio(@Nonnull String name) throws AudioException;
 
     /**
-     * Get an existing Audio or return null if it doesn't exists. 
-     * 
+     * Get an existing Audio or return null if it doesn't exists.
+     *
      * Locates via user name, then system name if needed.
      *
      * @param name User name or system name to match
      * @return null if no match found
      */
     @CheckForNull
-    public Audio getAudio(@Nonnull String name);
+    Audio getAudio(@Nonnull String name);
 
     /**
      * Get the Audio with the given system name or return null if no instance
@@ -90,7 +89,7 @@ public interface AudioManager extends Manager<Audio> {
      */
     @Override
     @CheckForNull
-    public Audio getBySystemName(@Nonnull String systemName);
+    Audio getBySystemName(@Nonnull String systemName);
 
     /**
      * Get the Audio with the given user name or return null if no instance
@@ -101,10 +100,10 @@ public interface AudioManager extends Manager<Audio> {
      */
     @Override
     @CheckForNull
-    public Audio getByUserName(@Nonnull String userName);
+    Audio getByUserName(@Nonnull String userName);
 
     /**
-     * Return an Audio with the specified system and user names. 
+     * Return an Audio with the specified system and user names.
      * Note that
      * two calls with the same arguments will get the same instance; there is
      * only one Audio object representing a given physical Audio and therefore
@@ -132,7 +131,7 @@ public interface AudioManager extends Manager<Audio> {
      * @throws AudioException if error occurs during creation
      */
     @Nonnull
-    public Audio newAudio(@Nonnull String systemName, String userName) throws AudioException;
+    Audio newAudio(@Nonnull String systemName, String userName) throws AudioException;
 
     /**
      * Returns the currently active AudioFactory object.
@@ -143,44 +142,33 @@ public interface AudioManager extends Manager<Audio> {
      * @return current active AudioFactory object
      */
     @CheckForNull
-    public AudioFactory getActiveAudioFactory();
-
-    /**
-     * Get a list of specified Audio sub-type objects' system names.
-     *
-     * @param subType sub-type to retrieve
-     * @return List of specified Audio sub-type objects' system names.
-     * @deprecated 4.17.6 use direct access via {@link #getNamedBeanSet(char)}
-     */
-    @Nonnull
-    @Deprecated
-    public List<String> getSystemNameList(char subType);
+    AudioFactory getActiveAudioFactory();
 
     /**
      * Get the specified Audio sub-type NamedBeans.
      *
      * @param subType sub-type to retrieve
      * @return Unmodifiable access to a SortedSet of NamedBeans for the specified Audio sub-type .
-     * 
+     *
      * @since 4.17.6
      */
     @Nonnull
-    public SortedSet<Audio> getNamedBeanSet(char subType);
+    SortedSet<Audio> getNamedBeanSet(char subType);
 
     /**
      * Perform any initialisation operations
      */
-    public void init();
+    void init();
 
     /**
      * Perform any clean-up operations
      */
-    public void cleanup();
+    void cleanup();
 
     /**
      * Determine if this AudioManager is initialised
      * @return true if initialised
      */
-    public boolean isInitialised();
+    boolean isInitialised();
 
 }

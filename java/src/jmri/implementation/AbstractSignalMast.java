@@ -123,7 +123,32 @@ public abstract class AbstractSignalMast extends AbstractNamedBean
         }
     }
 
-    DefaultSignalAppearanceMap map;
+    @Override
+    public boolean isAtStop() {
+        if  (speed.equals("0")) return true;  // should this also include DANGER?
+        return false;
+    }
+
+    @Override
+    public boolean isShowingRestricting() {
+        String displayedAspect = getAspect();
+        if ( displayedAspect != null && displayedAspect.equals(getAppearanceMap().getSpecificAppearance(jmri.SignalAppearanceMap.PERMISSIVE))) return true;
+        return false;
+    }
+
+    @Override
+    public boolean isCleared() {
+        String displayedAspect = getAspect();
+        if ( displayedAspect == null ) {
+            return false;
+        }
+        if (displayedAspect.equals(getAppearanceMap().getSpecificAppearance(jmri.SignalAppearanceMap.PERMISSIVE))) return false;
+        if (displayedAspect.equals(getAppearanceMap().getSpecificAppearance(jmri.SignalAppearanceMap.HELD))) return false;
+        if (displayedAspect.equals(getAppearanceMap().getSpecificAppearance(jmri.SignalAppearanceMap.DANGER))) return false;
+        return true;
+    }
+
+    protected DefaultSignalAppearanceMap map;
     SignalSystem systemDefn;
 
     boolean disablePermissiveSignalMastLogic = false;
@@ -162,7 +187,7 @@ public abstract class AbstractSignalMast extends AbstractNamedBean
         return map;
     }
 
-    ArrayList<String> disabledAspects = new ArrayList<>(1);
+    protected ArrayList<String> disabledAspects = new ArrayList<>(1);
 
     @Override
     @Nonnull

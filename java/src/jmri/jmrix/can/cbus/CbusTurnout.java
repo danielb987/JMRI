@@ -1,13 +1,10 @@
 package jmri.jmrix.can.cbus;
 
-import jmri.Sensor;
 import jmri.Turnout;
 import jmri.jmrix.can.CanListener;
 import jmri.jmrix.can.CanMessage;
 import jmri.jmrix.can.CanReply;
 import jmri.jmrix.can.TrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Turnout for CBUS connections.
@@ -67,8 +64,7 @@ public class CbusTurnout extends jmri.implementation.AbstractTurnout
      */
     @Override
     public void requestUpdateFromLayout() {
-        CanMessage m;
-        m = addrThrown.makeMessage(tc.getCanid());
+        CanMessage m = addrThrown.makeMessage(tc.getCanid());
         if (CbusOpCodes.isShortEvent(CbusMessage.getOpcode(m))) {
             m.setOpCode(CbusConstants.CBUS_ASRQ);
         }
@@ -77,15 +73,8 @@ public class CbusTurnout extends jmri.implementation.AbstractTurnout
         }
         CbusMessage.setPri(m, CbusConstants.DEFAULT_DYNAMIC_PRIORITY * 4 + CbusConstants.DEFAULT_MINOR_PRIORITY);
         tc.sendCanMessage(m, this);
-        
-        if (getFeedbackMode() == ONESENSOR || getFeedbackMode() == TWOSENSOR) {
-            Sensor s1 = getFirstSensor();
-            if (s1 != null) s1.requestUpdateFromLayout();
-        }
-        if (getFeedbackMode() == TWOSENSOR) {
-            Sensor s2 = getSecondSensor();
-            if (s2 != null) s2.requestUpdateFromLayout();
-        }
+
+        super.requestUpdateFromLayout(); // request update from feedback sensors.
     }
 
     /**
@@ -219,12 +208,12 @@ public class CbusTurnout extends jmri.implementation.AbstractTurnout
      * @see jmri.jmrix.can.CanListener#reply(jmri.jmrix.can.CanReply)
      */
     @Override
-    public void reply(CanReply f) {
-        if ( f.isExtended() || f.isRtr() ) {
+    public void reply(CanReply origf) {
+        if ( origf.extendedOrRtr()) {
             return;
         }
         // convert response events to normal
-        f = CbusMessage.opcRangeToStl(f);
+        CanReply f = CbusMessage.opcRangeToStl(origf);
         if (addrThrown.match(f)) {
             int state = (!getInverted() ? THROWN : CLOSED);
             newCommandedState(state);
@@ -287,7 +276,7 @@ public class CbusTurnout extends jmri.implementation.AbstractTurnout
         tc.removeCanListener(this);
         super.dispose();
     }    
-    
-    
-    private final static Logger log = LoggerFactory.getLogger(CbusTurnout.class);
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CbusTurnout.class);
+
 }

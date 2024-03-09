@@ -15,17 +15,17 @@ public class AcelaSensorTest extends jmri.implementation.AbstractSensorTestBase 
     public int numListeners() {return 0;}
 
     @Override
-    public void checkOnMsgSent() {}
+    public void checkActiveMsgSent() {}
 
     @Override
-    public void checkOffMsgSent() {}
+    public void checkInactiveMsgSent() {}
 
     @Override
     public void checkStatusRequestMsgSent() {}
 
 
     @Test
-    public void test2StringCTor() {
+    public void testSensor2StringCTor() {
         AcelaSensor t2 = new AcelaSensor("AS1","test");
         Assert.assertNotNull("exists",t2);
     }

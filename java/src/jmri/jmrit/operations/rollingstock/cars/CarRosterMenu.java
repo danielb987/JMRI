@@ -10,7 +10,6 @@ import jmri.jmrit.operations.rollingstock.cars.tools.*;
 
 /**
  * Provides a context-specific menu for handling the Roster.
- * <p>
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2002
  * @author Dennis Miller Copyright (C) 2005
@@ -64,10 +63,12 @@ public class CarRosterMenu extends JMenu {
         printAction.setEnabled(false);
         AbstractAction previewAction = new PrintCarRosterAction(true, carsTableFrame);
         previewAction.setEnabled(false);
+        
         add(importAction);
         add(exportAction);
         add(deleteAction);
         add(resetMovesAction);
+        addSeparator();
         add(printAction);
         add(previewAction);
 

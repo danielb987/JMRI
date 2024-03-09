@@ -41,11 +41,11 @@ import javax.annotation.CheckForNull;
  * @see jmri.InstanceManager
  * @see jmri.jmrit.simpleturnoutctrl.SimpleTurnoutCtrlFrame
  */
-public interface TurnoutManager extends ProvidingManager<Turnout> {
+public interface TurnoutManager extends ProvidingManager<Turnout>, NameIncrementingManager {
 
     /**
      * Get the Turnout with the user name, then system name if needed; if that fails, create a
-     * new Turnout. 
+     * new Turnout.
      * If the name is a valid system name, it will be used for the new Turnout.
      * Otherwise, the {@link Manager#makeSystemName} method will attempt to turn it
      * into a valid system name.
@@ -62,22 +62,23 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      *                                  be parsed.
      */
     @Nonnull
-    public Turnout provideTurnout(@Nonnull String name) throws IllegalArgumentException;
+    Turnout provideTurnout(@Nonnull String name) throws IllegalArgumentException;
 
     /** {@inheritDoc} */
     @Override
-    default public Turnout provide(@Nonnull String name) throws IllegalArgumentException { return provideTurnout(name); }
-    
+    @Nonnull
+    default Turnout provide(@Nonnull String name) throws IllegalArgumentException { return provideTurnout(name); }
+
     /**
-     * Get an existing Turnout or return null if it doesn't exist. 
-     * 
+     * Get an existing Turnout or return null if it doesn't exist.
+     *
      * Locates via user name, then system name if needed.
      *
      * @param name User name or system name to match
      * @return null if no match found
      */
     @CheckForNull
-    public Turnout getTurnout(@Nonnull String name);
+    Turnout getTurnout(@Nonnull String name);
 
     /**
      * Get the Turnout with the given system name or null if no instance
@@ -88,7 +89,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      */
     @CheckForNull
     @Override
-    public Turnout getBySystemName(@Nonnull String systemName);
+    Turnout getBySystemName(@Nonnull String systemName);
 
     /**
      * Get the Turnout with the given user name or null if no instance
@@ -99,10 +100,12 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      */
     @CheckForNull
     @Override
-    public Turnout getByUserName(@Nonnull String userName);
+    Turnout getByUserName(@Nonnull String userName);
 
     /**
-     * Return a Turnout with the specified system and user names. 
+     * Return a Turnout with the specified system and user names.
+     * Lookup by UserName then provide by System Name.
+     * <p>
      * Note that
      * two calls with the same arguments will get the same instance; there is
      * only one Turnout object representing a given physical turnout and
@@ -132,7 +135,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      *                                  be parsed
      */
     @Nonnull
-    public Turnout newTurnout(@Nonnull String systemName, @CheckForNull String userName) throws IllegalArgumentException;
+    Turnout newTurnout(@Nonnull String systemName, @CheckForNull String userName) throws IllegalArgumentException;
 
     /**
      * Get text to be used for the Turnout.CLOSED state in user communication.
@@ -142,7 +145,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      * @return the textual representation of {@link jmri.Turnout#CLOSED}
      */
     @Nonnull
-    public String getClosedText();
+    String getClosedText();
 
     /**
      * Get text to be used for the Turnout.THROWN state in user communication.
@@ -152,7 +155,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      * @return the textual representation of {@link jmri.Turnout#THROWN}
      */
     @Nonnull
-    public String getThrownText();
+    String getThrownText();
 
     /**
      * Get a list of the valid TurnoutOperation subtypes for use with turnouts
@@ -162,7 +165,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      *         supported
      */
     @Nonnull
-    public String[] getValidOperationTypes();
+    String[] getValidOperationTypes();
 
     /**
      * Get, from the user, the number of addressed bits used to control a
@@ -178,7 +181,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      * @param systemName the turnout system name
      * @return the bit length for turnout control
      */
-    public int askNumControlBits(@Nonnull String systemName);
+    int askNumControlBits(@Nonnull String systemName);
 
     /**
      * Determine if the manager supports multiple control bits, as
@@ -189,7 +192,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      * @return true if manager supports multiple control bits for the turnout;
      *         false otherwise
      */
-    public boolean isNumControlBitsSupported(@Nonnull String systemName);
+    boolean isNumControlBitsSupported(@Nonnull String systemName);
 
     /**
      * Get, from the user, the type of output to be used bits to control a
@@ -204,7 +207,7 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      * @param systemName the turnout system name
      * @return 0 for steady state or the number of seconds for a pulse control
      */
-    public int askControlType(@Nonnull String systemName);
+    int askControlType(@Nonnull String systemName);
 
     /**
      * Determine if the manager supports the handling of pulsed and steady state
@@ -216,51 +219,8 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      *         {@link #askControlType(java.lang.String)}; false otherwise
      *
      */
-    public boolean isControlTypeSupported(@Nonnull String systemName);
+    boolean isControlTypeSupported(@Nonnull String systemName);
 
-    /**
-     * Determines if it is possible to add a range of turnouts in
-     * numerical order.
-     *
-     * @param systemName the starting turnout system name; ignored in all known
-     *                   implementations
-     * @return true if a range of turnouts can be added; false otherwise
-     */
-    public boolean allowMultipleAdditions(@Nonnull String systemName);
-
-    /**
-     * Get the next valid address.
-     * <p>
-     * Determine if the address supplied is valid and free. 
-     * If not then it shall return the next free valid address up to a maximum 
-     * of 10 addresses away from the initial address.
-     * Used when adding add a range of Turnouts.
-     *
-     * @param prefix     System prefix used in system name
-     * @param curAddress desired hardware address
-     * @return the next available address or null if next 10 addresses unavailable.
-     * @throws jmri.JmriException if unable to provide a turnout at the desired
-     *                            address due to invalid format for the current
-     *                            address or other reasons.
-     * @deprecated since 4.21.3; use #getNextValidAddress(String, String, boolean) instead.
-     */
-    @Deprecated
-    public String getNextValidAddress(@Nonnull String curAddress, @Nonnull String prefix) throws JmriException;
-
-    /**
-     * Get the Next valid Turnout address.
-     * <p>
-     * @param curAddress the starting hardware address to get the next valid from.
-     * @param prefix system prefix, just system name, not type letter.
-     * @param ignoreInitialExisting false to return the starting address if it 
-     *                          does not exist, else true to force an increment.
-     * @return the next valid system name, excluding both system name prefix and type letter.
-     * @throws JmriException    if unable to get the current / next address, 
-     *                          or more than 10 next addresses in use.
-     */
-    @Nonnull
-    public String getNextValidAddress(@Nonnull String curAddress, @Nonnull String prefix, boolean ignoreInitialExisting) throws JmriException;
-    
     /**
      * Get a system name for a given hardware address and system prefix.
      *
@@ -272,15 +232,15 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      *                            given address, possibly due to invalid address
      *                            format
      */
-    public String createSystemName(@Nonnull String curAddress, @Nonnull String prefix) throws JmriException;
+    String createSystemName(@Nonnull String curAddress, @Nonnull String prefix) throws JmriException;
 
-    public void setDefaultClosedSpeed(@Nonnull String speed) throws JmriException;
+    void setDefaultClosedSpeed(@Nonnull String speed) throws JmriException;
 
-    public void setDefaultThrownSpeed(@Nonnull String speed) throws JmriException;
+    void setDefaultThrownSpeed(@Nonnull String speed) throws JmriException;
 
-    public String getDefaultThrownSpeed();
+    String getDefaultThrownSpeed();
 
-    public String getDefaultClosedSpeed();
+    String getDefaultClosedSpeed();
 
     /**
      * Get the Interval (in ms) to wait between output commands.
@@ -288,14 +248,14 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      *
      * @return the (Turnout) Output Interval in milliseconds
      */
-    public int getOutputInterval();
+    int getOutputInterval();
 
     /**
      * Set the Interval (in ms) to wait between output commands.
      *
      * @param newInterval the new Output Interval in Milliseconds
      */
-    public void setOutputInterval(int newInterval);
+    void setOutputInterval(int newInterval);
 
     /**
      * Get end time of latest OutputInterval, calculated from the current time.
@@ -303,6 +263,6 @@ public interface TurnoutManager extends ProvidingManager<Turnout> {
      * @return end time in milliseconds or current time if no interval was set or timer has completed
      */
     @Nonnull
-    public LocalDateTime outputIntervalEnds();
+    LocalDateTime outputIntervalEnds();
 
 }

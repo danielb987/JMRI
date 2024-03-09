@@ -2,12 +2,14 @@ package jmri.jmrit.display;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
+
 import jmri.InstanceManager;
 import jmri.NamedBeanHandle;
 import jmri.Turnout;
@@ -15,6 +17,8 @@ import jmri.NamedBean.DisplayOptions;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.display.palette.TableItemPanel;
 import jmri.jmrit.picker.PickListModel;
+import jmri.util.swing.JmriMouseEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,6 +214,12 @@ public class TurnoutIcon extends PositionableIcon implements java.beans.Property
     public String getStateName(int state) {
         return _state2nameMap.get(state);
 
+    }
+
+    @Override
+    @Nonnull
+    public String getTypeString() {
+        return Bundle.getMessage("PositionableType_TurnoutIcon");
     }
 
     @Override
@@ -454,7 +464,7 @@ public class TurnoutIcon extends PositionableIcon implements java.beans.Property
     }
 
     @Override
-    public void doMousePressed(MouseEvent e) {
+    public void doMousePressed(JmriMouseEvent e) {
         if (getMomentary() && buttonLive() && !e.isMetaDown() && !e.isAltDown()) {
             // this is a momentary button press
             getTurnout().setCommandedState(jmri.Turnout.THROWN);
@@ -463,7 +473,7 @@ public class TurnoutIcon extends PositionableIcon implements java.beans.Property
     }
 
     @Override
-    public void doMouseReleased(MouseEvent e) {
+    public void doMouseReleased(JmriMouseEvent e) {
         if (getMomentary() && buttonLive() && !e.isMetaDown() && !e.isAltDown()) {
             // this is a momentary button release
             getTurnout().setCommandedState(jmri.Turnout.CLOSED);
@@ -472,7 +482,7 @@ public class TurnoutIcon extends PositionableIcon implements java.beans.Property
     }
 
     @Override
-    public void doMouseClicked(java.awt.event.MouseEvent e) {
+    public void doMouseClicked(JmriMouseEvent e) {
         if (!_editor.getFlag(Editor.OPTION_CONTROLS, isControlling())) {
             return;
         }

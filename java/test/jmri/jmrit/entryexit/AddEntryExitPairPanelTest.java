@@ -1,15 +1,14 @@
 package jmri.jmrit.entryexit;
 
-import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 
 import jmri.jmrit.display.layoutEditor.LayoutEditor;
 import jmri.util.JUnitUtil;
-import org.junit.jupiter.api.AfterAll;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.*;
 import org.junit.Assume;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.netbeans.jemmy.operators.JButtonOperator;
 import org.netbeans.jemmy.operators.JComboBoxOperator;
 import org.netbeans.jemmy.operators.JFrameOperator;
@@ -20,22 +19,21 @@ import org.netbeans.jemmy.operators.JTableOperator;
  * @author Paul Bender Copyright (C) 2017
  * @author Dave Sand Copyright (C) 2018
  */
+@DisabledIfSystemProperty(named ="java.awt.headless", matches ="true")
 public class AddEntryExitPairPanelTest {
 
-    static EntryExitTestTools tools;
-    static HashMap<String, LayoutEditor> panels = new HashMap<>();
-    static EntryExitPairs eep;
+    private HashMap<String, LayoutEditor> panels = new HashMap<>();
 
     @Test
     public void testCTor() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+
         AddEntryExitPairPanel t = new AddEntryExitPairPanel(panels.get("Alpha"));  // NOI18N
         Assert.assertNotNull("exists", t);  // NOI18N
     }
 
     @Test
     public void testPanelActions() throws Exception {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
 
         // Open the NX window
         AddEntryExitPairAction nxAction = new AddEntryExitPairAction("ENTRY EXIT", panels.get("Alpha"));  // NOI18N
@@ -65,8 +63,8 @@ public class AddEntryExitPairPanelTest {
         java.util.List<AddEntryExitPairFrame>  frames = jmri.util.JmriJFrame.getFrameList(AddEntryExitPairFrame.class);
         Assert.assertEquals("Should be only one frame", 1, frames.size());
         frames.get(0).nxPanel.optionWindow(null);
-        
-        
+
+
         // Close the options window
         JFrameOperator optionFrame = new JFrameOperator(Bundle.getMessage("OptionsTitle"));  // NOI18N
         Assert.assertNotNull("optionFrame", optionFrame);  // NOI18N
@@ -76,20 +74,26 @@ public class AddEntryExitPairPanelTest {
         nxFrame.dispose();
     }
 
-    @BeforeAll
-    public static void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         JUnitUtil.setUp();
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        jmri.util.JUnitUtil.resetProfileManager();
+        JUnitUtil.resetProfileManager();
 
         panels = EntryExitTestTools.getPanels();
         Assert.assertEquals("Get LE panels", 2, panels.size());  // NOI18N
     }
 
-    @AfterAll
-    public static void tearDown() {
-        panels.forEach((name, panel) -> JUnitUtil.dispose(panel));
+    @AfterEach
+    public void tearDown() {
+        if (panels != null) {
+            panels.forEach((name, panel) -> JUnitUtil.dispose(panel));
+        }
         panels = null;
+
+        JUnitUtil.clearTurnoutThreads();
+        JUnitUtil.clearRouteThreads();
+        JUnitUtil.removeMatchingThreads("Routing stabilising timer");
+
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }

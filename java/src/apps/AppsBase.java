@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 
 import jmri.*;
+import jmri.jmrit.logixng.LogixNGPreferences;
 import jmri.jmrit.revhistory.FileHistory;
 import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
@@ -18,6 +19,7 @@ import jmri.util.FileUtil;
 import jmri.util.ThreadingUtil;
 
 import jmri.util.prefs.JmriPreferencesActionFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,7 @@ import apps.util.Log4JUtil;
  * There are a series of steps in the configuration:
  * <dl>
  * <dt>preInit<dd>Initialize log4j, invoked from the main()
- * <dt>ctor<dd>
+ * <dt>ctor<dd>Construct the basic application object
  * </dl>
  *
  * @author Bob Jacobsen Copyright 2009, 2010
@@ -56,6 +58,8 @@ public abstract class AppsBase {
      *
      * @param applicationName The application name as presented to the user
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+        justification="Info String always needs to be evaluated")
     static public void preInit(String applicationName) {
         Log4JUtil.initLogging();
 
@@ -112,6 +116,13 @@ public abstract class AppsBase {
         InstanceManager.getDefault(jmri.LogixManager.class).activateAllLogixs();
         InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).initializeLayoutBlockPaths();
 
+        jmri.jmrit.logixng.LogixNG_Manager logixNG_Manager =
+                InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class);
+        logixNG_Manager.setupAllLogixNGs();
+        if (InstanceManager.getDefault(LogixNGPreferences.class).getStartLogixNGOnStartup()
+                && InstanceManager.getDefault(jmri.jmrit.logixng.LogixNG_Manager.class).isStartLogixNGsOnLoad()) {
+            logixNG_Manager.activateAllLogixNGs();
+        }
     }
 
     /**
@@ -146,7 +157,7 @@ public abstract class AppsBase {
             try {
                 if (ProfileManager.getDefault().migrateToProfiles(getConfigFileName())) { // migration or first use
                     // GUI should show message here
-                    log.info(Bundle.getMessage("ConfigMigratedToProfile"));
+                    log.info("Migrated {}",Bundle.getMessage("ConfigMigratedToProfile"));
                 }
             } catch (IOException | IllegalArgumentException ex) {
                 // GUI should show message here
@@ -187,7 +198,8 @@ public abstract class AppsBase {
 
     protected void installManagers() {
         // record startup
-        InstanceManager.getDefault(FileHistory.class).addOperation("app", Application.getApplicationName(), null);
+        String appString = String.format("%s (v%s)", Application.getApplicationName(), Version.getCanonicalVersion());
+        InstanceManager.getDefault(FileHistory.class).addOperation("app", appString, null);
 
         // install the abstract action model that allows items to be added to the, both
         // CreateButton and Perform Action Model use a common Abstract class
@@ -313,14 +325,6 @@ public abstract class AppsBase {
     }
 
     /**
-     * @deprecated for removal since 4.17.2 without replacement
-     */
-    @Deprecated
-    protected void installShutDownManager() {
-        // nothing to do
-    }
-
-    /**
      * Final actions before releasing control of the application to the user,
      * invoked explicitly after object has been constructed in main().
      */
@@ -387,20 +391,19 @@ public abstract class AppsBase {
                 log.warn("JMRI property {} already set to {}, skipping reset to {}", key, current, value);
             }
         } catch (Exception e) {
-            log.error("Unable to set JMRI property {} to {}due to exception: {}", key, value, e);
+            log.error("Unable to set JMRI property {} to {}due to exception", key, value, e);
         }
     }
 
     /**
      * The application decided to quit, handle that.
      *
-     * @return true if successfully ran all shutdown tasks and can quit; false
-     *         otherwise
+     * @return always returns false
      */
     static public boolean handleQuit() {
         log.debug("Start handleQuit");
         try {
-            return InstanceManager.getDefault(jmri.ShutDownManager.class).shutdown();
+            InstanceManager.getDefault(jmri.ShutDownManager.class).shutdown();
         } catch (Exception e) {
             log.error("Continuing after error in handleQuit", e);
         }
@@ -409,18 +412,14 @@ public abstract class AppsBase {
 
     /**
      * The application decided to restart, handle that.
-     *
-     * @return true if successfully ran all shutdown tasks and can quit; false
-     *         otherwise
      */
-    static public boolean handleRestart() {
+    static public void handleRestart() {
         log.debug("Start handleRestart");
         try {
-            return InstanceManager.getDefault(jmri.ShutDownManager.class).restart();
+            InstanceManager.getDefault(jmri.ShutDownManager.class).restart();
         } catch (Exception e) {
             log.error("Continuing after error in handleRestart", e);
         }
-        return false;
     }
 
 

@@ -11,13 +11,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Date;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
 import jmri.InstanceManager;
 import jmri.Timebase;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.util.JmriJFrame;
+import jmri.util.ThreadingUtil;
 
 /**
  * Creates a JFrame containing an analog clockface and hands.
@@ -38,9 +41,6 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         super(Bundle.getMessage("MenuItemAnalogClock"));
 
         clock = InstanceManager.getDefault(jmri.Timebase.class);
-
-        // listen for changes to the Timebase parameters
-        clock.addPropertyChangeListener(this);
 
         // init GUI
         setPreferredSize(new java.awt.Dimension(200, 200));
@@ -63,11 +63,17 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         buttonPanel.setVisible(clock.getShowStopButton()); // pick up clock prefs choice
         // get ready to display
         pack();
-        update();  // set proper time
+
+        ThreadingUtil.runOnGUIEventually(() -> {
+            AnalogClockFrame.this.update();  // set proper time
+        });
+
+        // listen for changes to the Timebase parameters
+        clock.addPropertyChangeListener(AnalogClockFrame.this);
 
         // request callback to update time
         clock.addMinuteChangeListener((java.beans.PropertyChangeEvent e) -> {
-            update();
+            AnalogClockFrame.this.update();  // set new time
         });
 
     }
@@ -93,16 +99,11 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         int rotatedMinuteX[] = new int[minuteX.length];
         int rotatedMinuteY[] = new int[minuteY.length];
 
-        Polygon hourHand;
         Polygon scaledHourHand;
-        Polygon minuteHand;
         Polygon scaledMinuteHand;
         int minuteHeight;
-        int hourHeight;
         double scaleRatio;
         int faceSize;
-        int panelWidth;
-        int panelHeight;
         int size;
         int logoWidth;
         int logoHeight;
@@ -119,11 +120,9 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
             scaledIcon = new NamedIcon("resources/logo.gif", "resources/logo.gif");
             logo = jmriIcon.getImage();
 
-            // Create an unscaled set of hands to get the original size (height)to use
+            // Create an unscaled minute hand to get the original size (height) to use
             // in the scaling calculations
-            hourHand = new Polygon(hourX, hourY, 11);
-            hourHeight = hourHand.getBounds().getSize().height;
-            minuteHand = new Polygon(minuteX, minuteY, 11);
+            Polygon minuteHand = new Polygon(minuteX, minuteY, 11);
             minuteHeight = minuteHand.getBounds().getSize().height;
 
             amPm = "AM";
@@ -247,7 +246,7 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
             // use the NamedIcon as a source for the sizes
             int logoScaleWidth = faceSize / 6;
             int logoScaleHeight = (int) ((float) logoScaleWidth * (float) jmriIcon.getIconHeight() / jmriIcon.getIconWidth());
-            scaledLogo = logo.getScaledInstance(logoScaleWidth, logoScaleHeight, Image.SCALE_SMOOTH);
+            scaledLogo = logo.getScaledInstance(Math.max(1, logoScaleWidth), Math.max(1, logoScaleHeight), Image.SCALE_SMOOTH);
             scaledIcon.setImage(scaledLogo);
             logoWidth = scaledIcon.getIconWidth();
             logoHeight = scaledIcon.getIconHeight();
@@ -265,11 +264,10 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
             centreX = panelWidth / 2;
             centreY = panelHeight / 2;
 
-            return;
         }
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Date.getHours, getMinutes, getSeconds
     void update() {
         Date now = clock.getTime();
         int hours = now.getHours();
@@ -277,17 +275,31 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
         minuteAngle = minutes * 6.;
         hourAngle = hours * 30. + 30. * minuteAngle / 360.;
         if (hours < 12) {
-            amPm = "AM ";
+            amPm = Bundle.getMessage("ClockAM");
         } else {
-            amPm = "PM ";
+            amPm = Bundle.getMessage("ClockPM");
         }
         if (hours == 12 && minutes == 0) {
-            amPm = "Noon";
+            amPm = Bundle.getMessage("ClockNoon");
         }
         if (hours == 0 && minutes == 0) {
-            amPm = "Midnight";
+            amPm = Bundle.getMessage("ClockMidnight");
         }
-        amPm = amPm + " " + (int) clock.userGetRate() + ":1";
+
+        // show either "Stopped" or rate, depending on state
+        if (! clock.getRun()) {
+            amPm = amPm + " "+Bundle.getMessage("ClockStopped");
+        } else {
+            // running, display rate
+            String rate = ""+(int)clock.userGetRate();
+            if (Math.floor(clock.userGetRate()) != clock.userGetRate()) {
+                var format = new java.text.DecimalFormat("0.###");  // no trailing zeros
+                rate = format.format(clock.userGetRate());
+            }
+
+            // add rate to amPm string for display
+            amPm = amPm + " " + rate + ":1";
+        }
         repaint();
     }
 
@@ -298,8 +310,11 @@ public class AnalogClockFrame extends JmriJFrame implements java.beans.PropertyC
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         updateButtonText();
+
+        // paint the clock too
+        update();
     }
-    
+
     /**
      * Update clock button text.
      */

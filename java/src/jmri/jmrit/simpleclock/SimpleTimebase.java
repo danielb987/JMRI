@@ -1,15 +1,14 @@
 package jmri.jmrit.simpleclock;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
-import jmri.ClockControl;
-import jmri.Memory;
-import jmri.Sensor;
-import jmri.Timebase;
-import jmri.TimebaseRateException;
+
+import jmri.*;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,44 +35,47 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
     public static final double MINIMUM_RATE = 0.1;
     public static final double MAXIMUM_RATE = 100;
 
-    public SimpleTimebase() {
+    protected final SystemConnectionMemo memo;
+
+    public SimpleTimebase(InternalSystemConnectionMemo memo) {
         super("SIMPLECLOCK");
+        this.memo = memo;
         // initialize time-containing memory
         try {
-            clockMemory = jmri.InstanceManager.memoryManagerInstance().provideMemory("IMCURRENTTIME");
+            clockMemory = InstanceManager.memoryManagerInstance().provideMemory(memo.getSystemPrefix()+"MCURRENTTIME");
             clockMemory.setValue("--");
         } catch (IllegalArgumentException ex) {
-            log.warn("Unable to create IMCURRENTTIME time memory variable");
+            log.warn("Unable to create CURRENTTIME time memory variable");
         }
-        
+
         init();
 
     }
-    
+
     final void init(){
-    
+
         // set to start counting from now
         setTime(new Date());
         pauseTime = null;
         // initialize start/stop sensor for time running
         try {
-            clockSensor = jmri.InstanceManager.sensorManagerInstance().provideSensor("ISCLOCKRUNNING");
+            clockSensor = InstanceManager.sensorManagerInstance().provideSensor(memo.getSystemPrefix()+"SCLOCKRUNNING");
             clockSensor.setKnownState(Sensor.ACTIVE);
             clockSensor.addPropertyChangeListener(this::clockSensorChanged);
-        } catch (jmri.JmriException e) {
-            log.warn("Exception setting ISCLOCKRUNNING sensor ACTIVE: {}", e);
+        } catch (JmriException e) {
+            log.warn("Exception setting CLOCKRUNNING sensor ACTIVE", e);
         }
         // initialize rate factor-containing memory
-        if (jmri.InstanceManager.getNullableDefault(jmri.MemoryManager.class) != null) {
+        if (InstanceManager.getNullableDefault(MemoryManager.class) != null) {
             // only try to create memory if memories are supported
             try {
-                factorMemory = jmri.InstanceManager.memoryManagerInstance().provideMemory("IMRATEFACTOR");
+                factorMemory = InstanceManager.memoryManagerInstance().provideMemory(memo.getSystemPrefix()+"MRATEFACTOR");
                 factorMemory.setValue(userGetRate());
             } catch (IllegalArgumentException ex) {
-                log.warn("Unable to create IMRATEFACTOR time memory variable");
+                log.warn("Unable to create RATEFACTOR time memory variable");
             }
         }
-    
+
     }
 
     /**
@@ -108,8 +110,8 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         if (synchronizeWithHardware) {
             // send new time to all hardware clocks, except the hardware time source if there is one
             // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-            if (jmri.InstanceManager.getDefault(jmri.ClockControl.class) != hardwareTimeSource) {
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).setTime(d);
+            if (InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+                InstanceManager.getDefault(ClockControl.class).setTime(d);
             }
         }
         if (pauseTime != null) {
@@ -137,7 +139,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         if (synchronizeWithHardware) {
             // send new time to all hardware clocks, including the hardware time source if there is one
             // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-            jmri.InstanceManager.getDefault(jmri.ClockControl.class).setTime(d);
+            InstanceManager.getDefault(jmri.ClockControl.class).setTime(d);
         } else if (!internalMaster && (hardwareTimeSource != null)) {
             // if not synchronizing, send to the hardware time source if there is one
             hardwareTimeSource.setTime(d);
@@ -158,7 +160,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             setTime(pauseTime);
             if (synchronizeWithHardware) {
                 // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).startHardwareClock(getTime());
+                InstanceManager.getDefault(ClockControl.class).startHardwareClock(getTime());
             } else if (!internalMaster && hardwareTimeSource != null) {
                 hardwareTimeSource.startHardwareClock(getTime());
             }
@@ -166,8 +168,8 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             if (clockSensor != null) {
                 try {
                     clockSensor.setKnownState(Sensor.ACTIVE);
-                } catch (jmri.JmriException e) {
-                    log.warn("Exception setting ISClockRunning sensor ACTIVE: {}", e);
+                } catch (JmriException e) {
+                    log.warn("Exception setting ISClockRunning sensor ACTIVE", e);
                 }
             }
         } else if (!run && pauseTime == null) {
@@ -176,7 +178,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             pauseTime = getTime();
             if (synchronizeWithHardware) {
                 // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).stopHardwareClock();
+                InstanceManager.getDefault(ClockControl.class).stopHardwareClock();
             } else if (!internalMaster && hardwareTimeSource != null) {
                 hardwareTimeSource.stopHardwareClock();
             }
@@ -184,7 +186,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
                 try {
                     clockSensor.setKnownState(Sensor.INACTIVE);
                 } catch (jmri.JmriException e) {
-                    log.warn("Exception setting ISClockRunning sensor INACTIVE: {}", e);
+                    log.warn("Exception setting ISClockRunning sensor INACTIVE", e);
                 }
             }
         }
@@ -205,10 +207,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setRate(double factor) throws TimebaseRateException {
-        if (factor < MINIMUM_RATE || factor > MAXIMUM_RATE) {
-            log.error("rate of {} is out of reasonable range", factor);
-            throw new TimebaseRateException();
-        }
+        checkRateValid(factor);
         if (internalMaster && (!notInitialized)) {
             log.error("Probable Error - questionable attempt to change fast clock rate");
         }
@@ -222,8 +221,8 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         if (internalMaster || (synchronizeWithHardware && notInitialized)) {
             // send new rate to all hardware clocks, except the hardware time source if there is one
             // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-            if (jmri.InstanceManager.getDefault(jmri.ClockControl.class) != hardwareTimeSource) {
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).setRate(factor);
+            if (InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+                InstanceManager.getDefault(ClockControl.class).setRate(factor);
             }
         }
         // make sure time is right with new rate
@@ -242,10 +241,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
     public void userSetRate(double factor) throws TimebaseRateException {
         // this call is used when user changes fast clock rate either in Setup Fast Clock or via a ClockControl
         // implementation
-        if (factor < MINIMUM_RATE || factor > MAXIMUM_RATE) {
-            log.error("rate of {} is out of reasonable range", factor);
-            throw new TimebaseRateException();
-        }
+        checkRateValid(factor);
         double oldFactor = hardwareFactor;
         Date now = getTime();
         // actually make the change
@@ -254,7 +250,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         if (synchronizeWithHardware) {
             // send new rate to all hardware clocks, including the hardware time source if there is one
             // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-            jmri.InstanceManager.getDefault(jmri.ClockControl.class).setRate(factor);
+            InstanceManager.getDefault(ClockControl.class).setRate(factor);
         } else if (!internalMaster && (hardwareTimeSource != null)) {
             // if not synchronizing, send to the hardware time source if there is one
             hardwareTimeSource.setRate(factor);
@@ -266,6 +262,13 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         // notify listeners
         firePropertyChange("rate", oldFactor, factor); // old, then new
         handleAlarm(null);
+    }
+
+    private void checkRateValid(double factor) throws TimebaseRateException {
+        if (factor < MINIMUM_RATE || factor > MAXIMUM_RATE) {
+            log.error("rate of {} is out of reasonable range {} - {}", factor, MINIMUM_RATE, MAXIMUM_RATE);
+            throw new TimebaseRateException(Bundle.getMessage("IncorrectRate", factor, MINIMUM_RATE, MAXIMUM_RATE));
+        }
     }
 
     /**
@@ -296,7 +299,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             }
             if (update) {
                 // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).initializeHardwareClock(userGetRate(),
+                InstanceManager.getDefault(ClockControl.class).initializeHardwareClock(userGetRate(),
                         getTime(), false);
             }
 
@@ -306,12 +309,13 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             } else {
                 // Note if there are multiple hardware clocks, this should be changed to correctly
                 // identify which hardware clock has been chosen-currently assumes only one
-                hardwareTimeSource = jmri.InstanceManager.getDefault(jmri.ClockControl.class);
+                hardwareTimeSource = InstanceManager.getDefault(ClockControl.class);
                 masterName = hardwareTimeSource.getHardwareClockName();
             }
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed            
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -329,7 +333,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             masterName = name;
             // if multiple clocks, this must be replaced by a loop over all hardware clocks to identify
             // the one that is the hardware time source
-            hardwareTimeSource = jmri.InstanceManager.getDefault(jmri.ClockControl.class);
+            hardwareTimeSource = InstanceManager.getDefault(ClockControl.class);
         } else {
             masterName = "";
             hardwareTimeSource = null;
@@ -353,9 +357,10 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             synchronizeWithHardware = synchronize;
             if (update) {
                 // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).initializeHardwareClock(
+                InstanceManager.getDefault(ClockControl.class).initializeHardwareClock(
                    userGetRate(), getTime(), false);
             }
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
         }
     }
 
@@ -377,9 +382,10 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             correctHardware = correct;
             if (update) {
                 // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).initializeHardwareClock(
+                InstanceManager.getDefault(ClockControl.class).initializeHardwareClock(
                 userGetRate(), getTime(), false);
             }
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
         }
     }
 
@@ -400,7 +406,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             display12HourClock = display;
             if (update) {
                 // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).initializeHardwareClock(
+                InstanceManager.getDefault(ClockControl.class).initializeHardwareClock(
                 userGetRate(), getTime(), false);
             }
         }
@@ -419,7 +425,10 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setClockInitialRunState(ClockInitialRunState state) {
-        initialState = state;
+        if (initialState != state) {
+            initialState = state;
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
+        }
     }
 
     /**
@@ -435,7 +444,10 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setShowStopButton(boolean displayed) {
-        showStopButton = displayed;
+        if (showStopButton != displayed) {
+            showStopButton = displayed;
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
+        }
     }
 
     /**
@@ -451,8 +463,11 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setStartSetTime(boolean set, Date time) {
-        startSetTime = set;
-        startTime = new Date(time.getTime());
+        if (startSetTime!=set || startTime!=new Date(time.getTime())) {
+            startSetTime = set;
+            startTime = new Date(time.getTime());
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
+        }
     }
 
     /**
@@ -468,8 +483,11 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setStartRate(double factor) {
-        startupFactor = factor;
-        haveStartupFactor = true;
+        if (Math.abs(startupFactor - factor) > 0.0001) { //avoid possible float precision errors
+            startupFactor = factor;
+            haveStartupFactor = true;
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
+        }
     }
 
     /**
@@ -489,7 +507,10 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setSetRateAtStart(boolean set) {
-        startSetRate = set;
+        if (startSetRate != set) {
+            startSetRate = set;
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
+        }
     }
 
     /**
@@ -513,7 +534,10 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
      */
     @Override
     public void setStartClockOption(int option) {
-        startClockOption = option;
+        if (startClockOption != option) {
+            startClockOption = option;
+            firePropertyChange("config", 0, 1); // inform listeners that the clock config has changed
+        }
     }
 
     /**
@@ -560,13 +584,11 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         boolean startStopped = (initialState == ClockInitialRunState.DO_STOP);
         if (synchronizeWithHardware || correctHardware) {
             if (startStopped) {
-                // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).initializeHardwareClock(0,
-                        getTime(), (!internalMaster && !startSetTime));
+                InstanceManager.getList(ClockControl.class).forEach( cc -> 
+                    cc.initializeHardwareClock( 0, getTime(), (!internalMaster && !startSetTime)) );
             } else {
-                // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-                jmri.InstanceManager.getDefault(jmri.ClockControl.class).initializeHardwareClock(mFactor,
-                        getTime(), (!internalMaster && !startSetTime));
+                InstanceManager.getList(ClockControl.class).forEach( cc -> 
+                    cc.initializeHardwareClock( mFactor, getTime(), (!internalMaster && !startSetTime)) );
             }
         } else if (!internalMaster) {
             if (startStopped) {
@@ -616,12 +638,16 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             timer.setRepeats(false); // just in case
             timer.stop();
 
-            java.awt.event.ActionListener listeners[] = timer.getListeners(java.awt.event.ActionListener.class);
-            for (java.awt.event.ActionListener listener : listeners)
+            ActionListener listeners[] = timer.getListeners(ActionListener.class);
+            for (ActionListener listener : listeners) {
                 timer.removeActionListener(listener);
-
+            }
             timer = null;
         }
+        if ( clockSensor != null ) {
+            clockSensor.removePropertyChangeListener(this::clockSensorChanged);
+        }
+        super.dispose(); // remove standard property change listeners
     }
 
     /**
@@ -677,7 +703,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
     /**
      * Handle an "alarm", which is used to count off minutes.
      * <p>
-     * Listeners will be notified if the hours or minutes changed 
+     * Listeners will be notified if the hours or minutes changed
      * since the last time.
      * @param e Event which triggered this
      */
@@ -715,12 +741,14 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
 
     void updateMemory(Date date) {
         if (timeStorageFormat == null) {
+            String pattern = java.util.ResourceBundle.getBundle("jmri.jmrit.simpleclock.SimpleClockBundle")
+                .getString("TimeStorageFormat");
             try {
-                timeStorageFormat = new java.text.SimpleDateFormat(
-               java.util.ResourceBundle.getBundle("jmri.jmrit.simpleclock.SimpleClockBundle")
-                    .getString("TimeStorageFormat"));
-            } catch (java.lang.IllegalArgumentException e) {
-                log.info("Dropping back to default time format due to exception {}", e);
+                timeStorageFormat = new java.text.SimpleDateFormat(pattern);
+            } catch (IllegalArgumentException e) {
+                log.info("Unable to parse date / time format: {}",pattern);
+                log.info("For supported formats see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
+                log.info("Dropping back to default time format (h:mm a) 4:56 PM, due to exception", e);
                 timeStorageFormat = new java.text.SimpleDateFormat("h:mm a");
             }
         }
@@ -748,7 +776,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
     }
 
     /**
-     * {@inheritDoc} 
+     * {@inheritDoc}
      */
     @Override
     public PropertyChangeListener[] getMinuteChangeListeners() {
@@ -761,7 +789,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         startAlarm();
     }
 
-    
+
     @Override
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         super.addPropertyChangeListener(propertyName, listener);

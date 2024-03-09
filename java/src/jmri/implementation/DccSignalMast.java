@@ -48,11 +48,12 @@ public class DccSignalMast extends AbstractSignalMast {
 
     public DccSignalMast(String sys, String user, String mastSubType) {
         super(sys, user);
-        mastType = mastSubType;
+        theMastType = mastSubType;
         configureFromName(sys);
     }
 
-    private String mastType = "F$dsm";
+    private String theMastType = "F$dsm";
+    private boolean useAddressOffSet = false;
 
     protected void configureFromName(String systemName) {
         // split out the basic information
@@ -61,8 +62,8 @@ public class DccSignalMast extends AbstractSignalMast {
             log.error("SignalMast system name needs at least three parts: {}", systemName);
             throw new IllegalArgumentException("System name needs at least three parts: " + systemName);
         }
-        if (!parts[0].endsWith(mastType)) {
-            log.warn("First part of SignalMast system name is incorrect {} : {}", systemName, mastType);
+        if (!parts[0].endsWith(theMastType)) {
+            log.warn("First part of SignalMast system name is incorrect {} : {}", systemName, theMastType);
         } else {
             String commandStationPrefix = parts[0].substring(0, parts[0].indexOf("$") - 1);
             java.util.List<jmri.CommandStation> connList = jmri.InstanceManager.getList(jmri.CommandStation.class);
@@ -86,7 +87,7 @@ public class DccSignalMast extends AbstractSignalMast {
         mast = mast.substring(0, mast.indexOf("("));
         log.trace("In configureFromName setMastType to {}", mast);
         setMastType(mast);
-        
+
         String tmp = parts[2].substring(parts[2].indexOf("(") + 1, parts[2].indexOf(")"));
         try {
             dccSignalDecoderAddress = Integer.parseInt(tmp);
@@ -97,7 +98,7 @@ public class DccSignalMast extends AbstractSignalMast {
         configureAspectTable(system, mast);
     }
 
-    protected HashMap<String, Integer> appearanceToOutput = new HashMap<String, Integer>();
+    protected HashMap<String, Integer> appearanceToOutput = new HashMap<>();
 
     public void setOutputForAppearance(String appearance, int number) {
         if (appearanceToOutput.containsKey(appearance)) {
@@ -153,11 +154,26 @@ public class DccSignalMast extends AbstractSignalMast {
     @Override
     public void setAspect(@Nonnull String aspect) {
         if (appearanceToOutput.containsKey(aspect) && appearanceToOutput.get(aspect) != -1) {
-            c.sendPacket(NmraPacket.altAccSignalDecoderPkt(dccSignalDecoderAddress, appearanceToOutput.get(aspect)), packetSendCount);
+            if (getLit()) {
+                if (useAddressOffSet) {
+                    c.sendPacket(NmraPacket.accSignalDecoderPkt(dccSignalDecoderAddress, appearanceToOutput.get(aspect)), packetSendCount);
+                } else {
+                    c.sendPacket(NmraPacket.altAccSignalDecoderPkt(dccSignalDecoderAddress, appearanceToOutput.get(aspect)), packetSendCount);
+                }
+            }
         } else {
             log.warn("Trying to set aspect ({}) that has not been configured on mast {}", aspect, getDisplayName());
         }
         super.setAspect(aspect);
+    }
+
+
+    public void useAddressOffSet(boolean boo) {
+        useAddressOffSet = boo;
+    }
+
+    public boolean useAddressOffSet() {
+        return useAddressOffSet;
     }
 
     @Override
@@ -165,12 +181,19 @@ public class DccSignalMast extends AbstractSignalMast {
         if (!allowUnLit() || newLit == getLit()) {
             return;
         }
-        if (newLit) {
-            setAspect(getAspect());
-        } else {
-            c.sendPacket(NmraPacket.altAccSignalDecoderPkt(dccSignalDecoderAddress, unLitId), packetSendCount);
-        }
         super.setLit(newLit);
+        if (newLit) {
+            String newAspect = getAspect();
+            if (newAspect != null){
+                setAspect(newAspect);
+            }
+        } else {
+            if (useAddressOffSet) {
+                c.sendPacket(NmraPacket.accSignalDecoderPkt(dccSignalDecoderAddress, unLitId), packetSendCount);
+            } else {
+                c.sendPacket(NmraPacket.altAccSignalDecoderPkt(dccSignalDecoderAddress, unLitId), packetSendCount);
+            }
+        }
     }
 
     int unLitId = 31;

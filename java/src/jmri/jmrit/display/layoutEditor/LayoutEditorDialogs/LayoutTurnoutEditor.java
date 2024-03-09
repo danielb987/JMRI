@@ -1,7 +1,7 @@
 package jmri.jmrit.display.layoutEditor.LayoutEditorDialogs;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +14,7 @@ import jmri.*;
 import jmri.jmrit.display.layoutEditor.*;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.JmriJFrame;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * MVC Editor component for LayoutTurnout objects.
@@ -202,9 +203,9 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
 
         setUpContinuingSense();
         
-        editLayoutTurnoutFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+        editLayoutTurnoutFrame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
+            public void windowClosing(WindowEvent e) {
                 editLayoutTurnoutCancelPressed(null);
             }
         });
@@ -270,9 +271,9 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
         }
         // check if a block exists to edit
         if (layoutTurnout.getLayoutBlock() == null) {
-            JOptionPane.showMessageDialog(editLayoutTurnoutFrame,
+            JmriJOptionPane.showMessageDialog(editLayoutTurnoutFrame,
                     Bundle.getMessage("Error1"), // NOI18N
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
             return;
         }
         layoutTurnout.getLayoutBlock().editLayoutBlock(editLayoutTurnoutFrame);
@@ -294,9 +295,9 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
         }
         // check if a block exists to edit
         if (layoutTurnout.getLayoutBlockB() == null) {
-            JOptionPane.showMessageDialog(editLayoutTurnoutFrame,
+            JmriJOptionPane.showMessageDialog(editLayoutTurnoutFrame,
                     Bundle.getMessage("Error1"), // NOI18N
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
             return;
         }
         layoutTurnout.getLayoutBlockB().editLayoutBlock(editLayoutTurnoutFrame);
@@ -318,9 +319,9 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
         }
         // check if a block exists to edit
         if (layoutTurnout.getLayoutBlockC() == null) {
-            JOptionPane.showMessageDialog(editLayoutTurnoutFrame,
+            JmriJOptionPane.showMessageDialog(editLayoutTurnoutFrame,
                     Bundle.getMessage("Error1"), // NOI18N
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
             return;
         }
         layoutTurnout.getLayoutBlockC().editLayoutBlock(editLayoutTurnoutFrame);
@@ -342,9 +343,9 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
         }
         // check if a block exists to edit
         if (layoutTurnout.getLayoutBlockD() == null) {
-            JOptionPane.showMessageDialog(editLayoutTurnoutFrame,
+            JmriJOptionPane.showMessageDialog(editLayoutTurnoutFrame,
                     Bundle.getMessage("Error1"), // NOI18N
-                    Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);  // NOI18N
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
             return;
         }
         layoutTurnout.getLayoutBlockD().editLayoutBlock(editLayoutTurnoutFrame);
@@ -359,7 +360,7 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
             newName = "";
         }
         if (!layoutTurnout.getTurnoutName().equals(newName)) {
-            // turnout has changed
+            // turnout has changed, is it valid?
             if (layoutEditor.validatePhysicalTurnout(
                     newName, editLayoutTurnoutFrame)) {
                 layoutTurnout.setTurnout(newName);
@@ -370,6 +371,7 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
             editLayoutTurnoutNeedRedraw = true;
         }
 
+        // check if 2nd Turnout changed
         if (editLayoutTurnout2ndTurnoutCheckBox.isSelected()) {
             newName = editLayoutTurnout2ndTurnoutComboBox.getSelectedItemDisplayName();
             if (newName == null) {
@@ -380,6 +382,58 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
             }
         } else {
             layoutTurnout.setSecondTurnout("");
+        }
+
+        // Do we have an infinite invert loop?
+        if (editLayoutTurnout2ndTurnoutCheckBox.isSelected()) {
+            Turnout turnout1 = layoutTurnout.getTurnout();
+            LayoutTurnout layoutTurnout2 = null;
+            int t1state = Turnout.CLOSED;
+            int t2state = t1state;  // start off the same
+            
+            // invert if 2nd is inverted
+            if (layoutTurnout.isSecondTurnoutInverted()) {
+                t2state = Turnout.invertTurnoutState(t2state);
+            }
+
+            LayoutEditorFindItems lf = layoutEditor.getFinder();
+            Turnout turnout2 = layoutTurnout.getSecondTurnout();
+            while ((turnout2 != null) && (turnout1 != turnout2)) {
+                // first try to find it using the system name
+                layoutTurnout2 = lf.findLayoutTurnoutByTurnoutName(turnout2.getSystemName());
+                if (layoutTurnout2 == null) {   // if we didn't find it
+                    //  then try to find it using the user name
+                    layoutTurnout2 = lf.findLayoutTurnoutByTurnoutName(turnout2.getUserName());
+                }
+                // if we found it
+                if (layoutTurnout2 != null) {
+                    // and its 2nd turnout is inverted
+                    if (layoutTurnout2.isSecondTurnoutInverted()) {
+                        //  then invert the expected state
+                        t2state = Turnout.invertTurnoutState(t2state);
+                    }
+                    // and get the next 2nd turnout
+                    turnout2 = layoutTurnout2.getSecondTurnout();
+                } else {
+                    break;  // we didn't find the next LayoutTurnout
+                }
+            }
+            // if we've come full circle
+            if (turnout1 == turnout2) {
+                // are the states different?
+                if (t1state != t2state) {
+                    // yes (infinite loop)
+                    if (layoutTurnout2 != null) {   // if 2nd LayoutTurnout is defined (to get here it should be)
+                        // then flip its 2nd turnout's inverted condition
+                        layoutTurnout2.setSecondTurnoutInverted(!layoutTurnout2.isSecondTurnoutInverted());
+                        log.warn("layoutTurnout2.setSecondTurnoutInverted() infinite loop prevented.");
+                    } else {    // (but just in case)
+                        // otherwise flip our 2nd turnout's inverted condition
+                        layoutTurnout.setSecondTurnoutInverted(!layoutTurnout.isSecondTurnoutInverted());
+                        log.warn("layoutTurnout.setSecondTurnoutInverted() infinite loop prevented.");
+                    }
+                }
+            }
         }
 
         setContinuingRouteTurnoutState();

@@ -70,12 +70,11 @@ public class EngineTest extends OperationsTestCase {
         e.setAttribute("comment", "Test Comment");
 
         // set the engine specific attributes
-        try {
+        Assertions.assertDoesNotThrow( () ->  {
             Engine e1 = new Engine(e);
             Assert.assertNotNull("Xml Element Constructor", e1);
-        } catch (java.lang.NullPointerException npe) {
-            Assert.fail("Null Pointer Exception while executing Xml Element Constructor");
-        }
+        }, "Exception while executing Xml Element Constructor");
+
     }
 
     // test Engine Class
@@ -125,7 +124,7 @@ public class EngineTest extends OperationsTestCase {
         // place engines on tracks
         Assert.assertEquals("place e1", Track.OKAY, e1.setLocation(l1, l1t1));
         // check for failure too.
-        Assert.assertFalse("fail place e1", Track.OKAY == e1.setLocation(l3, l2t1));
+        Assert.assertNotEquals("fail place e1", Track.OKAY, e1.setLocation(l3, l2t1));
 
     }
 
@@ -164,6 +163,6 @@ public class EngineTest extends OperationsTestCase {
         // set destination.
         Assert.assertEquals("destination set e1", Track.OKAY, e1.setDestination(l1, l1t1));
         // check for failure too.
-        Assert.assertFalse("fail to set destination e1", Track.OKAY == e1.setDestination(l3, l1t1));
+        Assert.assertNotEquals("fail to set destination e1", Track.OKAY, e1.setDestination(l3, l1t1));
     }
 }

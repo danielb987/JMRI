@@ -25,6 +25,21 @@
 ; -------------------------------------------------------------------------
 ; - Version History
 ; -------------------------------------------------------------------------
+; - Version 0.1.28.1
+; - Do not set the jinput.plugins property
+; -------------------------------------------------------------------------
+; - Version 0.1.29.0
+; - Prepend the "Settings/lib" jars before the appended "Cp:a=..." entry, if used,
+;   where "Settings" is generally the JMRI directory immediately below the user's 
+;   "home" directory. 
+; -------------------------------------------------------------------------
+; - Version 0.1.28.1
+; - Do not set the jmri.log.path System property.
+; -------------------------------------------------------------------------
+; - Version 0.1.28.0
+; - Check default version of installed java before looking anywhere else
+; - If environment variable JMRI_JAVA_HOME is present use that
+; -------------------------------------------------------------------------
 ; - Version 0.1.27.0
 ; - Add support for 200 return code to shutdown the host machine
 ; - Add support for 210 return code to reboot the host machine
@@ -162,14 +177,18 @@
 ; -------------------------------------------------------------------------
 !define AUTHOR     "Matt Harris for JMRI"         ; Author name
 !define APP        "LaunchJMRI"                   ; Application name
-!define COPYRIGHT  "(C) 1997-2020 JMRI Community" ; Copyright string
-!define VER        "0.1.27.0"                     ; Launcher version
+!define COPYRIGHT  "(C) 1997-2024 JMRI Community" ; Copyright string
+!define VER        "0.1.29.0"                     ; Launcher version
 !define PNAME      "${APP}"                       ; Name of launcher
 ; -- Comment out next line to use {app}.ico
 !define ICON       "decpro5.ico"                  ; Launcher icon
 !define INITHEAP   96                             ; Initial heap size in Mbyte
 !define MINMEM     192                            ; Minimum memory in Mbyte
 !define X86MAX     1024                           ; Maximum heap size for x86 in Mbyte
+!ifndef JRE_VER
+  ; -- usually, this will be determined by the build.xml ant script
+  !define JRE_VER   "11"                       ; Required JRE version
+!endif
 
 ; -------------------------------------------------------------------------
 ; - End of basic information
@@ -202,7 +221,7 @@ Var x64JRE     ; used to determine JRE architecture
 Var FORCE32BIT ; used to determine if 32-bit JRE should always be used
 Var DEFOPTIONS ; used to hold any default options
 Var ALTLAUNCH  ; used to determine use of the alternate launcher
-
+Var USEDEFJAVA ; use default java
 ; -------------------------------------------------------------------------
 ; - Various constants
 ; -------------------------------------------------------------------------
@@ -212,6 +231,47 @@ Var ALTLAUNCH  ; used to determine use of the alternate launcher
 !define ARCH_64BIT  1   ; represents 64-bit architecture
 !define FLAG_NO     0   ; represents a NO return value from subroutines
 !define FLAG_YES    1   ; represents a YES return value from subroutines
+; -------------------------------------------------------------------------
+; - includes
+; -------------------------------------------------------------------------
+; include "MultiUser.nsh" ; MultiUser installation
+!include "WordFunc.nsh" ; add header for word manipulation
+!insertmacro VersionCompare ; add function to compare versions
+
+;-- from https://nsis.sourceforge.io/GetInQuotes:_Get_string_from_between_quotes
+Function GetInQuotes
+Exch $R0
+Push $R1
+Push $R2
+Push $R3
+
+ StrCpy $R2 -1
+ IntOp $R2 $R2 + 1
+  StrCpy $R3 $R0 1 $R2
+  StrCmp $R3 "" 0 +3
+   StrCpy $R0 ""
+   Goto Done
+  StrCmp $R3 '"' 0 -5
+
+ IntOp $R2 $R2 + 1
+ StrCpy $R0 $R0 "" $R2
+
+ StrCpy $R2 0
+ IntOp $R2 $R2 + 1
+  StrCpy $R3 $R0 1 $R2
+  StrCmp $R3 "" 0 +3
+   StrCpy $R0 ""
+   Goto Done
+  StrCmp $R3 '"' 0 -5
+
+ StrCpy $R0 $R0 $R2
+ Done:
+
+Pop $R3
+Pop $R2
+Pop $R1
+Exch $R0
+FunctionEnd
 
 ; -------------------------------------------------------------------------
 ; - Compiler Flags (to reduce executable size, saves some bytes)
@@ -298,51 +358,81 @@ Section "Main"
       SetRegView 64
       StrCpy $x64JRE ${ARCH_64BIT}
 
-  ; -- Read from machine registry
+  ; --check directory for jre
   JRESearch:
     ClearErrors
-    DetailPrint "Checking 'JRE'..."
-    ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\JRE" "CurrentVersion"
-    ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\JRE\$R1" "JavaHome"
-    IfErrors 0 FoundJavaInstallPoint
-    DetailPrint "Checking 'Java Runtime Environment'..."
-    ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-    ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
-    IfErrors 0 FoundJavaInstallPoint
-    DetailPrint "Checking 'JDK'..."
-    ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\JDK" "CurrentVersion"
-    ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\JDK\$R1" "JavaHome"
-    ; -- JDK 11 doesn't seem to like our 'default' behaviour of running from
-    ; -- a temp directory with a renamed 'java.exe' so switch that off here
-    ; -- We only need to do this if JDK has been found
-    IfErrors 0 DisableAltLauncher
-    ; -- As we've just cleared the error flag, we need to set it again
-    ; -- otherwise we'll think that we've found an installation
-    ; -- Gotta love the spaghetti...
+    strCpy $R0 "$EXEDIR\jre"
+    DetailPrint "Checking local path [$R0\bin\$JAVAEXE]"
+    IfFileExists  "$R0\bin\$JAVAEXE" 0 JRESearchNoLocal
+       StrCpy $UseDefJava "0"
+       DetailPrint "Using Local  $R0"
+       Goto DisableAltLauncher
+    JRESearchNoLocal:
+        DetailPrint "Checking default java as Local not found"
+        ; -- Check default java
+       ClearErrors
+        nsExec::ExecToStack "java -fullversion"
+        IfErrors JRESearchC  ; continue to use registry
+        Pop $0
+        Pop $0    ;-- response code
+        DetailPrint "program response [$0]"
+        push $0
+        call GetInQuotes
+        Pop $R1
+        IfErrors JRESearchC  ; continue to use registry
+        DetailPrint "Default java is [$R1]"
+        ${VersionCompare} "$R1" "${JRE_VER}" $0
+        StrCpy $UseDefJava "1"
+        IntCmp $0 2 JRESearchC 0 JRESearchC
+        DetailPrint "Useing default java"
+        goto DisableAltLauncher
+  JRESearchC:
+        ; -- loop over javasoft keys looking for our version or greater
+        StrCpy $0 0
+  loopKeys:
+        EnumRegKey $1 HKLM "SOFTWARE\JavaSoft" $0
+        StrCmp $1 "" done  ;-- end of keys
+        StrCpy $2 0
+  loopSubKeys:
+            EnumRegKey $3 HKLM "SOFTWARE\JavaSoft\$1" $2
+            DetailPrint "Checked [SOFTWARE\JavaSoft\$1] item [$2] got [$3]"
+            StrCmp $3 "" doneSubKey  ;--end of subkeys
+            ReadRegStr $6 HKLM "SOFTWARE\JavaSoft\$1\$3" "JavaHome"
+            DetailPrint "JavaHome [$6]"
+            IfErrors nextSubKey
+            ${VersionCompare} "$3" "${JRE_VER}" $5
+            StrCpy $UseDefJava "0"
+            DetailPrint "Found key for java [$3]"
+            IntCmp $5 2 nextSubKey 0 nextSubKey
+            ;--have good one
+            StrCpy $R0 $6   ;-- stuff home
+            StrCpy $R1 $3   ;-- stuff version
+            goto DisableAltLauncher
+    nextSubKey:
+           IntOp $2 $2 + 1
+           DetailPrint "$1 $3 Checked"
+           goto loopSubKeys
+     doneSubKey:
+           IntOp $0 $0 + 1 ;-- move to next top level key
+           DetailPrint "$1 checked - movin on"
+           goto loopKeys
+     done:
+           ;-- still no good java
     SetErrors
-    IfErrors 0 FoundJavaInstallPoint
-    DetailPrint "Checking 'Java Development Kit'..."
-    ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
-    ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$R1" "JavaHome"
-    IfErrors 0 DisableAltLauncher
-    ; -- As we've just cleared the error flag, we need to set it again
-    ; -- otherwise we'll think that we've found an installation
-    ; -- Gotta love the spaghetti...
-    SetErrors
-    Goto FoundJavaInstallPoint
-    
-  DisableAltLauncher:
+    Goto FoundJavaInstallPoint   ;-- counter intuitive I know, but going with errors
+
+  DisableAltLauncher:       ;-- always use this an stop the ssd wear.
     DetailPrint "Switching off alternate launcher..."
     StrCpy $ALTLAUNCH ${FLAG_NO}
 
   FoundJavaInstallPoint:
     StrCpy $R0 "$R0\bin\$JAVAEXE"
-
-  ; -- Not found
-  IfErrors 0 JreFound
+    StrCmp $UseDefJava "0" +2
+    StrCpy $R0 "$JAVAEXE"   ;-- use just the exec name if using default
+    IfErrors 0 JreFound
     ; -- If we've got an error here on x64, switch to the 32-bit registry
     ; -- and retry (not needed if we've forced 32-bit above)
-    StrCmp ${ARCH_32BIT} $x64JRE JRENotFound
+      StrCmp ${ARCH_32BIT} $x64JRE JRENotFound
       SetRegView 32
       DetailPrint "Setting x86 registry view..."
       StrCpy $x64JRE ${ARCH_32BIT}
@@ -350,7 +440,7 @@ Section "Main"
 
   JreNotFound:
     DetailPrint "Java not found!"
-    MessageBox MB_OK|MB_ICONSTOP "Java not found!"
+    MessageBox MB_OK|MB_ICONSTOP "Java not found  in jre, default or registry$\n$\rTry installing or using mklink jre {path to java version ${JRE_VER}"
     Goto Exit
 
   JreFound:
@@ -470,7 +560,6 @@ Section "Main"
   StrCpy $OPTIONS "$OPTIONS -Dsun.java2d.d3d=false"
   StrCpy $OPTIONS "$OPTIONS -Djava.security.policy=security.policy"
   StrCpy $OPTIONS "$OPTIONS -Djogamp.gluegen.UseTempJarCache=false"
-  StrCpy $OPTIONS "$OPTIONS -Djinput.plugins=net.bobis.jinput.hidraw.HidRawEnvironmentPlugin"
   StrCpy $OPTIONS "$OPTIONS -Dswing.defaultlaf=com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
   StrCmp ${ARCH_64BIT} $x64JRE x64Libs x86Libs
   x86Libs:
@@ -528,7 +617,7 @@ Section "Main"
       StrCpy $OPTIONS `$OPTIONS -Djmri.prefsdir="$JMRIPREFS"`
 
   PathOptions:
-  ; -- set paths for Jython and message log
+  ; -- set path for Jython
   ; -- Creates the necessary directory if not existing
   ; -- User Profile is only valid for Win2K and later
   ; -- so skip on earlier versions
@@ -537,8 +626,7 @@ Section "Main"
       CreateDirectory "$JMRIPREFS\systemfiles"
     SetPaths:
     StrCpy $OPTIONS '$OPTIONS -Dpython.home="$JMRIPREFS\systemfiles"'
-    StrCpy $OPTIONS '$OPTIONS -Djmri.log.path="$JMRIPREFS\systemfiles\\"'
-    ; -- jmri.log.path needs a double trailing backslash to ensure a valid command-line
+
   OptionsDone:
   DetailPrint "Options: $OPTIONS"
 
@@ -552,37 +640,103 @@ Section "Main"
   EnvJmriHomeDone:
 
   ; -- Build the ClassPath
+  ;
+  ; The CLASSPATH shall be made up as, first to last:
+  ;  a) Any path elements specified with the -cp:p prepend argument
+  ;  b) JMRI’s code itself via the jmri.jar file
+  ;  c) contents of the program lib/ directory
+  ;  d) contents of the settings:lib/ directory 
+  ;  e) Any path elements specified with the --cp:a append argument
+
   StrCpy $CLASSPATH ".;classes"
   StrCpy $0 "$JMRIHOME" ; normally 'C:\Program Files\JMRI'
   StrCpy $3 "jmri.jar" ; set to jmri.jar to skip jmri.jar
   StrCpy $4 "" ; no prefix required
   Call GetClassPath
   StrCmp $9 "" +2 0
-  StrCpy $CLASSPATH "$CLASSPATH;$9"
+    StrCpy $CLASSPATH "$CLASSPATH;$9"
   StrCpy $CLASSPATH "$CLASSPATH;jmri.jar"
   StrCpy $3 "" ; set to blank to include all .jar files
   StrCpy $4 "lib\" ; lib prefix
   StrCpy $0 "$JMRIHOME\lib" ; normally 'C:\Program Files\JMRI\lib'
   Call GetClassPath
   StrCmp $9 "" +2 0
-  StrCpy $CLASSPATH "$CLASSPATH;$9"
+    StrCpy $CLASSPATH "$CLASSPATH;$9"
   DetailPrint "ClassPath: $CLASSPATH"
 
   ; -- Now prepend and/or append when required
   DetailPrint "Check for any prepended/appended classpath entries"
   StrCmp $P_CLASSPATH "" ClassPathAppend
-  StrCpy $CLASSPATH "$P_CLASSPATH;$CLASSPATH"
-  DetailPrint "Prepended $P_CLASSPATH"
-  ClassPathAppend:
-  StrCmp $CLASSPATH_A "" ClassPathDone
-  StrCpy $CLASSPATH "$CLASSPATH;$CLASSPATH_A"
-  DetailPrint "Appended $CLASSPATH_A"
+    StrCpy $CLASSPATH "$P_CLASSPATH;$CLASSPATH"
+    DetailPrint "Prepended $P_CLASSPATH"
 
-  ClassPathDone:
+  ClassPathAppend:
+
+; add something here to "append" any/all "settings:"\lib\.jar filenames, 
+; separated by a ";".
+
+  StrCpy $0 "$PROFILE\JMRI\lib"
+  DetailPrint "Check $0 for any appended classpath entries"
+
+  Call GetSettingsClassPath
+  DetailPrint "Checked GetSettingsClassPath from $0 and found $9"
+
+  StrCmp $9 "" ContinueClasspathAppend
+    StrCpy $CLASSPATH "$CLASSPATH;$9"
+    DetailPrint "  Adding $9 to Classpath."
+
+  ContinueClasspathAppend:
+
+  StrCmp $CLASSPATH_A "" ContinueClassAppend
+    StrCpy $CLASSPATH "$CLASSPATH;$CLASSPATH_A"
+    DetailPrint "Appended $CLASSPATH_A"
+
+  ContinueClassAppend:
+
   DetailPrint "Final ClassPath: $CLASSPATH"
 
   DetailPrint "MaxLen: ${NSIS_MAX_STRLEN}"
   DetailPrint `ExeString: "$JEXEPATH" $OPTIONS -Djava.class.path="$CLASSPATH" $CLASS $PARAMETERS`
+
+  ; -- Create a preferences:\lib directory for this user
+  IfFileExists "$PROFILE\JMRI\lib\*.*" +2
+    CreateDirectory "$PROFILE\JMRI\lib"
+
+  ; -- Create the directory and README.txt file
+  IfFileExists "$PROFILE\JMRI\lib\*.*" +2
+    CreateDirectory "$PROFILE\JMRI\lib"
+
+  IfFileExists "$PROFILE\JMRI\lib\README.txt" ReadMeIsCreated
+
+  ; Create a "$JMRIPREFS\lib\README.txt" file
+  Push $0
+  FileOpen $0 "$JMRIPREFS\lib\README.txt" w
+  FileWrite $0 '(Since JMRI version 5.7.1.)$\r$\n'
+  FileWrite $0 '$\r$\n'
+  FileWrite $0 'This directory can be used to hold "Plugin" files for JMRI.$\r$\n'
+  FileWrite $0 '$\r$\n'
+  FileWrite $0 'Third-party developers, and, on occasion, JMRI developers, may wish to provide$\r$\n'
+  FileWrite $0 'a "Plugin" to enhance JMRI functionality.  One way to install such a plugin into$\r$\n'
+  FileWrite $0 'JMRI is to:$\r$\n'
+  FileWrite $0 '  1. Quit all JMRI programs.$\r$\n'
+  FileWrite $0 '  2. Acquire the plugin.$\r$\n'
+  FileWrite $0 '  3. Copy the acquired plugin to this directory.$\r$\n'
+  FileWrite $0 '  4. Re-start the JMRI programs that you use.$\r$\n'
+  FileWrite $0 'If it has been installed correctly, JMRI will now use the plugin.  Any plugins $\r$\n'
+  FileWrite $0 'installed here will be available to all JMRI instances >for this user<, except $\r$\n'
+  FileWrite $0 'when JMRI has a similarly-implemented function.$\r$\n'
+  FileWrite $0 '$\r$\n'
+  FileWrite $0 'Any of these .jar files shall be added as the last .jar files in the CLASSPATH.$\r$\n'
+  FileWrite $0 '$\r$\n'
+  FileWrite $0 'Note: Plugin files installed in this directory are only available on a "user-"$\r$\n'
+  FileWrite $0 'specific basis.  If a plugin is to be available to multiple Windows users using$\r$\n'
+  FileWrite $0 'this type of install, each Windows "user" who needs access to the plugin will$\r$\n'
+  FileWrite $0 'need to install the plugin in their own user-specific JMRI directory$\'s "lib"$\r$\n'
+  FileWrite $0 'directory.$\r$\n'
+  FileWrite $0 '$\r$\n'
+  FileClose $0
+  Pop $0
+  ReadMeIsCreated:
 
   ; -- Finally get ready to run the application
   SetOutPath $JMRIHOME
@@ -601,7 +755,7 @@ Section "Main"
 
   ; -- Check the return code is 200 - if so, shutdown
   StrCmp $7 200 Shutdown
-  
+
   ; -- Check the return code is 210 - if so, reboot
   StrCmp $7 210 Reboot PreExit
 
@@ -623,7 +777,10 @@ SectionEnd
 
 Function .onInit
   ; -- Setup the default environment
+  ;    This can be overriden by us of the "/debug" or "[/noisy]" parameter.
+
   SetSilent silent
+
   StrCpy $NOISY ${SW_MINIMIZE}
   StrCpy $FORCE32BIT ${FLAG_NO}
   StrCpy $ALTLAUNCH ${FLAG_YES}
@@ -767,6 +924,7 @@ Function ProcessParameters
   ; -- to append 'CLASSPATH' to classpath
   ; -- $1 already contains complete option with '--cp:a=' prefix
   StrCpy $CLASSPATH_A $1 "" 7 ; strip first 7 chars
+  DetailPrint "Classpath_a is $CLASSPATH_A"
   Return
 
   optsPCP:
@@ -775,7 +933,7 @@ Function ProcessParameters
   ; -- $1 already contains complete option with '--cp:p=' prefix
   StrCpy $P_CLASSPATH $1 "" 7 ; strip first 7 chars
   Return
-  
+
   optsNoAlt:
   StrCpy $ALTLAUNCH ${FLAG_NO}
   Return
@@ -952,6 +1110,57 @@ Function GetClassPath
   finished:
 FunctionEnd
 
+Function GetSettingsClassPath
+; -------------------------------------------------------------------------
+; - Get any additional class path items from preferences:lib for "prepending" to
+;   the CLASSPATH
+; - input:  $0 path to search (i.e. the equivalent of "preferences:lib")
+; - output: $9 AddToClassPath
+; -------------------------------------------------------------------------
+  ;DetailPrint ""
+  ;DetailPrint "Checking $0 for jar files"
+  ; find the first "*.jar" file at $0.
+  StrCpy $9 ""
+
+  FindFirst $2 $1 "$0\*.jar"
+
+  loop:
+    ; DetailPrint "Checking: $1"
+    
+    ; quit if now done
+    StrCmp $1 "" Done
+
+    ; NOTE: the "find" operation WILL find filenames that have other characters
+    ; than the ones specified in FindFirst operation.  So look for the last 4 
+    ; characters of the filename to match ".jar"...
+
+    ; check if found object ends in ".jar"
+    StrCpy $4 $1 4 -4
+    
+    ; DetailPrint "end of text is $4"
+    StrCmp $4 ".jar" 0 GoingToNext
+    
+    ; DetailPrint "answer $0\$1"
+
+    StrCmp $9 "" SkipSemicolon
+      StrCpy $9 "$9;"
+
+    SkipSemicolon:
+    ; add the latest jar file to the end of the list of 
+    ; preferences:lib files
+    StrCpy $9 "$9$0\$1"
+
+    GoingToNext:
+    ; Find the next one, if available
+    FindNext $2 $1
+    Goto loop
+
+  Done:
+  FindClose $0
+  ;DetailPrint ""
+
+FunctionEnd
+
 Function GetParameters
 ; -------------------------------------------------------------------------
 ; - Gets command line parameters
@@ -1043,7 +1252,7 @@ FunctionEnd
 
 Function CheckUserHome
 ; -------------------------------------------------------------------------
-; - Check if the value of the registry key that Java uses to detemine
+; - Check if the value of the registry key that Java uses to determine
 ; - user.home points to the user profile directory.
 ; - For non NT-based systems, always return FLAG_YES
 ; - input:  none

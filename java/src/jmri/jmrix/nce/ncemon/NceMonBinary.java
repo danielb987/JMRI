@@ -1,11 +1,13 @@
 package jmri.jmrix.nce.ncemon;
 
 import java.text.MessageFormat;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jmri.jmrix.nce.NceMessage;
 import jmri.jmrix.nce.NceReply;
 import jmri.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for formatting NCE binary command and replies into
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
  * published November 2007 and is used with NCE's permission.
  *
  * @author Daniel Boudreau Copyright (C) 2012
+ * @author Ken Cameron (C) 2023
  */
 public class NceMonBinary {
 
@@ -157,6 +160,9 @@ public class NceMonBinary {
                 if (m.getNumDataElements() == 5) {
                     // byte three is the Op_1
                     switch (m.getElement(3)) {
+                        case (0):
+                            return MessageFormat.format(Bundle.getMessage("LOCO_CMD_Op1_00"),
+                                    new Object[]{getLocoAddress(m), m.getElement(4)});
                         case (1):
                             return MessageFormat.format(Bundle.getMessage("LOCO_CMD_Op1_01"),
                                     new Object[]{getLocoAddress(m), m.getElement(4)});
@@ -541,7 +547,7 @@ public class NceMonBinary {
             case (REPLY_DATA):
                 break;
             default:
-                log.debug("Unhandled reply type code: {}, display as raw", replyType);
+                log.debug("Unhandled reply type code1: {}, display as raw", replyType);
                 break;
         }
         return MessageFormat.format(Bundle.getMessage("NceReply"), new Object[]{r.toString()});

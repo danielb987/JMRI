@@ -270,7 +270,7 @@ public class JsonUtilSocketServiceTest {
      * Test of onClose method, of class JsonUtilSocketService. This tests that
      * listeners are removed after a message triggering the addition of a
      * listener is sent.
-     * 
+     *
      * @throws JsonException if an exception unexpected in the context of these
      *                       tests occurs
      * @throws JmriException if an exception unexpected in the context of these

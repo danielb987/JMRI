@@ -1,7 +1,6 @@
 package jmri.jmrix.can.adapters.gridconnect;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +9,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jmri.jmrix.ConnectionStatus;
 import jmri.jmrix.can.TrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import purejavacomm.CommPortIdentifier;
-import purejavacomm.NoSuchPortException;
-import purejavacomm.PortInUseException;
-import purejavacomm.SerialPort;
-import purejavacomm.UnsupportedCommOperationException;
 
 /**
  * Implements SerialPortAdapter for the GridConnect protocol.
@@ -27,7 +19,7 @@ import purejavacomm.UnsupportedCommOperationException;
  */
 public class GcSerialDriverAdapter extends GcPortController {
 
-    protected SerialPort activeSerialPort = null;
+    protected FlowControl flowControl = FlowControl.NONE; // disabled to start
 
     /**
      * Creates a new CAN GridConnect Network Driver Adapter.
@@ -57,61 +49,61 @@ public class GcSerialDriverAdapter extends GcPortController {
     }
 
     /**
+     * Creates a new CAN GridConnect Network Driver Adapter.
+     * <p>
+     * Allows for default systemPrefix other than "M".
+     * @param prefix System Prefix.
+     * @param flow flow control, true for RTS/CTS
+     */
+    public GcSerialDriverAdapter(String prefix, FlowControl flow) {
+        super(new jmri.jmrix.can.CanSystemConnectionMemo(prefix));
+        option1Name = "Protocol"; // NOI18N
+        options.put(option1Name, new Option(Bundle.getMessage("ConnectionProtocol"),
+                jmri.jmrix.can.ConfigurationManager.getSystemOptions()));
+        this.manufacturerName = jmri.jmrix.merg.MergConnectionTypeList.MERG;
+        allowConnectionRecovery = true;
+        flowControl = flow;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String openPort(String portName, String appName) {
-        // open the port, check ability to set moderators
-        try {
-            // get and open the primary port
-            CommPortIdentifier portID = CommPortIdentifier.getPortIdentifier(portName);
-            try {
-                activeSerialPort = (SerialPort) portID.open(appName, 2000);  // name of program, msec to wait
-            } catch (PortInUseException p) {
-                return handlePortBusy(p, portName, log);
-            }
 
-            // try to set it for communication via SerialDriver
-            try {
-                // find the baud rate value, configure comm options
-                int baud = currentBaudNumber(mBaudRate);
-                activeSerialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            } catch (UnsupportedCommOperationException e) {
-                log.error("Cannot set serial parameters on port {}: {}", portName, e.getMessage());
-                return "Cannot set serial parameters on port " + portName + ": " + e.getMessage();
-            }
-
-            // disable flow control; hardware lines used for signaling, XON/XOFF might appear in data
-            configureLeadsAndFlowControl(activeSerialPort, 0);
-            activeSerialPort.enableReceiveTimeout(50);  // 50 mSec timeout before sending chars
-
-            // set timeout
-            // activeSerialPort.enableReceiveTimeout(1000);
-            log.debug("Serial timeout was observed as: {} {}",
-                    activeSerialPort.getReceiveTimeout(),
-                    activeSerialPort.isReceiveTimeoutEnabled());
-
-            // get and save stream
-            serialStream = activeSerialPort.getInputStream();
-
-            // purge contents, if any
-            purgeStream(serialStream);
-
-            // report status?
-            if (log.isInfoEnabled()) {
-                log.info("{} port opened at {} baud, sees  DTR: {} RTS: {} DSR: {} CTS: {}  CD: {}", portName, activeSerialPort.getBaudRate(), activeSerialPort.isDTR(), activeSerialPort.isRTS(), activeSerialPort.isDSR(), activeSerialPort.isCTS(), activeSerialPort.isCD());
-            }
-
-            opened = true;
-
-        } catch (NoSuchPortException p) {
-            return handlePortNotFound(p, portName, log);
-        } catch (UnsupportedCommOperationException | IOException ex) {
-            log.error("Unexpected exception while opening port {}", portName, ex);
-            return "Unexpected error while opening port " + portName + ": " + ex;
+        // get and open the primary port
+        currentSerialPort = activatePort(portName, log);
+        if (currentSerialPort == null) {
+            log.error("failed to connect CAN to {}", portName);
+            return Bundle.getMessage("SerialPortNotFound", portName);
         }
+        log.info("Connecting CAN to {} {}", portName, currentSerialPort);
+        
+        // try to set it for communication via SerialDriver
+        // find the baud rate value, configure comm options
+        int baud = currentBaudNumber(mBaudRate);
+        setBaudRate(currentSerialPort, baud);
+        configureLeads(currentSerialPort, true, true);
+        localSetFlowControl();
+
+        // get and save stream
+        serialStream = currentSerialPort.getInputStream();
+        // this is referenced in several other methods, 
+        // so can't easily be removed.
+
+        // report status
+        reportPortStatus(log, portName);
+
+        opened = true;
 
         return null; // indicates OK return
+    }
+
+    /** 
+     * Local set up the flow contro, here to allow override
+     */
+    protected void localSetFlowControl() {
+        setFlowControl(currentSerialPort, flowControl);
     }
 
     /**
@@ -136,7 +128,7 @@ public class GcSerialDriverAdapter extends GcPortController {
         //jmri.jmrix.can.ConfigurationManager.configure(getOptionState(option1Name));
         this.getSystemConnectionMemo().configureManagers();
     }
-    
+
     /**
      * {@inheritDoc}
      * Reconnects to Traffic Controller.
@@ -146,19 +138,19 @@ public class GcSerialDriverAdapter extends GcPortController {
     protected void resetupConnection() {
         if (!getSystemConnectionMemo().getTrafficController().status()) {
             getSystemConnectionMemo().getTrafficController().connectPort(this);
-            ConnectionStatus.instance().setConnectionState(getUserName(), getCurrentPortName(), 
+            ConnectionStatus.instance().setConnectionState(getUserName(), getCurrentPortName(),
                 ((getSystemConnectionMemo().getTrafficController().status() && status()) ? ConnectionStatus.CONNECTION_UP : ConnectionStatus.CONNECTION_DOWN));
         }
     }
-    
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * Closes serial streams.
      */
     @Override
     protected void closeConnection(){
-        log.info("Closing connection {}.",getCurrentPortName());        
+        log.info("Closing connection {}.",getCurrentPortName());
         try {
             if (serialStream!=null) {
                 serialStream.close();
@@ -170,12 +162,12 @@ public class GcSerialDriverAdapter extends GcPortController {
             bufferedStream = null;
         }
         catch ( IOException e ) {
-            log.error("unable to close {}",this.activeSerialPort.getName());
+            log.error("unable to close {}",this.currentSerialPort);
         }
-        if (activeSerialPort!=null) {
-            activeSerialPort.close();
+        if (currentSerialPort!=null) {
+            currentSerialPort.closePort();
         }
-        activeSerialPort = null;
+        currentSerialPort = null;
     }
 
     /**
@@ -189,7 +181,7 @@ public class GcSerialDriverAdapter extends GcPortController {
     /**
      * Helper class wrapping the input serial port's InputStream.
      * <p>
-     * It starts a helper thread at high priority that reads the input serial 
+     * It starts a helper thread at high priority that reads the input serial
      * port as fast as it can, buffering all incoming data in memory in a queue.
      * <p>
      * The queue is unbounded and readers will get the data from the queue.
@@ -199,7 +191,7 @@ public class GcSerialDriverAdapter extends GcPortController {
     private static class AsyncBufferInputStream extends FilterInputStream {
 
         private boolean active;
-        
+
         /**
          * Create new AsyncBufferInputStream.
          * @param inputStream Input Stream.
@@ -220,15 +212,17 @@ public class GcSerialDriverAdapter extends GcPortController {
          * Helper function that tries to perform a read from the underlying port
          * with a given maximum length.
          *
-         * @param len how many bytes to request from the port. Setting this to 1
+         * @param maxLen how many bytes to request from the port. Setting this to 1
          *            will apparently block the thread if there are zero bytes
          *            available.
          * @return a block of data read, or nullptr if fatal IO errors make
          *         further use of this port impossible.
          */
-        private BufferEntry tryRead(int len) {
+        private BufferEntry tryRead(int maxLen) {
             BufferEntry tail = new BufferEntry();
             try {
+                // read what's available, up to maxLen, but always at least 1
+                int len = Math.max (1, Math.min(maxLen, in.available()));
                 tail.data = new byte[len];
                 tail.len = in.read(tail.data, 0, len);
                 errorCount = 0;
@@ -238,12 +232,8 @@ public class GcSerialDriverAdapter extends GcPortController {
                     log.error("Closing read thread due to too many IO errors", e);
                     return null;
                 } else {
-                    log.warn("Error reading serial port {}", portName, e);
+                    log.debug("Error reading serial port {}", portName, e);
                 }
-            } 
-            catch (purejavacomm.PureJavaIllegalStateException e) {
-                log.error("PureJavaIllegalStateException Illegal State, closing read thread.");
-                return null;
             }
             return tail;
         }
@@ -267,7 +257,7 @@ public class GcSerialDriverAdapter extends GcPortController {
                 } else {
                     continue;
                 }
-                // Read as many bytes as we have in large increments. REading 128 bytes is a good
+                // Read as many bytes as we have in large increments. Reading 128 bytes is a good
                 // compromise between throughput (4 gridconnect packets per kernel IO) but not
                 // wasting a lot of memory if less data actually shows up.
                 do {
@@ -357,7 +347,7 @@ public class GcSerialDriverAdapter extends GcPortController {
         int headOfs = 0;
         // How many of the last consecutive read attempts have resulted in an exception.
         int errorCount = 0;
-        
+
         @Override
         public void close() throws IOException {
             active = false;
@@ -377,26 +367,10 @@ public class GcSerialDriverAdapter extends GcPortController {
         }
         synchronized (this) {
             if (bufferedStream == null) {
-                bufferedStream = new AsyncBufferInputStream(serialStream, activeSerialPort.getName());
+                bufferedStream = new AsyncBufferInputStream(serialStream, currentSerialPort.toString());
             }
             return new DataInputStream(bufferedStream);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DataOutputStream getOutputStream() {
-        if (!opened) {
-            log.error("getOutputStream called before load(), stream not available");
-        }
-        try {
-            return new DataOutputStream(activeSerialPort.getOutputStream());
-        } catch (java.io.IOException e) {
-            log.error("getOutputStream exception: {}", e.getMessage());
-        }
-        return null;
     }
 
     /**
@@ -430,21 +404,11 @@ public class GcSerialDriverAdapter extends GcPortController {
         return 0;
     }
 
-    /**
-     * Migration method.
-     * @return array of valid baud numbers.
-     * @deprecated since 4.16
-     */
-    @Deprecated
-    public int[] validBaudValues() {
-        return validBaudNumbers();
-    }
-
     // private control members
     InputStream serialStream = null;
     // Stream wrapper that buffers the input bytes.
     private InputStream bufferedStream = null;
 
-    private final static Logger log = LoggerFactory.getLogger(GcSerialDriverAdapter.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GcSerialDriverAdapter.class);
 
 }

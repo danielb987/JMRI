@@ -16,18 +16,15 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import jmri.Block;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jmri.JmriException;
 import jmri.jmrit.display.LocoIcon;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Track an occupied block to adjacent blocks becoming occupied.
@@ -38,16 +35,16 @@ public class Tracker {
 
     private static final String TRACKER_NO_CURRENT_BLOCK = "TrackerNoCurrentBlock";
     TrackerTableAction _parent;
-    private String _trainName;
+    private final String _trainName;
     private ArrayList<OBlock> _headRange; // blocks reachable from head block
     private ArrayList<OBlock> _tailRange; // blocks reachable from tail block
-    private ArrayList<OBlock> _lostRange = new ArrayList<>(); // blocks that lost detection
-    private LinkedList<OBlock> _occupies = new LinkedList<>();     // blocks occupied by train
+    private final ArrayList<OBlock> _lostRange = new ArrayList<>(); // blocks that lost detection
+    private final LinkedList<OBlock> _occupies = new LinkedList<>();     // blocks occupied by train
     long _startTime;
     String _statusMessage;
-    private Color _markerForeground;
-    private Color _markerBackground;
-    private Font _markerFont;
+    private final Color _markerForeground;
+    private final Color _markerBackground;
+    private final Font _markerFont;
     private OBlock _darkBlock = null;
     enum PathSet {NOWAY, NOTSET, PARTIAL, SET}
 
@@ -143,14 +140,16 @@ public class Tracker {
     /**
      * Check if there is a path set between blkA and blkB with at most
      * one dark block between them.  If there is both a path set to exit blkA
-     * and a path set to enter blkB, the path is PathSet.SET. If there an exit
-     * or entry path set, but not both, the path is PathSet.PARTIAL.  If there
+     * and a path set to enter blkB, the path is PathSet.SET. If an exit or
+     * an entry path is set, but not both, the path is PathSet.PARTIAL. If there
      * is neither an exit path not an entry path set, the path is PathSet.NO.
      * When NOT PathSet.SET between blkA and blkB, then any dark blocks between 
      * blkA and blkB are examined. All are examined for the most likely path
      * through the dark block connecting blkA and blkB.
-     * blkA is the current Head or Tail block
-     * blkB is a block from the headRange or tailRange, where entry may be possible
+     * @param blkA the current Head or Tail block
+     * @param blkB a block from the headRange or tailRange, where entry is possible
+     * @param recurse true if path can be used more than once
+     * @return one of PathSet enum values representing (how much of) a path was set
      */
    private PathSet hasPathBetween(@Nonnull OBlock blkA, @Nonnull OBlock blkB, boolean recurse)
            throws JmriException {
@@ -204,7 +203,7 @@ public class Tracker {
                pathset = PathSet.PARTIAL;
            }
        }
-       if (_darkBlock == null && !darkBlocks.isEmpty()) {
+       if (_darkBlock == null) { // _darkBlocks never empty at this point
            // no good paths, nevertheless there is an intermediate dark block
            _darkBlock = darkBlocks.get(0);
        }
@@ -286,18 +285,14 @@ public class Tracker {
                 _occupies.addLast(b);
             }
             showBlockValue(b);
-            if (_lostRange.contains(b)) {
-                _lostRange.remove(b);
-            }
+            _lostRange.remove(b);
         }
     }
 
     private void removeFromOccupies(OBlock b) {
         if (b != null) {
             _occupies.remove(b);
-            if (_lostRange.contains(b)) {
-                _lostRange.remove(b);
-            }
+            _lostRange.remove(b);
         }
     }
     
@@ -353,15 +348,9 @@ public class Tracker {
         if (_occupies.isEmpty()) {
             log.warn("{} does not occupy any blocks!", _trainName);
         }
-        for (OBlock b : _occupies) {
-            range.add(b);
-        }
-        for (OBlock b : _headRange) {
-            range.add(b);
-        }
-        for (OBlock b : _tailRange) {
-            range.add(b);
-        }
+        range.addAll(_occupies);
+        range.addAll(_headRange);
+        range.addAll(_tailRange);
         return range;
     }
 
@@ -420,9 +409,8 @@ public class Tracker {
                     log.error("Block \"{}\" occupied by \"{}\", but block.getValue()= {}!",
                             block.getDisplayName(),  _trainName, block.getValue());
                 }
-            } else if (_lostRange.contains(block)) {
+            } else
                 _lostRange.remove(block);
-            }
             Warrant w = block.getWarrant();
             if (w != null) {
                 String msg = Bundle.getMessage("AllocatedToWarrant", 
@@ -431,7 +419,7 @@ public class Tracker {
                 // Was it the warranted train that entered the block?
                 // Can't tell who got notified first - tracker or warrant?
                 // is distance of 1 block OK?
-                if (Math.abs(w.getIndexOfBlock(block, 0) - idx) < 2) {
+                if (Math.abs(w.getIndexOfBlockAfter(block, 0) - idx) < 2) {
                     _statusMessage = msg;
                     return true;
                 }  // otherwise claim it for tracker
@@ -541,9 +529,9 @@ public class Tracker {
             JButton recoverButton = new JButton(Bundle.getMessage("ButtonRecover"));
             recoverButton.addActionListener((ActionEvent a) -> {
                 if (_occupies.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, 
+                    JmriJOptionPane.showMessageDialog(this, 
                             Bundle.getMessage("RecoverOrExit", _trainName, Bundle.getMessage("ButtonStop")),
-                            Bundle.getMessage("WarningTitle"), JOptionPane.INFORMATION_MESSAGE);                    
+                            Bundle.getMessage("WarningTitle"), JmriJOptionPane.INFORMATION_MESSAGE);                    
                 } else {
                     doAction();
                 }
@@ -570,8 +558,8 @@ public class Tracker {
                     }
                 }
                 if (msg != null) {
-                    JOptionPane.showMessageDialog(this, msg,
-                            Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.showMessageDialog(this, msg,
+                            Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
                     _jList.removeListSelectionListener(this);
                     list.remove(blk);
                     if (list.isEmpty()) {
@@ -685,6 +673,7 @@ public class Tracker {
 
         class BlockCellRenderer extends JLabel implements ListCellRenderer<Object> {
 
+            @Override
             public Component getListCellRendererComponent(
               JList<?> list,           // the list
               Object value,            // value to display
@@ -727,5 +716,6 @@ public class Tracker {
         }
     }
 
-    private static final Logger log = LoggerFactory.getLogger(Tracker.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Tracker.class);
+
 }

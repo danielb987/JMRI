@@ -2,24 +2,27 @@
 <!-- This is the common sidebar definition for supported hardware pages -->
 <!-- ALPHABETIC ORDER -->
 
-		<dt><h3 style="padding-left: 1em;"><a href="/help/en/html/hardware/">Supported Hardware</a></h3></dt>
+		<dt><a href="/help/en/html/hardware/index.shtml">Supported Hardware</a></dt>
 		<dd>Devices, command stations, networks, and protocols:
-		    <ul>
-                <li><a href="/help/en/html/hardware/anyma/index.shtml">Anyma DMX</a>
+		  <ul>
+        <li><a href="/help/en/html/hardware/anyma/index.shtml">Anyma DMX</a>
 				<li><a href="/help/en/html/hardware/arduino/index.shtml">Arduinos</a>
 				<li><a href="/help/en/html/hardware/XPressNet/index.shtml">Atlas Commander</a>
 				<li><a href="/help/en/html/hardware/bachrus/index.shtml">Bachrus</a>
-				<li><a href="/help/en/html/hardware/can/index.shtml">CAN Bus Networks</a>				
-				<li><a href="/help/en/html/hardware/can/cbus/index.shtml">CBUS&trade;</a>
+				<li><a href="/help/en/html/hardware/bidib/index.shtml">BiDiB</a>
+				<li><a href="/help/en/html/hardware/can/index.shtml">CAN Bus Networks</a>
+				<li><a href="/help/en/html/hardware/can/cbus/index.shtml">CBUS&reg;</a>
 				<li><a href="/help/en/html/hardware/cmri/CMRI.shtml">C/MRI</a>
 				<li><a href="/help/en/html/hardware/acela/index.shtml">CTI Electronics (Acela)</a>
 				<li><a href="/help/en/html/hardware/easydcc/EasyDCC.shtml">CVP EasyDCC</a>
                 <li><a href="/help/en/html/hardware/dcc4pc/index.shtml">Dcc4Pc</a>
- 				<li><a href="/help/en/html/hardware/dccpp/index.shtml">DCC++</a>
+				<li><a href="/help/en/html/hardware/dcc-ex/index.shtml">DCC-EX EX-CommandStation</a>
+				<li><a href="/help/en/html/hardware/dccpp/index.shtml">DCC++</a>
 				<li><a href="/help/en/html/hardware/misc/DccSpecialties.shtml">DCC Specialities</a>
 				<li><a href="/help/en/html/hardware/XBee/index.shtml">Digi XBee</a>
 				<li><a href="/help/en/html/hardware/digirails/index.shtml">Digikeijs (Digirails)</a>
 				<li><a href="/help/en/html/hardware/loconet/Digitrax.shtml">Digitrax</a>
+                <li><a href="/help/en/html/hardware/powerline/Compatibility.shtml">DMX 512 (Powerline)</a>
 				<li><a href="/help/en/html/hardware/ecos/index.shtml">ESU ECoS</a>
 				<li><a href="/help/en/html/hardware/loconet/Fleischmann.shtml">Fleischmann</a>
 				<li><a href="/help/en/html/hardware/XPressNet/index.shtml">Hornby</a>
@@ -59,6 +62,6 @@
                 <li><a href="/help/en/html/hardware/XPressNet/index.shtml">XPressNet</a>
 				<li><a href="/help/en/html/hardware/zimo/Zimo.shtml">Zimo MX-1</a>
 				<li><a href="/help/en/html/hardware/XPressNet/index.shtml">ZTC Controls</a>
-		    </ul>
+		  </ul>
 		</dd>
 <!-- /SidebarSupportedHardware.shtml -->

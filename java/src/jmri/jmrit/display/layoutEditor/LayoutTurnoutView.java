@@ -3,7 +3,6 @@ package jmri.jmrit.display.layoutEditor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import static java.lang.Float.POSITIVE_INFINITY;
 import java.util.*;
@@ -18,6 +17,8 @@ import jmri.jmrit.display.layoutEditor.LayoutTurnout.LinkType;
 import jmri.jmrit.display.layoutEditor.LayoutTurnout.TurnoutType;
 import jmri.jmrit.display.layoutEditor.blockRoutingTable.LayoutBlockRouteTableAction;
 import jmri.util.MathUtil;
+import jmri.util.swing.JmriJOptionPane;
+import jmri.util.swing.JmriMouseEvent;
 
 /**
  * MVC View component for the LayoutTurnout class.
@@ -257,9 +258,6 @@ public class LayoutTurnoutView extends LayoutTrackView {
     public Point2D pointD = new Point2D.Double(20, 20);
 
     private int version = 1;
-
-    public String linkedTurnoutName = ""; // name of the linked Turnout (as entered in tool)
-    public LinkType linkType = LinkType.NO_LINK;
 
     private final boolean useBlockSpeed = false;
 
@@ -1469,6 +1467,28 @@ public class LayoutTurnoutView extends LayoutTrackView {
         pointD = rotatePoint(pointD, sineRot, cosineRot);
     }
 
+    public double getRotationDEG() {
+        double result = 0;
+        switch (getTurnoutType()) {
+            case RH_TURNOUT:
+            case LH_TURNOUT:
+            case WYE_TURNOUT: {
+                result = 90 - MathUtil.computeAngleDEG(getCoordsA(), getCoordsCenter());
+                break;
+            }
+            case DOUBLE_XOVER:
+            case RH_XOVER:
+            case LH_XOVER: {
+                result = 90 - MathUtil.computeAngleDEG(getCoordsA(), getCoordsB());
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        return result;
+    }
+
     /**
      * Toggle turnout if clicked on, physical turnout exists, and not disabled.
      */
@@ -1525,7 +1545,7 @@ public class LayoutTurnoutView extends LayoutTrackView {
      */
     @Override
     @Nonnull
-    protected JPopupMenu showPopup(@CheckForNull MouseEvent mouseEvent) {
+    protected JPopupMenu showPopup(@Nonnull JmriMouseEvent mouseEvent) {
         if (popup != null) {
             popup.removeAll();
         } else {
@@ -1697,10 +1717,12 @@ public class LayoutTurnoutView extends LayoutTrackView {
             });
 
             // Rotate if there are no track connections
-            if ((getConnectA() == null) && (getConnectB() == null)
-                    && (getConnectC() == null)
-                    && (getConnectD() == null)) {
-                JMenuItem rotateItem = new JMenuItem(Bundle.getMessage("Rotate") + "...");
+//            if ((getConnectA() == null) && (getConnectB() == null)
+//                    && (getConnectC() == null)
+//                    && (getConnectD() == null))
+            {
+                JMenuItem rotateItem = new JMenuItem(Bundle.getMessage("Rotate_",
+                        String.format("%.1f", getRotationDEG())) + "...");
                 popup.add(rotateItem);
                 rotateItem.addActionListener((ActionEvent event) -> {
                     boolean entering = true;
@@ -1709,17 +1731,17 @@ public class LayoutTurnoutView extends LayoutTrackView {
                     while (entering) {
                         // prompt for rotation angle
                         error = false;
-                        newAngle = JOptionPane.showInputDialog(layoutEditor,
-                                Bundle.getMessage("MakeLabel", Bundle.getMessage("EnterRotation")));
-                        if (newAngle.isEmpty()) {
+                        newAngle = JmriJOptionPane.showInputDialog(layoutEditor,
+                                Bundle.getMessage("MakeLabel", Bundle.getMessage("EnterRotation")),"");
+                        if (newAngle==null || newAngle.isEmpty()) {
                             return;  // cancelled
                         }
                         double rot = 0.0;
                         try {
                             rot = Double.parseDouble(newAngle);
                         } catch (Exception e1) {
-                            JOptionPane.showMessageDialog(layoutEditor, Bundle.getMessage("Error3")
-                                    + " " + e1, Bundle.getMessage("ErrorTitle"), JOptionPane.ERROR_MESSAGE);
+                            JmriJOptionPane.showMessageDialog(layoutEditor, Bundle.getMessage("Error3")
+                                    + " " + e1, Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
                             error = true;
                             newAngle = "";
                         }
@@ -1740,6 +1762,7 @@ public class LayoutTurnoutView extends LayoutTrackView {
                     setUpDefaultSize();
                 }
             });
+
             popup.add(new AbstractAction(Bundle.getMessage("ButtonEdit")) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -1749,7 +1772,8 @@ public class LayoutTurnoutView extends LayoutTrackView {
             popup.add(new AbstractAction(Bundle.getMessage("ButtonDelete")) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (canRemove() && layoutEditor.removeLayoutTurnout(turnout)) {
+                    if (canRemove() && removeInlineLogixNG()
+                            && layoutEditor.removeLayoutTurnout(turnout)) {
                         // Returned true if user did not cancel
                         remove();
                         dispose();
@@ -1766,17 +1790,17 @@ public class LayoutTurnoutView extends LayoutTrackView {
                         if (isTurnoutTypeXover()) {
                             tools.setSignalsAtXoverTurnoutFromMenu(turnout,
                                     letbp.signalIconEditor, letbp.signalFrame);
-                        } else if (linkType == LinkType.NO_LINK) {
+                        } else if (getLinkType() == LinkType.NO_LINK) {
                             tools.setSignalsAtTurnoutFromMenu(turnout,
                                     letbp.signalIconEditor, letbp.signalFrame);
-                        } else if (linkType == LinkType.THROAT_TO_THROAT) {
-                            tools.setSignalsAtThroatToThroatTurnoutsFromMenu(turnout, linkedTurnoutName,
+                        } else if (getLinkType() == LinkType.THROAT_TO_THROAT) {
+                            tools.setSignalsAtThroatToThroatTurnoutsFromMenu(turnout, getLinkedTurnoutName(),
                                     letbp.signalIconEditor, letbp.signalFrame);
-                        } else if (linkType == LinkType.FIRST_3_WAY) {
-                            tools.setSignalsAt3WayTurnoutFromMenu(getTurnoutName(), linkedTurnoutName,
+                        } else if (getLinkType() == LinkType.FIRST_3_WAY) {
+                            tools.setSignalsAt3WayTurnoutFromMenu(getTurnoutName(), getLinkedTurnoutName(),
                                     letbp.signalIconEditor, letbp.signalFrame);
-                        } else if (linkType == LinkType.SECOND_3_WAY) {
-                            tools.setSignalsAt3WayTurnoutFromMenu(linkedTurnoutName, getTurnoutName(),
+                        } else if (getLinkType() == LinkType.SECOND_3_WAY) {
+                            tools.setSignalsAt3WayTurnoutFromMenu(getLinkedTurnoutName(), getTurnoutName(),
                                     letbp.signalIconEditor, letbp.signalFrame);
                         }
                     }
@@ -1784,7 +1808,7 @@ public class LayoutTurnoutView extends LayoutTrackView {
 
                 JMenu jm = new JMenu(Bundle.getMessage("SignalHeads"));
                 if (layoutEditor.getLETools().addLayoutTurnoutSignalHeadInfoToMenu(
-                        getTurnoutName(), linkedTurnoutName, jm)) {
+                        getTurnoutName(), getLinkedTurnoutName(), jm)) {
                     jm.add(ssaa);
                     popup.add(jm);
                 } else {
@@ -1861,9 +1885,11 @@ public class LayoutTurnoutView extends LayoutTrackView {
             }   // getBlockName().isEmpty()
             setAdditionalEditPopUpMenu(popup);
             layoutEditor.setShowAlignmentMenu(popup);
+            addCommonPopupItems(mouseEvent, popup);
             popup.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
         } else if (!viewAdditionalMenu.isEmpty()) {
             setAdditionalViewPopUpMenu(popup);
+            addCommonPopupItems(mouseEvent, popup);
             popup.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
         }
         return popup;
@@ -3003,18 +3029,19 @@ public class LayoutTurnoutView extends LayoutTrackView {
     protected void drawTurnoutControls(Graphics2D g2) {
         if (!isDisabled() && !(isDisabledWhenOccupied() && isOccupied())) {
             Color foregroundColor = g2.getColor();
-            // if turnout is not continuing state
-            if (getState() != getContinuingSense()) {
-                // then switch to background color
+
+            if (getState() != Turnout.CLOSED) {
+                // then switch to background (thrown) color
                 g2.setColor(g2.getBackground());
             }
+
             if (layoutEditor.isTurnoutFillControlCircles()) {
                 g2.fill(trackControlCircleAt(getCoordsCenter()));
             } else {
                 g2.draw(trackControlCircleAt(getCoordsCenter()));
             }
-            // if turnout is not continuing state
-            if (getState() != getContinuingSense()) {
+
+            if (getState() != Turnout.CLOSED) {
                 // then restore foreground color
                 g2.setColor(foregroundColor);
             }

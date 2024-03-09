@@ -14,7 +14,7 @@
 	    
             <!--#include virtual="/help/en/parts/SidebarSupportedHardware.shtml" -->    
 	    
-	    <!--#include virtual="/help/en/parts/SidebarInstall.shtml" -->
+	          <!--#include virtual="/help/en/parts/SidebarInstall.shtml" -->
 
          </dl>
 
@@ -22,4 +22,6 @@
 
     </div> <!-- closes #side -->
 
+<!-- button is in /Header -->
+<script src="/js/side.js"></script>
 <!-- /Sidebar.shtml -->

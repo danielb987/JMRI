@@ -26,7 +26,7 @@ public class ManageLocationsFrameTest extends jmri.util.JmriJFrameTestBase {
         ListeningSpot s = new ListeningSpot();
         ReporterManager rmgr = jmri.InstanceManager.getDefault(jmri.ReporterManager.class);
         Object[][] reporterTable = new Object[rmgr.getObjectCount()][6];
-        
+
         BlockManager bmgr = jmri.InstanceManager.getDefault(jmri.BlockManager.class);
         Object[][] blockTable = new Object[bmgr.getObjectCount()][6];
 

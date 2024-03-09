@@ -48,7 +48,6 @@ public class JsonIdTagHttpServiceTest extends JsonNamedBeanHttpServiceTestBase<I
         JUnitUtil.initReporterManager();
     }
 
-    @SuppressWarnings("deprecation")
     @AfterEach
     @Override
     public void tearDown() throws Exception {
@@ -150,7 +149,7 @@ public class JsonIdTagHttpServiceTest extends JsonNamedBeanHttpServiceTestBase<I
         } catch (JsonException ex) {
             assertEquals(400, ex.getCode());
         }
-        JUnitAppender.assertErrorMessage("Invalid system name for Reporter: System name must start with \"ID\".");
+        JUnitAppender.assertErrorMessage("Invalid system name for IdTag: System name must start with \"ID\".");
     }
 
     @Test

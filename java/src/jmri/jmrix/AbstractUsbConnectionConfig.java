@@ -5,26 +5,25 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.ListCellRenderer;
+
 import jmri.InstanceManager;
 import jmri.UserPreferencesManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Abstract base class for common implementation of the ConnectionConfig
@@ -56,7 +55,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
         log.debug("*   AbstractUSBConnectionConfig()");
     }
 
-    protected UsbPortAdapter adapter = null;
+    protected UsbPortAdapter adapter;
 
     @Override
     public UsbPortAdapter getAdapter() {
@@ -73,52 +72,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
     protected void checkInitDone() {
         log.debug("init called for {}", name());
         if (!init) {
-            if (adapter.getSystemConnectionMemo() != null) {
-                systemPrefixField.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (!adapter.getSystemConnectionMemo().setSystemPrefix(systemPrefixField.getText())) {
-                            JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionPrefixDialog", systemPrefixField.getText()));
-                            systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
-                        }
-                    }
-                });
-                systemPrefixField.addFocusListener(new FocusListener() {
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        if (!adapter.getSystemConnectionMemo().setSystemPrefix(systemPrefixField.getText())) {
-                            JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionPrefixDialog", systemPrefixField.getText()));
-                            systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
-                        }
-                    }
-
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                    }
-                });
-                connectionNameField.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (!adapter.getSystemConnectionMemo().setUserName(connectionNameField.getText())) {
-                            JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionNameDialog", connectionNameField.getText()));
-                            connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
-                        }
-                    }
-                });
-                connectionNameField.addFocusListener(new FocusListener() {
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        if (!adapter.getSystemConnectionMemo().setUserName(connectionNameField.getText())) {
-                            JOptionPane.showMessageDialog(null, Bundle.getMessage("ConnectionNameDialog", connectionNameField.getText()));
-                            connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
-                        }
-                    }
-
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                    }
-                });
-            }
+            addNameEntryCheckers(adapter);
             portBox.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
@@ -139,7 +93,6 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
                     });
                 }
             }
-
             init = true;
         }
     }
@@ -302,12 +255,12 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
         catch (UnsatisfiedLinkError e1) {
             log.error("UnsatisfiedLinkError - the serial library has not been installed properly");
             log.error("java.library.path={}", System.getProperty("java.library.path", "<unknown>"));
-            JOptionPane.showMessageDialog(null, Bundle.getMessage("ErrorComLibLoad"));
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("ErrorComLibLoad"));
             return;
         }
 
         if (adapter.getSystemConnectionMemo() != null) {
-            systemPrefixField.setValue(adapter.getSystemConnectionMemo().getSystemPrefix());
+            systemPrefixField.setText(adapter.getSystemConnectionMemo().getSystemPrefix());
             connectionNameField.setText(adapter.getSystemConnectionMemo().getUserName());
             NUMOPTIONS = NUMOPTIONS + 2;
         }
@@ -320,9 +273,7 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
 
         showAdvanced.setFont(showAdvanced.getFont().deriveFont(9f));
         showAdvanced.setForeground(Color.blue);
-        showAdvanced.addItemListener((ItemEvent e) -> {
-            showAdvancedItems();
-        });
+        showAdvanced.addItemListener((ItemEvent e) -> showAdvancedItems());
         showAdvancedItems();
         init = false;       // need to reload action listeners
         checkInitDone();
@@ -538,7 +489,6 @@ abstract public class AbstractUsbConnectionConfig extends AbstractConnectionConf
         return new ArrayList<>();
     }
 
-    private final static Logger log
-            = LoggerFactory.getLogger(AbstractUsbConnectionConfig.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractUsbConnectionConfig.class);
 
 }

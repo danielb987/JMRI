@@ -486,10 +486,10 @@ final public class LayoutEditorChecks {
             if (pp.getType() == PositionablePoint.PointType.ANCHOR) {
                 // adjacent track segments must be defined...
                 TrackSegment ts1 = pp.getConnect1();
-                TrackSegmentView ts1v = layoutEditor.getTrackSegmentView(ts1);
                 TrackSegment ts2 = pp.getConnect2();
-                TrackSegmentView ts2v = layoutEditor.getTrackSegmentView(ts2);
                 if ((ts1 != null) && (ts2 != null)) {
+                    TrackSegmentView ts1v = layoutEditor.getTrackSegmentView(ts1);
+                    TrackSegmentView ts2v = layoutEditor.getTrackSegmentView(ts2);
                     // can't be an arc, circle or bezier...
                     if (!ts1v.isArc() && !ts1v.isCircle() && !ts1v.isBezier()
                             && !ts2v.isArc() && !ts2v.isCircle() && !ts2v.isBezier()) {
@@ -623,7 +623,6 @@ final public class LayoutEditorChecks {
                     }
                     if (good) {
                         linearBezierTrackSegmentViews.add(tsv);
-//                        ts.setBezier(false);
                     }
                 }   // c1 & c2 aren't null
             }   // is bezier
@@ -646,7 +645,6 @@ final public class LayoutEditorChecks {
                 if (checkMarkedMenuItemNamesSet.contains(name)) {
                     jmi.setSelected(true);
                 }
-                //ts.setBezier(false);
             }
         }   //count == 0
     }   // setupCheckLinearBezierTrackSegmentsMenu
@@ -659,7 +657,7 @@ final public class LayoutEditorChecks {
         log.debug("doCheckLinearBezierTrackSegmentsMenuItem({})", trackSegmentName);
 
         LayoutTrack layoutTrack = layoutEditor.getFinder().findObjectByName(trackSegmentName);
-        
+
         if (layoutTrack != null) {
             LayoutTrackView layoutTrackView = layoutEditor.getLayoutTrackView(layoutTrack);
             layoutEditor.setSelectionRect(layoutTrackView.getBounds());
@@ -688,7 +686,7 @@ final public class LayoutEditorChecks {
         checkFixedRadiusBezierTrackSegmentsMenu.add(checkInProgressMenuItem);
 
         // check all TrackSegments
-        List<TrackSegmentView> linearBezierTrackSegmentViews = new ArrayList<>();
+        List<TrackSegmentView> radiusBezierTrackSegmentViews = new ArrayList<>();
         for (TrackSegmentView tsv : layoutEditor.getTrackSegmentViews()) {
             // has to be a bezier
             if (tsv.isBezier()) {
@@ -741,11 +739,8 @@ final public class LayoutEditorChecks {
                                     }
                                 }
                                 if (good) {
-                                    linearBezierTrackSegmentViews.add(tsv);
-                                    tsv.setCircle(true);
+                                    radiusBezierTrackSegmentViews.add(tsv);
                                 }
-                            } else {
-                                log.error("checkFixedRadiusBezierTrackSegments(): unequal radius");
                             }
                         }
                     }
@@ -756,11 +751,11 @@ final public class LayoutEditorChecks {
         // clear the "in progress..." menu item
         checkFixedRadiusBezierTrackSegmentsMenu.removeAll();
         // if we didn't find any...
-        if (checkFixedRadiusBezierTrackSegmentsMenu.getMenuComponentCount() == 0) {
+        if (radiusBezierTrackSegmentViews.size() == 0) {
             checkFixedRadiusBezierTrackSegmentsMenu.add(checkNoResultsMenuItem);
         } else {
-            // for each linear bezier track segment we found
-            for (TrackSegmentView tsv : linearBezierTrackSegmentViews) {
+            // for each radius bezier track segment we found
+            for (TrackSegmentView tsv : radiusBezierTrackSegmentViews) {
                 String name = tsv.getName();
                 JMenuItem jmi = new JMenuItem(name);
                 checkFixedRadiusBezierTrackSegmentsMenu.add(jmi);
@@ -770,7 +765,6 @@ final public class LayoutEditorChecks {
                 if (checkMarkedMenuItemNamesSet.contains(name)) {
                     jmi.setSelected(true);
                 }
-                ///ts.setBezier(false);
             }
         }   //count == 0
     }   // setupCheckFixedRadiusBezierTrackSegmentsMenu
@@ -783,7 +777,7 @@ final public class LayoutEditorChecks {
         log.debug("doCheckFixedRadiusBezierTrackSegmentsMenuItem({})", trackSegmentName);
 
         LayoutTrack layoutTrack = layoutEditor.getFinder().findObjectByName(trackSegmentName);
-        
+
         if (layoutTrack != null) {
             LayoutTrackView layoutTrackView = layoutEditor.getLayoutTrackView(layoutTrack);
             layoutEditor.setSelectionRect(layoutTrackView.getBounds());

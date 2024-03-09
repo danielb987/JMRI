@@ -6,10 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BorderFactory;
@@ -29,17 +29,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * New GUI pane for a Virtual Sound Decoder (VSDecoder).
+ *
  * <hr>
  * This file is part of JMRI.
  * <p>
- * JMRI is free software; you can redistribute it and/or modify it under 
- * the terms of version 2 of the GNU General Public License as published 
+ * JMRI is free software; you can redistribute it and/or modify it under
+ * the terms of version 2 of the GNU General Public License as published
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
  * <p>
- * JMRI is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ * JMRI is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
  * @author Mark Underwood Copyright (C) 2011
@@ -49,28 +50,13 @@ public class VSDControl extends JPanel {
     public static final String OPTION_CHANGE = "OptionChange"; // NOI18N
     public static final String DELETE = "DeleteDecoder"; // NOI18N
 
-    /**
-     * 
-     * @deprecated since 4.19.5; use {@link #OPTION_CHANGE} or {@link #DELETE} instead
-     */
-    @Deprecated
-    public static enum PropertyChangeId {
-
-        OPTION_CHANGE, DELETE
-    }
-
-    /**
-     * 
-     * @deprecated since 4.19.5; use {@link #OPTION_CHANGE} or {@link #DELETE} instead
-     */
-    @Deprecated
-    public static final Map<PropertyChangeId, String> PCIdMap;
+    // Map of Mnemonic KeyEvent values to GUI Components
+    private static final Map<String, Integer> Mnemonics = new HashMap<>();
 
     static {
-        Map<PropertyChangeId, String> aMap = new HashMap<>();
-        aMap.put(PropertyChangeId.OPTION_CHANGE, OPTION_CHANGE);
-        aMap.put(PropertyChangeId.DELETE, DELETE);
-        PCIdMap = Collections.unmodifiableMap(aMap);
+        // GUI buttons
+        Mnemonics.put("OptionButton", KeyEvent.VK_O);
+        Mnemonics.put("DeleteButton", KeyEvent.VK_D);
     }
 
     String address;
@@ -178,8 +164,12 @@ public class VSDControl extends JPanel {
         deleteButton = new JButton(Bundle.getMessage("ButtonDelete"));
         configPanel.add(Box.createHorizontalGlue());
         configPanel.add(optionButton);
+        optionButton.setToolTipText(Bundle.getMessage("MgrOptionButtonToolTip"));
+        optionButton.setMnemonic(Mnemonics.get("OptionButton"));
         configPanel.add(Box.createHorizontalGlue());
         configPanel.add(deleteButton);
+        deleteButton.setToolTipText(Bundle.getMessage("MgrDeleteButtonToolTip"));
+        deleteButton.setMnemonic(Mnemonics.get("DeleteButton"));
 
         JPanel alPanel = new JPanel();
         alPanel.setLayout(new BoxLayout(alPanel, BoxLayout.PAGE_AXIS));
@@ -269,21 +259,6 @@ public class VSDControl extends JPanel {
     protected void optionsDialogPropertyChange(PropertyChangeEvent event) {
         log.debug("internal options dialog handler");
         firePropertyChange(OPTION_CHANGE, null, event.getNewValue());
-    }
-
-    // VSDecoderManager Events
-
-    /**
-     * Fire a property change from this object
-     * @param id prop ID.
-     * @param oldProp old prop.
-     * @param newProp new prop.
-     * @deprecated since 4.19.5; use {@link #firePropertyChange(java.lang.String, java.lang.Object, java.lang.Object)} directly
-     */
-    // NOTE: should this be public???
-    @Deprecated
-    public void firePropertyChange(PropertyChangeId id, Object oldProp, Object newProp) {
-        firePropertyChange(PCIdMap.get(id), oldProp, newProp);
     }
 
     private static final Logger log = LoggerFactory.getLogger(VSDControl.class);

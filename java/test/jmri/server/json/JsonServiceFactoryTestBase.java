@@ -21,8 +21,7 @@ import jmri.spi.JsonServiceFactory;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * Common methods for JMRI JSON Service HTTP provider tests.
@@ -36,11 +35,11 @@ public abstract class JsonServiceFactoryTestBase<H extends JsonHttpService, I ex
     protected ObjectMapper mapper = null;
     protected Locale locale = Locale.ENGLISH;
     protected JsonServiceFactory<H, I> factory;
-    protected String[] duplicates;
 
     /**
      * @throws Exception to allow overriding methods to throw any exception
      */
+    @BeforeEach
     @OverridingMethodsMustInvokeSuper
     public void setUp() throws Exception {
         JUnitUtil.setUp();

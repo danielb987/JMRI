@@ -7,7 +7,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Factory for BeanTable startup actions.
- * 
+ *
  * @author Randall Wood Copyright 2020
  */
 @ServiceProvider(service = StartupActionFactory.class)
@@ -27,12 +27,22 @@ public final class BeanTableStartupActionFactory extends AbstractStartupActionFa
             return Bundle.getMessage(locale, "StartupListedTableAction"); // NOI18N
         } else if (clazz.equals(LogixTableAction.class)) {
             return Bundle.getMessage(locale, "StartupLogixTableAction"); // NOI18N
+        } else if (clazz.equals(LogixNGTableAction.class)) {
+            return Bundle.getMessage(locale, "StartupLogixNGTableAction"); // NOI18N
+        } else if (clazz.equals(LogixNGModuleTableAction.class)) {
+            return Bundle.getMessage(locale, "StartupLogixNGModuleTableAction"); // NOI18N
+        } else if (clazz.equals(LogixNGTableTableAction.class)) {
+            return Bundle.getMessage(locale, "StartupLogixNGTableTableAction"); // NOI18N
+        } else if (clazz.equals(LogixNGGlobalVariableTableAction.class)) {
+            return Bundle.getMessage(locale, "StartupLogixNGGlobalVariableTableAction"); // NOI18N
         } else if (clazz.equals(LRouteTableAction.class)) {
             return Bundle.getMessage(locale, "StartupLRouteTableAction"); // NOI18N
         } else if (clazz.equals(MemoryTableAction.class)) {
             return Bundle.getMessage(locale, "StartupMemoryTableAction"); // NOI18N
         } else if (clazz.equals(OBlockTableAction.class)) {
             return Bundle.getMessage(locale, "StartupOBlockTableAction"); // NOI18N
+        } else if (clazz.equals(RailComTableAction.class)) {
+            return Bundle.getMessage(locale, "StartupRailComTableAction"); // NOI18N
         } else if (clazz.equals(ReporterTableAction.class)) {
             return Bundle.getMessage(locale, "StartupReporterTableAction"); // NOI18N
         } else if (clazz.equals(RouteTableAction.class)) {
@@ -63,10 +73,15 @@ public final class BeanTableStartupActionFactory extends AbstractStartupActionFa
             LightTableAction.class,
             ListedTableAction.class,
             LogixTableAction.class,
+            LogixNGTableAction.class,
+            LogixNGModuleTableAction.class,
+            LogixNGTableTableAction.class,
+            LogixNGGlobalVariableTableAction.class,
             LRouteTableAction.class,
             MemoryTableAction.class,
             OBlockTableAction.class,
             ReporterTableAction.class,
+            RailComTableAction.class,
             RouteTableAction.class,
             SectionTableAction.class,
             SensorTableAction.class,
@@ -76,5 +91,5 @@ public final class BeanTableStartupActionFactory extends AbstractStartupActionFa
             TransitTableAction.class,
             TurnoutTableAction.class};
     }
-    
+
 }

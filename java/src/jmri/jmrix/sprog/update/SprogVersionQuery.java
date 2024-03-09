@@ -62,27 +62,23 @@ public class SprogVersionQuery implements SprogListener {
         }
     }
 
+    /**
+     * Remove a SprogVersionListener.
+     * Stops Timer ( if running ), when no further Listeners are present.
+     * @param l the Listener to remove.
+     */
     public synchronized void removeSprogVersionListener(SprogVersionListener l) {
         if (versionListeners.contains(l)) {
             versionListeners.removeElement(l);
+        }
+        if (versionListeners.size() == 0 ) {
+            stopTimer();
         }
     }
 
     @SuppressWarnings("unchecked")
     private synchronized Vector<SprogVersionListener> getCopyOfListeners() {
         return (Vector<SprogVersionListener>) versionListeners.clone();
-    }
-
-    /**
-     * Return the SprogVersionQuery instance to use.
-     *
-     * @return The registered SprogVersionQuery instance for general use, if
-     *         need be creating one.
-     * @deprecated JMRI Since 4.4 instance() shouldn't be used, convert to JMRI multi-system support structure
-     */
-    @Deprecated
-    static public SprogVersionQuery instance() {
-        return null;
     }
 
     synchronized public void requestVersion(SprogVersionListener l) {
@@ -92,7 +88,11 @@ public class SprogVersionQuery implements SprogListener {
         }
         if (state == QueryState.DONE) {
             // Reply immediately
-            l.notifyVersion(ver);
+            try {
+                l.notifyVersion(ver);
+            } catch (jmri.ProgrammerException e) {
+                log.error("Programmer Exception in non-programming context", e);
+            }
             return;
         }
         // Remember this listener
@@ -118,7 +118,11 @@ public class SprogVersionQuery implements SprogListener {
         ver = v;
         for (SprogVersionListener listener : getCopyOfListeners()) {
             try {
-                listener.notifyVersion(ver);
+                try {
+                    listener.notifyVersion(ver);
+                } catch (jmri.ProgrammerException e) {
+                    log.error("Programmer Exception in non-programming context", e);
+                }
                 versionListeners.remove(listener);
             } catch (Exception e) {
                 log.warn("notify: During dispatch to {}", listener, e);
@@ -243,13 +247,13 @@ public class SprogVersionQuery implements SprogListener {
                     log.debug("Found: {}", v.toString());
                     notifyVersion(v);
                     state = QueryState.DONE;
-                    break;
+//                    break;
                 }
+                tc.resetTimeout();
                 break;
             }
 
             case DONE:
-                tc.resetTimeout();
                 break;
 
             default: {

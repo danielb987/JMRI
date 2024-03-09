@@ -33,16 +33,18 @@ public class AutoSave {
         }
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value="SLF4J_FORMAT_SHOULD_BE_CONST",
+            justification="I18N of Info Message")
     private static void saveFiles() {
         while (true) {
             synchronized (autoSave) {
+                if (!Setup.isAutoSaveEnabled()) {
+                    break;
+                }
                 try {
                     autoSave.wait(60000); // check every minute
                 } catch (InterruptedException e) {
                     break; // stop was called
-                }
-                if (!Setup.isAutoSaveEnabled()) {
-                    break;
                 }
                 if (OperationsXml.areFilesDirty()) {
                     log.debug("Detected dirty operation files");
@@ -61,7 +63,7 @@ public class AutoSave {
                     }
                     if (OperationsXml.areFilesDirty()) {
                         OperationsXml.save();
-                        log.info("Operation files automatically saved");
+                        log.info(Bundle.getMessage("InfoFilesSaved"));
                     }
                 }
             }

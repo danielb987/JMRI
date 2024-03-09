@@ -1,21 +1,17 @@
 package jmri.jmrit.operations.rollingstock.engines;
 
 import java.awt.GridBagLayout;
-import java.text.MessageFormat;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
-import jmri.jmrit.operations.rollingstock.RollingStock;
-import jmri.jmrit.operations.rollingstock.RollingStockAttribute;
-import jmri.jmrit.operations.rollingstock.RollingStockEditFrame;
+import jmri.jmrit.operations.rollingstock.*;
 import jmri.jmrit.operations.rollingstock.engines.tools.EngineAttributeEditFrame;
 import jmri.jmrit.operations.setup.Control;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user edit of engine
@@ -36,6 +32,9 @@ public class EngineEditFrame extends RollingStockEditFrame {
     JCheckBox bUnitCheckBox = new JCheckBox(Bundle.getMessage("BUnit"));
 
     JTextField hpTextField = new JTextField(8);
+    JTextField teTextField = new JTextField(8);
+
+    private static final String SPEED = "25"; // MPH for tractive effort to HP conversion
 
     EngineAttributeEditFrame engineAttributeEditFrame;
 
@@ -47,7 +46,7 @@ public class EngineEditFrame extends RollingStockEditFrame {
     @Override
     public void initComponents() {
 
-        groupComboBox = InstanceManager.getDefault(EngineManager.class).getConsistComboBox();
+        groupComboBox = InstanceManager.getDefault(ConsistManager.class).getComboBox();
         modelComboBox = engineModels.getComboBox();
 
         super.initComponents();
@@ -61,11 +60,11 @@ public class EngineEditFrame extends RollingStockEditFrame {
         bUnitCheckBox.setSelected(false);
 
         // load tool tips
-        builtTextField.setToolTipText(Bundle.getMessage("buildDateTip"));
-        editModelButton.setToolTipText(MessageFormat.format(Bundle.getMessage("TipAddDeleteReplace"),
-                new Object[]{Bundle.getMessage("Model").toLowerCase()}));
-        editGroupButton.setToolTipText(MessageFormat.format(Bundle.getMessage("TipAddDeleteReplace"),
-                new Object[]{Bundle.getMessage("Consist").toLowerCase()}));
+        builtTextField.setToolTipText(Bundle.getMessage("TipBuildDate"));
+        editModelButton.setToolTipText(Bundle.getMessage("TipAddDeleteReplace",
+                Bundle.getMessage("Model").toLowerCase()));
+        editGroupButton.setToolTipText(Bundle.getMessage("TipAddDeleteReplace",
+                Bundle.getMessage("Consist").toLowerCase()));
         bUnitCheckBox.setToolTipText(Bundle.getMessage("TipBoosterUnit"));
 
         deleteButton.setToolTipText(Bundle.getMessage("TipDeleteButton"));
@@ -80,10 +79,20 @@ public class EngineEditFrame extends RollingStockEditFrame {
         pModel.setVisible(true);
 
         // row 12
+        pPower.setLayout(new BoxLayout(pPower, BoxLayout.X_AXIS));
+        JPanel pHp = new JPanel();
         pHp.setLayout(new GridBagLayout());
         pHp.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Hp")));
         addItem(pHp, hpTextField, 0, 0);
-        pHp.setVisible(true);
+        JPanel pTe = new JPanel();
+        pTe.setLayout(new GridBagLayout());
+        pTe.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("TractiveEffort")));
+        addItem(pTe, teTextField, 0, 0);
+        pPower.add(pHp);
+        pPower.add(pTe);
+        pPower.setVisible(true);
+
+        teTextField.setToolTipText(Bundle.getMessage("TipConvertTE-HP", SPEED));
 
         pGroup.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Consist")));
 
@@ -111,12 +120,13 @@ public class EngineEditFrame extends RollingStockEditFrame {
     }
 
     public void load(Engine engine) {
+        setTitle(Bundle.getMessage("TitleEngineEdit"));
+        
         if (!engineModels.containsName(engine.getModel())) {
-            String msg = MessageFormat.format(Bundle.getMessage("modelNameNotExist"),
-                    new Object[]{engine.getModel()});
-            if (JOptionPane
-                    .showConfirmDialog(this, msg, Bundle.getMessage("engineAddModel"),
-                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String msg = Bundle.getMessage("modelNameNotExist",
+                    engine.getModel());
+            if (JmriJOptionPane.showConfirmDialog(this, msg, Bundle.getMessage("engineAddModel"),
+                    JmriJOptionPane.YES_NO_OPTION) == JmriJOptionPane.YES_OPTION) {
                 engineModels.addName(engine.getModel());
             }
         }
@@ -129,8 +139,6 @@ public class EngineEditFrame extends RollingStockEditFrame {
         bUnitCheckBox.setSelected(engine.isBunit());
         hpTextField.setText(engine.getHp());
         groupComboBox.setSelectedItem(engine.getConsistName());
-
-        setTitle(Bundle.getMessage("TitleEngineEdit"));
     }
 
     // combo boxes
@@ -156,13 +164,12 @@ public class EngineEditFrame extends RollingStockEditFrame {
     @Override
     protected boolean check(RollingStock engine) {
         // check to see if engine with road and number already exists
-        Engine existingEngine =
-                engineManager.getByRoadAndNumber((String) roadComboBox.getSelectedItem(), roadNumberTextField
-                        .getText());
+        Engine existingEngine = engineManager.getByRoadAndNumber((String) roadComboBox.getSelectedItem(),
+                roadNumberTextField.getText());
         if (existingEngine != null) {
             if (engine == null || !existingEngine.getId().equals(engine.getId())) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("engineExists"), Bundle
-                        .getMessage("engineCanNotUpdate"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("engineExists"),
+                        Bundle.getMessage("engineCanNotUpdate"), JmriJOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -173,6 +180,8 @@ public class EngineEditFrame extends RollingStockEditFrame {
     protected void save(boolean isSave) {
         super.save(engineManager, isSave);
         Engine engine = (Engine) _rs;
+        
+        checkAndSetLocationAndTrack(engine);
 
         engine.setBunit(bUnitCheckBox.isSelected());
 
@@ -181,7 +190,7 @@ public class EngineEditFrame extends RollingStockEditFrame {
                 engine.setConsist(null);
                 engine.setBlocking(Engine.DEFAULT_BLOCKING_ORDER);
             } else if (!engine.getConsistName().equals(groupComboBox.getSelectedItem())) {
-                engine.setConsist(engineManager.getConsistByName((String) groupComboBox.getSelectedItem()));
+                engine.setConsist(InstanceManager.getDefault(ConsistManager.class).getConsistByName((String) groupComboBox.getSelectedItem()));
                 if (engine.getConsist() != null) {
                     engine.setBlocking(engine.getConsist().getSize());
                     blockingTextField.setText(Integer.toString(engine.getBlocking()));
@@ -190,22 +199,48 @@ public class EngineEditFrame extends RollingStockEditFrame {
         }
         pBlocking.setVisible(engine.getConsist() != null);
 
+        convertTractiveEffortToHp();
         // confirm that horsepower is a number
         if (!hpTextField.getText().trim().isEmpty()) {
             try {
                 Integer.parseInt(hpTextField.getText());
                 engine.setHp(hpTextField.getText());
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("engineHorsepower"),
-                        Bundle.getMessage("engineCanNotHp"), JOptionPane.ERROR_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("engineHorsepower"),
+                        Bundle.getMessage("engineCanNotHp"), JmriJOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+        // is this engine part of a consist? Ask if all engines should have the same location and track
+        if (engine.getConsist() != null) {
+            List<Engine> engines = engine.getConsist().getEngines();
+            for (Engine cEngine : engines) {
+                if (cEngine != engine) {
+                    if (cEngine.getLocation() != engine.getLocation() || cEngine.getTrack() != engine.getTrack()) {
+                        int results = JmriJOptionPane.showConfirmDialog(this, Bundle
+                                .getMessage("engineInConsistLocation",
+                                engine.toString(), engine.getLocationName(), engine.getTrackName()),
+                                Bundle.getMessage("enginePartConsist"),
+                                JmriJOptionPane.YES_NO_OPTION);
+                        if (results == JmriJOptionPane.YES_OPTION) {
+                            // change the location for all engines in consist
+                            for (Engine cEngine2 : engines) {
+                                if (cEngine2 != engine) {
+                                    setLocationAndTrack(cEngine2);
+                                }
+                            }
+                        }
+                        break; // done
+                    }
+                }
             }
         }
     }
 
     @Override
     protected void delete() {
-        Engine engine = engineManager.getByRoadAndNumber((String) roadComboBox.getSelectedItem(), roadNumberTextField
-                .getText());
+        Engine engine = engineManager.getByRoadAndNumber((String) roadComboBox.getSelectedItem(),
+                roadNumberTextField.getText());
         if (engine != null) {
             engineManager.deregister(engine);
         }
@@ -247,8 +282,30 @@ public class EngineEditFrame extends RollingStockEditFrame {
         }
     }
 
+    /**
+     * Converts tractive effort to HP using the formula: HP = TE * MPH / 375. MPH
+     * set at 25, see SPEED. 60% conversion efficiency to produce reasonable HP values.
+     */
+    private void convertTractiveEffortToHp() {
+        String TE = teTextField.getText().trim();
+        if (!TE.isEmpty()) {
+            TE = TE.replace(",", "");
+            int te = 0;
+            try {
+                te = Integer.parseInt(TE);
+            } catch (Exception e) {
+                log.error("Not able to convert TE {} to HP", teTextField.getText());
+            }
+            if (te > 0) {
+                int hp = te * Integer.parseInt(SPEED) / 625;
+                hpTextField.setText(Integer.toString(hp));
+            }
+        }
+    }
+
     @Override
     protected void addPropertyChangeListeners() {
+        InstanceManager.getDefault(ConsistManager.class).addPropertyChangeListener(this);
         engineModels.addPropertyChangeListener(this);
         engineManager.addPropertyChangeListener(this);
         super.addPropertyChangeListeners();
@@ -256,6 +313,7 @@ public class EngineEditFrame extends RollingStockEditFrame {
 
     @Override
     protected void removePropertyChangeListeners() {
+        InstanceManager.getDefault(ConsistManager.class).removePropertyChangeListener(this);
         engineModels.removePropertyChangeListener(this);
         engineManager.removePropertyChangeListener(this);
         if (_rs != null) {
@@ -267,8 +325,8 @@ public class EngineEditFrame extends RollingStockEditFrame {
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (Control.SHOW_PROPERTY) {
-            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(), e
-                    .getNewValue());
+            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(),
+                    e.getNewValue());
         }
         super.propertyChange(e);
 
@@ -284,8 +342,8 @@ public class EngineEditFrame extends RollingStockEditFrame {
                 modelComboBox.setSelectedItem(((Engine) _rs).getModel());
             }
         }
-        if (e.getPropertyName().equals(EngineManager.CONSISTLISTLENGTH_CHANGED_PROPERTY)) {
-            engineManager.updateConsistComboBox(groupComboBox);
+        if (e.getPropertyName().equals(ConsistManager.LISTLENGTH_CHANGED_PROPERTY)) {
+            InstanceManager.getDefault(ConsistManager.class).updateComboBox(groupComboBox);
             if (_rs != null) {
                 groupComboBox.setSelectedItem(((Engine) _rs).getConsistName());
             }
@@ -295,6 +353,6 @@ public class EngineEditFrame extends RollingStockEditFrame {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(EngineEditFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EngineEditFrame.class);
 
 }

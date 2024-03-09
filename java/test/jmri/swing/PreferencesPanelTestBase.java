@@ -2,14 +2,13 @@ package jmri.swing;
 
 import jmri.util.JUnitUtil;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.catchThrowable;
 
 /**
- *  Base Tests for implementations of the PreferenesPanel interface.
+ *  Base Tests for implementations of the PreferencesPanel interface.
  *
  * @author Paul Bender Colyright (C) 2020
  */
@@ -20,7 +19,6 @@ abstract public class PreferencesPanelTestBase<P extends PreferencesPanel> {
     /**
      * Implementing classes should set the value of prefsPanel in setUp.
      */
-    @BeforeEach
     abstract public void setUp();
 
     @AfterEach

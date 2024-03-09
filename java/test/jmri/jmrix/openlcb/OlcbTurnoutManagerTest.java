@@ -16,7 +16,7 @@ import org.openlcb.*;
  */
 public class OlcbTurnoutManagerTest extends jmri.managers.AbstractTurnoutMgrTestBase {
 
-    private static OlcbSystemConnectionMemo memo;
+    private static OlcbSystemConnectionMemoScaffold memo;
     static Connection connection;
     static NodeID nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
     static java.util.ArrayList<Message> messages;
@@ -25,7 +25,7 @@ public class OlcbTurnoutManagerTest extends jmri.managers.AbstractTurnoutMgrTest
     public String getSystemName(int i) {
         return "MTX010203040506070" + i + ";X010203040506070" + (i - 1);
     }
-    
+
     @Override
     protected String getASystemNameWithNoPrefix() {
         return "X0102030405060702;X0102030405060701";
@@ -62,16 +62,24 @@ public class OlcbTurnoutManagerTest extends jmri.managers.AbstractTurnoutMgrTest
         Assert.assertNotNull("real object returned ", t);
         Assert.assertSame("system name correct ", t, l.getBySystemName(getSystemName(getNumToTest1())));
     }
-    
+
+    @Test
+    public void testLeadingZeros() {
+        Assert.assertNotNull(l.provide("01.02.03.04.05.06.07.08;01.02.03.04.05.06.07.09"));
+        Assert.assertNotNull(l.provide("01.02.03.04.05.06.07.08;01.02.03.04.05.06.07.0A"));
+        Assert.assertNotNull(l.provide("1.02.03.04.05.06.07.08;01.02.03.04.05.06.07.0B"));
+        Assert.assertNotNull(l.provide("01.02.03.04.05.06.07.08;1.02.03.04.05.06.07.0C"));
+    }
+
     @Override
     @Test
     public void testRegisterDuplicateSystemName() throws PropertyVetoException, NoSuchFieldException,
-            NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+            IllegalArgumentException, IllegalAccessException {
         String s1 = l.makeSystemName("x0102030405060701;x0102030405060702");
         String s2 = l.makeSystemName("x0102030405060703;x0102030405060704");
         testRegisterDuplicateSystemName(l, s1, s2);
     }
-    
+
     @Test
     @Override
     public void testSetAndGetOutputInterval() {
@@ -89,13 +97,14 @@ public class OlcbTurnoutManagerTest extends jmri.managers.AbstractTurnoutMgrTest
     public void setUp() {
         l = new OlcbTurnoutManager(memo);
     }
- 
+
     @AfterEach
     public void tearDown() {
         l.dispose();
     }
 
     @BeforeAll
+    @SuppressWarnings("deprecation") // OlcbInterface(NodeID, Connection)
     static public void preClassInit() {
         JUnitUtil.setUp();
         JUnitUtil.initInternalTurnoutManager();
@@ -109,7 +118,7 @@ public class OlcbTurnoutManagerTest extends jmri.managers.AbstractTurnoutMgrTest
             }
         };
 
-        memo = new OlcbSystemConnectionMemo(); // this self-registers as 'M'
+        memo = new OlcbSystemConnectionMemoScaffold(); // this self-registers as 'M'
         memo.setProtocol(jmri.jmrix.can.ConfigurationManager.OPENLCB);
         memo.setInterface(new OlcbInterface(nodeID, connection) {
             @Override
@@ -117,7 +126,7 @@ public class OlcbTurnoutManagerTest extends jmri.managers.AbstractTurnoutMgrTest
                 return connection;
             }
         });
-    
+
         jmri.util.JUnitUtil.waitFor(()-> (messages.size()>0),"Initialization Complete message");
     }
 

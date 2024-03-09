@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manage the XBee specific Sensor implementation.
- *
+ * <p>
  * System names are formatted as one of:
  * <ul>
  *   <li>"ZSnnn", where nnn is the sensor number without padding</li>
@@ -66,8 +66,8 @@ public class XBeeSensorManager extends jmri.managers.AbstractSensorManager imple
      */
     @Override
     @Nonnull
-    public Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
-        XBeeNode curNode = null;
+    protected Sensor createNewSensor(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+        XBeeNode curNode;
         String name = addressFromSystemName(systemName);
         if ((curNode = (XBeeNode) tc.getNodeFromName(name)) == null) {
             if ((curNode = (XBeeNode) tc.getNodeFromAddress(name)) == null) {

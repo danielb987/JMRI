@@ -6,7 +6,6 @@ import static jmri.server.json.JSON.DECODER_FAMILY;
 import static jmri.server.json.JSON.DECODER_MODEL;
 import static jmri.server.json.JSON.F;
 import static jmri.server.json.JSON.FUNCTION_KEYS;
-import static jmri.server.json.JSON.GET;
 import static jmri.server.json.JSON.GROUP;
 import static jmri.server.json.JSON.ICON;
 import static jmri.server.json.JSON.IMAGE;
@@ -23,7 +22,6 @@ import static jmri.server.json.JSON.OWNER;
 import static jmri.server.json.JSON.ROAD;
 import static jmri.server.json.JSON.SELECTED_ICON;
 import static jmri.server.json.JSON.SHUNTING_FUNCTION;
-import static jmri.server.json.JSON.V5;
 import static jmri.server.json.JSON.VALUE;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -192,7 +190,7 @@ public class JsonRosterHttpService extends JsonHttpService {
                 ? new StdDateFormat().format(entry.getDateModified())
                 : null);
         ArrayNode labels = data.putArray(FUNCTION_KEYS);
-        for (int i = 0; i <= entry.getMAXFNNUM(); i++) {
+        for (int i = 0; i <= entry.getMaxFnNumAsInt(); i++) {
             ObjectNode label = mapper.createObjectNode();
             label.put(NAME, F + i);
             label.put(LABEL, entry.getFunctionLabel(i));
@@ -219,7 +217,7 @@ public class JsonRosterHttpService extends JsonHttpService {
 
     /**
      * Get a list of roster groups.
-     * 
+     *
      * @param request the JSON request
      * @return a message containing the roster groups
      * @throws JsonException if a requested roster group does not exist
@@ -231,20 +229,6 @@ public class JsonRosterHttpService extends JsonHttpService {
             array.add(getRosterGroup(request.locale, name, request.id));
         }
         return message(array, request.id);
-    }
-
-    /**
-     * Get a list of roster groups.
-     * 
-     * @param locale the client locale
-     * @param id the request id set by the client
-     * @return a message containing the roster groups
-     * @throws JsonException if a requested roster group does not exist
-     * @deprecated since 4.19.2; use {@link #getRosterGroups(JsonRequest)} instead
-     */
-    @Deprecated
-    public JsonNode getRosterGroups(Locale locale, int id) throws JsonException {
-        return getRosterGroups(new JsonRequest(locale, V5, GET, id));
     }
 
     public JsonNode getRosterGroup(Locale locale, String name, int id) throws JsonException {

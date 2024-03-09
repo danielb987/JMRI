@@ -38,6 +38,20 @@
             ],
             "description": "The name of the consist the engine is in"
         },
+        "trainId": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "null to remove engine from its train"
+        },
+        "trainName": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "name of train engine is assigned to, null if not assigned"
+        },
         "destination": {
             "type": [
                 "object",
@@ -63,6 +77,10 @@
         "outOfService": {
             "type": "boolean",
             "description": "True if out of service; false otherwise"
+        },
+        "locationUnknown": {
+            "type": "boolean",
+            "description": "True if car is lost, false otherwise"
         },
         "owner": {
             "type": "string",

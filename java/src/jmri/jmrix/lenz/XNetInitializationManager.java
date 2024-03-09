@@ -20,33 +20,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class XNetInitializationManager {
 
-    /**
-     * Construct a memo using the defaults and a version check.  This Constructor
-     * is included for backwards compatability and should not be used for new code.
-     * @param memo The connectionmemo to initialize.
-     * @deprecated since 4.21.1. Use {@link #XNetInitializationManager()} and the builder
-     * interface instead.
-     */
-    @Deprecated
-    public XNetInitializationManager(XNetSystemConnectionMemo memo){
-        memo(memo);
-        setDefaults();
-        setTimeout(getInitTimeout());
-        versionCheck();
-        init();
-    }
-
     public XNetInitializationManager() {
-    }
-
-    /**
-     * Define the default timeout used during initialization
-     * @return timeout value in milliseconds
-     * @deprecated since 4.21.1.  Use {@link #setTimeout(int)} instead.
-     */
-    @Deprecated
-    protected int getInitTimeout() {
-        return initTimeout;
     }
 
     private XNetSystemConnectionMemo systemMemo;
@@ -371,9 +345,9 @@ public class XNetInitializationManager {
         new XNetInitializer(this);
 
         // Since we can't currently reconfigure the user interface after
-        // initilization, We need to wait for the initilization thread
+        // initialization, We need to wait for the initialization thread
         // to finish before we can continue.  The wait  can be removed IF
-        // we revisit the GUI initilization process.
+        // we revisit the GUI initialization process.
         synchronized (this) {
             log.debug("start wait");
             new jmri.util.WaitHandler(this);
@@ -468,7 +442,7 @@ public class XNetInitializationManager {
         }
 
         protected javax.swing.Timer setupInitTimer() {
-            // Initialize and start initilization timeout timer.
+            // Initialize and start initialization timeout timer.
             javax.swing.Timer retVal = new javax.swing.Timer(initTimeout,
                     (ActionEvent e) -> {
                                     /* If the timer times out, notify any
@@ -493,7 +467,7 @@ public class XNetInitializationManager {
                     parent.notify();
                 }
             } catch (Exception e) {
-                log.error("Exception {] while notifying initilization thread.",e);
+                log.error("Exception {] while notifying initialization thread.",e);
             }
             if (log.isDebugEnabled()) {
                 log.debug("Notification Sent");

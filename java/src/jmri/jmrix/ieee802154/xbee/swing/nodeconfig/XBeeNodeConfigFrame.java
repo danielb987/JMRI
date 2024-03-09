@@ -2,20 +2,22 @@ package jmri.jmrix.ieee802154.xbee.swing.nodeconfig;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.listeners.IDiscoveryListener;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+
 import jmri.jmrix.ieee802154.xbee.XBeeConnectionMemo;
 import jmri.jmrix.ieee802154.xbee.XBeeNode;
 import jmri.jmrix.ieee802154.xbee.XBeeTrafficController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Frame for user configuration of XBee nodes Derived from node configuration
@@ -28,8 +30,8 @@ import org.slf4j.LoggerFactory;
 public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.NodeConfigFrame implements IDiscoveryListener {
 
     private XBeeTrafficController xtc = null;
-    protected javax.swing.JButton discoverButton = new javax.swing.JButton(Bundle.getMessage("ButtonDiscover"));
-    private JComboBox<XBeeNode> nodeField = new javax.swing.JComboBox<XBeeNode>();
+    protected final javax.swing.JButton discoverButton = new javax.swing.JButton(Bundle.getMessage("ButtonDiscover"));
+    private final JComboBox<XBeeNode> nodeField = new javax.swing.JComboBox<>();
     protected JTable assignmentTable = null;
     protected javax.swing.table.TableModel assignmentListModel = null;
 
@@ -80,7 +82,7 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
     }
 
     /*
-     * Initilaize the address panel.
+     * Initialize the address panel.
      */
     @Override
     protected JPanel initAddressPanel(){
@@ -92,12 +94,7 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
         panel11.add(new JLabel(Bundle.getMessage("LabelNodeSelection") + " "));
         panel11.add(nodeField);
         nodeField.setToolTipText(Bundle.getMessage("TipNodeSelection"));
-        nodeField.addItemListener(new java.awt.event.ItemListener() {
-            @Override
-            public void itemStateChanged(java.awt.event.ItemEvent e) {
-                   nodeSelected();
-            }
-        });
+        nodeField.addItemListener(e -> nodeSelected());
 
         initAddressBoxes();
 
@@ -106,7 +103,7 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
     }
 
     /*
-     * Initilaize the Button panel.
+     * Initialize the Button panel.
      */
     @Override
     protected JPanel initButtonPanel(){
@@ -117,79 +114,44 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
         addButton.setText(Bundle.getMessage("ButtonAdd"));
         addButton.setVisible(true);
         addButton.setToolTipText(Bundle.getMessage("TipAddButton"));
-        addButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                addButtonActionPerformed();
-            }
-        });
+        addButton.addActionListener(e -> addButtonActionPerformed());
         panel4.add(addButton);
         discoverButton.setText(Bundle.getMessage("ButtonDiscover"));
         discoverButton.setVisible(true);
         discoverButton.setToolTipText(Bundle.getMessage("TipAddButton"));
-        discoverButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                discoverButtonActionPerformed();
-            }
-        });
+        discoverButton.addActionListener(e -> discoverButtonActionPerformed());
         discoverButton.setEnabled(!(xtc.getXBee().getNetwork().isDiscoveryRunning()));
         panel4.add(discoverButton);
         editButton.setText(Bundle.getMessage("ButtonEdit"));
         editButton.setVisible(true);
         editButton.setToolTipText(Bundle.getMessage("TipEditButton"));
         panel4.add(editButton);
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                editButtonActionPerformed();
-            }
-        });
+        editButton.addActionListener(e -> editButtonActionPerformed());
         panel4.add(deleteButton);
         deleteButton.setText(Bundle.getMessage("ButtonDelete"));
         deleteButton.setVisible(true);
         deleteButton.setToolTipText(Bundle.getMessage("TipDeleteButton"));
         panel4.add(deleteButton);
-        deleteButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                deleteButtonActionPerformed();
-            }
-        });
+        deleteButton.addActionListener(e -> deleteButtonActionPerformed());
         panel4.add(doneButton);
         doneButton.setText(Bundle.getMessage("ButtonDone"));
         doneButton.setVisible(true);
         doneButton.setToolTipText(Bundle.getMessage("TipDoneButton"));
         panel4.add(doneButton);
-        doneButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                doneButtonActionPerformed();
-            }
-        });
+        doneButton.addActionListener(e -> doneButtonActionPerformed());
         panel4.add(updateButton);
         updateButton.setText(Bundle.getMessage("ButtonUpdate"));
         updateButton.setVisible(true);
         updateButton.setToolTipText(Bundle.getMessage("TipUpdateButton"));
         panel4.add(updateButton);
-        updateButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                updateButtonActionPerformed();
-            }
-        });
+        updateButton.addActionListener(e -> updateButtonActionPerformed());
         updateButton.setVisible(false);
         panel4.add(cancelButton);
         cancelButton.setText(Bundle.getMessage("ButtonCancel"));
         cancelButton.setVisible(true);
         cancelButton.setToolTipText(Bundle.getMessage("TipCancelButton"));
         panel4.add(cancelButton);
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                cancelButtonActionPerformed();
-            }
-        });
+        cancelButton.addActionListener(e -> cancelButtonActionPerformed());
         cancelButton.setVisible(false);
         return panel4;
     }
@@ -281,11 +243,11 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
             return;
         }
         // confirm deletion with the user
-        if (javax.swing.JOptionPane.OK_OPTION == javax.swing.JOptionPane.showConfirmDialog(
+        if (JmriJOptionPane.OK_OPTION == JmriJOptionPane.showConfirmDialog(
                 this, Bundle.getMessage("ConfirmDelete1") + "\n"
                 + Bundle.getMessage("ConfirmDelete2"), Bundle.getMessage("ConfirmDeleteTitle"),
-                javax.swing.JOptionPane.OK_CANCEL_OPTION,
-                javax.swing.JOptionPane.WARNING_MESSAGE)) {
+                JmriJOptionPane.OK_CANCEL_OPTION,
+                JmriJOptionPane.WARNING_MESSAGE)) {
             // delete this node
             xtc.deleteNode((XBeeNode) curNode);
             // provide user feedback
@@ -319,10 +281,10 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
         }
         if (changedNode) {
             // Remind user to Save new configuration
-            javax.swing.JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("Reminder1") + "\n" + Bundle.getMessage("Reminder2"),
                     Bundle.getMessage("ReminderTitle"),
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    JmriJOptionPane.INFORMATION_MESSAGE);
         }
         setVisible(false);
         dispose();
@@ -463,7 +425,7 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
         return true;
     }
 
-    // Initilize the drop down box for the address lists.
+    // Initialize the drop down box for the address lists.
     @Override
     protected void initAddressBoxes() {
         nodeField.removeAllItems();
@@ -522,14 +484,11 @@ public class XBeeNodeConfigFrame extends jmri.jmrix.ieee802154.swing.nodeconfig.
          initAddressBoxes();
        }
        // removing the listener here is causing a
-       // ConcurrentModificaitonException on an ArrayList in the library.
+       // ConcurrentModificationException on an ArrayList in the library.
        // xtc.getXBee().getNetwork().removeDiscoveryListener(this);
        discoverButton.setEnabled(true);
     }
 
-
-
-
-    private final static Logger log = LoggerFactory.getLogger(XBeeNodeConfigFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XBeeNodeConfigFrame.class);
 
 }

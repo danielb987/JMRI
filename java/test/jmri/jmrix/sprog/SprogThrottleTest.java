@@ -1,5 +1,6 @@
 package jmri.jmrix.sprog;
 
+import jmri.SpeedStepMode;
 import jmri.util.JUnitUtil;
 import jmri.jmrix.sprog.SprogConstants.SprogMode;
 
@@ -322,6 +323,17 @@ public class SprogThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     }
 
     /**
+     * Test of setFxx method for Fns above F28
+     */
+    @Test
+    public void testSetHigherFns() {
+        for(int i=29; i<maxFns; i++) {
+            instance.setFunction(i, true);
+            Assert.assertEquals(true, instance.getFunction(i));
+        }
+    }
+    
+    /**
      * Test of sendFunctionGroup1 method, of class AbstractThrottle.
      */
     @Test
@@ -361,6 +373,28 @@ public class SprogThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     public void testSendFunctionGroup5() {
     }
 
+    /**
+     * Test of getSpeedStepMode method
+     */
+    @Test
+    @Override
+    public void testGetSpeedStepMode() {
+        SpeedStepMode expResult = SpeedStepMode.NMRA_DCC_128;
+        SpeedStepMode result = instance.getSpeedStepMode();
+        Assert.assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getSpeedIncrement method
+     */
+    @Test
+    @Override
+    public void testGetSpeedIncrement() {
+        float expResult = 1.0F/126.0F;
+        float result = instance.getSpeedIncrement();
+        Assert.assertEquals(expResult, result, 0.0);
+    }
+    
     @BeforeEach
     @Override
     public void setUp() {
@@ -374,6 +408,7 @@ public class SprogThrottleTest extends jmri.jmrix.AbstractThrottleTest {
         m.configureCommandStation();
         jmri.InstanceManager.setDefault(jmri.ThrottleManager.class,new SprogThrottleManager(m));
         instance = new SprogThrottle(m, new jmri.DccLocoAddress(2,false));
+        setMaxFns(SprogConstants.MAX_FUNCTIONS);
     }
 
     @AfterEach

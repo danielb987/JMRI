@@ -1,23 +1,22 @@
 package jmri.jmrit.throttle;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * A very specific dialog for editing the properties of a ThrottleFrame object.
@@ -32,8 +31,6 @@ public class ThrottleFramePropertyEditor extends JDialog {
     private JTextField titleField;
 
     private JList<String> titleType;
-
-    private JCheckBox borderOff;
 
     private String[] titleTextTypes = {"address", "text", "textAddress", "addressText", "rosterID"};
     private String[] titleTextTypeNames = {
@@ -109,16 +106,6 @@ public class ThrottleFramePropertyEditor extends JDialog {
         constraints.gridx++;
         propertyPanel.add(titleType, constraints);
 
-        // add a checkbox for borders off, but only if that's actually possible.
-        // this code uses details of internal UI code
-        if (((javax.swing.plaf.basic.BasicInternalFrameUI) frame.getCurrentThrottleFrame().getControlPanel().getUI()).getNorthPane() != null) {
-            borderOff = new JCheckBox(Bundle.getMessage("FrameBorderOffTitle"), false);
-            constraints.gridy++;
-            constraints.gridx = 0;
-            propertyPanel.add(new JLabel(Bundle.getMessage("FrameDecorationsTitle")), constraints);
-            constraints.gridx++;
-            propertyPanel.add(borderOff, constraints);
-        }
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 2, 4, 4));
@@ -155,15 +142,6 @@ public class ThrottleFramePropertyEditor extends JDialog {
         pack();
         titleField.setText(frame.getTitleText());
         titleField.selectAll();
-
-        if (((javax.swing.plaf.basic.BasicInternalFrameUI) frame.getCurrentThrottleFrame().getControlPanel().getUI()).getNorthPane() != null) {
-            Dimension bSize = ((javax.swing.plaf.basic.BasicInternalFrameUI) frame.getCurrentThrottleFrame().getControlPanel().getUI()).getNorthPane().getPreferredSize();
-            if (bSize.height == 0) {
-                borderOff.setSelected(true);
-            } else {
-                borderOff.setSelected(false);
-            }
-        }
     }
 
     /**
@@ -183,35 +161,9 @@ public class ThrottleFramePropertyEditor extends JDialog {
      */
     private void saveProperties() {
         if (isDataValid()) {
-            int bSize = Integer.parseInt(Bundle.getMessage("FrameSize"));
-            JInternalFrame myFrame;
             frame.setTitleText(titleField.getText());
             frame.setTitleTextType(titleTextTypes[titleType.getSelectedIndex()]);
             frame.getCurrentThrottleFrame().setFrameTitle();
-
-            if (((javax.swing.plaf.basic.BasicInternalFrameUI) frame.getCurrentThrottleFrame().getControlPanel().getUI()).getNorthPane() != null) {
-                if (borderOff.isSelected()) {
-                    bSize = 0;
-                }
-                myFrame = frame.getCurrentThrottleFrame().getControlPanel();
-                ((javax.swing.plaf.basic.BasicInternalFrameUI) myFrame.getUI()).getNorthPane().setPreferredSize(new Dimension(0, bSize));
-                if (myFrame.isVisible()) {
-                    myFrame.setVisible(false);
-                    myFrame.setVisible(true);
-                }
-                myFrame = frame.getCurrentThrottleFrame().getFunctionPanel();
-                ((javax.swing.plaf.basic.BasicInternalFrameUI) myFrame.getUI()).getNorthPane().setPreferredSize(new Dimension(0, bSize));
-                if (myFrame.isVisible()) {
-                    myFrame.setVisible(false);
-                    myFrame.setVisible(true);
-                }
-                myFrame = frame.getCurrentThrottleFrame().getAddressPanel();
-                ((javax.swing.plaf.basic.BasicInternalFrameUI) myFrame.getUI()).getNorthPane().setPreferredSize(new Dimension(0, bSize));
-                if (myFrame.isVisible()) {
-                    myFrame.setVisible(false);
-                    myFrame.setVisible(true);
-                }
-            }
             finishEdit();
         }
     }
@@ -231,8 +183,8 @@ public class ThrottleFramePropertyEditor extends JDialog {
         int errorNumber = 0;
 
         if (errorNumber > 0) {
-            JOptionPane.showMessageDialog(this, errors,
-                    Bundle.getMessage("ErrorOnPage"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, errors,
+                    Bundle.getMessage("ErrorOnPage"), JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;

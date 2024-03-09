@@ -36,6 +36,7 @@ public class AppsLaunchFrameTest {
 
     @AfterEach
     public void tearDown() {
+        JUnitUtil.clearShutDownManager();
         JUnitUtil.tearDown();
     }
 

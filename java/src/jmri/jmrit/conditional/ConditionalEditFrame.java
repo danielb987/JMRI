@@ -15,10 +15,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
 
 import jmri.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jmri.Conditional.Operator;
 import jmri.Conditional.State;
 import jmri.implementation.DefaultConditionalAction;
@@ -27,10 +23,12 @@ import jmri.jmrit.conditional.ConditionalEditBase.NameBoxListener;
 import jmri.jmrit.conditional.ConditionalEditBase.SelectionMode;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Warrant;
+import jmri.script.swing.ScriptFileChooser;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.FileUtil;
 import jmri.util.JmriJFrame;
 import jmri.util.swing.JComboBoxUtil;
+import jmri.util.swing.JmriJOptionPane;
 import jmri.util.table.ButtonEditor;
 import jmri.util.table.ButtonRenderer;
 
@@ -38,7 +36,7 @@ import jmri.util.table.ButtonRenderer;
  * Extracted from ConditionalEditList.
  * Allows ConditionalEditList to open alternate frame
  * for copying Conditionals.
- * 
+ *
  * @author Pete Cressman Copyright (C) 2020
  */
 public class ConditionalEditFrame extends ConditionalFrame {
@@ -110,7 +108,6 @@ public class ConditionalEditFrame extends ConditionalFrame {
     ConditionalAction _curAction;
     int _curActionRowNumber;
     Conditional.ItemType _curActionItem = Conditional.ItemType.NONE;
-    static final int STRUT = 10;
 
     // ------------ Components of Logix and SConditional selection ------------
     JComboBox<String> _selectLogixBox = new JComboBox<>();
@@ -119,7 +116,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
     ArrayList<String> _selectConditionalList = new ArrayList<>();
 
     // ------------------------------------------------------------------
-    
+
     ConditionalEditFrame(String title, Conditional conditional, ConditionalList parent) {
         super(title, conditional, parent);
         makeConditionalFrame(conditional);
@@ -403,7 +400,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
         // End of Action Consequents Section
 
         contentPane.add(_parent.makeBottomPanel());
-        
+
         // setup window closing listener
         this.addWindowListener(
                 new java.awt.event.WindowAdapter() {
@@ -474,10 +471,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
         }
         // Check if reorder is reasonable
         if (_variableList.size() <= 1) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("Error51"),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         _nextInOrder = 0;
@@ -587,10 +584,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
         }
         // Check if reorder is reasonable
         if (_actionList.size() <= 1) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("Error46"),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         _nextInOrder = 0;
@@ -699,7 +696,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
      * @param e The event heard
      */
     void helpPressed(ActionEvent e) {
-        JOptionPane.showMessageDialog(this,
+        JmriJOptionPane.showMessageDialog(this,
                 new String[]{
                     Bundle.getMessage("ConditionalHelpText1"), // NOI18N
                     Bundle.getMessage("ConditionalHelpText2"), // NOI18N
@@ -710,7 +707,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
                     Bundle.getMessage("ConditionalHelpText7")  // NOI18N
                 },
                 Bundle.getMessage("MenuHelp"),
-                JOptionPane.INFORMATION_MESSAGE);  // NOI18N
+                JmriJOptionPane.INFORMATION_MESSAGE);  // NOI18N
     }
 
     /**
@@ -735,7 +732,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
      * @return false if antecedent can't be validated
      */
     boolean validateAntecedent() {
-        return _parent.validateAntecedent(_logicType, _antecedentField.getText(), 
+        return _parent.validateAntecedent(_logicType, _antecedentField.getText(),
                 _variableList, _parent._curConditional);
     }
 
@@ -755,10 +752,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 cleanUpAction();
                 return false;
             }
-            JOptionPane.showMessageDialog(_editActionFrame,
+            JmriJOptionPane.showMessageDialog(_editActionFrame,
                     Bundle.getMessage("Error48"),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             _editActionFrame.setVisible(true);
             _editActionFrame.toFront();
             return true;
@@ -768,10 +765,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 cleanUpVariable();
                 return false;
             }
-            JOptionPane.showMessageDialog(_editVariableFrame,
+            JmriJOptionPane.showMessageDialog(_editVariableFrame,
                     Bundle.getMessage("Error47"),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             _editVariableFrame.setVisible(true);
             _editVariableFrame.toFront();
             return true;
@@ -1462,10 +1459,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
         }
         if (_variableList.size() < 1 && !_parent._suppressReminder) {
             // warning message - last State Variable deleted
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("Warn3"),
                     Bundle.getMessage("WarningTitle"), // NOI18N
-                    JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.WARNING_MESSAGE);
         }
         // move remaining state variables if needed
         _variableList.remove(row);
@@ -1543,10 +1540,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 testType = Conditional.Type.BLOCK_STATUS_EQUALS;
                 break;
             default:
-                JOptionPane.showMessageDialog(this,
+                JmriJOptionPane.showMessageDialog(this,
                         Bundle.getMessage("ErrorVariableType"),
                         Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
         }
         _curVariable.setType(testType);
@@ -1627,10 +1624,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                     String appStr = (String) _variableSignalBox.getSelectedItem();
                     Conditional.Type type = ConditionalVariable.stringToVariableTest(appStr);
                     if (type == Conditional.Type.ERROR) {
-                        JOptionPane.showMessageDialog(this,
+                        JmriJOptionPane.showMessageDialog(this,
                                 Bundle.getMessage("ErrorAppearance"),
                                 Bundle.getMessage("ErrorTitle"), // NOI18N
-                                JOptionPane.ERROR_MESSAGE);
+                                JmriJOptionPane.ERROR_MESSAGE);
                         return false;
                     }
                     _curVariable.setType(type);
@@ -1646,10 +1643,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 }
                 if (testType == Conditional.Type.SIGNAL_MAST_ASPECT_EQUALS) {
                     if (_variableSignalBox.getSelectedIndex() < 0) {
-                        JOptionPane.showMessageDialog(this,
+                        JmriJOptionPane.showMessageDialog(this,
                                 Bundle.getMessage("ErrorAspect"),
                                 Bundle.getMessage("ErrorTitle"), // NOI18N
-                                JOptionPane.ERROR_MESSAGE);
+                                JmriJOptionPane.ERROR_MESSAGE);
                         return false;
                     }
                     // save the selected aspect for comparison
@@ -1680,10 +1677,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 }
                 break;
             default:
-                JOptionPane.showMessageDialog(this,
+                JmriJOptionPane.showMessageDialog(this,
                         Bundle.getMessage("ErrorVariableType"),
                         Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
         }
         _curVariable.setName(name);
@@ -1691,10 +1688,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
         log.debug("State Variable \"{}\" of type '{}' state= {} type= {}",  // NOI18N
                 name, testType.getTestTypeString(), result, _curVariable.getType());
         if (_curVariable.getType() == Conditional.Type.NONE) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("ErrorVariableState"),
                     Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return (true);
@@ -1831,6 +1828,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
         }
 
         _actionTypeBox = new JComboBox<>();
+        JComboBoxUtil.setupComboBoxMaxRows(_actionTypeBox);
         _actionTypeBox.addItem(Conditional.Action.NONE);
         _actionTypePanel = makeEditPanel(_actionTypeBox, "LabelActionType", "ActionTypeHint");  // NOI18N
         _actionTypePanel.setVisible(false);
@@ -2169,23 +2167,43 @@ public class ConditionalEditFrame extends ConditionalFrame {
             case WARRANT:
                 _actionTypeBox.setSelectedItem(actionType);
                 if (actionType == Conditional.Action.CONTROL_TRAIN) {
-                    if (_curAction.getActionData() == Warrant.HALT) {
-                        _actionBox.setSelectedIndex(0);
-                    } else if (_curAction.getActionData() == Warrant.RESUME) {
-                        _actionBox.setSelectedIndex(1);
-                    } else if (_curAction.getActionData() == Warrant.ABORT) {
-                        _actionBox.setSelectedIndex(2);
+                    switch (_curAction.getActionData()) {
+                        case Warrant.HALT:
+                            _actionBox.setSelectedIndex(0);
+                            break;
+                        case Warrant.RESUME:
+                            _actionBox.setSelectedIndex(1);
+                            break;
+                        case Warrant.RETRY_FWD:
+                            _actionBox.setSelectedIndex(2);
+                            break;
+                        case Warrant.SPEED_UP:
+                            _actionBox.setSelectedIndex(3);
+                            break;
+                        case Warrant.STOP:
+                            _actionBox.setSelectedIndex(4);
+                            break;
+                        case Warrant.ESTOP:
+                            _actionBox.setSelectedIndex(5);
+                            break;
+                        case Warrant.ABORT:
+                            _actionBox.setSelectedIndex(6);
+                            break;
+                        default:
+                            log.warn("Unexpected _curAction.getActionData() of {}", _curAction.getActionData());  // NOI18N
                     }
                 } else if (actionType == Conditional.Action.SET_TRAIN_ID
                         || actionType == Conditional.Action.SET_TRAIN_NAME
-                        || actionType == Conditional.Action.THROTTLE_FACTOR) {
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     _shortActionString.setText(_curAction.getActionString());
                 }
                 break;
 
             case OBLOCK:
                 _actionTypeBox.setSelectedItem(actionType);
-                if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
+                if (actionType == Conditional.Action.SET_BLOCK_VALUE
+                        || actionType == Conditional.Action.GET_BLOCK_TRAIN_NAME
+                        || actionType == Conditional.Action.GET_BLOCK_WARRANT) {
                     _shortActionString.setText(_curAction.getActionString());
                 }
                 break;
@@ -2500,14 +2518,18 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 if (actionType == Conditional.Action.CONTROL_TRAIN) {
                     p = (JPanel) _actionPanel.getComponent(0);
                     l = (JLabel) p.getComponent(0);
-                    _actionBox.addItem(Bundle.getMessage("WarrantHalt"));  // NOI18N
-                    _actionBox.addItem(Bundle.getMessage("WarrantResume"));  // NOI18N
-                    _actionBox.addItem(Bundle.getMessage("WarrantAbort"));  // NOI18N
+                    _actionBox.addItem(Bundle.getMessage("WarrantHalt"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantResume"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantMoveToNext"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantSpeedUp"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantStop"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantEStop"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantAbort"));
                     l.setText(Bundle.getMessage("LabelControlTrain"));  // NOI18N
                     _actionPanel.setVisible(true);
                 } else if (actionType == Conditional.Action.SET_TRAIN_ID
                         || actionType == Conditional.Action.SET_TRAIN_NAME
-                        || actionType == Conditional.Action.THROTTLE_FACTOR) {
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     p = (JPanel) _shortTextPanel.getComponent(0);
                     l = (JLabel) p.getComponent(0);
                     if (actionType == Conditional.Action.SET_TRAIN_ID) {
@@ -2516,9 +2538,9 @@ public class ConditionalEditFrame extends ConditionalFrame {
                     } else if (actionType == Conditional.Action.SET_TRAIN_NAME) {
                         _shortTextPanel.setToolTipText(Bundle.getMessage("DataHintTrainName"));  // NOI18N
                         l.setText(Bundle.getMessage("LabelTrainName"));
-                    } else { // must be Conditional.ACTION_THROTTLE_FACTOR, so treat as such
-                        _shortTextPanel.setToolTipText(Bundle.getMessage("DataHintThrottleFactor"));  // NOI18N
-                        l.setText(Bundle.getMessage("LabelThrottleFactor"));  // NOI18N
+                    } else if (actionType == Conditional.Action.GET_TRAIN_LOCATION) {
+                        _shortTextPanel.setToolTipText(Bundle.getMessage("DataHintToMemory"));  // NOI18N
+                        l.setText(Bundle.getMessage("LabelMemoryLocation"));  // NOI18N
                     }
                     _shortTextPanel.setVisible(true);
                 }
@@ -2531,11 +2553,18 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 }
                 _actionNamePanel.setToolTipText(Bundle.getMessage("NameHintOBlock"));  // NOI18N
                 _actionNamePanel.setVisible(true);
-                if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
+                if (actionType == Conditional.Action.SET_BLOCK_VALUE
+                    || actionType == Conditional.Action.GET_BLOCK_TRAIN_NAME
+                    || actionType == Conditional.Action.GET_BLOCK_WARRANT) {
                     p = (JPanel) _shortTextPanel.getComponent(0);
                     l = (JLabel) p.getComponent(0);
-                    _shortTextPanel.setToolTipText(Bundle.getMessage("DataHintBlockValue"));  // NOI18N
-                    l.setText(Bundle.getMessage("LabelBlockValue"));  // NOI18N
+                    if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
+                        _shortTextPanel.setToolTipText(Bundle.getMessage("DataHintBlockValue"));  // NOI18N
+                        l.setText(Bundle.getMessage("LabelBlockValue"));  // NOI18N
+                    } else {
+                            _shortTextPanel.setToolTipText(Bundle.getMessage("DataHintToMemory"));  // NOI18N
+                            l.setText(Bundle.getMessage("LabelMemoryLocation"));  // NOI18
+                    }
                     _shortTextPanel.setVisible(true);
                 }
                 setActionNameBox(itemType);
@@ -2712,7 +2741,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
     }
 
     JFileChooser sndFileChooser = null;
-    JFileChooser scriptFileChooser = null;
+    ScriptFileChooser scriptFileChooser = null;
     JFileChooser defaultFileChooser = null;
 
     /**
@@ -2728,7 +2757,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
         Conditional.Action actionType = action.getType();
         if (actionType == Conditional.Action.PLAY_SOUND) {
             if (sndFileChooser == null) {
-                sndFileChooser = new JFileChooser(System.getProperty("user.dir") // NOI18N
+                sndFileChooser = new jmri.util.swing.JmriJFileChooser(System.getProperty("user.dir") // NOI18N
                         + java.io.File.separator + "resources" // NOI18N
                         + java.io.File.separator + "sounds");  // NOI18N
                 sndFileChooser.setFileFilter(new FileNameExtensionFilter("wav sound files", "wav")); // NOI18N
@@ -2736,14 +2765,13 @@ public class ConditionalEditFrame extends ConditionalFrame {
             currentChooser = sndFileChooser;
         } else if (actionType == Conditional.Action.RUN_SCRIPT) {
             if (scriptFileChooser == null) {
-                scriptFileChooser = new JFileChooser(FileUtil.getScriptsPath());
-                scriptFileChooser.setFileFilter(new FileNameExtensionFilter("Python script files", "py")); // NOI18N
+                scriptFileChooser = new ScriptFileChooser(FileUtil.getScriptsPath());
             }
             currentChooser = scriptFileChooser;
         } else {
             log.warn("Unexpected actionType[{}] = {}", actionType.name(), actionType.toString());  // NOI18N
             if (defaultFileChooser == null) {
-                defaultFileChooser = new JFileChooser(FileUtil.getUserFilesPath());
+                defaultFileChooser = new jmri.util.swing.JmriJFileChooser(FileUtil.getUserFilesPath());
                 defaultFileChooser.setFileFilter(new jmri.util.NoArchiveFileFilter());
             }
             currentChooser = defaultFileChooser;
@@ -2758,7 +2786,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 _longActionString.setText(FileUtil.getPortableFilename(currentChooser.getSelectedFile().getCanonicalPath()));
             } catch (java.io.IOException ex) {
                 if (log.isDebugEnabled()) {
-                    log.error("exception setting file location: {}", ex);  // NOI18N
+                    log.error("exception setting file location", ex);  // NOI18N
                 }
                 _longActionString.setText("");
             }
@@ -2782,10 +2810,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
         Conditional.Action actionType = Conditional.Action.NONE;
         Conditional.Action selection = _actionTypeBox.getItemAt(_actionTypeBox.getSelectedIndex());
         if (selection == Conditional.Action.NONE) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("makeSelection"), // NOI18N
                     Bundle.getMessage("WarningTitle"),
-                    JOptionPane.WARNING_MESSAGE);  // NOI18N
+                    JmriJOptionPane.WARNING_MESSAGE);  // NOI18N
             return false;
         }
         String name = _actionNameField.getText().trim();
@@ -2881,10 +2909,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                         return false;
                     }
                     if (!(lgtx instanceof VariableLight)) {
-                        JOptionPane.showMessageDialog(this,
+                        JmriJOptionPane.showMessageDialog(this,
                                 Bundle.getMessage("Error45", name), // NOI18N
                                 Bundle.getMessage("ErrorTitle"),
-                                JOptionPane.ERROR_MESSAGE);  // NOI18N
+                                JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
                         return (false);
                     }
                     if (!_parent.validateIntensityReference(actionType, actionString)) {
@@ -2899,10 +2927,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                     }
                     if ( !(lgtx instanceof VariableLight) ||
                             !((VariableLight)lgtx).isTransitionAvailable()) {
-                        JOptionPane.showMessageDialog(this,
+                        JmriJOptionPane.showMessageDialog(this,
                                 Bundle.getMessage("Error40", name), // NOI18N
                                 Bundle.getMessage("ErrorTitle"),
-                                JOptionPane.ERROR_MESSAGE);  // NOI18N
+                                JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
                         return (false);
                     }
                     if (!_parent.validateTimeReference(actionType, actionString)) {
@@ -2953,10 +2981,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 break;
             case MEMORY:
                 if (_referenceByMemory) {
-                    JOptionPane.showMessageDialog(_editActionFrame,
+                    JmriJOptionPane.showMessageDialog(_editActionFrame,
                             Bundle.getMessage("Warn6"),
                             Bundle.getMessage("WarningTitle"), // NOI18N
-                            JOptionPane.WARNING_MESSAGE);
+                            JmriJOptionPane.WARNING_MESSAGE);
                     return false;
                 }
                 name = _parent.validateMemoryReference(name);
@@ -2996,16 +3024,35 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 _actionNameField.setText(name);
                 _curAction.setDeviceName(name);
                 if (actionType == Conditional.Action.CONTROL_TRAIN) {
-                    if (_actionBox.getSelectedIndex() == 0) {
-                        _curAction.setActionData(Warrant.HALT);
-                    } else if (_actionBox.getSelectedIndex() == 1) {
-                        _curAction.setActionData(Warrant.RESUME);
-                    } else {
-                        _curAction.setActionData(Warrant.ABORT);
+                    switch (_actionBox.getSelectedIndex()) {
+                        case 0:
+                            _curAction.setActionData(Warrant.HALT);
+                            break;
+                        case 1:
+                            _curAction.setActionData(Warrant.RESUME);
+                            break;
+                        case 2:
+                            _curAction.setActionData(Warrant.RETRY_FWD);
+                            break;
+                        case 3:
+                            _curAction.setActionData(Warrant.SPEED_UP);
+                            break;
+                        case 4:
+                            _curAction.setActionData(Warrant.STOP);
+                            break;
+                        case 5:
+                            _curAction.setActionData(Warrant.ESTOP);
+                            break;
+                        case 6:
+                            _curAction.setActionData(Warrant.ABORT);
+                            break;
+                        default:
+                            log.warn("Unexpected _actionBox.getSelectedIndex() of {}", _actionBox.getSelectedIndex());  // NOI18N
+                            break;
                     }
                 } else if (actionType == Conditional.Action.SET_TRAIN_ID
                         || actionType == Conditional.Action.SET_TRAIN_NAME
-                        || actionType == Conditional.Action.THROTTLE_FACTOR) {
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     _curAction.setActionString(actionString);
                 }
                 break;
@@ -3019,7 +3066,9 @@ public class ConditionalEditFrame extends ConditionalFrame {
                 actionType = selection;
                 _actionNameField.setText(name);
                 _curAction.setDeviceName(name);
-                if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
+                if (actionType == Conditional.Action.SET_BLOCK_VALUE
+                    || actionType == Conditional.Action.GET_BLOCK_TRAIN_NAME
+                    || actionType == Conditional.Action.GET_BLOCK_WARRANT) {
                     _curAction.setActionString(actionString);
                 }
                 break;
@@ -3382,10 +3431,10 @@ public class ConditionalEditFrame extends ConditionalFrame {
                     break;
                 case EDIT_COLUMN:
                     if (LRouteTableAction.getLogixInitializer().equals(_parent._curLogix.getSystemName())) {
-                        JOptionPane.showMessageDialog(_editVariableFrame,
+                        JmriJOptionPane.showMessageDialog(_editVariableFrame,
                                 Bundle.getMessage("Error49"),
                                 Bundle.getMessage("ErrorTitle"), // NOI18N
-                                JOptionPane.ERROR_MESSAGE);
+                                JmriJOptionPane.ERROR_MESSAGE);
                         break;
                     }
                     // Use separate Runnable so window is created on top
@@ -3524,6 +3573,6 @@ public class ConditionalEditFrame extends ConditionalFrame {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ConditionalEditFrame.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConditionalEditFrame.class);
 
 }

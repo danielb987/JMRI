@@ -19,7 +19,6 @@ import org.junit.jupiter.api.*;
 public abstract class AbstractPowerManagerTestBase {
 
     // required setup routine, must set p to an appropriate value.
-    @BeforeEach
     abstract public void setUp();
 
     // service routines to simulate receiving on, off from interface
@@ -47,7 +46,7 @@ public abstract class AbstractPowerManagerTestBase {
 
     protected PowerManager p = null; // holds objects under test
 
-    static protected boolean listenerResult = false;
+    protected boolean listenerResult = false;
 
     protected class Listen implements PropertyChangeListener {
 
@@ -147,15 +146,15 @@ public abstract class AbstractPowerManagerTestBase {
         p.removePropertyChangeListener(ln);
         listenerResult = false;
         hearOn();
-        Assert.assertTrue("listener should not have heard message after removeListener",
-                !listenerResult);
+        Assert.assertFalse("listener should not have heard message after removeListener",
+                listenerResult);
     }
 
     @Test
     public void testDispose1() throws JmriException {
         p.setPower(PowerManager.ON); // in case registration is deferred
         int startingListeners = numListeners();
-        p.getPower();
+
         p.dispose();
         Assert.assertEquals("controller listeners remaining", startingListeners -1 , numListeners());
     }

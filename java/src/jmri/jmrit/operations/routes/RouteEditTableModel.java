@@ -6,31 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.table.TableCellEditor;
 
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
-import jmri.util.swing.SplitButtonColorChooserPanel;
-import jmri.util.swing.XTableColumnModel;
+import jmri.util.swing.*;
 import jmri.util.table.ButtonEditor;
 import jmri.util.table.ButtonRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Table Model for edit of route locations used by operations
@@ -95,6 +82,7 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
         if (_route != null) {
             _route.addPropertyChangeListener(this);
         }
+        Setup.getDefault().addPropertyChangeListener(this);
         initTable(table);
     }
 
@@ -427,8 +415,8 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
             rl.setMaxCarMoves(moves);
             _maxTrainMoves = moves;
         } else {
-            JOptionPane.showMessageDialog(null, Bundle.getMessage("MaximumLocationMoves"), Bundle
-                    .getMessage("CanNotChangeMoves"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("MaximumLocationMoves"), Bundle
+                    .getMessage("CanNotChangeMoves"), JmriJOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -458,8 +446,8 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
             wait = Integer.parseInt(value.toString());
         } catch (NumberFormatException e) {
             log.error("Location wait must be a number");
-            JOptionPane.showMessageDialog(null, Bundle.getMessage("EnterWaitTimeMinutes"), Bundle
-                    .getMessage("WaitTimeNotValid"), JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("EnterWaitTimeMinutes"), Bundle
+                    .getMessage("WaitTimeNotValid"), JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
         rl.setWait(wait);
@@ -484,19 +472,18 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
         if (length < 500 && Setup.getLengthUnit().equals(Setup.FEET) ||
                 length < 160 && Setup.getLengthUnit().equals(Setup.METER)) {
             // warn that train length might be too short
-            if (JOptionPane.showConfirmDialog(null, MessageFormat.format(Bundle.getMessage("LimitTrainLength"),
-                    new Object[]{length, Setup.getLengthUnit().toLowerCase(), rl.getName()}),
-                    Bundle
-                            .getMessage("WarningTooShort"),
-                    JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
+            if (JmriJOptionPane.showConfirmDialog(null, Bundle.getMessage("LimitTrainLength",
+                    length, Setup.getLengthUnit().toLowerCase(), rl.getName()),
+                    Bundle.getMessage("WarningTooShort"),
+                    JmriJOptionPane.OK_CANCEL_OPTION) != JmriJOptionPane.OK_OPTION) {
                 return;
             }
         }
         if (length > Setup.getMaxTrainLength()) {
             log.error("Maximum departure length can not exceed maximum train length");
-            JOptionPane.showMessageDialog(null, MessageFormat.format(Bundle.getMessage("DepartureLengthNotExceed"),
-                    new Object[]{length, Setup.getMaxTrainLength()}), Bundle.getMessage("CanNotChangeMaxLength"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("DepartureLengthNotExceed",
+                    length, Setup.getMaxTrainLength()), Bundle.getMessage("CanNotChangeMaxLength"),
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         } else {
             rl.setMaxTrainLength(length);
@@ -516,8 +503,8 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
             rl.setGrade(grade);
         } else {
             log.error("Maximum grade is 6 percent");
-            JOptionPane.showMessageDialog(null, Bundle.getMessage("MaxGrade"), Bundle.getMessage("CanNotChangeGrade"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("MaxGrade"), Bundle.getMessage("CanNotChangeGrade"),
+                    JmriJOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -611,7 +598,7 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
         return cb;
     }
 
-    private JComboBox<String> getTimeComboBox() {
+    protected JComboBox<String> getTimeComboBox() {
         JComboBox<String> timeBox = new JComboBox<>();
         String hour;
         String minute;
@@ -646,7 +633,9 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
             updateList();
             fireTableDataChanged();
         }
-
+        if (e.getPropertyName().equals(Setup.TRAIN_DIRECTION_PROPERTY_CHANGE)) {
+            fireTableDataChanged();
+        }
         if (e.getSource().getClass().equals(RouteLocation.class)) {
             RouteLocation rl = (RouteLocation) e.getSource();
             int row = _routeList.indexOf(rl);
@@ -670,9 +659,10 @@ public class RouteEditTableModel extends javax.swing.table.AbstractTableModel im
         if (_route != null) {
             _route.removePropertyChangeListener(this);
         }
+        Setup.getDefault().removePropertyChangeListener(this);
         _routeList.clear();
         fireTableDataChanged();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(RouteEditTableModel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RouteEditTableModel.class);
 }

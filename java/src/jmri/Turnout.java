@@ -72,94 +72,101 @@ import javax.annotation.CheckForNull;
  * @see jmri.InstanceManager
  * @see jmri.jmrit.simpleturnoutctrl.SimpleTurnoutCtrlFrame
  */
-public interface Turnout extends DigitalIO {
+public interface Turnout extends DigitalIO, VariableControlSpanBean {
 
     /**
-     * Constant representing an "closed" state, either in readback or as a
+     * Constant representing a "closed" state, either in readback or as a
      * commanded state. Note that it's possible to be both CLOSED and THROWN at
      * the same time on some systems, which should be called INCONSISTENT
      */
-    public static final int CLOSED = DigitalIO.ON;
+    static final int CLOSED = DigitalIO.ON;
 
     /**
-     * Constant representing an "thrown" state, either in readback or as a
+     * Constant representing a "thrown" state, either in readback or as a
      * commanded state. Note that it's possible to be both CLOSED and THROWN at
      * the same time on some systems, which should be called INCONSISTENT
      */
-    public static final int THROWN = DigitalIO.OFF;
+    static final int THROWN = DigitalIO.OFF;
 
     /**
      * Constant representing "direct feedback method". In this case, the
      * commanded state is provided when the known state is requested. The two
      * states never differ. This mode is always possible!
      */
-    public static final int DIRECT = 1;
+    static final int DIRECT = 1;
 
     /**
      * Constant representing "exact feedback method". In this case, the layout
      * hardware can sense both positions of the turnout, which is used to set
      * the known state.
      */
-    public static final int EXACT = 2;
+    static final int EXACT = 2;
 
     /**
      * Constant representing "indirect feedback". In this case, the layout
      * hardware can only sense one setting of the turnout. The known state is
      * inferred from that info.
      */
-    public static final int INDIRECT = 4;  // only one side directly sensed
+    static final int INDIRECT = 4;  // only one side directly sensed
 
     /**
      * Constant representing "feedback by monitoring sent commands". In this
      * case, the known state tracks commands seen on the rails or bus.
      */
-    public static final int MONITORING = 8;
+    static final int MONITORING = 8;
 
     /**
      * Constant representing "feedback by monitoring one sensor". The sensor
      * sets the state CLOSED when INACTIVE and THROWN when ACTIVE
      */
-    public static final int ONESENSOR = 16;
+    static final int ONESENSOR = 16;
 
     /**
      * Constant representing "feedback by monitoring two sensors". The first
      * sensor sets the state THROWN when ACTIVE; the second sensor sets the
      * state CLOSED when ACTIVE.
      */
-    public static final int TWOSENSOR = 32;
+    static final int TWOSENSOR = 32;
 
     /**
      * Constant representing "feedback for signals" . This is DIRECT feedback,
      * with minimal delay (for use with systems that wait for responses returned
      * by from the command station).
      */
-    public static final int SIGNAL = 64;
+    static final int SIGNAL = 64;
 
     /**
      * Constant representing "automatic delayed feedback" . This is DIRECT feedback
      * with a fixed delay before the feedback (known state) takes effect.
      */
-    public static final int DELAYED = 128;
+    static final int DELAYED = 128;
+
+    /**
+     * Constant representing "loconet alternate feedback method". In this case, the layout
+     * hardware can sense both positions of the turnout, which is used to set
+     * the known state. Hardware use OPS_SW_REP alternate message.
+     */
+    static final int LNALTERNATE = 256;
 
     /**
      * Constant representing turnout lockout cab commands
      */
-    public static final int CABLOCKOUT = 1;
+    static final int CABLOCKOUT = 1;
 
     /**
      * Constant representing turnout lockout pushbuttons
      */
-    public static final int PUSHBUTTONLOCKOUT = 2;
+    static final int PUSHBUTTONLOCKOUT = 2;
 
     /**
      * Constant representing a unlocked turnout
      */
-    public static final int UNLOCKED = 0;
+    static final int UNLOCKED = 0;
 
     /**
      * Constant representing a locked turnout
      */
-    public static final int LOCKED = 1;
+    static final int LOCKED = 1;
 
     /**
      * Get a list of valid feedback types. The valid types depend on the
@@ -167,7 +174,7 @@ public interface Turnout extends DigitalIO {
      *
      * @return array of feedback types
      */
-    public Set<Integer> getValidFeedbackModes();
+    Set<Integer> getValidFeedbackModes();
 
     /**
      * Get a representation of the feedback type. This is the OR of possible
@@ -176,7 +183,7 @@ public interface Turnout extends DigitalIO {
      *
      * @return the ORed combination of feedback types
      */
-    public int getValidFeedbackTypes();
+    int getValidFeedbackTypes();
 
     /**
      * Get a human readable representation of the feedback type. The values
@@ -186,7 +193,7 @@ public interface Turnout extends DigitalIO {
      *         is available
      */
     @Nonnull
-    public String[] getValidFeedbackNames();
+    String[] getValidFeedbackNames();
 
     /**
      * Set the feedback mode from a human readable name. This must be one of the
@@ -196,7 +203,7 @@ public interface Turnout extends DigitalIO {
      * @throws IllegalArgumentException if mode is not valid
      */
     @InvokeOnLayoutThread
-    public void setFeedbackMode(@Nonnull String mode) throws IllegalArgumentException;
+    void setFeedbackMode(@Nonnull String mode) throws IllegalArgumentException;
 
     /**
      * Set the feedback mode from a integer. This must be one of the bit values
@@ -207,7 +214,7 @@ public interface Turnout extends DigitalIO {
      * @throws IllegalArgumentException if mode is not valid
      */
     @InvokeOnLayoutThread
-    public void setFeedbackMode(int mode) throws IllegalArgumentException;
+    void setFeedbackMode(int mode) throws IllegalArgumentException;
 
     /**
      * Get the feedback mode in human readable form. This will be one of the
@@ -216,7 +223,7 @@ public interface Turnout extends DigitalIO {
      * @return the feedback type
      */
     @Nonnull
-    public String getFeedbackModeName();
+    String getFeedbackModeName();
 
     /**
      * Get the feedback mode in machine readable form. This will be one of the
@@ -224,27 +231,27 @@ public interface Turnout extends DigitalIO {
      *
      * @return the feedback type
      */
-    public int getFeedbackMode();
+    int getFeedbackMode();
 
     /**
      * Get if automatically retrying an operation is blocked for this turnout.
      *
      * @return true if retrying is disabled; false otherwise
      */
-    public boolean getInhibitOperation();
+    boolean getInhibitOperation();
 
     /**
      * Set if automatically retrying an operation is blocked for this turnout.
      *
      * @param io true if retrying is to be disabled; false otherwise
      */
-    public void setInhibitOperation(boolean io);
+    void setInhibitOperation(boolean io);
 
     /**
      * @return current operation automation class
      */
     @CheckForNull
-    public TurnoutOperation getTurnoutOperation();
+    TurnoutOperation getTurnoutOperation();
 
     /**
      * set current automation class
@@ -252,7 +259,7 @@ public interface Turnout extends DigitalIO {
      * @param toper TurnoutOperation subclass instance
      */
     @InvokeOnLayoutThread
-    public void setTurnoutOperation(@CheckForNull TurnoutOperation toper);
+    void setTurnoutOperation(@CheckForNull TurnoutOperation toper);
 
     /**
      * Return the inverted state of the specified state
@@ -260,7 +267,7 @@ public interface Turnout extends DigitalIO {
      * @param inState the specified state
      * @return the inverted state
      */
-    public static int invertTurnoutState(int inState) {
+    static int invertTurnoutState(int inState) {
         int result = UNKNOWN;
         if (inState == CLOSED) {
             result = THROWN;
@@ -287,7 +294,7 @@ public interface Turnout extends DigitalIO {
      * @param number the feedback number of the sensor, indexed from 0
      * @throws jmri.JmriException if unable to assign the feedback sensor
      */
-    public default void provideFeedbackSensor(@CheckForNull String name, int number) throws JmriException {
+    default void provideFeedbackSensor(@CheckForNull String name, int number) throws JmriException {
         switch (number) {
             case 0:
                 provideFirstFeedbackSensor(name);
@@ -300,9 +307,9 @@ public interface Turnout extends DigitalIO {
         }
     }
 
-    public void provideFirstFeedbackSensor(@CheckForNull String pName) throws JmriException;
+    void provideFirstFeedbackSensor(@CheckForNull String pName) throws JmriException;
 
-    public void provideSecondFeedbackSensor(@CheckForNull String pName) throws JmriException;
+    void provideSecondFeedbackSensor(@CheckForNull String pName) throws JmriException;
 
     /**
      * Get the first feedback sensor.
@@ -310,7 +317,7 @@ public interface Turnout extends DigitalIO {
      * @return the sensor or null if no Sensor set
      */
     @CheckForNull
-    public Sensor getFirstSensor();
+    Sensor getFirstSensor();
 
     /**
      * Get the handle for the first feedback sensor.
@@ -318,7 +325,7 @@ public interface Turnout extends DigitalIO {
      * @return the sensor handle or null if no Sensor set
      */
     @CheckForNull
-    public NamedBeanHandle<Sensor> getFirstNamedSensor();
+    NamedBeanHandle<Sensor> getFirstNamedSensor();
 
     /**
      * Get the second feedback sensor.
@@ -326,7 +333,7 @@ public interface Turnout extends DigitalIO {
      * @return the sensor or null if no Sensor set
      */
     @CheckForNull
-    public Sensor getSecondSensor();
+    Sensor getSecondSensor();
 
     /**
      * Get the second feedback sensor handle.
@@ -334,7 +341,7 @@ public interface Turnout extends DigitalIO {
      * @return the sensor handle or null if no Sensor set
      */
     @CheckForNull
-    public NamedBeanHandle<Sensor> getSecondNamedSensor();
+    NamedBeanHandle<Sensor> getSecondNamedSensor();
 
     /**
      * Sets the initial known state (CLOSED,THROWN,UNKNOWN) from feedback
@@ -349,29 +356,14 @@ public interface Turnout extends DigitalIO {
      * is set to UNKNOWN.
      */
     @InvokeOnLayoutThread
-    public void setInitialKnownStateFromFeedback();
-
-    /**
-     * Get number of output bits.
-     *
-     * @return the size of the output, currently 1 or 2
-     */
-    public int getNumberOutputBits();
-
-    /**
-     * Set number of output bits.
-     *
-     * @param num the size of the output, currently 1 or 2
-     */
-    @InvokeOnLayoutThread
-    public void setNumberOutputBits(int num);
+    void setInitialKnownStateFromFeedback();
 
     /**
      * Get control type.
      *
      * @return 0 for steady state or the number of time units the control pulses
      */
-    public int getControlType();
+    int getControlType();
 
     /**
      * Set control type.
@@ -380,7 +372,7 @@ public interface Turnout extends DigitalIO {
      *            pulses
      */
     @InvokeOnLayoutThread
-    public void setControlType(int num);
+    void setControlType(int num);
 
     /**
      * Get turnout inverted. When a turnout is inverted the {@link #CLOSED} and
@@ -388,7 +380,7 @@ public interface Turnout extends DigitalIO {
      *
      * @return true if inverted; false otherwise
      */
-    public boolean getInverted();
+    boolean getInverted();
 
     /**
      * Get turnout inverted. When a turnout is inverted the {@link #CLOSED} and
@@ -396,7 +388,7 @@ public interface Turnout extends DigitalIO {
      *
      * @param inverted true if inverted; false otherwise
      */
-    public void setInverted(boolean inverted);
+    void setInverted(boolean inverted);
 
     /**
      * Determine if turnout can be inverted. When a turnout is inverted the
@@ -404,7 +396,7 @@ public interface Turnout extends DigitalIO {
      *
      * @return true if can be inverted; false otherwise
      */
-    public boolean canInvert();
+    boolean canInvert();
 
     /**
      * Get the locked state of the turnout. A turnout can be locked to prevent
@@ -414,7 +406,7 @@ public interface Turnout extends DigitalIO {
      * @param turnoutLockout the type of lock
      * @return true if turnout is locked using specified lock method
      */
-    public boolean getLocked(int turnoutLockout);
+    boolean getLocked(int turnoutLockout);
 
     /**
      * Enable turnout lock operators. A turnout can be locked to prevent it
@@ -426,7 +418,7 @@ public interface Turnout extends DigitalIO {
      *                       false otherwise
      */
     @InvokeOnLayoutThread
-    public void enableLockOperation(int turnoutLockout, boolean locked);
+    void enableLockOperation(int turnoutLockout, boolean locked);
 
     /**
      * Determine if turnout can be locked as currently configured. A turnout can be locked to prevent it
@@ -438,18 +430,18 @@ public interface Turnout extends DigitalIO {
      * @return true if turnout is locked using specified lock method; false
      *         otherwise
      */
-    public boolean canLock(int turnoutLockout);
+    boolean canLock(int turnoutLockout);
 
     /**
-     * Provide the possible locking modes for a turnout.  
-     * These may require additional configuration, e.g. 
+     * Provide the possible locking modes for a turnout.
+     * These may require additional configuration, e.g.
      * setting of a decoder definition for PUSHBUTTONLOCKOUT,
      * before {@link #canLock(int)} will return true.
      *
      * @return One of 0 for none, CABLOCKOUT, PUSHBUTTONLOCKOUT
      * or CABLOCKOUT | PUSHBUTTONLOCKOUT for both
      */
-    public int getPossibleLockModes();
+    int getPossibleLockModes();
 
     /**
      * Lock a turnout. A turnout can be locked to prevent it being thrown from a
@@ -460,14 +452,14 @@ public interface Turnout extends DigitalIO {
      *                       method; false otherwise
      */
     @InvokeOnLayoutThread
-    public void setLocked(int turnoutLockout, boolean locked);
+    void setLocked(int turnoutLockout, boolean locked);
 
     /**
      * Get reporting of use of locked turnout by a cab or throttle.
      *
      * @return true to report; false otherwise
      */
-    public boolean getReportLocked();
+    boolean getReportLocked();
 
     /**
      * Set reporting of use of locked turnout by a cab or throttle.
@@ -475,7 +467,7 @@ public interface Turnout extends DigitalIO {
      * @param reportLocked true to report; false otherwise
      */
     @InvokeOnLayoutThread
-    public void setReportLocked(boolean reportLocked);
+    void setReportLocked(boolean reportLocked);
 
     /**
      * Get a human readable representation of the decoder types.
@@ -483,22 +475,23 @@ public interface Turnout extends DigitalIO {
      * @return a list of known stationary decoders that can be specified for locking
      */
     @Nonnull
-    public String[] getValidDecoderNames();
+    String[] getValidDecoderNames();
 
     /**
      * Get a human readable representation of the locking decoder type for this turnout.
      *
+     * In AbstractTurnout this String defaults to PushbuttonPacket.unknown , ie "None"
      * @return the name of the decoder type; null indicates none defined
      */
     @CheckForNull
-    public String getDecoderName();
+    String getDecoderName();
 
     /**
      * Set a human readable representation of the locking decoder type for this turnout.
      *
      * @param decoderName the name of the decoder type
      */
-    public void setDecoderName(@CheckForNull String decoderName);
+    void setDecoderName(@CheckForNull String decoderName);
 
     /**
      * Use a binary output for sending commands. This appears to expose a
@@ -507,19 +500,19 @@ public interface Turnout extends DigitalIO {
      * @param state true if the outputs are binary; false otherwise
      */
     @InvokeOnLayoutThread
-    public void setBinaryOutput(boolean state);
+    void setBinaryOutput(boolean state);
 
-    public float getDivergingLimit();
+    float getDivergingLimit();
 
-    public String getDivergingSpeed();
+    String getDivergingSpeed();
 
-    public void setDivergingSpeed(String s) throws JmriException;
+    void setDivergingSpeed(String s) throws JmriException;
 
-    public float getStraightLimit();
+    float getStraightLimit();
 
-    public String getStraightSpeed();
+    String getStraightSpeed();
 
-    public void setStraightSpeed(String s) throws JmriException;
+    void setStraightSpeed(String s) throws JmriException;
 
     /**
      * Check if this Turnout can follow the state of another Turnout.
@@ -528,7 +521,7 @@ public interface Turnout extends DigitalIO {
      */
     // Note: not `canFollow()` to allow JavaBeans introspection to find
     // the property "canFollow"
-    public boolean isCanFollow();
+    boolean isCanFollow();
 
     /**
      * Get the Turnout this Turnout is following.
@@ -537,7 +530,7 @@ public interface Turnout extends DigitalIO {
      *         {@link #isCanFollow()} is false
      */
     @CheckForNull
-    public Turnout getLeadingTurnout();
+    Turnout getLeadingTurnout();
 
     /**
      * Set the Turnout this Turnout will follow.
@@ -557,7 +550,7 @@ public interface Turnout extends DigitalIO {
      *                follow another Turnout; silently ignored if
      *                {@link #isCanFollow()} is false
      */
-    public void setLeadingTurnout(@CheckForNull Turnout turnout);
+    void setLeadingTurnout(@CheckForNull Turnout turnout);
 
     /**
      * Set both the leading Turnout and if the commanded state of the leading
@@ -573,7 +566,7 @@ public interface Turnout extends DigitalIO {
      *                                turnout; false to only have non-commanded
      *                                states match
      */
-    public void setLeadingTurnout(@CheckForNull Turnout turnout, boolean followingCommandedState);
+    void setLeadingTurnout(@CheckForNull Turnout turnout, boolean followingCommandedState);
 
     /**
      * Check if this Turnout is following all states or only the non-commanded
@@ -581,7 +574,7 @@ public interface Turnout extends DigitalIO {
      *
      * @return true if following all states; false otherwise
      */
-    public boolean isFollowingCommandedState();
+    boolean isFollowingCommandedState();
 
     /**
      * Set if this Turnout follows all states or only the non-commanded states
@@ -599,7 +592,7 @@ public interface Turnout extends DigitalIO {
      * @param following true to have all states match leading turnout; false to
      *                  only have non-commanded states match
      */
-    public void setFollowingCommandedState(boolean following);
+    void setFollowingCommandedState(boolean following);
 
     /**
      * Before setting commanded state, if required by manager, apply wait interval until
@@ -612,6 +605,6 @@ public interface Turnout extends DigitalIO {
      *
      * @param s turnout state to forward
      */
-    public void setCommandedStateAtInterval(int s);
+    void setCommandedStateAtInterval(int s);
 
 }

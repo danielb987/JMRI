@@ -3,8 +3,6 @@ package jmri.jmrit.display.layoutEditor.blockRoutingTable;
 import java.beans.PropertyChangeListener;
 import jmri.jmrit.display.layoutEditor.LayoutBlock;
 import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Table data model for display of Roster variable values.
@@ -176,7 +174,7 @@ public class LayoutBlockRouteTableModel extends javax.swing.table.AbstractTableM
     public void dispose() {
     }
 
-    public jmri.Manager getManager() {
+    public jmri.Manager<LayoutBlock> getManager() {
         return jmri.InstanceManager.getDefault(LayoutBlockManager.class);
     }
 

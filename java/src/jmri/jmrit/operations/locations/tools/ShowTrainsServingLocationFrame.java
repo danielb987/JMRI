@@ -2,16 +2,8 @@ package jmri.jmrit.operations.locations.tools;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.text.MessageFormat;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
-import jmri.jmrit.operations.locations.Location;
-import jmri.jmrit.operations.locations.Track;
+import jmri.jmrit.operations.locations.*;
 import jmri.jmrit.operations.rollingstock.cars.CarTypes;
 import jmri.jmrit.operations.routes.Route;
 import jmri.jmrit.operations.routes.RouteLocation;
@@ -32,30 +23,28 @@ import jmri.jmrit.operations.trains.TrainManager;
  * Frame to show which trains can service this location
  *
  * @author Dan Boudreau Copyright (C) 2014
- * 
  */
 public class ShowTrainsServingLocationFrame extends OperationsFrame implements java.beans.PropertyChangeListener {
 
-    // location
     Location _location = null;
     Track _track = null;
 
     // panels
     JPanel pTrains = new JPanel();
 
-    // radio buttons
-    // for padding out panel
     // combo boxes
+    JComboBox<Location> locationComboBox = new JComboBox<>();
+    JComboBox<Track> trackComboBox = new JComboBox<>();
     JComboBox<String> typeComboBox = new JComboBox<>();
 
     // check boxes
     JCheckBox showAllTrainsCheckBox = new JCheckBox(Bundle.getMessage("ShowAllTrains"));
 
     // make show all trains consistent during a session
-    private static boolean isShowAllTrains = true;
+    private static boolean isShowAllTrains = false;
 
     public ShowTrainsServingLocationFrame() {
-        super();
+        super(Bundle.getMessage("TitleShowTrains"));
     }
 
     public void initComponents(Location location, Track track) {
@@ -67,11 +56,19 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         // Set up the panels
-        JPanel pOptions = new JPanel();
-        pOptions.setLayout(new GridBagLayout());
-        pOptions.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Options")));
+        JPanel pLocations = new JPanel();
+        pLocations.setLayout(new GridBagLayout());
+        pLocations.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Location")));
+        pLocations.setMaximumSize(new Dimension(2000, 50));
 
-        addItem(pOptions, showAllTrainsCheckBox, 0, 0);
+        addItem(pLocations, locationComboBox, 0, 0);
+
+        JPanel pTracks = new JPanel();
+        pTracks.setLayout(new GridBagLayout());
+        pTracks.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Track")));
+        pTracks.setMaximumSize(new Dimension(2000, 50));
+
+        addItem(pTracks, trackComboBox, 0, 0);
 
         JPanel pCarType = new JPanel();
         pCarType.setLayout(new GridBagLayout());
@@ -79,14 +76,22 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
         pCarType.setMaximumSize(new Dimension(2000, 50));
 
         addItem(pCarType, typeComboBox, 0, 0);
+        
+        JPanel pOptions = new JPanel();
+        pOptions.setLayout(new GridBagLayout());
+        pOptions.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Options")));
+
+        addItem(pOptions, showAllTrainsCheckBox, 0, 0);
 
         pTrains.setLayout(new GridBagLayout());
         JScrollPane trainsPane = new JScrollPane(pTrains);
         trainsPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         trainsPane.setBorder(BorderFactory.createTitledBorder(Bundle.getMessage("Trains")));
 
-        getContentPane().add(pOptions);
+        getContentPane().add(pLocations);
+        getContentPane().add(pTracks);
         getContentPane().add(pCarType);
+        getContentPane().add(pOptions);
         getContentPane().add(trainsPane);
 
         // show all trains
@@ -95,8 +100,12 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
         showAllTrainsCheckBox.setSelected(isShowAllTrains);
 
         // setup combo box
-        updateComboBox();
-        typeComboBox.setSelectedItem(NONE);
+        updateLocationsComboBox();
+        updateTracksComboBox();
+        updateTypeComboBox();
+
+        addComboBoxAction(locationComboBox);
+        addComboBoxAction(trackComboBox);
         addComboBoxAction(typeComboBox);
 
         // increase width of combobox so large text names display properly
@@ -106,18 +115,14 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
             typeComboBox.setMinimumSize(boxsize);
         }
 
-        updateTrainPane();
-
-        location.addPropertyChangeListener(this);
+        if (location != null) {
+            location.addPropertyChangeListener(this);
+        }
+        if (track != null) {
+            track.addPropertyChangeListener(this);
+        }
         addPropertyChangeAllTrains();
 
-        if (_track != null) {
-            _track.addPropertyChangeListener(this);
-            setTitle(MessageFormat.format(Bundle.getMessage("TitleShowTrains"), new Object[]{_track.getName()}));
-        } else {
-            setTitle(MessageFormat.format(Bundle.getMessage("TitleShowTrains"), new Object[]{_location.getName()}));
-        }
-        
         // add help menu to window
         addHelpMenu("package.jmri.jmrit.operations.Operations_ShowTrainsServicingThisLocation", true); // NOI18N
 
@@ -126,6 +131,7 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
     }
 
     private void updateTrainPane() {
+        log.debug("Updating for location ({}), Track ({})", _location, _track);
         pTrains.removeAll();
         int y = 0;
         for (Train train : InstanceManager.getDefault(TrainManager.class).getTrainsByNameList()) {
@@ -133,33 +139,49 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
             if (route == null) {
                 continue;
             }
+            // determine if the car type is accepted by train
+            boolean typeAccepted = train.isTypeNameAccepted(_carType);
+            if (_carType.equals(NONE)) {
+                // determine if any available car type is accepted by train
+                for (int i = 0; i < typeComboBox.getItemCount(); i++) {
+                    if (train.isTypeNameAccepted(typeComboBox.getItemAt(i))) {
+                        typeAccepted = true;
+                        break;
+                    }
+                }
+            }
             for (RouteLocation rl : route.getLocationsBySequenceList()) {
-                if (rl.getName().equals(_location.getName())) {
+                if (_location != null && rl.getName().equals(_location.getName())) {
                     boolean pickup = false;
                     boolean setout = false;
                     // monitor move count in the route for this location
                     train.getRoute().removePropertyChangeListener(this);
                     train.getRoute().addPropertyChangeListener(this);
-                    if (rl.isPickUpAllowed()
-                            && rl.getMaxCarMoves() > 0
-                            && !train.isLocationSkipped(rl.getId())
-                            && (typeComboBox.getSelectedItem() == null || typeComboBox.getSelectedItem().equals(NONE) || train
-                            .isTypeNameAccepted((String) typeComboBox.getSelectedItem()))
-                            && (train.isLocalSwitcher() || (rl.getTrainDirection() & _location.getTrainDirections()) != 0)
-                            && (train.isLocalSwitcher() || _track == null || ((rl.getTrainDirection() & _track
-                            .getTrainDirections()) != 0))
-                            && (_track == null || _track.isPickupTrainAccepted(train))) {
+                    if (rl.isPickUpAllowed() &&
+                            rl.getMaxCarMoves() > 0 &&
+                            !train.isLocationSkipped(rl.getId()) &&
+                            typeAccepted &&
+                            (train.isLocalSwitcher() ||
+                                    (rl.getTrainDirection() & _location.getTrainDirections()) != 0) &&
+                            (train.isLocalSwitcher() ||
+                                    _track == null ||
+                                    ((rl.getTrainDirection() & _track.getTrainDirections()) != 0)) &&
+                            (_track == null || _track.isPickupTrainAccepted(train))) {
                         pickup = true;
                     }
-                    if (rl.isDropAllowed()
-                            && rl.getMaxCarMoves() > 0
-                            && !train.isLocationSkipped(rl.getId())
-                            && (typeComboBox.getSelectedItem() == null || typeComboBox.getSelectedItem().equals(NONE) || train
-                            .isTypeNameAccepted((String) typeComboBox.getSelectedItem()))
-                            && (train.isLocalSwitcher() || (rl.getTrainDirection() & _location.getTrainDirections()) != 0)
-                            && (train.isLocalSwitcher() || _track == null || ((rl.getTrainDirection() & _track
-                            .getTrainDirections()) != 0)) 
-                            && (_track == null || _track.isDropTrainAccepted(train))) {
+                    if (rl.isDropAllowed() &&
+                            rl.getMaxCarMoves() > 0 &&
+                            !train.isLocationSkipped(rl.getId()) &&
+                            typeAccepted &&
+                            (train.isLocalSwitcher() ||
+                                    (rl.getTrainDirection() & _location.getTrainDirections()) != 0) &&
+                            (train.isLocalSwitcher() ||
+                                    _track == null ||
+                                    ((rl.getTrainDirection() & _track.getTrainDirections()) != 0)) &&
+                            (_track == null || _track.isDropTrainAccepted(train)) &&
+                            (_track == null ||
+                                    _carType.equals(NONE) ||
+                                    _track.checkScheduleAttribute(Track.TYPE, _carType, null))) {
                         setout = true;
                     }
                     // now display results
@@ -184,6 +206,7 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
         }
         pTrains.repaint();
         pTrains.revalidate();
+        pack();
     }
 
     @Override
@@ -194,21 +217,49 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
         updateTrainPane();
     }
 
-    private String comboBoxSelect;
+    private String _carType = NONE;
 
     @Override
     public void comboBoxActionPerformed(java.awt.event.ActionEvent ae) {
-        log.debug("combo box action");
-        if (typeComboBox.isEnabled() && ae.getSource().equals(typeComboBox)) {
+        if (ae.getSource().equals(locationComboBox)) {
+            _location = (Location) locationComboBox.getSelectedItem();
+            updateTracksComboBox();
+            updateTypeComboBox();
             updateTrainPane();
-            if (typeComboBox.getSelectedItem() != null) {
-                comboBoxSelect = (String) typeComboBox.getSelectedItem();
+        }
+        if (ae.getSource().equals(trackComboBox)) {
+            if (_track != null) {
+                _track.removePropertyChangeListener(this);
             }
+            _track = (Track) trackComboBox.getSelectedItem();
+            if (_track != null) {
+                _track.addPropertyChangeListener(this);
+            }
+            updateTypeComboBox();
+            updateTrainPane();
+        }
+        if (typeComboBox.isEnabled() && ae.getSource().equals(typeComboBox)) {
+            if (typeComboBox.getSelectedItem() != null) {
+                _carType = (String) typeComboBox.getSelectedItem();
+            }
+            updateTrainPane();
         }
     }
 
-    private void updateComboBox() {
-        log.debug("update combobox");
+    private void updateLocationsComboBox() {
+        InstanceManager.getDefault(LocationManager.class).updateComboBox(locationComboBox);
+        locationComboBox.setSelectedItem(_location);
+    }
+
+    private void updateTracksComboBox() {
+        if (_location != null) {
+            _location.updateComboBox(trackComboBox);
+        }
+        trackComboBox.setSelectedItem(_track);
+    }
+
+    private void updateTypeComboBox() {
+        log.debug("update type combobox");
         typeComboBox.setEnabled(false);
         InstanceManager.getDefault(CarTypes.class).updateComboBox(typeComboBox);
         // remove car types not serviced by this location and track
@@ -222,16 +273,9 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
             }
         }
         typeComboBox.insertItemAt(NONE, 0);
+        typeComboBox.setSelectedItem(_carType);
 
-        if (comboBoxSelect == null) {
-            typeComboBox.setSelectedItem(NONE);
-        } else {
-            typeComboBox.setSelectedItem(comboBoxSelect);
-            if (typeComboBox.getSelectedItem() != null && !typeComboBox.getSelectedItem().equals(comboBoxSelect)) {
-                typeComboBox.setSelectedItem(NONE); // selected object has been removed
-            }
-            updateTrainPane();
-        }
+        updateTrainPane();
         typeComboBox.setEnabled(true);
     }
 
@@ -243,7 +287,6 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
         if (_track != null) {
             _track.removePropertyChangeListener(this);
         }
-        InstanceManager.getDefault(CarTypes.class).removePropertyChangeListener(this);
         removePropertyChangeAllTrains();
         super.dispose();
     }
@@ -268,21 +311,21 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
     @Override
     public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (Control.SHOW_PROPERTY) {
-            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(), e
-                    .getNewValue());
+            log.debug("Property change: ({}) old: ({}) new: ({})", e.getPropertyName(), e.getOldValue(),
+                    e.getNewValue());
         }
-        if (e.getPropertyName().equals(Location.TYPES_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Track.TYPES_CHANGED_PROPERTY)) {
-            updateComboBox();
+        if (e.getPropertyName().equals(Location.TYPES_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Track.TYPES_CHANGED_PROPERTY)) {
+            updateTypeComboBox();
         }
-        if (e.getPropertyName().equals(Location.TRAINDIRECTION_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Track.TRAINDIRECTION_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Track.DROP_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Track.PICKUP_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Train.TRAIN_ROUTE_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Train.TYPES_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Train.STOPS_CHANGED_PROPERTY)
-                || e.getPropertyName().equals(Route.LISTCHANGE_CHANGED_PROPERTY)) {
+        if (e.getPropertyName().equals(Location.TRAIN_DIRECTION_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Track.TRAIN_DIRECTION_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Track.DROP_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Track.PICKUP_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Train.TRAIN_ROUTE_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Train.TYPES_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Train.STOPS_CHANGED_PROPERTY) ||
+                e.getPropertyName().equals(Route.LISTCHANGE_CHANGED_PROPERTY)) {
             updateTrainPane();
         }
         if (e.getPropertyName().equals(TrainManager.LISTLENGTH_CHANGED_PROPERTY)) {

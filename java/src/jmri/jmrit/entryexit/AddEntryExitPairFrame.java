@@ -1,7 +1,5 @@
 package jmri.jmrit.entryexit;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JMenu;
@@ -44,12 +42,7 @@ public class AddEntryExitPairFrame extends jmri.util.JmriJFrame {
         optMenu.add(optItem);
         menuBar.add(optMenu);
 
-        optItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                nxPanel.optionWindow(event);
-            }
-        });
+        optItem.addActionListener(nxPanel::optionWindow);
 
         setJMenuBar(menuBar);
         addHelpMenu("package.jmri.jmrit.entryexit.EntryExitFrame", true);  // NOI18N

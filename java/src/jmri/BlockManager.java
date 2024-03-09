@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import jmri.implementation.AbstractShutDownTask;
 import jmri.implementation.SignalSpeedMap;
 import jmri.jmrit.display.layoutEditor.BlockValueFile;
-import jmri.jmrit.roster.RosterEntry;
 import jmri.managers.AbstractManager;
 
 /**
@@ -49,7 +48,7 @@ public class BlockManager extends AbstractManager<Block> implements ProvidingMan
             }
         }
     };
-    
+
     public BlockManager() {
         super();
         InstanceManager.getDefault(SensorManager.class).addVetoableChangeListener(this);
@@ -62,6 +61,7 @@ public class BlockManager extends AbstractManager<Block> implements ProvidingMan
 
     @Override
     public void dispose() {
+        super.dispose();
         InstanceManager.getDefault(ShutDownManager.class).deregister(shutDownTask);
     }
 
@@ -105,7 +105,7 @@ public class BlockManager extends AbstractManager<Block> implements ProvidingMan
     public Block createNewBlock(@Nonnull String systemName, @CheckForNull String userName) {
         // Check that Block does not already exist
         Block r;
-        if (userName != null && !userName.equals("")) {
+        if (userName != null && !userName.isEmpty()) {
             r = getByUserName(userName);
             if (r != null) {
                 return null;
@@ -126,7 +126,7 @@ public class BlockManager extends AbstractManager<Block> implements ProvidingMan
         try {
             r.setBlockSpeed("Global"); // NOI18N
         } catch (JmriException ex) {
-            log.error("{}", ex.getMessage());
+            log.error("Unexpected exception {}", ex.getMessage());
         }
         return r;
     }
@@ -140,7 +140,7 @@ public class BlockManager extends AbstractManager<Block> implements ProvidingMan
      *         exists, or if there is trouble creating a new Block.
      */
     @CheckForNull
-    public Block createNewBlock(@Nonnull String userName) {
+    public Block createNewBlock(@CheckForNull String userName) {
         return createNewBlock(getAutoSystemName(), userName);
     }
 

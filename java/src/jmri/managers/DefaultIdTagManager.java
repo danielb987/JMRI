@@ -1,20 +1,12 @@
 package jmri.managers;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+
 import javax.annotation.CheckForNull;
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import jmri.Disposable;
-import jmri.IdTag;
-import jmri.IdTagManager;
-import jmri.InstanceInitializer;
-import jmri.InstanceManager;
-import jmri.Reporter;
-import jmri.ShutDownManager;
-import jmri.ShutDownTask;
+
+import jmri.*;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultIdTag;
 import jmri.SystemConnectionMemo;
@@ -40,6 +32,8 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     private boolean useFastClock = false;
     private Runnable shutDownTask = null;
 
+    public final static String PROPERTY_INITIALISED = "initialised";
+
     public DefaultIdTagManager(SystemConnectionMemo memo) {
         super(memo);
     }
@@ -47,7 +41,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     /** {@inheritDoc} */
     @Override
     public int getXMLOrder() {
-        return jmri.Manager.IDTAGS;
+        return Manager.IDTAGS;
     }
 
     /** {@inheritDoc} */
@@ -69,6 +63,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
             dirty = false;
             initShutdownTask();
             initialised = true;
+            propertyChangeSupport.firePropertyChange(PROPERTY_INITIALISED, false, true);
         }
     }
 
@@ -82,7 +77,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
                 try {
                     writeIdTagDetails();
                 } catch (java.io.IOException ioe) {
-                    log.error("Exception writing IdTags: {}", (Object) ioe);
+                    log.error("Exception writing IdTags", ioe);
                 }
             };
             InstanceManager.getDefault(ShutDownManager.class).register(this.shutDownTask);
@@ -107,14 +102,37 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     /** {@inheritDoc} */
     @Override
     @Nonnull
-    public IdTag provide(@Nonnull String name) {
+    public IdTag provide(@Nonnull String name) throws IllegalArgumentException {
         return provideIdTag(name);
     }
 
     /** {@inheritDoc} */
     @Override
+    @CheckReturnValue
     @Nonnull
-    public IdTag provideIdTag(@Nonnull String name) {
+    public SortedSet<IdTag> getNamedBeanSet() {
+        // need to ensure that load has taken place before returning
+        if (!initialised && !loading) {
+            init();
+        }
+        return super.getNamedBeanSet();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @CheckReturnValue
+    public int getObjectCount() {
+        // need to ensure that load has taken place before returning
+        if (!initialised && !loading) {
+            init();
+        }
+        return super.getObjectCount();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nonnull
+    public IdTag provideIdTag(@Nonnull String name) throws IllegalArgumentException {
         if (!initialised && !loading) {
             init();
         }
@@ -132,6 +150,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     }
 
     /** {@inheritDoc} */
+    @CheckForNull
     @Override
     public IdTag getIdTag(@Nonnull String name) {
         if (!initialised && !loading) {
@@ -152,6 +171,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     }
 
     /** {@inheritDoc} */
+    @CheckForNull
     @Override
     public IdTag getBySystemName(@Nonnull String name) {
         if (!initialised && !loading) {
@@ -161,6 +181,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     }
 
     /** {@inheritDoc} */
+    @CheckForNull
     @Override
     public IdTag getByUserName(@Nonnull String key) {
         if (!initialised && !loading) {
@@ -170,6 +191,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     }
 
     /** {@inheritDoc} */
+    @CheckForNull
     @Override
     public IdTag getByTagID(@Nonnull String tagID) {
         if (!initialised && !loading) {
@@ -178,7 +200,8 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
         return getBySystemName(makeSystemName(tagID));
     }
 
-    protected IdTag createNewIdTag(String systemName, String userName) {
+    @Nonnull
+    protected IdTag createNewIdTag(String systemName, String userName) throws IllegalArgumentException {
         // Names start with the system prefix followed by D.
         // Add the prefix if not present.
         if (!systemName.startsWith(getSystemPrefix() + typeLetter())) {
@@ -187,10 +210,12 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
         return new DefaultIdTag(systemName, userName);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Provide ID Tag by UserName then SystemName, creates new IdTag if not found.
+     * {@inheritDoc} */
     @Override
     @Nonnull
-    public IdTag newIdTag(@Nonnull String systemName, @CheckForNull String userName) {
+    public IdTag newIdTag(@Nonnull String systemName, @CheckForNull String userName) throws IllegalArgumentException {
         if (!initialised && !loading) {
             init();
         }
@@ -199,13 +224,17 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
 
         // return existing if there is one
         IdTag s;
-        if ((userName != null) && ((s = getByUserName(userName)) != null)) {
-            if (getBySystemName(systemName) != s) {
-                log.error("inconsistent user ({}) and system name ({}) results; userName related to ({})", userName, systemName, s.getSystemName());
+        if (userName != null)  {
+            s = getByUserName(userName);
+            if (s != null) {
+                if (getBySystemName(systemName) != s) {
+                    log.error("inconsistent user ({}) and system name ({}) results; userName related to ({})", userName, systemName, s.getSystemName());
+                }
+                return s;
             }
-            return s;
         }
-        if ((s = getBySystemName(systemName)) != null) {
+        s = getBySystemName(systemName);
+        if (s != null) {
             if ((s.getUserName() == null) && (userName != null)) {
                 s.setUserName(userName);
             } else if (userName != null) {
@@ -216,11 +245,6 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
 
         // doesn't exist, make a new one
         s = createNewIdTag(systemName, userName);
-
-        // if that failed, blame it on the input arguments
-        if (s == null) {
-            throw new IllegalArgumentException();
-        }
 
         // save in the maps
         register(s);
@@ -359,7 +383,7 @@ public class DefaultIdTagManager extends AbstractManager<IdTag> implements IdTag
     @Override
     @Nonnull
     public String getBeanTypeHandled(boolean plural) {
-        return Bundle.getMessage(plural ? "BeanNameReporters" : "BeanNameReporter");
+        return Bundle.getMessage(plural ? "BeanNameIdTags" : "BeanNameIdTag");
     }
 
     /**

@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  * :XhhhhhhhhNd0d1d2d3d4d5d6d7; The X indicates an extended CAN frame N or R
  * indicates a normal or remote frame, in position 6 or 10 d0 - d7 are the (up
  * to) 8 data bytes
- * <p>
  *
  * @author Andrew Crosland Copyright (C) 2008, 2009
  * @author Bob Jacobsen Copyright (C) 2008
@@ -167,9 +166,7 @@ public class GridConnectReply extends AbstractMRReply {
      */
     public void setData(int[] d) {
         int len = (d.length <= MAXLEN) ? d.length : MAXLEN;
-        for (int i = 0; i < len; i++) {
-            _dataChars[i] = d[i];
-        }
+        System.arraycopy(d, 0, _dataChars, 0, len);
     }
 
     // pointer to the N or R character
@@ -229,8 +226,7 @@ public class GridConnectReply extends AbstractMRReply {
 
     // Get a single hex digit. returns 0 if digit is invalid
     private int getHexDigit(int index) {
-        int b = 0;
-        b = _dataChars[index];
+        int b = _dataChars[index];
         if ((b >= '0') && (b <= '9')) {
             b = b - '0';
         } else if ((b >= 'A') && (b <= 'F')) {

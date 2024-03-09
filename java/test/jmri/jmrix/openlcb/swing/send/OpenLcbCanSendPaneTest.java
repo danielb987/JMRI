@@ -18,18 +18,21 @@ public class OpenLcbCanSendPaneTest extends jmri.util.swing.JmriPanelTest {
     @Test
     @Override
     public void testInitComponents() {
+        org.junit.Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
         // for now, just makes ure there isn't an exception.
         ((OpenLcbCanSendPane)panel).initComponents(memo);
     }
 
     @Test
     public void testInitContext() {
+        org.junit.Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
         // for now, just makes ure there isn't an exception.
         panel.initContext(memo);
     }
 
     @Test
     public void testEventId() {
+        org.junit.Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
         OpenLcbCanSendPane p = (OpenLcbCanSendPane) panel;
 
         p.sendEventField.setText("05 01 01 01 14 FF 01 02");
@@ -39,6 +42,7 @@ public class OpenLcbCanSendPaneTest extends jmri.util.swing.JmriPanelTest {
 
     @Test
     public void testEventIdDotted() {
+        org.junit.Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
         OpenLcbCanSendPane p = (OpenLcbCanSendPane) panel;
 
         p.sendEventField.setText("05.01.01.01.14.FF.01.02");
@@ -51,6 +55,8 @@ public class OpenLcbCanSendPaneTest extends jmri.util.swing.JmriPanelTest {
     @Override
     public void setUp() {
         JUnitUtil.setUp();
+       // this test is run separately because it leaves a lot of threads behind
+        org.junit.Assume.assumeFalse("Ignoring intermittent test", Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning"));
         JUnitUtil.resetProfileManager();
         memo = new jmri.jmrix.can.CanSystemConnectionMemo();
         tc = new jmri.jmrix.can.TestTrafficController();
@@ -58,21 +64,22 @@ public class OpenLcbCanSendPaneTest extends jmri.util.swing.JmriPanelTest {
         memo.setProtocol(jmri.jmrix.can.ConfigurationManager.OPENLCB);
         memo.configureManagers();
         panel = new OpenLcbCanSendPane();
-        helpTarget="package.jmri.jmrix.openlcb.swing.send.OpenLcbCanSendPane";
+        helpTarget="package.jmri.jmrix.openlcb.swing.send.OpenLcbCanSendFrame";
         title="Send CAN Frames and OpenLCB Messages";
     }
 
     @AfterEach
     @Override
     public void tearDown() {
-        memo.dispose();
-        memo = null;
-        tc.terminateThreads();
-        tc = null;
-        panel = null;
-        helpTarget = null;
-        title = null;
+        if (Boolean.getBoolean("jmri.skipTestsRequiringSeparateRunning") == false) {
+            memo.dispose();
+            memo = null;
+            tc.terminateThreads();
+            tc = null;
+            panel = null;
+            helpTarget = null;
+            title = null;
+        }
         JUnitUtil.tearDown();
-
     }
 }

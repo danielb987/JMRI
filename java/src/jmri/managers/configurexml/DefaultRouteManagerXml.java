@@ -4,18 +4,15 @@ import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.SortedSet;
 
-import javax.swing.JOptionPane;
-
 import jmri.InstanceManager;
 import jmri.Route;
 import jmri.RouteManager;
 import jmri.Sensor;
 import jmri.Turnout;
 import jmri.managers.DefaultRouteManager;
+import jmri.util.swing.JmriJOptionPane;
 
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides the functionality for configuring RouteManagers.
@@ -83,6 +80,10 @@ public class DefaultRouteManagerXml extends jmri.managers.configurexml.AbstractN
                     } else {
                         elem.setAttribute("controlTurnoutState", "CLOSED");
                     }
+                    
+                    if (r.getControlTurnoutFeedback()) {
+                        elem.setAttribute("controlTurnoutFeedback", "true");
+                    } // don't write if not set, accept default
                 }
                 if (cLockTurnout != null && !cLockTurnout.equals("")) {
                     elem.setAttribute("controlLockTurnout", cLockTurnout);
@@ -263,6 +264,7 @@ public class DefaultRouteManagerXml extends jmri.managers.configurexml.AbstractN
             String userName = getUserName(el);
             String cTurnout = null;
             String cTurnoutState = null;
+            boolean cTurnoutFeedback = false;
             String addedDelayTxt = null;
             String routeLockedTxt = null;
             String cLockTurnout = null;
@@ -274,6 +276,9 @@ public class DefaultRouteManagerXml extends jmri.managers.configurexml.AbstractN
             }
             if (el.getAttribute("controlTurnoutState") != null) {
                 cTurnoutState = el.getAttribute("controlTurnoutState").getValue();
+            }
+            if (el.getAttribute("controlTurnoutFeedback") != null) {
+                cTurnoutFeedback = el.getAttribute("controlTurnoutFeedback").getValue().equals("true");
             }
             if (el.getAttribute("controlLockTurnout") != null) {
                 cLockTurnout = el.getAttribute("controlLockTurnout").getValue();
@@ -327,6 +332,7 @@ public class DefaultRouteManagerXml extends jmri.managers.configurexml.AbstractN
                 } else {
                     log.error("cTurnoutState was null!");
                 }
+                r.setControlTurnoutFeedback(cTurnoutFeedback);
             }
             // set added delay
             r.setRouteCommandDelay(addedDelay);
@@ -493,10 +499,10 @@ public class DefaultRouteManagerXml extends jmri.managers.configurexml.AbstractN
             // for notifying users of multiple changes that can be silenced as part of
             // normal operations
             if (!GraphicsEnvironment.isHeadless() && !Boolean.getBoolean("jmri.test.no-dialogs")) {
-                JOptionPane.showMessageDialog(null,
+                JmriJOptionPane.showMessageDialog(null,
                         Bundle.getMessage(namesChanged > 1 ? "RouteManager.SystemNamesChanged.Message" : "RouteManager.SystemNameChanged.Message", namesChanged),
                         Bundle.getMessage("Manager.SystemNamesChanged.Title", namesChanged, tm.getBeanTypeHandled(namesChanged > 1)),
-                        JOptionPane.WARNING_MESSAGE);
+                        JmriJOptionPane.WARNING_MESSAGE);
             }
             log.warn("System names for {} Routes changed; this may have operational impacts.", namesChanged); 
         }
@@ -531,6 +537,6 @@ public class DefaultRouteManagerXml extends jmri.managers.configurexml.AbstractN
         return InstanceManager.getDefault(jmri.RouteManager.class).getXMLOrder();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultRouteManagerXml.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultRouteManagerXml.class);
 
 }

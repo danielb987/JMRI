@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
-import jmri.jmrit.operations.routes.tools.ExportRoutesAction;
-import jmri.jmrit.operations.routes.tools.PrintRoutesAction;
-import jmri.jmrit.operations.routes.tools.RouteCopyAction;
-import jmri.jmrit.operations.routes.tools.SetTrainIconPositionAction;
+import jmri.jmrit.operations.routes.tools.*;
 import jmri.jmrit.operations.setup.Control;
 import jmri.swing.JTablePersistenceManager;
 
@@ -30,14 +27,14 @@ public class RoutesTableFrame extends OperationsFrame {
 
     // labels
     JLabel textSort = new JLabel(Bundle.getMessage("SortBy"));
-    JLabel textSep = new javax.swing.JLabel("          ");
+    JLabel textSep = new JLabel("          ");
 
     // radio buttons
     JRadioButton sortByName = new JRadioButton(Bundle.getMessage("Name"));
     JRadioButton sortById = new JRadioButton(Bundle.getMessage("Id"));
 
     // major buttons
-    JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
+    JButton addButton = new JButton(Bundle.getMessage("AddRoute"));
 
     public RoutesTableFrame() {
         super(Bundle.getMessage("TitleRoutesTable"));
@@ -64,14 +61,19 @@ public class RoutesTableFrame extends OperationsFrame {
         controlPanel.setMaximumSize(new Dimension(Control.panelWidth1025, 50));
 
         getContentPane().add(controlPanel);
-
+        
         sortByName.setSelected(true);
 
         // setup buttons
         addButtonAction(addButton);
+        addButton.setToolTipText(Bundle.getMessage("AddRouteTip"));
 
         addRadioButtonAction(sortByName);
         addRadioButtonAction(sortById);
+        
+        ButtonGroup bGroup = new ButtonGroup();
+        bGroup.add(sortByName);
+        bGroup.add(sortById);
 
         // build menu
         JMenuBar menuBar = new JMenuBar();
@@ -79,6 +81,8 @@ public class RoutesTableFrame extends OperationsFrame {
         toolMenu.add(new RouteCopyAction());
         toolMenu.add(new SetTrainIconPositionAction());
         toolMenu.add(new ExportRoutesAction());
+        toolMenu.addSeparator();
+        toolMenu.add(new ShowRoutesServingLocationAction(null));
         toolMenu.addSeparator();
         toolMenu.add(new PrintRoutesAction(false));
         toolMenu.add(new PrintRoutesAction(true));
@@ -90,12 +94,8 @@ public class RoutesTableFrame extends OperationsFrame {
         // add help menu to window
         addHelpMenu("package.jmri.jmrit.operations.Operations_Routes", true); // NOI18N
 
-        initMinimumSize();
-        // make panel a bit wider than minimum if the very first time opened
-        if (getWidth() == Control.panelWidth500) {
-            setSize(Control.panelWidth700, getHeight());
-        }
-
+        initMinimumSize(new Dimension(Control.panelWidth700, Control.panelHeight300));
+ 
         // create ShutDownTasks
         createShutDownTask();
     }
@@ -106,13 +106,9 @@ public class RoutesTableFrame extends OperationsFrame {
         // clear any sorts by column
         clearTableSort(routesTable);
         if (ae.getSource() == sortByName) {
-            sortByName.setSelected(true);
-            sortById.setSelected(false);
             routesModel.setSort(routesModel.SORTBYNAME);
         }
         if (ae.getSource() == sortById) {
-            sortByName.setSelected(false);
-            sortById.setSelected(true);
             routesModel.setSort(routesModel.SORTBYID);
         }
     }
@@ -124,7 +120,6 @@ public class RoutesTableFrame extends OperationsFrame {
         if (ae.getSource() == addButton) {
             RouteEditFrame f = new RouteEditFrame();
             f.initComponents(null);
-            f.setTitle(Bundle.getMessage("TitleRouteAdd"));
         }
     }
 

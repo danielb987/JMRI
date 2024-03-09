@@ -11,11 +11,13 @@
 <!-- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or  -->
 <!-- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License  -->
 <!-- for more details.                                                      -->
-<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<decoder-config xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
   <version author="Michael Mosher" version="1" lastUpdated="20110216"/>
   <version author="Michael Mosher" version="2" lastUpdated="20151029"/>
+  <version author="Michael Mosher" version="3" lastUpdated="20220801"/>
   <!-- version 1	Based on the "Soundtraxx_Tsu_Diesel by Jack Shall 									-->
   <!-- version 2	Fixed function mapping and use of more external includes							-->
+  <!-- version 2	Add MC1H104P21																		-->
   <!-- Decoder Model information follows -->
   <decoder>
     <family name="MC Motor Decoders" mfg="SoundTraxx (Throttle-Up)">
@@ -52,6 +54,14 @@
         <output name="5" label="FX6|Mode">
          <label xml:lang="it">FX6|Modo</label>
         </output>
+        <output name="6" label="Dimmer| "/>
+        <output name="7" label="Brakes| "/>
+      </model>
+      <model model="MC1H104P21" numOuts="4" numFns="14" connector="21pin" productID="852005">
+        <versionCV lowVersionID="65"/>
+        <output name="3" label="Xing|Logic"/>
+        <output name="4" label="  FX5  | "/>
+        <output name="5" label="  FX6  | "/>
         <output name="6" label="Dimmer| "/>
         <output name="7" label="Brakes| "/>
       </model>
@@ -260,7 +270,7 @@
       <!-- begin exchangeable function groups -->
       <variables>
         <qualifier>
-          <variableref>Function Group 2 and 3 Exchange</variableref>
+          <variableref>Function Map Option 1</variableref>
           <relation>eq</relation>
           <value>0</value>
         </qualifier>
@@ -341,7 +351,7 @@
       </variables>
       <variables>
         <qualifier>
-          <variableref>Function Group 2 and 3 Exchange</variableref>
+          <variableref>Function Map Option 1</variableref>
           <relation>ge</relation>
           <value>1</value>
         </qualifier>

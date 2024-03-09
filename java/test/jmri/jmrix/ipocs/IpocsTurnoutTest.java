@@ -2,8 +2,7 @@ package jmri.jmrix.ipocs;
 
 import static org.mockito.Mockito.mock;
 
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -18,15 +17,6 @@ public class IpocsTurnoutTest extends AbstractTurnoutTestBase {
 
   @Mock
   IpocsPortController portController;
-
-  @BeforeEach
-  public void subSetup() {
-    JUnitUtil.initDefaultUserMessagePreferences();
-    MockitoAnnotations.openMocks(this);
-    // when(portController..send())
-    t = new IpocsTurnout(portController, "MT2", "Vx2");
-    // t.client
-  }
 
   @Override
   public int numListeners() {
@@ -83,7 +73,6 @@ public class IpocsTurnoutTest extends AbstractTurnoutTestBase {
     t = new IpocsTurnout(portController, "MT2", "Vx2");
 
     ((IpocsTurnout) t).forwardCommandChangeToLayout(IpocsTurnout.UNKNOWN);
-    // JUnitAppender.assertErrorMessage("Unknown turnout order state");
   }
 
   @Test
@@ -111,4 +100,15 @@ public class IpocsTurnoutTest extends AbstractTurnoutTestBase {
     final IpocsClientHandler client = mock(IpocsClientHandler.class);
     ((IpocsTurnout)t).clientDisconnected(client);
   }
+
+    @BeforeEach
+    @Override
+    public void setUp() {
+        JUnitUtil.setUp();
+        MockitoAnnotations.openMocks(this);
+        // when(portController..send())
+        t = new IpocsTurnout(portController, "PT2", "Vx2");
+        // t.client
+    }
+
 }

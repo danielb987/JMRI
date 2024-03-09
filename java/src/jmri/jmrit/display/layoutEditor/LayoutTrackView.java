@@ -1,67 +1,80 @@
 package jmri.jmrit.display.layoutEditor;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.geom.*;
+import java.beans.PropertyVetoException;
+import java.util.List;
 import java.util.*;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import javax.swing.*;
 
-import jmri.JmriException;
-import jmri.Turnout;
+import jmri.*;
+import jmri.jmrit.logixng.InlineLogixNG;
+import jmri.jmrit.logixng.LogixNG;
+import jmri.jmrit.logixng.LogixNG_Manager;
+import jmri.jmrit.logixng.tools.swing.DeleteBean;
+import jmri.jmrit.logixng.tools.swing.LogixNGEditor;
 import jmri.util.*;
+import jmri.util.swing.JmriJOptionPane;
+import jmri.util.swing.JmriMouseEvent;
 
 /**
  * MVC View component abstract base for the LayoutTrack hierarchy.
  * <p>
- * This contains the display information, including screen geometry, for a LayoutEditor panel.
- * The geometry/connectivity information is held in {@link LayoutTrack} subclasses.
+ * This contains the display information, including screen geometry, for a
+ * LayoutEditor panel. The geometry/connectivity information is held in
+ * {@link LayoutTrack} subclasses.
  * <ul>
- *   <li>Position(s) of the screen icons and its parts, typically the center;
- *             scaling and translation; size and bounds
- *   <li>Line colors
- *   <li>Flipped status; drawing details like bezier curve points
- *   <li>Various decorations: arrows, tunnels, bridges
- *   <li>Hidden status
+ * <li>Position(s) of the screen icons and its parts, typically the center;
+ * scaling and translation; size and bounds
+ * <li>Line colors
+ * <li>Flipped status; drawing details like bezier curve points
+ * <li>Various decorations: arrows, tunnels, bridges
+ * <li>Hidden status
  * </ul>
  *
- * @author Bob Jacobsen  Copyright (c) 2020
+ * @author Bob Jacobsen Copyright (c) 2020
  *
  */
-abstract public class LayoutTrackView {
+abstract public class LayoutTrackView implements InlineLogixNG {
 
     /**
      * Constructor method.
-     * @param track the layout track to view
+     *
+     * @param track        the layout track to view
      * @param layoutEditor the panel in which to place the view
      */
     public LayoutTrackView(@Nonnull LayoutTrack track, @Nonnull LayoutEditor layoutEditor) {
-         this.layoutTrack = track;
-         this.layoutEditor = layoutEditor;
+        this.layoutTrack = track;
+        this.layoutEditor = layoutEditor;
     }
 
     /**
      * constructor method
      *
-     * @param track the track to view
-     * @param c display location
+     * @param track        the track to view
+     * @param c            display location
      * @param layoutEditor for reference to tools
      */
     public LayoutTrackView(@Nonnull LayoutTrack track, @Nonnull Point2D c, @Nonnull LayoutEditor layoutEditor) {
-         this.layoutTrack = track;
-         this.layoutEditor = layoutEditor;
-         this.center = c;
+        this.layoutTrack = track;
+        this.layoutEditor = layoutEditor;
+        this.center = c;
     }
 
     final private LayoutTrack layoutTrack;
 
     final protected LayoutEditor layoutEditor;
 
-    // Accessor Methods
+    private LogixNG _logixNG;
+    private String _logixNG_SystemName;
 
+    private boolean _inEditInlineLogixNGMode = false;
+    private LogixNGEditor _inlineLogixNGEdit;
+
+    // Accessor Methods
 
     @Nonnull
     final public String getId() {  // temporary Id vs name; is one for the View?
@@ -73,13 +86,21 @@ abstract public class LayoutTrackView {
         return layoutTrack.getName();
     }
 
+    @Nonnull
+    @CheckReturnValue
+    public LayoutEditor getLayoutEditor() {
+        return layoutEditor;
+    }
+
     final protected void setIdent(@Nonnull String ident) {
         layoutTrack.setIdent(ident);
     }
 
     // temporary accessor?  Or is this a long term thing?
     // @Nonnull temporary until we gigure out if can be null or not
-    public LayoutTrack getLayoutTrack() { return layoutTrack; }
+    public LayoutTrack getLayoutTrack() {
+        return layoutTrack;
+    }
 
     /**
      * Set center coordinates
@@ -125,9 +146,10 @@ abstract public class LayoutTrackView {
      *
      * This is a complete replacement of the decorations, not an appending.
      *
-     * @param decorations A map from strings ("arrow", "bridge", "bumper",..)
-     *          to specific value strings ("single", "entry;right", ), perhaps
-     *          including multiple values separated by semicolons.
+     * @param decorations A map from strings ("arrow", "bridge", "bumper",..) to
+     *                    specific value strings ("single", "entry;right", ),
+     *                    perhaps including multiple values separated by
+     *                    semicolons.
      */
     public void setDecorations(Map<String, String> decorations) {
         this.decorations = decorations;
@@ -226,13 +248,42 @@ abstract public class LayoutTrackView {
     }
 
     /**
+     * draw the text for this layout track
+     * @param g
+     * note: currently can't override (final); change this if you need to
+     */
+    final protected void drawLayoutTrackText(Graphics2D g) {
+        // get the center coordinates
+        int x = (int) center.getX(), y = (int) center.getY();
+
+        // get the name of this track
+        String name = getName();
+
+        // get the FontMetrics
+        FontMetrics metrics = g.getFontMetrics(g.getFont());
+
+        // determine the X coordinate for the text
+        x -= metrics.stringWidth(name) / 2;
+
+        // determine the Y coordinate for the text
+        y += metrics.getHeight() / 2;
+
+        // (note we add the ascent, as in java 2d 0 is top of the screen)
+        //y += (int) metrics.getAscent();
+
+        g.drawString(name, x, y);
+    }
+
+    /**
      * Load a file for a specific arrow ending.
-     * @param n The arrow type as a number
-     * @param arrowsCountMenu menu containing the arrows to set visible selection
+     *
+     * @param n               The arrow type as a number
+     * @param arrowsCountMenu menu containing the arrows to set visible
+     *                        selection
      * @return An item for the arrow menu
      */
     public JCheckBoxMenuItem loadArrowImageToJCBItem(int n, JMenu arrowsCountMenu) {
-        ImageIcon imageIcon = new ImageIcon(FileUtil.findURL("program:resources/icons/decorations/ArrowStyle"+n+".png"));
+        ImageIcon imageIcon = new ImageIcon(FileUtil.findURL("program:resources/icons/decorations/ArrowStyle" + n + ".png"));
         JCheckBoxMenuItem jcbmi = new JCheckBoxMenuItem(imageIcon);
         arrowsCountMenu.add(jcbmi);
         jcbmi.setToolTipText(Bundle.getMessage("DecorationStyleMenuToolTip"));
@@ -340,10 +391,10 @@ abstract public class LayoutTrackView {
         for (String item : itemList) {
             msg.append("\n    " + item);  // NOI18N
         }
-        javax.swing.JOptionPane.showMessageDialog(layoutEditor,
+        JmriJOptionPane.showMessageDialog(layoutEditor,
                 msg.toString(),
                 Bundle.getMessage("WarningTitle"), // NOI18N
-                javax.swing.JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -428,7 +479,166 @@ abstract public class LayoutTrackView {
      * @return the popup menu for this layout track
      */
     @Nonnull
-    abstract protected JPopupMenu showPopup(@Nonnull MouseEvent mouseEvent);
+    abstract protected JPopupMenu showPopup(@Nonnull JmriMouseEvent mouseEvent);
+
+    /**
+     * Att items to the popup menu that's common to all implementing classes.
+     * @param mouseEvent  the mouse down event that triggered this popup
+     * @param popup       the popup menu
+     */
+    protected void addCommonPopupItems(@Nonnull JmriMouseEvent mouseEvent, @Nonnull JPopupMenu popup) {
+        popup.addSeparator();
+        setLogixNGPositionableMenu(popup);
+        layoutEditor.addPopupItems(popup, mouseEvent);
+    }
+
+    @Override
+    public String getNameString() {
+        return getName();
+    }
+
+    @Override
+    public String getEditorName() {
+        return getLayoutEditor().getName();
+    }
+
+    @Override
+    public int getX() {
+        return (int) center.getX();
+    }
+
+    @Override
+    public int getY() {
+        return (int) center.getY();
+    }
+
+    @Override
+    public String getTypeName() {
+        return layoutTrack.getTypeName();
+    }
+
+    /**
+     * Check if edit of a conditional is in progress.
+     *
+     * @return true if this is the case, after showing dialog to user
+     */
+    private boolean checkEditConditionalNG() {
+        if (_inEditInlineLogixNGMode) {
+            // Already editing a LogixNG, ask for completion of that edit
+            JmriJOptionPane.showMessageDialog(null,
+                    Bundle.getMessage("Error_InlineLogixNGInEditMode"), // NOI18N
+                    Bundle.getMessage("ErrorTitle"), // NOI18N
+                    JmriJOptionPane.ERROR_MESSAGE);
+            _inlineLogixNGEdit.bringToFront();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Add a menu entry to edit Id of the Positionable item
+     *
+     * @param popup the menu to add the entry to
+     */
+    public void setLogixNGPositionableMenu(JPopupMenu popup) {
+        JMenu logixNG_Menu = new JMenu("LogixNG");
+        popup.add(logixNG_Menu);
+
+        logixNG_Menu.add(new AbstractAction(Bundle.getMessage("LogixNG_Inline")) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (checkEditConditionalNG()) return;
+
+                if (getLogixNG() == null) {
+                    LogixNG logixNG = InstanceManager.getDefault(LogixNG_Manager.class)
+                            .createLogixNG(null, true);
+                    logixNG.setInlineLogixNG(LayoutTrackView.this);
+                    logixNG.activate();
+                    logixNG.setEnabled(true);
+                    logixNG.clearStartup();
+                    setLogixNG(logixNG);
+                }
+                LogixNGEditor logixNGEditor = new LogixNGEditor(null, getLogixNG().getSystemName());
+                logixNGEditor.addEditorEventListener((HashMap<String, String> data) -> {
+                    _inEditInlineLogixNGMode = false;
+                    data.forEach((key, value) -> {
+                        if (key.equals("Finish")) {                  // NOI18N
+                            _inlineLogixNGEdit = null;
+                            _inEditInlineLogixNGMode = false;
+                        } else if (key.equals("Delete")) {           // NOI18N
+                            _inEditInlineLogixNGMode = false;
+                            deleteLogixNG(getLogixNG());
+                        } else if (key.equals("chgUname")) {         // NOI18N
+                            getLogixNG().setUserName(value);
+                        }
+                    });
+                    if (getLogixNG() != null && getLogixNG().getNumConditionalNGs() == 0) {
+                        deleteLogixNG_Internal(getLogixNG());
+                    }
+                });
+                logixNGEditor.bringToFront();
+                _inEditInlineLogixNGMode = true;
+                _inlineLogixNGEdit = logixNGEditor;
+            }
+        });
+    }
+
+    private void deleteLogixNG(LogixNG logixNG) {
+        DeleteBean<LogixNG> deleteBean = new DeleteBean<>(
+                InstanceManager.getDefault(LogixNG_Manager.class));
+
+        boolean hasChildren = logixNG.getNumConditionalNGs() > 0;
+
+        deleteBean.delete(logixNG, hasChildren, (t)->{deleteLogixNG_Internal(t);},
+                (t,list)->{logixNG.getListenerRefsIncludingChildren(list);},
+                jmri.jmrit.logixng.LogixNG_UserPreferences.class.getName());
+    }
+
+    private void deleteLogixNG_Internal(LogixNG logixNG) {
+        logixNG.setEnabled(false);
+        try {
+            InstanceManager.getDefault(LogixNG_Manager.class).deleteBean(logixNG, "DoDelete");
+            logixNG.getInlineLogixNG().setLogixNG(null);
+        } catch (PropertyVetoException e) {
+            //At this stage the DoDelete shouldn't fail, as we have already done a can delete, which would trigger a veto
+            log.error("{} : Could not Delete.", e.getMessage());
+        }
+    }
+
+    /**
+     * Get the LogixNG of this Positionable.
+     * @return the LogixNG or null if it has no LogixNG
+     */
+    @Override
+    public LogixNG getLogixNG() {
+        return _logixNG;
+    }
+
+    /**
+     * Set the LogixNG of this Positionable.
+     * @param logixNG the LogixNG or null if remove the LogixNG from the Positionable
+     */
+    @Override
+    public void setLogixNG(LogixNG logixNG) {
+        this._logixNG = logixNG;
+    }
+
+    @Override
+    public void setLogixNG_SystemName(String systemName) {
+        this._logixNG_SystemName = systemName;
+    }
+
+    @Override
+    public void setupLogixNG() {
+        _logixNG = InstanceManager.getDefault(LogixNG_Manager.class)
+                .getBySystemName(_logixNG_SystemName);
+        if (_logixNG == null) {
+            throw new RuntimeException(String.format(
+                    "LogixNG %s is not found for LayoutTrackView %s in panel %s",
+                    _logixNG_SystemName, getName(), layoutEditor.getName()));
+        }
+        _logixNG.setInlineLogixNG(this);
+    }
 
     /**
      * show the popup menu for this layout track
@@ -438,9 +648,9 @@ abstract public class LayoutTrackView {
      */
     @Nonnull
     final protected JPopupMenu showPopup(Point2D where) {
-        return this.showPopup(new MouseEvent(
+        return this.showPopup(new JmriMouseEvent(
                 layoutEditor.getTargetPanel(), // source
-                MouseEvent.MOUSE_CLICKED, // id
+                JmriMouseEvent.MOUSE_CLICKED, // id
                 System.currentTimeMillis(), // when
                 0, // modifiers
                 (int) where.getX(), (int) where.getY(), // where
@@ -508,11 +718,11 @@ abstract public class LayoutTrackView {
      *
      * @return the list of available connections
      */
-     // note: used by LayoutEditorChecks.setupCheckUnConnectedTracksMenu()
-     //
-     // This could have just returned a boolean but I thought a list might be
-     // more useful (eventually... not currently being used; we just check to see
-     // if it's not empty.)
+    // note: used by LayoutEditorChecks.setupCheckUnConnectedTracksMenu()
+    //
+    // This could have just returned a boolean but I thought a list might be
+    // more useful (eventually... not currently being used; we just check to see
+    // if it's not empty.)
     @Nonnull
     abstract public List<HitPointType> checkForFreeConnections();
 
@@ -521,8 +731,8 @@ abstract public class LayoutTrackView {
      *
      * @return true if all appropriate blocks have been assigned
      */
-     // note: used by LayoutEditorChecks.setupCheckUnBlockedTracksMenu()
-     //
+    // note: used by LayoutEditorChecks.setupCheckUnBlockedTracksMenu()
+    //
     abstract public boolean checkForUnAssignedBlocks();
 
     /**
@@ -540,8 +750,8 @@ abstract public class LayoutTrackView {
      * @param blockNamesToTrackNameSetMaps hashmap of key:block names to lists
      *                                     of track name sets for those blocks
      */
-     // note: used by LayoutEditorChecks.setupCheckNonContiguousBlocksMenu()
-     //
+    // note: used by LayoutEditorChecks.setupCheckNonContiguousBlocksMenu()
+    //
     abstract public void checkForNonContiguousBlocks(
             @Nonnull HashMap<String, List<Set<String>>> blockNamesToTrackNameSetMaps);
 
@@ -563,5 +773,21 @@ abstract public class LayoutTrackView {
      */
     abstract public void setAllLayoutBlocks(LayoutBlock layoutBlock);
 
-    // private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LayoutTrackView.class);
+    protected boolean removeInlineLogixNG() {
+        LogixNG logixNG = getLogixNG();
+
+        if (logixNG == null) return true;
+
+        DeleteBean<LogixNG> deleteBean = new DeleteBean<>(
+                InstanceManager.getDefault(LogixNG_Manager.class));
+
+        boolean hasChildren = logixNG.getNumConditionalNGs() > 0;
+
+        return deleteBean.delete(logixNG, hasChildren, (t)->{deleteLogixNG_Internal(t);},
+                (t,list)->{logixNG.getListenerRefsIncludingChildren(list);},
+                jmri.jmrit.logixng.LogixNG_UserPreferences.class.getName(),
+                true);
+    }
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LayoutTrackView.class);
 }

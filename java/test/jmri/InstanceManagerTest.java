@@ -69,16 +69,16 @@ public class InstanceManagerTest {
         // counts on the following test class to be loaded
         Assert.assertFalse(InstanceManager.isInitialized(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
         Assert.assertFalse(InstanceManager.isInitialized(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
-        
+
         Assert.assertNotNull(InstanceManager.getDefault(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
-        
+
         Assert.assertTrue(InstanceManager.isInitialized(jmri.InstanceManagerTest.InstanceManagerInitCheck.class));
     }
-    
+
     static public class InstanceManagerInitCheck implements jmri.InstanceManagerAutoDefault {
         public InstanceManagerInitCheck() {}
     }
-    
+
     // the following test was moved from jmri.jmrit.symbolicprog.PackageTet when
     // it was converted to JUnit4 format.  It seemed out of place there.
     // check configuring the programmer
@@ -116,6 +116,11 @@ public class InstanceManagerTest {
                 InstanceManager.getList(PowerManager.class).get(0));
         Assert.assertEquals("retrieved 2nd PowerManager", m2,
                 InstanceManager.getList(PowerManager.class).get(1));
+
+        Assert.assertTrue("access by string",
+                InstanceManager.getList(PowerManager.class).equals(
+                InstanceManager.getList("jmri.PowerManager"))
+            );
     }
 
     @Test
@@ -132,6 +137,37 @@ public class InstanceManagerTest {
 
         Assert.assertEquals("retrieved same PowerManager", m1, m2);
         Assert.assertEquals("retrieved same TurnoutManager", t1, t2);
+
+        Assert.assertEquals("access by string",
+                InstanceManager.getDefault(PowerManager.class),
+                InstanceManager.getDefault("jmri.PowerManager")
+            );
+
+    }
+
+    @Test
+    public void testListTwoDifferentTypes() {
+        PowerManager m1 = new PowerManagerScaffold();
+        TurnoutManager t1 = new TurnoutManagerScaffold();
+
+        InstanceManager.store(m1, PowerManager.class);
+        InstanceManager.store(t1, TurnoutManager.class);
+
+        var set = InstanceManager.getInstanceClasses();
+        
+        Assert.assertTrue("PowerManager", set.contains(PowerManager.class));
+        Assert.assertTrue("TurnoutManager", set.contains(TurnoutManager.class));
+    }
+
+    @Test
+    public void testGetInstance() throws ClassNotFoundException {
+        // for sync usage, check a predicate - Class.forName returns same object always
+        Assert.assertTrue("access by string",
+                Class.forName("jmri.PowerManager") == Class.forName("jmri.PowerManager")
+            );
+        // the rest of the checks are done via calls to getInstance
+        // embedded in various other tests
+
     }
 
     @Test
@@ -170,21 +206,23 @@ public class InstanceManagerTest {
 
     @Test
     public void testAutoCreateNotOK() {
-        try {
-            InstanceManager.getDefault(NoAutoCreate.class);
-            Assert.fail("Expected NullPointerException not thrown");
-        } catch (NullPointerException ex) {
-            // passes
-        }
+        Exception ex = Assertions.assertThrows(NullPointerException.class, () ->
+            InstanceManager.getDefault(NoAutoCreate.class) );
+        Assert.assertEquals("Required nonnull default for jmri.InstanceManagerTest$NoAutoCreate does not exist.",
+            ex.getMessage());
     }
 
-    static boolean avoidLoopAutoCreateCycle = true;
+    static volatile boolean avoidLoopAutoCreateCycle = true;
 
+    static synchronized void setavoidLoopAutoCreateCycle( boolean newVal) {
+        avoidLoopAutoCreateCycle = newVal;
+    }
+    
     public static class AutoCreateCycle implements InstanceManagerAutoDefault {
 
         public AutoCreateCycle() {
-            if (avoidLoopAutoCreateCycle) {
-                avoidLoopAutoCreateCycle = false;
+            if (InstanceManagerTest.avoidLoopAutoCreateCycle) {
+                InstanceManagerTest.setavoidLoopAutoCreateCycle(false);
                 InstanceManager.getDefault(AutoCreateCycle.class);
             }
         }
@@ -192,7 +230,7 @@ public class InstanceManagerTest {
 
     @Test
     public void testAutoCreateCycle() {
-        avoidLoopAutoCreateCycle = true;
+        InstanceManagerTest.setavoidLoopAutoCreateCycle(true);
         InstanceManager.getDefault(AutoCreateCycle.class);
         JUnitAppender.assertErrorMessage("Proceeding to initialize class jmri.InstanceManagerTest$AutoCreateCycle while already in initialization");
         JUnitAppender.assertErrorMessage("    Prior initialization:");
@@ -203,13 +241,17 @@ public class InstanceManagerTest {
         public static final String MESSAGE = "dispose called";
         private static int times = 0;
 
-        private static void setUp() {
+        private static void startUp() {
             times = 0;
+        }
+
+        private static void increaseDisposedCount() {
+            OkToDispose.times++;
         }
 
         @Override
         public void dispose() {
-            times++;
+            increaseDisposedCount();
             log.warn("{} {}", MESSAGE, times);
         }
     }
@@ -379,7 +421,8 @@ public class InstanceManagerTest {
     @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
-        OkToDispose.setUp();
+        OkToDispose.startUp();
+        InstanceManager.getDefault().clearAll();
     }
 
     @AfterEach

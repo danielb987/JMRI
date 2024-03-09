@@ -1,9 +1,7 @@
 package jmri.jmrix.nce;
 
-import javax.swing.JOptionPane;
 import jmri.jmrix.ConnectionStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /* 
  * Checks to see if AIU broadcasts are enabled and warns user to 
@@ -12,12 +10,10 @@ import org.slf4j.LoggerFactory;
  * AIU broadcasts, 0 = disabled, 1 = enabled.
  *  
  * @author Daniel Boudreau (C) 2007
- * 
- * 
+ * @author Ken Cameron Copyright (C) 2023
  */
 public class NceAIUChecker implements NceListener {
-
-    private static final int MEM_AIU = 0xDC15;  // NCE CS AIU memory address 
+ 
     private static final int REPLY_LEN = 1;  // number of bytes read
     private boolean EXPECT_REPLY = false;   // flag 
 
@@ -40,7 +36,7 @@ public class NceAIUChecker implements NceListener {
         }
 
         // read one byte from NCE memory to determine if AIU broadcasts are enabled
-        byte[] bl = NceBinaryCommand.accMemoryRead1(MEM_AIU);
+        byte[] bl = NceBinaryCommand.accMemoryRead1(tc.csm.getAiuFlagAddr());
         NceMessage m = NceMessage.createBinaryMessage(tc, bl, REPLY_LEN);
         EXPECT_REPLY = true;
         return m;
@@ -74,11 +70,11 @@ public class NceAIUChecker implements NceListener {
                         tc.getUserName(),
                         tc.getPortName(),
                         ConnectionStatus.CONNECTION_DOWN);
-                JOptionPane.showMessageDialog(null,
+                JmriJOptionPane.showMessageDialog(null,
                         "JMRI has detected that AIU broadcasts are enabled. \n"
                         + "You must disable AIU broadcasts for proper operation of this program. \n"
                         + "For more information, see Setup Command Station in your NCE System Reference Manual.",
-                        "Warning", JOptionPane.INFORMATION_MESSAGE);
+                        "Warning", JmriJOptionPane.INFORMATION_MESSAGE);
 
             }
 
@@ -87,8 +83,7 @@ public class NceAIUChecker implements NceListener {
         }
     }
 
-    private final static Logger log = LoggerFactory
-            .getLogger(NceAIUChecker.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NceAIUChecker.class);
 
 }
 

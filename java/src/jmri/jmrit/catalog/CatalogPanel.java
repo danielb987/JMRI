@@ -20,8 +20,6 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +39,9 @@ import jmri.jmrit.display.palette.IconItemPanel;
 import jmri.util.FileUtil;
 import jmri.util.swing.DrawSquares;
 import jmri.util.swing.ImagePanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriMouseEvent;
+import jmri.util.swing.JmriMouseListener;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Create a JPanel containing trees of resources to replace default icons. The
@@ -183,7 +182,7 @@ public class CatalogPanel extends JPanel {
                 _previewLabel.setText(setIcons());
             } catch (OutOfMemoryError oome) {
                 resetPanel();
-                log.debug("setIcons threw OutOfMemoryError {}", oome);
+                log.debug("setIcons threw OutOfMemoryError", oome);
             }
         } else {
             _previewLabel.setText(" ");
@@ -566,7 +565,7 @@ public class CatalogPanel extends JPanel {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
             _noMemory = true;
-            log.error("MemoryExceptionHandler: {}", e);
+            log.error("MemoryExceptionHandler", e);
         }
     }
 
@@ -646,9 +645,9 @@ public class CatalogPanel extends JPanel {
         return Bundle.getMessage("numImagesInNode", node.getUserObject(), leaves.size());
     }
 
-    class IconListener implements MouseListener {
+    class IconListener implements JmriMouseListener {
         @Override
-        public void mouseClicked(MouseEvent event) {
+        public void mouseClicked(JmriMouseEvent event) {
             if (event.getSource() instanceof IconDisplayPanel) {
                 IconDisplayPanel panel = (IconDisplayPanel)event.getSource();
                 setSelection(panel);
@@ -657,11 +656,11 @@ public class CatalogPanel extends JPanel {
            }
         }
         @Override
-        public void mousePressed(MouseEvent event) {
+        public void mousePressed(JmriMouseEvent event) {
             // no handling provided for mousePressed events
         }
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(JmriMouseEvent e) {
             if (log.isDebugEnabled()) {
                 log.debug("IconListener mouseReleased, _treeDnd= {}, popup= {}, source= {}",
                         _treeDnd, e.isPopupTrigger(), e.getSource().getClass().getName());
@@ -682,11 +681,11 @@ public class CatalogPanel extends JPanel {
             }
         }
         @Override
-        public void mouseEntered(MouseEvent event) {
+        public void mouseEntered(JmriMouseEvent event) {
             // no handling provided for mouseEntered events
         }
         @Override
-        public void mouseExited(MouseEvent event) {
+        public void mouseExited(JmriMouseEvent event) {
             // no handling provided for mouseExited events
         }
     }
@@ -839,9 +838,7 @@ public class CatalogPanel extends JPanel {
         if (node == null) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("delete icon {} from node {}", icon.getName(), node);
-        }
+        log.debug("delete icon {} from node {}", icon.getName(), node);
         node.deleteLeaf(icon.getName(), icon.getURL());
         _model.nodeChanged(node);
         updatePanel();
@@ -853,13 +850,10 @@ public class CatalogPanel extends JPanel {
         if (node == null) {
             return;
         }
-        String name = JOptionPane.showInputDialog(getParentFrame(this),
-                Bundle.getMessage("newIconName"), icon.getName(),
-                JOptionPane.QUESTION_MESSAGE);
+        String name = JmriJOptionPane.showInputDialog(getParentFrame(this),
+                Bundle.getMessage("newIconName"), icon.getName());
         if (name != null && name.length() > 0) {
-            if (log.isDebugEnabled()) {
-                log.debug("rename icon {} to {} from node {}", icon.getName(), name, node);
-            }
+            log.debug("rename icon {} to {} from node {}", icon.getName(), name, node);
             CatalogTreeLeaf leaf = node.getLeaf(icon.getName(), icon.getURL());
             if (leaf != null) {
                 leaf.setName(name);
@@ -872,7 +866,7 @@ public class CatalogPanel extends JPanel {
         }
     }
 
-    private void showPopUp(MouseEvent evt, NamedIcon icon) {
+    private void showPopUp(JmriMouseEvent evt, NamedIcon icon) {
         if (log.isDebugEnabled()) {
             log.debug("showPopUp {}", icon);
         }
@@ -1019,7 +1013,7 @@ public class CatalogPanel extends JPanel {
         }
     }
 
-    public class IconDisplayPanel extends JPanel implements MouseListener{
+    public class IconDisplayPanel extends JPanel implements JmriMouseListener{
         String _name;
         NamedIcon _icon;
 
@@ -1032,7 +1026,7 @@ public class CatalogPanel extends JPanel {
             if (_name != null) {
                 setBorderAndIcon(icon);
             }
-            addMouseListener(new IconListener());
+            addMouseListener(JmriMouseListener.adapt(new IconListener()));
         }
 
         NamedIcon getIcon() {
@@ -1064,7 +1058,7 @@ public class CatalogPanel extends JPanel {
                 }
                 image.setIcon(icon);
                 image.setHorizontalAlignment(SwingConstants.CENTER);
-                image.addMouseListener(new IconListener());
+                image.addMouseListener(JmriMouseListener.adapt(new IconListener()));
                 add(image, BorderLayout.NORTH);
 
                 String scaleMessage = Bundle.getMessage("scale", CatalogPanel.printDbl(scale, 2));
@@ -1086,30 +1080,29 @@ public class CatalogPanel extends JPanel {
             return _name;
         }
         @Override
-        public void mouseClicked(MouseEvent event) {
+        public void mouseClicked(JmriMouseEvent event) {
             if (event.getSource() instanceof JLabel ) {
                 setSelection(this);
             }
         }
         @Override
-        public void mousePressed(MouseEvent event) {
+        public void mousePressed(JmriMouseEvent event) {
             // no handling provided for mousePressed events
         }
         @Override
-        public void mouseReleased(MouseEvent event) {
+        public void mouseReleased(JmriMouseEvent event) {
             // no handling provided for mouseReleased events
         }
         @Override
-        public void mouseEntered(MouseEvent event) {
+        public void mouseEntered(JmriMouseEvent event) {
             // no handling provided for mouseEntered events
         }
         @Override
-        public void mouseExited(MouseEvent event) {
+        public void mouseExited(JmriMouseEvent event) {
             // no handling provided for mouseExited events
         }
     }
 
-
-    private static final Logger log = LoggerFactory.getLogger(CatalogPanel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogPanel.class);
 
 }

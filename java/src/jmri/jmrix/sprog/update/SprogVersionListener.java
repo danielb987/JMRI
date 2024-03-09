@@ -8,7 +8,7 @@ package jmri.jmrix.sprog.update;
  */
 public interface SprogVersionListener extends java.util.EventListener {
 
-    public void notifyVersion(SprogVersion v);
+    void notifyVersion(SprogVersion v) throws jmri.ProgrammerException;
 
 }
 

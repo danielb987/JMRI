@@ -2,15 +2,10 @@ package jmri.jmrit.operations.rollingstock.engines.tools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
 import jmri.jmrit.XmlFile;
@@ -18,6 +13,7 @@ import jmri.jmrit.operations.rollingstock.engines.Engine;
 import jmri.jmrit.operations.rollingstock.engines.EngineManager;
 import jmri.jmrit.operations.setup.OperationsSetupXml;
 import jmri.jmrit.operations.setup.Setup;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Exports the Engine roster into a comma delimited file (CSV). Order stored:
@@ -28,7 +24,7 @@ import jmri.jmrit.operations.setup.Setup;
  *
  */
 public class ExportEngines extends XmlFile {
-    
+
     protected static final String LOCATION_TRACK_SEPARATOR = "-";
 
     public ExportEngines() {
@@ -57,7 +53,7 @@ public class ExportEngines extends XmlFile {
             }
             writeFile(defaultOperationsFilename());
         } catch (IOException e) {
-            log.error("Exception while writing the new CSV operations file, may not be complete: {}", e);
+            log.error("Exception while writing the new CSV operations file, may not be complete", e);
         }
     }
 
@@ -101,7 +97,7 @@ public class ExportEngines extends XmlFile {
                         engine.getRoadName(),
                         engine.getModel(),
                         engine.getLength(),
-                        engine.getOwner(),
+                        engine.getOwnerName(),
                         engine.getBuilt(),
                         engine.getLocationName(),
                         LOCATION_TRACK_SEPARATOR,
@@ -119,14 +115,14 @@ public class ExportEngines extends XmlFile {
             fileOut.flush();
             fileOut.close();
             log.info("Exported {} engines to file {}", engineList.size(), defaultOperationsFilename());
-            JOptionPane.showMessageDialog(null, MessageFormat.format(Bundle.getMessage("ExportedEnginesToFile"),
-                    new Object[]{engineList.size(), defaultOperationsFilename()}), Bundle.getMessage("ExportComplete"),
-                    JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("ExportedEnginesToFile",
+                    engineList.size(), defaultOperationsFilename()), Bundle.getMessage("ExportComplete"),
+                    JmriJOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             log.error("Can not open export engines CSV file: {}", file.getName());
-            JOptionPane.showMessageDialog(null, MessageFormat.format(Bundle.getMessage("ExportedEnginesToFile"),
-                    new Object[]{0, defaultOperationsFilename()}), Bundle.getMessage("ExportFailed"),
-                    JOptionPane.ERROR_MESSAGE);
+            JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("ExportedEnginesToFile",
+                    0, defaultOperationsFilename()), Bundle.getMessage("ExportFailed"),
+                    JmriJOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -148,6 +144,6 @@ public class ExportEngines extends XmlFile {
 
     private static String operationsFileName = "ExportOperationsEngineRoster.csv"; // NOI18N
 
-    private final static Logger log = LoggerFactory.getLogger(ExportEngines.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExportEngines.class);
 
 }

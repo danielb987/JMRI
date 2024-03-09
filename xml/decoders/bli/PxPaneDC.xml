@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pane xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder.xsd">
+<pane xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://jmri.org/xml/schema/decoder-4-15-2.xsd">
     <name>Analog Controls</name>
     <column>
       <row>
@@ -46,6 +46,42 @@
           <text> </text>
         </label>
         <display item="Analog Brake Release Voltage" layout="above" format="hslider"/>
+      </row>
+      <row>
+        <display item="DC Alpha Filter" layout="above" label="">
+          <label/>
+        </display>
+        <label>
+          <text> </text>
+        </label>
+        <display item="DC Alpha Filter" layout="above" format="hslider"/>
+      </row>
+      <row>
+        <display item="DC Sounds Startup Volume" layout="above" label="">
+          <label/>
+        </display>
+        <label>
+          <text> </text>
+        </label>
+        <display item="DC Sounds Startup Volume" layout="above" format="hslider"/>
+      </row>
+      <row>
+        <display item="DC Sounds Maximum Volume" layout="above" label="">
+          <label/>
+        </display>
+        <label>
+          <text> </text>
+        </label>
+        <display item="DC Sounds Maximum Volume" layout="above" format="hslider"/>
+      </row>
+      <row>
+        <display item="DC Smoke Unit On Voltage" layout="above" label="">
+          <label/>
+        </display>
+        <label>
+          <text> </text>
+        </label>
+        <display item="DC Smoke Unit On Voltage" layout="above" format="hslider"/>
       </row>
     </column>
     <column>

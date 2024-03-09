@@ -39,8 +39,7 @@ import jmri.CatalogTreeNode;
 import jmri.jmrit.catalog.ImageIndexEditor;
 import jmri.jmrit.catalog.NamedIcon;
 import jmri.jmrit.picker.PickListModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Provides a simple editor for selecting N NamedIcons. Class for Icon Editors
@@ -60,7 +59,9 @@ public class IconAdder extends JPanel implements ListSelectionListener {
     HashMap<String, JToggleButton> _iconMap;
     ArrayList<String> _iconOrderList;
     private JScrollPane _pickTablePane;
-    private PickListModel _pickListModel;
+
+    private PickListModel<NamedBean> _pickListModel;
+
     CatalogTreeNode _defaultIcons;      // current set of icons user has selected
     JPanel _iconPanel;
     private JPanel _buttonPanel;
@@ -81,7 +82,7 @@ public class IconAdder extends JPanel implements ListSelectionListener {
         _userDefaults = false;
         _iconMap = new HashMap<>(10);
         _iconOrderList = new ArrayList<>();
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        IconAdder.this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
 
     public IconAdder(boolean allowDeletes) {
@@ -92,7 +93,7 @@ public class IconAdder extends JPanel implements ListSelectionListener {
     public IconAdder(String type) {
         this();
         _type = type;
-        initDefaultIcons();
+        IconAdder.this.initDefaultIcons();
     }
 
     public void reset() {
@@ -282,7 +283,7 @@ public class IconAdder extends JPanel implements ListSelectionListener {
     }
 
     protected void doIconPanel() {
-        JPanel panel = null;
+        JPanel panel;
         for (int i = _iconOrderList.size() - 1; i >= 0; i--) {
             log.debug("adding icon #{}", i);
             panel = new JPanel();
@@ -317,8 +318,9 @@ public class IconAdder extends JPanel implements ListSelectionListener {
      *
      * @param tableModel the model from which the table is created
      */
-    public void setPickList(PickListModel tableModel) {
-        _pickListModel = tableModel;
+    @SuppressWarnings("unchecked")  //  cast PickListModel<? extends NamedBean> to PickListModel<NamedBean>
+    public void setPickList(PickListModel<? extends NamedBean> tableModel) {
+        _pickListModel = (PickListModel<NamedBean>) tableModel;
         _table = new JTable(tableModel);
         _pickListModel.makeSorter(_table);
 
@@ -345,7 +347,6 @@ public class IconAdder extends JPanel implements ListSelectionListener {
         pack();
     }
 
-    @SuppressWarnings("unchecked") // PickList is a parameterized class, but we don't use that here
     public void setSelection(NamedBean bean) {
         int row = _pickListModel.getIndexOf(bean);
         row = _table.convertRowIndexToView(row);
@@ -428,8 +429,8 @@ public class IconAdder extends JPanel implements ListSelectionListener {
             int nextWidth = but.getIcon().getIconWidth();
             int nextHeight = but.getIcon().getIconHeight();
             if ((Math.abs(lastWidth - nextWidth) > 3 || Math.abs(lastHeight - nextHeight) > 3)) {
-                JOptionPane.showMessageDialog(this, Bundle.getMessage("IconSizeDiff"),
-                        Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("IconSizeDiff"),
+                        Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
                 return;
             }
             lastWidth = nextWidth;
@@ -518,14 +519,36 @@ public class IconAdder extends JPanel implements ListSelectionListener {
         JPanel p = new JPanel();
         p.setLayout(new FlowLayout());
         if (addToTable) {
+            JPanel pInner = new JPanel();
+            pInner.setLayout(new BoxLayout(pInner, BoxLayout.X_AXIS));
             _sysNameText = new JTextField();
             _sysNameText.setPreferredSize(
                     new Dimension(150, _sysNameText.getPreferredSize().height + 2));
-            _addTableButton = new JButton(Bundle.getMessage("addToTable"));
+
+            String tooltip = _pickListModel.getManager().getEntryToolTip();
+            if (tooltip!=null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("<br>");
+                sb.append(_pickListModel.getManager().getMemo().getUserName());
+                sb.append(" ");
+                sb.append(_pickListModel.getManager().getBeanTypeHandled(true));
+                sb.append(":<br>");
+                sb.append(_pickListModel.getManager().getEntryToolTip());
+                tooltip = sb.toString();
+            }
+
+            _sysNameText.setToolTipText(Bundle.getMessage("newBeanBySysNameTip",
+                _pickListModel.getManager().getBeanTypeHandled(false),
+                _pickListModel.getManager().getMemo().getUserName(),
+                InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class)
+                    .getSystemPrefix()+_pickListModel.getManager().typeLetter(),
+                (tooltip==null ? "" : tooltip)
+                ));
+            _addTableButton = new JButton(Bundle.getMessage("addToTable",_pickListModel.getManager().getBeanTypeHandled()));
             _addTableButton.addActionListener((ActionEvent a) -> addToTable());
             _addTableButton.setEnabled(false);
             _addTableButton.setToolTipText(Bundle.getMessage("ToolTipWillActivate"));
-            p.add(_sysNameText);
+            pInner.add(_sysNameText);
             _sysNameText.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent a) {
@@ -537,7 +560,8 @@ public class IconAdder extends JPanel implements ListSelectionListener {
                 }
             });
 
-            p.add(_addTableButton);
+            pInner.add(_addTableButton);
+            p.add(pInner);
             _buttonPanel.add(p);
             p = new JPanel();
             p.setLayout(new FlowLayout());  //new BoxLayout(p, BoxLayout.Y_AXIS)
@@ -599,11 +623,18 @@ public class IconAdder extends JPanel implements ListSelectionListener {
     void addToTable() {
         String name = _sysNameText.getText();
         if (name != null && name.length() > 0) {
-            NamedBean bean = _pickListModel.addBean(name);
-            if (bean != null) {
-                int setRow = _pickListModel.getIndexOf(bean);
-                _table.setRowSelectionInterval(setRow, setRow);
-                _pickTablePane.getVerticalScrollBar().setValue(setRow * ROW_HEIGHT);
+            try {
+                NamedBean bean = _pickListModel.addBean(name);
+                if (bean != null) {
+                    int setRow = _pickListModel.getIndexOf(bean);
+                    _table.setRowSelectionInterval(setRow, setRow);
+                    _pickTablePane.getVerticalScrollBar().setValue(setRow * ROW_HEIGHT);
+                }
+            } catch (IllegalArgumentException ex) {
+                JmriJOptionPane.showMessageDialog(this.getParent(),
+                     ex.getLocalizedMessage(),
+                    Bundle.getMessage("WarningTitle"),  // NOI18N
+                    JmriJOptionPane.WARNING_MESSAGE);
             }
         }
         _sysNameText.setText("");
@@ -784,6 +815,6 @@ public class IconAdder extends JPanel implements ListSelectionListener {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(IconAdder.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IconAdder.class);
 
 }

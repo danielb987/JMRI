@@ -49,8 +49,8 @@ public class InternalSensorManager extends jmri.managers.AbstractSensorManager {
         try {
             sen.setKnownState(getDefaultStateForNewSensors());
         } catch (jmri.JmriException ex) {
-            log.error("An error occurred while trying to set initial state for sensor {}", sen.getDisplayName());
-            log.error(ex.toString());
+            log.error("An error occurred while trying to set initial state for sensor {} , {}",
+                sen.getDisplayName(), ex.getMessage());
         }
         log.debug("Internal Sensor \"{}\", \"{}\" created", systemName, userName);
         return sen;
@@ -89,6 +89,7 @@ public class InternalSensorManager extends jmri.managers.AbstractSensorManager {
      * {@inheritDoc}
      */
     @Override
+    @Nonnull
     public String createSystemName(@Nonnull String curAddress, @Nonnull String prefix) throws jmri.JmriException {
         return prefix + typeLetter() + curAddress;
     }

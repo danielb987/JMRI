@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
-import javax.swing.JOptionPane;
 
 import jmri.InstanceManager;
 import jmri.NamedBean;
 import jmri.ShutDownTask;
+import jmri.jmrit.roster.RosterEntry;
 import jmri.jmrit.roster.RosterSpeedProfile;
+import jmri.jmrit.roster.RosterSpeedProfile.SpeedStep;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.managers.AbstractManager;
 import jmri.util.ThreadingUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Basic Implementation of a WarrantManager.
@@ -29,8 +30,8 @@ import org.slf4j.LoggerFactory;
 public class WarrantManager extends AbstractManager<Warrant>
         implements jmri.InstanceManagerAutoDefault {
     
-    private HashMap<String, RosterSpeedProfile> _mergeProfiles;
-    private HashMap<String, RosterSpeedProfile> _sessionProfiles;
+    private HashMap<String, RosterSpeedProfile> _mergeProfiles = new HashMap<>();
+    ShutDownTask _shutDownTask = null;
     private boolean _suppressWarnings = false;
 
     public WarrantManager() {
@@ -216,17 +217,17 @@ public class WarrantManager extends AbstractManager<Warrant>
             log.warn("Cannot delete portal \"{}\" from this thread", name);
             return false;
         }
-        int val = JOptionPane.showOptionDialog(null, message,
-                Bundle.getMessage("WarningTitle"), JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null,
+        int val = JmriJOptionPane.showOptionDialog(null, message,
+                Bundle.getMessage("WarningTitle"), JmriJOptionPane.DEFAULT_OPTION,
+                JmriJOptionPane.QUESTION_MESSAGE, null,
                 new Object[]{Bundle.getMessage("ButtonYes"),
                         Bundle.getMessage("ButtonYesPlus"),
                         Bundle.getMessage("ButtonNo"),},
                 Bundle.getMessage("ButtonNo")); // default NO
-        if (val == 2) {
+        if (val == 2 || val == JmriJOptionPane.CLOSED_OPTION ) { // array position 2 No, or Dialog closed
             return false;
         }
-        if (val == 1) { // suppress future warnings
+        if (val == 1) { // array position 1 ButtonYesPlus suppress future warnings
             _suppressWarnings = true;
         }
         return true;
@@ -345,49 +346,60 @@ public class WarrantManager extends AbstractManager<Warrant>
     public Class<Warrant> getNamedBeanClass() {
         return Warrant.class;
     }
-    
-    protected void setSpeedProfiles(String id, RosterSpeedProfile merge, RosterSpeedProfile session) {
-        if (_mergeProfiles == null) {
-            _mergeProfiles = new HashMap<>();
-            _sessionProfiles = new HashMap<>();
+
+    protected void setMergeProfile(String id, RosterSpeedProfile merge) {
+        if (_shutDownTask == null) {
             if (!WarrantPreferences.getDefault().getShutdown().equals((WarrantPreferences.Shutdown.NO_MERGE))) {
-                ShutDownTask shutDownTask = new WarrantShutdownTask("WarrantRosterSpeedProfileCheck");
-                jmri.InstanceManager.getDefault(jmri.ShutDownManager.class).register(shutDownTask);
+                _shutDownTask = new WarrantShutdownTask("WarrantRosterSpeedProfileCheck");
+                jmri.InstanceManager.getDefault(jmri.ShutDownManager.class).register(_shutDownTask);
             }
         }
-        if (id != null) {
+        log.debug("setMergeProfile id = {}", id);
+        if (id != null && merge != null) {
+            _mergeProfiles.remove(id);
             _mergeProfiles.put(id, merge);
-            _sessionProfiles.put(id, session);
         }
     }
-    
+
+    /**
+     * Return a copy of the RosterSpeedProfile for Roster entry
+     * @param id roster id
+     * @return RosterSpeedProfile
+     */
     protected RosterSpeedProfile getMergeProfile(String id) {
-        if (_mergeProfiles == null) {
-            return null;
-        }
+        log.debug("getMergeProfile id = {}", id);
         return _mergeProfiles.get(id);
     }
-    protected RosterSpeedProfile getSessionProfile(String id) {
-        if (_sessionProfiles == null) {
-            return null;
+
+    protected RosterSpeedProfile makeProfileCopy(RosterSpeedProfile mergeProfile, @Nonnull RosterEntry re) {
+        RosterSpeedProfile profile = new RosterSpeedProfile(re);
+        if (mergeProfile == null) {
+            mergeProfile = re.getSpeedProfile();
+            if (mergeProfile == null) {
+                mergeProfile = new RosterSpeedProfile(re);
+                re.setSpeedProfile(mergeProfile);
+            }
         }
-        return _sessionProfiles.get(id);
+        // make copy of mergeProfile
+        TreeMap<Integer, SpeedStep> rosterTree = mergeProfile.getProfileSpeeds();
+        for (Map.Entry<Integer, SpeedStep> entry : rosterTree.entrySet()) {
+            profile.setSpeed(entry.getKey(), entry.getValue().getForwardSpeed(), entry.getValue().getReverseSpeed());
+        }
+        return profile;
     }
-    
+
     protected HashMap<String, RosterSpeedProfile> getMergeProfiles() {
         return _mergeProfiles;
-    }
-    protected HashMap<String, RosterSpeedProfile> getSessionProfiles() {
-        return _sessionProfiles;
     }
 
     @Override
     public void dispose(){
         for(Warrant w:_beans){
-            w.stopWarrant(true);
+            w.dispose();
         }
         super.dispose();
     }
 
-    private static final Logger log = LoggerFactory.getLogger(WarrantManager.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WarrantManager.class);
+
 }

@@ -70,7 +70,6 @@ import org.slf4j.LoggerFactory;
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <p>
  *
  * @author Randall Wood Copyright (C) 2011, 2013, 2018
  * @see javax.jmdns.JmDNS
@@ -88,7 +87,7 @@ public class ZeroConfServiceManager implements InstanceManagerAutoDefault, Dispo
      * objects is static. All access <strong>must</strong> be through
      * {@link #getDNSes() } to ensure this is populated correctly.
      */
-    protected static final HashMap<InetAddress, JmDNS> JMDNS_SERVICES = new HashMap<>();
+    static final HashMap<InetAddress, JmDNS> JMDNS_SERVICES = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(ZeroConfServiceManager.class);
     // class data objects
     protected final HashMap<String, ZeroConfService> services = new HashMap<>();
@@ -470,7 +469,7 @@ public class ZeroConfServiceManager implements InstanceManagerAutoDefault, Dispo
      * <li>Repeat process with NodeIdentity#networkIdentity() as input if above never
      * yields a usable host name</li>
      * </ol>
-     * 
+     *
      * @param string String to convert to host name
      * @return An RFC 1123 compliant host name
      */
@@ -593,7 +592,7 @@ public class ZeroConfServiceManager implements InstanceManagerAutoDefault, Dispo
                             });
                         }
                     } catch (IOException ex) {
-                        log.error(ex.getLocalizedMessage(), ex);
+                        log.error("IOException adding address {}",address, ex);
                     }
                 });
             } else {

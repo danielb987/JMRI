@@ -16,8 +16,6 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -30,10 +28,12 @@ import jmri.implementation.DefaultConditionalAction;
 import jmri.jmrit.beantable.LRouteTableAction;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Warrant;
+import jmri.script.swing.ScriptFileChooser;
 import jmri.swing.NamedBeanComboBox;
 import jmri.util.FileUtil;
 import jmri.util.JmriJFrame;
 import jmri.util.swing.JComboBoxUtil;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * A tree based editor for maintaining Logix Conditionals, State Variables and
@@ -226,9 +226,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                         if (p != null) {
                             // Logix with this user name already exists
                             log.error("Failure to update Logix with Duplicate User Name: {}", uName); // NOI18N
-                            JOptionPane.showMessageDialog(_editLogixFrame,
+                            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                                     Bundle.getMessage("Error6"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                                    JOptionPane.ERROR_MESSAGE);
+                                    JmriJOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     }
@@ -709,9 +709,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
      */
     void newVariable() {
         if (LRouteTableAction.getLogixInitializer().equals(_curLogix.getSystemName())) {
-            JOptionPane.showMessageDialog(_editLogixFrame,
+           JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Error49"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -906,7 +906,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     if (cRef==null){
                         log.error("Conditional :{}: not found while updating username",ref);
                         continue;
-                    }
+                        }
                     List<ConditionalVariable> varList = cRef.getCopyOfStateVariables();
                     int idx = 0;
                     for (ConditionalVariable var : varList) {
@@ -1049,7 +1049,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
 
     /**
      * Check the antecedent and logic type.
-     * <p>
+     *
      * @param antecedentText The user supplied antecedent text
      * @return false if antecedent can't be validated
      */
@@ -1129,10 +1129,10 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 _curLogix.activateLogix();
                 if (msgs != null) {
                     // Unable to delete due to existing conditional references
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                   JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Error11", (Object[]) msgs), // NOI18N
                             Bundle.getMessage("ErrorTitle"),
-                            JOptionPane.ERROR_MESSAGE);  // NOI18N
+                            JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
                     return;
                 }
                 updateWhereUsed(oldTargetNames, newTargetNames, _curNodeName);
@@ -1152,9 +1152,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
 
                 if (_curLogix.getNumConditionals() < 1 && !_suppressReminder) {
                     // warning message - last Conditional deleted
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                   JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Warn1"), Bundle.getMessage("WarningTitle"), // NOI18N
-                            JOptionPane.WARNING_MESSAGE);
+                            JmriJOptionPane.WARNING_MESSAGE);
                 }
                 setMoveButtons();
                 break;
@@ -1163,9 +1163,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 loadReferenceNames(_variableList, oldTargetNames);
                 if (_variableList.size() < 2 && !_suppressReminder) {
                     // warning message - last State Variable deleted
-                    JOptionPane.showMessageDialog(_editLogixFrame,
+                    JmriJOptionPane.showMessageDialog(_editLogixFrame,
                             Bundle.getMessage("Warn3"), Bundle.getMessage("WarningTitle"), // NOI18N
-                            JOptionPane.WARNING_MESSAGE);
+                            JmriJOptionPane.WARNING_MESSAGE);
                 }
 
                 // Adjust operator
@@ -1444,7 +1444,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
      * using mixed mode and an antecedent node is selected.
      */
     void helpPressed() {
-        JOptionPane.showMessageDialog(null,
+        JmriJOptionPane.showMessageDialog(null,
                 new String[]{
                     Bundle.getMessage("ConditionalHelpText1"), // NOI18N
                     Bundle.getMessage("ConditionalHelpText2"), // NOI18N
@@ -1454,7 +1454,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     Bundle.getMessage("ConditionalHelpText6"), // NOI18N
                     Bundle.getMessage("ConditionalHelpText7") // NOI18N
                 },
-                Bundle.getMessage("MenuHelp"), JOptionPane.INFORMATION_MESSAGE);  // NOI18N
+                Bundle.getMessage("MenuHelp"), JmriJOptionPane.INFORMATION_MESSAGE);  // NOI18N
     }
 
     /**
@@ -2853,9 +2853,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 testType = Conditional.Type.BLOCK_STATUS_EQUALS;
                 break;
             default:
-                JOptionPane.showMessageDialog(_editLogixFrame,
+                JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         Bundle.getMessage("ErrorVariableType"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
         }
         _curVariable.setType(testType);
@@ -2937,8 +2937,8 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     if (appStr != null) {
                         Conditional.Type type = ConditionalVariable.stringToVariableTest(appStr);
                         if (type == Conditional.Type.ERROR) {
-                            JOptionPane.showMessageDialog(_editLogixFrame, Bundle.getMessage("ErrorAppearance"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                                    JOptionPane.ERROR_MESSAGE);
+                           JmriJOptionPane.showMessageDialog(_editLogixFrame, Bundle.getMessage("ErrorAppearance"), Bundle.getMessage("ErrorTitle"), // NOI18N
+                                    JmriJOptionPane.ERROR_MESSAGE);
                             return false;
                         }
                         _curVariable.setType(type);
@@ -2956,9 +2956,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 }
                 if (testType == Conditional.Type.SIGNAL_MAST_ASPECT_EQUALS) {
                     if (_variableSignalBox.getSelectedIndex() < 0) {
-                        JOptionPane.showMessageDialog(_editLogixFrame,
+                       JmriJOptionPane.showMessageDialog(_editLogixFrame,
                                 Bundle.getMessage("ErrorAspect"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                                JOptionPane.ERROR_MESSAGE);
+                                JmriJOptionPane.ERROR_MESSAGE);
                         return false;
                     }
                     // save the selected aspect for comparison
@@ -2990,9 +2990,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 }
                 break;
             default:
-                JOptionPane.showMessageDialog(_editLogixFrame,
+               JmriJOptionPane.showMessageDialog(_editLogixFrame,
                         Bundle.getMessage("ErrorVariableType"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                        JOptionPane.ERROR_MESSAGE);
+                        JmriJOptionPane.ERROR_MESSAGE);
                 return false;
         }
         _curVariable.setName(name);
@@ -3001,9 +3001,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 name, testType.getTestTypeString(),
                 result, _curVariable.getType());  // NOI18N
         if (_curVariable.getType() == Conditional.Type.NONE) {
-            JOptionPane.showMessageDialog(_editLogixFrame,
+           JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("ErrorVariableState"), Bundle.getMessage("ErrorTitle"), // NOI18N
-                    JOptionPane.ERROR_MESSAGE);
+                    JmriJOptionPane.ERROR_MESSAGE);
             return false;
         }
         return (true);
@@ -3189,6 +3189,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
 
         // Action Type Box
         _actionTypeBox = new JComboBox<>();
+        JComboBoxUtil.setupComboBoxMaxRows(_actionTypeBox);
         _actionTypeBox.addItem(Conditional.Action.NONE);
 
         // Action State Box
@@ -3537,23 +3538,42 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
             case WARRANT:
                 _actionTypeBox.setSelectedItem(actionType);
                 if (actionType == Conditional.Action.CONTROL_TRAIN) {
-                    if (_curAction.getActionData() == Warrant.HALT) {
-                        _actionBox.setSelectedIndex(0);
-                    } else if (_curAction.getActionData() == Warrant.RESUME) {
-                        _actionBox.setSelectedIndex(1);
-                    } else if (_curAction.getActionData() == Warrant.ABORT) {
-                        _actionBox.setSelectedIndex(2);
+                    switch (_curAction.getActionData()) {
+                        case Warrant.HALT:
+                            _actionBox.setSelectedIndex(0);
+                            break;
+                        case Warrant.RESUME:
+                            _actionBox.setSelectedIndex(1);
+                            break;
+                        case Warrant.RETRY_FWD:
+                            _actionBox.setSelectedIndex(2);
+                            break;
+                        case Warrant.SPEED_UP:
+                            _actionBox.setSelectedIndex(3);
+                            break;
+                        case Warrant.STOP:
+                            _actionBox.setSelectedIndex(4);
+                            break;
+                        case Warrant.ESTOP:
+                            _actionBox.setSelectedIndex(5);
+                            break;
+                        case Warrant.ABORT:
+                            _actionBox.setSelectedIndex(6);
+                            break;
+                        default:
+                            log.warn("Unexpected _curAction.getActionData() of {}", _curAction.getActionData());  // NOI18N
                     }
                 } else if (actionType == Conditional.Action.SET_TRAIN_ID
-                        || actionType == Conditional.Action.SET_TRAIN_NAME
-                        || actionType == Conditional.Action.THROTTLE_FACTOR) {
+                        || actionType == Conditional.Action.SET_TRAIN_NAME) {
                     _shortActionString.setText(_curAction.getActionString());
                 }
                 break;
 
             case OBLOCK:
                 _actionTypeBox.setSelectedItem(actionType);
-                if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
+                if (actionType == Conditional.Action.SET_BLOCK_VALUE
+                        || actionType == Conditional.Action.SET_TRAIN_NAME
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     _shortActionString.setText(_curAction.getActionString());
                 }
                 break;
@@ -3886,12 +3906,16 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     warrantGrid = "StandardAction";  // NOI18N
                     _actionBoxLabel.setText(Bundle.getMessage("LabelControlTrain"));  // NOI18N
                     _actionBoxLabel.setToolTipText(Bundle.getMessage("DataHintTrainControl"));  // NOI18N
-                    _actionBox.addItem(Bundle.getMessage("WarrantHalt"));   // NOI18N
-                    _actionBox.addItem(Bundle.getMessage("WarrantResume")); // NOI18N
-                    _actionBox.addItem(Bundle.getMessage("WarrantAbort"));  // NOI18N
+                    _actionBox.addItem(Bundle.getMessage("WarrantHalt"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantResume"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantMoveToNext"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantSpeedUp"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantStop"));
+                    _actionBox.addItem(Bundle.getMessage("WarantEStop"));
+                    _actionBox.addItem(Bundle.getMessage("WarrantAbort"));
                 } else if (actionType == Conditional.Action.SET_TRAIN_ID
                         || actionType == Conditional.Action.SET_TRAIN_NAME
-                        || actionType == Conditional.Action.THROTTLE_FACTOR) {
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     warrantGrid = "ShortFieldNoBoxAction";  // NOI18N
                     if (actionType == Conditional.Action.SET_TRAIN_ID) {
                         _shortActionLabel.setText(Bundle.getMessage("LabelTrainId"));  // NOI18N
@@ -3899,12 +3923,11 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     } else if (actionType == Conditional.Action.SET_TRAIN_NAME) {
                         _shortActionLabel.setText(Bundle.getMessage("LabelTrainName"));  // NOI18N
                         _shortActionLabel.setToolTipText(Bundle.getMessage("DataHintTrainName"));  // NOI18N
-                    } else { // must be Conditional.Action.THROTTLE_FACTOR, so treat as such
-                        _shortActionLabel.setText(Bundle.getMessage("LabelThrottleFactor"));  // NOI18N
-                        _shortActionLabel.setToolTipText(Bundle.getMessage("DataHintThrottleFactor"));  // NOI18N
+                    } else if (actionType == Conditional.Action.GET_TRAIN_LOCATION) {
+                        _shortActionLabel.setText(Bundle.getMessage("LabelMemoryLocation"));  // NOI18N
+                        _shortActionLabel.setToolTipText(Bundle.getMessage("DataHintToMemory"));  // NOI18N
                     }
                 }
-
                 setActionNameBox(itemType);
                 makeDetailGrid(warrantGrid);
                 break;
@@ -3917,14 +3940,15 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     _actionTypeBox.addItem(action);
                 }
                 if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
-                    oblockGrid = "ShortFieldNoBoxAction";  // NOI18N
                     _shortActionLabel.setText(Bundle.getMessage("LabelBlockValue"));  // NOI18N
                     _shortActionLabel.setToolTipText(Bundle.getMessage("DataHintBlockValue"));  // NOI18N
-                } else if ((actionType == Conditional.Action.DEALLOCATE_BLOCK)
-                        || (actionType == Conditional.Action.SET_BLOCK_ERROR)
-                        || (actionType == Conditional.Action.CLEAR_BLOCK_ERROR)
-                        || (actionType == Conditional.Action.SET_BLOCK_OUT_OF_SERVICE)
-                        || (actionType == Conditional.Action.SET_BLOCK_IN_SERVICE)) {
+                    oblockGrid = "ShortFieldNoBoxAction";  // NOI18N
+                } else if(actionType == Conditional.Action.GET_BLOCK_TRAIN_NAME
+                        || actionType == Conditional.Action.GET_BLOCK_WARRANT) {
+                    _shortActionLabel.setText(Bundle.getMessage("LabelMemoryLocation"));  // NOI18N
+                    _shortActionLabel.setToolTipText(Bundle.getMessage("DataHintToMemory"));  // NOI18N
+                    oblockGrid = "ShortFieldNoBoxAction";  // NOI18N
+                } else {
                     oblockGrid = "NameTypeActionFinal";  // NOI18N
                 }
 
@@ -4128,7 +4152,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
     }
 */
     JFileChooser sndFileChooser = null;
-    JFileChooser scriptFileChooser = null;
+    ScriptFileChooser scriptFileChooser = null;
     JFileChooser defaultFileChooser = null;
 
     /**
@@ -4144,7 +4168,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
         Conditional.Action actionType = action.getType();
         if (actionType == Conditional.Action.PLAY_SOUND) {
             if (sndFileChooser == null) {
-                sndFileChooser = new JFileChooser(System.getProperty("user.dir") // NOI18N
+                sndFileChooser = new jmri.util.swing.JmriJFileChooser(System.getProperty("user.dir") // NOI18N
                         + java.io.File.separator + "resources" // NOI18N
                         + java.io.File.separator + "sounds");  // NOI18N
                 sndFileChooser.setFileFilter(new FileNameExtensionFilter("wav sound files", "wav")); // NOI18N
@@ -4152,14 +4176,13 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
             currentChooser = sndFileChooser;
         } else if (actionType == Conditional.Action.RUN_SCRIPT) {
             if (scriptFileChooser == null) {
-                scriptFileChooser = new JFileChooser(FileUtil.getScriptsPath());
-                scriptFileChooser.setFileFilter(new FileNameExtensionFilter("Python script file", "py")); // NOI18N
+                scriptFileChooser = new ScriptFileChooser(FileUtil.getScriptsPath());
             }
             currentChooser = scriptFileChooser;
         } else {
             log.warn("Unexpected actionType[{}] = {}", actionType.name(), actionType);  // NOI18N
             if (defaultFileChooser == null) {
-                defaultFileChooser = new JFileChooser(FileUtil.getUserFilesPath());
+                defaultFileChooser = new jmri.util.swing.JmriJFileChooser(FileUtil.getUserFilesPath());
                 defaultFileChooser.setFileFilter(new jmri.util.NoArchiveFileFilter());
             }
             currentChooser = defaultFileChooser;
@@ -4198,9 +4221,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
         Conditional.Action actionType = Conditional.Action.NONE;
         Conditional.Action selection = _actionTypeBox.getItemAt(_actionTypeBox.getSelectedIndex());
         if (selection == Conditional.Action.NONE) {
-            JOptionPane.showMessageDialog(
+           JmriJOptionPane.showMessageDialog(
                     _editLogixFrame, Bundle.getMessage("makeSelection"),
-                    Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
+                    Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
             return false;
         }
         String name = _actionNameField.getText().trim();
@@ -4304,10 +4327,10 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                         return false;
                     }
                     if (!(lgtx instanceof VariableLight)) {
-                        JOptionPane.showMessageDialog(_editLogixFrame,
+                       JmriJOptionPane.showMessageDialog(_editLogixFrame,
                                 Bundle.getMessage("Error45", name), // NOI18N
                                 Bundle.getMessage("ErrorTitle"),
-                                JOptionPane.ERROR_MESSAGE);  // NOI18N
+                                JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
                         return (false);
                     }
                     if (!validateIntensityReference(actionType, actionString)) {
@@ -4322,10 +4345,10 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                     }
                     if ( !(lgtx instanceof VariableLight)
                             || !((VariableLight)lgtx).isTransitionAvailable()) {
-                        JOptionPane.showMessageDialog(_editLogixFrame,
+                       JmriJOptionPane.showMessageDialog(_editLogixFrame,
                                 Bundle.getMessage("Error40", name), // NOI18N
                                 Bundle.getMessage("ErrorTitle"),
-                                JOptionPane.ERROR_MESSAGE);  // NOI18N
+                                JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
                         return (false);
                     }
                     if (!validateTimeReference(actionType, actionString)) {
@@ -4376,8 +4399,8 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 break;
             case MEMORY:
                 if (referenceByMemory) {
-                    JOptionPane.showMessageDialog(_editLogixFrame, Bundle.getMessage("Warn6"), Bundle.getMessage("WarningTitle"), // NOI18N
-                            JOptionPane.WARNING_MESSAGE);
+                   JmriJOptionPane.showMessageDialog(_editLogixFrame, Bundle.getMessage("Warn6"), Bundle.getMessage("WarningTitle"), // NOI18N
+                            JmriJOptionPane.WARNING_MESSAGE);
                     return false;
                 }
                 name = validateMemoryReference(name);
@@ -4417,16 +4440,35 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 _actionNameField.setText(name);
                 _curAction.setDeviceName(name);
                 if (actionType == Conditional.Action.CONTROL_TRAIN) {
-                    if (_actionBox.getSelectedIndex() == 0) {
-                        _curAction.setActionData(Warrant.HALT);
-                    } else if (_actionBox.getSelectedIndex() == 1) {
-                        _curAction.setActionData(Warrant.RESUME);
-                    } else {
-                        _curAction.setActionData(Warrant.ABORT);
+                    switch (_actionBox.getSelectedIndex()) {
+                        case 0:
+                            _curAction.setActionData(Warrant.HALT);
+                            break;
+                        case 1:
+                            _curAction.setActionData(Warrant.RESUME);
+                            break;
+                        case 2:
+                            _curAction.setActionData(Warrant.RETRY_FWD);
+                            break;
+                        case 3:
+                            _curAction.setActionData(Warrant.SPEED_UP);
+                            break;
+                        case 4:
+                            _curAction.setActionData(Warrant.STOP);
+                            break;
+                        case 5:
+                            _curAction.setActionData(Warrant.ESTOP);
+                            break;
+                        case 6:
+                            _curAction.setActionData(Warrant.ABORT);
+                            break;
+                        default:
+                            log.warn("Unexpected _actionBox.getSelectedIndex() of {}", _actionBox.getSelectedIndex());  // NOI18N
+                            break;
                     }
                 } else if (actionType == Conditional.Action.SET_TRAIN_ID
                         || actionType == Conditional.Action.SET_TRAIN_NAME
-                        || actionType == Conditional.Action.THROTTLE_FACTOR) {
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     _curAction.setActionString(actionString);
                 }
                 break;
@@ -4440,7 +4482,9 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 actionType = selection;
                 _actionNameField.setText(name);
                 _curAction.setDeviceName(name);
-                if (actionType == Conditional.Action.SET_BLOCK_VALUE) {
+                if (actionType == Conditional.Action.SET_BLOCK_VALUE
+                        || actionType == Conditional.Action.SET_TRAIN_NAME
+                        || actionType == Conditional.Action.GET_TRAIN_LOCATION) {
                     _curAction.setActionString(actionString);
                 }
                 break;
@@ -4564,7 +4608,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
 
     /**
      * Check that a state variable is not also used as an action
-     * 
+     *
      * @param name of the state variable
      * @param itemType item type of the state variable
      * @return true if variable is not an action of if the user OK's
@@ -4580,7 +4624,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 } else {
                     NamedBean bean  = action.getBean();
                     if (bean != null &&
-                        (name.equals(bean.getSystemName()) || 
+                        (name.equals(bean.getSystemName()) ||
                                 name.equals(bean.getUserName()))) {
                         actionName = action.getDeviceName();
                    }
@@ -4595,7 +4639,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
 
     /**
      * Check that an action is not also used as a state variable
-     * 
+     *
      * @param name of the action
      * @param itemType item type of the action
      * @return true if action is not a state variable of if the user OK's
@@ -4611,7 +4655,7 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
                 } else {
                     NamedBean bean  = var.getBean();
                     if (bean != null &&
-                        (name.equals(bean.getSystemName()) || 
+                        (name.equals(bean.getSystemName()) ||
                                 name.equals(bean.getUserName()))) {
                         varName = var.getName();
                    }
@@ -4743,6 +4787,6 @@ public class ConditionalTreeEdit extends ConditionalEditBase {
         return ConditionalTreeEdit.class.getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ConditionalTreeEdit.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConditionalTreeEdit.class);
 
 }

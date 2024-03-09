@@ -15,56 +15,45 @@ import org.junit.jupiter.api.*;
  */
 public class MqttLightTest extends AbstractLightTestBase {
 
-    MqttAdapter a;
-    String saveTopic;
-    byte[] savePayload;
-    
+    MqttAdapterScaffold a = null;
+
     @BeforeEach
     @Override
     public void setUp() {
-        jmri.util.JUnitUtil.setUp();
+        JUnitUtil.setUp();
         JUnitUtil.initDefaultUserMessagePreferences();
         // prepare an interface
-        saveTopic = null;
-        savePayload = null;
-        a = new MqttAdapter(){
-                @Override
-                public void publish(String topic, byte[] payload) {
-                    saveTopic = topic;
-                    savePayload = payload;
-                }
-            };
-
+        a = new MqttAdapterScaffold(true);
         t = new MqttLight(a, "ML2", "", "track/light/2", "track/light/2/foo");
-        JUnitAppender.assertWarnMessage("Trying to subscribe before connect/configure is done");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        t.dispose();
+        a.dispose();
+        JUnitUtil.tearDown();
     }
 
     @Override
     public int numListeners() {
-        // return tcis.numListeners();
         return 0;
     }
 
     @Test
     public void testParserUpdate() {
-       
+
         t.setCommandedState(Light.ON);
-        
-        JUnitUtil.waitFor( ()->{
-            return "track/light/2".equals(saveTopic);
-        }, "topic check");
-        Assert.assertEquals("topic", "ON", new String(savePayload));
-        
-        saveTopic = null;
-        savePayload = null;
+
+        JUnitUtil.waitFor( ()->{ return a.getPublishCount()==2; }, "publish triggered");
+        Assertions.assertEquals("track/light/2", a.getLastTopic(),"topic");
+        Assertions.assertEquals("ON", new String(a.getLastPayload()),"payload");
 
         t.setCommandedState(Light.OFF);
-        
-        JUnitUtil.waitFor( ()->{
-            return "track/light/2".equals(saveTopic);
-        }, "topic check");
-        Assert.assertEquals("topic", "OFF", new String(savePayload));
-        
+
+        JUnitUtil.waitFor( ()->{ return a.getPublishCount()==3; }, "publish triggered 2");
+        Assertions.assertEquals("track/light/2", a.getLastTopic(),"topic");
+        Assertions.assertEquals("OFF", new String(a.getLastPayload()),"payload");
+
     }
 
     @Test
@@ -76,14 +65,12 @@ public class MqttLightTest extends AbstractLightTestBase {
         ((MqttLight)t).notifyMqttMessage("track/light/2/foo", "UNKNOWN");
         Assert.assertEquals("state", Light.UNKNOWN, t.getKnownState());
     }
-    
+
     @Override
     public void checkOnMsgSent() {
-        JUnitUtil.waitFor( ()->{
-            return "track/light/2".equals(saveTopic);
-        }, "topic check");
-        Assert.assertEquals("topic", "track/light/2", saveTopic);
-        Assert.assertEquals("topic", "ON", new String(savePayload));
+        JUnitUtil.waitFor( ()->{ return a.getPublishCount()==2; }, "publish triggered");
+        Assertions.assertEquals("track/light/2", a.getLastTopic(),"topic");
+        Assertions.assertEquals("ON", new String(a.getLastPayload()),"payload");
     }
 
     @Override
@@ -95,7 +82,8 @@ public class MqttLightTest extends AbstractLightTestBase {
 
     @Override
     public void checkOffMsgSent() {
-        Assert.assertEquals("topic", "track/light/2", saveTopic);
-        Assert.assertEquals("topic", "OFF", new String(savePayload));
+        JUnitUtil.waitFor( ()->{ return a.getPublishCount()==3; }, "publish on then off triggered");
+        Assertions.assertEquals("track/light/2", a.getLastTopic(),"topic");
+        Assertions.assertEquals("OFF", new String(a.getLastPayload()),"payload");
     }
 }

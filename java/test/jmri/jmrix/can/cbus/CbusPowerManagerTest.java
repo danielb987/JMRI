@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
  *
  * @author Paul Bender Copyright (C) 2017
  * @author Steve Young Copyright (c) 2019
+ * @author Andrew Crosland Copyright (c) 2021
  */
 public class CbusPowerManagerTest extends AbstractPowerManagerTestBase {
 
@@ -115,6 +116,31 @@ public class CbusPowerManagerTest extends AbstractPowerManagerTestBase {
     }
     
     @Test
+    public void checkArstBehaviour () throws jmri.JmriException {
+        
+        // Test effect of ARST on power state
+        CanReply r = new CanReply( new int[]{CbusConstants.CBUS_TOF},0x12);
+        pwr.reply(r);
+        Assert.assertEquals("set off before ARST", PowerManager.OFF, p.getPower());
+        
+        r = new CanReply( new int[]{CbusConstants.CBUS_ARST},0x12);
+        pwr.reply(r);
+        Assert.assertEquals("on after ARST", PowerManager.ON, p.getPower());
+        
+        // Change from default behaviour
+        memo.setPowerOnArst(false);
+        
+        r = new CanReply( new int[]{CbusConstants.CBUS_TOF},0x12);
+        pwr.reply(r);
+        Assert.assertEquals("set off before ARST", PowerManager.OFF, p.getPower());
+        
+        r = new CanReply( new int[]{CbusConstants.CBUS_ARST},0x12);
+        pwr.reply(r);
+        Assert.assertEquals("still off after ARST", PowerManager.OFF, p.getPower());
+        
+    }
+    
+    @Test
     public void checkName() {
         Assert.assertNotNull(pwr.getUserName());
     }
@@ -137,9 +163,7 @@ public class CbusPowerManagerTest extends AbstractPowerManagerTestBase {
     @AfterEach
     public void tearDown() {
         
-        try {
-            pwr.dispose();
-        } catch (jmri.JmriException ex) {}
+        pwr.dispose();
         
         memo.dispose();
         controller.terminateThreads();

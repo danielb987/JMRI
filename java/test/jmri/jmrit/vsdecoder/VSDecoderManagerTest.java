@@ -16,7 +16,7 @@ public class VSDecoderManagerTest {
     public void testCTor() {
         VSDecoderManager t = new VSDecoderManager();
         Assert.assertNotNull("exists",t);
-    
+
         // this created an audio manager, clean that up
         InstanceManager.getDefault(jmri.AudioManager.class).cleanup();
     }
@@ -28,6 +28,10 @@ public class VSDecoderManagerTest {
 
     @AfterEach
     public void tearDown() {
+
+        // Potentially no Audio Device installed
+        jmri.util.JUnitAppender.suppressWarnMessageStartsWith("Error initialising JOAL");
+
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
     }

@@ -4,15 +4,15 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-import org.apache.log4j.Level;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import jmri.Light;
 import jmri.jmrix.ipocs.protocol.Message;
 import jmri.jmrix.ipocs.protocol.enums.RqOutputState;
 import jmri.jmrix.ipocs.protocol.packets.OutputStatusPacket;
+import jmri.util.JUnitUtil;
 
-public class IpocsLightTest {
+public class IpocsLightTest extends jmri.implementation.AbstractLightTestBase {
   @Test
   public void constructorTest() {
     IpocsPortController portController = mock(IpocsPortController.class);
@@ -28,7 +28,6 @@ public class IpocsLightTest {
     light.doNewState(-1, Light.OFF);
     //assertEquals(Light.OFF, light.getState());
     light.doNewState(-1, Light.UNKNOWN);
-    jmri.util.JUnitAppender.suppressMessage(Level.DEBUG, "Unknown light order state");
     //assertEquals(Light.OFF, light.getState());
   }
 
@@ -73,4 +72,35 @@ public class IpocsLightTest {
     pkt.setState(RqOutputState.On);
     light.onMessage(client, msg);
   }
+
+    @BeforeEach
+    @Override
+    public void setUp() {
+        JUnitUtil.setUp();
+        IpocsPortController portController = mock(IpocsPortController.class);
+        t  = new IpocsLight(portController, "EL33", "Light9F1");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        t.dispose();
+        t = null;
+        JUnitUtil.tearDown();
+    }
+
+    @Override
+    public int numListeners() {
+        return 0;
+    }
+
+    // Test requires further development
+    @Override
+    public void checkOnMsgSent() {
+    }
+
+    // Test requires further development
+    @Override
+    public void checkOffMsgSent() {
+    }
+
 }

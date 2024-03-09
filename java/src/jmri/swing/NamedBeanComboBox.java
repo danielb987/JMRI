@@ -1,12 +1,15 @@
 package jmri.swing;
 
 import java.awt.Component;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -21,7 +24,7 @@ import javax.swing.text.JTextComponent;
 import com.alexandriasoftware.swing.JInputValidatorPreferences;
 import com.alexandriasoftware.swing.JInputValidator;
 import com.alexandriasoftware.swing.Validation;
-import java.awt.event.ActionListener;
+
 import javax.swing.ComboBoxEditor;
 
 import org.slf4j.Logger;
@@ -80,6 +83,7 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
 
     private final transient Manager<B> manager;
     private DisplayOptions displayOptions;
+    private Predicate<B> filter;
     private boolean allowNull = false;
     private boolean providing = true;
     private boolean validatingInput = true;
@@ -121,10 +125,25 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
      * @param displayOrder the sorting scheme for NamedBeans
      */
     public NamedBeanComboBox(Manager<B> manager, B selection, DisplayOptions displayOrder) {
+        this(manager, selection, displayOrder, null);
+    }
+
+    /**
+     * Create a ComboBox with an existing selection using the specified display
+     * order to sort NamedBeans.
+     *
+     * @param manager      the Manager backing the ComboBox
+     * @param selection    the NamedBean that is selected or null to specify no
+     *                     selection
+     * @param displayOrder the sorting scheme for NamedBeans
+     * @param filter       the filter or null if no filter
+     */
+    public NamedBeanComboBox(Manager<B> manager, B selection, DisplayOptions displayOrder, Predicate<B> filter) {
         // uses NamedBeanComboBox.this... to prevent overridden methods from being
         // called in constructor
         super();
         this.manager = manager;
+        this.filter = filter;
         super.setToolTipText(
                 Bundle.getMessage("NamedBeanComboBoxDefaultToolTipText", this.manager.getBeanTypeHandled(true)));
         setDisplayOrder(displayOrder);
@@ -343,7 +362,13 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
             comparator = new NamedBeanUserNameComparator<>();
         }
         TreeSet<B> set = new TreeSet<>(comparator);
-        set.addAll(manager.getNamedBeanSet());
+
+        if (filter != null) {
+            set.addAll(manager.getNamedBeanSet().stream().filter(filter)
+                    .collect(Collectors.toSet()));
+        } else {
+            set.addAll(manager.getNamedBeanSet());
+        }
         set.removeAll(excludedItems);
         Vector<B> vector = new Vector<>(set);
         if (allowNull) {
@@ -438,7 +463,7 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
 
     private class NamedBeanEditor implements ComboBoxEditor {
 
-        private final ComboBoxEditor editor;
+        private final ComboBoxEditor myEditor;
 
         /**
          * Create a NamedBeanEditor using another editor as its base. This
@@ -448,7 +473,7 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
          * @param editor the underlying editor
          */
         public NamedBeanEditor(ComboBoxEditor editor) {
-            this.editor = editor;
+            this.myEditor = editor;
             Component ec = editor.getEditorComponent();
             if (ec instanceof JComponent) {
                 JComponent jc = (JComponent) ec;
@@ -506,7 +531,7 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
 
         @Override
         public Component getEditorComponent() {
-            return editor.getEditorComponent();
+            return myEditor.getEditorComponent();
         }
 
         @Override
@@ -521,40 +546,40 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
                     jtc.setText("");
                 }
             } else {
-                editor.setItem(anObject);
+                myEditor.setItem(anObject);
             }
         }
 
         @Override
         public Object getItem() {
-            return editor.getItem();
+            return myEditor.getItem();
         }
 
         @Override
         public void selectAll() {
-            editor.selectAll();
+            myEditor.selectAll();
         }
 
         @Override
         public void addActionListener(ActionListener l) {
-            editor.addActionListener(l);
+            myEditor.addActionListener(l);
         }
 
         @Override
         public void removeActionListener(ActionListener l) {
-            editor.removeActionListener(l);
+            myEditor.removeActionListener(l);
         }
     }
 
     private class NamedBeanRenderer implements ListCellRenderer<B>, JComboBox.KeySelectionManager {
 
-        private final ListCellRenderer<? super B> renderer;
+        private final ListCellRenderer<? super B> myRenderer;
         private final long timeFactor;
         private long lastTime;
         private String prefix = "";
 
         public NamedBeanRenderer(ListCellRenderer<? super B> renderer) {
-            this.renderer = renderer;
+            this.myRenderer = renderer;
             Long l = (Long) UIManager.get("ComboBox.timeFactor");
             timeFactor = l != null ? l : 1000;
         }
@@ -562,7 +587,7 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
         @Override
         public Component getListCellRendererComponent(JList<? extends B> list, B value, int index, boolean isSelected,
                 boolean cellHasFocus) {
-            JLabel label = (JLabel) renderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            JLabel label = (JLabel) myRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             if (value != null) {
                 label.setText(value.getDisplayName(displayOptions));
             }

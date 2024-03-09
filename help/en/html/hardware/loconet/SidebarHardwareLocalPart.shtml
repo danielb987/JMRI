@@ -1,6 +1,6 @@
 <!-- SidebarToolLocalPart.shtml - part of Sidebar for loconet -->
 
-		<dt><h3 style="padding-left: 1em;"><a href="Digitrax.shtml"> Digitrax LocoNet&reg;</a></h3></dt>
+		<dt><a href="Digitrax.shtml"> Digitrax LocoNet&reg;</a></dt>
 		<dd>
 		  <ul>
                     <li><a href="LocoNetTools.shtml">LocoNet Tools</a></li>
@@ -27,7 +27,6 @@
                     </ul>
                     <li>Networking</li>
                     <ul>
-                        <li><a href="LocoNetServer.shtml">LocoNet Client/Server</a></li>
                         <li><a href="LbServer.shtml">LocoNetOverTCP LbServer</a></li>
                         <li><a href="BTLocoBridge.shtml">LocoBridge Adapter</a></li>
                         <li><a href="StandaloneLocoNet.shtml">Standalone LocoNet</a>
@@ -41,5 +40,5 @@
                     </ul>
                 </ul>
 		</dd>
-    
+
     <!-- /SidebarToolLocalPart.shtml -->

@@ -1,7 +1,6 @@
 package jmri;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
@@ -210,14 +209,6 @@ public class NamedBeanHandleManager extends AbstractManager<NamedBean> implement
     @Nonnull
     @CheckReturnValue
     public String makeSystemName(@Nonnull String s) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated  // will be removed when superclass method is removed due to @Override
-    public List<String> getSystemNameList() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

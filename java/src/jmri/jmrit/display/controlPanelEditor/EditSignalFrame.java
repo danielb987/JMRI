@@ -1,6 +1,5 @@
 package jmri.jmrit.display.controlPanelEditor;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.datatransfer.DataFlavor;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
@@ -22,15 +20,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
 import jmri.NamedBean;
@@ -54,6 +48,7 @@ import jmri.jmrit.display.palette.ItemPalette;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Portal;
 import jmri.jmrit.picker.PickListModel;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  *
@@ -112,39 +107,50 @@ public class EditSignalFrame extends EditFrame {
             _parent._editor.highlight(null);
             _mastName.setText(null);
         });
+
         panel = new JPanel();
         panel.add(clearButton);
         signalPanel.add(panel);
         signalPanel.add(Box.createVerticalStrut(STRUT_SIZE / 2));
+
+        JPanel framingPanel = new JPanel();
+        JPanel mastConfigPanel = new JPanel();
+        // set border to group items in UI
+        mastConfigPanel.setBorder(BorderFactory.createEtchedBorder());
+        mastConfigPanel.setLayout(new BoxLayout(mastConfigPanel, BoxLayout.Y_AXIS));
 
         panel = new JPanel();
         _mastName = new JTextField();
         panel.add(CircuitBuilder.makeTextBoxPanel(false, _mastName, "mastName", true, null));
         _mastName.setPreferredSize(new Dimension(300, _mastName.getPreferredSize().height));
         _mastName.setToolTipText(Bundle.getMessage("ToolTipMastName", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME)));
-        signalPanel.add(panel);
+        mastConfigPanel.add(panel);
 
-        _lengthPanel = new LengthPanel(_homeBlock, "entranceSpace");
+        _lengthPanel = new LengthPanel(_homeBlock, LengthPanel.ENTRANCE_SPACE, "OffsetToolTip");
         _lengthPanel.changeUnits();
-        signalPanel.add(_lengthPanel);
+        mastConfigPanel.add(_lengthPanel);
 
-        panel = new JPanel();
+        JPanel buttonPanel = new JPanel();
         JButton addButton = new JButton(Bundle.getMessage("ButtonAddMast"));
         addButton.addActionListener((ActionEvent a) -> addMast());
         addButton.setToolTipText(Bundle.getMessage("ToolTipAddMast", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME)));
-        panel.add(addButton);
+        buttonPanel.add(addButton);
 /*
         JButton button = new JButton(Bundle.getMessage("buttonChangeName"));
         button.addActionListener((ActionEvent a) -> changeName(null));
         button.setToolTipText(Bundle.getMessage("ToolTipChangeName", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME)));
         panel.add(button);*/
 
-        JButton button = new JButton(Bundle.getMessage("ButtonRemoveMast"));
-        button.addActionListener((ActionEvent a) -> removeMast());
-        button.setToolTipText(Bundle.getMessage("ToolTipRemoveMast", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME)));
-        panel.add(button);
+        JButton buttonRemove = new JButton(Bundle.getMessage("ButtonRemoveMast"));
+        buttonRemove.addActionListener((ActionEvent a) -> removeMast());
+        buttonRemove.setToolTipText(Bundle.getMessage("ToolTipRemoveMast", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME)));
+        buttonPanel.add(buttonRemove);
 
-        signalPanel.add(panel);
+        mastConfigPanel.add(buttonPanel);
+        // border up to here
+        framingPanel.add(mastConfigPanel);
+        signalPanel.add(framingPanel);
+
         signalPanel.add(Box.createVerticalStrut(STRUT_SIZE));
 
         panel = new JPanel();
@@ -171,7 +177,7 @@ public class EditSignalFrame extends EditFrame {
         signalPanel.add(Box.createVerticalStrut(STRUT_SIZE / 2));
 
         panel = new JPanel();
-        l = new JLabel(Bundle.getMessage("recomendMasts"));
+        l = new JLabel(Bundle.getMessage("recommendMasts"));
         panel.add(l);
         signalPanel.add(panel);
         signalPanel.add(Box.createVerticalStrut(STRUT_SIZE / 2));
@@ -188,10 +194,10 @@ public class EditSignalFrame extends EditFrame {
         p.add(_pickMast.getButtonPanel());
         JPanel pp = new JPanel();
         pp.setLayout(new FlowLayout());
-        button = new JButton(Bundle.getMessage("ButtonCreateMast"));
-        button.addActionListener(_mastTableAction);
-        button.setToolTipText(Bundle.getMessage("ToolTipAddToTable"));
-        pp.add(button);
+        JButton buttonCreate = new JButton(Bundle.getMessage("ButtonCreateMast"));
+        buttonCreate.addActionListener(_mastTableAction);
+        buttonCreate.setToolTipText(Bundle.getMessage("ToolTipAddToTable"));
+        pp.add(buttonCreate);
         p.add(pp);
         panel.add(p);
         
@@ -203,10 +209,10 @@ public class EditSignalFrame extends EditFrame {
         p.add(_pickHead.getButtonPanel());
         pp = new JPanel();
         pp.setLayout(new FlowLayout());
-        button = new JButton(Bundle.getMessage("ButtonCreateHead"));
-        button.addActionListener(_headTableAction);
-        button.setToolTipText(Bundle.getMessage("ToolTipAddToTable"));
-        pp.add(button);
+        buttonCreate = new JButton(Bundle.getMessage("ButtonCreateHead"));
+        buttonCreate.addActionListener(_headTableAction);
+        buttonCreate.setToolTipText(Bundle.getMessage("ToolTipAddToTable"));
+        pp.add(buttonCreate);
         p.add(pp);
         panel.add(p);
         signalPanel.add(panel);
@@ -304,9 +310,9 @@ public class EditSignalFrame extends EditFrame {
                             sb.append("\n");
                             sb.append(Bundle.getMessage("saveChanges"));
 //                        }
-                        int answer = JOptionPane.showConfirmDialog(_frame, sb.toString(), Bundle.getMessage("configureSignal"),
-                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        if (answer == JOptionPane.YES_OPTION) {
+                        int answer = JmriJOptionPane.showConfirmDialog(_frame, sb.toString(), Bundle.getMessage("configureSignal"),
+                                JmriJOptionPane.YES_NO_OPTION, JmriJOptionPane.QUESTION_MESSAGE);
+                        if (answer == JmriJOptionPane.YES_OPTION) {
                             if (bean != null) {
                                 addMast(_currentPortal, bean);                            
 //                            } else {
@@ -410,9 +416,9 @@ public class EditSignalFrame extends EditFrame {
             sb.append(Bundle.getMessage("attachMast", mastName, homeName, homePortal.getName()));
         }
         if (sb.length() > 0) {
-            int answer = JOptionPane.showConfirmDialog(this,  sb.toString(),
-                    Bundle.getMessage("configureSignal"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (answer != JOptionPane.YES_OPTION) {
+            int answer = JmriJOptionPane.showConfirmDialog(this,  sb.toString(),
+                    Bundle.getMessage("configureSignal"), JmriJOptionPane.YES_NO_OPTION, JmriJOptionPane.QUESTION_MESSAGE);
+            if (answer != JmriJOptionPane.YES_OPTION) {
                 return false;   // Skip the rest
             }
         }
@@ -439,7 +445,7 @@ public class EditSignalFrame extends EditFrame {
     // ConfigureButton -    addMast(portal, mast); portal from portal list, mast from name field
     private void addMast(@Nonnull Portal portal, @Nonnull NamedBean newMast) {
         if (log.isDebugEnabled()) {
-            log.debug("addMast \"{}\" icon ={}", newMast.getDisplayName());
+            log.debug("addMast \"{}\"", newMast.getDisplayName());
         }
         if (newMast instanceof SignalMast) {
             SignalMast mast = (SignalMast)newMast;
@@ -473,8 +479,8 @@ public class EditSignalFrame extends EditFrame {
             msg = Bundle.getMessage("selectPortalProtection", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME));
         }
         if (msg != null) {
-            JOptionPane.showMessageDialog(this, msg,
-                    Bundle.getMessage("configureSignal"), JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, msg,
+                    Bundle.getMessage("configureSignal"), JmriJOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         return true;
@@ -513,8 +519,8 @@ public class EditSignalFrame extends EditFrame {
             msg = Bundle.getMessage("selectPortalProtection", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME));
         }
         if (msg != null) {
-            JOptionPane.showMessageDialog(this, msg,
-                    Bundle.getMessage("configureSignal"), JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(this, msg,
+                    Bundle.getMessage("configureSignal"), JmriJOptionPane.INFORMATION_MESSAGE);
         }
     }*/
 
@@ -532,10 +538,10 @@ public class EditSignalFrame extends EditFrame {
             portal.setProtectSignal(null, 0, _homeBlock);
             _parent.putSignalPortal(oldMast, null);
         } else {
-            JOptionPane.showMessageDialog(this, 
+            JmriJOptionPane.showMessageDialog(this, 
                     Bundle.getMessage("noPortalProtection", _homeBlock.getDisplayName(DisplayOptions.QUOTED_DISPLAYNAME),
                             portal.getName()),
-                    Bundle.getMessage("configureSignal"), JOptionPane.INFORMATION_MESSAGE);
+                    Bundle.getMessage("configureSignal"), JmriJOptionPane.INFORMATION_MESSAGE);
         }
         _mastName.setText(null);
     }
@@ -703,7 +709,7 @@ public class EditSignalFrame extends EditFrame {
                 for (List<PositionableIcon> ia : icons.values()) {
                     if (!ia.isEmpty()) {
                         PositionableIcon pos = ia.get(0);
-                        if (pos != null && pos instanceof SignalHeadIcon) {
+                        if (pos instanceof SignalHeadIcon) {
                             _dragHeadIcon = (SignalHeadIcon)pos;
                             break;
                         }
@@ -718,9 +724,7 @@ public class EditSignalFrame extends EditFrame {
             if (maps.isEmpty()) {
                 log.error("SignalHead icon cannot be found for {}", mast.getDisplayName(DisplayOptions.USERNAME_SYSTEMNAME));
             } else {
-                java.util.Iterator<Map.Entry<String, HashMap<String, NamedIcon>>> iter = maps.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Map.Entry<String, HashMap<String, NamedIcon>> entry = iter.next();
+                for (Entry<String, HashMap<String, NamedIcon>> entry : maps.entrySet()) {
                     HashMap<String, NamedIcon> map = entry.getValue();
                     for (Entry<String, NamedIcon> ent : map.entrySet()) {
                         _dragHeadIcon.setIcon(ent.getKey(), new NamedIcon(ent.getValue()));
@@ -749,7 +753,7 @@ public class EditSignalFrame extends EditFrame {
         dndPanel.add(p);
 
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black),
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
                 Bundle.getMessage("signal")));
         try {
             _dragLabel = new IconDragJLabel(new DataFlavor(Editor.POSITIONABLE_FLAVOR));
@@ -792,8 +796,8 @@ public class EditSignalFrame extends EditFrame {
                 }
             }
             if (msg.length() > 0) {
-                JOptionPane.showMessageDialog(this, msg,
-                        Bundle.getMessage("configureSignal"), JOptionPane.INFORMATION_MESSAGE);
+                JmriJOptionPane.showMessageDialog(this, msg,
+                        Bundle.getMessage("configureSignal"), JmriJOptionPane.INFORMATION_MESSAGE);
                 return false;
             }
             return true;
@@ -837,5 +841,6 @@ public class EditSignalFrame extends EditFrame {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(EditSignalFrame.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EditSignalFrame.class);
+
 }

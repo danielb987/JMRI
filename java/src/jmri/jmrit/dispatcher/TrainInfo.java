@@ -3,6 +3,7 @@ package jmri.jmrit.dispatcher;
 import jmri.InstanceManager;
 import jmri.Sensor;
 import jmri.SensorManager;
+import jmri.jmrit.dispatcher.DispatcherFrame.TrainsFrom;
 
 /**
  * TrainInfo is a temporary object specifying New Train information just read
@@ -23,6 +24,7 @@ public class TrainInfo {
     }
 
     // instance variables for both manual and automatic operation
+    private int version = 1;
     private String transitName = "";
     private String transitId = "";
     private String trainName = "";
@@ -37,6 +39,7 @@ public class TrainInfo {
     private boolean trainFromRoster = true;
     private boolean trainFromTrains = false;
     private boolean trainFromUser = false;
+    private boolean trainFromSetLater = false;
     private int priority = 5;
     private boolean autoRun = false;
     private boolean resetWhenDone = false;
@@ -49,11 +52,19 @@ public class TrainInfo {
     private int departureTimeMin = 00;
     private String delaySensorName = null;
     private boolean resetStartSensor = true;
+
     private String restartSensorName = null;
     private boolean resetRestartSensor = true;
     private int restartDelayMin = 0;
+
+    private int reverseDelayedRestart = ActiveTrain.NODELAY;
+    private String reverseRestartSensorName = null;
+    private boolean reverseResetRestartSensor = true;
+    private int reverseRestartDelayMin = 0;
+
     private String trainType = "";
     private boolean terminateWhenDone = false;
+    private String nextTrain = "None";
     private boolean loadAtStartup = false;
 
     // instance variables for automatic operation
@@ -68,10 +79,21 @@ public class TrainInfo {
     private boolean stopBySpeedProfile = false;
     private float stopBySpeedProfileAdjust = 1.0f;
 
+    private float waitTime = 1.0f; //required only by dispatcher system to pause train at beginning of transit (station)
+
+    private String blockName = ""; //required only by Dispatcher System to inhibit running of transit if this block is occupied
+
 
     //
     // Access methods for manual and automatic instance variables
     //
+    public void setVersion(int ver) {
+        version = ver;
+    }
+    public int getVersion() {
+        return version;
+    }
+
     public void setTransitName(String s) {
         transitName = s;
     }
@@ -160,6 +182,38 @@ public class TrainInfo {
         return destinationBlockSeq;
     }
 
+    public void setTrainsFrom(TrainsFrom value) {
+        trainFromRoster = false;
+        trainFromTrains = false;
+        trainFromUser = false;
+        trainFromSetLater = false;
+        switch (value) {
+            case TRAINSFROMROSTER:
+                trainFromRoster = true;
+                break;
+            case TRAINSFROMOPS:
+                trainFromTrains = true;
+                break;
+            case TRAINSFROMUSER:
+                trainFromUser = true;
+                break;
+            case TRAINSFROMSETLATER:
+            default:
+                trainFromSetLater = true;
+        }
+    }
+
+    public TrainsFrom getTrainsFrom() {
+        if (trainFromRoster) {
+            return TrainsFrom.TRAINSFROMROSTER;
+        } else if (trainFromTrains) {
+            return TrainsFrom.TRAINSFROMOPS;
+        } else if (trainFromUser) {
+            return TrainsFrom.TRAINSFROMUSER;
+        }
+        return TrainsFrom.TRAINSFROMSETLATER;
+    }
+
     public void setTrainFromRoster(boolean b) {
         trainFromRoster = b;
     }
@@ -184,6 +238,14 @@ public class TrainInfo {
         return trainFromUser;
     }
 
+    public void setTrainFromSetLater(boolean b) {
+        trainFromSetLater = b;
+    }
+
+    public boolean getTrainFromSetLater() {
+        return trainFromSetLater;
+    }
+
     public void setTerminateWhenDone(boolean b) {
         terminateWhenDone = b;
     }
@@ -191,6 +253,15 @@ public class TrainInfo {
     public boolean getTerminateWhenDone() {
         return terminateWhenDone;
     }
+
+    public void setNextTrain(String s) {
+        nextTrain = s;
+    }
+
+    public String getNextTrain() {
+        return nextTrain;
+    }
+
 
     public void setPriority(int pri) {
         priority = pri;
@@ -301,6 +372,50 @@ public class TrainInfo {
         return delaySensorName;
     }
 
+    public void setReverseDelayedRestart(int ds) {
+        reverseDelayedRestart = ds;
+    }
+
+    /**
+     * return restart code for this train, only used for continuous running
+     *
+     * @return one of ActiveTrain.NODELAY,TIMEDDELAY,SENSORDELAY
+     */
+    public int getReverseDelayedRestart() {
+        return reverseDelayedRestart;
+    }
+
+    public void setReverseRestartSensorName(String value) {
+        reverseRestartSensorName = value;
+    }
+
+    public String getReverseRestartSensorName() {
+        return reverseRestartSensorName;
+    }
+
+    public void setReverseResetRestartSensor(boolean value) {
+        reverseResetRestartSensor = value;
+    }
+
+    public boolean getReverseResetRestartSensor() {
+        return reverseResetRestartSensor;
+    }
+
+    public Sensor getReverseRestartSensor() {
+        if (reverseRestartSensorName == null) {
+            return null;
+        }
+        return jmri.InstanceManager.sensorManagerInstance().getSensor(reverseRestartSensorName);
+    }
+
+    public void setReverseRestartDelayMin(int value) {
+        reverseRestartDelayMin = value;
+    }
+
+    public int getReverseRestartDelayMin() {
+        return reverseRestartDelayMin;
+    }
+
     /**
      * retrieve the startup delay sensor using the delay sensor name
      *
@@ -369,7 +484,7 @@ public class TrainInfo {
     public void setResetRestartSensor(boolean b) {
         resetRestartSensor = b;
     }
-    
+
     /**
      * number of minutes to delay between restarting for continuous runs
      *
@@ -449,4 +564,15 @@ public class TrainInfo {
     public float getMaxTrainLength() {
         return maxTrainLength;
     }
+
+    public void setWaitTime(float f) { waitTime = f; }
+
+    public float getWaitTime() {
+        return waitTime;
+    }
+
+    public void setBlockName(String s) { blockName = s; }
+
+    public String getBlockName() { return blockName; }
+
 }

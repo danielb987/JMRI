@@ -1,7 +1,5 @@
 package jmri.jmrix.loconet.loconetovertcp;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import jmri.jmrix.loconet.LnNetworkPortController;
 import jmri.jmrix.loconet.LnPacketizer;
@@ -46,13 +44,6 @@ public class LnOverTcpPacketizer extends LnPacketizer {
         super(m);
         xmtHandler = new XmtHandler();
         rcvHandler = new RcvHandler(this);
-    }
-
-    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
-            justification = "Only used during system initialization")
-    @Deprecated
-    public LnOverTcpPacketizer() {
-        this(new LocoNetSystemConnectionMemo());
     }
 
     public LnNetworkPortController networkController = null;
@@ -113,7 +104,7 @@ public class LnOverTcpPacketizer extends LnPacketizer {
 
         // readline is deprecated, but there are no problems
         // with multi-byte characters here.
-        @SuppressWarnings("deprecation")
+        @SuppressWarnings("deprecation")  // InputStream#readline
         @Override
         public void run() {
 
@@ -236,12 +227,10 @@ public class LnOverTcpPacketizer extends LnPacketizer {
             while (true) {   // loop permanently
                 // any input?
                 try {
-                    // get content; failure is a NoSuchElementException
+                    // get content; blocks write until present
                     log.debug("check for input");
-                    byte msg[] = null;
-                    synchronized (this) {
-                        msg = xmtList.removeFirst();
-                    }
+
+                    byte msg[] = xmtList.take();
 
                     // input - now send
                     try {
@@ -274,13 +263,8 @@ public class LnOverTcpPacketizer extends LnPacketizer {
                     } catch (java.io.IOException e) {
                         log.warn("sendLocoNetMessage: IOException: {}", e.toString());
                     }
-                } catch (NoSuchElementException e) {
-                    // message queue was empty, wait for input
-                    log.debug("start wait");
-
-                    new jmri.util.WaitHandler(this);  // handle synchronization, spurious wake, interruption
-
-                    log.debug("end wait");
+                } catch (InterruptedException ie) {
+                    return; // ending the thread
                 }
             }
         }

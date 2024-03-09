@@ -5,8 +5,8 @@ import java.awt.FlowLayout;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.Vector;
+
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,8 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import purejavacomm.*;
 
 /**
@@ -71,7 +70,7 @@ public class LoaderPane extends javax.swing.JPanel {
             try {
                 openPortButtonActionPerformed(evt);
             } catch (UnsatisfiedLinkError ex) {
-                log.error("Error while opening port. Did you select the right one?\n{}", ex);
+                log.error("Error while opening port. Did you select the right one?", ex);
             }
         });
 
@@ -143,7 +142,7 @@ public class LoaderPane extends javax.swing.JPanel {
             byte endbyte = 0x03;
             ostream.write(endbyte);
         } catch (java.io.IOException e) {
-            log.error("Exception on output: {}", e);
+            log.error("Exception on output", e);
         }
     }
 
@@ -166,13 +165,13 @@ public class LoaderPane extends javax.swing.JPanel {
             try {
                 nibbleIncomingData();            // remove any pending chars in queue
             } catch (java.io.IOException e) {
-                log.warn("nibble: Exception: {}", e);
+                log.warn("nibble: Exception", e);
             }
             while (true) {   // loop permanently, stream close will exit via exception
                 try {
                     handleIncomingData();
                 } catch (java.io.IOException e) {
-                    log.warn("run: Exception: {}", e);
+                    log.warn("run: Exception", e);
                 }
             }
         }
@@ -354,7 +353,7 @@ public class LoaderPane extends javax.swing.JPanel {
 
     // use deprecated stop method to stop thread,
     // which will be sitting waiting for input
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // Thread.stop
     void stopThread(Thread t) {
         t.stop();
     }
@@ -377,19 +376,7 @@ public class LoaderPane extends javax.swing.JPanel {
     }
 
     public Vector<String> getPortNames() {
-        // first, check that the comm package can be opened and ports seen
-        portNameVector = new Vector<>();
-        Enumeration<CommPortIdentifier> portIDs = CommPortIdentifier.getPortIdentifiers();
-        // find the names of suitable ports
-        while (portIDs.hasMoreElements()) {
-            CommPortIdentifier id = portIDs.nextElement();
-            // filter out line printers
-            if (id.getPortType() != CommPortIdentifier.PORT_PARALLEL) // accumulate the names in a vector
-            {
-                portNameVector.addElement(id.getName());
-            }
-        }
-        return portNameVector;
+        return jmri.jmrix.AbstractSerialPortController.getActualPortNames();
     }
 
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value="SR_NOT_CHECKED",
@@ -442,7 +429,10 @@ public class LoaderPane extends javax.swing.JPanel {
 
             // report status?
             if (log.isInfoEnabled()) {
-                log.info("{} port opened at {} baud, sees  DTR: {} RTS: {} DSR: {} CTS: {}  CD: {}", portName, activeSerialPort.getBaudRate(), activeSerialPort.isDTR(), activeSerialPort.isRTS(), activeSerialPort.isDSR(), activeSerialPort.isCTS(), activeSerialPort.isCD());
+                log.info("{} port opened at {} baud, sees  DTR: {} RTS: {} DSR: {} CTS: {}  CD: {}",
+                        portName, activeSerialPort.getBaudRate(), activeSerialPort.isDTR(),
+                        activeSerialPort.isRTS(), activeSerialPort.isDSR(), activeSerialPort.isCTS(),
+                        activeSerialPort.isCD());
             }
 
             //opened = true;
@@ -454,7 +444,7 @@ public class LoaderPane extends javax.swing.JPanel {
     }
 
     void handlePortBusy(PortInUseException p, String port) {
-        log.error("Port {} in use, cannot open", p);
+        log.error("Port {} in use, cannot open", port, p);
     }
 
     public LoaderPane() {
@@ -504,7 +494,7 @@ public class LoaderPane extends javax.swing.JPanel {
             JPanel p = new JPanel();
             p.setLayout(new FlowLayout());
 
-            loadButton = new JButton(Bundle.getMessage("ButtonLoad"));
+            loadButton = new JButton(Bundle.getMessage("ButtonDownload"));
             loadButton.setEnabled(false);
             loadButton.setToolTipText(Bundle.getMessage("TipLoadDisabled"));
             p.add(loadButton);
@@ -546,7 +536,7 @@ public class LoaderPane extends javax.swing.JPanel {
         try {
             pdiFile.open();
         } catch (IOException e) {
-            log.error("Error opening file: {}", e);
+            log.error("Error opening file", e);
         }
 
         comment.setText(pdiFile.getComment());
@@ -655,7 +645,7 @@ public class LoaderPane extends javax.swing.JPanel {
 
     /**
      * Get output data length from 1st message
-     * 
+     *
      * @param buffer Message from which length is to be extracted
      * @return length of the buffer
      */
@@ -680,6 +670,6 @@ public class LoaderPane extends javax.swing.JPanel {
         return buffer;
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LoaderPane.class);
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LoaderPane.class);
 
 }

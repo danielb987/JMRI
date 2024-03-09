@@ -7,6 +7,7 @@ import jmri.*;
 import jmri.implementation.AbstractInstanceInitializer;
 import jmri.implementation.DefaultClockControl;
 import jmri.jmrit.audio.DefaultAudioManager;
+import jmri.jmrit.audio.DefaultAudioSourceManager;
 import jmri.jmrit.simpleclock.SimpleTimebase;
 import jmri.jmrit.vsdecoder.VSDecoderManager;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
@@ -52,6 +53,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultAudioManager(memo);
         }
 
+        if (type == AudioSourceManager.class) {
+            return new DefaultAudioSourceManager();
+        }
+
         if (type == ClockControl.class) {
             return new DefaultClockControl();
         }
@@ -92,6 +97,10 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
             return new DefaultRouteManager(memo);
         }
 
+        if (type == SectionManager.class) {
+            return new DefaultSectionManager();
+        }
+
         if (type == SensorManager.class) {
             return new ProxySensorManager();
         }
@@ -125,13 +134,17 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         }
 
         if (type == Timebase.class) {
-            Timebase timebase = new SimpleTimebase();
+            Timebase timebase = new SimpleTimebase(memo);
             InstanceManager.getOptionalDefault(ConfigureManager.class).ifPresent(cm -> cm.registerConfig(timebase, Manager.TIMEBASE));
             return timebase;
         }
 
         if (type == TurnoutManager.class) {
             return new ProxyTurnoutManager();
+        }
+
+        if (type == TransitManager.class) {
+            return new DefaultTransitManager();
         }
 
         if (type == VSDecoderManager.class) {
@@ -151,6 +164,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
         set.addAll(Arrays.asList(
                 AnalogIOManager.class,
                 AudioManager.class,
+                AudioSourceManager.class,
                 ClockControl.class,
                 ConditionalManager.class,
                 IdTagManager.class,
@@ -161,6 +175,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 RailComManager.class,
                 ReporterManager.class,
                 RouteManager.class,
+                SectionManager.class,
                 SensorManager.class,
                 SignalGroupManager.class,
                 SignalHeadManager.class,
@@ -169,6 +184,7 @@ public class DefaultInstanceInitializer extends AbstractInstanceInitializer {
                 SignalSystemManager.class,
                 StringIOManager.class,
                 Timebase.class,
+                TransitManager.class,
                 TurnoutManager.class,
                 VariableLightManager.class,
                 VSDecoderManager.class

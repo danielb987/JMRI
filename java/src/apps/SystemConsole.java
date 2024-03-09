@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to direct standard output and standard error to a ( JTextArea ) TextAreaFIFO . 
+ * Class to direct standard output and standard error to a ( JTextArea ) TextAreaFIFO .
  * This allows for easier clipboard operations etc.
  * <hr>
  * This file is part of JMRI.
@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <p>
  *
  * @author Matthew Harris copyright (c) 2010, 2011, 2012
  */
@@ -113,7 +112,7 @@ public final class SystemConsole extends JTextArea {
      * Initialise the system console ensuring both System.out and System.err
      * streams are re-directed to the consoles JTextArea
      */
-    
+
     public static void create() {
 
         if (instance == null) {
@@ -165,7 +164,7 @@ public final class SystemConsole extends JTextArea {
 
     /**
      * Test if the default instance exists.
-     * 
+     *
      * @return true if default instance exists; false otherwise
      */
     public static boolean isCreated() {
@@ -196,7 +195,7 @@ public final class SystemConsole extends JTextArea {
                     // return until the frame layout is completed
                     SwingUtilities.invokeAndWait(this::createFrame);
                 } catch (InterruptedException | InvocationTargetException ex) {
-                    log.error("Exception creating system console frame: {}", ex);
+                    log.error("Exception creating system console frame", ex);
                 }
             }
             log.debug("Frame created");
@@ -226,16 +225,16 @@ public final class SystemConsole extends JTextArea {
 
 
         JPanel p = new JPanel();
-        
+
         // Add button to clear display
         JButton clear = new JButton(Bundle.getMessage("ButtonClear"));
         clear.addActionListener((ActionEvent event) -> {
             console.setText("");
         });
         clear.setToolTipText(Bundle.getMessage("ButtonClearTip"));
-        p.add(clear);        
-        
-        // Add button to allow copy to clipboard        
+        p.add(clear);
+
+        // Add button to allow copy to clipboard
         JButton copy = new JButton(Bundle.getMessage("ButtonCopyClip"));
         copy.addActionListener((ActionEvent event) -> {
             StringSelection text = new StringSelection(console.getText());
@@ -367,9 +366,11 @@ public final class SystemConsole extends JTextArea {
         }
 
         // Now append to the JTextArea
-        // As append method is thread safe, we don't need to run this on
-        // the Swing dispatch thread
-        console.append(text);
+        SwingUtilities.invokeLater(() -> {
+            synchronized (SystemConsole.this) {
+                console.append(text);            }
+        });
+
     }
 
     /**
@@ -479,26 +480,6 @@ public final class SystemConsole extends JTextArea {
     }
 
     /**
-     * 
-     * @param family the new font family
-     * @deprecated since 4.19.6 without replacement
-     */
-    @Deprecated
-    public void setFontFamily(String family) {
-        // does nothing
-    }
-
-    /**
-     * 
-     * @return the current font family
-     * @deprecated since 4.19.6 without replacement
-     */
-    @Deprecated
-    public String getFontFamily() {
-        return fontFamily;
-    }
-
-    /**
      * Retrieve the current console font style
      *
      * @return selected font style - one of
@@ -585,7 +566,7 @@ public final class SystemConsole extends JTextArea {
     public PrintStream getOutputStream() {
         return this.outputStream;
     }
-    
+
     public PrintStream getErrorStream() {
         return this.errorStream;
     }

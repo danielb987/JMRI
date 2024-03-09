@@ -2,18 +2,15 @@ package jmri.jmrit.conditional;
 
 import java.util.TreeSet;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import jmri.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
 
 /**
  * Basis for ConditionalListEdit and ConditionalListCopy
- * 
+ *
  * @author Pete Cressman Copyright (C) 2020
  */
 abstract public class ConditionalList extends ConditionalEditBase {
@@ -22,7 +19,7 @@ abstract public class ConditionalList extends ConditionalEditBase {
     ConditionalFrame _conditionalFrame = null;
     boolean _newConditional = false;
     TreeSet<String> _oldTargetNames = new TreeSet<>();
-    
+
     /**
      * Create a new Conditional List View editor.
      *
@@ -58,15 +55,17 @@ abstract public class ConditionalList extends ConditionalEditBase {
     /**
      * Make the bottom panel for _conditionalFrame to hold buttons for
      * Update/Save, Cancel, Delete/FullEdit
-     * 
+     *
      * @return the panel
      */
     abstract JPanel makeBottomPanel();
 
+    abstract void updateConditionalTableModel();
+
     /**
      * Update _curConditional, the current Conditional.
-     * Checks for being well formed rules and registers its usage. 
-     * 
+     * Checks for being well formed rules and registers its usage.
+     *
      * @param uName Conditiona's user name
      * @param logicType Logic type od antecedent
      * @param trigger Trigger on variablr change action choice
@@ -75,10 +74,10 @@ abstract public class ConditionalList extends ConditionalEditBase {
      */
     abstract boolean updateConditional(String uName, Conditional.AntecedentOperator logicType, boolean trigger, String antecedent);
 
-    boolean updateConditional(String uName, Logix logix, 
+    boolean updateConditional(String uName, Logix logix,
             Conditional.AntecedentOperator logicType, boolean trigger, String antecedent) {
         log.debug("updateConditional");
-        
+
         // Check if the User Name has been changed
         if (!uName.equals(_curConditional.getUserName())) {
             // user name has changed - check if already in use
@@ -89,10 +88,10 @@ abstract public class ConditionalList extends ConditionalEditBase {
             _curConditional.setUserName(uName);
         }
         if (_conditionalFrame._variableList.size() <= 0 && !_suppressReminder) {
-            JOptionPane.showMessageDialog(_editLogixFrame,
+            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Warn5", _curConditional.getUserName(), _curConditional.getSystemName()),
                     Bundle.getMessage("WarningTitle"), // NOI18N
-                    JOptionPane.WARNING_MESSAGE);
+                    JmriJOptionPane.WARNING_MESSAGE);
         }
         // complete update
         _curConditional.setStateVariables(_conditionalFrame._variableList);
@@ -105,12 +104,13 @@ abstract public class ConditionalList extends ConditionalEditBase {
             logix.addConditional(_curConditional.getSystemName(), -1);
             _showReminder = true;
             _newConditional = false;
+            updateConditionalTableModel();
         }
         TreeSet<String> newTargetNames = new TreeSet<String>();
         loadReferenceNames(_conditionalFrame._variableList, newTargetNames);
         updateWhereUsed(_oldTargetNames, newTargetNames, _curConditional.getSystemName());
         closeConditionalFrame();
-        return true;        
+        return true;
     }
 
     PickSingleListener getPickSingleListener(JTextField textField, Conditional.ItemType itemType) {
@@ -125,10 +125,10 @@ abstract public class ConditionalList extends ConditionalEditBase {
             logix.activateLogix();
         } catch (NumberFormatException nfe) {
             log.debug("NumberFormatException on activation of Logix ", nfe);  // NOI18N
-            JOptionPane.showMessageDialog(_editLogixFrame,
+            JmriJOptionPane.showMessageDialog(_editLogixFrame,
                     Bundle.getMessage("Error4") + nfe.toString() + Bundle.getMessage("Error7"), // NOI18N
                     Bundle.getMessage("ErrorTitle"),
-                    JOptionPane.ERROR_MESSAGE);  // NOI18N
+                    JmriJOptionPane.ERROR_MESSAGE);  // NOI18N
         }
         if (_pickTables != null) {
             _pickTables.dispose();
@@ -136,7 +136,7 @@ abstract public class ConditionalList extends ConditionalEditBase {
         }
         // when user uses the escape key and returns to editing, interaction with
         // window closing event create strange environment
-        
+
         if (_conditionalFrame != null) {
             _conditionalFrame.dispose();
             _conditionalFrame = null;
@@ -151,5 +151,6 @@ abstract public class ConditionalList extends ConditionalEditBase {
         return ConditionalListEdit.class.getName();
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ConditionalList.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConditionalList.class);
+
 }

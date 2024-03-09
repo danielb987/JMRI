@@ -1,14 +1,21 @@
 package jmri.jmrit.beantable;
 
-import java.awt.GraphicsEnvironment;
+import javax.annotation.Nonnull;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 
-import jmri.Reporter;
+import jmri.*;
+import jmri.jmrix.internal.InternalReporterManager;
+import jmri.jmrix.internal.InternalSystemConnectionMemo;
 import jmri.util.JUnitUtil;
+import jmri.util.swing.JemmyUtil;
+
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.jupiter.api.*;
-import org.netbeans.jemmy.operators.JFrameOperator;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+
+import org.netbeans.jemmy.operators.*;
+import org.netbeans.jemmy.util.NameComponentChooser;
 
 /**
  *
@@ -42,11 +49,12 @@ public class ReporterTableActionTest extends AbstractTableActionBase<Reporter> {
         Assert.assertTrue("Default include add button", a.includeAddButton());
     }
 
+    
     @Test
     @Override
+    @DisabledIfSystemProperty(named = "java.awt.headless", matches = "true")
     public void testAddButton() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
-        Assume.assumeTrue(a.includeAddButton());
+        Assert.assertTrue(a.includeAddButton());
         a.actionPerformed(null);
         JFrame f = JFrameOperator.waitJFrame(getTableFrameName(), true, true);
 
@@ -54,7 +62,7 @@ public class ReporterTableActionTest extends AbstractTableActionBase<Reporter> {
         jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(f), Bundle.getMessage("ButtonAdd"));
         new org.netbeans.jemmy.QueueTool().waitEmpty();
         JFrame f1 = JFrameOperator.waitJFrame(getAddFrameName(), true, true);
-        jmri.util.swing.JemmyUtil.pressButton(new JFrameOperator(f1), Bundle.getMessage("ButtonClose")); // not sure why this is close in this frame.
+        JemmyUtil.pressButton(new JFrameOperator(f1), Bundle.getMessage("ButtonClose")); // not sure why this is close in this frame.
         JUnitUtil.dispose(f1);
         JUnitUtil.dispose(f);
     }
@@ -70,11 +78,57 @@ public class ReporterTableActionTest extends AbstractTableActionBase<Reporter> {
     public void testEditButton() {
     }
 
+    @Test
+    @DisabledIfSystemProperty(named = "java.awt.headless", matches = "true")
+    public void testAddFailureCreate() {
+        
+        InstanceManager.setDefault(ReporterManager.class, new AlwaysExceptionCreateNewReporter());
+        
+        a = new ReporterTableAction();
+        Assert.assertTrue(a.includeAddButton());
+        
+        a.actionPerformed(null);
+        JFrame f = JFrameOperator.waitJFrame(getTableFrameName(), true, true);
+        // find the "Add... " button and press it.
+        JemmyUtil.pressButton(new JFrameOperator(f), Bundle.getMessage("ButtonAdd"));
+        
+        JFrame f1 = JFrameOperator.waitJFrame(getAddFrameName(), true, true);
+        JTextField hwAddressField = JTextFieldOperator.findJTextField(f1, new NameComponentChooser("hwAddressTextField"));
+        Assert.assertNotNull("hwAddressTextField", hwAddressField);
+        // set to "1"
+        new JTextFieldOperator(hwAddressField).setText("1");
+        Thread add1 = JemmyUtil.createModalDialogOperatorThread(
+            Bundle.getMessage("ErrorBeanCreateFailed","Reporter", "IR1"), Bundle.getMessage("ButtonOK"));  // NOI18N
+        
+        //and press create
+        JemmyUtil.pressButton(new JFrameOperator(f1), Bundle.getMessage("ButtonCreate"));
+        JUnitUtil.waitFor(()->{return !(add1.isAlive());}, "dialog finished");  // NOI18N
+        
+        JemmyUtil.pressButton(new JFrameOperator(f1), Bundle.getMessage("ButtonClose")); // not sure why this is close in this frame.
+        JUnitUtil.dispose(f1);
+        JUnitUtil.dispose(f);
+    }
+
+    private static class AlwaysExceptionCreateNewReporter extends InternalReporterManager {
+
+        AlwaysExceptionCreateNewReporter() {
+            super(InstanceManager.getDefault(InternalSystemConnectionMemo.class));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        @Nonnull
+        protected Reporter createNewReporter(@Nonnull String systemName, String userName) throws IllegalArgumentException {
+            throw new IllegalArgumentException("createNewReporter Exception Text");
+        }
+        
+    }
+
     @Override
     @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
-        jmri.util.JUnitUtil.resetProfileManager();
+        JUnitUtil.resetProfileManager();
         helpTarget = "package.jmri.jmrit.beantable.ReporterTable";
         a = new ReporterTableAction();
     }

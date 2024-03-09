@@ -20,7 +20,7 @@ public class LnOpsModeProgrammerTest extends jmri.AddressedProgrammerTestBase{
     @Test
     public void testGetCanWriteAddress() {
         Assert.assertFalse("can write address", programmer.getCanWrite("1234"));
-    }    
+    }
 
     @Test
     public void testSetMode() {
@@ -42,7 +42,7 @@ public class LnOpsModeProgrammerTest extends jmri.AddressedProgrammerTestBase{
     public void testGetCanReadWithTransponding() {
         // allow transponding
         sm.setTranspondingAvailable(true);
-        
+
         lnopsmodeprogrammer = new LnOpsModeProgrammer(memo, 1, true);
 
         Assert.assertEquals("ops mode can read with transponding", true,
@@ -466,6 +466,78 @@ public class LnOpsModeProgrammerTest extends jmri.AddressedProgrammerTestBase{
 
      }
 
+     @Test
+     public void testOpsReadLocoNetModeLACKRejected() throws ProgrammerException {
+        // allow transponding
+        sm.setTranspondingAvailable(false);
+
+        LnOpsModeProgrammer lnopsmodeprogrammer = new LnOpsModeProgrammer(memo, 4, true);
+
+        lnopsmodeprogrammer.setMode(LnProgrammerManager.LOCONETOPSBOARD);
+        lnopsmodeprogrammer.readCV("12", pl);
+
+        // should have written
+        Assert.assertEquals("one message sent", 1, lnis.outbound.size());
+        Assert.assertEquals("No programming reply", 0, pl.getRcvdInvoked());
+
+        Assert.assertEquals("sent", "EF 0E 7C 2F 00 00 04 00 00 0B 00 7F 7F 00", lnis.outbound.get(0).toString());
+
+        // check echo of sent message has no effect
+        LocoNetMessage m = lnis.outbound.get(0);
+        lnopsmodeprogrammer.message(m);
+        Assert.assertEquals("still one message sent", 1, lnis.outbound.size());
+        Assert.assertEquals("No programming reply", 0, pl.getRcvdInvoked());
+
+        // LACK "command rejected" followed by Known-good message in reply
+        m = new LocoNetMessage(new int[]{0xB4, 0x6F, 0x00, 0x24});
+        lnopsmodeprogrammer.message(m);
+        sm.message(m);
+
+        m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x7C, 0x2B, 0x00, 0x00, 0x02, 0x47, 0x00, 0x1C, 0x23, 0x7F, 0x7F, 0x3B});
+        lnopsmodeprogrammer.message(m);
+        sm.message(m);
+        JUnitUtil.waitFor(()->{return pl.getRcvdInvoked() == 1;},"getRcvdInvoked not set");
+        Assert.assertEquals("still one message sent", 1, lnis.outbound.size());
+        Assert.assertEquals("Reply status OK", 0, pl.getRcvdStatus());
+
+     }
+
+     @Test
+     public void testOpsReadLocoNetModeLACKAcceptedBlind() throws ProgrammerException {
+        // allow transponding
+        sm.setTranspondingAvailable(false);
+
+        LnOpsModeProgrammer lnopsmodeprogrammer = new LnOpsModeProgrammer(memo, 4, true);
+
+        lnopsmodeprogrammer.setMode(LnProgrammerManager.LOCONETOPSBOARD);
+        lnopsmodeprogrammer.readCV("12", pl);
+
+        // should have written
+        Assert.assertEquals("one message sent", 1, lnis.outbound.size());
+        Assert.assertEquals("No programming reply", 0, pl.getRcvdInvoked());
+
+        Assert.assertEquals("sent", "EF 0E 7C 2F 00 00 04 00 00 0B 00 7F 7F 00", lnis.outbound.get(0).toString());
+
+        // check echo of sent message has no effect
+        LocoNetMessage m = lnis.outbound.get(0);
+        lnopsmodeprogrammer.message(m);
+        Assert.assertEquals("still one message sent", 1, lnis.outbound.size());
+        Assert.assertEquals("No programming reply", 0, pl.getRcvdInvoked());
+
+        // LACK "accepted blind" followed by Known-good message in reply
+        m = new LocoNetMessage(new int[]{0xB4, 0x6F, 0x40, 0x64});
+        lnopsmodeprogrammer.message(m);
+        sm.message(m);
+
+        m = new LocoNetMessage(new int[]{0xE7, 0x0E, 0x7C, 0x2B, 0x00, 0x00, 0x02, 0x47, 0x00, 0x1C, 0x23, 0x7F, 0x7F, 0x3B});
+        lnopsmodeprogrammer.message(m);
+        sm.message(m);
+        JUnitUtil.waitFor(()->{return pl.getRcvdInvoked() == 1;},"getRcvdInvoked not set");
+        Assert.assertEquals("still one message sent", 1, lnis.outbound.size());
+        Assert.assertEquals("Reply status OK", 0, pl.getRcvdStatus());
+
+     }
+
     @BeforeEach
     @Override
     public void setUp() {
@@ -473,6 +545,7 @@ public class LnOpsModeProgrammerTest extends jmri.AddressedProgrammerTestBase{
 
         lnis = new LocoNetInterfaceScaffold();
         sm = new SlotManager(lnis);
+        sm.pmManagerGotReply = true; // tells slotman probing done
         memo = new LocoNetSystemConnectionMemo(lnis, sm);
         pl = new ProgListenerScaffold();
         programmer = lnopsmodeprogrammer = new LnOpsModeProgrammer(memo, 1, true);

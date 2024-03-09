@@ -10,9 +10,6 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -23,8 +20,8 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import jmri.jmrit.catalog.CatalogPanel;
 import jmri.jmrit.catalog.DragJLabel;
 import jmri.jmrit.catalog.ImageIndexEditor;
@@ -34,8 +31,10 @@ import jmri.jmrit.display.Editor;
 import jmri.jmrit.display.LinkingLabel;
 import jmri.jmrit.display.PositionableLabel;
 import jmri.util.swing.ImagePanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmri.util.swing.JmriJOptionPane;
+import jmri.util.swing.JmriMouseAdapter;
+import jmri.util.swing.JmriMouseEvent;
+import jmri.util.swing.JmriMouseListener;
 
 /**
  * ItemPanel for plain Icons and Backgrounds.
@@ -124,7 +123,7 @@ public class IconItemPanel extends ItemPanel {
         }
         super.previewColorChange();
     }
-    
+
     /*
      * Plain icons have only one family, usually named "set".
      * Override for plain icon and background and put all icons here.
@@ -133,7 +132,7 @@ public class IconItemPanel extends ItemPanel {
     protected void initIconFamiliesPanel() {
         super.initIconFamiliesPanel();
         if (!_update) {
-            _iconPanel.addMouseListener(new IconListener());
+            _iconPanel.addMouseListener(JmriMouseListener.adapt(new IconListener()));
         }
     }
 
@@ -240,17 +239,17 @@ public class IconItemPanel extends ItemPanel {
 
     protected void hideCatalog() {
         Dimension oldDim = getSize();
-        boolean isPalette = (_frame instanceof ItemPalette); 
+        boolean isPalette = (_frame instanceof ItemPalette);
         Dimension totalDim = _frame.getSize();
         _catalog.setVisible(false);
         _catalog.invalidate();
         reSizeDisplay(isPalette, oldDim, totalDim);
         _catalogButton.setText(Bundle.getMessage("ButtonShowCatalog"));
     }
-    
+
     protected void showCatalog() {
         Dimension oldDim = getSize();
-        boolean isPalette = (_frame instanceof ItemPalette); 
+        boolean isPalette = (_frame instanceof ItemPalette);
         Dimension totalDim = _frame.getSize();
         _catalog.setVisible(true);
         _catalog.invalidate();
@@ -269,8 +268,8 @@ public class IconItemPanel extends ItemPanel {
      */
     protected void deleteIcon() {
         if (_selectedIcon == null) {
-            JOptionPane.showMessageDialog(_frame, Bundle.getMessage("ToSelectIcon"),
-                    Bundle.getMessage("ReminderTitle"), JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(_frame, Bundle.getMessage("ToSelectIcon"),
+                    Bundle.getMessage("ReminderTitle"), JmriJOptionPane.INFORMATION_MESSAGE);
             return;
         }
         log.debug("deleteIcon {}", _selectedIcon._key);
@@ -289,7 +288,7 @@ public class IconItemPanel extends ItemPanel {
         _previewPanel.setVisible(false);    // necessary to guarantee _iconPanel gets refreshed
         addIconsToPanel();
         Dimension oldDim = getSize();
-        boolean isPalette = (_frame instanceof ItemPalette); 
+        boolean isPalette = (_frame instanceof ItemPalette);
         Dimension totalDim = _frame.getSize();
         _previewPanel.setVisible(true);
         if (!_update) {
@@ -302,8 +301,8 @@ public class IconItemPanel extends ItemPanel {
 
     private void renameIcon() {
         if (_selectedIcon != null) {
-            String name = JOptionPane.showInputDialog(_frame, Bundle.getMessage("NoIconName"),
-                    Bundle.getMessage("QuestionTitle"), JOptionPane.QUESTION_MESSAGE);
+            String name = JmriJOptionPane.showInputDialog(_frame, Bundle.getMessage("NoIconName"),
+                Bundle.getMessage("QuestionTitle"), JmriJOptionPane.QUESTION_MESSAGE);
             if (name != null) {
                 _currentIconMap.remove(_selectedIcon._key);
                 putIcon(name, _selectedIcon._icon);
@@ -311,8 +310,8 @@ public class IconItemPanel extends ItemPanel {
                 deselectIcon();
             }
         } else {
-            JOptionPane.showMessageDialog(_frame, Bundle.getMessage("ToSelectIcon"),
-                    Bundle.getMessage("ReminderTitle"), JOptionPane.INFORMATION_MESSAGE);
+            JmriJOptionPane.showMessageDialog(_frame, Bundle.getMessage("ToSelectIcon"),
+                    Bundle.getMessage("ReminderTitle"), JmriJOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -336,16 +335,16 @@ public class IconItemPanel extends ItemPanel {
     }
 
     protected String setIconName(String name) {
-        name = JOptionPane.showInputDialog(this,
+        name = JmriJOptionPane.showInputDialog(this,
                 Bundle.getMessage("NoIconName"), name);
         if (name == null || name.trim().length() == 0) {
             return null;
         }
         while (_currentIconMap.get(name) != null) {
-            JOptionPane.showMessageDialog(this,
+            JmriJOptionPane.showMessageDialog(this,
                     Bundle.getMessage("DuplicateIconName", name),
-                    Bundle.getMessage("WarningTitle"), JOptionPane.WARNING_MESSAGE);
-            name = JOptionPane.showInputDialog(this,
+                    Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
+            name = JmriJOptionPane.showInputDialog(this,
                     Bundle.getMessage("NoIconName"), name);
             if (name == null || name.trim().length() == 0) {
                 return null;
@@ -452,9 +451,9 @@ public class IconItemPanel extends ItemPanel {
             }
             return true;
         }
-        
+
     }
-    
+
     public class IconDragJLabel extends DragJLabel /*implements DropTargetListener*/ {
 
         int level;
@@ -487,11 +486,7 @@ public class IconItemPanel extends ItemPanel {
                 l.setLevel(level);
                 return l;
             } else if (DataFlavor.stringFlavor.equals(flavor)) {
-                StringBuilder sb = new StringBuilder(_itemType);
-                sb.append(" for \"");
-                sb.append(url);
-                sb.append("\"");
-                return sb.toString();
+                return _itemType + " for \"" + url + "\"";
             }
             return null;
         }
@@ -509,10 +504,10 @@ public class IconItemPanel extends ItemPanel {
         protected void accept(DropTargetDropEvent e, NamedIcon newIcon) {
             super.accept(e, newIcon);
             _updateIcon = newIcon;
-        }        
+        }
     }
 
-    public class IconDisplayPanel extends JPanel implements MouseListener {
+    public class IconDisplayPanel extends JPanel implements JmriMouseListener {
         String _key;
         NamedIcon _icon;
 
@@ -525,14 +520,14 @@ public class IconItemPanel extends ItemPanel {
                 image = new ADropJLabel(icon);
             } else {
                 image = new IconDragJLabel(_positionableDataFlavor, icon, _level);
-                image.addMouseListener(this);
-                addMouseListener(new IconListener());
+                image.addMouseListener(JmriMouseListener.adapt(this));
+                addMouseListener(JmriMouseListener.adapt(new IconListener()));
             }
             wrapIconImage(icon, image, this, key);
         }
 
         @Override
-        public void mouseClicked(MouseEvent event) {
+        public void mouseClicked(JmriMouseEvent event) {
             if (event.getSource() instanceof JLabel) {
                 setSelection(this);
             } else if (event.getSource() instanceof IconDisplayPanel) {
@@ -541,22 +536,22 @@ public class IconItemPanel extends ItemPanel {
             }
         }
         @Override
-        public void mousePressed(MouseEvent event) {
+        public void mousePressed(JmriMouseEvent event) {
         }
         @Override
-        public void mouseReleased(MouseEvent event) {
+        public void mouseReleased(JmriMouseEvent event) {
         }
         @Override
-        public void mouseEntered(MouseEvent event) {
+        public void mouseEntered(JmriMouseEvent event) {
         }
         @Override
-        public void mouseExited(MouseEvent event) {
+        public void mouseExited(JmriMouseEvent event) {
         }
     }
-    
-    class IconListener extends MouseAdapter  {
+
+    class IconListener extends JmriMouseAdapter  {
         @Override
-        public void mouseClicked(MouseEvent event) {
+        public void mouseClicked(JmriMouseEvent event) {
             if (event.getSource() instanceof IconDisplayPanel) {
                 IconDisplayPanel panel = (IconDisplayPanel)event.getSource();
                 setSelection(panel);
@@ -566,6 +561,6 @@ public class IconItemPanel extends ItemPanel {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(IconItemPanel.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IconItemPanel.class);
 
 }
