@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * List of decoders.
  * This class is used internally by LnNodeManager. It takes some time to load
  * this list so we don't want each LnNodeManager to have its own list.
- * 
+ *
  * @author Daniel Bergqvist Copyright (C) 2020
  */
 public final class DecoderList {
@@ -60,7 +60,7 @@ public final class DecoderList {
     }
 
     public String getManufacturer(int manufacturerID) {
-        return _decoderIndexFile.mfgNameFromId(Integer.toString(manufacturerID));
+        return _decoderIndexFile.mfgNameFromID(Integer.toString(manufacturerID));
     }
 
     public String getDeveloper(int developerID) {
@@ -119,7 +119,7 @@ public final class DecoderList {
             oldProd = prod;
         }
     }
-    
+
     private static final Logger log = LoggerFactory.getLogger(DecoderList.class);
-    
+
 }
