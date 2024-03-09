@@ -77,6 +77,7 @@ public class LocoNetMenu extends JMenu {
         panelItems.add(new LocoNetMenuItem("MenuItemSlotMonitor", SlotMonPane.class, false, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemClockMon", ClockMonPane.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemLocoStats", LocoStatsPanel.class, false, true)); // NOI18N
+        panelItems.add(new LocoNetMenuItem("MenuItemDiscoverLocoNet", jmri.jmrix.loconet.nodes.swing.DiscoverNodesPane.class, false, true)); // NOI18N
         panelItems.add(null);
         panelItems.add(new LocoNetMenuItem("MenuItemBDL16Programmer", BDL16Panel.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemPM4Programmer", PM4Panel.class, true, true)); // NOI18N
@@ -182,39 +183,7 @@ public class LocoNetMenu extends JMenu {
             return createNonGuiAction(item);
         }
     }
-/*
-    Item[] panelItems = new Item[]{
-        new Item("MenuItemLocoNetMonitor", "jmri.jmrix.loconet.locomon.LocoMonPane", false), // NOI18N
-        new Item("MenuItemSlotMonitor", "jmri.jmrix.loconet.slotmon.SlotMonPane", false), // NOI18N
-        new Item("MenuItemClockMon", "jmri.jmrix.loconet.clockmon.ClockMonPane", true), // NOI18N
-        new Item("MenuItemLocoStats", "jmri.jmrix.loconet.locostats.swing.LocoStatsPanel", false), // NOI18N
-        new Item("MenuItemDiscoverLocoNet", "jmri.jmrix.loconet.nodes.swing.DiscoverNodesPane", false), // NOI18N
-        null,
-        new Item("MenuItemBDL16Programmer", "jmri.jmrix.loconet.bdl16.BDL16Panel", true), // NOI18N
-        new Item("MenuItemLocoIOProgrammer", "jmri.jmrix.loconet.locoio.LocoIOPanel", true), // NOI18N
-        new Item("MenuItemPM4Programmer", "jmri.jmrix.loconet.pm4.PM4Panel", true), // NOI18N
-        new Item("MenuItemSE8cProgrammer", "jmri.jmrix.loconet.se8.SE8Panel", true), // NOI18N
-        new Item("MenuItemDS64Programmer", "jmri.jmrix.loconet.ds64.Ds64TabbedPanel", true), // NOI18N
-        new Item("MenuItemCmdStnConfig", "jmri.jmrix.loconet.cmdstnconfig.CmdStnConfigPane",true), // NOI18N
-        new Item("MenuItemSetID", "jmri.jmrix.loconet.locoid.LocoIdPanel", true), // NOI18N
-        new Item("MenuItemDuplex", "jmri.jmrix.loconet.duplexgroup.swing.DuplexGroupTabbedPanel", true), // NOI18N
-        null,
-        new Item("MenuItemThrottleMessages", "jmri.jmrix.loconet.swing.throttlemsg.MessagePanel", true), // NOI18N
-        new Item("MenuItemSendPacket", "jmri.jmrix.loconet.locogen.LocoGenPanel", false), // NOI18N
-        new Item("MenuItemPr3ModeSelect", "jmri.jmrix.loconet.pr3.swing.Pr3SelectPane", false), // NOI18N
-        null,
-        new Item("MenuItemDownload", "jmri.jmrix.loconet.downloader.LoaderPane", false), // NOI18N
-        new Item("MenuItemSoundload", "jmri.jmrix.loconet.soundloader.LoaderPane", false), // NOI18N
-        new Item("MenuItemSoundEditor", "jmri.jmrix.loconet.soundloader.EditorPane", false) // NOI18N
-    };
 
-    static class Item {
-
-        Item(String name, String load, boolean interfaceOnly) {
-            this.name = name;
-            this.load = load;
-            this.interfaceOnly = interfaceOnly;
-*/
     /**
      * Create an Action object from a LocoNetMenuItem, linked to the appropriate
      * WindowInterface, for use as a menu item on a LocoNet menu.
