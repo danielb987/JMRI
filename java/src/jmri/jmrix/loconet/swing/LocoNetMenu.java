@@ -26,6 +26,7 @@ import jmri.jmrix.loconet.soundloader.EditorPane;
 import jmri.jmrix.loconet.loconetovertcp.LnTcpServerAction;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LnCommandStationType;
+import jmri.jmrix.loconet.nodes.swing.DiscoverNodesPane;
 import jmri.jmrix.loconet.swing.menuitemspi.MenuItemsService;
 
 import jmri.util.swing.WindowInterface;
@@ -77,7 +78,7 @@ public class LocoNetMenu extends JMenu {
         panelItems.add(new LocoNetMenuItem("MenuItemSlotMonitor", SlotMonPane.class, false, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemClockMon", ClockMonPane.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemLocoStats", LocoStatsPanel.class, false, true)); // NOI18N
-        panelItems.add(new LocoNetMenuItem("MenuItemDiscoverLocoNet", jmri.jmrix.loconet.nodes.swing.DiscoverNodesPane.class, false, true)); // NOI18N
+        panelItems.add(new LocoNetMenuItem("MenuItemDiscoverLocoNet", DiscoverNodesPane.class, false, true)); // NOI18N
         panelItems.add(null);
         panelItems.add(new LocoNetMenuItem("MenuItemBDL16Programmer", BDL16Panel.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemPM4Programmer", PM4Panel.class, true, true)); // NOI18N
