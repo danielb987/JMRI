@@ -53,6 +53,7 @@ public class DiscoverNodesPane extends jmri.jmrix.loconet.swing.LnPanel implemen
     /**
      * {@inheritDoc}
      */
+    @Override
     public void initComponents(LocoNetSystemConnectionMemo memo) {
         _memo = memo;
 
