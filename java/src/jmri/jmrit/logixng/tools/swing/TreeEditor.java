@@ -36,6 +36,7 @@ public class TreeEditor extends TreeViewer {
 
     // Enums used to configure TreeEditor
     public enum EnableClipboard { EnableClipboard, DisableClipboard }
+    public enum ClearClipboard { ClearClipboard, DontClearClipboard }
     public enum EnableRootRemoveCutCopy { EnableRootRemoveCutCopy, DisableRootRemoveCutCopy }
     public enum EnableRootPopup { EnableRootPopup, DisableRootPopup }
     public enum EnableExecuteEvaluate { EnableExecuteEvaluate, DisableExecuteEvaluate }
@@ -92,6 +93,7 @@ public class TreeEditor extends TreeViewer {
     private LocalVariableTableModel _localVariableTableModel;
 
     private final boolean _enableClipboard;
+    private final boolean _clearClipboard;
     private final boolean _disableRootRemoveCutCopy;
     private final boolean _disableRootPopup;
     private final boolean _enableExecuteEvaluate;
@@ -101,6 +103,7 @@ public class TreeEditor extends TreeViewer {
      *
      * @param femaleRootSocket         the root of the tree
      * @param enableClipboard          should clipboard be enabled on the menu?
+     * @param clearClipboard           add a menu item to clear the clipboard?
      * @param enableRootRemoveCutCopy  should the popup menu items remove,
      *                                 cut and copy be enabled or disabled?
      * @param enableRootPopup          should the popup menu be disabled for root?
@@ -109,12 +112,14 @@ public class TreeEditor extends TreeViewer {
     public TreeEditor(
             @Nonnull FemaleSocket femaleRootSocket,
             EnableClipboard enableClipboard,
+            ClearClipboard clearClipboard,
             EnableRootRemoveCutCopy enableRootRemoveCutCopy,
             EnableRootPopup enableRootPopup,
             EnableExecuteEvaluate enableExecuteEvaluate) {
 
         super(femaleRootSocket);
         _enableClipboard = enableClipboard == EnableClipboard.EnableClipboard;
+        _clearClipboard = clearClipboard == ClearClipboard.ClearClipboard;
         _disableRootRemoveCutCopy = enableRootRemoveCutCopy == EnableRootRemoveCutCopy.DisableRootRemoveCutCopy;
         _disableRootPopup = enableRootPopup == EnableRootPopup.DisableRootPopup;
         _enableExecuteEvaluate = enableExecuteEvaluate == EnableExecuteEvaluate.EnableExecuteEvaluate;
@@ -134,6 +139,13 @@ public class TreeEditor extends TreeViewer {
                 openClipboard();
             });
             toolsMenu.add(openClipboardItem);
+        }
+        if (_clearClipboard) {
+            JMenuItem clearClipboardItem = new JMenuItem(Bundle.getMessage("MenuClearClipboard"));
+            clearClipboardItem.addActionListener((ActionEvent e) -> {
+                clearClipboard();
+            });
+            toolsMenu.add(clearClipboardItem);
         }
         menuBar.add(toolsMenu);
 
@@ -316,6 +328,12 @@ public class TreeEditor extends TreeViewer {
         } else {
             _clipboardEditor.setVisible(true);
         }
+    }
+
+    public void clearClipboard() {
+        TreePath path = _treePane._tree.getPathForRow(0);
+        DeleteBeanWorker worker = new DeleteBeanWorker(_treePane._femaleRootSocket, path, true);
+        worker.execute();
     }
 
     private static String getClassName() {
@@ -1964,11 +1982,20 @@ public class TreeEditor extends TreeViewer {
         private final FemaleSocket _currentFemaleSocket;
         private final TreePath _currentPath;
         MaleSocket _maleSocket;
+        private final boolean _removeOnlyTheChildren;
 
         public DeleteBeanWorker(FemaleSocket currentFemaleSocket, TreePath currentPath) {
             _currentFemaleSocket = currentFemaleSocket;
             _currentPath = currentPath;
             _maleSocket = _currentFemaleSocket.getConnectedSocket();
+            _removeOnlyTheChildren = false;
+        }
+
+        public DeleteBeanWorker(FemaleSocket currentFemaleSocket, TreePath currentPath, boolean removeOnlyTheChildren) {
+            _currentFemaleSocket = currentFemaleSocket;
+            _currentPath = currentPath;
+            _maleSocket = _currentFemaleSocket.getConnectedSocket();
+            _removeOnlyTheChildren = removeOnlyTheChildren;
         }
 
         public int getDisplayDeleteMsg() {
@@ -1981,9 +2008,19 @@ public class TreeEditor extends TreeViewer {
 
         public void doDelete() {
             try {
-                _currentFemaleSocket.disconnect();
-
-                _maleSocket.getManager().deleteBean(_maleSocket, "DoDelete");
+                if (_removeOnlyTheChildren) {
+                    for (int i=0; i < _maleSocket.getChildCount(); i++) {
+                        FemaleSocket childSocket = _maleSocket.getChild(i);
+                        childSocket.disconnect();
+                        if (childSocket.isConnected()) {
+                            childSocket.getConnectedSocket().getManager()
+                                    .deleteBean(_maleSocket, "DoDelete");
+                        }
+                    }
+                } else {
+                    _currentFemaleSocket.disconnect();
+                    _maleSocket.getManager().deleteBean(_maleSocket, "DoDelete");
+                }
             } catch (PropertyVetoException e) {
                 //At this stage the DoDelete shouldn't fail, as we have already done a can delete, which would trigger a veto
                 log.error("Unexpected doDelete failure for {}, {}", _maleSocket, e.getMessage() );
@@ -1999,7 +2036,18 @@ public class TreeEditor extends TreeViewer {
 
             StringBuilder message = new StringBuilder();
             try {
-                _maleSocket.getManager().deleteBean(_maleSocket, "CanDelete");  // NOI18N
+                if (_removeOnlyTheChildren) {
+                    for (int i=0; i < _maleSocket.getChildCount(); i++) {
+                        FemaleSocket childSocket = _maleSocket.getChild(i);
+                        childSocket.disconnect();
+                        if (childSocket.isConnected()) {
+                            childSocket.getConnectedSocket().getManager()
+                                    .deleteBean(_maleSocket, "CanDelete");
+                        }
+                    }
+                } else {
+                    _maleSocket.getManager().deleteBean(_maleSocket, "CanDelete");  // NOI18N
+                }
             } catch (PropertyVetoException e) {
                 if (e.getPropertyChangeEvent().getPropertyName().equals("DoNotDelete")) { // NOI18N
                     log.warn("Do not Delete {}, {}", _maleSocket, e.getMessage());
@@ -2043,7 +2091,7 @@ public class TreeEditor extends TreeViewer {
 
                     tempListenerRefs.addAll(listenerRefs);
 
-                    if (tempListenerRefs.size() > 0) {
+                    if (!tempListenerRefs.isEmpty()) {
                         ArrayList<String> listeners = new ArrayList<>();
                         for (int i = 0; i < tempListenerRefs.size(); i++) {
                             if (!listeners.contains(tempListenerRefs.get(i))) {

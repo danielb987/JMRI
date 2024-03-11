@@ -47,6 +47,7 @@ public class ModuleEditor extends TreeEditor implements AbstractLogixNGEditor<Mo
 
         super(setupRootSocket(null, sName),
                 EnableClipboard.EnableClipboard,
+                ClearClipboard.DontClearClipboard,
                 EnableRootRemoveCutCopy.DisableRootRemoveCutCopy,
                 EnableRootPopup.EnableRootPopup,
                 EnableExecuteEvaluate.EnableExecuteEvaluate
