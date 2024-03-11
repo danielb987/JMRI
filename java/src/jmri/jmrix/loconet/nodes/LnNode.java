@@ -88,7 +88,7 @@ public class LnNode implements PropertyChangeProvider, VetoableChangeListener {
         _address = contents.getDestAddr();
         _tc = tc;
 
-        log.debug(String.format("LnNode: %d, %d, %d%n", contents.getSv2ManufacturerID(), contents.getSv2DeveloperID(), contents.getSv2ProductID()));
+        log.debug("LnNode: {}, {}, {}", contents.getSv2ManufacturerID(), contents.getSv2DeveloperID(), contents.getSv2ProductID());
     }
 
     /**
@@ -98,7 +98,7 @@ public class LnNode implements PropertyChangeProvider, VetoableChangeListener {
         try {
             LnNodeDecoderDefinition.createNamedBeans(this);
         } catch (IOException | JDOMException e) {
-            log.error("cannot create named beans for LnNode "+_name);
+            log.error("cannot create named beans for LnNode {}", _name);
         }
     }
 

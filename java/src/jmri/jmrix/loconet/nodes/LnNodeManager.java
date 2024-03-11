@@ -23,25 +23,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manager of LnNodes.
- * 
+ *
  * @author Daniel Bergqvist Copyright (C) 2020
  */
 public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChangeListener, PropertyChangeProvider {
 
     private static DecoderList _decoderList;
-    
+
     public static final int PUBLIC_DOMAIN_DIY_MANAGER_ID = 13;
     public static final String PUBLIC_DOMAIN_DIY_MANAGER = "Public-domain and DIY";
-    
+
     protected final ConcurrentMap<Integer, LnNode> _lnNodesMap = new ConcurrentHashMap<>();
-    
+
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private final VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
-    
-    
+
+
     public LnNodeManager() {
     }
-    
+
     /**
      * Get the LnNode.
      *
@@ -53,7 +53,7 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
     public LnNode getLnNode(int address) {
         return _lnNodesMap.get(address);
     }
-    
+
     /**
      * Method for a UI to delete a LnNode.
      * <p>
@@ -76,7 +76,7 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
      */
     public void deleteBean(@Nonnull LnNode lnNode, @Nonnull String property)
             throws java.beans.PropertyVetoException {
-        
+
         // throws PropertyVetoException if vetoed
         fireVetoableChange(property, lnNode, null);
         if (property.equals("DoDelete")) { // NOI18N
@@ -105,15 +105,15 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
                                 + Integer.toString(lnNode.getAddress()));
             }
         }
-        
+
         // clear caches
 //        cachedSystemNameList = null;
 //        cachedNamedBeanList = null;
-        
+
         // save this bean
 //        _lnNodes.add(lnNode);
         _lnNodesMap.put(lnNode.getAddress(), lnNode);
-        
+
         // notifications
 //        int position = getPosition(lnNode);
 //        fireDataListenersAdded(position, position, lnNode);
@@ -122,7 +122,7 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
         // listen for name and state changes to forward
 //        lnNode.addPropertyChangeListener(this);
     }
-    
+
     public void deregister(@Nonnull LnNode lnNode) {
 //        int position = getPosition(lnNode);
 
@@ -132,17 +132,17 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
 
         // stop listening for user name changes
 //        lnNode.removePropertyChangeListener(this);
-        
+
         // remove LnNode from local storage
 //        _lnNodes.remove(lnNode);
         _lnNodesMap.remove(lnNode.getAddress());
-        
+
         // notifications
 //        fireDataListenersRemoved(position, position, lnNode);
 //        fireIndexedPropertyChange("beans", position, lnNode, null);
 //        firePropertyChange("length", null, _lnNodes.size());
     }
-    
+
     public DecoderList getDecoderList() {
         synchronized(LnNodeManager.class) {
             if (_decoderList == null) {
@@ -151,7 +151,7 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
             return _decoderList;
         }
     }
-    
+
     /**
      * Inform all registered listeners of a vetoable change. If the
      * propertyName is "CanDelete" ALL listeners with an interest in the bean
@@ -179,7 +179,7 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
                     vc.vetoableChange(evt);
                 } catch (PropertyVetoException e) {
                     if (e.getPropertyChangeEvent().getPropertyName().equals("DoNotDelete")) { // NOI18N
-                        log.info(e.getMessage());
+                        log.info("{}", e.getMessage());
                         throw e;
                     }
                     message.append(e.getMessage()).append("<hr>"); // NOI18N
@@ -194,14 +194,14 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
             }
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     @OverridingMethodsMustInvokeSuper
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
 
         Collection<LnNode> nodes = _lnNodesMap.values();
-        
+
         if ("CanDelete".equals(evt.getPropertyName())) { // NOI18N
             StringBuilder message = new StringBuilder();
             message.append(Bundle.getMessage("VetoFoundIn", "LnNode"))
@@ -232,38 +232,38 @@ public class LnNodeManager implements InstanceManagerAutoDefault, VetoableChange
             }
         }
     }
-    
+
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
     }
-    
+
     @Override
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(propertyName, listener);
     }
-    
+
     @Override
     public PropertyChangeListener[] getPropertyChangeListeners() {
         return pcs.getPropertyChangeListeners();
     }
-    
+
     @Override
     public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
         return pcs.getPropertyChangeListeners(propertyName);
     }
-    
+
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
-    
+
     @Override
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
-    
-    
+
+
     private final static Logger log = LoggerFactory.getLogger(LnNodeManager.class);
-    
+
 }

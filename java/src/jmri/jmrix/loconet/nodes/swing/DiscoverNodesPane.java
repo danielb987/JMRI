@@ -242,8 +242,8 @@ public class DiscoverNodesPane extends jmri.jmrix.loconet.swing.LnPanel implemen
     public void openProgrammerActionSelected() {
 
         LnNode selectedNode = getSelectedNode();
-        log.debug(String.format("LnNode: Mfg: %s, Dev: %s, Prod: %s, decoderFile: %s%n",
-                selectedNode.getManufacturer(), selectedNode.getDeveloper(), selectedNode.getProduct(), selectedNode.getDecoderFile()));
+        log.debug("LnNode: Mfg: {}, Dev: {}, Prod: {}, decoderFile: {}",
+                selectedNode.getManufacturer(), selectedNode.getDeveloper(), selectedNode.getProduct(), selectedNode.getDecoderFile());
 
         String programmerFilename;
 
@@ -386,7 +386,7 @@ public class DiscoverNodesPane extends jmri.jmrix.loconet.swing.LnPanel implemen
                     openProgrammerActionSelected();
                 }
             } else {
-                log.info("setValueAt Row" + row + " value " + value);
+                log.info("setValueAt Row {} value {}", row, value);
             }
             fireTableDataChanged();
         }

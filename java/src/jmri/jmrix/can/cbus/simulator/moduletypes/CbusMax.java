@@ -16,6 +16,8 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = CbusSimulatedModuleProvider.class)
 public class CbusMax extends CbusSimulatedModuleProvider {
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "NM_CONFUSING",
+        justification = "jmri.jmrix.loconet.nodes.LnNode.getManufacturerID() is not related to this method in any way")
     @Override
     public int getManufacturerId() {
         return 0;
@@ -80,10 +82,10 @@ public class CbusMax extends CbusSimulatedModuleProvider {
     public String getModuleType() {
         return "CBUS TestMax";
     }
-    
+
     @Override
     public String getToolTipText() {
         return "Simulated Module which has 255 NVs, 255 Events, and 255 EVs per Event.";
     }
-    
+
 }

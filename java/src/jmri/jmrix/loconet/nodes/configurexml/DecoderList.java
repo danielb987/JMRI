@@ -47,7 +47,7 @@ public final class DecoderList {
         if (developerList != null) {
             List<Element> l = developerList.getChildren("developer");
             if (log.isDebugEnabled()) {
-                log.debug("readMfgSection sees " + l.size() + " children");
+                log.debug("readMfgSection sees {} children", l.size());
             }
             for (Element el : l) {
                 int id = el.getAttribute("devID").getIntValue();
@@ -75,7 +75,8 @@ public final class DecoderList {
                 String productIDs = decoder.getProductID();
                 String[] products = productIDs.split(",");
                 for (String p : products) {
-                    log.debug(String.format("Manufacturer: %s, Developer: %s, ProductID: %s. Expect manufacturer: %d, developer: %d, productID: %d, num decoders: %d%n", decoder.getMfgID(), decoder.getDeveloperID(), p, manufacturerID, developerID, productID, decoders.size()));
+                    log.debug("Manufacturer: {}, Developer: {}, ProductID: {}. Expect manufacturer: {}, developer: {}, productID: {}, num decoders: {}",
+                            decoder.getMfgID(), decoder.getDeveloperID(), p, manufacturerID, developerID, productID, decoders.size());
                     if (productID == Integer.parseInt(p)) {
                         return decoder;
                     }
