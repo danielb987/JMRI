@@ -71,6 +71,7 @@ public class ActionsAndExpressionsTest {
 
     // Test that a class that has a method that returns one or more LogixNG_SelectNamedBean also implements the method
     // ActionOrExpression.getSelectNamedBeans() and returns them.
+    @SuppressWarnings("unchecked") // Due to type erasure
     private void check_ActionOrExpression_getSelectNamedBeans(Base base)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
