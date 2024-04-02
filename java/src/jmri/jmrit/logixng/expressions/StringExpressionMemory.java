@@ -126,6 +126,11 @@ public class StringExpressionMemory extends AbstractStringExpression
         _selectNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Expression);
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectNamedBean);
+    }
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StringExpressionMemory.class);
 
 }

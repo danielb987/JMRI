@@ -5,17 +5,17 @@ import jmri.JmriException;
 /**
  * DigitalExpressionBean is used in LogixNG to answer a question that can give
  * the answers 'true' or 'false'.
- * 
+ *
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface DigitalExpression extends Base {
+public interface DigitalExpression extends Base, ActionOrExpression {
 
     /**
      * Evaluate this expression.
-     * 
+     *
      * @return the result of the evaluation
      * @throws JmriException when an exception occurs
      */
     boolean evaluate() throws JmriException;
-    
+
 }

@@ -114,6 +114,11 @@ public class LastResultOfDigitalExpression extends AbstractDigitalExpression
         getConditionalNG().execute();
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectNamedBean);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void disposeMe() {

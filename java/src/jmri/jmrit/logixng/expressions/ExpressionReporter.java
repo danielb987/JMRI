@@ -564,6 +564,12 @@ public class ExpressionReporter extends AbstractDigitalExpression
         _selectMemoryNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Expression);
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectNamedBean);
+        list.add(_selectMemoryNamedBean);
+    }
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionReporter.class);
 
 }

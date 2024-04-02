@@ -325,6 +325,12 @@ public class ActionReporter extends AbstractDigitalAction
         getConditionalNG().execute();
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectNamedBean);
+        list.add(_selectMemoryNamedBean);
+    }
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionReporter.class);
 
 }

@@ -4,16 +4,16 @@ import jmri.JmriException;
 
 /**
  * A LogixNG digitalaction.
- * 
+ *
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface DigitalAction extends Base {
+public interface DigitalAction extends Base, ActionOrExpression {
 
     /**
      * Execute this DigitalActionBean.
-     * 
+     *
      * @throws JmriException when an exception occurs
      */
     void execute() throws JmriException;
-    
+
 }

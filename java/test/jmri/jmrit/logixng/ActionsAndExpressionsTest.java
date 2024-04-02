@@ -2,6 +2,8 @@ package jmri.jmrit.logixng;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +15,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import jmri.InstanceManager;
+import jmri.NamedBean;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
+import jmri.jmrit.logixng.util.LogixNG_SelectNamedBean;
 import jmri.util.JUnitUtil;
 
 // import org.apache.log4j.Level;
@@ -63,6 +67,53 @@ public class ActionsAndExpressionsTest {
             locales.add(new Locale(lang));
         }
 
+    }
+
+    // Test that a class that has a method that returns one or more LogixNG_SelectNamedBean also implements the method
+    // ActionOrExpression.getSelectNamedBeans() and returns them.
+    private void check_ActionOrExpression_getSelectNamedBeans(Base base)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+        Comparator<LogixNG_SelectNamedBean> comparator =
+                (LogixNG_SelectNamedBean t1, LogixNG_SelectNamedBean t2)
+                        -> Integer.compare(t1.hashCode(), t2.hashCode());
+
+        ActionOrExpression actionOrExpression = (ActionOrExpression)base;
+
+        List<LogixNG_SelectNamedBean<? extends NamedBean>> origList = new ArrayList<>();
+
+        for (Method m : base.getClass().getDeclaredMethods()) {
+//            log.warn("{}, {}", m.getReturnType(), m.getGenericReturnType());
+            if (m.getReturnType().equals(LogixNG_SelectNamedBean.class)) {
+                origList.add((LogixNG_SelectNamedBean<? extends NamedBean>) m.invoke(base));
+            }
+        }
+
+        List<LogixNG_SelectNamedBean<?>> returnedList = new ArrayList<>();
+        actionOrExpression.getSelectNamedBeans(returnedList);
+
+        Collections.sort(origList, comparator);
+        Collections.sort(returnedList, comparator);
+
+        Iterator<LogixNG_SelectNamedBean<? extends NamedBean>> origListIterator = origList.iterator();
+        Iterator<LogixNG_SelectNamedBean<? extends NamedBean>> returnedListIterator = returnedList.iterator();
+
+        while (origListIterator.hasNext() && returnedListIterator.hasNext()) {
+            LogixNG_SelectNamedBean orig = origListIterator.next();
+            LogixNG_SelectNamedBean returned = returnedListIterator.next();
+            if (orig.equals(returned)) {
+                origListIterator.remove();
+                returnedListIterator.remove();
+            }
+        }
+
+        if (!origList.isEmpty()) {
+            log.error("Class {} don't return all LogixNG_SelectNamedBean by the call ActionOrExpression.getSelectNamedBeans()", base.getClass());
+        }
+
+        if (!returnedList.isEmpty()) {
+            log.error("Class {} return a LogixNG_SelectNamedBean by the call ActionOrExpression.getSelectNamedBeans() that isn't returned by another method", base.getClass());
+        }
     }
 
     private void checkFolder(Path path, String packageName, Map<Category, List<Class<? extends Base>>> registeredClasses, String[] classesToIgnore)
@@ -166,6 +217,10 @@ public class ActionsAndExpressionsTest {
 //                        configureSwing.getManager().getMaleSocketClass().getName(),
 //                        socket.getClass().getName());
             Assert.assertTrue(configureSwing.getManager().getMaleSocketClass().isAssignableFrom(lastMaleSocket.getClass()));
+
+            // Test that a class that has a method that returns one or more LogixNG_SelectNamedBean also implements the method
+            // ActionOrExpression.getSelectNamedBeans() and returns them.
+            check_ActionOrExpression_getSelectNamedBeans(base);
 
             // Test all locales. This mainly tests that the female socket
             // names are valid for each locale, for example that the name

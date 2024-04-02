@@ -489,6 +489,13 @@ public class ActionTable extends AbstractDigitalAction
         _selectReporterNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Action);
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectBlockNamedBean);
+        list.add(_selectMemoryNamedBean);
+        list.add(_selectReporterNamedBean);
+    }
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionTable.class);
 
 }

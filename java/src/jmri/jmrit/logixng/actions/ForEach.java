@@ -354,6 +354,11 @@ public class ForEach extends AbstractDigitalAction
         getConditionalNG().execute();
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectMemoryNamedBean);
+    }
+
 
     public enum UserSpecifiedSource {
         Variable(Bundle.getMessage("ForEach_UserSpecifiedSource_Variable")),

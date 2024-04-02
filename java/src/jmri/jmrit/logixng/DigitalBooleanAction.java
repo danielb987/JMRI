@@ -7,7 +7,7 @@ import jmri.JmriException;
  *
  * @author Daniel Bergqvist Copyright 2018
  */
-public interface DigitalBooleanAction extends Base {
+public interface DigitalBooleanAction extends Base, ActionOrExpression {
 
     /**
      * Execute this DigitalActionBean.

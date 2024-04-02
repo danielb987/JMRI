@@ -118,6 +118,11 @@ public class AnalogActionMemory extends AbstractAnalogAction
         getConditionalNG().execute();
     }
 
+    @Override
+    public void getSelectNamedBeans(List<LogixNG_SelectNamedBean<? extends NamedBean>> list) {
+        list.add(_selectNamedBean);
+    }
+
 //    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AnalogActionMemory.class);
 
 }
