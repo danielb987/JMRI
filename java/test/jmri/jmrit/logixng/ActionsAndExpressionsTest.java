@@ -85,7 +85,11 @@ public class ActionsAndExpressionsTest {
         for (Method m : base.getClass().getDeclaredMethods()) {
 //            log.warn("{}, {}", m.getReturnType(), m.getGenericReturnType());
             if (m.getReturnType().equals(LogixNG_SelectNamedBean.class)) {
-                origList.add((LogixNG_SelectNamedBean<? extends NamedBean>) m.invoke(base));
+                Object result = m.invoke(base);
+                if (! (result instanceof LogixNG_SelectNamedBean)) {
+                    throw new RuntimeException("result is not a LogixNG_SelectNamedBean");
+                }
+                origList.add((LogixNG_SelectNamedBean<? extends NamedBean>) result);
             }
         }
 
