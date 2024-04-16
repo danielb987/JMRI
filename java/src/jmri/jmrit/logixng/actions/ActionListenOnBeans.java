@@ -225,6 +225,21 @@ public class ActionListenOnBeans extends AbstractDigitalAction
         return Bundle.getMessage(locale, "ActionListenOnBeans_Long");
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            StringBuilder sb = new StringBuilder(Bundle.getMessage(locale, "ActionListenOnBeans_Long"));
+//            for (var entry : _namedBeanReferences.entrySet()) {
+//                sb.append("\n   Reference: ").append(entry.getKey()).append(": ").append(entry.getValue().getDescription());
+            for (var ref : _namedBeanReferences.values()) {
+                sb.append(Base.NEW_LINE).append("   Reference: ").append(ref.getDescription());
+            }
+            return sb.toString();
+        } else {
+            return Bundle.getMessage(locale, "ActionListenOnBeans_Long");
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {
@@ -401,6 +416,15 @@ public class ActionListenOnBeans extends AbstractDigitalAction
 
         public void setListenOnAllProperties(boolean listenOnAllProperties) {
             _listenOnAllProperties = listenOnAllProperties;
+        }
+
+        public String getDescription() {
+            StringBuilder sb = new StringBuilder(_name);
+            sb.append(": ").append(_handle != null ? _handle.getName() : "[No bean]");
+            if (_listenOnAllProperties) {
+                sb.append(", Listen on all properties ");
+            }
+            return sb.toString();
         }
 
         // This method is used by ListenOnBeansTableModel

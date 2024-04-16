@@ -22,17 +22,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionListenOnBeans
+ * Test ActionListenOnBeansLocalVariable
  *
  * @author Daniel Bergqvist 2019
  */
-public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
+public class ActionListenOnBeansLocalVariableTest extends AbstractDigitalActionTestBase {
 
     private Sensor s1, s2, s3, sensorWait, s99;
     private LogixNG logixNG;
     private ConditionalNG conditionalNG;
     private WaitForScaffold actionWaitFor;
-    private ActionListenOnBeans actionListenOnBeans;
+    private ActionListenOnBeansLocalVariable actionListenOnBeansLocalVariable;
 
 
     @Override
@@ -52,7 +52,10 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @Override
     public String getExpectedPrintedTree() {
-        return String.format("Listen on beans ::: Use default%n");
+        return String.format(
+                "Listen on the bean in the local variable \"null\" of type Sensor ::: Use default%n" +
+                "   ! Execute%n" +
+                "      Socket not connected%n");
     }
 
     @Override
@@ -68,7 +71,9 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
                 "            ! A1%n" +
                 "               Wait for ::: Use default%n" +
                 "            ! A2%n" +
-                "               Listen on beans ::: Use default%n" +
+                "               Listen on the bean in the local variable \"null\" of type Sensor ::: Use default%n" +
+                "                  ! Execute%n" +
+                "                     Socket not connected%n" +
                 "            ! A3%n" +
                 "               Log data: Comma separated list ::: Use default%n" +
                 "            ! A4%n" +
@@ -90,11 +95,11 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
                 "            ! A1%n" +
                 "               Wait for ::: Use default%n" +
                 "            ! A2%n" +
-                "               Listen on beans%n" +
-                "                  Reference: IS1: IS1%n" +
-                "                  Reference: IS3: IS3%n" +
-                "                  Reference: IS2: IS2%n" +
-                "                  ::: Use default%n" +
+                "               Listen on the bean in the local variable \"null\" of type Sensor ::: Use default%n" +
+//                "               Listen on the bean in the local variable \"null\" of type Sensor%n" +
+//                "                  ::: Use default%n" +
+                "                  ! Execute%n" +
+                "                     Socket not connected%n" +
                 "            ! A3%n" +
                 "               Log data: Comma separated list ::: Use default%n" +
                 "            ! A4%n" +
@@ -106,7 +111,7 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @Override
     public NamedBean createNewBean(String systemName) {
-        return new ActionListenOnBeans(systemName, null);
+        return new ActionListenOnBeansLocalVariable(systemName, null);
     }
 
     @Override
@@ -115,41 +120,16 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
     }
 
     @Test
-    public void testCtor() {
-        ActionListenOnBeans t = new ActionListenOnBeans("IQDA1", null);
-        Assert.assertNotNull("not null", t);
-    }
-
-    @Test
-    public void testGetChild() {
-        Assert.assertTrue("getChildCount() returns 0", 0 == actionListenOnBeans.getChildCount());
-
-        boolean hasThrown = false;
-        try {
-            actionListenOnBeans.getChild(0);
-        } catch (UnsupportedOperationException ex) {
-            hasThrown = true;
-            Assert.assertEquals("Error message is correct", "Not supported.", ex.getMessage());
-        }
-        Assert.assertTrue("Exception is thrown", hasThrown);
-    }
-
-    @Test
-    public void testCategory() {
-        Assert.assertTrue("Category matches", Category.OTHER == _base.getCategory());
-    }
-
-    @Test
     public void testShortDescription() {
-        Assert.assertEquals("String matches", "Listen on beans", _base.getShortDescription());
+        Assert.assertEquals("String matches", "Listen on beans - Local variable", _base.getShortDescription());
     }
 
     @Test
     public void testLongDescription() {
-        ActionListenOnBeans a1 = new ActionListenOnBeans("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Listen on beans", a1.getShortDescription());
-        ActionListenOnBeans a2 = new ActionListenOnBeans("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Listen on beans", a2.getLongDescription());
+        ActionListenOnBeansLocalVariable a1 = new ActionListenOnBeansLocalVariable("IQDA321", null);
+        Assert.assertEquals("strings are equal", "Listen on beans - Local variable", a1.getShortDescription());
+        ActionListenOnBeansLocalVariable a2 = new ActionListenOnBeansLocalVariable("IQDA321", null);
+        Assert.assertEquals("strings are equal", "Listen on the bean in the local variable \"null\" of type Light", a2.getLongDescription());
     }
 
     @Test
@@ -164,76 +144,6 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     private JTextArea getOutputArea() {
         return ScriptOutput.getDefault().getOutputArea();
-    }
-
-    @Test
-    public void testExecute() throws JmriException {
-
-        var oldReleaseCondition = actionWaitFor.getReleaseCondition();
-
-        actionWaitFor.setReleaseCondition(() -> { return sensorWait.getState() == Sensor.ACTIVE; });
-        sensorWait.setState(Sensor.ACTIVE);
-
-        conditionalNG.setRunDelayed(true);
-
-        // Test listen on sensor s1
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        s1.setState(Sensor.INACTIVE);
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 4", getOutputArea().getText().trim());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        s1.setState(Sensor.ACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 2", getOutputArea().getText().trim());
-
-        // Test listen on sensor s1
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        s1.setState(Sensor.INACTIVE);
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 4", getOutputArea().getText().trim());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        s1.setState(Sensor.ACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 2", getOutputArea().getText().trim());
-
-        // Test listen on sensor s1, s2 and s3, when s1 and s2 goes active
-        // while the conditionalNG is running.
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        getOutputArea().setText("");
-        sensorWait.setState(Sensor.INACTIVE);
-        s99.setState(Sensor.INACTIVE);
-        s1.setState(Sensor.INACTIVE);
-        s2.setState(Sensor.INACTIVE);
-        s3.setState(Sensor.INACTIVE);
-        sensorWait.setState(Sensor.ACTIVE);
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return "IS1, KnownState, 4\nIS2, KnownState, 4\nIS3, KnownState, 4\n".equals(getOutputArea().getText());}));
-        Assert.assertEquals("IS1, KnownState, 4\nIS2, KnownState, 4\nIS3, KnownState, 4\n", getOutputArea().getText());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        s1.setState(Sensor.ACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 2", getOutputArea().getText().trim());
-
-        actionWaitFor.setReleaseCondition(oldReleaseCondition);
     }
 
     // The minimal setup for log4J
@@ -276,17 +186,19 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         socket = digitalActionManager.registerAction(actionWaitFor);
         many.getChild(0).connect(socket);
 
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.addReference("Sensor:IS1");
-        actionListenOnBeans.addReference("Sensor:IS2");
-        actionListenOnBeans.addReference("Sensor:IS3");
-        actionListenOnBeans.setLocalVariableNamedBean("bean");
-        actionListenOnBeans.setLocalVariableEvent("event");
-        actionListenOnBeans.setLocalVariableNewValue("value");
-        socket = digitalActionManager.registerAction(actionListenOnBeans);
+        actionListenOnBeansLocalVariable = new ActionListenOnBeansLocalVariable(digitalActionManager.getAutoSystemName(), null);
+        actionListenOnBeansLocalVariable.setNamedBeanType(NamedBeanType.Sensor);
+        actionListenOnBeansLocalVariable.setListenOnAllProperties(true);
+//        actionListenOnBeansLocalVariable.addReference("Sensor:IS1");
+//        actionListenOnBeansLocalVariable.addReference("Sensor:IS2");
+//        actionListenOnBeansLocalVariable.addReference("Sensor:IS3");
+        actionListenOnBeansLocalVariable.setLocalVariableNamedBean("bean");
+        actionListenOnBeansLocalVariable.setLocalVariableEvent("event");
+        actionListenOnBeansLocalVariable.setLocalVariableNewValue("value");
+        socket = digitalActionManager.registerAction(actionListenOnBeansLocalVariable);
         many.getChild(1).connect(socket);
 
-        _base = actionListenOnBeans;
+        _base = actionListenOnBeansLocalVariable;
         _baseMaleSocket = socket;
 
         LogData logData = new LogData(digitalActionManager.getAutoSystemName(), null);
@@ -319,7 +231,7 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         logixNG = null;
         conditionalNG = null;
         actionWaitFor = null;
-        actionListenOnBeans = null;
+        actionListenOnBeansLocalVariable = null;
     }
 
 }

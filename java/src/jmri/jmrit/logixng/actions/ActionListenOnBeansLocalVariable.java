@@ -236,6 +236,14 @@ public class ActionListenOnBeansLocalVariable extends AbstractDigitalAction
                 _namedBeanType.toString());
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        return Bundle.getMessage(locale,
+                "ActionListenOnBeansLocalVariable_Long",
+                _localVariableBeanToListenOn,
+                _namedBeanType.toString());
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {

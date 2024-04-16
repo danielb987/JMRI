@@ -21,6 +21,11 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public interface Base extends PropertyChangeProvider {
 
     /**
+     * The new line separator.
+     */
+    public static final String NEW_LINE = System.getProperty("line.separator");
+
+    /**
      * Separator returned by enums toString() methods to get a separator
      * in JComboBoxes. See {@link jmri.jmrit.logixng.expressions.ExpressionEntryExit.EntryExitState}
      * for an example.
@@ -184,6 +189,16 @@ public interface Base extends PropertyChangeProvider {
      * @return a long description
      */
     String getLongDescription(Locale locale);
+
+    /**
+     * Get a long description of this item.
+     * @param locale    The locale to be used
+     * @param settings  settings for what to print
+     * @return a long description
+     */
+    default String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        return getLongDescription(locale);
+    }
 
     /**
      * Get the Module of this item, if it's part of a module.
@@ -642,6 +657,7 @@ public interface Base extends PropertyChangeProvider {
 
 
     static class PrintTreeSettings {
+        public boolean _completeOutput = false;
         public boolean _printLineNumbers = false;
         public boolean _printDisplayName = false;
         public boolean _hideUserName = false;           // Used for tests

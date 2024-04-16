@@ -1,18 +1,19 @@
 package jmri.jmrit.logixng.actions;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.swing.JTextArea;
 
 import jmri.*;
+import jmri.implementation.VirtualSignalHead;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.Base.PrintTreeSettings;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.script.swing.ScriptOutput;
+import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -22,17 +23,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test ActionListenOnBeans
+ * Test ActionListenOnBeansTable
  *
  * @author Daniel Bergqvist 2019
  */
-public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
+public class ActionListenOnBeansTableTest extends AbstractDigitalActionTestBase {
 
     private Sensor s1, s2, s3, sensorWait, s99;
+    private NamedTable csvTable;
     private LogixNG logixNG;
     private ConditionalNG conditionalNG;
     private WaitForScaffold actionWaitFor;
-    private ActionListenOnBeans actionListenOnBeans;
+    private ActionListenOnBeansTable actionListenOnBeansTable;
 
 
     @Override
@@ -52,7 +54,7 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @Override
     public String getExpectedPrintedTree() {
-        return String.format("Listen on beans ::: Use default%n");
+        return String.format("Listen to each Signal Head in each column of row \"Signal before\" in table \"IQT1\" ::: Use default%n");
     }
 
     @Override
@@ -68,7 +70,7 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
                 "            ! A1%n" +
                 "               Wait for ::: Use default%n" +
                 "            ! A2%n" +
-                "               Listen on beans ::: Use default%n" +
+                "               Listen to each Signal Head in each column of row \"Signal before\" in table \"IQT1\" ::: Use default%n" +
                 "            ! A3%n" +
                 "               Log data: Comma separated list ::: Use default%n" +
                 "            ! A4%n" +
@@ -90,11 +92,9 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
                 "            ! A1%n" +
                 "               Wait for ::: Use default%n" +
                 "            ! A2%n" +
-                "               Listen on beans%n" +
-                "                  Reference: IS1: IS1%n" +
-                "                  Reference: IS3: IS3%n" +
-                "                  Reference: IS2: IS2%n" +
-                "                  ::: Use default%n" +
+                "               Listen to each Signal Head in each column of row \"Signal before\" in table \"IQT1\" ::: Use default%n" +
+//                "               Listen to each Signal Head in each column of row \"Signal before\" in table \"IQT1\"%n" +
+//                "                  ::: Use default%n" +
                 "            ! A3%n" +
                 "               Log data: Comma separated list ::: Use default%n" +
                 "            ! A4%n" +
@@ -106,7 +106,7 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @Override
     public NamedBean createNewBean(String systemName) {
-        return new ActionListenOnBeans(systemName, null);
+        return new ActionListenOnBeansTable(systemName, null);
     }
 
     @Override
@@ -116,17 +116,17 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testCtor() {
-        ActionListenOnBeans t = new ActionListenOnBeans("IQDA1", null);
+        ActionListenOnBeansTable t = new ActionListenOnBeansTable("IQDA1", null);
         Assert.assertNotNull("not null", t);
     }
 
     @Test
     public void testGetChild() {
-        Assert.assertTrue("getChildCount() returns 0", 0 == actionListenOnBeans.getChildCount());
+        Assert.assertTrue("getChildCount() returns 0", 0 == actionListenOnBeansTable.getChildCount());
 
         boolean hasThrown = false;
         try {
-            actionListenOnBeans.getChild(0);
+            actionListenOnBeansTable.getChild(0);
         } catch (UnsupportedOperationException ex) {
             hasThrown = true;
             Assert.assertEquals("Error message is correct", "Not supported.", ex.getMessage());
@@ -141,15 +141,15 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @Test
     public void testShortDescription() {
-        Assert.assertEquals("String matches", "Listen on beans", _base.getShortDescription());
+        Assert.assertEquals("String matches", "Listen on beans - Table", _base.getShortDescription());
     }
 
     @Test
     public void testLongDescription() {
-        ActionListenOnBeans a1 = new ActionListenOnBeans("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Listen on beans", a1.getShortDescription());
-        ActionListenOnBeans a2 = new ActionListenOnBeans("IQDA321", null);
-        Assert.assertEquals("strings are equal", "Listen on beans", a2.getLongDescription());
+        ActionListenOnBeansTable a1 = new ActionListenOnBeansTable("IQDA321", null);
+        Assert.assertEquals("strings are equal", "Listen on beans - Table", a1.getShortDescription());
+        ActionListenOnBeansTable a2 = new ActionListenOnBeansTable("IQDA321", null);
+        Assert.assertEquals("strings are equal", "Listen to each Light in each column of row \"\" in table \"''\"", a2.getLongDescription());
     }
 
     @Test
@@ -166,79 +166,9 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         return ScriptOutput.getDefault().getOutputArea();
     }
 
-    @Test
-    public void testExecute() throws JmriException {
-
-        var oldReleaseCondition = actionWaitFor.getReleaseCondition();
-
-        actionWaitFor.setReleaseCondition(() -> { return sensorWait.getState() == Sensor.ACTIVE; });
-        sensorWait.setState(Sensor.ACTIVE);
-
-        conditionalNG.setRunDelayed(true);
-
-        // Test listen on sensor s1
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        s1.setState(Sensor.INACTIVE);
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 4", getOutputArea().getText().trim());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        s1.setState(Sensor.ACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 2", getOutputArea().getText().trim());
-
-        // Test listen on sensor s1
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        s1.setState(Sensor.INACTIVE);
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 4", getOutputArea().getText().trim());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        s1.setState(Sensor.ACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 2", getOutputArea().getText().trim());
-
-        // Test listen on sensor s1, s2 and s3, when s1 and s2 goes active
-        // while the conditionalNG is running.
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        getOutputArea().setText("");
-        sensorWait.setState(Sensor.INACTIVE);
-        s99.setState(Sensor.INACTIVE);
-        s1.setState(Sensor.INACTIVE);
-        s2.setState(Sensor.INACTIVE);
-        s3.setState(Sensor.INACTIVE);
-        sensorWait.setState(Sensor.ACTIVE);
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return "IS1, KnownState, 4\nIS2, KnownState, 4\nIS3, KnownState, 4\n".equals(getOutputArea().getText());}));
-        Assert.assertEquals("IS1, KnownState, 4\nIS2, KnownState, 4\nIS3, KnownState, 4\n", getOutputArea().getText());
-        getOutputArea().setText("");
-        s99.setState(Sensor.INACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        s1.setState(Sensor.ACTIVE);
-        Assert.assertEquals("", getOutputArea().getText());
-        Assert.assertTrue(JUnitUtil.waitFor(() -> {return s99.getState() == Sensor.ACTIVE;}));
-        Assert.assertTrue(conditionalNG.getCurrentThread().isQueueEmpty());
-        Assert.assertEquals("IS1, KnownState, 2", getOutputArea().getText().trim());
-
-        actionWaitFor.setReleaseCondition(oldReleaseCondition);
-    }
-
     // The minimal setup for log4J
     @Before
-    public void setUp() throws SocketAlreadyConnectedException, ParserException {
+    public void setUp() throws SocketAlreadyConnectedException, ParserException, IOException {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
         JUnitUtil.resetProfileManager();
@@ -255,6 +185,14 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         s3 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS3");
         sensorWait = InstanceManager.getDefault(SensorManager.class).provideSensor("ISWait");
         s99 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS99");
+
+        InstanceManager.getDefault(SignalHeadManager.class)
+                .register(new VirtualSignalHead("IH1"));
+
+        // Load table turnout_and_signals.csv
+        csvTable = InstanceManager.getDefault(NamedTableManager.class)
+                        .loadTableFromCSV("IQT1", null, "program:java/test/jmri/jmrit/logixng/panel_and_data_files/turnout_and_signals.csv");
+        Assert.assertNotNull(csvTable);
 
         logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
         conditionalNG = new DefaultConditionalNGScaffold("IQC1", "A conditionalNG");  // NOI18N;
@@ -276,17 +214,23 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         socket = digitalActionManager.registerAction(actionWaitFor);
         many.getChild(0).connect(socket);
 
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.addReference("Sensor:IS1");
-        actionListenOnBeans.addReference("Sensor:IS2");
-        actionListenOnBeans.addReference("Sensor:IS3");
-        actionListenOnBeans.setLocalVariableNamedBean("bean");
-        actionListenOnBeans.setLocalVariableEvent("event");
-        actionListenOnBeans.setLocalVariableNewValue("value");
-        socket = digitalActionManager.registerAction(actionListenOnBeans);
+        actionListenOnBeansTable = new ActionListenOnBeansTable(digitalActionManager.getAutoSystemName(), null);
+        actionListenOnBeansTable.getSelectNamedBean().setNamedBean(csvTable);
+        actionListenOnBeansTable.setRowOrColumnName("Signal before");
+        actionListenOnBeansTable.setTableRowOrColumn(TableRowOrColumn.Row);
+        actionListenOnBeansTable.setNamedBeanType(NamedBeanType.SignalHead);
+        actionListenOnBeansTable.setListenOnAllProperties(true);
+        actionListenOnBeansTable.setIncludeCellsWithoutHeader(false);
+//        actionListenOnBeansTable.addReference("Sensor:IS1");
+//        actionListenOnBeansTable.addReference("Sensor:IS2");
+//        actionListenOnBeansTable.addReference("Sensor:IS3");
+        actionListenOnBeansTable.setLocalVariableNamedBean("bean");
+        actionListenOnBeansTable.setLocalVariableEvent("event");
+        actionListenOnBeansTable.setLocalVariableNewValue("value");
+        socket = digitalActionManager.registerAction(actionListenOnBeansTable);
         many.getChild(1).connect(socket);
 
-        _base = actionListenOnBeans;
+        _base = actionListenOnBeansTable;
         _baseMaleSocket = socket;
 
         LogData logData = new LogData(digitalActionManager.getAutoSystemName(), null);
@@ -312,6 +256,11 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
 
     @After
     public void tearDown() {
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
@@ -319,7 +268,8 @@ public class ActionListenOnBeansTest extends AbstractDigitalActionTestBase {
         logixNG = null;
         conditionalNG = null;
         actionWaitFor = null;
-        actionListenOnBeans = null;
+        actionListenOnBeansTable = null;
+        csvTable = null;
     }
 
 }

@@ -122,6 +122,19 @@ public abstract class AbstractMaleSocket implements MaleSocket {
     }
 
     @Override
+    public final String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        String s = _object.getLongDescription(locale, settings);
+        if (!_listen) {
+            if (settings._completeOutput && s.contains(Base.NEW_LINE)) {
+                s += "\n ::: " + Base.getNoListenString();
+            } else {
+                s += " ::: " + Base.getNoListenString();
+            }
+        }
+        return s;
+    }
+
+    @Override
     public final String getUserName() {
         return _object.getUserName();
     }
@@ -398,6 +411,42 @@ public abstract class AbstractMaleSocket implements MaleSocket {
             MutableInt lineNumber) {
 
         if (!(getObject() instanceof AbstractMaleSocket)) {
+
+            var additionalOptions = new StringBuilder();
+            if (settings._printSystemNames) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(this.getSystemName());
+            }
+            if (settings._printDisplayName) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(Bundle.getMessage("LabelDisplayName"));
+                additionalOptions.append(" ");
+                additionalOptions.append(((NamedBean)this).getDisplayName(
+                        NamedBean.DisplayOptions.USERNAME_SYSTEMNAME));
+            } else if (!settings._hideUserName && getUserName() != null) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(Bundle.getMessage("LabelUserName"));
+                additionalOptions.append(" ");
+                additionalOptions.append(getUserName());
+            }
+
+            if (settings._printErrorHandling) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(getErrorHandlingType().toString());
+            }
+            if (!isEnabled()) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(Bundle.getMessage("AbstractMaleSocket_Disabled"));
+            }
+            if (isLocked()) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(Bundle.getMessage("AbstractMaleSocket_Locked"));
+            }
+            if (isSystem()) {
+                additionalOptions.append(" ::: ");
+                additionalOptions.append(Bundle.getMessage("AbstractMaleSocket_System"));
+            }
+
             String comment = getComment();
             if (comment != null) {
                 comment = comment.replaceAll("\\r\\n", "\\n");
@@ -412,45 +461,31 @@ public abstract class AbstractMaleSocket implements MaleSocket {
                     writer.println();
                 }
             }
-            if (settings._printLineNumbers) {
-                writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
+            String descr = getLongDescription(locale, settings);
+            if (descr.contains(Base.NEW_LINE)) {
+                for (String s : descr.split(Base.NEW_LINE)) {
+                    if (settings._printLineNumbers) {
+                        writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
+                    }
+                    writer.append(currentIndent);
+                    writer.append(s);
+                    writer.println();
+                }
+                if (!additionalOptions.isEmpty()) {
+                    writer.append(currentIndent);
+                    writer.append("  ");
+                    writer.append(additionalOptions);
+                    writer.println();
+                }
+            } else {
+                if (settings._printLineNumbers) {
+                    writer.append(String.format(PRINT_LINE_NUMBERS_FORMAT, lineNumber.addAndGet(1)));
+                }
+                writer.append(currentIndent);
+                writer.append(descr);
+                writer.append(additionalOptions);
+                writer.println();
             }
-            writer.append(currentIndent);
-            writer.append(getLongDescription(locale));
-            if (settings._printSystemNames) {
-                writer.append(" ::: ");
-                writer.append(this.getSystemName());
-            }
-            if (settings._printDisplayName) {
-                writer.append(" ::: ");
-                writer.append(Bundle.getMessage("LabelDisplayName"));
-                writer.append(" ");
-                writer.append(((NamedBean)this).getDisplayName(
-                        NamedBean.DisplayOptions.USERNAME_SYSTEMNAME));
-            } else if (!settings._hideUserName && getUserName() != null) {
-                writer.append(" ::: ");
-                writer.append(Bundle.getMessage("LabelUserName"));
-                writer.append(" ");
-                writer.append(getUserName());
-            }
-
-            if (settings._printErrorHandling) {
-                writer.append(" ::: ");
-                writer.append(getErrorHandlingType().toString());
-            }
-            if (!isEnabled()) {
-                writer.append(" ::: ");
-                writer.append(Bundle.getMessage("AbstractMaleSocket_Disabled"));
-            }
-            if (isLocked()) {
-                writer.append(" ::: ");
-                writer.append(Bundle.getMessage("AbstractMaleSocket_Locked"));
-            }
-            if (isSystem()) {
-                writer.append(" ::: ");
-                writer.append(Bundle.getMessage("AbstractMaleSocket_System"));
-            }
-            writer.println();
         }
     }
 

@@ -262,6 +262,17 @@ public class ActionListenOnBeansTable extends AbstractDigitalAction
                 tableName);
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        String tableName = _selectNamedBean.getDescription(locale);
+        return Bundle.getMessage(locale, "ActionListenOnBeansTable_Long",
+                _namedBeanType.toString(),
+                _tableRowOrColumn.getOpposite().toStringLowerCase(),
+                _tableRowOrColumn.toStringLowerCase(),
+                _rowOrColumnName,
+                tableName);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {

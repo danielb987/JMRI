@@ -43,6 +43,7 @@ public class StoreAndLoadTest {
         } else {
             PrintTreeSettings printTreeSettings = new PrintTreeSettings();
             printTreeSettings._printDisplayName = true;
+            printTreeSettings._completeOutput = true;
 
             FileUtil.createDirectory(FileUtil.getUserFilesPath() + "temp");
             File firstFile = new File(FileUtil.getUserFilesPath() + "temp/" + "LogixNG_temp.xml");

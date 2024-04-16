@@ -1057,7 +1057,7 @@ public class CreateLogixNGTreeScaffold {
 
         actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
         actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Turnout:"+turnout1.getSystemName());
+        actionListenOnBeans.addReference("Turnout:"+turnout1.getSystemName()+":no");
         maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
         actionManySocket.getChild(indexAction++).connect(maleSocket);
         ref = getNamedBeanReference(actionListenOnBeans.getReferences(), turnout1.getSystemName());
