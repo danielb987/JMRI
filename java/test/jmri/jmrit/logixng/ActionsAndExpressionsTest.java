@@ -217,35 +217,35 @@ public class ActionsAndExpressionsTest {
         return FileSystems.getDefault().getPath("java/src/jmri/jmrit/logixng/" + subFolder);
     }
 
-    public Map<Category, List<Class<? extends Base>>> getAnalogActionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getAnalogActionClasses() {
         return InstanceManager.getDefault(AnalogActionManager.class).getActionClasses();
     }
 
-    public Map<Category, List<Class<? extends Base>>> getAnalogExpressionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getAnalogExpressionClasses() {
         return InstanceManager.getDefault(AnalogExpressionManager.class).getExpressionClasses();
     }
 
-    public Map<Category, List<Class<? extends Base>>> getDigitalActionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getDigitalActionClasses() {
         return InstanceManager.getDefault(DigitalActionManager.class).getActionClasses();
     }
 
-    public Map<Category, List<Class<? extends Base>>> getDigitalBooleanActionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getDigitalBooleanActionClasses() {
         return InstanceManager.getDefault(DigitalBooleanActionManager.class).getActionClasses();
     }
 
-    public Map<Category, List<Class<? extends Base>>> getDigitalExpressionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getDigitalExpressionClasses() {
         return InstanceManager.getDefault(DigitalExpressionManager.class).getExpressionClasses();
     }
 
-    public Map<Category, List<Class<? extends Base>>> getStringActionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getStringActionClasses() {
         return InstanceManager.getDefault(StringActionManager.class).getActionClasses();
     }
 
-    public Map<Category, List<Class<? extends Base>>> getStringExpressionClasses() {
+    public static Map<Category, List<Class<? extends Base>>> getStringExpressionClasses() {
         return InstanceManager.getDefault(StringExpressionManager.class).getExpressionClasses();
     }
 
-    public void addClasses(Map<Category, List<Class<? extends Base>>> classes, Map<Category, List<Class<? extends Base>>> newClasses) {
+    public static void addClasses(Map<Category, List<Class<? extends Base>>> classes, Map<Category, List<Class<? extends Base>>> newClasses) {
         newClasses.entrySet().forEach((entry) -> {
 //            System.out.format("Add action: %s, %s%n", entry.getKey().name(), entry.getValue().getName());
             entry.getValue().forEach((clazz) -> {

@@ -471,7 +471,7 @@ public abstract class AbstractMaleSocket implements MaleSocket {
                     writer.append(s);
                     writer.println();
                 }
-                if (!additionalOptions.isEmpty()) {
+                if (additionalOptions.length() != 0) {
                     writer.append(currentIndent);
                     writer.append("  ");
                     writer.append(additionalOptions);
