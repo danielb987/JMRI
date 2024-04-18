@@ -85,17 +85,7 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
 
-        if (jmri.jmrit.logixng.expressions.ExpressionClock.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionBlock.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionOBlock.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionEntryExit.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionMemory.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionLight.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionReference.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionSensor.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionSensorEdge.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionTurnout.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionConditional.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionDispatcher.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionReporter.class.equals(object.getClass())) return;
