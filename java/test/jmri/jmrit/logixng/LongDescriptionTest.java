@@ -31,8 +31,8 @@ public class LongDescriptionTest {
     private final Set<String> _interfaceMethods = new HashSet<>();
     private LocoNetSystemConnectionMemo _locoNetMemo;
     private MqttSystemConnectionMemo _mqttMemo;
-    private JmriJFrame _frame;
-    private LayoutTurnout _layoutTurnout;
+    private JmriJFrame _frame1, _frame2;
+    private LayoutTurnout _layoutTurnout1, _layoutTurnout2;
 
 
     private String getMethodString(Method m) {
@@ -69,21 +69,13 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ActionListenOnBeans.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionListenOnBeansLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionListenOnBeansTable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionSensor.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionTurnout.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionMemory.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionDispatcher.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionThrottle.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionThrottleFunction.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionTable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionSetReporter.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionBlock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionOBlock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLight.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLightIntensity.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.AnalogActionLightIntensity.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.AnalogActionMemory.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionRequestUpdateAllSensors.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionWarrant.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
@@ -94,7 +86,6 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.Sequence.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.StringActionStringIO.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
 
         if (jmri.jmrit.logixng.expressions.AnalogFormula.class.equals(object.getClass())) return;
@@ -129,6 +120,7 @@ public class LongDescriptionTest {
         if (jmri.jmrit.display.logixng.WindowManagement.class.equals(object.getClass())) return;
         if (jmri.jmrit.display.logixng.ActionAudioIcon.class.equals(object.getClass())) return;
         if (jmri.jmrit.display.logixng.ActionLayoutTurnout.class.equals(object.getClass())) return;
+
 
 //        log.error(object.getClass().getName());
 
@@ -219,100 +211,95 @@ public class LongDescriptionTest {
                 continue;
             }
 
-//            if (m.getName().startsWith("set")) {
+            for (long count = 0; count < (1 << m.getParameterCount()); count++) {
 
-                for (long count = 0; count < (1 << m.getParameterCount()); count++) {
+//                System.out.format("  Method: %s%n", m.toString());
+//                System.out.format("  Method: %s%n", m.toGenericString());
+//                System.out.format("  Method: %s%n", m.getName());
+                List<Object> parameters = new ArrayList<>();
+//                for (Parameter p : m.getParameters()) {
+                for (int paramIndex = 0; paramIndex < m.getParameterCount(); paramIndex++) {
+                    var p = m.getParameters()[paramIndex];
+                    var onOrOff = (count & (1 << paramIndex)) > 0;
 
-    //                System.out.format("  Method: %s%n", m.toString());
-    //                System.out.format("  Method: %s%n", m.toGenericString());
-    //                System.out.format("  Method: %s%n", m.getName());
-                    List<Object> parameters = new ArrayList<>();
-    //                for (Parameter p : m.getParameters()) {
-                    for (int paramIndex = 0; paramIndex < m.getParameterCount(); paramIndex++) {
-                        var p = m.getParameters()[paramIndex];
-                        var onOrOff = (count & (1 << paramIndex)) > 0;
-
-                        Class<?> type = p.getType();
-    ////                    System.out.format("    Parameter: %s%n", type);
-                        Object param;
-                        if (boolean.class.equals(type) || Boolean.class.equals(type)) {
-                            param = true;
-                        } else if (int.class.equals(type) || Integer.class.equals(type)) {
-                            if (onOrOff) param = 0;
-                            else param = 1;
-                        } else if (double.class.equals(type) || Double.class.equals(type)) {
-                            param = 0.0;
-    //                        param = 2;
-                        } else if (String.class.equals(type)) {
-                            if ("setFormula".equals(m.getName())) {
-                                param = "a + b";
-                            } else if ("setLocalVariable".equals(m.getName())) {
-                                param = onOrOff ? "myVar" : "myOtherVar";
-                            } else {
-                                param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
-                            }
-                        } else if (Is_IsNot_Enum.class.equals(type)) {
-                            param = Is_IsNot_Enum.IsNot;
-                        } else if (NamedBeanAddressing.class.equals(type)) {
-                            param = NamedBeanAddressing.LocalVariable;
-                        } else if (TableRowOrColumn.class.equals(type)) {
-                            param = TableRowOrColumn.Row;
-                        } else if (PropertyChangeProvider.class.equals(type)) {
-                            param = new PropertyChangeProvider() {
-                                @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
-                                @Override public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
-                                @Override public PropertyChangeListener[] getPropertyChangeListeners() { return new PropertyChangeListener[]{};}
-                                @Override public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) { return new PropertyChangeListener[]{}; }
-                                @Override public void removePropertyChangeListener(PropertyChangeListener listener) {}
-                                @Override public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
-                            };
-                        } else if (SystemConnectionMemo.class.equals(type)) {
-                            param = _locoNetMemo;
-    //                        param = _mqttMemo;
-                        } else if (JmriJFrame.class.equals(type)) {
-                            param = _frame;
-                        } else if (LayoutTurnout.class.equals(type)) {
-                            param = _layoutTurnout;
-    //                    } else if (type.getEnumConstants().length > 0) {
-                        } else if (type.getEnumConstants() != null) {
-                            var enums = type.getEnumConstants();
-                            param = enums[onOrOff ? 0 : 1];
+                    Class<?> type = p.getType();
+////                    System.out.format("    Parameter: %s%n", type);
+                    Object param;
+                    if (boolean.class.equals(type) || Boolean.class.equals(type)) {
+                        param = true;
+                    } else if (int.class.equals(type) || Integer.class.equals(type)) {
+                        if (onOrOff) param = 0;
+                        else param = 1;
+                    } else if (double.class.equals(type) || Double.class.equals(type)) {
+                        param = 0.0;
+//                        param = 2;
+                    } else if (String.class.equals(type)) {
+                        if ("setFormula".equals(m.getName())) {
+                            param = "a + b";
+                        } else if ("setLocalVariable".equals(m.getName())) {
+                            param = onOrOff ? "myVar" : "myOtherVar";
                         } else {
-                            for (Class<?> iface : type.getInterfaces()) {
-                                System.out.format("Interface: %s%n", iface.getName());
-                            }
-                            log.error("Class {} is unknown: {}", type.getName());
-                            param = null;
+                            param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
                         }
-                        parameters.add(param);
+                    } else if (Is_IsNot_Enum.class.equals(type)) {
+                        param = Is_IsNot_Enum.IsNot;
+                    } else if (NamedBeanAddressing.class.equals(type)) {
+                        param = NamedBeanAddressing.LocalVariable;
+                    } else if (TableRowOrColumn.class.equals(type)) {
+                        param = TableRowOrColumn.Row;
+                    } else if (PropertyChangeProvider.class.equals(type)) {
+                        param = new PropertyChangeProvider() {
+                            @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
+                            @Override public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
+                            @Override public PropertyChangeListener[] getPropertyChangeListeners() { return new PropertyChangeListener[]{};}
+                            @Override public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) { return new PropertyChangeListener[]{}; }
+                            @Override public void removePropertyChangeListener(PropertyChangeListener listener) {}
+                            @Override public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
+                        };
+                    } else if (SystemConnectionMemo.class.equals(type)) {
+                        param = onOrOff ? _locoNetMemo : _mqttMemo;
+                    } else if (JmriJFrame.class.equals(type)) {
+                        param = onOrOff ? _frame1 : _frame2;
+                    } else if (LayoutTurnout.class.equals(type)) {
+                        param = onOrOff ? _layoutTurnout1 : _layoutTurnout2;
+                    } else if (type.getEnumConstants() != null) {
+                        var enums = type.getEnumConstants();
+                        param = enums[onOrOff ? 0 : 1];
+                    } else {
+                        for (Class<?> iface : type.getInterfaces()) {
+                            System.out.format("Interface: %s%n", iface.getName());
+                        }
+                        log.error("Class {} is unknown: {}", type.getName());
+                        param = null;
                     }
+                    parameters.add(param);
+                }
 
-                    try {
-                        m.invoke(object, parameters.toArray());
-                        String longDescr = object.getLongDescription(Locale.getDefault(), settings);
-                        descriptions.add(longDescr);
-                        if (longDescriptions.contains(longDescr)) {
-                            matchFound = true;
-                            log.error("Description already exists: {}", longDescr);
-                            log.error("  Called method: {}", m);
-//                            log.error("Error:  Called method: {}", m);
-                        }
-//                        Assert.assertFalse(String.format("Description doesn't exists: %s", longDescr), longDescriptions.contains(longDescr));
-                        longDescriptions.add(longDescr);
-                    } catch (InvocationTargetException e) {
-                        System.out.format("Cannot invoke %s: %s%n", m.toString(), e.getCause());
+                try {
+                    m.invoke(object, parameters.toArray());
+                    String longDescr = object.getLongDescription(Locale.getDefault(), settings);
+                    descriptions.add(longDescr);
+                    if (longDescriptions.contains(longDescr)) {
+                        matchFound = true;
+////                        log.error("Description already exists: {}", longDescr);
+////                        log.error("  Called method: {}", m);
+//                        log.error("Error:  Called method: {}", m);
+                    }
+//                    Assert.assertFalse(String.format("Description doesn't exists: %s", longDescr), longDescriptions.contains(longDescr));
+                    longDescriptions.add(longDescr);
+                } catch (InvocationTargetException e) {
+                    System.out.format("Cannot invoke %s: %s%n", m.toString(), e.getCause());
 //                        log.error("Cannot invoke {}: {}", m.toString(), e.getCause());
-                    }
                 }
+            }
+        }
 
-                if (matchFound) {
-                    for (String s : descriptions) {
-                        log.error("Descriptions: {}", s);
-                    }
-                }
-
-
-//            }
+        if (matchFound) {
+            log.error(object.getClass().getName());
+            if (1==0)
+            for (String s : descriptions) {
+                log.error("Descriptions: {}", s);
+            }
         }
     }
 
@@ -381,17 +368,22 @@ public class LongDescriptionTest {
         InstanceManager.setDefault(MqttSystemConnectionMemo.class, _mqttMemo);
         InstanceManager.store(_mqttMemo, SystemConnectionMemo.class);
 
-        _frame = new JmriJFrame();
+        _frame1 = new JmriJFrame("My frame");
+        _frame2 = new JmriJFrame("My other frame");
 
         LayoutEditor layoutEditor = new LayoutEditor();
-        _layoutTurnout = new LayoutRHTurnout("MyId", layoutEditor);
+        _layoutTurnout1 = new LayoutRHTurnout("MyId", layoutEditor);
+        _layoutTurnout2 = new LayoutRHTurnout("MyOtherId", layoutEditor);
     }
 
     @After
     public void tearDown() {
-        _frame.dispose();
-        _frame = null;
-        _layoutTurnout = null;
+        _frame1.dispose();
+        _frame2.dispose();
+        _frame1 = null;
+        _frame2 = null;
+        _layoutTurnout1 = null;
+        _layoutTurnout2 = null;
         _locoNetMemo = null;
         _mqttMemo = null;
 
