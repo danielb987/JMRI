@@ -85,8 +85,6 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
 
-//        if (jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionAudio.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionClock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionBlock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionOBlock.class.equals(object.getClass())) return;
