@@ -396,6 +396,15 @@ public class IfThenElse extends AbstractDigitalAction
         return Bundle.getMessage(locale, "IfThenElse_Long", _executeType.toString());
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            return getLongDescription(locale) + ", " + _evaluateType._text;
+        } else {
+            return getLongDescription(locale);
+        }
+    }
+
     public int getNumExpressions() {
         return _expressionEntries.size();
     }

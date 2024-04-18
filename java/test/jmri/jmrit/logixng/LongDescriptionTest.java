@@ -62,7 +62,9 @@ public class LongDescriptionTest {
     }
 
     private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        if (jmri.jmrit.logixng.actions.LogLocalVariables.class.equals(object.getClass())) return;   // FIX THIS!!!
+
+//        if (!jmri.jmrit.logixng.expressions.ExpressionPower.class.equals(object.getClass())) return;
+
         if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionFindTableRowOrColumn.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionListenOnBeans.class.equals(object.getClass())) return;
@@ -77,16 +79,11 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionTimer.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ExecuteDelayed.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.IfThenElse.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.Sequence.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
 
-        if (jmri.jmrit.logixng.expressions.AnalogFormula.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.Antecedent.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.DigitalFormula.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionLinuxLinePower.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionAudio.class.equals(object.getClass())) return;
@@ -103,13 +100,11 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.expressions.ExpressionConditional.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionDispatcher.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionLocalVariable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionPower.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionReporter.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionSection.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionScript.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionTransit.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionWarrant.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.StringFormula.class.equals(object.getClass())) return;
 
         if (jmri.jmrit.display.logixng.ActionPositionable.class.equals(object.getClass())) return;
         if (jmri.jmrit.display.logixng.ActionPositionableByClass.class.equals(object.getClass())) return;
@@ -163,7 +158,7 @@ public class LongDescriptionTest {
                 continue;
             }
             if (_interfaceMethods.contains(getMethodString(m))) {
-                System.out.format("Method %s is in interface%n", m.toString());
+//                System.out.format("Method %s is in interface%n", m.toString());
                 continue;
             }
             if (!m.getName().startsWith("set")) {
@@ -218,6 +213,8 @@ public class LongDescriptionTest {
                     for (Parameter p : m.getParameters()) {
                         var onOrOff = (count & (1 << methodIndex)) > 0;
 
+//                        System.out.format("%2d, %3s, %s%n", count, Long.toBinaryString(count), Integer.toBinaryString(onOrOff ? 1 : 0));
+
                         Class<?> type = p.getType();
                         Object param;
                         if (boolean.class.equals(type) || Boolean.class.equals(type)) {
@@ -236,12 +233,12 @@ public class LongDescriptionTest {
                             } else {
                                 param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
                             }
-                        } else if (Is_IsNot_Enum.class.equals(type)) {
-                            param = Is_IsNot_Enum.IsNot;
-                        } else if (NamedBeanAddressing.class.equals(type)) {
-                            param = NamedBeanAddressing.LocalVariable;
-                        } else if (TableRowOrColumn.class.equals(type)) {
-                            param = TableRowOrColumn.Row;
+//                        } else if (Is_IsNot_Enum.class.equals(type)) {
+//                            param = Is_IsNot_Enum.IsNot;
+//                        } else if (NamedBeanAddressing.class.equals(type)) {
+//                            param = NamedBeanAddressing.LocalVariable;
+//                        } else if (TableRowOrColumn.class.equals(type)) {
+//                            param = TableRowOrColumn.Row;
                         } else if (PropertyChangeProvider.class.equals(type)) {
                             param = new PropertyChangeProvider() {
                                 @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
@@ -281,6 +278,7 @@ public class LongDescriptionTest {
 
                         String longDescr = object.getLongDescription(Locale.getDefault(), settings);
                         methodCalls.add(m.getName()+"("+sb.toString()+")" + "\n" + longDescr);
+//                        System.out.format("Method call: %s%n", m.getName()+"("+sb.toString()+")");
 
                         String longDescrNoCompleteOutput = object.getLongDescription(Locale.getDefault(), settingsNoCompleteOutput);
                         Assert.assertEquals("Long description is correct for class " + object.getClass().getName(),
@@ -299,10 +297,12 @@ public class LongDescriptionTest {
                 String longDescr = object.getLongDescription(Locale.getDefault(), settings);
                 descriptions.add(longDescr);
 
+//                System.out.format("Long descr: %s%n%n", longDescr);
+
                 if (longDescriptions.contains(longDescr)) {
                     matchFound = true;
                     log.error("Description already exists: {}", longDescr);
-                    log.error("Num methods: {}", methods.size());
+    //                log.error("Num methods: {}", methods.size());
     //                log.error("  Called method: {}", m);
     //                        log.error("Error:  Called method: {}", m);
                 }
@@ -331,11 +331,11 @@ public class LongDescriptionTest {
 //            log.error(object.getClass().getName());
 //            if (1==0)
             for (String s : descriptions) {
-                log.error("AA Descriptions: {}", s);
+//                log.error("Descriptions: {}", s);
             }
-            log.error("Method call: {}", methodCalls.size());
             for (String s : methodCalls) {
-                log.error("Method call: {}", s);
+                System.out.format("Method call: %s%n", s);
+//                log.error("Method call: {}", s);
             }
         }
     }

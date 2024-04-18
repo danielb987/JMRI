@@ -122,6 +122,18 @@ public class LogLocalVariables extends AbstractDigitalAction {
         return Bundle.getMessage(locale, "LogLocalVariables_Long");
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            return getLongDescription(locale)
+                    + (this._includeGlobalVariables ? ", Include global variables" : "")
+                    + (this._expandArraysAndMaps ? ", Expand arrays and maps" : "")
+                    + (this._showClassName ? ", Show class name" : "");
+        } else {
+            return getLongDescription(locale);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {
