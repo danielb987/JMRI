@@ -19,12 +19,14 @@ import jmri.jmrix.mqtt.MqttSystemConnectionMemo;
 import jmri.util.JUnitUtil;
 import jmri.util.JmriJFrame;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 /**
+ * Test method getLongDescription() of LogixNG actions and expressions.
  *
- * @author daniel
+ * @author Daniel Bergqvist (C) 2024
  */
 public class LongDescriptionTest {
 
@@ -365,7 +367,7 @@ public class LongDescriptionTest {
     }
 
     // The minimal setup for log4J
-    @Before
+    @BeforeEach
     public void setUp() throws SocketAlreadyConnectedException, ParserException, IOException {
         JUnitUtil.setUp();
         JUnitUtil.resetInstanceManager();
@@ -399,7 +401,7 @@ public class LongDescriptionTest {
         _layoutTurnout2 = new LayoutRHTurnout("MyOtherId", layoutEditor);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         _frame1.dispose();
         _frame2.dispose();
