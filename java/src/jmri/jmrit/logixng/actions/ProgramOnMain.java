@@ -252,6 +252,16 @@ public class ProgramOnMain extends AbstractDigitalAction
         }
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            return getLongDescription(locale)
+                    + ", Local variable for status: \"" + _localVariableForStatus + "\"";
+        } else {
+            return getLongDescription(locale);
+        }
+    }
+
     public FemaleDigitalActionSocket getExecuteSocket() {
         return _executeSocket;
     }

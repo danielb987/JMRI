@@ -63,6 +63,7 @@ public class LongDescriptionTest {
 
     private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
+//        if (!jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
 //        if (!jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
 
         if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
@@ -76,7 +77,7 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ActionSetReporter.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionOBlock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionWarrant.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
+//        if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionTimer.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
@@ -219,11 +220,9 @@ public class LongDescriptionTest {
                         if (boolean.class.equals(type) || Boolean.class.equals(type)) {
                             param = onOrOff;
                         } else if (int.class.equals(type) || Integer.class.equals(type)) {
-                            if (onOrOff) param = 0;
-                            else param = 1;
+                            param = onOrOff ? 1 : 0;
                         } else if (double.class.equals(type) || Double.class.equals(type)) {
-                            param = 0.0;
-    //                        param = 2;
+                            param = onOrOff ? 1.0 : 0.0;
                         } else if (String.class.equals(type)) {
                             if ("setFormula".equals(m.getName())) {
                                 param = onOrOff ? "a + b" : "c - d";
