@@ -1,21 +1,25 @@
 package jmri.jmrit.logixng;
 
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
 import java.util.*;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import jmri.*;
+import jmri.beans.PropertyChangeProvider;
+import jmri.jmrit.display.layoutEditor.*;
 import jmri.jmrit.logixng.swing.SwingConfiguratorInterface;
 import jmri.jmrit.logixng.swing.SwingTools;
 import jmri.jmrit.logixng.util.parser.ParserException;
+import jmri.jmrix.loconet.*;
+import jmri.jmrix.mqtt.MqttSystemConnectionMemo;
 import jmri.util.JUnitUtil;
+import jmri.util.JmriJFrame;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 /**
@@ -24,9 +28,300 @@ import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
  */
 public class LongDescriptionTest {
 
+    private final Set<String> _interfaceMethods = new HashSet<>();
+    private LocoNetSystemConnectionMemo _locoNetMemo;
+    private MqttSystemConnectionMemo _mqttMemo;
+    private JmriJFrame _frame;
+    private LayoutTurnout _layoutTurnout;
+
+
+    private String getMethodString(Method m) {
+        var sb = new StringBuilder(m.getName());
+        sb.append(": ");
+        for (Class<?> param : m.getParameterTypes()) {
+            sb.append(param.toString()).append(", ");
+        }
+        return sb.toString();
+    }
+
+    private void fetchInterfaceMethods(Class<?> iface) {
+        for (Method m : iface.getDeclaredMethods()) {
+            _interfaceMethods.add(getMethodString(m));
+        }
+    }
+
+    private void fetchInterfaces() {
+        fetchInterfaceMethods(jmri.NamedBean.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.AnalogAction.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.DigitalAction.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.DigitalBooleanAction.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.StringAction.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.AnalogExpression.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.DigitalExpression.class);
+        fetchInterfaceMethods(jmri.jmrit.logixng.StringExpression.class);
+    }
+
+    private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        if (jmri.jmrit.logixng.actions.LogData.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.LogLocalVariables.class.equals(object.getClass())) return;   // FIX THIS!!!
+        if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionFindTableRowOrColumn.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionListenOnBeans.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionListenOnBeansLocalVariable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionListenOnBeansTable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionSensor.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionTurnout.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionMemory.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionDispatcher.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionThrottle.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionThrottleFunction.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionTable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionSetReporter.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionBlock.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionOBlock.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionLight.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionLightIntensity.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.AnalogActionLightIntensity.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.AnalogActionMemory.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionRequestUpdateAllSensors.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionWarrant.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ActionTimer.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.DigitalFormula.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ExecuteDelayed.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.IfThenElse.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.Sequence.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.StringActionStringIO.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
+
+        if (jmri.jmrit.logixng.expressions.AnalogFormula.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.Antecedent.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.DigitalFormula.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionLinuxLinePower.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionAudio.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionClock.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionBlock.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionOBlock.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionEntryExit.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionMemory.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionLight.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionReference.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionSensor.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionSensorEdge.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionTurnout.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionConditional.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionDispatcher.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionLocalVariable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionPower.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionReporter.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionSection.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionScript.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionTransit.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.ExpressionWarrant.class.equals(object.getClass())) return;
+        if (jmri.jmrit.logixng.expressions.StringFormula.class.equals(object.getClass())) return;
+
+        if (jmri.jmrit.display.logixng.ActionPositionable.class.equals(object.getClass())) return;
+        if (jmri.jmrit.display.logixng.ActionPositionableByClass.class.equals(object.getClass())) return;
+        if (jmri.jmrit.display.logixng.WindowManagement.class.equals(object.getClass())) return;
+        if (jmri.jmrit.display.logixng.ActionAudioIcon.class.equals(object.getClass())) return;
+        if (jmri.jmrit.display.logixng.ActionLayoutTurnout.class.equals(object.getClass())) return;
+
+//        log.error(object.getClass().getName());
+
+        var settings = new Base.PrintTreeSettings();
+        settings._completeOutput = true;
+
+////        System.out.println(object.getLongDescription(Locale.getDefault()));
+
+        Set<String> longDescriptions = new HashSet<>();
+        Set<String> addressingMethods = new HashSet<>();
+        Set<String> addressingMethodNames = new HashSet<>();
+
+//        List<String> calledMethods = new ArrayList<>();
+
+        List<Method> methods = new ArrayList<>();
+
+        for (Method m : object.getClass().getDeclaredMethods()) {
+            int modifiers = m.getModifiers();
+            if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+                // Ignore non public and static methods
+                continue;
+            }
+
+            String name = m.getName();
+            if (name.startsWith("set")
+                    && name.endsWith("Addressing")
+                    && m.getParameterCount() == 1
+                    && NamedBeanAddressing.class.equals(m.getParameterTypes()[0])) {
+
+                name = name.substring(0, name.length()-"Addressing".length());
+                addressingMethods.add(name);
+//                log.error("Addressing: {}, {}", name, m.getName());
+            }
+        }
+//        if (1==1) return;
+
+        for (Method m : object.getClass().getDeclaredMethods()) {
+            int modifiers = m.getModifiers();
+            if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+                // Ignore non public and static methods
+                continue;
+            }
+            if (!m.getName().startsWith("set")) {
+                continue;
+            }
+            if ("setup".equals(m.getName())
+                    || "setActionSocketSystemName".equals(m.getName())
+                    || "setExpressionSocketSystemName".equals(m.getName())
+                    || m.getName().endsWith("SocketSystemName")) {
+                continue;
+            }
+            if (m.getName().endsWith("Addressing")) {
+                String name = m.getName().substring(0, m.getName().length()-"Addressing".length());
+                if (addressingMethods.contains(name)) {
+                    addressingMethodNames.add(m.getName());
+//                    log.error("Ignore method {} for {}", m.getName(), object.getShortDescription());
+                    continue;
+                }
+            }
+            String name = m.getName();
+            if (name.endsWith("Value")) {
+                name = name.substring(0, name.length()-"Value".length());
+            }
+            if (name.endsWith("Reference")) {
+                name = name.substring(0, name.length()-"Reference".length());
+            }
+            if (name.endsWith("LocalVariable")) {
+                name = name.substring(0, name.length()-"LocalVariable".length());
+            }
+            if (name.endsWith("Formula")) {
+                name = name.substring(0, name.length()-"Formula".length());
+            }
+            if (addressingMethods.contains(name)) {
+                addressingMethodNames.add(m.getName());
+//                log.error("Ignore method {} for {}", m.getName(), object.getShortDescription());
+                continue;
+            }
+            methods.add(m);
+        }
+
+        boolean matchFound = false;
+        List<String> descriptions = new ArrayList<>();
+
+        for (Method m : methods) {
+
+            if (_interfaceMethods.contains(getMethodString(m))) {
+                System.out.format("Method %s is in interface%n", m.toString());
+                continue;
+            }
+
+//            if (m.getName().startsWith("set")) {
+
+                for (long count = 0; count < (1 << m.getParameterCount()); count++) {
+
+    //                System.out.format("  Method: %s%n", m.toString());
+    //                System.out.format("  Method: %s%n", m.toGenericString());
+    //                System.out.format("  Method: %s%n", m.getName());
+                    List<Object> parameters = new ArrayList<>();
+    //                for (Parameter p : m.getParameters()) {
+                    for (int paramIndex = 0; paramIndex < m.getParameterCount(); paramIndex++) {
+                        var p = m.getParameters()[paramIndex];
+                        var onOrOff = (count & (1 << paramIndex)) > 0;
+
+                        Class<?> type = p.getType();
+    ////                    System.out.format("    Parameter: %s%n", type);
+                        Object param;
+                        if (boolean.class.equals(type) || Boolean.class.equals(type)) {
+                            param = true;
+                        } else if (int.class.equals(type) || Integer.class.equals(type)) {
+                            if (onOrOff) param = 0;
+                            else param = 1;
+                        } else if (double.class.equals(type) || Double.class.equals(type)) {
+                            param = 0.0;
+    //                        param = 2;
+                        } else if (String.class.equals(type)) {
+                            if ("setFormula".equals(m.getName())) {
+                                param = "a + b";
+                            } else if ("setLocalVariable".equals(m.getName())) {
+                                param = onOrOff ? "myVar" : "myOtherVar";
+                            } else {
+                                param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
+                            }
+                        } else if (Is_IsNot_Enum.class.equals(type)) {
+                            param = Is_IsNot_Enum.IsNot;
+                        } else if (NamedBeanAddressing.class.equals(type)) {
+                            param = NamedBeanAddressing.LocalVariable;
+                        } else if (TableRowOrColumn.class.equals(type)) {
+                            param = TableRowOrColumn.Row;
+                        } else if (PropertyChangeProvider.class.equals(type)) {
+                            param = new PropertyChangeProvider() {
+                                @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
+                                @Override public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
+                                @Override public PropertyChangeListener[] getPropertyChangeListeners() { return new PropertyChangeListener[]{};}
+                                @Override public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) { return new PropertyChangeListener[]{}; }
+                                @Override public void removePropertyChangeListener(PropertyChangeListener listener) {}
+                                @Override public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
+                            };
+                        } else if (SystemConnectionMemo.class.equals(type)) {
+                            param = _locoNetMemo;
+    //                        param = _mqttMemo;
+                        } else if (JmriJFrame.class.equals(type)) {
+                            param = _frame;
+                        } else if (LayoutTurnout.class.equals(type)) {
+                            param = _layoutTurnout;
+    //                    } else if (type.getEnumConstants().length > 0) {
+                        } else if (type.getEnumConstants() != null) {
+                            var enums = type.getEnumConstants();
+                            param = enums[onOrOff ? 0 : 1];
+                        } else {
+                            for (Class<?> iface : type.getInterfaces()) {
+                                System.out.format("Interface: %s%n", iface.getName());
+                            }
+                            log.error("Class {} is unknown: {}", type.getName());
+                            param = null;
+                        }
+                        parameters.add(param);
+                    }
+
+                    try {
+                        m.invoke(object, parameters.toArray());
+                        String longDescr = object.getLongDescription(Locale.getDefault(), settings);
+                        descriptions.add(longDescr);
+                        if (longDescriptions.contains(longDescr)) {
+                            matchFound = true;
+                            log.error("Description already exists: {}", longDescr);
+                            log.error("  Called method: {}", m);
+//                            log.error("Error:  Called method: {}", m);
+                        }
+//                        Assert.assertFalse(String.format("Description doesn't exists: %s", longDescr), longDescriptions.contains(longDescr));
+                        longDescriptions.add(longDescr);
+                    } catch (InvocationTargetException e) {
+                        System.out.format("Cannot invoke %s: %s%n", m.toString(), e.getCause());
+//                        log.error("Cannot invoke {}: {}", m.toString(), e.getCause());
+                    }
+                }
+
+                if (matchFound) {
+                    for (String s : descriptions) {
+                        log.error("Descriptions: {}", s);
+                    }
+                }
+
+
+//            }
+        }
+    }
+
     @Test
     @DisabledIfSystemProperty(named = "java.awt.headless", matches = "true")
     public void testLongDescription() throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+        fetchInterfaces();
+
         Map<Category, List<Class<? extends Base>>> classes = new HashMap<>();
         for (Category category : Category.values()) {
             classes.put(category, new ArrayList<>());
@@ -48,7 +343,13 @@ public class LongDescriptionTest {
                 configureSwing.getConfigPanel(new JPanel());
                 configureSwing.setDefaultValues();
                 Base object = configureSwing.createNewObject(configureSwing.getAutoSystemName(), null);
-                System.out.println(object.getLongDescription(Locale.getDefault()));
+
+                while (object instanceof MaleSocket) {
+                    object = ((MaleSocket)object).getObject();
+                }
+
+//                System.out.println(object.getLongDescription(Locale.getDefault()));
+                callMethods(object);
             }
         }
     }
@@ -67,10 +368,33 @@ public class LongDescriptionTest {
 
         InstanceManager.getDefault(MemoryManager.class).provide("IM1");
         InstanceManager.getDefault(ReporterManager.class).provide("IR1");
+
+        LocoNetInterfaceScaffold lnis = new LocoNetInterfaceScaffold();
+        SlotManager sm = new SlotManager(lnis);
+        _locoNetMemo = new LocoNetSystemConnectionMemo(lnis, sm);
+        _locoNetMemo.setThrottleManager(new LnThrottleManager(_locoNetMemo));
+        sm.setSystemConnectionMemo(_locoNetMemo);
+        InstanceManager.setDefault(LocoNetSystemConnectionMemo.class, _locoNetMemo);
+        InstanceManager.store(_locoNetMemo, SystemConnectionMemo.class);
+
+        _mqttMemo = new MqttSystemConnectionMemo();
+        InstanceManager.setDefault(MqttSystemConnectionMemo.class, _mqttMemo);
+        InstanceManager.store(_mqttMemo, SystemConnectionMemo.class);
+
+        _frame = new JmriJFrame();
+
+        LayoutEditor layoutEditor = new LayoutEditor();
+        _layoutTurnout = new LayoutRHTurnout("MyId", layoutEditor);
     }
 
     @After
     public void tearDown() {
+        _frame.dispose();
+        _frame = null;
+        _layoutTurnout = null;
+        _locoNetMemo = null;
+        _mqttMemo = null;
+
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
