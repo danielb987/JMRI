@@ -63,7 +63,7 @@ public class LongDescriptionTest {
 
     private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-//        if (!jmri.jmrit.logixng.expressions.ExpressionPower.class.equals(object.getClass())) return;
+//        if (!jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
 
         if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionFindTableRowOrColumn.class.equals(object.getClass())) return;
@@ -84,8 +84,7 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
 
-        if (jmri.jmrit.logixng.expressions.ExpressionLinuxLinePower.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
+//        if (jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionAudio.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionClock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionBlock.class.equals(object.getClass())) return;
@@ -278,7 +277,7 @@ public class LongDescriptionTest {
 
                         String longDescr = object.getLongDescription(Locale.getDefault(), settings);
                         methodCalls.add(m.getName()+"("+sb.toString()+")" + "\n" + longDescr);
-//                        System.out.format("Method call: %s%n", m.getName()+"("+sb.toString()+")");
+                        System.out.format("Method call: %s%n", m.getName()+"("+sb.toString()+")");
 
                         String longDescrNoCompleteOutput = object.getLongDescription(Locale.getDefault(), settingsNoCompleteOutput);
                         Assert.assertEquals("Long description is correct for class " + object.getClass().getName(),
@@ -297,7 +296,7 @@ public class LongDescriptionTest {
                 String longDescr = object.getLongDescription(Locale.getDefault(), settings);
                 descriptions.add(longDescr);
 
-//                System.out.format("Long descr: %s%n%n", longDescr);
+                System.out.format("Long descr: %s%n%n", longDescr);
 
                 if (longDescriptions.contains(longDescr)) {
                     matchFound = true;

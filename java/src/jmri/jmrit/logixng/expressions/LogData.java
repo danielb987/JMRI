@@ -205,10 +205,37 @@ public class LogData extends AbstractDigitalExpression
 
     @Override
     public String getLongDescription(Locale locale) {
-        return Bundle.getMessage(locale, "LogData_Long");
+        String bundleKey;
+        switch (_formatType) {
+            case OnlyText:
+                bundleKey = "LogData_Long_TextOnly";
+                break;
+            case CommaSeparatedList:
+                bundleKey = "LogData_Long_CommaSeparatedList";
+                break;
+            case StringFormat:
+                bundleKey = "LogData_Long_StringFormat";
+                break;
+            default:
+                throw new RuntimeException("_formatType has unknown value: "+_formatType.name());
+        }
+        return Bundle.getMessage(locale, bundleKey, _format);
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            return getLongDescription(locale)
+                    + ", Format: \"" + _format + "\""
+                    + (_logToScriptOutput ? ", Log to script output" : "")
+                    + (_logToLog ? ", Log to log" : "")
+                    + String.format("Result: %b", _result);
+        } else {
+            return getLongDescription(locale);
+        }
+    }
+
+   /** {@inheritDoc} */
     @Override
     public void setup() {
         // Do nothing
