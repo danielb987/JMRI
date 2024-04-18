@@ -96,7 +96,7 @@ public class ActionListenOnBeansTableTest extends AbstractDigitalActionTestBase 
 //                "               Listen to each Signal Head in each column of row \"Signal before\" in table \"IQT1\"%n" +
 //                "                  ::: Use default%n" +
                 "            ! A3%n" +
-                "               Log data: Comma separated list ::: Use default%n" +
+                "               Log data: Comma separated list, Format: \"\", Log to script output ::: Use default%n" +
                 "            ! A4%n" +
                 "               Set sensor IS99 to state Active ::: Use default%n" +
                 "            ! A5%n" +
