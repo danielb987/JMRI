@@ -101,7 +101,7 @@ public class ActionListenOnBeansLocalVariableTest extends AbstractDigitalActionT
                 "                  ! Execute%n" +
                 "                     Socket not connected%n" +
                 "            ! A3%n" +
-                "               Log data: Comma separated list ::: Use default%n" +
+                "               Log data: Comma separated list, Format: \"\", Log to script output ::: Use default%n" +
                 "            ! A4%n" +
                 "               Set sensor IS99 to state Active ::: Use default%n" +
                 "            ! A5%n" +
