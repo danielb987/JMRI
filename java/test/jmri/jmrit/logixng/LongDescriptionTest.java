@@ -62,7 +62,6 @@ public class LongDescriptionTest {
     }
 
     private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        if (jmri.jmrit.logixng.actions.LogData.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.LogLocalVariables.class.equals(object.getClass())) return;   // FIX THIS!!!
         if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionFindTableRowOrColumn.class.equals(object.getClass())) return;
@@ -74,13 +73,10 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ActionTable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionSetReporter.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionOBlock.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionLight.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionLightIntensity.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionWarrant.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionTimer.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.DigitalFormula.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ExecuteDelayed.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.IfThenElse.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
@@ -127,6 +123,9 @@ public class LongDescriptionTest {
         var settings = new Base.PrintTreeSettings();
         settings._completeOutput = true;
 
+        var settingsNoCompleteOutput = new Base.PrintTreeSettings();
+        settingsNoCompleteOutput._completeOutput = false;
+
 ////        System.out.println(object.getLongDescription(Locale.getDefault()));
 
         Set<String> longDescriptions = new HashSet<>();
@@ -163,13 +162,17 @@ public class LongDescriptionTest {
                 // Ignore non public and static methods
                 continue;
             }
+            if (_interfaceMethods.contains(getMethodString(m))) {
+                System.out.format("Method %s is in interface%n", m.toString());
+                continue;
+            }
             if (!m.getName().startsWith("set")) {
                 continue;
             }
             if ("setup".equals(m.getName())
-                    || "setActionSocketSystemName".equals(m.getName())
-                    || "setExpressionSocketSystemName".equals(m.getName())
-                    || m.getName().endsWith("SocketSystemName")) {
+                    || m.getName().endsWith("SystemName")
+                    || "setChildCount".equals(m.getName())) {
+//                    || m.getName().endsWith("SocketSystemName")) {
                 continue;
             }
             if (m.getName().endsWith("Addressing")) {
@@ -203,102 +206,136 @@ public class LongDescriptionTest {
 
         boolean matchFound = false;
         List<String> descriptions = new ArrayList<>();
+        List<String> methodCalls = new ArrayList<>();
 
-        for (Method m : methods) {
+        if (!methods.isEmpty()) {
+            for (long count = 0; count < (1 << methods.size()); count++) {
 
-            if (_interfaceMethods.contains(getMethodString(m))) {
-                System.out.format("Method %s is in interface%n", m.toString());
-                continue;
-            }
+                for (int methodIndex=0; methodIndex < methods.size(); methodIndex++) {
+                    Method m = methods.get(methodIndex);
 
-            for (long count = 0; count < (1 << m.getParameterCount()); count++) {
+                    List<Object> parameters = new ArrayList<>();
+                    for (Parameter p : m.getParameters()) {
+                        var onOrOff = (count & (1 << methodIndex)) > 0;
 
-//                System.out.format("  Method: %s%n", m.toString());
-//                System.out.format("  Method: %s%n", m.toGenericString());
-//                System.out.format("  Method: %s%n", m.getName());
-                List<Object> parameters = new ArrayList<>();
-//                for (Parameter p : m.getParameters()) {
-                for (int paramIndex = 0; paramIndex < m.getParameterCount(); paramIndex++) {
-                    var p = m.getParameters()[paramIndex];
-                    var onOrOff = (count & (1 << paramIndex)) > 0;
-
-                    Class<?> type = p.getType();
-////                    System.out.format("    Parameter: %s%n", type);
-                    Object param;
-                    if (boolean.class.equals(type) || Boolean.class.equals(type)) {
-                        param = true;
-                    } else if (int.class.equals(type) || Integer.class.equals(type)) {
-                        if (onOrOff) param = 0;
-                        else param = 1;
-                    } else if (double.class.equals(type) || Double.class.equals(type)) {
-                        param = 0.0;
-//                        param = 2;
-                    } else if (String.class.equals(type)) {
-                        if ("setFormula".equals(m.getName())) {
-                            param = "a + b";
-                        } else if ("setLocalVariable".equals(m.getName())) {
-                            param = onOrOff ? "myVar" : "myOtherVar";
+                        Class<?> type = p.getType();
+                        Object param;
+                        if (boolean.class.equals(type) || Boolean.class.equals(type)) {
+                            param = onOrOff;
+                        } else if (int.class.equals(type) || Integer.class.equals(type)) {
+                            if (onOrOff) param = 0;
+                            else param = 1;
+                        } else if (double.class.equals(type) || Double.class.equals(type)) {
+                            param = 0.0;
+    //                        param = 2;
+                        } else if (String.class.equals(type)) {
+                            if ("setFormula".equals(m.getName())) {
+                                param = onOrOff ? "a + b" : "c - d";
+                            } else if ("setLocalVariable".equals(m.getName())) {
+                                param = onOrOff ? "myVar" : "myOtherVar";
+                            } else {
+                                param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
+                            }
+                        } else if (Is_IsNot_Enum.class.equals(type)) {
+                            param = Is_IsNot_Enum.IsNot;
+                        } else if (NamedBeanAddressing.class.equals(type)) {
+                            param = NamedBeanAddressing.LocalVariable;
+                        } else if (TableRowOrColumn.class.equals(type)) {
+                            param = TableRowOrColumn.Row;
+                        } else if (PropertyChangeProvider.class.equals(type)) {
+                            param = new PropertyChangeProvider() {
+                                @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
+                                @Override public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
+                                @Override public PropertyChangeListener[] getPropertyChangeListeners() { return new PropertyChangeListener[]{};}
+                                @Override public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) { return new PropertyChangeListener[]{}; }
+                                @Override public void removePropertyChangeListener(PropertyChangeListener listener) {}
+                                @Override public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
+                            };
+                        } else if (SystemConnectionMemo.class.equals(type)) {
+                            param = onOrOff ? _locoNetMemo : _mqttMemo;
+                        } else if (JmriJFrame.class.equals(type)) {
+                            param = onOrOff ? _frame1 : _frame2;
+                        } else if (LayoutTurnout.class.equals(type)) {
+                            param = onOrOff ? _layoutTurnout1 : _layoutTurnout2;
+                        } else if (type.getEnumConstants() != null) {
+                            var enums = type.getEnumConstants();
+                            param = enums[onOrOff ? 0 : 1];
                         } else {
-                            param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
+                            for (Class<?> iface : type.getInterfaces()) {
+                                System.out.format("Interface: %s%n", iface.getName());
+                            }
+                            log.error("Class {} is unknown: {}", type.getName());
+                            param = null;
                         }
-                    } else if (Is_IsNot_Enum.class.equals(type)) {
-                        param = Is_IsNot_Enum.IsNot;
-                    } else if (NamedBeanAddressing.class.equals(type)) {
-                        param = NamedBeanAddressing.LocalVariable;
-                    } else if (TableRowOrColumn.class.equals(type)) {
-                        param = TableRowOrColumn.Row;
-                    } else if (PropertyChangeProvider.class.equals(type)) {
-                        param = new PropertyChangeProvider() {
-                            @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
-                            @Override public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
-                            @Override public PropertyChangeListener[] getPropertyChangeListeners() { return new PropertyChangeListener[]{};}
-                            @Override public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) { return new PropertyChangeListener[]{}; }
-                            @Override public void removePropertyChangeListener(PropertyChangeListener listener) {}
-                            @Override public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {}
-                        };
-                    } else if (SystemConnectionMemo.class.equals(type)) {
-                        param = onOrOff ? _locoNetMemo : _mqttMemo;
-                    } else if (JmriJFrame.class.equals(type)) {
-                        param = onOrOff ? _frame1 : _frame2;
-                    } else if (LayoutTurnout.class.equals(type)) {
-                        param = onOrOff ? _layoutTurnout1 : _layoutTurnout2;
-                    } else if (type.getEnumConstants() != null) {
-                        var enums = type.getEnumConstants();
-                        param = enums[onOrOff ? 0 : 1];
-                    } else {
-                        for (Class<?> iface : type.getInterfaces()) {
-                            System.out.format("Interface: %s%n", iface.getName());
-                        }
-                        log.error("Class {} is unknown: {}", type.getName());
-                        param = null;
+                        parameters.add(param);
                     }
-                    parameters.add(param);
+
+                    try {
+                        m.invoke(object, parameters.toArray());
+
+                        var sb = new StringBuilder();
+                        for (Object o : parameters) {
+                            if (sb.length() > 0) sb.append(", ");
+                            sb.append(o.toString());
+                        }
+
+                        String longDescr = object.getLongDescription(Locale.getDefault(), settings);
+                        methodCalls.add(m.getName()+"("+sb.toString()+")" + "\n" + longDescr);
+
+                        String longDescrNoCompleteOutput = object.getLongDescription(Locale.getDefault(), settingsNoCompleteOutput);
+                        Assert.assertEquals("Long description is correct for class " + object.getClass().getName(),
+                                longDescrNoCompleteOutput,
+                                object.getLongDescription(Locale.getDefault()));
+
+
+    //                    methodCalls.add(m.toString());
+
+                    } catch (InvocationTargetException e) {
+                        System.out.format("Cannot invoke %s: %s%n", m.toString(), e.getCause());
+    //                        log.error("Cannot invoke {}: {}", m.toString(), e.getCause());
+                    }
                 }
 
-                try {
-                    m.invoke(object, parameters.toArray());
-                    String longDescr = object.getLongDescription(Locale.getDefault(), settings);
-                    descriptions.add(longDescr);
-                    if (longDescriptions.contains(longDescr)) {
-                        matchFound = true;
-////                        log.error("Description already exists: {}", longDescr);
-////                        log.error("  Called method: {}", m);
-//                        log.error("Error:  Called method: {}", m);
-                    }
-//                    Assert.assertFalse(String.format("Description doesn't exists: %s", longDescr), longDescriptions.contains(longDescr));
-                    longDescriptions.add(longDescr);
-                } catch (InvocationTargetException e) {
-                    System.out.format("Cannot invoke %s: %s%n", m.toString(), e.getCause());
-//                        log.error("Cannot invoke {}: {}", m.toString(), e.getCause());
+                String longDescr = object.getLongDescription(Locale.getDefault(), settings);
+                descriptions.add(longDescr);
+
+                if (longDescriptions.contains(longDescr)) {
+                    matchFound = true;
+                    log.error("Description already exists: {}", longDescr);
+                    log.error("Num methods: {}", methods.size());
+    //                log.error("  Called method: {}", m);
+    //                        log.error("Error:  Called method: {}", m);
                 }
+    //                    Assert.assertFalse(String.format("Description doesn't exists: %s", longDescr), longDescriptions.contains(longDescr));
+                longDescriptions.add(longDescr);
             }
+
+/*
+            var sb = new StringBuilder();
+            for (Object o : parameters) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(o.toString());
+            }
+            methodCalls.add(m.getName()+"("+sb.toString()+")" + "\n" + longDescr);
+//                    methodCalls.add(m.toString());
+*/
+
+
         }
 
+//            for (String s : methodCalls) {
+//                log.error("Method call: {}", s);
+//            }
+
         if (matchFound) {
-            log.error(object.getClass().getName());
-            if (1==0)
+//            log.error(object.getClass().getName());
+//            if (1==0)
             for (String s : descriptions) {
-                log.error("Descriptions: {}", s);
+                log.error("AA Descriptions: {}", s);
+            }
+            log.error("Method call: {}", methodCalls.size());
+            for (String s : methodCalls) {
+                log.error("Method call: {}", s);
             }
         }
     }

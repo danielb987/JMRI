@@ -257,6 +257,16 @@ public class ActionLight extends AbstractDigitalAction
         return Bundle.getMessage(locale, "Light_Long", namedBean, state);
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            return getLongDescription(locale)
+                    + ", Light value: \"" + Integer.toString(_lightValue) + "\"";
+        } else {
+            return getLongDescription(locale);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {

@@ -218,6 +218,18 @@ public class LogData extends AbstractDigitalAction
         return Bundle.getMessage(locale, bundleKey, _format);
     }
 
+    @Override
+    public String getLongDescription(Locale locale, PrintTreeSettings settings) {
+        if (settings._completeOutput) {
+            return getLongDescription(locale)
+                    + ", Format: \"" + _format + "\""
+                    + (_logToScriptOutput ? ", Log to script output" : "")
+                    + (_logToLog ? ", Log to log" : "");
+        } else {
+            return getLongDescription(locale);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setup() {
