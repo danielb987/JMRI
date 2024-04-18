@@ -79,7 +79,6 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.ActionSetReporter.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionOBlock.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionWarrant.class.equals(object.getClass())) return;
-//        if (jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionTimer.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
@@ -88,17 +87,10 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
 
         if (jmri.jmrit.logixng.expressions.ExpressionMemory.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionDispatcher.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionReporter.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionSection.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionTransit.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionWarrant.class.equals(object.getClass())) return;
 
-        if (jmri.jmrit.display.logixng.ActionPositionable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.display.logixng.ActionPositionableByClass.class.equals(object.getClass())) return;
         if (jmri.jmrit.display.logixng.WindowManagement.class.equals(object.getClass())) return;
-        if (jmri.jmrit.display.logixng.ActionAudioIcon.class.equals(object.getClass())) return;
         if (jmri.jmrit.display.logixng.ActionLayoutTurnout.class.equals(object.getClass())) return;
 
 
