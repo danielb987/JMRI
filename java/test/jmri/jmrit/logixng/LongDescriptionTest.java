@@ -66,7 +66,7 @@ public class LongDescriptionTest {
     private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 //        if (!jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
-//        if (!jmri.jmrit.logixng.expressions.LogData.class.equals(object.getClass())) return;
+//        if (!jmri.jmrit.logixng.expressions.ExpressionScript.class.equals(object.getClass())) return;
 
         if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.actions.ActionFindTableRowOrColumn.class.equals(object.getClass())) return;
@@ -92,7 +92,6 @@ public class LongDescriptionTest {
         if (jmri.jmrit.logixng.expressions.ExpressionLocalVariable.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionReporter.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionSection.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionScript.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionTransit.class.equals(object.getClass())) return;
         if (jmri.jmrit.logixng.expressions.ExpressionWarrant.class.equals(object.getClass())) return;
 
@@ -156,8 +155,9 @@ public class LongDescriptionTest {
             }
             if ("setup".equals(m.getName())
                     || m.getName().endsWith("SystemName")
+                    || m.getName().startsWith("setRegisterListener")
+                    || m.getName().startsWith("setUnregisterListener")
                     || "setChildCount".equals(m.getName())) {
-//                    || m.getName().endsWith("SocketSystemName")) {
                 continue;
             }
             if (m.getName().endsWith("Addressing")) {
