@@ -77,7 +77,7 @@ public class LongDescriptionTest {
 
         Set<String> longDescriptions = new HashSet<>();
         Set<String> addressingMethods = new HashSet<>();
-        Set<String> addressingMethodNames = new HashSet<>();
+//        Set<String> addressingMethodNames = new HashSet<>();
 
 //        List<String> calledMethods = new ArrayList<>();
 
@@ -156,6 +156,7 @@ public class LongDescriptionTest {
                     || "setChildCount".equals(m.getName())) {
                 continue;
             }
+/*
             if (m.getName().endsWith("Addressing")) {
                 String name = m.getName().substring(0, m.getName().length()-"Addressing".length());
                 if (addressingMethods.contains(name)) {
@@ -164,6 +165,7 @@ public class LongDescriptionTest {
                     continue;
                 }
             }
+*/
             String name = m.getName();
             if (name.endsWith("Value")) {
                 name = name.substring(0, name.length()-"Value".length());
@@ -178,7 +180,7 @@ public class LongDescriptionTest {
                 name = name.substring(0, name.length()-"Formula".length());
             }
             if (addressingMethods.contains(name)) {
-                addressingMethodNames.add(m.getName());
+//////                addressingMethodNames.add(m.getName());
 //                log.error("Ignore method {} for {}", m.getName(), object.getShortDescription());
                 continue;
             }
