@@ -65,35 +65,6 @@ public class LongDescriptionTest {
 
     private void callMethods(Base object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-//        if (!jmri.jmrit.logixng.actions.ProgramOnMain.class.equals(object.getClass())) return;
-//        if (!jmri.jmrit.logixng.expressions.ExpressionScript.class.equals(object.getClass())) return;
-
-        if (jmri.jmrit.logixng.actions.ActionCreateBeansFromTable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionFindTableRowOrColumn.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionListenOnBeans.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionListenOnBeansLocalVariable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionListenOnBeansTable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionMemory.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionDispatcher.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionTable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionSetReporter.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionOBlock.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionWarrant.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionLocalVariable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ActionTimer.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ForEach.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.Sequence.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.ShowDialog.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.actions.WebRequest.class.equals(object.getClass())) return;
-
-        if (jmri.jmrit.logixng.expressions.ExpressionMemory.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionLocalVariable.class.equals(object.getClass())) return;
-        if (jmri.jmrit.logixng.expressions.ExpressionReporter.class.equals(object.getClass())) return;
-
-        if (jmri.jmrit.display.logixng.WindowManagement.class.equals(object.getClass())) return;
-        if (jmri.jmrit.display.logixng.ActionLayoutTurnout.class.equals(object.getClass())) return;
-
-
 //        log.error(object.getClass().getName());
 
         var settings = new Base.PrintTreeSettings();
@@ -111,6 +82,7 @@ public class LongDescriptionTest {
 //        List<String> calledMethods = new ArrayList<>();
 
         List<Method> methods = new ArrayList<>();
+        Map<String, Method> overloadedMethods = new HashMap<>();
 
         for (Method m : object.getClass().getDeclaredMethods()) {
             int modifiers = m.getModifiers();
@@ -138,11 +110,43 @@ public class LongDescriptionTest {
                 // Ignore non public and static methods
                 continue;
             }
+
+            Method existingMethod = overloadedMethods.get(m.getName());
+            if (existingMethod != null) {
+                if (m.getParameterCount() == 1) {
+                    Class<?> param = m.getParameterTypes()[0];
+                    Class<?> existingParam = m.getParameterTypes()[0];
+                    if (String.class.equals(param)) {
+                        // Keep the existing method
+                    } else if (String.class.equals(existingParam)) {
+                        overloadedMethods.replace(m.getName(), m);
+                    } else if (NamedBeanHandle.class.equals(param)) {
+                        // Keep the existing method
+                    } else if (NamedBeanHandle.class.equals(existingParam)) {
+                        overloadedMethods.replace(m.getName(), m);
+                    }
+
+                }
+            } else {
+                overloadedMethods.put(m.getName(), m);
+            }
+        }
+
+        for (Method m : object.getClass().getDeclaredMethods()) {
+            int modifiers = m.getModifiers();
+            if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+                // Ignore non public and static methods
+                continue;
+            }
             if (_interfaceMethods.contains(getMethodString(m))) {
 //                System.out.format("Method %s is in interface%n", m.toString());
                 continue;
             }
             if (!m.getName().startsWith("set")) {
+                continue;
+            }
+            Method overloadedMethod = overloadedMethods.get(m.getName());
+            if (overloadedMethod != null && m != overloadedMethod) {
                 continue;
             }
             if ("setup".equals(m.getName())
@@ -213,12 +217,6 @@ public class LongDescriptionTest {
                             } else {
                                 param = onOrOff ? "{SomeReference}" : "{SomeOtherReference}";
                             }
-//                        } else if (Is_IsNot_Enum.class.equals(type)) {
-//                            param = Is_IsNot_Enum.IsNot;
-//                        } else if (NamedBeanAddressing.class.equals(type)) {
-//                            param = NamedBeanAddressing.LocalVariable;
-//                        } else if (TableRowOrColumn.class.equals(type)) {
-//                            param = TableRowOrColumn.Row;
                         } else if (PropertyChangeProvider.class.equals(type)) {
                             param = new PropertyChangeProvider() {
                                 @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
