@@ -4,15 +4,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.swing.JTextArea;
-
 import jmri.*;
 import jmri.implementation.VirtualSignalHead;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.Base.PrintTreeSettings;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 import jmri.jmrit.logixng.util.parser.ParserException;
-import jmri.script.swing.ScriptOutput;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
@@ -29,7 +26,6 @@ import org.junit.Test;
  */
 public class ActionListenOnBeansTableTest extends AbstractDigitalActionTestBase {
 
-    private Sensor s1, s2, s3, sensorWait, s99;
     private NamedTable csvTable;
     private LogixNG logixNG;
     private ConditionalNG conditionalNG;
@@ -162,8 +158,44 @@ public class ActionListenOnBeansTableTest extends AbstractDigitalActionTestBase 
         Assert.assertEquals("Tree is equal", getExpectedPrintedTreeFromRootWithPrintTreeSettings(), stringWriter.toString());
     }
 
-    private JTextArea getOutputArea() {
-        return ScriptOutput.getDefault().getOutputArea();
+    @Test
+    @Override
+    public void testMaleSocketIsActive() {
+        super.testMaleSocketIsActive();
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+    }
+
+    @Test
+    @Override
+    public void testIsActive() {
+        super.testIsActive();
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
+        JUnitAppender.assertWarnMessage("The named bean \"\" cannot be found in the manager for Signal Head");
     }
 
     // The minimal setup for log4J
@@ -180,11 +212,7 @@ public class ActionListenOnBeansTableTest extends AbstractDigitalActionTestBase 
         _category = Category.ITEM;
         _isExternal = true;
 
-        s1 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS1");
-        s2 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS2");
-        s3 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS3");
-        sensorWait = InstanceManager.getDefault(SensorManager.class).provideSensor("ISWait");
-        s99 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS99");
+        InstanceManager.getDefault(SensorManager.class).provideSensor("IS99");
 
         InstanceManager.getDefault(SignalHeadManager.class)
                 .register(new VirtualSignalHead("IH1"));
@@ -264,7 +292,6 @@ public class ActionListenOnBeansTableTest extends AbstractDigitalActionTestBase 
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
-        s1 = s2 = s3 = s99 = null;
         logixNG = null;
         conditionalNG = null;
         actionWaitFor = null;
