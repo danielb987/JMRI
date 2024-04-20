@@ -5,14 +5,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.swing.JTextArea;
-
 import jmri.*;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.Base.PrintTreeSettings;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGScaffold;
 import jmri.jmrit.logixng.util.parser.ParserException;
-import jmri.script.swing.ScriptOutput;
 import jmri.util.JUnitUtil;
 
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -139,10 +136,6 @@ public class ActionListenOnBeansLocalVariableTest extends AbstractDigitalActionT
         settings._completeOutput = true;
         _base.getRoot().printTree(settings, Locale.ENGLISH, printWriter, TREE_INDENT, new MutableInt(0));
         Assert.assertEquals("Tree is equal", getExpectedPrintedTreeFromRootWithPrintTreeSettings(), stringWriter.toString());
-    }
-
-    private JTextArea getOutputArea() {
-        return ScriptOutput.getDefault().getOutputArea();
     }
 
     // The minimal setup for log4J
