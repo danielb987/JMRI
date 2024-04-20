@@ -28,7 +28,6 @@ import org.junit.Test;
  */
 public class ActionListenOnBeansLocalVariableTest extends AbstractDigitalActionTestBase {
 
-    private Sensor s1, s2, s3, sensorWait, s99;
     private LogixNG logixNG;
     private ConditionalNG conditionalNG;
     private WaitForScaffold actionWaitFor;
@@ -160,11 +159,7 @@ public class ActionListenOnBeansLocalVariableTest extends AbstractDigitalActionT
         _category = Category.ITEM;
         _isExternal = true;
 
-        s1 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS1");
-        s2 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS2");
-        s3 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS3");
-        sensorWait = InstanceManager.getDefault(SensorManager.class).provideSensor("ISWait");
-        s99 = InstanceManager.getDefault(SensorManager.class).provideSensor("IS99");
+        InstanceManager.getDefault(SensorManager.class).provideSensor("IS99");
 
         logixNG = InstanceManager.getDefault(LogixNG_Manager.class).createLogixNG("A logixNG");
         conditionalNG = new DefaultConditionalNGScaffold("IQC1", "A conditionalNG");  // NOI18N;
@@ -227,7 +222,6 @@ public class ActionListenOnBeansLocalVariableTest extends AbstractDigitalActionT
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
-        s1 = s2 = s3 = s99 = null;
         logixNG = null;
         conditionalNG = null;
         actionWaitFor = null;
