@@ -10,6 +10,7 @@ import jmri.jmrit.signalsystemeditor.*;
 import jmri.util.FileUtil;
 import jmri.util.JUnitUtil;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -158,6 +159,9 @@ public class LoadAndStoreAllSignalSystemsTest {
     }
 
     private static boolean checkFile(File inFile1, File inFile2) throws Exception {
+
+        Assert.assertTrue("File "+inFile1.getAbsolutePath()+" exists", inFile1.exists());
+        Assert.assertTrue("File "+inFile2.getAbsolutePath()+" exists", inFile2.exists());
 
         try ( // compare files, except for certain special lines
             BufferedReader fileStream1 = new BufferedReader( new InputStreamReader(
