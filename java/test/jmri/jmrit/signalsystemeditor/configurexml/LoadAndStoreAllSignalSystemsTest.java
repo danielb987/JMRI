@@ -345,6 +345,8 @@ public class LoadAndStoreAllSignalSystemsTest {
 
         if (!signalSystemName.equals(lastSignalSystem)) {
 
+            log.warn("New signal system name: {}, {}", signalSystemName, lastSignalSystem);
+
             lastSignalSystem = signalSystemName;
 
             SignalSystemXml signalSystemXml = new SignalSystemXml();
