@@ -76,8 +76,8 @@ public class LongDescriptionTest {
 ////        System.out.println(object.getLongDescription(Locale.getDefault()));
 
         Set<String> longDescriptions = new HashSet<>();
-        Set<String> addressingMethods = new HashSet<>();
-//        Set<String> addressingMethodNames = new HashSet<>();
+//        Map<String, Method> addressingMethods = new HashMap<>();
+//        Map<String, Method> addressingMethodMethods = new HashMap<>();
 
 //        List<String> calledMethods = new ArrayList<>();
 
@@ -90,7 +90,7 @@ public class LongDescriptionTest {
                 // Ignore non public and static methods
                 continue;
             }
-
+/*
             String name = m.getName();
             if (name.startsWith("set")
                     && name.endsWith("Addressing")
@@ -98,9 +98,10 @@ public class LongDescriptionTest {
                     && NamedBeanAddressing.class.equals(m.getParameterTypes()[0])) {
 
                 name = name.substring(0, name.length()-"Addressing".length());
-                addressingMethods.add(name);
+                addressingMethods.put(name, m);
 //                log.error("Addressing: {}, {}", name, m.getName());
             }
+*/
         }
 //        if (1==1) return;
 
@@ -159,8 +160,8 @@ public class LongDescriptionTest {
 /*
             if (m.getName().endsWith("Addressing")) {
                 String name = m.getName().substring(0, m.getName().length()-"Addressing".length());
-                if (addressingMethods.contains(name)) {
-                    addressingMethodNames.add(m.getName());
+                if (addressingMethods.keySet().contains(name)) {
+                    addressingMethodMethods.put(m.getName(), m);
 //                    log.error("Ignore method {} for {}", m.getName(), object.getShortDescription());
                     continue;
                 }
@@ -179,16 +180,18 @@ public class LongDescriptionTest {
             if (name.endsWith("Formula")) {
                 name = name.substring(0, name.length()-"Formula".length());
             }
-            if (addressingMethods.contains(name)) {
-//////                addressingMethodNames.add(m.getName());
+/*
+            if (addressingMethods.keySet().contains(name)) {
+                addressingMethodMethods.put(m.getName(), m);
 //                log.error("Ignore method {} for {}", m.getName(), object.getShortDescription());
                 continue;
             }
+*/
             methods.add(m);
         }
 
         boolean matchFound = false;
-        List<String> descriptions = new ArrayList<>();
+//        List<String> descriptions = new ArrayList<>();
         List<String> methodCalls = new ArrayList<>();
 
         if (!methods.isEmpty()) {
@@ -275,7 +278,7 @@ public class LongDescriptionTest {
                 }
 
                 String longDescr = object.getLongDescription(Locale.getDefault(), settings);
-                descriptions.add(longDescr);
+//                descriptions.add(longDescr);
 
                 System.out.format("Long descr: %s%n%n", longDescr);
 
@@ -310,9 +313,9 @@ public class LongDescriptionTest {
         if (matchFound) {
 //            log.error(object.getClass().getName());
 //            if (1==0)
-            for (String s : descriptions) {
+//            for (String s : descriptions) {
 //                log.error("Descriptions: {}", s);
-            }
+//            }
             for (String s : methodCalls) {
                 System.out.format("Method call: %s%n", s);
 //                log.error("Method call: {}", s);
