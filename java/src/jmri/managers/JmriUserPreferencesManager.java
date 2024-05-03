@@ -604,11 +604,15 @@ public class JmriUserPreferencesManager extends Bean implements UserPreferencesM
     @Override
     public void setClassDescription(String strClass) {
         try {
+            log.error(strClass);
             Class<?> cl = Class.forName(strClass);
             Object t;
             try {
                 t = cl.getDeclaredConstructor().newInstance();
-            } catch (IllegalArgumentException | NullPointerException | ExceptionInInitializerError | NoSuchMethodException | java.lang.reflect.InvocationTargetException ex) {
+            } catch (NoSuchMethodException ex) {
+                log.warn("setClassDescription({}) failed since the class {} doesn't have a public default constructor", strClass, cl.getName());
+                return;
+            } catch (IllegalArgumentException | NullPointerException | ExceptionInInitializerError | java.lang.reflect.InvocationTargetException ex) {
                 log.error("setClassDescription({}) failed in newInstance", strClass, ex);
                 return;
             }
