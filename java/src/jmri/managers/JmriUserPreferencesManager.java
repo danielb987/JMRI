@@ -604,7 +604,6 @@ public class JmriUserPreferencesManager extends Bean implements UserPreferencesM
     @Override
     public void setClassDescription(String strClass) {
         try {
-            log.error(strClass);
             Class<?> cl = Class.forName(strClass);
             Object t;
             try {
