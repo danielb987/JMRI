@@ -25,8 +25,6 @@
             "
            >
 
-  <xs:include schemaLocation="http://jmri.org/xml/schema/types/general.xsd"/>
-
   <xs:element name="throttle-config" type="throttle-configType"/>
 
   <xs:complexType name="windowType">

@@ -25,6 +25,7 @@
             "
            >
 
+  <xs:include schemaLocation="http://jmri.org/xml/schema/types/general.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/throttle-config.xsd"/>
   <xs:annotation>
     <xs:documentation>
