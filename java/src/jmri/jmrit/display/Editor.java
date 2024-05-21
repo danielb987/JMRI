@@ -2751,7 +2751,7 @@ abstract public class Editor extends JmriJFrame implements JmriMouseListener, Jm
      * @return The LogixNG icon that was added to the target.
      */
     protected Positionable putThrottle() {
-        IconAdder iconEditor = getIconEditor("Throttle");
+//        IconAdder iconEditor = getIconEditor("Throttle");
 //        String url = iconEditor.getIcon("plainIcon").getURL();
 //        NamedIcon icon = NamedIcon.getIconByName(url);
 //        if (log.isDebugEnabled()) {

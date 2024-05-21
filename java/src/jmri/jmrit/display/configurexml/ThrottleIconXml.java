@@ -2,10 +2,10 @@ package jmri.jmrit.display.configurexml;
 
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.display.*;
-import jmri.jmrit.logixng.GlobalVariable;
-import jmri.jmrit.logixng.GlobalVariableManager;
+// import jmri.jmrit.logixng.GlobalVariable;
+// import jmri.jmrit.logixng.GlobalVariableManager;
 
-import org.jdom2.Attribute;
+// import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,5 +117,5 @@ public class ThrottleIconXml extends PositionableLabelXml {
         }
     }
 
-    private final static Logger log = LoggerFactory.getLogger(ThrottleIconXml.class);
+//    private final static Logger log = LoggerFactory.getLogger(ThrottleIconXml.class);
 }
