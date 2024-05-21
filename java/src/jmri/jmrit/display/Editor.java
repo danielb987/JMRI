@@ -1929,6 +1929,8 @@ abstract public class Editor extends JmriJFrame implements JmriMouseListener, Jm
                 addAudioEditor();
             } else if ("LogixNG".equals(name)) {
                 addLogixNGEditor();
+            } else if ("Throttle".equals(name)) {
+                addThrottleEditor();
             } else {
                 // log.error("No such Icon Editor \"{}\"", name);
                 return null;
@@ -2306,6 +2308,18 @@ abstract public class Editor extends JmriJFrame implements JmriMouseListener, Jm
         _iconEditorFrame.put("LogixNG", frame);
 
         ActionListener addIconAction = a -> putLogixNG();
+        editor.makeIconPanel(true);
+        editor.complete(addIconAction, true, false, false);
+        frame.addHelpMenu("package.jmri.jmrit.display.IconAdder", true);
+    }
+
+    protected void addThrottleEditor() {
+        IconAdder editor = new IconAdder("Throttle");
+        editor.setIcon(0, "plainIcon", "resources/icons/logixng/logixng_icon.gif");
+        JFrameItem frame = makeAddIconFrame("Throttle", true, false, editor);
+        _iconEditorFrame.put("Throttle", frame);
+
+        ActionListener addIconAction = a -> putThrottle();
         editor.makeIconPanel(true);
         editor.complete(addIconAction, true, false, false);
         frame.addHelpMenu("package.jmri.jmrit.display.IconAdder", true);
@@ -2718,6 +2732,33 @@ abstract public class Editor extends JmriJFrame implements JmriMouseListener, Jm
             log.debug("putLogixNG: {} url= {}", (icon == null ? "null" : "icon"), url);
         }
         LogixNGIcon result = new LogixNGIcon(icon, this);
+//        l.setPopupUtility(null);        // no text
+        result.setDisplayLevel(ICONS);
+        setNextLocation(result);
+        try {
+            putItem(result);
+        } catch (Positionable.DuplicateIdException e) {
+            // This should never happen
+            log.error("Editor.putLogixNG() with null id has thrown DuplicateIdException", e);
+        }
+        result.updateSize();
+        return result;
+    }
+
+    /**
+     * Add a LogixNG icon to the target.
+     *
+     * @return The LogixNG icon that was added to the target.
+     */
+    protected Positionable putThrottle() {
+        IconAdder iconEditor = getIconEditor("Throttle");
+//        String url = iconEditor.getIcon("plainIcon").getURL();
+//        NamedIcon icon = NamedIcon.getIconByName(url);
+//        if (log.isDebugEnabled()) {
+//            log.debug("putThrottle");
+//        }
+//        ThrottleIcon result = new ThrottleIcon(icon, this);
+        ThrottleIcon result = new ThrottleIcon(this);
 //        l.setPopupUtility(null);        // no text
         result.setDisplayLevel(ICONS);
         setNextLocation(result);

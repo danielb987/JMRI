@@ -597,7 +597,9 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
         } else {
             willSwitch = true;
         }
-        throttleWindow.updateGUI();
+        if (throttleWindow != null) {
+            throttleWindow.updateGUI();
+        }
     }
 
     public boolean getEditMode() {
@@ -664,16 +666,24 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
         @Override
         public void internalFrameClosing(InternalFrameEvent e) {
             if (e.getSource() == controlPanel) {
-                throttleWindow.getViewControlPanel().setSelected(false);
+                if (throttleWindow != null) {
+                    throttleWindow.getViewControlPanel().setSelected(false);
+                }
                 controlPanel.setVisible(false);
             } else if (e.getSource() == addressPanel) {
-                throttleWindow.getViewAddressPanel().setSelected(false);
+                if (throttleWindow != null) {
+                    throttleWindow.getViewAddressPanel().setSelected(false);
+                }
                 addressPanel.setVisible(false);
             } else if (e.getSource() == functionPanel) {
-                throttleWindow.getViewFunctionPanel().setSelected(false);
+                if (throttleWindow != null) {
+                    throttleWindow.getViewFunctionPanel().setSelected(false);
+                }
                 functionPanel.setVisible(false);
             } else if (e.getSource() == speedPanel) {
-                throttleWindow.getViewSpeedPanel().setSelected(false);
+                if (throttleWindow != null) {
+                    throttleWindow.getViewSpeedPanel().setSelected(false);
+                }
                 speedPanel.setVisible(false);
             } else {
                 try { // #JYNSTRUMENT#, Very important, clean the Jynstrument
@@ -881,6 +891,9 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
      * setFrameTitle - set the frame title based on type, text and address
      */
     public void setFrameTitle() {
+        if (throttleWindow == null) {
+            return;
+        }
         String winTitle = Bundle.getMessage("ThrottleTitle");
         if (throttleWindow.getTitleTextType().compareTo("text") == 0) {
             winTitle = throttleWindow.getTitleText();
@@ -919,6 +932,9 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
 
     @Override
     public void componentShown(ComponentEvent e) {
+        if (throttleWindow == null) {
+            return;
+        }
         throttleWindow.setCurrentThrottleFrame(this);
         if (willSwitch) {
             setEditMode(this.throttleWindow.isEditMode());
@@ -1009,7 +1025,9 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
         throttle = null;
         setLastUsedSaveFile(null);        
         setFrameTitle();
-        throttleWindow.updateGUI(); 
+        if (throttleWindow != null) {
+            throttleWindow.updateGUI();
+        }
         allThrottlesTableModel.fireTableDataChanged();        
     }
 
@@ -1037,7 +1055,9 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
             }
         }
         setFrameTitle();
-        throttleWindow.updateGUI();
+        if (throttleWindow != null) {
+            throttleWindow.updateGUI();
+        }
         throttleManager.attachListener(throttle.getLocoAddress(), allThrottlesTableModel);        
         allThrottlesTableModel.fireTableDataChanged();
     }
@@ -1065,7 +1085,9 @@ public class ThrottleFrame extends JDesktopPane implements ComponentListener, Ad
 
     public void setLastUsedSaveFile(String lusf) {
         lastUsedSaveFile = lusf;
-        throttleWindow.updateGUI();
+        if (throttleWindow != null) {
+            throttleWindow.updateGUI();
+        }
     }
 
     // some utilities to turn a component background transparent

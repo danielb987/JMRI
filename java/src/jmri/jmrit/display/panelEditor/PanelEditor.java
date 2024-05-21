@@ -111,6 +111,7 @@ public class PanelEditor extends Editor implements ItemListener {
     private static final String ICON = "Icon";
     private static final String AUDIO = "Audio";
     private static final String LOGIXNG = "LogixNG";
+    private static final String THROTTLE = "Throttle";
     private final JTextField nextX = new JTextField("0", 4);
     private final JTextField nextY = new JTextField("0", 4);
 
@@ -289,6 +290,7 @@ public class PanelEditor extends Editor implements ItemListener {
         _addIconBox.addItem(new ComboBoxItem(GLOBAL_VARIABLE));
         _addIconBox.addItem(new ComboBoxItem(AUDIO));
         _addIconBox.addItem(new ComboBoxItem(LOGIXNG));
+        _addIconBox.addItem(new ComboBoxItem(THROTTLE));
         _addIconBox.addItem(new ComboBoxItem(ICON));
         _addIconBox.setSelectedIndex(-1);
         _addIconBox.addItemListener(this);  // must be AFTER no selection is set
@@ -1060,6 +1062,7 @@ public class PanelEditor extends Editor implements ItemListener {
         addItemPopUp(new ComboBoxItem(GLOBAL_VARIABLE), _add);
         addItemPopUp(new ComboBoxItem(AUDIO), _add);
         addItemPopUp(new ComboBoxItem(LOGIXNG), _add);
+        addItemPopUp(new ComboBoxItem(THROTTLE), _add);
         addItemPopUp(new ComboBoxItem(ICON), _add);
         addItemPopUp(new ComboBoxItem("Text"), _add);
         popup.add(_add);
