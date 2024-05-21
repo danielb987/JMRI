@@ -7,8 +7,6 @@ import jmri.jmrit.display.*;
 
 // import org.jdom2.Attribute;
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handle configuration for display.ThrottleIcon objects.
@@ -117,5 +115,5 @@ public class ThrottleIconXml extends PositionableLabelXml {
         }
     }
 
-//    private final static Logger log = LoggerFactory.getLogger(ThrottleIconXml.class);
+//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThrottleIconXml.class);
 }
