@@ -70,6 +70,7 @@ signals - obsolete, EMPTY, never used
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/routes-2-9-6.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/warrants-2-9-6.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/logix-2-9-6.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/throttle-config.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/editors.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/layouteditor.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/paneleditor.xsd"/>
