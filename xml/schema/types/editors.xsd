@@ -1368,7 +1368,7 @@
       </xs:annotation>
 
       <xs:sequence>
-        <xs:element type="ThrottleFrameType" name="ThrottleFrame" minOccurs="1" maxOccurs="1" />
+ <!--       <xs:element type="ThrottleFrameType" name="ThrottleFrame" minOccurs="1" maxOccurs="1" /> -->
         <xs:element name="tooltip_prependWithDisplayName" type="yesNoType" minOccurs="0" maxOccurs="1"></xs:element>
         <xs:element name="tooltip" type="xs:string" minOccurs="0" maxOccurs="1"></xs:element>
 <!--        <xs:element name="Identity" type="xs:integer" minOccurs="1" maxOccurs="1" /> -->
