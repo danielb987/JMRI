@@ -81,6 +81,7 @@ signals - obsolete, EMPTY, never used
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/routes.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/warrants.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/logix.xsd"/>
+  <xs:include schemaLocation="http://jmri.org/xml/schema/throttle-config-types.xsd"/>     <!-- Used by editors.xsd, EditorThrottleIconType -->
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/editors.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/layouteditor.xsd"/>
   <xs:include schemaLocation="http://jmri.org/xml/schema/types/paneleditor.xsd"/>
