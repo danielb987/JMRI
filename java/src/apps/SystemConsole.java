@@ -520,6 +520,7 @@ public final class SystemConsole extends JTextArea {
 
     private Map<Thread, StackTraceElement[]> traces;
 
+    @SuppressWarnings("deprecation")    // Thread.getId()
     private void performStackTrace() {
         System.out.println("----------- Begin Stack Trace -----------"); //NO18N
         System.out.println("-----------------------------------------"); //NO18N

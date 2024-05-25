@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -53,8 +55,8 @@ public class InstallDecoderURLAction extends JmriAbstractAction {
             return null;
         }
         try {
-            return new URL(urlname);
-        } catch (java.net.MalformedURLException e) {
+            return new URI(urlname).toURL();
+        } catch (java.net.MalformedURLException | URISyntaxException e) {
             JmriJOptionPane.showMessageDialog(who, Bundle.getMessage("MalformedURL"));
         }
         return null;
