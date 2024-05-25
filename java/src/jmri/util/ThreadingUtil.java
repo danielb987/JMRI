@@ -449,6 +449,7 @@ public class ThreadingUtil {
     /**
      * Warn if a thread is holding locks. Used when transitioning to another context.
      */
+    @SuppressWarnings("deprecation")    // Thread.getId()
     static public void warnLocks() {
         if ( log.isDebugEnabled() ) {
             try {

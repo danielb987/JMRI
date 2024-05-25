@@ -146,6 +146,7 @@ public class Z21XNetTurnout extends XNetTurnout {
        sendOffMessage(getCommandedState());
     }
 
+    @SuppressWarnings("deprecation")    // Thread.getId()
     protected synchronized void sendOffMessage(int state) {
         // We need to tell the turnout to shut off the output.
         if (log.isDebugEnabled()) {

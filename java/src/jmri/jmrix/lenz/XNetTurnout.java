@@ -534,6 +534,7 @@ public class XNetTurnout extends AbstractTurnout implements XNetListener {
     /**
      * Send an "Off" message to the decoder for this output. 
      */
+    @SuppressWarnings("deprecation")    // Thread.getId()
     protected synchronized void sendOffMessage() {
         // We need to tell the turnout to shut off the output.
         if (log.isDebugEnabled()) {

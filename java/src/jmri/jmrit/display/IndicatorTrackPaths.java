@@ -126,6 +126,7 @@ public class IndicatorTrackPaths {
      * a time lag for when track icon changes and display of the change.
      */
     @jmri.InvokeOnLayoutThread
+    @SuppressWarnings("deprecation")    // Thread.getId()
     synchronized protected void setLocoIcon(OBlock block, Point pt, Dimension size, Editor ed) {
         if (!_showTrain) {
             removeLocoIcon();

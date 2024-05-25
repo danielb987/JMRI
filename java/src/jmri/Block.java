@@ -473,6 +473,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
      * @param v the new state
      */
     @Override
+    @SuppressWarnings("deprecation")    // Thread.getId()
     public void setState(int v) {
         int old = _current;
         _current = v;

@@ -170,6 +170,7 @@ public class WebAppServlet extends HttpServlet {
         response.getWriter().print(FileUtil.readFile(script));
     }
 
+    @SuppressWarnings("deprecation")    // Locale(String) constructor
     private void processLocale(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType(UTF8_APPLICATION_JSON);
         Profile profile = ProfileManager.getDefault().getActiveProfile();

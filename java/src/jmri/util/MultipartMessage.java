@@ -8,9 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -56,17 +54,21 @@ public class MultipartMessage {
     public MultipartMessage(String requestURL, String charSet) throws IOException {
         this.charSet = charSet;
 
-        // create unique multi-part message boundary
-        boundary = "===" + System.currentTimeMillis() + "===";
-        URL url = new URL(requestURL);
-        httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setUseCaches(false);
-        httpConn.setDoOutput(true);
-        httpConn.setDoInput(true);
-        httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-        httpConn.setRequestProperty("User-Agent", "JMRI " + jmri.Version.getCanonicalVersion());
-        outStream = httpConn.getOutputStream();
-        writer = new PrintWriter(new OutputStreamWriter(outStream, this.charSet), true);
+        try {
+            // create unique multi-part message boundary
+            boundary = "===" + System.currentTimeMillis() + "===";
+            URL url = new URI(requestURL).toURL();
+            httpConn = (HttpURLConnection) url.openConnection();
+            httpConn.setUseCaches(false);
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            httpConn.setRequestProperty("User-Agent", "JMRI " + jmri.Version.getCanonicalVersion());
+            outStream = httpConn.getOutputStream();
+            writer = new PrintWriter(new OutputStreamWriter(outStream, this.charSet), true);
+        } catch (URISyntaxException ex) {
+            throw new IOException(ex.getMessage(), ex);
+        }
     }
 
     /**
