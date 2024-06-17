@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.actions.configurexml;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.actions.Exit;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml;
 
 import org.jdom2.Element;
 
@@ -21,10 +22,11 @@ public class ExitXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleSensorSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         Exit p = (Exit) o;
 
         Element element = new Element("Exit");
@@ -37,7 +39,7 @@ public class ExitXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
 

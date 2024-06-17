@@ -1,7 +1,7 @@
 package jmri.jmrit.logixng.actions.configurexml;
 
 import jmri.configurexml.JmriConfigureXmlException;
-import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
@@ -20,7 +20,7 @@ public class DigitalActionsXmlTest {
 
     @Test
     public void testLoad() throws JmriConfigureXmlException {
-        AbstractNamedBeanManagerConfigXML b;
+        StoreAndLoadXml b;
 
         b = new ActionLightXml();
         Assert.assertNotNull("exists", b);
@@ -87,7 +87,7 @@ public class DigitalActionsXmlTest {
 //        element.setAttribute("seconds", "abc");
 
         ShutdownComputerXml shutdownComputerXml = new ShutdownComputerXml();
-        shutdownComputerXml.load(element, null);
+        shutdownComputerXml.load(element, new StoreAndLoadXml.ImportData());
 //        JUnitAppender.assertErrorMessage("seconds attribute is not an integer");
     }
 

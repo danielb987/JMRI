@@ -106,6 +106,7 @@ public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
      */
     public void loadExpressions(Element expressions) {
 
+        ImportData importData = new ImportData();
         List<Element> expressionList = expressions.getChildren();  // NOI18N
         log.debug("Found {} expressions", expressionList.size());  // NOI18N
 //        DigitalExpressionManager tm = InstanceManager.getDefault(jmri.jmrit.logixng.DigitalExpressionManager.class);
@@ -140,7 +141,7 @@ public class DefaultDigitalExpressionManagerXml extends AbstractManagerXml {
                         StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
 
                         MaleSocket oldLastItem = InstanceManager.getDefault(DigitalExpressionManager.class).getLastRegisteredMaleSocket();
-                        o.load(expressionList.get(i), null);
+                        o.load(expressionList.get(i), importData);
 
                         // Load male socket data if a new bean has been registered
                         MaleSocket newLastItem = InstanceManager.getDefault(DigitalExpressionManager.class).getLastRegisteredMaleSocket();

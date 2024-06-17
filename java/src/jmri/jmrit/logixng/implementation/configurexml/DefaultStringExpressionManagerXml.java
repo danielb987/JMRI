@@ -105,6 +105,7 @@ public class DefaultStringExpressionManagerXml extends AbstractManagerXml {
      */
     public void loadExpressions(Element expressions) {
 
+        ImportData importData = new ImportData();
         List<Element> expressionList = expressions.getChildren();  // NOI18N
         log.debug("Found {} actions", expressionList.size() );  // NOI18N
 
@@ -138,7 +139,7 @@ public class DefaultStringExpressionManagerXml extends AbstractManagerXml {
                         StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
 
                         MaleSocket oldLastItem = InstanceManager.getDefault(StringExpressionManager.class).getLastRegisteredMaleSocket();
-                        o.load(expressionList.get(i), null);
+                        o.load(expressionList.get(i), importData);
 
                         // Load male socket data if a new bean has been registered
                         MaleSocket newLastItem = InstanceManager.getDefault(StringExpressionManager.class).getLastRegisteredMaleSocket();

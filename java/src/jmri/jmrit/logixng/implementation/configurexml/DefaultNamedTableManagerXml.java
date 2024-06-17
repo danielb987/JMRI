@@ -94,6 +94,7 @@ public class DefaultNamedTableManagerXml extends AbstractManagerXml {
      */
     public void loadTables(Element expressions) {
         
+        ImportData importData = new ImportData();
         List<Element> expressionList = expressions.getChildren();  // NOI18N
         log.debug("Found {} tables", expressionList.size() );  // NOI18N
 
@@ -124,7 +125,7 @@ public class DefaultNamedTableManagerXml extends AbstractManagerXml {
                 if (c != null) {
                     try {
                         StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
-                        o.load(expressionList.get(i), null);
+                        o.load(expressionList.get(i), importData);
                     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                         log.error("cannot create object", ex);
                     } catch (JmriConfigureXmlException ex) {

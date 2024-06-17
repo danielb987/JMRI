@@ -105,6 +105,7 @@ public class DefaultStringActionManagerXml extends AbstractManagerXml {
      */
     public void loadActions(Element actions) {
 
+        ImportData importData = new ImportData();
         List<Element> actionList = actions.getChildren();  // NOI18N
         log.debug("Found {} actions", actionList.size() );  // NOI18N
 
@@ -138,7 +139,7 @@ public class DefaultStringActionManagerXml extends AbstractManagerXml {
                         StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
 
                         MaleSocket oldLastItem = InstanceManager.getDefault(StringActionManager.class).getLastRegisteredMaleSocket();
-                        o.load(actionList.get(i), null);
+                        o.load(actionList.get(i), importData);
 
                         // Load male socket data if a new bean has been registered
                         MaleSocket newLastItem = InstanceManager.getDefault(StringActionManager.class).getLastRegisteredMaleSocket();
