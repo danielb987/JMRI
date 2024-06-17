@@ -11,7 +11,7 @@ import org.jdom2.Element;
 /**
  *
  */
-public class StringActionMemoryXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class StringActionMemoryXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public StringActionMemoryXml() {
     }

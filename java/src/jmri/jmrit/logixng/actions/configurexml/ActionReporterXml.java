@@ -20,7 +20,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright 2021
  * @author Dave Sand Copyright (C) 2021
  */
-public class ActionReporterXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionReporterXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionReporterXml() {
     }

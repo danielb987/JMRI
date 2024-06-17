@@ -14,7 +14,7 @@ import org.jdom2.Element;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2021
  */
-public class ActionAudioXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionAudioXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionAudioXml() {
     }

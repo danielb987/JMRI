@@ -17,7 +17,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright 2021
  * @author Dave Sand Copyright (C) 2021
  */
-public class ActionDispatcherXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionDispatcherXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionDispatcherXml() {
     }

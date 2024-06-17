@@ -10,7 +10,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.implementation.DefaultMaleStringExpressionSocket;
 import jmri.jmrit.logixng.implementation.DefaultStringExpressionManager;
-import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml;
 import jmri.util.ThreadingUtil;
 
 import org.jdom2.Element;
@@ -135,7 +135,7 @@ public class DefaultStringExpressionManagerXml extends AbstractManagerXml {
 
                 if (c != null) {
                     try {
-                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
 
                         MaleSocket oldLastItem = InstanceManager.getDefault(StringExpressionManager.class).getLastRegisteredMaleSocket();
                         o.load(expressionList.get(i), null);

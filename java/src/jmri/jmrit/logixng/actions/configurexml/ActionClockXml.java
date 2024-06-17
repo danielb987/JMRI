@@ -16,7 +16,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright (C) 2021
  * @author Dave Sand Copyright (C) 2021
  */
-public class ActionClockXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionClockXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionClockXml() {
     }

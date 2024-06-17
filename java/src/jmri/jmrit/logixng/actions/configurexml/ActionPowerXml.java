@@ -14,7 +14,7 @@ import org.jdom2.Element;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2021
  */
-public class ActionPowerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionPowerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionPowerXml() {
     }

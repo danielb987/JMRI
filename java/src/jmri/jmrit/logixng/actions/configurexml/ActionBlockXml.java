@@ -17,7 +17,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright 2021
  * @author Dave Sand Copyright (C) 2021
  */
-public class ActionBlockXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionBlockXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     static final ResourceBundle rb = ResourceBundle.getBundle("jmri.jmrit.logixng.actions.ActionBundle");
 

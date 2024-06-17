@@ -10,7 +10,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.implementation.DefaultDigitalBooleanActionManager;
 import jmri.jmrit.logixng.implementation.DefaultMaleDigitalBooleanActionSocket;
-import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml;
 import jmri.util.ThreadingUtil;
 
 import org.jdom2.Element;
@@ -133,7 +133,7 @@ public class DefaultDigitalBooleanActionManagerXml extends AbstractManagerXml {
 
                 if (c != null) {
                     try {
-                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
 
                         MaleSocket oldLastItem = InstanceManager.getDefault(DigitalBooleanActionManager.class).getLastRegisteredMaleSocket();
                         o.load(actionList.get(i), null);

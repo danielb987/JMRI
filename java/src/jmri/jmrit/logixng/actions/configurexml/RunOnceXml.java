@@ -14,7 +14,7 @@ import org.jdom2.Element;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2022
  */
-public class RunOnceXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class RunOnceXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     /**
      * Default implementation for storing the contents of a SE8cSignalHead

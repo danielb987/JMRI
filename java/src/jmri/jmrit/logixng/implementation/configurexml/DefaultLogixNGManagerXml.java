@@ -24,7 +24,7 @@ import jmri.util.ThreadingUtil;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public class DefaultLogixNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultLogixNGManagerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public DefaultLogixNGManagerXml() {
     }

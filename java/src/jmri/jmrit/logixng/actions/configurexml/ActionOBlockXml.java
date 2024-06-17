@@ -19,7 +19,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright 2021
  * @author Dave Sand Copyright (C) 2021
  */
-public class ActionOBlockXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionOBlockXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionOBlockXml() {
     }

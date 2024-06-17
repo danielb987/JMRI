@@ -359,6 +359,18 @@ public class ArchitectureTest {
             .should().beAssignableTo(jmri.Bundle.class);
 
     /**
+     * Check that classes in jmri.managers.configurexml isn't used in
+     * any LogixNG package, except the class StoreAndLoadXml.
+     */
+    @ArchTest
+    public static final ArchRule checkJmriManagers = noClasses()
+            .that()
+            .resideInAPackage("..logixng..")
+            .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.configurexml.StoreAndLoadXml")
+            .should()
+            .dependOnClassesThat().resideInAPackage("jmri.managers.configurexml");
+
+    /**
      * No classes in jmri.jmrit.logixng.actions should access jmri.NamedBeanHandle.
      * They should use jmri.jmrit.logixng.util.LogixNG_SelectNamedBean instead.
      */

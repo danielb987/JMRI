@@ -20,7 +20,7 @@ import jmri.jmrit.logixng.util.parser.ParserException;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2019
  */
-public class ForEachXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ForEachXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ForEachXml() {
     }

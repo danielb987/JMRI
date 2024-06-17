@@ -20,7 +20,7 @@ import jmri.jmrit.logixng.DigitalActionBean;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2019
  */
-public class DigitalManyXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DigitalManyXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     /**
      * Default implementation for storing the contents of a Many

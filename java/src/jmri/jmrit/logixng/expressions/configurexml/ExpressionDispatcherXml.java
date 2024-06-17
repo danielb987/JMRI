@@ -16,7 +16,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright (C) 2019
  * @author Dave Sand Copyright (C) 2021
  */
-public class ExpressionDispatcherXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ExpressionDispatcherXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ExpressionDispatcherXml() {
     }

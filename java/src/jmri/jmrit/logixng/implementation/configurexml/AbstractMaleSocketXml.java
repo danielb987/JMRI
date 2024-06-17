@@ -17,7 +17,7 @@ import jmri.jmrit.logixng.implementation.AbstractMaleSocket;
  * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class AbstractMaleSocketXml
-        extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML
+        extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml
         implements MaleSocketXml {
 
     public AbstractMaleSocketXml() {

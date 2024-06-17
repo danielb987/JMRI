@@ -20,7 +20,7 @@ import org.jdom2.Element;
  * @author Dave Sand Copyright (C) 2021
  * @author Pete Cressman Copyright (C) 2022
  */
-public class ActionWarrantXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionWarrantXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionWarrantXml() {
     }

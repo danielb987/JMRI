@@ -16,7 +16,7 @@ import org.jdom2.Element;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2019
  */
-public class ActionSignalHeadXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ActionSignalHeadXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ActionSignalHeadXml() {
     }

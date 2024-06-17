@@ -12,7 +12,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.Module;
 import jmri.jmrit.logixng.implementation.DefaultModuleManager;
-import jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml;
 import jmri.util.ThreadingUtil;
 
 import org.jdom2.Element;
@@ -123,7 +123,7 @@ public class DefaultModuleManagerXml extends AbstractManagerXml {
 
                 if (c != null) {
                     try {
-                        AbstractNamedBeanManagerConfigXML o = (AbstractNamedBeanManagerConfigXML)c.newInstance();
+                        StoreAndLoadXml o = (StoreAndLoadXml)c.newInstance();
                         o.load(expressionList.get(i), null);
                     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                         log.error("cannot create object", ex);

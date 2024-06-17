@@ -19,7 +19,7 @@ import org.jdom2.Element;
  * @author Dave Duchamp Copyright (c) 2007
  * @author Daniel Bergqvist Copyright (c) 2018
  */
-public abstract class AbstractManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public abstract class AbstractManagerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     private final Map<String, Class<?>> xmlClasses = new HashMap<>();
     

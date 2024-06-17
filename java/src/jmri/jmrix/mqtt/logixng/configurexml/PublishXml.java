@@ -17,7 +17,7 @@ import org.jdom2.Element;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2022
  */
-public class PublishXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class PublishXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public PublishXml() {
     }

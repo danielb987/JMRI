@@ -14,7 +14,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright (C) 2019
  */
 public class AbstractDebuggerMaleSocketXml
-        extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML
+        extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml
         implements MaleSocketXml {
 
     public AbstractDebuggerMaleSocketXml() {

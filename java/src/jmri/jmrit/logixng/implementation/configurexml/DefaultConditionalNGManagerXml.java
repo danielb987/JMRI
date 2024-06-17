@@ -23,7 +23,7 @@ import org.jdom2.Element;
  * @author Daniel Bergqvist Copyright (c) 2018
  * @author Dave Sand        Copyright (c) 2021
  */
-public class DefaultConditionalNGManagerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class DefaultConditionalNGManagerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public DefaultConditionalNGManagerXml() {
     }

@@ -15,7 +15,7 @@ import jmri.jmrit.logixng.util.configurexml.LogixNG_SelectEnumXml;
  * @author Bob Jacobsen Copyright: Copyright (c) 2004, 2008, 2010
  * @author Daniel Bergqvist Copyright (C) 2019
  */
-public class ShutdownComputerXml extends jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML {
+public class ShutdownComputerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
 
     public ShutdownComputerXml() {
     }
