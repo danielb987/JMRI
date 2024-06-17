@@ -3,7 +3,6 @@ package jmri.jmrit.logixng.actions.configurexml;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.actions.Exit;
-import jmri.jmrit.logixng.configurexml.StoreAndLoadXml;
 
 import org.jdom2.Element;
 

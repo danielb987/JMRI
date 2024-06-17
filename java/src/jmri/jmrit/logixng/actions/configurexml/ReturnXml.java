@@ -21,10 +21,12 @@ public class ReturnXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleSensorSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         Return p = (Return) o;
 
         Element element = new Element("Return");
