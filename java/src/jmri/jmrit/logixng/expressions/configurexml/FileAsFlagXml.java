@@ -25,10 +25,12 @@ public class FileAsFlagXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a SE8cSignalMast
      *
      * @param o Object to store, of type TripleLightSignalMast
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         FileAsFlag p = (FileAsFlag) o;
 
         var selectFilenameXml = new LogixNG_SelectStringXml();
@@ -47,7 +49,7 @@ public class FileAsFlagXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         FileAsFlag h = new FileAsFlag(sys, uname);

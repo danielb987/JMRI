@@ -22,10 +22,12 @@ public class ExpressionClockXml extends jmri.jmrit.logixng.configurexml.StoreAnd
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionClock p = (ExpressionClock) o;
 
         Element element = new Element("ExpressionClock");
@@ -43,7 +45,7 @@ public class ExpressionClockXml extends jmri.jmrit.logixng.configurexml.StoreAnd
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionClock h = new ExpressionClock(sys, uname);

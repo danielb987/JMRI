@@ -39,7 +39,7 @@ public class ReturnXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
 

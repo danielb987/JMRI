@@ -18,11 +18,12 @@ public class DefaultMaleDigitalExpressionSocketXml extends AbstractMaleSocketXml
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
-        Element element = super.store(o);
+    public Element store(Object o, ExportData exportData) {
+        Element element = super.store(o, exportData);
         
         DefaultMaleDigitalExpressionSocket maleSocket = (DefaultMaleDigitalExpressionSocket) o;
         

@@ -30,10 +30,12 @@ public class ExpressionBlockXml extends jmri.jmrit.logixng.configurexml.StoreAnd
      * Default implementation for storing the contents of a ExpressionBlock
      *
      * @param o Object to store, of type ExpressionBlock
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionBlock p = (ExpressionBlock) o;
 
         Element element = new Element("ExpressionBlock");
@@ -57,7 +59,7 @@ public class ExpressionBlockXml extends jmri.jmrit.logixng.configurexml.StoreAnd
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionBlock h = new ExpressionBlock(sys, uname);

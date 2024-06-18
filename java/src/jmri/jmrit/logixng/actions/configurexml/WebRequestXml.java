@@ -27,10 +27,12 @@ public class WebRequestXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a WebRequest
      *
      * @param o Object to store, of type WebRequest
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         WebRequest p = (WebRequest) o;
 
         Element element = new Element("WebRequest");
@@ -79,7 +81,7 @@ public class WebRequestXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
 
         Element socketNameElement = shared.getChild("Socket").getChild("socketName");
         String socketName = socketNameElement.getTextTrim();

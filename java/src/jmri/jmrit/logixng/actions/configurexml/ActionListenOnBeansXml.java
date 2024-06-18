@@ -25,10 +25,12 @@ public class ActionListenOnBeansXml extends jmri.jmrit.logixng.configurexml.Stor
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionListenOnBeans p = (ActionListenOnBeans) o;
 
         Element element = new Element("ActionListenOnBeans");
@@ -55,7 +57,7 @@ public class ActionListenOnBeansXml extends jmri.jmrit.logixng.configurexml.Stor
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionListenOnBeans h = new ActionListenOnBeans(sys, uname);

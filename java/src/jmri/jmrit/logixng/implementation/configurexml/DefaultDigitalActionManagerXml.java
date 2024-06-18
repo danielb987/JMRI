@@ -32,10 +32,11 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
      * Default implementation for storing the contents of a DigitalActionManager
      *
      * @param o Object to store, of type DigitalActionManager
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         Element actions = new Element("LogixNGDigitalActions");
         setStoreElementClass(actions);
         DigitalActionManager tm = (DigitalActionManager) o;
@@ -86,11 +87,11 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
      * @return true if successful
      */
     @Override
-    public boolean load(Element sharedAction, Element perNodeAction) {
+    public boolean load(Element sharedAction, ImportData importData) {
         // create the master object
         replaceActionManager();
         // load individual sharedAction
-        loadActions(sharedAction);
+        loadActions(sharedAction, importData);
         return true;
     }
 
@@ -101,9 +102,8 @@ public class DefaultDigitalActionManagerXml extends AbstractManagerXml {
      *
      * @param actions Element containing the DigitalActionBean elements to load.
      */
-    public void loadActions(Element actions) {
+    public void loadActions(Element actions, ImportData importData) {
 
-        ImportData importData = new ImportData();
         List<Element> actionList = actions.getChildren();  // NOI18N
         log.debug("Found {} actions", actionList.size() );  // NOI18N
 

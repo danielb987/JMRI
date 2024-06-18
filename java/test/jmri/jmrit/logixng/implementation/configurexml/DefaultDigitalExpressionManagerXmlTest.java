@@ -4,6 +4,7 @@ import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.DigitalExpressionManager;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml.ImportData;
 import jmri.jmrit.logixng.expressions.ExpressionTurnout;
 import jmri.jmrit.logixng.expressions.configurexml.ExpressionTurnoutXml;
 import jmri.jmrit.logixng.implementation.DefaultDigitalExpressionManager;
@@ -38,7 +39,7 @@ public class DefaultDigitalExpressionManagerXmlTest {
         e2.setAttribute("class", "jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
         e2.addContent(new Element("maleSocket"));
         e.addContent(e2);
-        b.loadExpressions(e);
+        b.loadExpressions(e, new ImportData());
         JUnitAppender.assertErrorMessage("cannot load class jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
 /*
         // Test loading the same class twice, in order to check field "xmlClasses"
@@ -205,7 +206,7 @@ public class DefaultDigitalExpressionManagerXmlTest {
     // Spotbugs will in that case flag it as "is never used locally"
     class ThrowExceptionXml extends ExpressionTurnoutXml {
         @Override
-        public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+        public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
     }

@@ -28,10 +28,12 @@ public class ExpressionTransitXml extends jmri.jmrit.logixng.configurexml.StoreA
      * Default implementation for storing the contents of a ExpressionTransit
      *
      * @param o Object to store, of type ExpressionTransit
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionTransit p = (ExpressionTransit) o;
 
         Element element = new Element("ExpressionTransit");
@@ -53,7 +55,7 @@ public class ExpressionTransitXml extends jmri.jmrit.logixng.configurexml.StoreA
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionTransit h = new ExpressionTransit(sys, uname);

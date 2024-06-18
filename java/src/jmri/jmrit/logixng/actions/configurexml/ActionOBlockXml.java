@@ -28,10 +28,12 @@ public class ActionOBlockXml extends jmri.jmrit.logixng.configurexml.StoreAndLoa
      * Default implementation for storing the contents of an OBlock
      *
      * @param o Object to store, of type ActionOBlock
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionOBlock p = (ActionOBlock) o;
 
         Element element = new Element("ActionOBlock");
@@ -60,7 +62,7 @@ public class ActionOBlockXml extends jmri.jmrit.logixng.configurexml.StoreAndLoa
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionOBlock h = new ActionOBlock(sys, uname);

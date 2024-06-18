@@ -29,10 +29,12 @@ public class ActionLocalVariableXml extends jmri.jmrit.logixng.configurexml.Stor
      * Default implementation for storing the contents of a ActionLocalVariable
      *
      * @param o Object to store, of type ActionLocalVariable
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionLocalVariable p = (ActionLocalVariable) o;
 
         LogixNG_SelectTableXml selectTableXml = new LogixNG_SelectTableXml();
@@ -75,7 +77,7 @@ public class ActionLocalVariableXml extends jmri.jmrit.logixng.configurexml.Stor
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionLocalVariable h = new ActionLocalVariable(sys, uname);

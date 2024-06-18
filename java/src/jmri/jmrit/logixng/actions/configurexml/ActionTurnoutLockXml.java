@@ -23,10 +23,12 @@ public class ActionTurnoutLockXml extends jmri.jmrit.logixng.configurexml.StoreA
      * Default implementation for storing the contents of a ActionTurnoutLock
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionTurnoutLock p = (ActionTurnoutLock) o;
 
         Element element = new Element("ActionTurnoutLock");
@@ -45,7 +47,7 @@ public class ActionTurnoutLockXml extends jmri.jmrit.logixng.configurexml.StoreA
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionTurnoutLock h = new ActionTurnoutLock(sys, uname);

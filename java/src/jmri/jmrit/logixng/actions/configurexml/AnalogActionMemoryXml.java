@@ -24,10 +24,12 @@ public class AnalogActionMemoryXml extends jmri.jmrit.logixng.configurexml.Store
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         AnalogActionMemory p = (AnalogActionMemory) o;
 
         Element element = new Element("AnalogActionMemory");
@@ -43,7 +45,7 @@ public class AnalogActionMemoryXml extends jmri.jmrit.logixng.configurexml.Store
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         AnalogActionMemory h;

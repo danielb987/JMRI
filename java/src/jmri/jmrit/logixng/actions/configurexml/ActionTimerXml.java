@@ -27,10 +27,12 @@ public class ActionTimerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionTimer p = (ActionTimer) o;
 
         Element element = new Element("ActionTimer");
@@ -96,7 +98,7 @@ public class ActionTimerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         List<Map.Entry<String, String>> expressionSystemNames = new ArrayList<>();
 
         Element socketNameElement = shared.getChild("StartSocket").getChild("socketName");

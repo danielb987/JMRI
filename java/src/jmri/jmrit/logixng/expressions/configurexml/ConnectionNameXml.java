@@ -22,10 +22,12 @@ public class ConnectionNameXml extends jmri.jmrit.logixng.configurexml.StoreAndL
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type ConnectionName
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ConnectionName p = (ConnectionName) o;
 
         Element element = new Element("ConnectionName");
@@ -41,7 +43,7 @@ public class ConnectionNameXml extends jmri.jmrit.logixng.configurexml.StoreAndL
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ConnectionName h = new ConnectionName(sys, uname);

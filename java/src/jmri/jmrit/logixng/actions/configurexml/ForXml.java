@@ -20,10 +20,12 @@ public class ForXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of a For
      *
      * @param o Object to store, of type For
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         For p = (For) o;
 
         Element element = new Element("For");
@@ -89,7 +91,7 @@ public class ForXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         
         String sys = getSystemName(shared);
         String uname = getUserName(shared);

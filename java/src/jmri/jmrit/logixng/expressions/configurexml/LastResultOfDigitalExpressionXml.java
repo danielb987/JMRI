@@ -23,10 +23,12 @@ public class LastResultOfDigitalExpressionXml extends jmri.jmrit.logixng.configu
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         LastResultOfDigitalExpression p = (LastResultOfDigitalExpression) o;
 
         Element element = new Element("LastResultOfDigitalExpression");
@@ -42,7 +44,7 @@ public class LastResultOfDigitalExpressionXml extends jmri.jmrit.logixng.configu
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         LastResultOfDigitalExpression h = new LastResultOfDigitalExpression(sys, uname);

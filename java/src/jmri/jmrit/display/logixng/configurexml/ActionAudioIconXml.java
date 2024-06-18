@@ -24,10 +24,11 @@ public class ActionAudioIconXml extends jmri.jmrit.logixng.configurexml.StoreAnd
      * Default implementation for storing the contents of a ActionAudioIcon
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         ActionAudioIcon p = (ActionAudioIcon) o;
 
         Element element = new Element("DisplayActionAudioIcon");
@@ -61,7 +62,7 @@ public class ActionAudioIconXml extends jmri.jmrit.logixng.configurexml.StoreAnd
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionAudioIcon h = new ActionAudioIcon(sys, uname);

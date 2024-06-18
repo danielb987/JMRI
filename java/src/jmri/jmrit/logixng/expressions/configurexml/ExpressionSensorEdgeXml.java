@@ -24,10 +24,12 @@ public class ExpressionSensorEdgeXml extends jmri.jmrit.logixng.configurexml.Sto
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleSensorSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionSensorEdge p = (ExpressionSensorEdge) o;
 
         Element element = new Element("ExpressionSensorEdge");
@@ -48,7 +50,7 @@ public class ExpressionSensorEdgeXml extends jmri.jmrit.logixng.configurexml.Sto
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionSensorEdge h = new ExpressionSensorEdge(sys, uname);

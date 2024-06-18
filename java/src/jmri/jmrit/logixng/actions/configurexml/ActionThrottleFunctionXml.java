@@ -25,10 +25,12 @@ public class ActionThrottleFunctionXml extends jmri.jmrit.logixng.configurexml.S
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionThrottleFunction p = (ActionThrottleFunction) o;
 
         var selectAddressXml = new LogixNG_SelectIntegerXml();
@@ -54,7 +56,7 @@ public class ActionThrottleFunctionXml extends jmri.jmrit.logixng.configurexml.S
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
 
         String sys = getSystemName(shared);
         String uname = getUserName(shared);

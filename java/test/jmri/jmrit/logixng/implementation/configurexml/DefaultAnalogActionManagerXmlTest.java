@@ -6,6 +6,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.AnalogActionManager;
 import jmri.jmrit.logixng.actions.AnalogActionMemory;
 import jmri.jmrit.logixng.actions.configurexml.AnalogActionMemoryXml;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml.ImportData;
 import jmri.jmrit.logixng.implementation.DefaultAnalogActionManager;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -37,7 +38,7 @@ public class DefaultAnalogActionManagerXmlTest {
         Element e2 = new Element("missing_class");
         e2.setAttribute("class", "jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
         e.addContent(e2);
-        b.loadActions(e);
+        b.loadActions(e, new ImportData());
         JUnitAppender.assertErrorMessage("cannot load class jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
 /*
         // Test loading the same class twice, in order to check field "xmlClasses"
@@ -204,7 +205,7 @@ public class DefaultAnalogActionManagerXmlTest {
     // Spotbugs will in that case flag it as "is never used locally"
     class ThrowExceptionXml extends AnalogActionMemoryXml {
         @Override
-        public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+        public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
     }

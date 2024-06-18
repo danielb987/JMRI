@@ -28,10 +28,12 @@ public class TableForEachXml extends jmri.jmrit.logixng.configurexml.StoreAndLoa
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         TableForEach p = (TableForEach) o;
 
         Element element = new Element("TableForEach");
@@ -71,7 +73,7 @@ public class TableForEachXml extends jmri.jmrit.logixng.configurexml.StoreAndLoa
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
 
         String sys = getSystemName(shared);
         String uname = getUserName(shared);

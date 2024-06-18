@@ -32,10 +32,11 @@ public class DefaultConditionalNGManagerXml extends jmri.jmrit.logixng.configure
      * Default implementation for storing the contents of a ConditionalNG_Manager
      *
      * @param o Object to store, of type ConditionalNG_Manager
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         Element conditionalNGs = new Element("LogixNGConditionalNGs");
         setStoreElementClass(conditionalNGs);
         ConditionalNG_Manager tm = (ConditionalNG_Manager) o;
@@ -106,11 +107,11 @@ public class DefaultConditionalNGManagerXml extends jmri.jmrit.logixng.configure
      * @return true if successful
      */
     @Override
-    public boolean load(Element sharedConditionalNG, Element perNodeConditionalNG) {
+    public boolean load(Element sharedConditionalNG, ImportData importData) {
         // create the master object
         replaceConditionalNGManager();
         // load individual sharedLogix
-        loadConditionalNGs(sharedConditionalNG);
+        loadConditionalNGs(sharedConditionalNG, importData);
         return true;
     }
 
@@ -121,7 +122,7 @@ public class DefaultConditionalNGManagerXml extends jmri.jmrit.logixng.configure
      *
      * @param conditionalNGs Element containing the ConditionalNG elements to load.
      */
-    public void loadConditionalNGs(Element conditionalNGs) {
+    public void loadConditionalNGs(Element conditionalNGs, ImportData importData) {
         List<Element> conditionalNGList = conditionalNGs.getChildren("ConditionalNG");  // NOI18N
         log.debug("Found {} ConditionalNGs", conditionalNGList.size() );  // NOI18N
         ConditionalNG_Manager tm = InstanceManager.getDefault(jmri.jmrit.logixng.ConditionalNG_Manager.class);

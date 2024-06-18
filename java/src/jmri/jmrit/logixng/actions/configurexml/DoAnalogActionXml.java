@@ -21,10 +21,12 @@ public class DoAnalogActionXml extends jmri.jmrit.logixng.configurexml.StoreAndL
      * Default implementation for storing the contents of a DoAnalogAction
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         DoAnalogAction p = (DoAnalogAction) o;
 
         Element element = new Element("DoAnalogAction");
@@ -64,7 +66,7 @@ public class DoAnalogActionXml extends jmri.jmrit.logixng.configurexml.StoreAndL
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         
         String sys = getSystemName(shared);
         String uname = getUserName(shared);

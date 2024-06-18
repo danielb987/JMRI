@@ -34,10 +34,11 @@ public class DefaultModuleManagerXml extends AbstractManagerXml {
      * Default implementation for storing the contents of a ModuleManager
      *
      * @param o Object to store, of type LogixManager
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         Element expressions = new Element("LogixNGModules");
         setStoreElementClass(expressions);
         DefaultModuleManager tm = (DefaultModuleManager) o;
@@ -73,15 +74,15 @@ public class DefaultModuleManagerXml extends AbstractManagerXml {
      * register and fill it.
      *
      * @param sharedExpression  Shared top level Element to unpack.
-     * @param perNodeExpression Per-node top level Element to unpack.
+     * @param importData import data.
      * @return true if successful
      */
     @Override
-    public boolean load(Element sharedExpression, Element perNodeExpression) {
+    public boolean load(Element sharedExpression, ImportData importData) {
         // create the master object
         replaceExpressionManager();
         // load individual sharedLogix
-        loadTables(sharedExpression);
+        loadTables(sharedExpression, importData);
         return true;
     }
 
@@ -92,9 +93,8 @@ public class DefaultModuleManagerXml extends AbstractManagerXml {
      *
      * @param expressions Element containing the Logix elements to load.
      */
-    public void loadTables(Element expressions) {
+    public void loadTables(Element expressions, ImportData importData) {
 
-        ImportData importData = new ImportData();
         List<Element> expressionList = expressions.getChildren();  // NOI18N
         log.debug("Found {} tables", expressionList.size() );  // NOI18N
 

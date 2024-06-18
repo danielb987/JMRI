@@ -6,6 +6,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.StringActionManager;
 import jmri.jmrit.logixng.actions.StringActionMemory;
 import jmri.jmrit.logixng.actions.configurexml.StringActionMemoryXml;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml.ImportData;
 import jmri.jmrit.logixng.implementation.DefaultStringActionManager;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -38,7 +39,7 @@ public class DefaultStringActionManagerXmlTest {
         e2.setAttribute("class", "jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
         e2.addContent(new Element("maleSocket"));
         e.addContent(e2);
-        b.loadActions(e);
+        b.loadActions(e, new ImportData());
         JUnitAppender.assertErrorMessage("cannot load class jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
 /*
         // Test loading the same class twice, in order to check field "xmlClasses"
@@ -205,7 +206,7 @@ public class DefaultStringActionManagerXmlTest {
     // Spotbugs will in that case flag it as "is never used locally"
     class ThrowExceptionXml extends StringActionMemoryXml {
         @Override
-        public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+        public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
     }

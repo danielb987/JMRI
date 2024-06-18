@@ -4,6 +4,7 @@ import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.StringExpressionManager;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml.ImportData;
 import jmri.jmrit.logixng.expressions.StringExpressionMemory;
 import jmri.jmrit.logixng.expressions.configurexml.StringExpressionMemoryXml;
 import jmri.jmrit.logixng.implementation.DefaultStringExpressionManager;
@@ -38,7 +39,7 @@ public class DefaultStringExpressionManagerXmlTest {
         e2.setAttribute("class", "jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
         e2.addContent(new Element("maleSocket"));
         e.addContent(e2);
-        b.loadExpressions(e);
+        b.loadExpressions(e, new ImportData());
         JUnitAppender.assertErrorMessage("cannot load class jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
 /*
         // Test loading the same class twice, in order to check field "xmlClasses"
@@ -205,7 +206,7 @@ public class DefaultStringExpressionManagerXmlTest {
     // Spotbugs will in that case flag it as "is never used locally"
     class ThrowExceptionXml extends StringExpressionMemoryXml {
         @Override
-        public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+        public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
     }

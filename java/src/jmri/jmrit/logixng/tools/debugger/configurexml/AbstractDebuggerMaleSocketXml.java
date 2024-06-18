@@ -24,10 +24,11 @@ public class AbstractDebuggerMaleSocketXml
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
 //        AbstractMaleSocket maleSocket = (AbstractMaleSocket) o;
         
         Element element = new Element("AbstractDebuggerMaleSocket");
@@ -46,7 +47,7 @@ public class AbstractDebuggerMaleSocketXml
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         return false;
     }
     

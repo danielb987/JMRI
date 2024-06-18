@@ -22,10 +22,12 @@ public class TriggerOnceXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         TriggerOnce p = (TriggerOnce) o;
 
         Element element = new Element("TriggerOnce");
@@ -52,7 +54,7 @@ public class TriggerOnceXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         TriggerOnce h;

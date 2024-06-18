@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.implementation.configurexml;
 import jmri.ConfigureManager;
 import jmri.InstanceManager;
 import jmri.jmrit.logixng.ConditionalNG_Manager;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml.ImportData;
 import jmri.jmrit.logixng.implementation.DefaultConditionalNGManager;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -34,7 +35,7 @@ public class DefaultConditionalNGManagerXmlTest {
         Element e = new Element("ConditionalNGs");
         Element e2 = new Element("ConditionalNG");
         e.addContent(e2);
-        b.loadConditionalNGs(e);
+        b.loadConditionalNGs(e, new ImportData());
         JUnitAppender.assertWarnMessage("unexpected null in systemName [Element: <ConditionalNG/>]");
 
         // Fix this later!!!

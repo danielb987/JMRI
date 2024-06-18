@@ -32,10 +32,11 @@ public class DefaultAnalogActionManagerXml extends AbstractManagerXml {
      * Default implementation for storing the contents of a AnalogActionManager
      *
      * @param o Object to store, of type AnalogActionManager
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         Element actions = new Element("LogixNGAnalogActions");
         setStoreElementClass(actions);
         AnalogActionManager tm = (AnalogActionManager) o;
@@ -86,11 +87,11 @@ public class DefaultAnalogActionManagerXml extends AbstractManagerXml {
      * @return true if successful
      */
     @Override
-    public boolean load(Element sharedAction, Element perNodeAction) {
+    public boolean load(Element sharedAction, ImportData importData) {
         // create the master object
         replaceActionManager();
         // load individual sharedAction
-        loadActions(sharedAction);
+        loadActions(sharedAction, importData);
         return true;
     }
 
@@ -101,9 +102,8 @@ public class DefaultAnalogActionManagerXml extends AbstractManagerXml {
      *
      * @param actions Element containing the AnalogActionBean elements to load.
      */
-    public void loadActions(Element actions) {
+    public void loadActions(Element actions, ImportData importData) {
 
-        ImportData importData = new ImportData();
         List<Element> actionList = actions.getChildren();  // NOI18N
         log.debug("Found {} actions", actionList.size());  // NOI18N
 

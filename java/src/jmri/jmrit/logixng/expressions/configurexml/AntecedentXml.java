@@ -28,10 +28,12 @@ public class AntecedentXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         Antecedent p = (Antecedent) o;
 
         Element element = new Element("Antecedent");
@@ -64,7 +66,7 @@ public class AntecedentXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         List<Map.Entry<String, String>> expressionSystemNames = new ArrayList<>();
         
         Element actionElement = shared.getChild("Expressions");

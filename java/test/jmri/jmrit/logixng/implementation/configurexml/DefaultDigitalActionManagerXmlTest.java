@@ -6,6 +6,7 @@ import jmri.configurexml.JmriConfigureXmlException;
 import jmri.jmrit.logixng.DigitalActionManager;
 import jmri.jmrit.logixng.actions.ActionTurnout;
 import jmri.jmrit.logixng.actions.configurexml.ActionTurnoutXml;
+import jmri.jmrit.logixng.configurexml.StoreAndLoadXml.ImportData;
 import jmri.jmrit.logixng.implementation.DefaultDigitalActionManager;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
@@ -38,7 +39,7 @@ public class DefaultDigitalActionManagerXmlTest {
         e2.setAttribute("class", "jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
         e2.addContent(new Element("maleSocket"));
         e.addContent(e2);
-        b.loadActions(e);
+        b.loadActions(e, new ImportData());
         JUnitAppender.assertErrorMessage("cannot load class jmri.jmrit.logixng.this.class.does.not.exist.TestClassXml");
 /*
         // Test loading the same class twice, in order to check field "xmlClasses"
@@ -211,7 +212,7 @@ public class DefaultDigitalActionManagerXmlTest {
     // Spotbugs will in that case flag it as "is never used locally"
     class ThrowExceptionXml extends ActionTurnoutXml {
         @Override
-        public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+        public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
             throw new JmriConfigureXmlException();
         }
     }

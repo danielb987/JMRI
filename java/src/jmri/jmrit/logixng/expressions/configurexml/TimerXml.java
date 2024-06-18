@@ -24,10 +24,12 @@ public class TimerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         Timer p = (Timer) o;
 
         Element element = new Element("Timer");
@@ -48,7 +50,7 @@ public class TimerXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         Timer h = new Timer(sys, uname);

@@ -39,10 +39,12 @@ public class StringManyXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a Many
      *
      * @param o Object to store, of type Many
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         StringMany p = (StringMany) o;
 
         Element element = new Element("StringMany");
@@ -73,7 +75,7 @@ public class StringManyXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         
         List<Map.Entry<String, String>> actionSystemNames = new ArrayList<>();
         

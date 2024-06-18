@@ -25,10 +25,12 @@ public class ActionSoundXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
      * Default implementation for storing the contents of a SE8cSignalMast
      *
      * @param o Object to store, of type TripleLightSignalMast
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionSound p = (ActionSound) o;
 
         Element element = new Element("ActionSound");
@@ -50,7 +52,7 @@ public class ActionSoundXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionSound h = new ActionSound(sys, uname);

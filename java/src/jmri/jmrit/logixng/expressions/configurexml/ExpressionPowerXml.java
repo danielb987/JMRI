@@ -21,10 +21,12 @@ public class ExpressionPowerXml extends jmri.jmrit.logixng.configurexml.StoreAnd
      * Default implementation for storing the contents of a ExpressionPower
      *
      * @param o Object to store, of type ExpressionPower
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionPower p = (ExpressionPower) o;
 
         Element element = new Element("ExpressionPower");
@@ -43,7 +45,7 @@ public class ExpressionPowerXml extends jmri.jmrit.logixng.configurexml.StoreAnd
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionPower h = new ExpressionPower(sys, uname);

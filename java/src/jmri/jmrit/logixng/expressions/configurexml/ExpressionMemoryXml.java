@@ -25,10 +25,12 @@ public class ExpressionMemoryXml extends jmri.jmrit.logixng.configurexml.StoreAn
      * Default implementation for storing the contents of a ExpressionMemory
      *
      * @param o Object to store, of type ExpressionMemory
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionMemory p = (ExpressionMemory) o;
 
         LogixNG_SelectTableXml selectTableXml = new LogixNG_SelectTableXml();
@@ -64,7 +66,7 @@ public class ExpressionMemoryXml extends jmri.jmrit.logixng.configurexml.StoreAn
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionMemory h = new ExpressionMemory(sys, uname);

@@ -17,6 +17,8 @@ public abstract class StoreAndLoadXml extends AbstractNamedBeanManagerConfigXML 
 
 // sed -i 's/jmri.managers.configurexml.AbstractNamedBeanManagerConfigXML/jmri.jmrit.logixng.configurexml.StoreAndLoadXml/g' *
 
+// sed -i 's/public boolean load(Element shared, Element perNode)/public boolean load(Element shared, ImportData importData)/g' *
+
 /*
 
 Substitute "Some...\n...Thing" by the contents of file "new" in one or more input files
@@ -36,22 +38,25 @@ perl -i -p0e 's/     \* \@return Element containing the complete info\n     \*\/
 */
 
     @Override
-    public Element store(Object o) {
+    public final Element store(Object o) {
+//        throw new UnsupportedOperationException("Not supported");
         return store(o, new ExportData());
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public final boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
         return load(shared, new ImportData());
     }
 
-    public Element store(Object o, ExportData exportData) {
-        return store(o);    // Temporary until all classes are refactorized
-    }
+    public abstract Element store(Object o, ExportData exportData);
+//    public Element store(Object o, ExportData exportData) {
+//        return store(o);    // Temporary until all classes are refactorized
+//    }
 
-    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
-        return load(shared, (Element)null);  // Temporary until all classes are refactorized
-    }
+    public abstract boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException;
+//    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
+//        return load(shared, (Element)null);  // Temporary until all classes are refactorized
+//    }
 
     /**
      * Data when doing an export.

@@ -22,10 +22,12 @@ public class HoldXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         Hold p = (Hold) o;
 
         Element element = new Element("Hold");
@@ -65,7 +67,7 @@ public class HoldXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         Hold h = new Hold(sys, uname);

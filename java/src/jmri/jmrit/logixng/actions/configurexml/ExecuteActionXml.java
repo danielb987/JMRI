@@ -23,10 +23,12 @@ public class ExecuteActionXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
      * Default implementation for storing the contents of an ExecuteAction
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExecuteAction p = (ExecuteAction) o;
 
         Element element = new Element("ExecuteAction");
@@ -42,7 +44,7 @@ public class ExecuteActionXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExecuteAction h = new ExecuteAction(sys, uname);

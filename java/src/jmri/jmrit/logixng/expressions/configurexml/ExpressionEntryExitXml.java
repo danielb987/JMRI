@@ -25,10 +25,12 @@ public class ExpressionEntryExitXml extends jmri.jmrit.logixng.configurexml.Stor
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleEntryExitSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionEntryExit p = (ExpressionEntryExit) o;
 
         Element element = new Element("ExpressionEntryExit");
@@ -55,7 +57,7 @@ public class ExpressionEntryExitXml extends jmri.jmrit.logixng.configurexml.Stor
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionEntryExit h = new ExpressionEntryExit(sys, uname);

@@ -21,10 +21,12 @@ public class WebBrowserXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a WebBrowser
      *
      * @param o Object to store, of type WebBrowser
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         WebBrowser p = (WebBrowser) o;
 
         Element element = new Element("WebBrowser");
@@ -51,7 +53,7 @@ public class WebBrowserXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
 
         String sys = getSystemName(shared);
         String uname = getUserName(shared);

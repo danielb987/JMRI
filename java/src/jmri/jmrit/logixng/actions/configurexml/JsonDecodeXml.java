@@ -22,10 +22,12 @@ public class JsonDecodeXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a JsonDecode
      *
      * @param o Object to store, of type JsonDecode
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         JsonDecode p = (JsonDecode) o;
 
         Element element = new Element("JsonDecode");   // NOI18N
@@ -48,7 +50,7 @@ public class JsonDecodeXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         JsonDecode h = new JsonDecode(sys, uname);

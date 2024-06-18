@@ -25,10 +25,11 @@ public class DefaultModuleXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
      * Default implementation for storing the contents of a DefaultModule
      *
      * @param o Object to store, of type DefaultModule
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         DefaultModule p = (DefaultModule) o;
 
         Element element = new Element("Module");
@@ -67,7 +68,7 @@ public class DefaultModuleXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         

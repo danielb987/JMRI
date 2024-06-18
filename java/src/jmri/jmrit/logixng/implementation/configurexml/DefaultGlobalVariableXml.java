@@ -23,10 +23,11 @@ public class DefaultGlobalVariableXml extends jmri.jmrit.logixng.configurexml.St
      * Default implementation for storing the contents of a DefaultGlobalVariable
      *
      * @param o Object to store, of type DefaultGlobalVariable
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         DefaultGlobalVariable p = (DefaultGlobalVariable) o;
 
         Element element = new Element("GlobalVariable");
@@ -45,7 +46,7 @@ public class DefaultGlobalVariableXml extends jmri.jmrit.logixng.configurexml.St
     }
 
     @Override
-    public boolean load(Element shared, Element perNode)
+    public boolean load(Element shared, ImportData importData)
             throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);

@@ -26,10 +26,12 @@ public class ActionLightXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionLight p = (ActionLight) o;
 
         Element element = new Element("ActionLight");
@@ -57,7 +59,7 @@ public class ActionLightXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionLight h = new ActionLight(sys, uname);

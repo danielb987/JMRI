@@ -26,10 +26,11 @@ public class PublishXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml 
      * Default implementation for storing the contents of a publish action.
      *
      * @param o Object to store, of type Publish
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         Publish p = (Publish) o;
 
         var selectTopicXml = new LogixNG_SelectStringXml();
@@ -53,7 +54,7 @@ public class PublishXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml 
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
 

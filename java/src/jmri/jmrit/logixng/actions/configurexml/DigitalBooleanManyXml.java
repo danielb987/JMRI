@@ -26,10 +26,12 @@ public class DigitalBooleanManyXml extends jmri.jmrit.logixng.configurexml.Store
      * Default implementation for storing the contents of a Many
      *
      * @param o Object to store, of type Many
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         DigitalBooleanMany p = (DigitalBooleanMany) o;
 
         Element element = new Element("DigitalBooleanMany");
@@ -60,7 +62,7 @@ public class DigitalBooleanManyXml extends jmri.jmrit.logixng.configurexml.Store
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         
         List<Map.Entry<String, String>> actionSystemNames = new ArrayList<>();
         

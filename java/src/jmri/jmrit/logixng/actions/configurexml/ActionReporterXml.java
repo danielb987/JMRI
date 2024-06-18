@@ -29,10 +29,12 @@ public class ActionReporterXml extends jmri.jmrit.logixng.configurexml.StoreAndL
      * Default implementation for storing the contents of a Reporter
      *
      * @param o Object to store, of type Reporter
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionReporter p = (ActionReporter) o;
 
         Element element = new Element("ActionReporter");
@@ -58,7 +60,7 @@ public class ActionReporterXml extends jmri.jmrit.logixng.configurexml.StoreAndL
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionReporter h = new ActionReporter(sys, uname);

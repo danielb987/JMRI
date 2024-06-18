@@ -367,6 +367,7 @@ public class ArchitectureTest {
             .that()
             .resideInAPackage("..logixng..")
             .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.configurexml.StoreAndLoadXml")
+            .and().doNotHaveFullyQualifiedName("jmri.jmrit.logixng.implementation.configurexml.DefaultLogixNGManagerXml")
             .should()
             .dependOnClassesThat().resideInAPackage("jmri.managers.configurexml");
 

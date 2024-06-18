@@ -29,10 +29,12 @@ public class ActionWarrantXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
      * Default implementation for storing the contents of a Warrant
      *
      * @param o Object to store, of type TriggerWarrant
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionWarrant p = (ActionWarrant) o;
 
         Element element = new Element("ActionWarrant");
@@ -62,7 +64,7 @@ public class ActionWarrantXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionWarrant h = new ActionWarrant(sys, uname);

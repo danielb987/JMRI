@@ -23,10 +23,12 @@ public class IfThenElseXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         IfThenElse p = (IfThenElse) o;
 
         Element element = new Element("IfThenElse");
@@ -77,7 +79,7 @@ public class IfThenElseXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
 
         IfThenElse.ExecuteType executeType = IfThenElse.ExecuteType.ExecuteOnChange;
         IfThenElse.EvaluateType evaluateType = IfThenElse.EvaluateType.EvaluateAll;

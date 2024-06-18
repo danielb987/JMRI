@@ -25,10 +25,12 @@ public class ActionTurnoutXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
      * Default implementation for storing the contents of a ActionTurnout
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionTurnout p = (ActionTurnout) o;
 
         var selectNamedBeanXml = new LogixNG_SelectNamedBeanXml<Turnout>();
@@ -47,7 +49,7 @@ public class ActionTurnoutXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionTurnout h = new ActionTurnout(sys, uname);

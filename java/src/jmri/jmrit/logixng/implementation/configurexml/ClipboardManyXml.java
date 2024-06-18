@@ -20,10 +20,11 @@ public class ClipboardManyXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
      * Default implementation for storing the contents of a Many
      *
      * @param o Object to store, of type Many
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         ClipboardMany p = (ClipboardMany) o;
 
         Element element = new Element("Many");
@@ -49,7 +50,7 @@ public class ClipboardManyXml extends jmri.jmrit.logixng.configurexml.StoreAndLo
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         throw new UnsupportedOperationException("Not supported");
     }
     

@@ -26,10 +26,12 @@ public class ActionDispatcherXml extends jmri.jmrit.logixng.configurexml.StoreAn
      * Default implementation for storing the contents of a Dispatcher action
      *
      * @param o Object to store, of type ActionDispatcher
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionDispatcher p = (ActionDispatcher) o;
 
         Element element = new Element("ActionDispatcher");
@@ -65,7 +67,7 @@ public class ActionDispatcherXml extends jmri.jmrit.logixng.configurexml.StoreAn
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionDispatcher h = new ActionDispatcher(sys, uname);

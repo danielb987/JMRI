@@ -29,10 +29,12 @@ public class ActionMemoryXml extends jmri.jmrit.logixng.configurexml.StoreAndLoa
      * Default implementation for storing the contents of a ActionMemory
      *
      * @param o Object to store, of type ActionMemory
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionMemory p = (ActionMemory) o;
 
         LogixNG_SelectTableXml selectTableXml = new LogixNG_SelectTableXml();
@@ -61,7 +63,7 @@ public class ActionMemoryXml extends jmri.jmrit.logixng.configurexml.StoreAndLoa
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionMemory h = new ActionMemory(sys, uname);

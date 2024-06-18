@@ -23,10 +23,11 @@ public class DefaultCsvNamedTableXml extends jmri.jmrit.logixng.configurexml.Sto
      * Default implementation for storing the contents of a DefaultCsvNamedTable
      *
      * @param o Object to store, of type DefaultCsvNamedTable
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         DefaultCsvNamedTable p = (DefaultCsvNamedTable) o;
 
         Element element = new Element("CsvTable");
@@ -49,7 +50,7 @@ public class DefaultCsvNamedTableXml extends jmri.jmrit.logixng.configurexml.Sto
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         String fileName = shared.getChild("fileName").getTextTrim();

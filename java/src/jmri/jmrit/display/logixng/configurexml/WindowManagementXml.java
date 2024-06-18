@@ -25,10 +25,11 @@ public class WindowManagementXml extends jmri.jmrit.logixng.configurexml.StoreAn
      * Default implementation for storing the contents of a WindowManagement
      *
      * @param o Object to store, of type TripleTurnoutSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
         WindowManagement p = (WindowManagement) o;
 
         var selectEnumHideOrShowXml = new LogixNG_SelectEnumXml<WindowManagement.HideOrShow>();
@@ -67,7 +68,7 @@ public class WindowManagementXml extends jmri.jmrit.logixng.configurexml.StoreAn
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {     // Test class that inherits this class throws exception
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         WindowManagement h = new WindowManagement(sys, uname);

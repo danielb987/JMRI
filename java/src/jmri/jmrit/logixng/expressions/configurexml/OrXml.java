@@ -27,10 +27,12 @@ public class OrXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of a ActionMany
      *
      * @param o Object to store, of type ActionMany
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         Or p = (Or) o;
 
         Element element = new Element("Or");
@@ -63,7 +65,7 @@ public class OrXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         List<Map.Entry<String, String>> expressionSystemNames = new ArrayList<>();
 
         Element actionElement = shared.getChild("Expressions");

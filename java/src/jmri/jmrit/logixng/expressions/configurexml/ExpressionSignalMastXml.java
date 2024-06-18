@@ -25,10 +25,12 @@ public class ExpressionSignalMastXml extends jmri.jmrit.logixng.configurexml.Sto
      * Default implementation for storing the contents of a SE8cSignalMast
      *
      * @param o Object to store, of type TripleLightSignalMast
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionSignalMast p = (ExpressionSignalMast) o;
 
         Element element = new Element("ExpressionSignalMast");
@@ -59,7 +61,7 @@ public class ExpressionSignalMastXml extends jmri.jmrit.logixng.configurexml.Sto
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionSignalMast h = new ExpressionSignalMast(sys, uname);

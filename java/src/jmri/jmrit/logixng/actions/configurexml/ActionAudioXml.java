@@ -23,10 +23,12 @@ public class ActionAudioXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleAudioSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionAudio p = (ActionAudio) o;
 
         Element element = new Element("ActionAudio");
@@ -45,7 +47,7 @@ public class ActionAudioXml extends jmri.jmrit.logixng.configurexml.StoreAndLoad
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionAudio h = new ActionAudio(sys, uname);

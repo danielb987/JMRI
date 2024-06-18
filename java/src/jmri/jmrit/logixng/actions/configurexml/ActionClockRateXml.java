@@ -25,10 +25,12 @@ public class ActionClockRateXml extends jmri.jmrit.logixng.configurexml.StoreAnd
      * Default implementation for storing the contents of a clock action.
      *
      * @param o Object to store, of type ActionClockRate
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ActionClockRate p = (ActionClockRate) o;
 
         var selectEnumXml = new LogixNG_SelectEnumXml<ActionClockRate.ClockState>();
@@ -47,7 +49,7 @@ public class ActionClockRateXml extends jmri.jmrit.logixng.configurexml.StoreAnd
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ActionClockRate h = new ActionClockRate(sys, uname);

@@ -27,10 +27,12 @@ public class ShowDialogXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
      * Default implementation for storing the contents of a SE8cSignalHead
      *
      * @param o Object to store, of type TripleLightSignalHead
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ShowDialog p = (ShowDialog) o;
 
         Element element = new Element("ShowDialog");
@@ -95,7 +97,7 @@ public class ShowDialogXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadX
     }
     
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ShowDialog h = new ShowDialog(sys, uname);

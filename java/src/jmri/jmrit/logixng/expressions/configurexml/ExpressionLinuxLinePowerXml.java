@@ -22,10 +22,12 @@ public class ExpressionLinuxLinePowerXml extends jmri.jmrit.logixng.configurexml
      * Default implementation for storing the contents of a ExpressionLinuxLinePower
      *
      * @param o Object to store, of type ExpressionLinuxLinePower
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         ExpressionLinuxLinePower p = (ExpressionLinuxLinePower) o;
 
         Element element = new Element("ExpressionLinuxLinePower");
@@ -40,7 +42,7 @@ public class ExpressionLinuxLinePowerXml extends jmri.jmrit.logixng.configurexml
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
+    public boolean load(Element shared, ImportData importData) throws JmriConfigureXmlException {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         ExpressionLinuxLinePower h = new ExpressionLinuxLinePower(sys, uname);

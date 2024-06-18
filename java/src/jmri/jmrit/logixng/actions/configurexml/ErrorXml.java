@@ -21,10 +21,12 @@ public class ErrorXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
      * Default implementation for storing the contents of an Error
      *
      * @param o Object to store, of type Error
+     * @param exportData export data
      * @return Element containing the complete info
      */
     @Override
-    public Element store(Object o) {
+    public Element store(Object o, ExportData exportData) {
+
         Error p = (Error) o;
 
         Element element = new Element("Error");
@@ -39,7 +41,7 @@ public class ErrorXml extends jmri.jmrit.logixng.configurexml.StoreAndLoadXml {
     }
 
     @Override
-    public boolean load(Element shared, Element perNode) {
+    public boolean load(Element shared, ImportData importData) {
         String sys = getSystemName(shared);
         String uname = getUserName(shared);
         Error h = new Error(sys, uname);
