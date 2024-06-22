@@ -2028,7 +2028,7 @@
                  use="true"
                  failonerror="true"
                  failonwarning="true"
-                 source="11"
+                 source="17"
                  windowtitle="JMRI API"
                  useexternalfile="yes"
             >
@@ -2089,7 +2089,7 @@
             <!-- <link href="https://static.javadoc.io/com.alexandriasoftware.swing/jsplitbutton/1.3.1/" packagelistLoc="lib/jsplitbutton-1.3.1-package-list"/>  redirected to next line -->
             <link href="https://www.javadoc.io/doc/com.alexandriasoftware.swing/jsplitbutton/1.3.1/" packagelistLoc="lib/jsplitbutton-1.3.1-package-list"/>
 
-            <link href="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
+            <link href="https://docs.oracle.com/en/java/javase/17/docs/api/"/>
             <link href="http://www.jdom.org/docs/apidocs/"/>
             <link href="https://commons.apache.org/proper/commons-csv/apidocs/"/>
             <link href="https://logging.apache.org/log4j/1.x/apidocs/"/>
@@ -2113,7 +2113,7 @@
     <!-- Does not work with Java 10 or later,                      -->
     <!-- see https://github.com/gboersma/uml-java-doclet           -->
     <target name="javadoc-uml" depends="check-java-version-requirement, init, jjdoc, compile-generated-source, plantuml, get-version-string"
-                    description="create Javadocs with UML, requires Java 11">
+                    description="create Javadocs with UML, requires Java 17">
         <javadoc packagenames="jmri.*, apps.*"
                  maxmemory="1536m"
                  overview="${source}/jmri/overview.html"
@@ -2125,7 +2125,7 @@
                  use="true"
                  failonerror="true"
                  failonwarning="false"
-                 source="11"
+                 source="17"
                  windowtitle="JMRI API"
             > <!-- failonwarning="false"  because always warns on cyclic redundancy with JDK11 -->
 
@@ -2190,7 +2190,7 @@
 
             <link href="https://www.javadoc.io/doc/org.openlcb/openlcb/latest/" />
 
-            <link href="http://docs.oracle.com/en/java/javase/11/docs/api/"/>
+            <link href="http://docs.oracle.com/en/java/javase/17/docs/api/"/>
             <link href="http://www.jdom.org/docs/apidocs/"/>
             <link href="https://commons.apache.org/proper/commons-csv/apidocs/"/>
             <link href="http://logging.apache.org/log4j/1.2/apidocs/"/>
