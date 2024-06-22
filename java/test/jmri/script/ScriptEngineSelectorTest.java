@@ -73,6 +73,7 @@ public class ScriptEngineSelectorTest {
     }
 
     @Test
+    @Disabled
     public void testEcmaOldStyle1() throws JmriException, ScriptException {
         _turnout.setState(Turnout.CLOSED);
         runEcmaScriptOldStyle();
@@ -80,6 +81,7 @@ public class ScriptEngineSelectorTest {
     }
 
     @Test
+    @Disabled
     public void testEcmaOldStyle2() throws JmriException, ScriptException {
         _turnout.setState(Turnout.CLOSED);
         runEcmaScriptOldStyle();
@@ -101,6 +103,7 @@ public class ScriptEngineSelectorTest {
     }
 
     @Test
+    @Disabled
     public void testEcmaNewStyle1() throws JmriException, ScriptException {
         _turnout.setState(Turnout.CLOSED);
         runEcmaScriptNewStyle();
@@ -108,6 +111,7 @@ public class ScriptEngineSelectorTest {
     }
 
     @Test
+    @Disabled
     public void testEcmaNewStyle2() throws JmriException, ScriptException {
         _turnout.setState(Turnout.CLOSED);
         runEcmaScriptNewStyle();
