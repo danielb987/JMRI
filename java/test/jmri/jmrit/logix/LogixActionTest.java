@@ -159,8 +159,17 @@ public class LogixActionTest {
     @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetInstanceManager();
         JUnitUtil.resetProfileManager();
         JUnitUtil.initConfigureManager();
+
+        JUnitUtil.initInternalTurnoutManager();
+        JUnitUtil.initInternalLightManager();
+        JUnitUtil.initInternalSensorManager();
+        JUnitUtil.initRouteManager();
+        JUnitUtil.initMemoryManager();
+        JUnitUtil.initReporterManager();
+        JUnitUtil.initOBlockManager();
 
         JUnitUtil.initLogixManager();
         JUnitUtil.initConditionalManager();
