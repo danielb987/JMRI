@@ -2,8 +2,7 @@ package jmri.jmrix;
 
 import java.awt.GraphicsEnvironment;
 
-import jmri.jmrix.loconet.LnTrafficController;
-import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
+import jmri.jmrix.loconet.*;
 import jmri.jmrix.mqtt.MqttSystemConnectionMemo;
 import jmri.util.JUnitUtil;
 
@@ -110,11 +109,19 @@ public class SystemConnectionMemoManagerTest {
 
     @AfterEach
     public void tearDown() {
+        mqttMemo.dispose();
         mqttMemo = null;
+        lnMemo1.dispose();
         lnMemo1 = null;
+        lnMemo2.dispose();
         lnMemo2 = null;
+        lnis2.dispose();
         lnis1 = null;
+        lnis2.dispose();
         lnis2 = null;
+
+        JUnitUtil.waitThreadTerminated("LocoNet" + LocoNetThrottledTransmitter.SERVICE_THREAD_NAME);
+        JUnitUtil.waitThreadTerminated("LocoNet2" + LocoNetThrottledTransmitter.SERVICE_THREAD_NAME);
 
         JUnitUtil.deregisterBlockManagerShutdownTask();
         JUnitUtil.tearDown();
