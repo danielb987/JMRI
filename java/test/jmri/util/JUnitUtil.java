@@ -1435,6 +1435,8 @@ public class JUnitUtil {
         }
     }
 
+    private static final Set<Thread> failedThreads = new HashSet<>();
+
     /**
      * Assert that a particular thread has terminated, ie is no longer alive.
      * A non-existent Thread is not an test failure.
@@ -1444,6 +1446,13 @@ public class JUnitUtil {
     public static void assertThreadTerminated( String threadName ) {
         Thread t = getThreadByName( threadName );
         if ( t != null ) {
+            // If the thread has remained once, it might continue to remain for
+            // a lot of other tests as well. We want to find the first failure,
+            // not the rest of failures.
+            if (failedThreads.contains(t)) {
+                return;
+            }
+            failedThreads.add(t);
             Assert.fail("Thread \"" + threadName + "\" is still running");
         }
     }
