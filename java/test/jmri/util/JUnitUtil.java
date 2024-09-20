@@ -380,6 +380,9 @@ public class JUnitUtil {
      */
     public static void tearDown() {
 
+        // Ensure all LocoNetThrottledTransmitter threads has ended
+        assertThreadTerminated("LocoNet LocoNetThrottledTransmitter");
+
         // Stop all LogixNG threads
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
 
@@ -1429,6 +1432,19 @@ public class JUnitUtil {
         Thread t = getThreadByName( threadName );
         if ( t != null ) {
             waitFor( () -> !t.isAlive(), "Thread \"" + threadName + "\" is still alive");
+        }
+    }
+
+    /**
+     * Assert that a particular thread has terminated, ie is no longer alive.
+     * A non-existent Thread is not an test failure.
+     * A Thread which has not complete IS a test failure.
+     * @param threadName full name of the Thread to check.
+     */
+    public static void assertThreadTerminated( String threadName ) {
+        Thread t = getThreadByName( threadName );
+        if ( t != null ) {
+            Assert.fail("Thread \"" + threadName + "\" is still running");
         }
     }
 
