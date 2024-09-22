@@ -43,7 +43,10 @@ public class EditorFrameOperator extends JFrameOperator {
 
     }
 
+    private static final java.util.concurrent.atomic.AtomicInteger count = new java.util.concurrent.atomic.AtomicInteger(0);
+
     private void dismissClosingDialogs(){
+        log.warn("Daniel: dismissClosingDialogs: {}", count.incrementAndGet());
         // the reminder dialog doesn't appear every time we close, so put
         // pressing the button in that dialog into a thread by itself.  If
         // the dialog appears, it will get clicked, but it's not an error
@@ -101,4 +104,5 @@ public class EditorFrameOperator extends JFrameOperator {
         jmri.util.JUnitUtil.removeMatchingThreads(DELETE_THREAD_NAME);
     }
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EditorFrameOperator.class);
 }
