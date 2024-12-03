@@ -148,7 +148,7 @@ public abstract class AbstractTurnout extends AbstractNamedBean implements
      */
     @Override
     public final void setCommandedState(int s) {
-        if (InstanceManager.getDefault(TurnoutManager.class).isUseIntervals()) {
+        if (true || InstanceManager.getDefault(TurnoutManager.class).isUseIntervals()) {
             setCommandedStateAtInterval(s);
         } else {
             setCommandedStateInternal(s);

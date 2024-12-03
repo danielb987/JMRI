@@ -389,12 +389,12 @@ public abstract class DefaultSystemConnectionMemo extends Bean implements System
     private int _interval = getDefaultOutputInterval();
 
     /**
-     * Default interval 250ms.
+     * Default interval 0ms.
      * {@inheritDoc}
      */
     @Override
     public int getDefaultOutputInterval(){
-        return 250;
+        return 0;
     }
 
     /**
