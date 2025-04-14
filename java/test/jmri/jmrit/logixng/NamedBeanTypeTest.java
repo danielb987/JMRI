@@ -53,6 +53,20 @@ public class NamedBeanTypeTest {
         return superManagerClass;
     }
 
+    private static final java.util.PrimitiveIterator.OfInt iterator =
+            JUnitUtil.getRandomConstantSeed().ints('a', 'z'+10).iterator();
+
+    public static String getRandomString(int count) {
+        StringBuilder s = new StringBuilder();
+        for (int i=0; i < count; i++) {
+            int r = iterator.nextInt();
+            if (i == 0 && r > 'z') r -= 10;     // The first char must be a character, not a digit.
+            char c = (char) (r > 'z' ? r-'z'+'0' : r);
+            s.append(c);
+        }
+        return s.toString();
+    }
+
     @SuppressWarnings("unchecked")  // Unchecked cast due to type erasure
     private void testNamedBeanType(NamedBeanType namedBeanType, Class<?> rootManagerClass) {
 
@@ -65,9 +79,9 @@ public class NamedBeanTypeTest {
         if (createBean != null) {
             String namedBeanName = namedBeanType.getManager()
                     .getSystemNamePrefix()
-                    + CreateLogixNGTreeScaffold.getRandomString(20);
+                    + getRandomString(20);
 
-            String namedBeanUserName = "UserName_" + CreateLogixNGTreeScaffold.getRandomString(20);
+            String namedBeanUserName = "UserName_" + getRandomString(20);
 
             NamedBean namedBean;
             if (jmri.jmrit.logixng.GlobalVariable.class.isAssignableFrom(namedBeanType.getClazz())) {

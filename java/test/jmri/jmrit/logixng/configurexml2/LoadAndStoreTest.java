@@ -72,11 +72,18 @@ public class LoadAndStoreTest extends LoadAndStoreTestBase {
         nb.setName(dp1.getUserName());
     }
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LoadAndStoreTest.class);
+
     @BeforeEach
     @Override
     public void setUp(@TempDir java.io.File tempDir) throws IOException  {
+
+        log.warn("SignalHeadManager before: {}", InstanceManager.getDefault(jmri.SignalHeadManager.class).hashCode());
+
         super.setUp(tempDir);
 //        super.setUp(new File("temp"));
+
+        log.warn("SignalHeadManager after:  {}", InstanceManager.getDefault(jmri.SignalHeadManager.class).hashCode());
 
         JUnitUtil.initDebugThrottleManager();
         JUnitUtil.initDebugCommandStation();

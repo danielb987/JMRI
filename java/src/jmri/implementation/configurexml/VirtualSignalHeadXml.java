@@ -58,6 +58,7 @@ public class VirtualSignalHeadXml extends jmri.managers.configurexml.AbstractNam
 
         if ((existingBean != null) && (existingBean != h)) {
             log.error("systemName is already registered: {}", sys);
+            log.error("systemName is already registered: {}, {}, {}", sys, existingBean, InstanceManager.getDefault(jmri.SignalHeadManager.class).hashCode());
         } else {
             InstanceManager.getDefault(jmri.SignalHeadManager.class).register(h);
         }

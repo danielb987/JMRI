@@ -228,7 +228,23 @@ public class ActionListenOnBeans extends AbstractDigitalAction
     /** {@inheritDoc} */
     @Override
     public void setup() {
-        // Do nothing
+        for (NamedBeanReference ref : getReferences()) {
+            if (ref.getType() == NamedBeanType.EntryExit) {
+                // The EntryExit objects were not available during file loading.
+                if (ref.getName() != null && !ref.getName().isEmpty()) {
+                    String name = ref.getName();
+                    ref.setName((NamedBean)null);
+                    var nxBean = ref.getType().getManager().getNamedBean(name);
+                    if (nxBean != null) {
+                        ref.setName(name);
+                    } else {
+                        log.error("NX bean null for {} during setup", ref.getName());
+                    }
+                } else {
+                    log.error("NX name is null or empty");
+                }
+            }
+        }
     }
 
     /** {@inheritDoc} */
