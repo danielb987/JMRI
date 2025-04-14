@@ -14,7 +14,6 @@ import jmri.jmrit.logix.Warrant;
 import jmri.jmrit.logixng.SymbolTable.InitialValueType;
 import jmri.jmrit.logixng.actions.*;
 import jmri.jmrit.logixng.actions.ActionListenOnBeans.NamedBeanReference;
-import jmri.jmrit.logixng.util.*;
 import jmri.jmrix.loconet.*;
 import jmri.jmrix.mqtt.MqttSystemConnectionMemo;
 import jmri.util.JUnitUtil;
@@ -239,101 +238,8 @@ public class CreateLogixNGTreeScaffold {
         }
 
 
-        // Load table turnout_and_signals.csv
-        csvTable = InstanceManager.getDefault(NamedTableManager.class)
-                        .loadTableFromCSV("IQT1", null, "program:java/test/jmri/jmrit/logixng/panel_and_data_files/turnout_and_signals.csv");
-        Assert.assertNotNull(csvTable);
-
-        // Create module IQM1
-        Module module =
-                InstanceManager.getDefault(ModuleManager.class).createModule("IQM1", null,
-                        InstanceManager.getDefault(FemaleSocketManager.class)
-                                .getSocketTypeByType("DefaultFemaleDigitalActionSocket"));
-
-        module.addParameter("other", true, true);
-        module.addParameter("n", true, false);
-        module.addParameter("result", false, true);
-        module.addLocalVariable("temp1", SymbolTable.InitialValueType.None, null);
-        module.addLocalVariable("temp2", SymbolTable.InitialValueType.None, null);
-
-        DigitalMany many901 = new DigitalMany("IQDA901", null);
-        MaleSocket manySocket901 =
-                InstanceManager.getDefault(DigitalActionManager.class).registerAction(many901);
-        module.getRootSocket().connect(manySocket901);
-
-        // Create global variables
-        GlobalVariable globalVariable =
-                InstanceManager.getDefault(GlobalVariableManager.class)
-                        .createGlobalVariable("IQGV1", "index");
-        globalVariable.setInitialValueType(InitialValueType.String);
-        globalVariable.setInitialValueData("Something");
-
-        globalVariable =
-                InstanceManager.getDefault(GlobalVariableManager.class)
-                        .createGlobalVariable("IQGV2", "MyVariable");
-        globalVariable.setInitialValueType(InitialValueType.Formula);
-        globalVariable.setInitialValueData("\"Variable\" + str(index)");
-
-        globalVariable =
-                InstanceManager.getDefault(GlobalVariableManager.class)
-                        .createGlobalVariable("IQGV15", "AnotherGlobalVariable");
-        globalVariable.setInitialValueType(InitialValueType.Array);
-        globalVariable.setInitialValueData("");
-
-        globalVariable =
-                InstanceManager.getDefault(GlobalVariableManager.class)
-                        .createGlobalVariable(InstanceManager.getDefault(GlobalVariableManager.class)
-                                .getAutoSystemName(), "SomeOtherGlobalVariable");
-        globalVariable.setInitialValueType(InitialValueType.Map);
-        globalVariable.setInitialValueData(null);
-
-
-
-
-        // Create an empty LogixNG
-        logixNG_Manager.createLogixNG("An empty logixNG");
-
-        // Create a LogixNG with an empty ConditionalNG
-        LogixNG logixNG = logixNG_Manager.createLogixNG("A logixNG with an empty conditionlNG");
+        LogixNG logixNG = logixNG_Manager.createLogixNG("A logixNG");
         ConditionalNG conditionalNG =
-                conditionalNGManager.createConditionalNG(logixNG, "An empty conditionalNG");
-        logixNG.setEnabled(false);
-        conditionalNG.setEnabled(false);
-
-
-        // Create an empty ConditionalNG on the debug thread
-        conditionalNG =
-                conditionalNGManager.createConditionalNG(
-                        logixNG, "A second empty conditionalNG", LogixNG_Thread.DEFAULT_LOGIXNG_THREAD);
-        conditionalNG.setEnabled(false);
-
-
-        // Create an empty ConditionalNG on another thread
-        LogixNG_Thread.createNewThread(53, "My logixng thread");
-        conditionalNG =
-                conditionalNGManager.createConditionalNG(logixNG, "A third empty conditionalNG", 53);
-        conditionalNG.setEnabled(false);
-
-
-        // Create an empty ConditionalNG on another thread
-        LogixNG_Thread.createNewThread("My other logixng thread");
-        conditionalNG = conditionalNGManager.createConditionalNG(
-                logixNG, "A fourth empty conditionalNG", LogixNG_Thread.getThreadID("My other logixng thread"));
-        conditionalNG.setEnabled(false);
-
-
-        logixNG = logixNG_Manager.createLogixNG("A logixNG in the initialization table");
-        conditionalNGManager.createConditionalNG(logixNG, "Yet another another conditionalNG");
-        logixNG_InitializationManager.add(logixNG);
-
-
-        logixNG = logixNG_Manager.createLogixNG("Another logixNG in the initialization table");
-        conditionalNGManager.createConditionalNG(logixNG, "Yet another another another conditionalNG");
-        logixNG_InitializationManager.add(logixNG);
-
-
-        logixNG = logixNG_Manager.createLogixNG("A logixNG");
-        conditionalNG =
                 conditionalNGManager.createConditionalNG(logixNG, "Yet another conditionalNG");
         logixNG.setEnabled(false);
         conditionalNG.setEnabled(true);
@@ -355,179 +261,15 @@ public class CreateLogixNGTreeScaffold {
         maleSocket.setEnabled(false);
         actionManySocket.getChild(indexAction++).connect(maleSocket);
 
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Light:"+light1.getSystemName());
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        NamedBeanReference ref = getNamedBeanReference(actionListenOnBeans.getReferences(), light1.getSystemName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(light1.getSystemName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Light, ref.getType());
-        Assert.assertFalse(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Light:"+light2.getUserName());
-        actionListenOnBeans.setLocalVariableNamedBean("localVariableNamedBean");
-        actionListenOnBeans.setLocalVariableEvent("localVariableEvent");
-        actionListenOnBeans.setLocalVariableNewValue("localVariableNewValue");
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), light2.getUserName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(light2.getUserName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Light, ref.getType());
-        Assert.assertFalse(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Memory:"+memory1.getSystemName()+":no");
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), memory1.getSystemName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(memory1.getSystemName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Memory, ref.getType());
-        Assert.assertFalse(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Memory:"+memory2.getUserName()+":yes");
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), memory2.getUserName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(memory2.getUserName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Memory, ref.getType());
-        Assert.assertTrue(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Sensor:"+sensor1.getSystemName());
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), sensor1.getSystemName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(sensor1.getSystemName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Sensor, ref.getType());
-        Assert.assertFalse(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Sensor:"+sensor2.getUserName());
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), sensor2.getUserName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(sensor2.getUserName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Sensor, ref.getType());
-        Assert.assertFalse(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Turnout:"+turnout1.getSystemName());
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), turnout1.getSystemName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(turnout1.getSystemName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Turnout, ref.getType());
-        Assert.assertFalse(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference("Turnout:"+turnout2.getUserName()+":yes");
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-        ref = getNamedBeanReference(actionListenOnBeans.getReferences(), turnout2.getUserName());
-        Assert.assertNotNull(ref);
-        Assert.assertEquals(turnout2.getUserName(), ref.getName());
-        Assert.assertEquals(NamedBeanType.Turnout, ref.getType());
-        Assert.assertTrue(ref.getListenOnAllProperties());
-
-        actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-        actionListenOnBeans.setComment("A comment");
-        actionListenOnBeans.addReference(new NamedBeanReference("MyGlobalVariable", NamedBeanType.GlobalVariable, false));
-        maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-
         for (NamedBeanType namedBeanType : NamedBeanType.values()) {
-            actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
-            actionListenOnBeans.setComment("A comment");
-            actionListenOnBeans.addReference(new NamedBeanReference("MyBean"+namedBeanType.name(), namedBeanType, false));
-            maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
-            actionManySocket.getChild(indexAction++).connect(maleSocket);
+            if (namedBeanType == NamedBeanType.EntryExit) {
+                actionListenOnBeans = new ActionListenOnBeans(digitalActionManager.getAutoSystemName(), null);
+                actionListenOnBeans.setComment("A comment");
+                actionListenOnBeans.addReference(new NamedBeanReference("MyBean"+namedBeanType.name(), namedBeanType, false));
+                maleSocket = digitalActionManager.registerAction(actionListenOnBeans);
+                actionManySocket.getChild(indexAction++).connect(maleSocket);
+            }
         }
-
-
-
-
-
-
-        ActionEntryExit entryExit = new ActionEntryExit(digitalActionManager.getAutoSystemName(), null);
-        maleSocket = digitalActionManager.registerAction(entryExit);
-        maleSocket.setEnabled(false);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-
-        entryExit = new ActionEntryExit(digitalActionManager.getAutoSystemName(), null);
-        entryExit.setComment("A comment");
-        entryExit.getSelectEnum().setEnum(ActionEntryExit.Operation.SetNXPairDisabled);
-        entryExit.getSelectNamedBean().setNamedBean(dp1);
-        entryExit.getSelectNamedBean().setAddressing(NamedBeanAddressing.Direct);
-        entryExit.getSelectNamedBean().setFormula("\"IT\"+index");
-        entryExit.getSelectNamedBean().setLocalVariable("index");
-        entryExit.getSelectNamedBean().setReference("{IM1}");
-        entryExit.getSelectEnum().setAddressing(NamedBeanAddressing.LocalVariable);
-        entryExit.getSelectEnum().setFormula("\"IT\"+index2");
-        entryExit.getSelectEnum().setLocalVariable("index2");
-        entryExit.getSelectEnum().setReference("{IM2}");
-        maleSocket = digitalActionManager.registerAction(entryExit);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-
-        entryExit = new ActionEntryExit(digitalActionManager.getAutoSystemName(), null);
-        entryExit.setComment("A comment");
-        entryExit.getSelectEnum().setEnum(ActionEntryExit.Operation.SetNXPairEnabled);
-        entryExit.getSelectNamedBean().setNamedBean(dp2);
-        entryExit.getSelectNamedBean().setAddressing(NamedBeanAddressing.LocalVariable);
-        entryExit.getSelectNamedBean().setFormula("\"IT\"+index");
-        entryExit.getSelectNamedBean().setLocalVariable("index");
-        entryExit.getSelectNamedBean().setReference("{IM1}");
-        entryExit.getSelectEnum().setAddressing(NamedBeanAddressing.Formula);
-        entryExit.getSelectEnum().setFormula("\"IT\"+index2");
-        entryExit.getSelectEnum().setLocalVariable("index2");
-        entryExit.getSelectEnum().setReference("{IM2}");
-        maleSocket = digitalActionManager.registerAction(entryExit);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-
-        entryExit = new ActionEntryExit(digitalActionManager.getAutoSystemName(), null);
-        entryExit.setComment("A comment");
-        entryExit.getSelectEnum().setEnum(ActionEntryExit.Operation.SetNXPairSegment);
-        entryExit.getSelectNamedBean().setAddressing(NamedBeanAddressing.Formula);
-        entryExit.getSelectNamedBean().setFormula("\"IT\"+index");
-        entryExit.getSelectNamedBean().setLocalVariable("index");
-        entryExit.getSelectNamedBean().setReference("{IM1}");
-        entryExit.getSelectEnum().setAddressing(NamedBeanAddressing.Reference);
-        entryExit.getSelectEnum().setFormula("\"IT\"+index2");
-        entryExit.getSelectEnum().setLocalVariable("index2");
-        entryExit.getSelectEnum().setReference("{IM2}");
-        maleSocket = digitalActionManager.registerAction(entryExit);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
-
-        entryExit = new ActionEntryExit(digitalActionManager.getAutoSystemName(), null);
-        entryExit.setUserName("An entry/exit action");     // Used by executeAction below
-        entryExit.setComment("A comment");
-        entryExit.getSelectEnum().setEnum(ActionEntryExit.Operation.SetNXPairDisabled);
-        entryExit.getSelectNamedBean().setAddressing(NamedBeanAddressing.Reference);
-        entryExit.getSelectNamedBean().setFormula("\"IT\"+index");
-        entryExit.getSelectNamedBean().setLocalVariable("index");
-        entryExit.getSelectNamedBean().setReference("{IM1}");
-        entryExit.getSelectEnum().setAddressing(NamedBeanAddressing.Direct);
-        entryExit.getSelectEnum().setFormula("\"IT\"+index2");
-        entryExit.getSelectEnum().setLocalVariable("index2");
-        entryExit.getSelectEnum().setReference("{IM2}");
-        maleSocket = digitalActionManager.registerAction(entryExit);
-        actionManySocket.getChild(indexAction++).connect(maleSocket);
     }
 
 
