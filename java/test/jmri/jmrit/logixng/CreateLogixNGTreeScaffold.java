@@ -2,20 +2,14 @@ package jmri.jmrit.logixng;
 
 import java.awt.GraphicsEnvironment;
 import java.beans.PropertyVetoException;
-import java.util.*;
 
 import jmri.*;
 import jmri.implementation.VirtualSignalHead;
 import jmri.jmrit.entryexit.DestinationPoints;
 import jmri.jmrit.entryexit.EntryExitPairs;
-import jmri.jmrit.logix.BlockOrder;
-import jmri.jmrit.logix.OBlock;
-import jmri.jmrit.logix.Warrant;
 import jmri.jmrit.logixng.SymbolTable.InitialValueType;
 import jmri.jmrit.logixng.actions.*;
 import jmri.jmrit.logixng.actions.ActionListenOnBeans.NamedBeanReference;
-import jmri.jmrix.loconet.*;
-import jmri.jmrix.mqtt.MqttSystemConnectionMemo;
 import jmri.util.JUnitUtil;
 
 import org.junit.*;
@@ -34,9 +28,6 @@ public class CreateLogixNGTreeScaffold {
         setupHasBeenCalled = newVal;
     }
 
-    private LocoNetSystemConnectionMemo _locoNetMemo;
-    private MqttSystemConnectionMemo _mqttMemo;
-
     private Block block1;
     private Block block2;
     private Reporter reporter1;
@@ -53,50 +44,23 @@ public class CreateLogixNGTreeScaffold {
     private Turnout turnout3;
     private Turnout turnout4;
     private Turnout turnout5;
-    private Memory memory1;
     private Memory memory2;
     private DestinationPoints dp1;
     private DestinationPoints dp2;
-    private NamedTable csvTable;
-    private StringIO stringIO;
-
-    private LogixManager logixManager = InstanceManager.getDefault(LogixManager.class);
-    private ConditionalManager conditionalManager = InstanceManager.getDefault(ConditionalManager.class);
-
-    private jmri.Logix logixIX1 = logixManager.createNewLogix("IX1", null);
-    private Conditional conditionalIX1C1 = conditionalManager.createNewConditional("IX1C1", "First conditional");
 
     private LogixNG_Manager logixNG_Manager;
     private ConditionalNG_Manager conditionalNGManager;
     private DigitalActionManager digitalActionManager;
-    private LogixNG_InitializationManager logixNG_InitializationManager;
     private GlobalVariableManager globalVariables_Manager;
 
 //    private AudioManager audioManager;
-
-    private static NamedBeanReference getNamedBeanReference(
-            Collection<NamedBeanReference> collection, String name) {
-        for (NamedBeanReference ref : collection) {
-            if (name.equals(ref.getName())) return ref;
-        }
-        return null;
-    }
 
     public void createLogixNGTree() throws PropertyVetoException, Exception {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
 
         // Ensure the setUp() and tearDown() methods of this class are called.
         Assert.assertTrue(setupHasBeenCalled);
-/*
-        audioManager = new jmri.jmrit.audio.DefaultAudioManager(
-                InstanceManager.getDefault(jmri.jmrix.internal.InternalSystemConnectionMemo.class));
-        audioManager.init();
-        JUnitUtil.waitFor(()->{return audioManager.isInitialised();});
 
-        audioManager.provideAudio("IAB1");
-        AudioSource audioSource = (AudioSource) audioManager.provideAudio("IAS1");
-        audioSource.setAssignedBuffer((AudioBuffer) audioManager.getNamedBean("IAB1"));
-*/
         block1 = InstanceManager.getDefault(BlockManager.class).provide("IB1");
         block1.setValue("Block 1 Value");
         block2 = InstanceManager.getDefault(BlockManager.class).provide("IB2");
@@ -109,8 +73,6 @@ public class CreateLogixNGTreeScaffold {
         light2 = InstanceManager.getDefault(LightManager.class).provide("IL2");
         light2.setUserName("Some light");
         light2.setCommandedState(Light.OFF);
-        variableLight1 = (VariableLight)InstanceManager.getDefault(LightManager.class).provide("ILVariable");
-        variableLight1.setCommandedState(Light.OFF);
         sensor1 = InstanceManager.getDefault(SensorManager.class).provide("IS1");
         sensor1.setCommandedState(Sensor.INACTIVE);
         sensor2 = InstanceManager.getDefault(SensorManager.class).provide("IS2");
@@ -135,7 +97,6 @@ public class CreateLogixNGTreeScaffold {
         turnout5 = InstanceManager.getDefault(TurnoutManager.class).provide("IT5");
         turnout5.setCommandedState(Turnout.CLOSED);
 
-        memory1 = InstanceManager.getDefault(MemoryManager.class).provide("IM1");
         memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
         memory2.setUserName("Some memory");
 
@@ -149,15 +110,6 @@ public class CreateLogixNGTreeScaffold {
             Assert.fail("Destination point not MyDestinationPoints");
         }
 
-        logixManager = InstanceManager.getDefault(LogixManager.class);
-        conditionalManager = InstanceManager.getDefault(ConditionalManager.class);
-
-        logixIX1 = logixManager.createNewLogix("IX1", null);
-        logixIX1.setEnabled(true);
-
-        conditionalIX1C1 = conditionalManager.createNewConditional("IX1C1", "First conditional");
-        logixIX1.addConditional(conditionalIX1C1.getSystemName(), 0);
-
         InstanceManager.getDefault(SignalHeadManager.class)
                 .register(new VirtualSignalHead("IH1"));
         InstanceManager.getDefault(SignalHeadManager.class)
@@ -167,25 +119,9 @@ public class CreateLogixNGTreeScaffold {
         InstanceManager.getDefault(SignalMastManager.class)
                 .provideSignalMast("IF$shsm:AAR-1946:CPL(IH1)");
 
-        InstanceManager.getDefault(jmri.jmrit.logix.OBlockManager.class)
-                .register(new OBlock("OB98"));
-        InstanceManager.getDefault(jmri.jmrit.logix.OBlockManager.class)
-                .register(new OBlock("OB99"));
-
-        InstanceManager.getDefault(jmri.jmrit.logix.WarrantManager.class)
-                .register(new Warrant("IW99", "Test Warrant"));
-        Warrant warrant = InstanceManager.getDefault(jmri.jmrit.logix.WarrantManager.class).getWarrant("IW99");
-        warrant.addBlockOrder(new BlockOrder(InstanceManager.getDefault(jmri.jmrit.logix.OBlockManager.class).getOBlock("OB98")));
-        warrant.addBlockOrder(new BlockOrder(InstanceManager.getDefault(jmri.jmrit.logix.OBlockManager.class).getOBlock("OB99")));
-
-        stringIO = InstanceManager.getDefault(StringIOManager.class).provideStringIO("MyStringIO");
-        Assert.assertNotNull(stringIO);
-        Assert.assertEquals("ICMyStringIO", stringIO.getSystemName());
-
         logixNG_Manager = InstanceManager.getDefault(LogixNG_Manager.class);
         conditionalNGManager = InstanceManager.getDefault(ConditionalNG_Manager.class);
         digitalActionManager = InstanceManager.getDefault(DigitalActionManager.class);
-        logixNG_InitializationManager = InstanceManager.getDefault(LogixNG_InitializationManager.class);
         globalVariables_Manager = InstanceManager.getDefault(GlobalVariableManager.class);
 
 
@@ -389,22 +325,6 @@ public class CreateLogixNGTreeScaffold {
         JUnitUtil.initDebugProgrammerManager();
         JUnitUtil.initInternalSignalHeadManager();
         JUnitUtil.initDefaultSignalMastManager();
-//        JUnitUtil.initSignalMastLogicManager();
-        JUnitUtil.initOBlockManager();
-        JUnitUtil.initSectionManager();
-        JUnitUtil.initWarrantManager();
-
-        LocoNetInterfaceScaffold lnis = new LocoNetInterfaceScaffold();
-        SlotManager sm = new SlotManager(lnis);
-        _locoNetMemo = new LocoNetSystemConnectionMemo(lnis, sm);
-        _locoNetMemo.setThrottleManager(new LnThrottleManager(_locoNetMemo));
-        sm.setSystemConnectionMemo(_locoNetMemo);
-        InstanceManager.setDefault(LocoNetSystemConnectionMemo.class, _locoNetMemo);
-        InstanceManager.store(_locoNetMemo, SystemConnectionMemo.class);
-
-        _mqttMemo = new MqttSystemConnectionMemo();
-        InstanceManager.setDefault(MqttSystemConnectionMemo.class, _mqttMemo);
-        InstanceManager.store(_mqttMemo, SystemConnectionMemo.class);
 
         TransitScaffold.initTransits();
 
@@ -416,10 +336,6 @@ public class CreateLogixNGTreeScaffold {
     public void tearDown() {
         CreateLogixNGTreeScaffold.setUpCalled(false);     // Reset for the next test
 
-        _locoNetMemo = null;
-        _mqttMemo = null;
-
-//        JUnitAppender.clearBacklog();    // REMOVE THIS!!!
         jmri.jmrit.logixng.util.LogixNG_Thread.stopAllLogixNGThreads();
 
         // Delete all the LogixNGs, ConditionalNGs, and so on.

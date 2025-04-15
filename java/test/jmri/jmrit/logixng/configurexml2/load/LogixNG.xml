@@ -65,9 +65,6 @@ to the folder java/test/jmri/jmrit/logixng/configurexml/load
       <systemName>IL2</systemName>
       <userName>Some light</userName>
     </light>
-    <light minIntensity="0.0" maxIntensity="1.0" transitionTime="0.0">
-      <systemName>ILVariable</systemName>
-    </light>
   </lights>
   <reporters class="jmri.jmrix.internal.configurexml.InternalReporterManagerXml">
     <reporter>
@@ -76,13 +73,10 @@ to the folder java/test/jmri/jmrit/logixng/configurexml/load
   </reporters>
   <memories class="jmri.managers.configurexml.DefaultMemoryManagerXml">
     <memory>
-      <systemName>IM1</systemName>
-    </memory>
-    <memory>
       <systemName>IM2</systemName>
       <userName>Some memory</userName>
     </memory>
-    <memory value="1:38 pm">
+    <memory value="12:49 pm">
       <systemName>IMCURRENTTIME</systemName>
     </memory>
     <memory value="1.0">
@@ -125,10 +119,6 @@ to the folder java/test/jmri/jmrit/logixng/configurexml/load
       <permissive>no</permissive>
     </block>
   </blocks>
-  <oblocks class="jmri.jmrit.logix.configurexml.OBlockManagerXml">
-    <oblock systemName="OB98" length="0.0" units="false" curve="0" permissive="false" speedNotch="" />
-    <oblock systemName="OB99" length="0.0" units="false" curve="0" permissive="false" speedNotch="" />
-  </oblocks>
   <sections class="jmri.configurexml.SectionManagerXml">
     <section systemName="IY:AUTO:0001" userName="Section_1" creationtype="userdefined">
       <systemName>IY:AUTO:0001</systemName>
@@ -147,38 +137,10 @@ to the folder java/test/jmri/jmrit/logixng/configurexml/load
       <transitsection sectionname="IY:AUTO:0002" sequence="2" direction="4" alternate="no" safe="no" stopallocatingsensor="" />
     </transit>
   </transits>
-  <warrants class="jmri.jmrit.logix.configurexml.WarrantManagerXml">
-    <warrant systemName="IW99" userName="Test Warrant" wtype="normal">
-      <blockOrder pathName="" entryName="" exitName="">
-        <block systemName="OB98" />
-      </blockOrder>
-      <blockOrder pathName="" entryName="" exitName="">
-        <block systemName="OB99" />
-      </blockOrder>
-      <train trainId="" runBlind="false" shareRoute="false" noRamp="false" trainName="" />
-    </warrant>
-  </warrants>
   <signalmastlogics class="jmri.managers.configurexml.DefaultSignalMastLogicManagerXml">
     <logicDelay>500</logicDelay>
   </signalmastlogics>
-  <stringios class="jmri.jmrix.internal.configurexml.InternalStringIOManagerXml">
-    <stringio>
-      <systemName>ICMyStringIO</systemName>
-    </stringio>
-  </stringios>
-  <logixs class="jmri.managers.configurexml.DefaultLogixManagerXml">
-    <logix enabled="yes">
-      <systemName>IX1</systemName>
-      <logixConditional systemName="IX1C1" order="0" />
-    </logix>
-  </logixs>
-  <conditionals class="jmri.managers.configurexml.DefaultConditionalManagerXml">
-    <conditional systemName="IX1C1" userName="First conditional" antecedent="" logicType="1" triggerOnChange="yes">
-      <systemName>IX1C1</systemName>
-      <userName>First conditional</userName>
-    </conditional>
-  </conditionals>
-  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Mon Apr 14 13:38:33 CEST 2025" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
+  <timebase class="jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml" time="Tue Apr 15 12:49:13 CEST 2025" rate="1.0" startrate="1.0" run="yes" master="yes" sync="no" correct="no" display="no" startstopped="no" startrunning="yes" startsettime="no" startclockoption="0" showbutton="no" startsetrate="yes" />
   <LogixNGs class="jmri.jmrit.logixng.implementation.configurexml.DefaultLogixNGManagerXml">
     <Thread>
       <id>0</id>
@@ -508,9 +470,9 @@ to the folder java/test/jmri/jmrit/logixng/configurexml/load
   <filehistory>
     <operation>
       <type>Store</type>
-      <date>Mon Apr 14 13:38:34 CEST 2025</date>
+      <date>Tue Apr 15 12:49:13 CEST 2025</date>
       <filename>/home/daniel/Dokument/GitHub/JMRI/temp/temp/LogixNG_temp.xml</filename>
     </operation>
   </filehistory>
-  <!--Written by JMRI version 5.11.5plus+daniel+2025-04-14T11:38:28Z+Rfb9b791 on Mon Apr 14 13:38:34 CEST 2025-->
+  <!--Written by JMRI version 5.11.5plus+daniel+2025-04-15T10:48:54Z+Re4cc053 on Tue Apr 15 12:49:13 CEST 2025-->
 </layout-config>
