@@ -61,13 +61,6 @@ public class CreateLogixNGTreeScaffold {
         // Ensure the setUp() and tearDown() methods of this class are called.
         Assert.assertTrue(setupHasBeenCalled);
 
-        block1 = InstanceManager.getDefault(BlockManager.class).provide("IB1");
-        block1.setValue("Block 1 Value");
-        block2 = InstanceManager.getDefault(BlockManager.class).provide("IB2");
-        block2.setUserName("Some block");
-        block1.setValue("Block 2 Value");
-        reporter1 = InstanceManager.getDefault(ReporterManager.class).provide("IR1");
-        reporter1.setReport("Reporter 1 Value");
         light1 = InstanceManager.getDefault(LightManager.class).provide("IL1");
         light1.setCommandedState(Light.OFF);
         light2 = InstanceManager.getDefault(LightManager.class).provide("IL2");
