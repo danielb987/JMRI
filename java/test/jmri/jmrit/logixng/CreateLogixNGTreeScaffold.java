@@ -85,21 +85,6 @@ public class CreateLogixNGTreeScaffold {
         transit1.addTransitSection(new TransitSection(section1, 1, Section.FORWARD));
         transit1.addTransitSection(new TransitSection(section2, 2, Section.FORWARD));
 
-        turnout1 = InstanceManager.getDefault(TurnoutManager.class).provide("IT1");
-        turnout1.setCommandedState(Turnout.CLOSED);
-        turnout2 = InstanceManager.getDefault(TurnoutManager.class).provide("IT2");
-        turnout2.setCommandedState(Turnout.CLOSED);
-        turnout2.setUserName("Some turnout");
-        turnout3 = InstanceManager.getDefault(TurnoutManager.class).provide("IT3");
-        turnout3.setCommandedState(Turnout.CLOSED);
-        turnout4 = InstanceManager.getDefault(TurnoutManager.class).provide("IT4");
-        turnout4.setCommandedState(Turnout.CLOSED);
-        turnout5 = InstanceManager.getDefault(TurnoutManager.class).provide("IT5");
-        turnout5.setCommandedState(Turnout.CLOSED);
-
-        memory2 = InstanceManager.getDefault(MemoryManager.class).provide("IM2");
-        memory2.setUserName("Some memory");
-
         dp1 = InstanceManager.getDefault(EntryExitPairs.class).getBySystemName("DP1");
         if (!( dp1 instanceof TransitScaffold.MyDestinationPoints )) {
             Assert.fail("Destination point not MyDestinationPoints");
