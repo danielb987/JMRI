@@ -201,12 +201,6 @@ public class ActionLocalVariable extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         if (_localVariable == null) return;
 

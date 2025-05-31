@@ -134,12 +134,6 @@ public class ActionSetReporter extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
 
         final ConditionalNG conditionalNG = getConditionalNG();

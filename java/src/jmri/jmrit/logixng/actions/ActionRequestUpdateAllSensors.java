@@ -31,12 +31,6 @@ public class ActionRequestUpdateAllSensors extends AbstractDigitalAction {
         return manager.registerAction(copy).deepCopyChildren(this, systemNames, userNames);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     public void setMemo(SystemConnectionMemo memo) {
         assertListenersAreNotRegistered(log, "setMemo");
         _memo = memo;

@@ -43,12 +43,6 @@ public class AnalogExpressionLocalVariable extends AbstractAnalogExpression
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public double evaluate() throws JmriException {
         String localVariable = _selectNamedBean.evaluateValue(getConditionalNG());
         if (localVariable == null) return 0.0;

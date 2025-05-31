@@ -136,12 +136,6 @@ public class ActionLight extends AbstractDigitalAction
         return _lightValue;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private int getNewData(SymbolTable symbolTable) throws JmriException {
         String newValue = "";
 

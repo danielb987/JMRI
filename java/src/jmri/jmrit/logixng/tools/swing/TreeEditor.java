@@ -15,6 +15,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.*;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.FemaleSocket;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.SymbolTable.InitialValueType;

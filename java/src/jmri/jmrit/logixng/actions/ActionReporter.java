@@ -133,13 +133,6 @@ public class ActionReporter extends AbstractDigitalAction
         }
     }
 
-
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     Object getReporterData(Reporter reporter) throws JmriException {
         Object obj;
         ReporterValue value = _reporterValue;

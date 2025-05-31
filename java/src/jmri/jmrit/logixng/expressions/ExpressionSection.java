@@ -71,12 +71,6 @@ public class ExpressionSection extends AbstractDigitalExpression
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean evaluate() throws JmriException {
         ConditionalNG conditionalNG = getConditionalNG();
 

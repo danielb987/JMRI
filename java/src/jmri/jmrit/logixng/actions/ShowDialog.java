@@ -9,6 +9,7 @@ import java.util.*;
 import javax.swing.*;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.implementation.DefaultSymbolTable;
 import jmri.jmrit.logixng.util.ReferenceUtil;

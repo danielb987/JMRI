@@ -93,12 +93,6 @@ public final class ActionThrottle extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
 
         int currentLocoAddress = -1;

@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.actions;
 import java.util.Locale;
 import java.util.Map;
 
+import jmri.Category;
 import jmri.InstanceManager;
 import jmri.JmriException;
 import jmri.jmrit.logixng.*;

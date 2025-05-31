@@ -12,6 +12,7 @@ import jmri.*;
 import jmri.jmrit.display.Editor;
 import jmri.jmrit.display.Positionable;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.actions.AbstractDigitalAction;
 import jmri.jmrit.logixng.util.ReferenceUtil;
 import jmri.jmrit.logixng.util.parser.*;

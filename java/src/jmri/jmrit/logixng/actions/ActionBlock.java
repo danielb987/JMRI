@@ -67,12 +67,6 @@ public class ActionBlock extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         ConditionalNG conditionalNG = getConditionalNG();
 

@@ -140,12 +140,6 @@ public class ActionOBlock extends AbstractDigitalAction
         return _oblockValue;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private String getNewData(ConditionalNG conditionalNG) throws JmriException {
 
         switch (_dataAddressing) {

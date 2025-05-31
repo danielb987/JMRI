@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.Module;
 import jmri.jmrit.logixng.Stack;
 import jmri.jmrit.logixng.util.LogixNG_Thread;

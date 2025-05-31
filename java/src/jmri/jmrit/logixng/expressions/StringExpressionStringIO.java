@@ -44,12 +44,6 @@ public class StringExpressionStringIO extends AbstractStringExpression
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String evaluate() throws JmriException {
         StringIO stringIO = _selectNamedBean.evaluateNamedBean(getConditionalNG());
         if (stringIO != null) {

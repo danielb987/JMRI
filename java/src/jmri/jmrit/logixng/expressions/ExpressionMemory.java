@@ -151,12 +151,6 @@ public class ExpressionMemory extends AbstractDigitalExpression
         return _caseInsensitive;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private String getString(Object o) {
         if (o != null) {
             return o.toString();

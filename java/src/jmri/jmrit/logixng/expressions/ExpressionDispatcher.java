@@ -148,12 +148,6 @@ public class ExpressionDispatcher extends AbstractDigitalExpression
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private String getSelectedFileName() throws JmriException {
         switch (_addressing) {
             case Direct:

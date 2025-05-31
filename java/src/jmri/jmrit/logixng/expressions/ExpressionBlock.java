@@ -86,12 +86,6 @@ public class ExpressionBlock extends AbstractDigitalExpression
         return _is_IsNot;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     /**
      * A block is considered to be allocated if the related layout block has use extra color enabled.
      * @param block The block whose allocation state is requested.

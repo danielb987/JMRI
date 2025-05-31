@@ -67,12 +67,6 @@ public class AnalogActionMemory extends AbstractAnalogAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String getShortDescription(Locale locale) {
         return Bundle.getMessage(locale, "AnalogActionMemory_Short");
     }

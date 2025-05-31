@@ -53,12 +53,6 @@ public class ActionLightIntensity extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         VariableLight light = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

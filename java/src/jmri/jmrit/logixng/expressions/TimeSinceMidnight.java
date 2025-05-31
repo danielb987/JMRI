@@ -40,12 +40,6 @@ public class TimeSinceMidnight extends AbstractAnalogExpression implements Prope
         return manager.registerExpression(copy).deepCopyChildren(this, systemNames, userNames);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     public void setType(Type type) {
         assertListenersAreNotRegistered(log, "setType");
         _type = type;

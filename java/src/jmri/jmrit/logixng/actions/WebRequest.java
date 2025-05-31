@@ -14,6 +14,7 @@ import java.util.*;
 import javax.net.ssl.HttpsURLConnection;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.SymbolTable.InitialValueType;
 import jmri.jmrit.logixng.implementation.DefaultSymbolTable;

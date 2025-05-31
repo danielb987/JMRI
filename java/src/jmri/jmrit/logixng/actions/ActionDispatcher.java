@@ -218,12 +218,6 @@ public class ActionDispatcher extends AbstractDigitalAction
         return _terminateOption;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private String getNewData(DirectOperation oper) throws JmriException {
         switch (_dataAddressing) {
             case Direct:

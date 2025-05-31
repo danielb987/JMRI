@@ -45,12 +45,6 @@ public class AnalogActionLightIntensity extends AbstractAnalogAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void setValue(double value) throws JmriException {
         VariableLight light = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

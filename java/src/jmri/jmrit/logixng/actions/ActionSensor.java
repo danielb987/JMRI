@@ -54,12 +54,6 @@ public class ActionSensor extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         Sensor sensor = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

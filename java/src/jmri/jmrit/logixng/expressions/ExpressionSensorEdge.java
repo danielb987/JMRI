@@ -74,12 +74,6 @@ public class ExpressionSensorEdge extends AbstractDigitalExpression
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean evaluate() throws JmriException {
         Sensor sensor = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

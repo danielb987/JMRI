@@ -6,6 +6,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.util.LogixNG_SelectNamedBean;
 import jmri.jmrit.logixng.util.parser.ParserException;

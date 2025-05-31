@@ -3,6 +3,7 @@ package jmri.jmrit.logixng.actions;
 import java.util.*;
 
 import jmri.*;
+import jmri.Category;
 import jmri.implementation.AbstractShutDownTask;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.implementation.DefaultFemaleDigitalActionSocket;

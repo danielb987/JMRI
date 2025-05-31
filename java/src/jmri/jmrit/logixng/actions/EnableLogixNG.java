@@ -54,12 +54,6 @@ public class EnableLogixNG extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         LogixNG logixNG = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

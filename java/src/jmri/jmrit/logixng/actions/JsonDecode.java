@@ -8,6 +8,7 @@ import java.beans.*;
 import java.util.*;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.util.parser.*;
 import jmri.util.TypeConversionUtil;

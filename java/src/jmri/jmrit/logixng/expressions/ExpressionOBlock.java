@@ -126,12 +126,6 @@ public class ExpressionOBlock extends AbstractDigitalExpression
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private String getNewState() throws JmriException {
 
         switch (_stateAddressing) {

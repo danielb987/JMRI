@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import jmri.*;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public abstract class AbstractBase
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
+    public jmri.Category getCategory() {
         return _category;
     }
 

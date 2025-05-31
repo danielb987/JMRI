@@ -4,12 +4,13 @@ import java.util.*;
 
 import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 
 /**
  * Have many items of any type.
  * <P>
  * This class is used by the clipboard.
- * 
+ *
  * @author Daniel Bergqvist Copyright 2018
  */
 public class ClipboardMany extends AbstractBase
@@ -18,7 +19,7 @@ public class ClipboardMany extends AbstractBase
     private Base _parent;
     private final List<ItemEntry> _itemEntries = new ArrayList<>();
     private boolean disableCheckForUnconnectedSocket = false;
-    
+
     public ClipboardMany(String sys, String user)
             throws BadUserNameException, BadSystemNameException {
         super(sys, user);
@@ -30,16 +31,16 @@ public class ClipboardMany extends AbstractBase
         super(sys, user);
         setItemSystemNames(itemSystemNames);
     }
-    
+
     private void setItemSystemNames(List<ItemData> systemNamesAndClasses) {
         if (!_itemEntries.isEmpty()) {
             throw new RuntimeException("action system names cannot be set more than once");
         }
-        
+
         for (ItemData itemData : systemNamesAndClasses) {
             FemaleAnySocket socket =
                     new DefaultFemaleAnySocket(this, this, itemData._socketName);
-            
+
             _itemEntries.add(new ItemEntry(socket, itemData._className, itemData._systemName));
         }
     }
@@ -53,7 +54,7 @@ public class ClipboardMany extends AbstractBase
     public void setup() {
         // We don't want to check for unconnected sockets while setup sockets
         disableCheckForUnconnectedSocket = true;
-        
+
         for (ItemEntry ae : _itemEntries) {
             try {
                 if ( !ae._socket.isConnected()
@@ -66,7 +67,7 @@ public class ClipboardMany extends AbstractBase
                         NamedBean namedBean =
                                 InstanceManager.getDefault(LogixNG_Manager.class)
                                         .getManager(ae._itemManagerClass).getBySystemName(socketSystemName);
-                        
+
                         if (namedBean != null) {
                             if (namedBean instanceof MaleSocket) {
                                 MaleSocket maleSocket = (MaleSocket)namedBean;
@@ -87,10 +88,10 @@ public class ClipboardMany extends AbstractBase
                 throw new RuntimeException("socket is already connected");
             }
         }
-        
+
         disableCheckForUnconnectedSocket = false;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
@@ -106,23 +107,23 @@ public class ClipboardMany extends AbstractBase
     public int getChildCount() {
         return _itemEntries.size();
     }
-    
+
     public void ensureFreeSocketAtTop() {
         if (_itemEntries.get(0)._socket.isConnected()) {
             DefaultFemaleAnySocket socket =
                     new DefaultFemaleAnySocket(this, this, getNewSocketName());
             _itemEntries.add(0, new ItemEntry(socket));
-            
+
             List<FemaleSocket> list = new ArrayList<>();
             list.add(socket);
             firePropertyChange(Base.PROPERTY_CHILD_COUNT, null, list);
         }
     }
-    
+
     @Override
     public void connected(FemaleSocket socket) {
         if (disableCheckForUnconnectedSocket) return;
-        
+
         for (ItemEntry entry : _itemEntries) {
             if (socket == entry._socket) {
                 entry._socketSystemName =
@@ -137,7 +138,7 @@ public class ClipboardMany extends AbstractBase
             ItemEntry entry = _itemEntries.get(i);
             if (socket == entry._socket) {
                 entry._socketSystemName = null;
-                
+
                 // Remove socket if not the first socket
                 if (i > 0) {
                     List<FemaleSocket> list = new ArrayList<>();
@@ -149,7 +150,7 @@ public class ClipboardMany extends AbstractBase
             }
         }
     }
-    
+
     @Override
     public String getShortDescription(Locale locale) {
         return Bundle.getMessage(locale, "Many_Short");
@@ -194,23 +195,23 @@ public class ClipboardMany extends AbstractBase
     public Base deepCopyChildren(Base original, Map<String, String> systemNames, Map<String, String> userNames) throws JmriException {
         throw new UnsupportedOperationException("Not supported");
     }
-    
-    
+
+
     private static class ItemEntry {
         private String _socketSystemName;
         private String _itemManagerClass;
         private final FemaleAnySocket _socket;
-        
+
         private ItemEntry(FemaleAnySocket socket, String itemManagerClass, String socketSystemName) {
             _socketSystemName = socketSystemName;
             _itemManagerClass = itemManagerClass;
             _socket = socket;
         }
-        
+
         private ItemEntry(FemaleAnySocket socket) {
             this._socket = socket;
         }
-        
+
     }
 
     /** {@inheritDoc} */
@@ -224,7 +225,7 @@ public class ClipboardMany extends AbstractBase
     public void unregisterListenersForThisClass() {
         // Do nothing
     }
-    
+
     private String getNewSocketName() {
         int x = 1;
         while (x < 10000) {     // Protect from infinite loop
@@ -250,23 +251,23 @@ public class ClipboardMany extends AbstractBase
     @Override
     public void disposeMe() {
     }
-    
-    
+
+
     public static class ItemData {
-        
+
         public final String _systemName;
         public final String _className;
         public final String _socketName;
-        
+
         public ItemData(String socketName, String systemName, String className) {
             _systemName = systemName;
             _className = className;
             _socketName = socketName;
         }
-        
+
     }
-    
-    
+
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClipboardMany.class);
 
 }

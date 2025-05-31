@@ -5,6 +5,7 @@ import jmri.jmrit.logixng.actions.*;
 import java.util.*;
 
 import jmri.*;
+import jmri.Category;
 import jmri.JmriException;
 import jmri.jmrit.logixng.*;
 import jmri.jmrix.loconet.*;

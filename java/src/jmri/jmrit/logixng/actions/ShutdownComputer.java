@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.util.LogixNG_SelectEnum;
 import jmri.jmrit.logixng.util.parser.ParserException;

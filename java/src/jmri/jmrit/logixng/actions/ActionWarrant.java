@@ -152,13 +152,6 @@ public class ActionWarrant extends AbstractDigitalAction
         return _controlAutoTrain;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-
     private String getNewData(DirectOperation theOper, SymbolTable symbolTable)
             throws JmriException {
 

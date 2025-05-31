@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.SymbolTable.VariableData;
 import jmri.jmrit.logixng.implementation.swing.ErrorHandlingDialog;

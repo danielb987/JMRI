@@ -6,6 +6,7 @@ import java.util.*;
 
 import javax.annotation.*;
 
+import jmri.Category;
 import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.beans.PropertyChangeProvider;

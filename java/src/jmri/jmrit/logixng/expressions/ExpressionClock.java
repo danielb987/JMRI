@@ -44,12 +44,6 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
         return manager.registerExpression(copy).deepCopyChildren(this, systemNames, userNames);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     public void set_Is_IsNot(Is_IsNot_Enum is_IsNot) {
         _is_IsNot = is_IsNot;
     }

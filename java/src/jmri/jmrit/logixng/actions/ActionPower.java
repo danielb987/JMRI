@@ -46,12 +46,6 @@ public class ActionPower extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         AtomicReference<JmriException> exception = new AtomicReference<>();
         PowerState powerState = _selectEnum.evaluateEnum(getConditionalNG());

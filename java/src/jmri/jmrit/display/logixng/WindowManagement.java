@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 
 import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.actions.AbstractDigitalAction;
 import jmri.jmrit.logixng.util.LogixNG_SelectEnum;
 import jmri.jmrit.logixng.util.ReferenceUtil;

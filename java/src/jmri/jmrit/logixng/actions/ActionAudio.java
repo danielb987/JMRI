@@ -57,12 +57,6 @@ public class ActionAudio extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         Audio audio = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

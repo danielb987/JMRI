@@ -44,12 +44,6 @@ public class AnalogExpressionMemory extends AbstractAnalogExpression
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public double evaluate() throws JmriException {
         Memory memory = _selectNamedBean.evaluateNamedBean(getConditionalNG());
         if (memory != null) {

@@ -1,8 +1,5 @@
 package jmri.jmrit.logixng;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 /**
  * The category of expressions and actions.
  * <P>
@@ -16,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Daniel Bergqvist Copyright 2018
  */
-public abstract class Category implements Comparable<Category> {
+public abstract class Category extends jmri.Category {
 
     /**
      * A item on the layout, for example turnout, sensor and signal mast.
@@ -34,18 +31,11 @@ public abstract class Category implements Comparable<Category> {
     public static final FlowControl FLOW_CONTROL = new FlowControl();
 
     /**
-     * Other things.
-     */
-    public static final Other OTHER = new Other();
-
-    /**
      * Linux specific things.
      */
     public static final Linux LINUX = new Linux();
 
     static {
-        // It's not often any item is added to this list so we use CopyOnWriteArrayList
-        _categories = new CopyOnWriteArrayList<>();
         registerCategory(ITEM);
         registerCategory(COMMON);
         registerCategory(FLOW_CONTROL);
@@ -55,68 +45,9 @@ public abstract class Category implements Comparable<Category> {
         }
     }
 
-    /**
-     * Get all the registered Categories
-     * @return a list of categories
-     */
-    public static List<Category> values() {
-        return Collections.unmodifiableList(_categories);
-    }
-
-    /**
-     * Register a category
-     * @param category the category
-     */
-    public static void registerCategory(Category category) {
-        _categories.add(category);
-    }
-
-
-    private static final List<Category> _categories;
-
-    private final String _name;
-    private final String _description;
-    private final int _order;
-
 
     protected Category(String name, String description, int order) {
-        _name = name;
-        _description = description;
-        _order = order;
-    }
-
-    public String name() {
-        return _name;
-    }
-
-    @Override
-    public final String toString() {
-        return _description;
-    }
-
-    public int order() {
-        return _order;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Category) {
-            Category c = (Category)o;
-            return _description.equals(c._description) && _name.equals(c._name);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return _description.hashCode();
-    }
-
-    @Override
-    public int compareTo(Category c) {
-        if (_order < c.order()) return -1;
-        if (_order > c.order()) return 1;
-        return 0;
+        super(name, description, order);
     }
 
 

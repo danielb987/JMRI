@@ -5,6 +5,7 @@ import jmri.jmrit.logixng.actions.*;
 import java.util.*;
 
 import jmri.*;
+import jmri.Category;
 import jmri.jmrit.logixng.*;
 import jmri.jmrit.logixng.util.parser.ParserException;
 import jmri.jmrix.mqtt.MqttEventListener;
@@ -94,7 +95,7 @@ public class Subscribe extends AbstractDigitalAction
     /** {@inheritDoc} */
     @Override
     public Category getCategory() {
-        return Category.ITEM;
+        return CategoryMqtt.MQTT;
     }
 
     /** {@inheritDoc} */

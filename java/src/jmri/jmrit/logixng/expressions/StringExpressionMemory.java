@@ -44,12 +44,6 @@ public class StringExpressionMemory extends AbstractStringExpression
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String evaluate() throws JmriException {
         Memory memory = _selectNamedBean.evaluateNamedBean(getConditionalNG());
         if (memory != null) {

@@ -72,12 +72,6 @@ public class ActionClock extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
 
         ClockState theState = _selectEnum.evaluateEnum(getConditionalNG());

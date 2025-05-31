@@ -5,6 +5,7 @@ import java.util.*;
 
 import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.Module;
 import jmri.jmrit.logixng.Module.ParameterData;
 import jmri.jmrit.logixng.Module.ReturnValueType;

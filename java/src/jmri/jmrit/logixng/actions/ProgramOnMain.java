@@ -147,36 +147,30 @@ public class ProgramOnMain extends AbstractDigitalAction
         return _memo;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private void doProgrammingOnMain(ConditionalNG conditionalNG,
             DefaultSymbolTable newSymbolTable, ProgrammingMode progMode,
             int address, LongOrShortAddress longOrShort, int cv, int value, boolean wait)
             throws JmriException {
         try {
             boolean longAddress;
-            
+
             switch (longOrShort) {
                 case Short:
                     longAddress = false;
                     break;
-                    
+
                 case Long:
                     longAddress = true;
                     break;
-                    
+
                 case Auto:
                     longAddress = !_throttleManager.canBeShortAddress(address);
                     break;
-                    
+
                 default:
                     throw new IllegalArgumentException("longOrShort has unknown value");
             }
-            
+
             AddressedProgrammer programmer = _programmerManager.getAddressedProgrammer(
                     new DccLocoAddress(address, longAddress));
 

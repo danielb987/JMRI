@@ -58,12 +58,6 @@ public class TriggerRoute extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         Route route = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

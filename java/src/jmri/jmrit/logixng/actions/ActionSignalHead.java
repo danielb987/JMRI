@@ -194,12 +194,6 @@ public class ActionSignalHead extends AbstractDigitalAction
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private int getAppearanceFromName(String name, SignalHead signalHead) {
         String[] keys = signalHead.getValidStateKeys();
         for (int i=0; i < keys.length; i++) {

@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import jmri.*;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.util.*;
 import jmri.jmrit.logixng.util.parser.*;
 import jmri.util.ThreadingUtil;

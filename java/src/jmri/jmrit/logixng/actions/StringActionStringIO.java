@@ -64,12 +64,6 @@ public class StringActionStringIO extends AbstractStringAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String getShortDescription(Locale locale) {
         return Bundle.getMessage(locale, "StringActionStringIO_Short");
     }

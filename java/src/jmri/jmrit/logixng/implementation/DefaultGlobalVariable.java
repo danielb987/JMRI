@@ -11,6 +11,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import jmri.*;
 import jmri.implementation.AbstractNamedBean;
 import jmri.jmrit.logixng.*;
+import jmri.jmrit.logixng.Category;
 import jmri.jmrit.logixng.SymbolTable.InitialValueType;
 
 import org.apache.commons.lang3.mutable.MutableInt;

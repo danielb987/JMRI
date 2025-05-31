@@ -195,12 +195,6 @@ public class ExpressionSignalHead extends AbstractDigitalExpression
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private int getAppearanceFromName(String name, SignalHead signalHead) {
         if (signalHead == null) throw new UnsupportedOperationException("_signalHeadHandle is null");
 

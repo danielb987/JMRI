@@ -54,12 +54,6 @@ public class ActionTurnoutLock extends AbstractDigitalAction
 
     /** {@inheritDoc} */
     @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void execute() throws JmriException {
         Turnout turnout = _selectNamedBean.evaluateNamedBean(getConditionalNG());
 

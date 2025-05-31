@@ -145,12 +145,6 @@ public class ExpressionReporter extends AbstractDigitalExpression
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public Category getCategory() {
-        return Category.ITEM;
-    }
-
     private String getString(Object o) {
         if (o != null) {
             return o.toString();
