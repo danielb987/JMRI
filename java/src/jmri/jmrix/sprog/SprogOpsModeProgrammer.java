@@ -31,13 +31,13 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         _memo = memo;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Forward a write request to an ops-mode write operation
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("write CV={} val={}", CV, val);
 
@@ -60,7 +60,7 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -70,16 +70,16 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    synchronized public void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         log.error("confirmCV not available in this protocol");
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Types implemented here.
@@ -92,7 +92,7 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         return ret;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -100,7 +100,7 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         // We will not see any replies
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Can this ops-mode programmer read back values? For now, no, but maybe
@@ -113,7 +113,7 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         return false;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -121,7 +121,7 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         return mLongAddr;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -129,7 +129,7 @@ public class SprogOpsModeProgrammer extends SprogProgrammer implements Addressed
         return mAddress;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

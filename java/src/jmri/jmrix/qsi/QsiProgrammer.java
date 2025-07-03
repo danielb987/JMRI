@@ -20,7 +20,7 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
         _memo = memo;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -42,11 +42,11 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
     int _val; // remember the value being read/written for confirmative reply
     int _cv;  // remember the cv being read/written
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listens {}", CV, p);
         useProgrammer(p);
@@ -63,15 +63,15 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
         controller().sendQsiMessage(QsiMessage.getWriteCV(CV, val, getMode()), this);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -106,7 +106,7 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -114,7 +114,7 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
         log.error("message received unexpectedly: {}", m);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -141,7 +141,7 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
             if (m.getElement(4) != 0) {
                 // status present
                 log.debug("handle non-zero status in reply {}", m);
-                // perhaps no loco present? 
+                // perhaps no loco present?
                 // reset status
                 progState = WAITRESETSTATUS;
                 startShortTimer();
@@ -165,7 +165,7 @@ public class QsiProgrammer extends AbstractProgrammer implements QsiListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

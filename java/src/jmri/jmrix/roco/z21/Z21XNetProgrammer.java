@@ -85,7 +85,7 @@ public class Z21XNetProgrammer extends XNetProgrammer {
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (getMode().equals(ProgrammingMode.DIRECTBITMODE)
                 || getMode().equals(ProgrammingMode.DIRECTBYTEMODE)) {

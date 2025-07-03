@@ -29,9 +29,9 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
 
     static protected final int DCCppProgrammerTimeout = 90000;
 
-    // keep track of whether or not the command station is in service 
-    // mode.  Used for determining if "OK" message is an aproriate 
-    // response to a request to a programming request. 
+    // keep track of whether or not the command station is in service
+    // mode.  Used for determining if "OK" message is an aproriate
+    // response to a request to a programming request.
     protected boolean _service_mode = false;  // TODO: Is this even meaningful for DCC++?
 
     static protected final int LISTENER_MASK = DCCppInterface.CS_INFO | DCCppInterface.COMMINFO | DCCppInterface.INTERFACE;
@@ -48,7 +48,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         setMode(ProgrammingMode.DIRECTBYTEMODE);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -62,7 +62,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         return ret;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Can we read from a specific CV in the specified mode? Answer may not be
@@ -84,7 +84,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Can we write to a specific CV in the specified mode? Answer may not be
@@ -105,7 +105,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Nonnull
@@ -123,11 +123,11 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
 
     // programming interface
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -154,15 +154,15 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p, val);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -170,7 +170,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         readCV(CVname, p, 0); //default starting value to zero
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -194,7 +194,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         if (getMode().equals(ProgrammingMode.DIRECTBYTEMODE)) {
             if (controller().getCommandStation().isReadStartValSupported()) { //use the 'V' command with a startVal
                 DCCppMessage msg = DCCppMessage.makeVerifyCVMsg(CV, startVal);
-                controller().sendDCCppMessage(msg, this);                
+                controller().sendDCCppMessage(msg, this);
             } else { //use the older 'R' command
                 DCCppMessage msg = DCCppMessage.makeReadDirectCVMsg(CV);
                 controller().sendDCCppMessage(msg, this);
@@ -217,7 +217,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -225,7 +225,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         if (progState == NOTPROGRAMMING) {
             return;
         }
-        if (m.getElement(0) == DCCppConstants.PROGRAM_REPLY || 
+        if (m.getElement(0) == DCCppConstants.PROGRAM_REPLY ||
                 m.getElement(0) == DCCppConstants.VERIFY_REPLY) {
             if (log.isDebugEnabled()) {
                 log.debug("reply in REQUESTSENT state");
@@ -243,7 +243,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -264,7 +264,7 @@ public class DCCppProgrammer extends AbstractProgrammer implements DCCppListener
         return (progState != NOTPROGRAMMING);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

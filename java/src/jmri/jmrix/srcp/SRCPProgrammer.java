@@ -27,7 +27,7 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
         LONG_TIMEOUT = 180000;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Types implemented here.
@@ -51,11 +51,11 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
     int _val; // remember the value being read/written for confirmative reply
     int _cv;  // remember the cv being read/written
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -87,11 +87,11 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    synchronized public void confirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteConfirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("confirmCV {} val {} listens {}", CV, val, p);
@@ -123,7 +123,7 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -174,7 +174,7 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -182,7 +182,7 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
         log.error("message received unexpectedly: {}", m.toString());
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -223,14 +223,14 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
                 if (_progConfirm) {
                     _val = _confirmVal;
                 }
-                // If this was a read or verify, we retreived the value above. 
+                // If this was a read or verify, we retreived the value above.
                 // If its a write, we're to return the original write value.
                 notifyProgListenerEnd(_val, jmri.ProgListener.OK);
             }
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -243,7 +243,7 @@ public class SRCPProgrammer extends AbstractProgrammer implements SRCPListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Internal routine to handle a timeout

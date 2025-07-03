@@ -36,7 +36,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
     protected int value;
     protected int cv;
     protected jmri.ProgListener progListener = null;
-  
+
     // possible states.
     static protected final int NOTPROGRAMMING = 0; // is notProgramming
     static protected final int READREQUEST = 1; // read command sent, waiting for ack and reply
@@ -57,16 +57,16 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         createOpsModeProgrammerListener();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Send an ops-mode write request to BiDiB.
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.info("write ops mode: {}, CV={}, val={}", getMode().getStandardName(), CV, val);
-        /* we need to save the programer and value so we can send messages 
+        /* we need to save the programer and value so we can send messages
          back to the screen when the programming screen when we receive
          something from the command station */
         progListener = p;
@@ -76,7 +76,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         PomAddressData decoderAddress = new PomAddressData(mAddress, PomAddressTypeEnum.LOCOMOTIVE);
         // start the error timer
         restartTimer(5000);
-        tc.addMessageListener(messageListener);   
+        tc.addMessageListener(messageListener);
 //TODO bit mode ??
 //XPom mode??
 
@@ -95,14 +95,14 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
             progState = NOTPROGRAMMING;
             notifyProgListenerEnd(p, 0, PomAcknowledge.NOT_ACKNOWLEDGED);
         }
-        
+
 
 //// waits for acknowledge synchroneously
 //        try {
 //            tc.checkProgMode(false, node); //request switch off progmode (PT or GlobalProgrammer!) if it is on
-//            
+//
 //            PomAcknowledge result = csNode.writePom(decoderAddress, CommandStationPom.WR_BYTE, cv, value);
-//            
+//
 //            log.debug("writePom result: {}", result);
 //            if (result == null  ||  result == PomAcknowledge.NOT_ACKNOWLEDGED) {
 //                log.warn("writePom was not acknowledged on node: {}, addr: {}");
@@ -116,8 +116,8 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
 //        progState = NOTPROGRAMMING;
 
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -130,7 +130,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         value = 42;//preset...
         PomAddressData decoderAddress = new PomAddressData(mAddress, PomAddressTypeEnum.LOCOMOTIVE);
         restartTimer(5000);
-        tc.addMessageListener(messageListener);        
+        tc.addMessageListener(messageListener);
 //TODO bit mode ??
 //XPom mode??
 
@@ -149,13 +149,13 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
             progState = NOTPROGRAMMING;
             notifyProgListenerEnd(p, 0, PomAcknowledge.NOT_ACKNOWLEDGED);
         }
-        
+
 //// waits for acknowledge synchroneously
 //        try {
 //            tc.checkProgMode(false, node); //request switch off progmode (PT or GlobalProgrammer!) if it is on
-//            
+//
 //            PomAcknowledge result = csNode.readPom(decoderAddress, CommandStationPom.RD_BYTE, cv);
-//            
+//
 //            log.debug("readPom result: {}", result);
 //            if (result == null  ||  result == PomAcknowledge.NOT_ACKNOWLEDGED) {
 //                log.warn("readPom was not acknowledged on node: {}, addr: {}");
@@ -171,11 +171,11 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         log.trace("Return from readCV");
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    public void concreteConfirmCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         int CV = Integer.parseInt(CVname);
         log.info("confirmCV ops mode: {}, CV={}", getMode().getStandardName(), CV);
         readCV(CVname, p);
@@ -186,13 +186,13 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
             log.debug("notifyProgListenerEnd value {}", value);
         }
         stopTimer();
-        tc.removeMessageListener(messageListener);        
+        tc.removeMessageListener(messageListener);
         progState = NOTPROGRAMMING;
         try {
             Thread.sleep(100);
         }
         catch (InterruptedException e) {
-            
+
         }
         if (result == PomAcknowledge.NOT_ACKNOWLEDGED) {
             notifyProgListenerEnd(p, value, ProgListener.NoAck);
@@ -200,11 +200,11 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         else {
             notifyProgListenerEnd(p, value, ProgListener.OK);
         }
-        //tc.removeMessageListener(messageListener);        
+        //tc.removeMessageListener(messageListener);
         //progState = NOTPROGRAMMING;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Types implemented here.
@@ -223,7 +223,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return ret;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Can this ops-mode programmer read back values?
@@ -243,7 +243,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         }
     }
 
-    /** {@inheritDoc} 
+    /** {@inheritDoc}
      * Checks using the current default programming mode
      */
     @Override
@@ -258,7 +258,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
 
 
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -266,7 +266,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return true;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -274,7 +274,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return mAddress;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -283,7 +283,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
     }
 
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -306,7 +306,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
             tc.removeMessageListener(messageListener);
         }
     }
-    
+
     private void createOpsModeProgrammerListener() {
         // to listen to messages related to POM
         messageListener = new DefaultMessageListener() {
@@ -346,7 +346,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
                     if (mAddress ==  decoderAddress.getAddress()  &&  cv == cvNumber) {
                         stopTimer();
                         progState = NOTPROGRAMMING;
-                        //tc.removeMessageListener(messageListener); //now in our notifyProgListenerEnd   
+                        //tc.removeMessageListener(messageListener); //now in our notifyProgListenerEnd
                         log.info("OPS PROGRAMMER BM_CV was signalled, node addr: {}, decoderAddress: {} {}, CV: {}, value: {}",
                                 address, decoderAddress.getAddress(), decoderAddress.getType(), cvNumber, dat);
                         value = dat;
@@ -355,7 +355,7 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
                 }
                 else {
                     progState = NOTPROGRAMMING;
-                    tc.removeMessageListener(messageListener);        
+                    tc.removeMessageListener(messageListener);
                 }
                 log.trace("return from feedbackCv");
             }
@@ -378,13 +378,13 @@ public class BiDiBOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
                 }
                 else {
                     progState = NOTPROGRAMMING;
-                    tc.removeMessageListener(messageListener);        
+                    tc.removeMessageListener(messageListener);
                 }
             }
         };
-        //tc.getBidib().getMessageReceiver().addMessageListener(messageListener);        
+        //tc.getBidib().getMessageReceiver().addMessageListener(messageListener);
     }
-    
+
 //    // dispose is not defined in superclass...
 //    //@Override
 //    public void dispose() {

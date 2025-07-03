@@ -48,7 +48,7 @@ public class Dcc4PcOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer imple
      * Send an ops-mode write request to the XPressnet.
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         rcTag.setExpectedCv(CV);
         progListener = p;
@@ -88,7 +88,7 @@ public class Dcc4PcOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer imple
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String cvName, int val, ProgListener p) throws ProgrammerException {
+    public void concreteConfirmCV(String cvName, int val, ProgListener p) throws ProgrammerException {
         int cvValue = Integer.parseInt(cvName);
         rcTag.addPropertyChangeListener(this);
         rcTag.setExpectedCv(cvValue);

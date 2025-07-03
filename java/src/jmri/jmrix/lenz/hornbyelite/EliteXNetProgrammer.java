@@ -35,11 +35,11 @@ public class EliteXNetProgrammer extends XNetProgrammer {
         super(tc);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listens {}", CV, p);
         useProgrammer(p);
@@ -77,15 +77,15 @@ public class EliteXNetProgrammer extends XNetProgrammer {
 
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -132,7 +132,7 @@ public class EliteXNetProgrammer extends XNetProgrammer {
 
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -296,7 +296,7 @@ public class EliteXNetProgrammer extends XNetProgrammer {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

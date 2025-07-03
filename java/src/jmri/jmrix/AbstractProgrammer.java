@@ -80,7 +80,11 @@ public abstract class AbstractProgrammer extends PropertyChangeSupport implement
 
     /** {@inheritDoc} */
     @Override
-    abstract public void writeCV(String CV, int val, ProgListener p) throws ProgrammerException;
+    public final void writeCV(String CV, int val, ProgListener p) throws ProgrammerException {
+        concreteWriteCV(CV, val, p);
+    }
+
+    abstract public void concreteWriteCV(String CV, int val, ProgListener p) throws ProgrammerException;
 
     /** {@inheritDoc} */
     @Override
@@ -88,7 +92,11 @@ public abstract class AbstractProgrammer extends PropertyChangeSupport implement
 
     /** {@inheritDoc} */
     @Override
-    abstract public void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException;
+    public final void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+        concreteConfirmCV(CV, val, p);
+    }
+
+    abstract public void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException;
 
 
     /** {@inheritDoc}

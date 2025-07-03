@@ -38,11 +38,11 @@ public class LI100XNetProgrammer extends XNetProgrammer {
         super(tc);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listens {}", CV, p);
         useProgrammer(p);
@@ -79,15 +79,15 @@ public class LI100XNetProgrammer extends XNetProgrammer {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -133,7 +133,7 @@ public class LI100XNetProgrammer extends XNetProgrammer {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -359,7 +359,7 @@ public class LI100XNetProgrammer extends XNetProgrammer {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
      @Override
@@ -367,7 +367,7 @@ public class LI100XNetProgrammer extends XNetProgrammer {
          // this class does not use outbound messages.
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

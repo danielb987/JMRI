@@ -158,7 +158,7 @@ public class OlcbProgrammer extends jmri.jmrix.AbstractProgrammer implements jmr
      * {@inheritDoc}
      */
     @Override
-    public void writeCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public void concreteWriteCV(String CV, int val, ProgListener p) throws ProgrammerException {
         checkProgramTrack();
         getInterface().getMemoryConfigurationService().requestWrite(nid, SPACE_DCC_CV, getCvAddress(CV), new byte[]{(byte) val}, new MemoryConfigurationService.McsWriteHandler() {
             @Override
@@ -210,7 +210,7 @@ public class OlcbProgrammer extends jmri.jmrix.AbstractProgrammer implements jmr
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         checkProgramTrack();
     }
 

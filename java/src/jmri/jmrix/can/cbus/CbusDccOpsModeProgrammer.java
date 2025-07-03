@@ -30,13 +30,13 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         mLongAddr = pLongAddr;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Forward a write request to an ops-mode write operation
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("ops mode write CV={} val={}", CV, val);
 
@@ -52,7 +52,7 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         notifyProgListenerEnd(_val, jmri.ProgListener.OK);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -61,16 +61,16 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    synchronized public void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         log.error("confirmCV {} not available for MERG CBUS, a query to track would return all locos",CV);
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Types implemented here.
@@ -83,7 +83,7 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         return ret;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -91,7 +91,7 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         // We will not see any replies
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Can this ops-mode programmer read back values?
@@ -103,7 +103,7 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         return false;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -111,7 +111,7 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         return mLongAddr;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -119,7 +119,7 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
         return mAddress;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -135,6 +135,6 @@ public class CbusDccOpsModeProgrammer extends CbusDccProgrammer implements Addre
      */
     void cleanup() {
     }
-    
+
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CbusDccOpsModeProgrammer.class);
 }

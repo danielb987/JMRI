@@ -64,7 +64,7 @@ public class SprogProgrammer extends AbstractProgrammer implements SprogListener
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} mode {} listens {}", CV, getMode(), p);
         useProgrammer(p);
@@ -76,7 +76,7 @@ public class SprogProgrammer extends AbstractProgrammer implements SprogListener
      * {@inheritDoc}
      */
     @Override
-    synchronized public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 

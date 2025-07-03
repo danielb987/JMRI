@@ -23,7 +23,7 @@ public class EasyDccProgrammer extends AbstractProgrammer implements EasyDccList
 
     protected EasyDccTrafficController tc = null;
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -43,11 +43,11 @@ public class EasyDccProgrammer extends AbstractProgrammer implements EasyDccList
     int _val; // remember the value being read/written for confirmative reply
     int _cv; // remember the cv being read/written
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -71,15 +71,15 @@ public class EasyDccProgrammer extends AbstractProgrammer implements EasyDccList
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -150,7 +150,7 @@ public class EasyDccProgrammer extends AbstractProgrammer implements EasyDccList
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -158,7 +158,7 @@ public class EasyDccProgrammer extends AbstractProgrammer implements EasyDccList
         log.error("message received unexpectedly: {}", m.toString());
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -195,7 +195,7 @@ public class EasyDccProgrammer extends AbstractProgrammer implements EasyDccList
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

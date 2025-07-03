@@ -33,7 +33,7 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
     int PACKET_TIMEOUT = 5000;
     int PACKET_READTIMEOUT = 650000;
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Types implemented here.
@@ -48,7 +48,7 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
 
     static final ProgrammingMode AUTOMATICMODE = new ProgrammingMode("Automatic", Bundle.getMessage("MrcAutomaticMode"));
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -56,7 +56,7 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         return true;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -64,9 +64,9 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         return true;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
-     * 
+     *
      * CV1 to 1024 valid
      */
     @Override
@@ -81,17 +81,17 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
     int progState = 0;
     static final int NOTPROGRAMMING = 0;// is notProgramming
     static final int READCOMMANDSENT = 2;  // read command sent, waiting reply
-    static final int WRITECOMMANDSENT = 4; // POM write command sent 
+    static final int WRITECOMMANDSENT = 4; // POM write command sent
     static final int POMCOMMANDSENT = 6; // ops programming mode, send msg twice
     boolean _progRead = false;
     int _val; // remember the value being read/written for confirmative reply
     int _cv; // remember the cv being read/written
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listens {}", CV, p); // NOI18N
         useProgrammer(p);
@@ -113,15 +113,15 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteConfirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CVname, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -181,14 +181,14 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         return m;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
     public synchronized void notifyXmit(Date timestamp, MrcMessage m) {
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -199,7 +199,7 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         timeout();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -234,7 +234,7 @@ public class MrcProgrammer extends AbstractProgrammer implements MrcTrafficListe
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Internal routine to handle a timeout

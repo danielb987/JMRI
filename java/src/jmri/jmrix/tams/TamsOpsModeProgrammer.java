@@ -38,7 +38,7 @@ public class TamsOpsModeProgrammer extends TamsProgrammer implements AddressedPr
      * Forward a write request to an ops-mode write operation
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("write CV={} val={}", CV, val);
@@ -74,7 +74,7 @@ public class TamsOpsModeProgrammer extends TamsProgrammer implements AddressedPr
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         if (log.isDebugEnabled()) {
             log.debug("confirm CV={}", CV);
         }

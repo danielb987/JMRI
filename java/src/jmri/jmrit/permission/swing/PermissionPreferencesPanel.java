@@ -252,6 +252,7 @@ public class PermissionPreferencesPanel extends JPanel implements PreferencesPan
             List<Permission> permissions = new ArrayList<>(_temporaryPermissionManager.getPermissions(owner));
             permissions.sort((a,b) -> { return a.getName().compareTo(b.getName()); });
             for (Permission permission : permissions) {
+                log.debug("Permission: {}, class: {}", permission, permission.getClass().getName());
                 PermissionSwing permissionSwing =
                         PermissionSwingTools.getPermissionSwingForClass(permission);
                 JLabel label = permissionSwing.getLabel(permission);

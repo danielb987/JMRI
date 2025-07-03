@@ -66,7 +66,7 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -97,7 +97,7 @@ public class Mx1Programmer extends AbstractProgrammer implements Mx1Listener {
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 

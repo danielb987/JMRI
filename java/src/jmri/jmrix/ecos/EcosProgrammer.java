@@ -53,7 +53,7 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -79,7 +79,7 @@ public class EcosProgrammer extends AbstractProgrammer implements EcosListener {
      * {@inheritDoc}
      */
     @Override
-    synchronized public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 

@@ -47,7 +47,7 @@ public class MrcOpsModeProgrammer extends MrcProgrammer implements jmri.Addresse
      * Forward a write request to an ops-mode write operation
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("write CV={} val={}", CV, val); // NOI18N
         MrcMessage msg = MrcMessage.getPOM(addressLo, addressHi, CV, val);
@@ -79,7 +79,7 @@ public class MrcOpsModeProgrammer extends MrcProgrammer implements jmri.Addresse
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         log.debug("confirm CV={}", CV);
         log.error("confirmCV not available in this protocol"); // NOI18N
         throw new ProgrammerException();

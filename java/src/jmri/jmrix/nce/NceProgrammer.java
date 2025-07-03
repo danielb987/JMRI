@@ -121,7 +121,7 @@ public class NceProgrammer extends AbstractProgrammer implements NceListener {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -157,7 +157,7 @@ public class NceProgrammer extends AbstractProgrammer implements NceListener {
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 

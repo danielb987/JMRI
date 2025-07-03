@@ -30,13 +30,13 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         mLongAddr = pLongAddr;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Forward a write request to an ops-mode write operation.
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("write CV={} val={}", CV, val);
         // create the message and fill it,
@@ -67,7 +67,7 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         tc.sendEasyDccMessage(msg, this);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -78,17 +78,17 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         log.debug("confirm CV={}", CV);
         log.error("confirmCV not available in this protocol");
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -99,7 +99,7 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         return ret;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Can this ops-mode programmer read back values? For now, no, but maybe
@@ -112,7 +112,7 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         return false;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -120,7 +120,7 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         return mLongAddr;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -128,7 +128,7 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         return mAddress;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -136,7 +136,7 @@ public class EasyDccOpsModeProgrammer extends EasyDccProgrammer implements Addre
         return "" + getAddressNumber() + " " + getLongAddress();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Ops-mode programming doesn't put the command station in programming mode,

@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Programmer support for Zimo MXULF operations mode.  
+ * Programmer support for Zimo MXULF operations mode.
  * Provide an Ops Mode Programmer via a wrapper that works with the
  * MX1Programmer object.
  * <p>
@@ -53,7 +53,7 @@ public class Mx1OpsModeProgrammer extends Mx1Programmer implements AddressedProg
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -88,17 +88,17 @@ public class Mx1OpsModeProgrammer extends Mx1Programmer implements AddressedProg
         throw new ProgrammerException();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public synchronized void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         log.debug("confirm CV={}", CV);
         log.error("confirmCV not available in this protocol");
         throw new ProgrammerException();
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      *
      * Can this ops-mode programmer read back values? For now, no, but maybe
@@ -111,7 +111,7 @@ public class Mx1OpsModeProgrammer extends Mx1Programmer implements AddressedProg
         return false;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -119,7 +119,7 @@ public class Mx1OpsModeProgrammer extends Mx1Programmer implements AddressedProg
         return mLongAddr;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -127,7 +127,7 @@ public class Mx1OpsModeProgrammer extends Mx1Programmer implements AddressedProg
         return mAddress;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

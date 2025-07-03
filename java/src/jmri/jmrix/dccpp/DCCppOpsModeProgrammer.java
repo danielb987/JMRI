@@ -46,13 +46,13 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Send an ops-mode write request to the DCC++.
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, ProgListener p) throws ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, ProgListener p) throws ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         DCCppMessage msg = DCCppMessage.makeWriteOpsModeCVMsg(mAddress, CV, val);
         tc.sendDCCppMessage(msg, null);
@@ -70,8 +70,8 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
          * Risk... the state change introduces a 250ms delay to keep the UI from sending
          * write commands too frequently... so we'd have to do that here too.
         */
-        // Before we set the programmer state to not programming, 
-        // delay for a short time to give the decoder a chance to 
+        // Before we set the programmer state to not programming,
+        // delay for a short time to give the decoder a chance to
         // process the request.
         try {
             this.wait(250); // Spotbugs not happy: WAIT_NOT_IN_LOOP
@@ -83,7 +83,7 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         notifyProgListenerEnd(progListener, value, ProgListener.OK);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -91,15 +91,15 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         notifyProgListenerEnd(p, Integer.parseInt(CVname), ProgListener.NotImplemented);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
+    public void concreteConfirmCV(String CV, int val, ProgListener p) throws ProgrammerException {
         notifyProgListenerEnd(p, val, ProgListener.NotImplemented);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Types implemented here.
@@ -113,7 +113,7 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return ret;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -121,7 +121,7 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return true;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -129,7 +129,7 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return mAddress;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -137,7 +137,7 @@ public class DCCppOpsModeProgrammer extends jmri.jmrix.AbstractProgrammer implem
         return "" + getAddressNumber() + " " + getLongAddress();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

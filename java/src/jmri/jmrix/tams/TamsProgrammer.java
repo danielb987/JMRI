@@ -27,7 +27,7 @@ public class TamsProgrammer extends AbstractProgrammer implements TamsListener {
         super.SHORT_TIMEOUT = 6000;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -50,11 +50,11 @@ public class TamsProgrammer extends AbstractProgrammer implements TamsListener {
     int _val; // remember the value being read/written for confirmative reply
     int _cv;  // remember the cv being read/written
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         if (log.isDebugEnabled()) {
             log.debug("writeCV {} listens {}", CV, p);
@@ -79,15 +79,15 @@ public class TamsProgrammer extends AbstractProgrammer implements TamsListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -156,7 +156,7 @@ public class TamsProgrammer extends AbstractProgrammer implements TamsListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -164,7 +164,7 @@ public class TamsProgrammer extends AbstractProgrammer implements TamsListener {
         log.error("message received unexpectedly: {}", m.toString());
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -241,7 +241,7 @@ public class TamsProgrammer extends AbstractProgrammer implements TamsListener {
         }
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override

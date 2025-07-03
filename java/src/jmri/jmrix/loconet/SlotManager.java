@@ -1328,7 +1328,7 @@ public class SlotManager extends AbstractProgrammer implements LocoNetListener, 
      * @throws jmri.ProgrammerException if an unsupported programming mode is exercised
      */
     @Override
-    public void writeCV(String cvNum, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteWriteCV(String cvNum, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         log.debug("writeCV(string): cvNum={}, value={}", cvNum, val);
         if (getMode().equals(csOpSwProgrammingMode)) {
             log.debug("cvOpSw mode write!");
@@ -1429,7 +1429,7 @@ public class SlotManager extends AbstractProgrammer implements LocoNetListener, 
      * @throws jmri.ProgrammerException if an unsupported programming mode is exercised
      */
     @Override
-    public void confirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteConfirmCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         int CV = Integer.parseInt(CVname);
         lopsa = 0;
         hopsa = 0;

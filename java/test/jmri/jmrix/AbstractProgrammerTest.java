@@ -24,9 +24,9 @@ public class AbstractProgrammerTest extends ProgrammerTestBase {
     public void testDefaultViaBestMode() {
         Assume.assumeTrue(programmer instanceof AbstractProgrammer);
         Assert.assertEquals("Check Default", ProgrammingMode.DIRECTMODE,
-                ((AbstractProgrammer)programmer).getBestMode());        
+                ((AbstractProgrammer)programmer).getBestMode());
     }
-    
+
     @Test
     public void testRegisterFromCV() {
         Assume.assumeTrue(programmer instanceof AbstractProgrammer);
@@ -77,22 +77,22 @@ public class AbstractProgrammerTest extends ProgrammerTestBase {
             @Override
             public List<ProgrammingMode> getSupportedModes() {
                 java.util.ArrayList<ProgrammingMode> retval = new java.util.ArrayList<>();
-                
+
                 retval.add(ProgrammingMode.DIRECTMODE);
                 retval.add(ProgrammingMode.PAGEMODE);
                 retval.add(ProgrammingMode.REGISTERMODE);
 
                 return retval;
             }
-  
+
             // Programmer implementation that uses getBestMode for setting default
             @Override
             public ProgrammingMode getBestMode() { return ProgrammingMode.DIRECTMODE; }
 
             @Override
-            public void writeCV(String i, int j, ProgListener l) {}
+            public void concreteWriteCV(String i, int j, ProgListener l) {}
             @Override
-            public void confirmCV(String i, int j, ProgListener l) {}
+            public void concreteConfirmCV(String i, int j, ProgListener l) {}
             @Override
             public void readCV(String i, ProgListener l) {}
             @Override

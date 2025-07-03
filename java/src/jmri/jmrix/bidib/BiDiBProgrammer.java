@@ -43,11 +43,11 @@ public class BiDiBProgrammer extends AbstractProgrammer {
         if (getSupportedModes().size() > 0) {
             setMode(getSupportedModes().get(0));
         }
-        
+
         createProgrammerListener();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * BiDiB programming modes available depend on settings
@@ -65,12 +65,12 @@ public class BiDiBProgrammer extends AbstractProgrammer {
         //ret.add(ProgrammingMode.DIRECTBITMODE); //TODO! BiDiB should be able to do this!
         return ret;
     }
-    
+
     // getCanRead/getCanWrite: BiDiB protocol allows CVs from 1...1024 - this is the default implementation
 
-    /** 
+    /**
      * {@inheritDoc}
-     * 
+     *
      * The default implementation does not check for cv &gt; 1024 - not neccessary? We do it here anywhere
      */
     @Override
@@ -81,7 +81,7 @@ public class BiDiBProgrammer extends AbstractProgrammer {
         return Integer.parseInt(cv) <= 1024;
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Nonnull
@@ -99,11 +99,11 @@ public class BiDiBProgrammer extends AbstractProgrammer {
     int _val; // remember the value being read/written for confirmative reply
     int _cv; // remember the cv being read/written
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public synchronized void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.info("write mode: {}, CV={}, val={}", getMode().getStandardName(), CV, val);
         if (log.isDebugEnabled()) {
@@ -126,15 +126,15 @@ public class BiDiBProgrammer extends AbstractProgrammer {
         sendBiDiBMessage(new CommandStationProgMessage(CommandStationPt.BIDIB_CS_PROG_WR_BYTE, _cv, _val));
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
-    public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -157,7 +157,7 @@ public class BiDiBProgrammer extends AbstractProgrammer {
 //TODO bit mode ??
         sendBiDiBMessage(new CommandStationProgMessage(CommandStationPt.BIDIB_CS_PROG_RD_BYTE, _cv, 0));
     }
-    
+
     private void sendBiDiBMessage(BidibCommandMessage message) {
         progNode = tc.getCurrentGlobalProgrammerNode(); //the global programmer progNode may have changed TODO: make the progNode user selectable!
         if (progNode != null) {
@@ -191,8 +191,8 @@ public class BiDiBProgrammer extends AbstractProgrammer {
             _usingProgrammer = p;
         }
     }
-    
-    
+
+
     private void createProgrammerListener() {
         // create BiDiB message listener
         MessageListener messageListener = new DefaultMessageListener() {
@@ -281,10 +281,10 @@ public class BiDiBProgrammer extends AbstractProgrammer {
                 }
             }
         };
-        tc.addMessageListener(messageListener);        
+        tc.addMessageListener(messageListener);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      *
      * Internal routine to handle a timeout
@@ -300,7 +300,7 @@ public class BiDiBProgrammer extends AbstractProgrammer {
             progState = NOTPROGRAMMING;
             cleanup();
             notifyProgListenerEnd(_val, jmri.ProgListener.FailedTimeout);
-            
+
             tc.checkProgMode(false, progNode); //be sure PROG mode is switched off
             tc.setCurrentGlobalProgrammerNode(null); //invalidate, so the progNode must be evaluated again the next time
         }

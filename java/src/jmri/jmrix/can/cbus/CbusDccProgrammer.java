@@ -65,7 +65,7 @@ public class CbusDccProgrammer extends AbstractProgrammer implements CanListener
 
     /**
      * Set the CBUS Node to be used for NV programming
-     * 
+     *
      * @param n a CBUS node
      */
     public synchronized void setNodeOfInterest(CbusNode n) {
@@ -76,7 +76,7 @@ public class CbusDccProgrammer extends AbstractProgrammer implements CanListener
      * {@inheritDoc}
      */
     @Override
-    synchronized public void writeCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteWriteCV(String CVname, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         final int CV = Integer.parseInt(CVname);
         log.debug("writeCV {} listener {}",CV, p);
         useProgrammer(p);
@@ -107,7 +107,7 @@ public class CbusDccProgrammer extends AbstractProgrammer implements CanListener
      * {@inheritDoc}
      */
     @Override
-    synchronized public void confirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
+    synchronized public void concreteConfirmCV(String CV, int val, jmri.ProgListener p) throws jmri.ProgrammerException {
         readCV(CV, p);
     }
 
