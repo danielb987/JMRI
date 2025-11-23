@@ -11,6 +11,7 @@ import javax.swing.table.JTableHeader;
 
 import jmri.*;
 import jmri.NamedBean.DisplayOptions;
+import jmri.jmrit.logixng.Module;
 import jmri.jmrit.logixng.*;
 import jmri.util.swing.*;
 
@@ -282,6 +283,22 @@ public final class LogixNGTableIcon extends PositionableJPanel {
                 int index, boolean isSelected, boolean cellHasFocus) {
             setText((value == null) ? "" : value.toString());
             return this;
+        }
+    }
+
+
+    static class ModuleItem {
+
+        private final Module _module;
+
+        public ModuleItem(Module m) {
+            _module = m;
+        }
+
+        @Override
+        public String toString() {
+            if (_module == null) return "";
+            else return _module.getDisplayName();
         }
     }
 
