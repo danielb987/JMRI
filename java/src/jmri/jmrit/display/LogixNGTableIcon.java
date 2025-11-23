@@ -1,7 +1,6 @@
 package jmri.jmrit.display;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,11 +9,9 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 
-import jmri.InstanceManager;
-import jmri.NamedBeanHandle;
+import jmri.*;
 import jmri.NamedBean.DisplayOptions;
-import jmri.jmrit.logixng.NamedTable;
-import jmri.jmrit.logixng.NamedTableManager;
+import jmri.jmrit.logixng.*;
 import jmri.util.swing.*;
 
 import org.slf4j.Logger;
