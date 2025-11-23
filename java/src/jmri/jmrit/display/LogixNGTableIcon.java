@@ -136,7 +136,7 @@ public final class LogixNGTableIcon extends PositionableJPanel {
                 columnIndexes.put(header, col);
             }
         }
-        JList<String> columnList = new JList<>(columns.toArray(new String[0]));
+        JList<String> columnList = new JList<>(columns.toArray(String[]::new));
         for (String header : _tableModel._editableColumnsList) {
             int index = columnIndexes.getOrDefault(header,-1);
             if (index != -1) {
@@ -154,7 +154,7 @@ public final class LogixNGTableIcon extends PositionableJPanel {
                 rowIndexes.put(header, row);
             }
         }
-        JList<String> rowList = new JList<>(rows.toArray(new String[0]));
+        JList<String> rowList = new JList<>(rows.toArray(String[]::new));
         for (String header : _tableModel._editableRowsList) {
             int index = rowIndexes.getOrDefault(header,-1);
             if (index != -1) {
