@@ -13,7 +13,7 @@ import jmri.beans.PropertyChangeSupport;
 import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.Track;
 import jmri.jmrit.operations.trains.Train;
-import jmri.jmrit.operations.trains.TrainCommon;
+import jmri.jmrit.operations.trains.trainbuilder.TrainCommon;
 
 /**
  * Base class for rolling stock managers car and engine.
@@ -495,6 +495,38 @@ public abstract class RollingStockManager<T extends RollingStock> extends Proper
                         .compareToIgnoreCase(r2.getRoadName() + r2.getNumber()));
         }
     }
+    
+    protected List<T> sortByTrackPriority(List<T> list) {
+        List<T> out = new ArrayList<>();
+        // sort rolling stock by track priority
+        for (T rs : list) {
+            if (rs.getTrack() != null && rs.getTrack().getTrackPriority().equals(Track.PRIORITY_HIGH)) {
+                out.add(rs);
+            }
+        }
+        for (T rs : list) {
+            if (rs.getTrack() != null && rs.getTrack().getTrackPriority().equals(Track.PRIORITY_MEDIUM)) {
+                out.add(rs);
+            }
+        }
+        for (T rs : list) {
+            if (rs.getTrack() != null && rs.getTrack().getTrackPriority().equals(Track.PRIORITY_NORMAL)) {
+                out.add(rs);
+            }
+        }
+        for (T rs : list) {
+            if (rs.getTrack() != null && rs.getTrack().getTrackPriority().equals(Track.PRIORITY_LOW)) {
+                out.add(rs);
+            }
+        }
+        // rolling stock without a track assignment
+        for (T rs : list) {
+            if (!out.contains(rs)) {
+                out.add(rs);
+            }
+        }
+        return out;
+    }
 
     /*
      * Converts build date into consistent String. Three build date formats; Two
@@ -546,7 +578,7 @@ public abstract class RollingStockManager<T extends RollingStock> extends Proper
      */
     public List<T> getList(Train train) {
         List<T> out = new ArrayList<>();
-        _hashTable.values().stream().filter((rs) -> {
+        getList().stream().filter((rs) -> {
             return rs.getTrain() == train;
         }).forEachOrdered((rs) -> {
             out.add(rs);
@@ -562,7 +594,7 @@ public abstract class RollingStockManager<T extends RollingStock> extends Proper
      */
     public List<T> getList(Location location) {
         List<T> out = new ArrayList<>();
-        _hashTable.values().stream().filter((rs) -> {
+        getList().stream().filter((rs) -> {
             return rs.getLocation() == location;
         }).forEachOrdered((rs) -> {
             out.add(rs);
@@ -578,7 +610,7 @@ public abstract class RollingStockManager<T extends RollingStock> extends Proper
      */
     public List<T> getList(Track track) {
         List<T> out = new ArrayList<>();
-        _hashTable.values().stream().filter((rs) -> {
+        getList().stream().filter((rs) -> {
             return rs.getTrack() == track;
         }).forEachOrdered((rs) -> {
             out.add(rs);

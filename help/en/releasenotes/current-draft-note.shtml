@@ -26,7 +26,7 @@
 
         <h4>CBUS</h4>
             <ul>
-                <li>The default CAN ID for new connections is restored to 126</li>
+                <li></li>
             </ul>
 
         <h4>C/MRI</h4>
@@ -36,7 +36,7 @@
 
         <h4>DCC++ and DCC-EX</h4>
             <ul>
-                <li>Add parsing for JR, jR, JA and jA messages, handle negative current</li>
+                <li></li>
             </ul>
 
         <h4>DCC4pc</h4>
@@ -86,21 +86,7 @@
 
         <h4>LocoNet</h4>
             <ul>
-                <li>Updated "LocoNet Monitor" to give some detail when the command
-                    station reports that a throttle's attempt to control a train's
-                    speed/direction or functions was ignored by the command station because
-                    the LocoNet "Expanded Slot" is "In-Use" by a different throttle
-                    than the one which attempted to control the slot.  Other
-                    operations can also cause this message when the requesting throttle
-                    is not the throttle which "owns" the slot.  This message
-                    (an "<OPC_LONG_ACK>" message) is only sent by
-                    command stations that support "Expanded Slot" messaging, and
-                    is not used by older Digitrax command stations which do not
-                    support "Expanded Slots".</li>
-                <li>Updated LocoNet Monitor to show certain current-generation
-                    Digitrax command stations as "sourcing" certain LocoNet
-                    messages.</li>
-                <li>Updated LocoNet Monitor to better decode certain messages.</li>
+                <li></li>
             </ul>
 
         <h4>Maple</h4>
@@ -130,12 +116,7 @@
 
         <h4>NCE</h4>
             <ul>
-                <li>Fix to the Consist Backup/Restore program. All versions from 5.7.1 to5.11.3
-                create a backup file including command station memory space beyond the consist tables.
-                The bigger issue is that the restore does not check that the addresses in the backup file
-                are within the consist tables. Restoring one of those backup files could corrupt the
-                memory used for AIU status and RS-232 buffers. This fixes both of those and makes sure the
-                restore will only restore within the consist tables.</li>
+                <li></li>
             </ul>
 
         <h4>Oak Tree</h4>
@@ -145,22 +126,14 @@
 
         <h4><a href="http://openlcb.org">OpenLCB</a> / LCC</h4>
             <ul>
-                <li>Improved how Event with Payload messages are displayed in the monitor.</li>
-                <li>Enabled the Abort button in the Update Firmware window.</li>
-                <li>Backup files are now written with dotted-hex event ID values,
-                    whether or not an event name is available.  This makes them more reliable
-                    and more portable.</li>
-                <li>Update the STL Editor to support "event names".
+                <li>The Send Frame tool has 
                     <ul>
-                      <li>When available, event names will be displayed in the IQYZ tables.</li>
-                      <li>The load from backup process will handle event names in older CDI backups.
-                      If the event name is no longer in the name store, a temporary event id will
-                      be created.</li>
-                      <li>Existing event names can be entered in the event columns of the IQYZ tables.
-                      Creating new event names is NOT supported.</li>
+                        <li>some button labels updated,</li>
+                        <li>a new Send Global Identify Events button,</li>
+                        <li>more reliable control of the Open CDI Editor button state and</li>
+                        <li>some clean-up of the window layout.
                     </ul>
                 </li>
-                <li>Correctly decode events-with-payload</li>
             </ul>
 
         <h4>Powerline</h4>
@@ -220,7 +193,22 @@
 
     <h3>New / Updated decoder definitions</h3>
         <ul>
-          <li></li>
+          <li>A <strong>No Decoder decoder with extended addressing</strong>
+              decoder has been added. This "no decoder" definition allows
+              a roster entry to be created that does not have a physical
+              decoder of its own.
+              <br>
+              It was created to suport the Zimo MX series of funcion-only
+              decoders that allow TWO addresses to be defined for a single
+              decoder - the primary address and a secondary address.
+              Function operations will result from commands sent to EITHER
+              decoder address.
+              <br>
+              The initial "No Decoder" definition is limited to a primary
+              address of 1-127, this extended version allows the full
+              range of extended addresses to be used</li>
+          <li>"DCCWorld.com" has been added as a manufacturer ID that DecoderPro 
+              recognizes.</li>
         </ul>
 
         <h4>AE Model</h4>
@@ -276,15 +264,6 @@
         <h4>ESU</h4>
             <ul>
                 <li></li>
-            </ul>
-
-        <h4>GCA</h4>
-            <ul>
-                <li>
-                   Added GCA50 (Arduino Nano based LocoIO) and
-                   GCA51 (2x RFID reader + 8 port LocoIO) models
-                   to the DIY HDL_LocoIO decoder definition.
-                </li>
             </ul>
 
         <h4>Hattoms</h4>
@@ -352,15 +331,9 @@
                 <li></li>
             </ul>
 
-        <h4>Piko decoders</h4>
-            <ul>
-                <li>Support for XP5.1 decoders up to FW 1.16.0 </li>
-            </ul>
-
         <h4>Public Domain and DIY decoders</h4>
             <ul>
-                <li>Added GCA50 and GCA51 models to the HDL_LocoIO
-                decoder file, showing only valid modes.</li>
+                <li></li>
             </ul>
 
         <h4>QSI</h4>
@@ -440,7 +413,7 @@
 
         <h4>ZIMO</h4>
             <ul>
-                <li></li>
+                <li>See above.</li>
             </ul>
 
         <h4>Miscellaneous</h4>
@@ -473,15 +446,18 @@
     <h3>DecoderPro</h3>
         <a id="DecoderPro" name="DecoderPro"></a>
         <ul>
-            <li></li>
+            <li>Fixed a problem causing the starting value when doing
+                CV reads to erroneously be zero.</li>
         </ul>
 
    <h3>Dispatcher</h3>
         <a id="Dispatcher" name="Dispatcher"></a>
         <ul>
-             <li>Restore TSA data to the correct place.</li>
-             <li>When checking for a hold mast do not assume the section join is at the end of a section.</li>
-             <li>For AdHoc trains check to see if a transit can be used.</li>
+            <li>Display minimum scale speed  when activating train.</li>
+            <li>Add basic column sorting on the traininfo selection screen, and correct missplaced columns.</li>
+            <li>Tidy up debug/trace in RosterSpeedProfile.</li>
+            <li>Make info message in allocated section to debug.</li>
+            <li>Fix Exception when starting trains under inauspicious circumstances.</li>
         </ul>
 
     <h3>Dispatcher System</h3>
@@ -499,13 +475,17 @@
     <h3>Layout Editor</h3>
         <a id="LE" name="LE"></a>
         <ul>
-            <li></li>
+            <li>Improved how the "?" is drawn for UNKNOWN turnouts (when that option is selected)</li>
         </ul>
 
         <h4>NX - Entry/Exit Tool</h4>
             <ul>
-                <li>Enable panel updates while the NX route is being created.</li>
-                <li>Display a warning dialog when creating a multipoint route fails.</li>
+                <li>Add two options to override the changes made in PR #13857 - Entry/Exit Enhancements
+                  <ul>
+                    <li>Suppress the multi-point failed dialog</li>
+                    <li>Revert to the old GUI behavior</li>
+                  </ul>
+                </li>
             </ul>
 
     <h3>LccPro</h3>
@@ -523,12 +503,6 @@
     <h3>LogixNG</h3>
         <a id="LogixNG" name="LogixNG"></a>
         <ul>
-          <li>The <strong>Listen On Beans</strong>,
-              <strong>Listen On Beans - Local variable</strong> and
-              <strong>Listen On Beans - Table</strong> actions
-              can now listen on Audio beans.</li>
-          <li><strong>Occupancy Blocks</strong> can now be used in
-              the <strong>For each</strong> action.</li>
           <li></li>
         </ul>
 
@@ -541,8 +515,7 @@
     <h3>OperationsPro</h3>
         <a id="Operations" name="Operations"></a>
         <ul>
-            <li>New route feature. Now able to control local car moves for each location in a route. 
-            See https://www.jmri.org/help/en/package/jmri/jmrit/operations/Operations.shtml#EditRoute</li>
+            <li>When a car arrives at a spur with a schedule, the car's final destination now changes when the car's load status changes.</li>
         </ul>
 
    <h3>Panel Editor</h3>
@@ -584,7 +557,9 @@
     <h3>Scripting</h3>
         <a id="Scripting" name="Scripting"></a>
         <ul>
-            <li></li>
+            <li>Add <strong>MemoryValuesPersistence.py</strong>. The script will write the values
+            for selected memory variables at shutdown and load them after starting PanelPro and
+            loading the layout data xml file.</li>
         </ul>
 
     <h3>Signals</h3>
@@ -654,7 +629,9 @@
     <h3>Turnouts, Lights, Sensors and other elements</h3>
         <a id="TLae" name="TLae"></a>
         <ul>
-            <li></li>
+            <li>There's a new "Property Add/Edit" in the item popup menu
+                in the various tables.  This lets you add or edit 
+                property values associated with a particular item.</li>
         </ul>
 
    <h3>Warrants</h3>
@@ -702,7 +679,8 @@
     <h3>Miscellaneous</h3>
         <a id="Misc" name="Misc"></a>
         <ul>
-            <li>The pop-up menu in the various Tables now has an entry
-                for "Copy System Name".</li>
-            <li>Bug fix: Add new editor panel to the Editor Manager when doing a CPE/PE switch.</li>
+            <li>Testing - JUnitUtil - waitFor condition failure text can be formed from a String Supplier, e.g. a lambda expression.
+            The expression is only evaluated ( lazily ) when the assertion fails.
+            </li>
         </ul>
+

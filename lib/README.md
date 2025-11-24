@@ -114,7 +114,15 @@ which checks the dates of the control files to make sure they've been updated wh
 - version 2.11.0
 - JMRI uses this for file selectors
 
-
+##### darklaf-*, jsvg-*, swing-dsl-*, swing-extensions-*
+ - from Maven Central, with version in file name
+ - These provide the DarkLaf look&feel package
+ - https://github.com/weisJ/darklaf
+ 
+##### swingx-core-1.6.5-1.jar   
+ - used by DarkLaf look&feel at runtime
+ - From https://repo1.maven.org/maven2/org/swinglabs/swingx/swingx-core/1.6.5-1/
+ 
 ##### jhall.jar
 - version 2.03
 - from <http://java.sun.com/javase/technologies/desktop/javahelp/>
@@ -137,9 +145,7 @@ which checks the dates of the control files to make sure they've been updated wh
 - from https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j/2.0.7
 
 ##### openlcb.jar
- - 0.8.5 from https://repo.maven.apache.org/maven2/org/openlcb/openlcb/0.8.5/openlcb-0.8.5.jar
-    with merged PR #287
-    with PR #288 from 2025-02-24
+ - 0.8.6 from https://repo.maven.apache.org/maven2/org/openlcb/openlcb/0.8.6/openlcb-0.8.6.jar
  
 ##### jlfgr-1_0.jar
 - icons from see http://www.coderanch.com/t/341737/GUI/java/Expand-Collapse-Panels
@@ -158,9 +164,10 @@ which checks the dates of the control files to make sure they've been updated wh
 ##### security.policy
 - (JMRI file)
 
-##### jdom2-2.0.6.jar
-- version 2.0.6
-- from <jdom.org>
+##### jdom2-2.0.6.1jar
+- version 2.0.6.1
+- see <jdom.org>
+- from Maven Central https://mvnrepository.com/artifact/org.jdom/jdom2/2.0.6.1
 
 ##### jackson-annotations-2.13.4.jar, jackson-core-2.13.4.jar, jackson-databind-2.13.4.2.jar
 - JSON processing library com.fasterxml.jackson
@@ -384,8 +391,10 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 - version 3.3
 - Mockito dependency
 
-##### opentest4j-1.2.0.jar
-- version 1.2.0
+##### opentest4j-1.3.0.jar
+- version 1.3.0
+- Downloaded from Maven 2025-09-25
+- Used with JUnit ant
 
 ##### tag-expressions-1.1.1.jar
 - version 1.1.1
@@ -437,8 +446,8 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 
 ##### ArchUnit: archunit-*.jar, archunit-junit5-api-*.jar, archunit-junit5-engine-*.jar, archunit-junit5-engine-api*.jar
 - See https://www.archunit.org
-- Jars from https://search.maven.org/search?q=g:com.tngtech.archunit
-- version 1.0.0-rc1
+- Jars from https://mvnrepository.com/artifact/com.tngtech.archunit/ 2025-10-09
+- version 1.4.1
 
 ##### byte-buddy-1.14.15
 - version 1.14.15
@@ -483,12 +492,21 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 - From https://mvnrepository.com/artifact/org.netbeans.external/jemmy-2.3.1.1/RELEASE125
 
 ##### junit-jupiter-*
-- version 5.9.1
+- version 5.13.4
+- Downloaded from Maven Central 2025-09-25
+
 
 ##### junit-platform-*
-- version 1.9.1
+- version 1.13.4
+- Downloaded from Maven Central 2025-09-25
 
-##### junit-vintage-engine-5.9.1.jar
+##### junit-vintage-engine-5.13.4.jar
+- Downloaded from Maven Central 2025-09-25
+
+##### junit-platform-console-standalone
+- version 5.13.4
+- for ant builds
+- Downloaded from Maven Central 2025-09-25
 
 ##### mockito-core mockito-junit-jupiter
 - version 5.12.0
@@ -501,7 +519,7 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 ##### PlantUML
 - plantuml.jar
     from plantuml.org
-    1.2023.1
+    plantuml-1.2025.2
 - umldoclet.jar
     downloaded as umldoclet-2.0.10-javadoc.jar
     from https://github.com/talsma-ict/umldoclet/releases
@@ -575,15 +593,6 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 
 ##### servlet.jar:
 - jakarta-servletapi-3.2.3-src/lib/servlet.jar but no longer included
-
-##### RXTXcomm.jar, librxtxSerial.jnilib
-- From Rxtx-2.2pre2  http://rxtx.qbang.org (http://rxtx.qbang.org/pub/rxtx/rxtx-2.2pre2-bins.zip)
-- The win32 and win64 directories contain the necessary rxtxSerial.dll for the two windows varients
-- The i686-pc-linux-gnu directory contains two .so libraries for 32-bit Linux
-- For MacOS X:
-    macosx/librxtxSerial.jnilib     169488  from rxtx-2.2pre2-bins distribution
-    macosx/ppc/librxtxSerial.jnilib 301908  built for MacOS X 10.4 by John Plocher 2010-02-04
-- No longer used as of JMRI 4.7.X
 
 ##### Serialio.jar
 - from <http://serialio.com>

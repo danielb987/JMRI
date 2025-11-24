@@ -59,6 +59,7 @@ import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
 import jmri.swing.JTablePersistenceManager;
 import jmri.util.JmriJFrame;
+import jmri.util.ThreadingUtil;
 import jmri.util.swing.JmriJOptionPane;
 import jmri.util.swing.JmriMouseAdapter;
 import jmri.util.swing.JmriMouseEvent;
@@ -97,8 +98,13 @@ import jmri.util.table.ButtonRenderer;
  */
 public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceManagerAutoDefault {
 
+    public static boolean dispatcherSystemSchedulingInOperation = false;    // required for Dispatcher System
+                                // to inhibit error message if train being scheduled is not in required station
+
     public DispatcherFrame() {
         super(true, true); // remember size a position.
+
+
         editorManager = InstanceManager.getDefault(EditorManager.class);
         initializeOptions();
         openDispatcherWindow();
@@ -134,7 +140,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
                 .initializeLayoutBlockPaths();
         if (names.length > 0) {
             for (int i = 0; i < names.length; i++) {
-                TrainInfo info = null;
+                TrainInfo info;
                 try {
                     info = tif.readTrainInfo(names[i]);
                 } catch (java.io.IOException ioe) {
@@ -156,6 +162,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
                             log.warn("Sleep Interrupted in loading trains, likely being stopped", e);
+                            Thread.currentThread().interrupt();
                         }
                     }
                 }
@@ -205,7 +212,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
         try {
             // maybe called from jthon protect our selves
             TrainInfoFile tif = new TrainInfoFile();
-            TrainInfo info = null;
+            TrainInfo info;
             try {
                 info = tif.readTrainInfo(traininfoFileName);
             } catch (java.io.FileNotFoundException fnfe) {
@@ -301,6 +308,10 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
             case OVERRIDETYPE_ROSTER:
                 tSource = ActiveTrain.ROSTER;
                 rosterIDToUse = overRideValue;
+                RosterEntry re = Roster.getDefault().getEntryForId(rosterIDToUse);
+                if (re != null) {
+                    dccAddressToUse = re.getDccAddress();
+                }
                 if (trainNameToUse.isEmpty()) {
                     trainNameToUse = overRideValue;
                 }
@@ -382,6 +393,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
                 aat.setStopBySpeedProfile(info.getStopBySpeedProfile());
                 aat.setStopBySpeedProfileAdjust(info.getStopBySpeedProfileAdjust());
                 aat.setUseSpeedProfile(info.getUseSpeedProfile());
+                aat.setFunctionLight(info.getFNumberLight());
                 getAutoTrainsFrame().addAutoActiveTrain(aat);
                 if (!aat.initialize()) {
                     log.error("ERROR initializing autorunning for train {}", at.getTrainName());
@@ -808,8 +820,10 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
                 tpm.persist(allocatedSectionTable);
             }
         }
-        dispatcherFrame.pack();
-        dispatcherFrame.setVisible(true);
+        ThreadingUtil.runOnGUI( () -> {
+            dispatcherFrame.pack();
+            dispatcherFrame.setVisible(true);
+        });
     }
 
     void releaseAllocatedSectionFromTable(int index) {
@@ -1446,7 +1460,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
             return null;
         }
         if (isInAllocatedSection(startBlock)) {
-            if (showErrorMessages) {
+            if (showErrorMessages && !DispatcherFrame.dispatcherSystemSchedulingInOperation) {
                 JmriJOptionPane.showMessageDialog(frame, java.text.MessageFormat.format(Bundle.getMessage(
                         "Error5"), new Object[]{startBlock.getDisplayName()}), Bundle.getMessage("ErrorTitle"),
                         JmriJOptionPane.ERROR_MESSAGE);
@@ -1455,7 +1469,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
             return null;
         }
         if (_HasOccupancyDetection && (!(startBlock.getState() == Block.OCCUPIED))) {
-            if (showErrorMessages) {
+            if (showErrorMessages && !DispatcherFrame.dispatcherSystemSchedulingInOperation) {
                 JmriJOptionPane.showMessageDialog(frame, java.text.MessageFormat.format(Bundle.getMessage(
                         "Error6"), new Object[]{startBlock.getDisplayName()}), Bundle.getMessage("ErrorTitle"),
                         JmriJOptionPane.ERROR_MESSAGE);
@@ -1578,7 +1592,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
             if (_autoTrainsFrame == null) {
                 _autoTrainsFrame = new AutoTrainsFrame(this);
             } else {
-                _autoTrainsFrame.setVisible(true);
+                ThreadingUtil.runOnGUI( () -> _autoTrainsFrame.setVisible(true));
             }
         } else if (_UseConnectivity && (editorManager.getAll(LayoutEditor.class).size() > 0)) {
             // not auto run, set up direction sensors in signals since use connectivity was requested
@@ -1680,21 +1694,10 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
      * ActiveTrain object should not be used again after this method is called.
      *
      * @param at the train to terminate
-     */
-    @Deprecated
-    public void terminateActiveTrain(ActiveTrain at) {
-        terminateActiveTrain(at,true,false);
-    }
-
-    /**
-     * Terminate an Active Train and remove it from the Dispatcher. The
-     * ActiveTrain object should not be used again after this method is called.
-     *
-     * @param at the train to terminate
      * @param terminateNow TRue if doing a full terminate, not just an end of transit.
      * @param runNextTrain if false the next traininfo is not run.
      */
-    public void terminateActiveTrain(ActiveTrain at, boolean terminateNow, boolean runNextTrain) {
+    public void terminateActiveTrain(final ActiveTrain at, boolean terminateNow, boolean runNextTrain) {
         // ensure there is a train to terminate
         if (at == null) {
             log.error("Null ActiveTrain pointer when attempting to terminate an ActiveTrain");
@@ -3118,7 +3121,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
         _NameInAllocatedBlock = set;
     }
 
-    protected Scale getScale() {
+    public Scale getScale() {
         return _LayoutScale;
     }
 
@@ -3171,7 +3174,7 @@ public class DispatcherFrame extends jmri.util.JmriJFrame implements InstanceMan
             }
         }
         if (atFrame != null) {
-            atFrame.setVisible(false);
+            ThreadingUtil.runOnGUI( () -> atFrame.setVisible(false));
             atFrame.dispose();
             atFrame = null;
         }

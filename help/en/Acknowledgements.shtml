@@ -87,6 +87,8 @@
         <li>Harald Barth, <!-- habazut -->
          who improved the SRCP implementation and the DCC++ implementation.</li>
 
+        <li>Jack Basiago, who worked on the block contents icon</li>
+
         <li>Michal Basta, who contributed the Czech internationalization</li>
 
         <li>Patrick Beard, who allows us to distribute his javax.comm.MRJ package for the
@@ -266,9 +268,6 @@
 
         <li>Bill Chown, who did a lot of work on the MRC decoder definitions</li>
 
-        <li>Chris Why, <!-- chriswhy00 -->
-         who fixed a tough bug in the speed-profiling code.</li>
-
         <li>Bob Clearfield, who helped fix some broken links</li>
 
         <li>Nigel Cliffe, who updated the CT Elektronik decoder definitions, provided sample
@@ -292,6 +291,9 @@
         <li>Jeff Collell, <!-- auctionsjeff -->
          who added Light support for OpenLCB.</li>
 
+        <li>Frank Collingwood, <!-- fcollingwood -->
+        who provided a definition for the Rokuhan A053 and A059 decoders.
+        
          <li>John Connelly, <!-- connelly38 -->
          who greatly sped up the decoder and roster indexing steps for large rosters.
 
@@ -411,6 +413,9 @@
         System</a> tools for working with Dispatcher.
         </li>
 
+        <li>Dieter Flunkert, who contributed a decoder definition for the 
+            Decoderwerk LokCommander.
+            
         <li>Dan Foltz created the Manifest Creator and Switch List Creator for operations</li>
 
         <li>Marco Forcone, who sacrificed two turnouts motors to the cause of debugging XPressNet
@@ -604,6 +609,10 @@
         <li>The Jython project, who provided a very powerful scripting engine for us <a id="K"></a>
         </li>
 
+        <li>Timothy Jump,   <!-- E3t1jump -->
+        who worked on the TMCC documentation.
+        </li>
+        
         <li>Georg Kautzsch, who provided a decoder definition for the Uhlenbrock 67800 servo
         decoder.</li>
 
@@ -1170,6 +1179,9 @@
 
         <li>Simon White, who added support for FindBugs and EMMA to our build tools.</li>
 
+        <li>Chris Why, <!-- chriswhy00 -->
+         who fixed a tough bug in the speed-profiling code.</li>
+
         <li>Stephen Williams, who improved the LocoNet slot monitor, made multiple small
         improvements to LocoNet internals, especially including the LocoNet monitor, fixed a nasty
         problem with looping LocoNet throttles, added a command station option to the TCP
@@ -1177,6 +1189,8 @@
 
         <li>Jos Wils updated the ESU decoder definitions, and extended the Comprehensive programmer
         format for really-high-functionality decoders.</li>
+
+        <li>Gerald Wolfson, who contributed the ClearFileHistory.py script.</li>
 
         <li>Jim Wolters, who updated the MRC Sound Brilliance 1812 decoder definition.</li>
 
@@ -1187,6 +1201,9 @@
 
         <li>Mike Yawn, who provided the instructions for building under Eclipse <a id="Z"></a>
         </li>
+
+        <li>Lim Sim Yee, <!-- simei2k -->
+        who fixed a security vulnerability.
 
         <li><a href="https://github.com/JMRI/JMRI/pulls?q=author%3Aicklesteve+">Steve Young</a>,
         <!-- icklesteve -->

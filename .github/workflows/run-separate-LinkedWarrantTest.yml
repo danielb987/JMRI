@@ -22,6 +22,10 @@ jobs:
         distribution: 'zulu'
         java-version: 11
     - name: Cache Maven packages
+      # TODO: remove next line after working again
+      #  temporarily work around https://github.com/actions/runner-images/issues/13341
+      #  by disabling caching for macOS
+      if: ${{ runner.os != 'macOS' }}
       uses: actions/cache@v4
       with:
         path: ~/.m2
@@ -32,4 +36,4 @@ jobs:
         # compile code and tests
         mvn antrun:run -Danttarget=tests
         # run individual tests
-        ./scripts/run_linked_warrant_test java/test/jmri/jmrit/logix/LinkedWarrantTest.java
+        ./scripts/run_linked_warrant_test jmri/jmrit/logix/LinkedWarrantTest.java
