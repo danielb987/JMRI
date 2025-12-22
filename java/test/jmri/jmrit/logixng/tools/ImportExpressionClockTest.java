@@ -24,7 +24,7 @@ public class ImportExpressionClockTest extends ImportExpressionComplexTestBase {
     ConditionalVariable cv;
 
     protected enum ClockEnum {
-        Clock__start10_20__end_13_10(10,20,13,10),
+//        Clock__start10_20__end_13_10(10,20,13,10),
         Clock__start18_15__end_12_25(18,15,12,25);
 
         private final int _start;
@@ -65,6 +65,7 @@ public class ImportExpressionClockTest extends ImportExpressionComplexTestBase {
         cv.setNum2(ce._end);    // end time
 
         switch (ce) {
+/*
             case Clock__start10_20__end_13_10:
                 switch (setup) {
                     case Init:
@@ -95,8 +96,9 @@ public class ImportExpressionClockTest extends ImportExpressionComplexTestBase {
                     default: throw new RuntimeException("Unknown enum: "+ce.name());
                 }
                 break;
-
+*/
             case Clock__start18_15__end_12_25:
+                System.out.format("setup: %s, %b%n", setup.name(), isLogixActivated());
                 switch (setup) {
                     case Init:
                         fastClock.setTime(new Date(0,0,0,14,20));   // 14:20

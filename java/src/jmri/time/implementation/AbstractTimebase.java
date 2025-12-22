@@ -1,11 +1,8 @@
 package jmri.time.implementation;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import java.beans.PropertyChangeListener;
 import java.time.*;
 
-import java.util.Date;
+import java.util.*;
 
 import jmri.*;
 import jmri.implementation.AbstractNamedBean;
@@ -45,7 +42,7 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
 
-    protected void setTimeIfPossible(Date d) {
+    protected final void setTimeIfPossible(Date d) {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         if (tp instanceof TimeSetter) {
@@ -54,31 +51,12 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
     @Override
-    public void setTime(Date d) {
+    public final void setTime(Date d) {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         if (tp instanceof TimeSetter) {
-            if ((tp instanceof DateProvider) && (tp instanceof DateSetter)) {
-                DateProvider dp = (DateProvider)(TimeSetter)tp;
-                DateSetter ds = (DateSetter)(TimeSetter)tp;
-                if (ds.canSetDate()) {
-                    LocalDateTime date = convertToLocalDateTime(d);
-                    if (dp.hasYear()) {
-                        ds.setYear(date.getYear());
-                    }
-                    if (dp.hasMonth()) {
-                        ds.setMonth(date.getMonthValue());
-                    }
-                    if (dp.hasDayOfMonth()) {
-                        ds.setDayOfMonth(date.getDayOfMonth());
-                    }
-                    if (dp.hasWeekday()) {
-                        ds.setWeekday(date.getDayOfWeek().getValue());
-                    }
-                }
-            }
-            TimeSetter ts = (TimeSetter)tp;
-            ts.setTime(convertToLocalTime(d));
+            LocalDateTime dateTime = convertToLocalDateTime(d);
+            ((TimeSetter) tp).setDateTime(dateTime);
         } else {
             throw new UnsupportedOperationException("The current TimeProvider is not a TimeSetter: "
                     + (tp != null ? tp.getClass().getName() : null));
@@ -86,7 +64,7 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
     @Override
-    public void setTime(Instant i) {
+    public final void setTime(Instant i) {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         if (tp instanceof TimeSetter) {
@@ -100,19 +78,19 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
     @Override
-    public void userSetTime(Date d) {
+    public final void userSetTime(Date d) {
         setTime(d);
     }
 
     @Override
-    public Date getTime() {
+    public final Date getTime() {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         return convertToDate(tp.getTime());
     }
 
     @Override
-    public void setRun(boolean y) {
+    public final void setRun(boolean y) {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         if (tp instanceof StartStopTimeProvider) {
@@ -133,13 +111,13 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
     @Override
-    public boolean getRun() {
+    public final boolean getRun() {
         return InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider().isRunning();
     }
 
     @Override
-    public void setRate(double factor) throws TimebaseRateException {
+    public final void setRate(double factor) throws TimebaseRateException {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         if (tp instanceof CanSetRate) {
@@ -162,7 +140,7 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
     @Override
-    public void userSetRate(double factor) throws TimebaseRateException {
+    public final void userSetRate(double factor) throws TimebaseRateException {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
         if (tp instanceof CanSetRate) {
@@ -185,21 +163,21 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     }
 
     @Override
-    public double getRate() {
+    public final double getRate() {
         return InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider().getRate().getRate();
     }
 
     @Override
-    public double userGetRate() {
+    public final double userGetRate() {
         return InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider().getRate().getRate();
     }
-
+/*
     @Override
     @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
             justification = "This class is an adapter of the main time provider")
-    public void addPropertyChangeListener(PropertyChangeListener l) {
+    public final void addPropertyChangeListener(PropertyChangeListener l) {
         InstanceManager.getDefault(TimeProviderManager.class)
                 .getMainTimeProviderHandler().addPropertyChangeListener(l);
     }
@@ -207,7 +185,7 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     @Override
     @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
             justification = "This class is an adapter of the main time provider")
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
+    public final void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
         InstanceManager.getDefault(TimeProviderManager.class)
                 .getMainTimeProviderHandler().addPropertyChangeListener(propertyName, l);
     }
@@ -215,7 +193,7 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     @Override
     @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
             justification = "This class is an adapter of the main time provider")
-    public void removePropertyChangeListener(PropertyChangeListener l) {
+    public final void removePropertyChangeListener(PropertyChangeListener l) {
         InstanceManager.getDefault(TimeProviderManager.class)
                 .getMainTimeProviderHandler().removePropertyChangeListener(l);
     }
@@ -223,37 +201,47 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     @Override
     @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
             justification = "This class is an adapter of the main time provider")
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
+    public final void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
         InstanceManager.getDefault(TimeProviderManager.class)
                 .getMainTimeProviderHandler().removePropertyChangeListener(l);
     }
 
     @Override
-    public PropertyChangeListener[] getPropertyChangeListeners() {
+    public final PropertyChangeListener[] getPropertyChangeListeners() {
         return InstanceManager.getDefault(TimeProviderManager.class)
                 .getMainTimeProviderHandler().getPropertyChangeListeners();
     }
 
     @Override
-    public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+    public final PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
         return InstanceManager.getDefault(TimeProviderManager.class)
                 .getMainTimeProviderHandler().getPropertyChangeListeners(propertyName);
     }
+/*
+    private final Map<PropertyChangeListener, PropertyChangeListener> _pclMap = new HashMap<>();
 
     @Override
-    public void addMinuteChangeListener(PropertyChangeListener l) {
-        addPropertyChangeListener(Timebase.PROPERTY_CHANGE_MINUTES, l);
+    public final void addMinuteChangeListener(PropertyChangeListener l) {
+        System.out.format("AbstractTimeBase.addMinuteChangeListener%n");
+        PropertyChangeListener adapter = new PropertyChangeListenerAdapter(l);
+        _pclMap.put(l, adapter);
+        addPropertyChangeListener(Timebase.PROPERTY_CHANGE_MINUTES, adapter);
     }
 
     @Override
-    public void removeMinuteChangeListener(PropertyChangeListener l) {
-        removePropertyChangeListener(Timebase.PROPERTY_CHANGE_MINUTES, l);
+    public final void removeMinuteChangeListener(PropertyChangeListener l) {
+        PropertyChangeListener adapter = _pclMap.remove(l);
+        if (adapter != null) {
+            removePropertyChangeListener(Timebase.PROPERTY_CHANGE_MINUTES, l);
+        }
     }
 
     @Override
-    public PropertyChangeListener[] getMinuteChangeListeners() {
-        return getPropertyChangeListeners(Timebase.PROPERTY_CHANGE_MINUTES);
+    public final PropertyChangeListener[] getMinuteChangeListeners() {
+        return _pclMap.keySet().toArray(PropertyChangeListener[]::new);
+//        return getPropertyChangeListeners(Timebase.PROPERTY_CHANGE_MINUTES);
     }
+*/
 
 
 //    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTimebase.class);

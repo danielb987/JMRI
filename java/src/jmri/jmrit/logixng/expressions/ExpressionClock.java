@@ -77,6 +77,7 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
         assertListenersAreNotRegistered(log, "setRange");
         _beginTime = beginTime;
         _endTime = endTime;
+        System.out.format("ExpressionClock.setRange: %d - %d ::: %s - %s%n", beginTime, endTime, formatTime(beginTime), formatTime(endTime));
     }
 
     public int getBeginTime() {
@@ -107,6 +108,8 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
     public boolean evaluate() {
         boolean result;
 
+        System.out.format("ExpressionClock.evaluate%n");
+
         Calendar currentTime = null;
 
         switch (_type) {
@@ -118,6 +121,7 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
                 if (_fastClock == null) return false;
                 currentTime = Calendar.getInstance();
                 currentTime.setTime(_fastClock.getTime());
+                System.out.format("ExpressionClock.evaluate: fastClock: %s, %s%n", _fastClock.getTime(), currentTime.toString());
                 break;
 
             default:
@@ -125,6 +129,7 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
         }
 
         int currentMinutes = (currentTime.get(Calendar.HOUR_OF_DAY) * 60) + currentTime.get(Calendar.MINUTE);
+        System.out.format("ExpressionClock.evaluate: currentMinutes: %d, begin: %d, end: %d%n", currentMinutes, _beginTime, _endTime);
         // check if current time is within range specified
         if (_beginTime <= _endTime) {
             // range is entirely within one day
@@ -135,8 +140,10 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
         }
 
         if (_is_IsNot == Is_IsNot_Enum.Is) {
+            System.out.format("ExpressionClock.evaluate: return %b%n", result);
             return result;
         } else {
+            System.out.format("ExpressionClock.evaluate: return %b%n", !result);
             return !result;
         }
     }
@@ -186,6 +193,7 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
      */
     @Override
     public void registerListenersForThisClass() {
+        System.out.format("ExpressionClock: registerListenersForThisClass: _listenersAreRegistered: %b, %s%n", _listenersAreRegistered, _type.name());
         if (!_listenersAreRegistered) {
             switch (_type) {
                 case SystemClock:
@@ -194,6 +202,8 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
 
                 case FastClock:
                     _fastClock.addPropertyChangeListener("time", this);
+//                    _fastClock.addPropertyChangeListener(this);
+                    System.out.format("_fastClock: %s%n", _fastClock.getClass().getName());
                     break;
 
                 default:
@@ -210,6 +220,7 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
      */
     @Override
     public void unregisterListenersForThisClass() {
+        System.out.format("ExpressionClock: unregisterListenersForThisClass: _listenersAreRegistered: %b, %s%n", _listenersAreRegistered, _type.name());
         if (_listenersAreRegistered) {
             switch (_type) {
                 case SystemClock:
@@ -241,6 +252,7 @@ public class ExpressionClock extends AbstractDigitalExpression implements Proper
     /** {@inheritDoc} */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        System.out.format("ExpressionClock.propertyChange: %s, %s, %s%n", evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         getConditionalNG().execute();
     }
 

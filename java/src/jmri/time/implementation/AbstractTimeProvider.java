@@ -42,16 +42,32 @@ public abstract class AbstractTimeProvider extends AbstractNamedBean implements 
     public int getState() {
         return NamedBean.UNKNOWN;
     }
+/*
+    private static final int SECONDS_PER_DAY = 24 * 60 * 60;
 
+    private long getSeconds(long sec) {
+        long seconds = sec % SECONDS_PER_DAY;
+        if (seconds < 0) {
+            seconds += SECONDS_PER_DAY;
+        }
+        return seconds;
+    }
+*/
     protected void timeIsUpdated(LocalDateTime oldTime) {
         LocalDateTime newTime = getTime();
         long oldSeconds = oldTime.toEpochSecond(ZoneOffset.UTC);
         long newSeconds = newTime.toEpochSecond(ZoneOffset.UTC);
+//        System.out.format("AAA timeIsUpdated: %d, %d, %b, %b, %s, %s%n", oldSeconds, newSeconds, oldSeconds >= 0, newSeconds >= 0, oldTime.toString(), newTime.toString());
+        System.out.format("timeIsUpdated: sec: %d, %d%n", oldSeconds, newSeconds);
         if (newSeconds != oldSeconds) {
             long oldMinutes = oldSeconds / 60;
             long newMinutes = newSeconds / 60;
+            System.out.format("timeIsUpdated: firePropChange: %s, %d, %d%n", TimeProvider.PROPERTY_CHANGE_SECONDS, oldSeconds, newSeconds);
             firePropertyChange(TimeProvider.PROPERTY_CHANGE_SECONDS, oldSeconds, newSeconds);
+            System.out.format("timeIsUpdated: min: %d, %d%n", oldMinutes, newMinutes);
             if (newMinutes != oldMinutes) {
+                System.out.format("timeIsUpdated: firePropChange: %s, %d, %d%n", TimeProvider.PROPERTY_CHANGE_MINUTES, oldMinutes, newMinutes);
+                System.out.format("timeIsUpdated: firePropChange: %s, %s, %s%n", TimeProvider.PROPERTY_CHANGE_DATETIME, oldTime, newTime);
                 firePropertyChange(TimeProvider.PROPERTY_CHANGE_MINUTES, oldMinutes, newMinutes);
                 firePropertyChange(TimeProvider.PROPERTY_CHANGE_DATETIME, oldTime, newTime);
             }

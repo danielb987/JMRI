@@ -14,7 +14,7 @@ import jmri.util.TimerUtil;
  * @author Daniel Bergqvist (C) 2025
  */
 public class InternalDateTime extends AbstractTimeProvider
-        implements TimeSetter, DateProvider, DateSetter, CanSetRate, StartStopTimeProvider, RateSetter {
+        implements TimeSetter, DateProvider, CanSetRate, StartStopTimeProvider, RateSetter {
 
     private static final int _100_MILLISECONDS = 100;
 
@@ -203,51 +203,6 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public boolean canSetDateTime() {
-        return true;
-    }
-
-    @Override
-    public void setWeekday(int dayOfWeek) throws UnsupportedOperationException {
-        synchronized(_lock) {
-            LocalDateTime oldTime = this._time;
-            _time = _time.with(ChronoField.DAY_OF_WEEK, dayOfWeek);
-            resetLast();
-            timeIsUpdated(oldTime);
-        }
-    }
-
-    @Override
-    public void setDayOfMonth(int day) throws UnsupportedOperationException {
-        synchronized(_lock) {
-            LocalDateTime oldTime = this._time;
-            _time = _time.withDayOfMonth(day);
-            resetLast();
-            timeIsUpdated(oldTime);
-        }
-    }
-
-    @Override
-    public void setMonth(int month) throws UnsupportedOperationException {
-        synchronized(_lock) {
-            LocalDateTime oldTime = this._time;
-            _time = _time.withMonth(month);
-            resetLast();
-            timeIsUpdated(oldTime);
-        }
-    }
-
-    @Override
-    public void setYear(int year) throws UnsupportedOperationException {
-        synchronized(_lock) {
-            LocalDateTime oldTime = this._time;
-            _time = _time.withYear(year);
-            resetLast();
-            timeIsUpdated(oldTime);
-        }
-    }
-
-    @Override
-    public boolean canSetDate() {
         return true;
     }
 
