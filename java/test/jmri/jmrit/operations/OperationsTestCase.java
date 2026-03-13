@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import jmri.InstanceManager;
 import jmri.ShutDownManager;
+import jmri.jmrit.operations.trains.TrainManager;
+import jmri.jmrit.operations.trains.trainbuilder.TrainCommon;
 import jmri.util.JUnitOperationsUtil;
 import jmri.util.JUnitUtil;
 
@@ -30,6 +32,8 @@ public class OperationsTestCase {
         JUnitUtil.setUp();
         reset();
         JUnitOperationsUtil.setupOperationsTests();
+        // default font chars per line, prevents headless exception when using HardcopyWriter
+        InstanceManager.getDefault(TrainManager.class).setHardcopyWriterLineLength("Monospaced", 0, 10, TrainCommon.getPageSize("Portrait"), false, 89);
     }
 
     // Set things up outside of operations

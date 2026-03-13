@@ -62,8 +62,9 @@ public class PrintCarLoadsAction extends AbstractAction {
 
             // obtain a HardcopyWriter to do this
             try (HardcopyWriter writer =
-                    new HardcopyWriter(new Frame(), Bundle.getMessage("TitleCarLoads"), Control.reportFontSize, .5,
-                            .5, .5, .5, _isPreview);) {
+                    new HardcopyWriter(new Frame(), Bundle.getMessage("TitleCarLoads"), null, null,
+                            Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, _isPreview, "", false, true,
+                            null, null)) {
 
                 writer.write(getHeader());
 

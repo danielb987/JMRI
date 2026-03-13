@@ -1,14 +1,18 @@
 package jmri.server.json.operations;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.beans.PropertyChangeEvent;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
+
+import org.junit.jupiter.api.*;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import jmri.InstanceManager;
 import jmri.JmriException;
@@ -18,17 +22,9 @@ import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.EngineManager;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
+import jmri.jmrit.operations.trains.trainbuilder.TrainCommon;
 import jmri.server.json.*;
 import jmri.util.*;
-
-import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JsonOperationsSocketServiceTest {
 
@@ -547,6 +543,8 @@ public class JsonOperationsSocketServiceTest {
         JUnitUtil.initIdTagManager();
         JUnitOperationsUtil.setupOperationsTests();
         JUnitOperationsUtil.initOperationsData();
+        // default font chars per line, prevents headless exception when using HardcopyWriter
+        InstanceManager.getDefault(TrainManager.class).setHardcopyWriterLineLength("Monospaced", 0, 10, TrainCommon.getPageSize("Portrait"), false, 89);
         Kernel kernel = InstanceManager.getDefault(KernelManager.class).newKernel("test1");
         InstanceManager.getDefault(CarManager.class).getById("CP99").setKernel(kernel);
         mapper = new ObjectMapper();

@@ -195,6 +195,16 @@ public class ActiveTrain implements PropertyChangeProvider {
     public static final String PROPERTY_SIGNAL = "signal";
 
     /**
+     * String property constant for signal.
+     */
+    public static final String PROPERTY_CURRENT_BLOCK = "currentblock";
+
+    /**
+     * String property constant for signal.
+     */
+    public static final String PROPERTY_NEXT_BLOCK = "nextblock";
+
+    /**
      * String property constant for section allocated.
      */
     public static final String PROPERTY_SECTION_ALLOCATED = "sectionallocated";
@@ -301,7 +311,7 @@ public class ActiveTrain implements PropertyChangeProvider {
         mStatus = RUNNING;
         holdAllocation(false);
         setStatus(WAITING);
-        if (mAutoActiveTrain != null && mDispatcher.getSignalType() == DispatcherFrame.SIGNALMAST) {
+        if (mAutoActiveTrain != null) {
             mAutoActiveTrain.setupNewCurrentSignal(null,false);
         }
     }
@@ -374,6 +384,14 @@ public class ActiveTrain implements PropertyChangeProvider {
 
     public void setControlingSignal(Object oldSignal, Object newSignal) {
         firePropertyChange(PROPERTY_SIGNAL, oldSignal, newSignal);
+    }
+
+    public void setNextBlock(Object oldSignal, Object newSignal) {
+        firePropertyChange(PROPERTY_NEXT_BLOCK, oldSignal, newSignal);
+    }
+
+    public void setCurrentBlock(Object oldSignal, Object newSignal) {
+        firePropertyChange(PROPERTY_CURRENT_BLOCK, oldSignal, newSignal);
     }
 
     public String getStatusText() {
@@ -1332,7 +1350,7 @@ public class ActiveTrain implements PropertyChangeProvider {
         holdAllocation(false);
         setStatus(WAITING);
         if (mAutoActiveTrain != null) {
-            mAutoActiveTrain.setupNewCurrentSignal(null,true);
+            mAutoActiveTrain.setupNewCurrentSignal(null,false);
         }
     }
 

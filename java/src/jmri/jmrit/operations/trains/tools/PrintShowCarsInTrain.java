@@ -43,9 +43,9 @@ public class PrintShowCarsInTrain extends TrainCommon {
         if (train.isBuilt()) {
             // obtain a HardcopyWriter to do this
             try (HardcopyWriter writer =
-                    new HardcopyWriter(new Frame(), Bundle.getMessage("TitleShowCarsInTrain", train.getName()),
-                            Control.reportFontSize, .5,
-                            .5, .5, .5, isPreview);) {
+                    new HardcopyWriter(new Frame(), Bundle.getMessage("TitleShowCarsInTrain", train.getName()), null,
+                            null, Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, isPreview, "", false,
+                            true, null, null)) {
 
                 printCarsAtLocation(writer, train, train.getCurrentRouteLocation());
 
@@ -95,9 +95,9 @@ public class PrintShowCarsInTrain extends TrainCommon {
         if (train.isBuilt()) {
             // obtain a HardcopyWriter to do this
             try (HardcopyWriter writer =
-                    new HardcopyWriter(new Frame(), Bundle.getMessage("TitleShowCarsInTrain", train.getName()),
-                            Control.reportFontSize, .5,
-                            .5, .5, .5, isPreview);) {
+                    new HardcopyWriter(new Frame(), Bundle.getMessage("TitleShowCarsInTrain", train.getName()), null,
+                            null, Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, isPreview, "", false,
+                            true, null, null);) {
                 printCarsRoute(writer, train);
             } catch (HardcopyWriter.PrintCanceledException ex) {
                 log.debug("Print canceled");

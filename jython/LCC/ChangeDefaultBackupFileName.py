@@ -21,6 +21,9 @@ class MyNameGenerator(org.openlcb.cdi.swing.CdiPanel.FileNameGenerator) :
         # assemble desired filename from above parts
         result = "config-"+nodeName+"-"+time+".txt"
         
+        if (nodeName is None or nodeName == "") :
+            result = "config-Node-"+nodeID+"+"+time+".txt"
+        
         # replace spaces with underscores and return the result
         return result.replace(" ", "_")
         

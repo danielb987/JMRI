@@ -15,7 +15,10 @@ import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.table.DefaultTableModel;
 
+import jmri.BooleanPermission;
 import jmri.InstanceManager;
+import jmri.PermissionManager;
+import jmri.PermissionsSystemAdmin;
 import jmri.jmrit.decoderdefn.DecoderIndexFile;
 import jmri.jmrit.roster.Roster;
 import jmri.jmrit.roster.RosterEntry;
@@ -56,6 +59,8 @@ public class RosterTableModel extends DefaultTableModel implements PropertyChang
     public static final int NUMCOL = COMMENT + 1;
     private String rosterGroup = null;
     boolean editable = false;
+    
+    static final PermissionManager permissionManager = InstanceManager.getDefault(PermissionManager.class);
     
     public RosterTableModel() {
         this(false);
@@ -238,6 +243,13 @@ public class RosterTableModel extends DefaultTableModel implements PropertyChang
             return false;
         }
         if (editable) {
+            // permission to edit optional columns?
+            if ( col >= NUMCOL && col < getColumnCount() ) {
+                if (! permissionManager.hasAtLeastPermission(PermissionsSystemAdmin.PERMISSION_EDIT_PREFERENCES,
+                                                    BooleanPermission.BooleanValue.TRUE)) {
+                    return false;
+                }
+            }
             RosterEntry re = Roster.getDefault().getGroupEntry(rosterGroup, row);
             if (re != null) {
                 return (!re.isOpen());
@@ -341,6 +353,9 @@ public class RosterTableModel extends DefaultTableModel implements PropertyChang
         if (associatedSorter == null || associatedTable == null ) {
             return; // because not initialized, can't act - useful for tests
         }
+        
+        if (heightInLines < 1) heightInLines = 1;       // always show at least one line
+        
         var viewRow = associatedSorter.convertRowIndexToView(modelRow);
         int height = heightInLines * (InstanceManager.getDefault(GuiLafPreferencesManager.class).getFontSize() + 4); // same line height as in RosterTable
         if (height != associatedTable.getRowHeight(viewRow)) {
@@ -412,6 +427,12 @@ public class RosterTableModel extends DefaultTableModel implements PropertyChang
                 re.setComment(valueToSet);
                 break;
             default:
+                // permission to edit optional columns?
+                if (! permissionManager.ensureAtLeastPermission(PermissionsSystemAdmin.PERMISSION_EDIT_PREFERENCES,
+                                                        BooleanPermission.BooleanValue.TRUE)) {
+                    return;
+                }
+                
                 setValueAtAttribute(valueToSet, re, col);
                 break;
         }

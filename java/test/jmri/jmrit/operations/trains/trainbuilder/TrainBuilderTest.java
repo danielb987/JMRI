@@ -6252,7 +6252,7 @@ public class TrainBuilderTest extends OperationsTestCase {
         BufferedReader in = JUnitOperationsUtil.getBufferedReader(buildReport);
 
         // any changes to the build report could cause this to fail
-        Assert.assertEquals("confirm number of lines in build report", 538, in.lines().count());
+        Assert.assertEquals("confirm number of lines in build report", 511, in.lines().count());
         in.close();
 
         // TODO search and confirm limit message in build report
@@ -6356,7 +6356,7 @@ public class TrainBuilderTest extends OperationsTestCase {
         BufferedReader in = JUnitOperationsUtil.getBufferedReader(buildReport);
 
         // any changes to the build report could cause this to fail
-        Assert.assertEquals("confirm number of lines in build report", 652, in.lines().count());
+        Assert.assertEquals("confirm number of lines in build report", 651, in.lines().count());
         in.close();
 
         JUnitOperationsUtil.checkOperationsShutDownTask();
@@ -21329,11 +21329,9 @@ public class TrainBuilderTest extends OperationsTestCase {
         // train 2 arrives 2nd Boston at 2:40 same time as clone arrives
         train2.setDepartureTime("0", "02", "28");
 
-        TrainBuilder tb = new TrainBuilder();
-
-        tb.build(train1);
+        new TrainBuilder().build(train1);
         Assert.assertTrue("train status", train1.isBuilt());
-        tb.build(train2);
+        new TrainBuilder().build(train2);
         Assert.assertTrue("train status", train2.isBuilt());
 
         // two cars and two clones
@@ -21379,7 +21377,7 @@ public class TrainBuilderTest extends OperationsTestCase {
         train2.reset();
         // train 2 arrives 2nd Boston at 2:39 one minute before clone arrives
         train2.setDepartureTime("0", "02", "27");
-        tb.build(train2);
+        new TrainBuilder().build(train2);
         Assert.assertTrue("train status", train2.isBuilt());
 
         Assert.assertEquals("should be 2 cars", 2, train1.getNumberCarsWorked());
@@ -21405,7 +21403,7 @@ public class TrainBuilderTest extends OperationsTestCase {
 
         Setup.setBuildAggressive(true);
 
-        tb.build(train2);
+        new TrainBuilder().build(train2);
         Assert.assertTrue("train status", train2.isBuilt());
 
         // 3 cars and 1 clone

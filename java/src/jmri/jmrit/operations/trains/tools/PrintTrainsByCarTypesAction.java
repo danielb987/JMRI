@@ -49,9 +49,9 @@ public class PrintTrainsByCarTypesAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // obtain a HardcopyWriter
         try {
-            writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleTrainsByType"), Control.reportFontSize, .5,
-                    .5, .5, .5,
-                    _isPreview);
+            writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleTrainsByType"), null, null,
+                    Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, _isPreview, "", false, true, null,
+                    null);
         } catch (HardcopyWriter.PrintCanceledException ex) {
             log.debug("Print canceled");
             return;

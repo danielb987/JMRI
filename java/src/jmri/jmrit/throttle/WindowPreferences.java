@@ -91,6 +91,9 @@ public class WindowPreferences {
      * @param ignorePosition true to not set location, false to set.
      */
     public static void setPreferences(Container c, Element e, boolean ignorePosition) {
+        if (c == null) {
+            return;
+        }
         try {
             int x = e.getAttribute("x").getIntValue();
             int y = e.getAttribute("y").getIntValue();

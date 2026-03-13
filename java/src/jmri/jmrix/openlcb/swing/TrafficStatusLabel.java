@@ -34,7 +34,9 @@ public class TrafficStatusLabel extends JLabel implements CanListener {
     }
     
     void traffic() {
-        timer.stop();
+        if (timer != null) { // only null at startup
+            timer.stop();
+        }
         active = true;
         displayActive();
     }

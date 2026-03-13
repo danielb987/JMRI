@@ -58,8 +58,8 @@ public class PrintRoutes {
 
     private void printRoutes() {
         // obtain a HardcopyWriter to do this
-        try (HardcopyWriter writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleRoutesTable"),
-                Control.reportFontSize, .5, .5, .5, .5, _isPreview)) {
+        try (HardcopyWriter writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleRoutesTable"), null, null,
+                Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, _isPreview, "", false, true, null, null)) {
 
             writer.write(SPACE); // prevents exception when using Preview and no routes
             List<Route> routes = InstanceManager.getDefault(RouteManager.class).getRoutesByNameList();
@@ -84,7 +84,8 @@ public class PrintRoutes {
         }
         // obtain a HardcopyWriter to do this
         try (HardcopyWriter writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleRoute", route.getName()),
-                Control.reportFontSize, .5, .5, .5, .5, _isPreview)) {
+                null, null, Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, _isPreview, "", false, true,
+                null, null)) {
 
             printRoute(writer, route);
         } catch (HardcopyWriter.PrintCanceledException ex) {

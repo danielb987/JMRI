@@ -1,12 +1,12 @@
 package jmri.jmrit.operations.trains;
 
 import java.awt.*;
-import java.awt.JobAttributes.SidesType;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.attribute.standard.Sides;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import jmri.jmrit.operations.setup.Setup;
 import jmri.jmrit.operations.trains.trainbuilder.TrainCommon;
-import jmri.util.davidflanagan.HardcopyWriter;
+import jmri.util.davidflanagan.CompatibleHardcopyWriter;
 
 /**
  * Used for train Manifests and switch lists.
@@ -38,28 +38,24 @@ public class TrainPrintManifest extends TrainCommon {
      * @param orientation   Setup.LANDSCAPE, Setup.PORTRAIT, or Setup.HANDHELD
      * @param fontSize      font size
      * @param isPrintHeader when true print page header
-     * @param sidesType     two sides long or short can be null
+     * @param sides         two sides long or short can be null
      */
     public static void printReport(File file, String name, boolean isPreview, String fontName, String logoURL,
-            String printerName, String orientation, int fontSize, boolean isPrintHeader, SidesType sidesType) {
-        // obtain a HardcopyWriter to do this
-
-        boolean isLandScape = false;
+            String printerName, String orientation, int fontSize, boolean isPrintHeader, Sides sides) {
+        
+        // obtain a CompatibleHardcopyWriter to do this
         double margin = .5;
         Dimension pagesize = null; // HardcopyWritter provides default page
                                    // sizes for portrait and landscape
-        if (orientation.equals(Setup.LANDSCAPE)) {
-            margin = .65;
-            isLandScape = true;
-        }
+
         if (orientation.equals(Setup.HANDHELD) || orientation.equals(Setup.HALFPAGE)) {
             isPrintHeader = false;
             // add margins to page size
             pagesize = new Dimension(getPageSize(orientation).width + PAPER_MARGINS.width,
                     getPageSize(orientation).height + PAPER_MARGINS.height);
         }
-        try (HardcopyWriter writer = new HardcopyWriter(new Frame(), name, fontSize, margin,
-                margin, .5, .5, isPreview, printerName, isLandScape, isPrintHeader, sidesType, pagesize);
+        try (CompatibleHardcopyWriter writer = new CompatibleHardcopyWriter(new Frame(), name, fontSize, margin,
+                margin, margin, margin, isPreview, printerName, orientation.equals(Setup.LANDSCAPE), isPrintHeader, sides, pagesize);
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         new FileInputStream(file), StandardCharsets.UTF_8));) {
 
@@ -96,14 +92,15 @@ public class TrainPrintManifest extends TrainCommon {
             print(writer, lines, true);
         } catch (FileNotFoundException e) {
             log.error("Build file doesn't exist", e);
-        } catch (HardcopyWriter.PrintCanceledException ex) {
+        } catch (CompatibleHardcopyWriter.PrintCanceledException ex) {
             log.debug("Print canceled");
         } catch (IOException e) {
             log.warn("Exception printing: {}", e.getLocalizedMessage());
         }
     }
 
-    private static void print(HardcopyWriter writer, List<String> lines, boolean lastBlock) throws IOException {
+    private static void print(CompatibleHardcopyWriter writer, List<String> lines, boolean lastBlock)
+            throws IOException {
         int lineSize = getNumberOfLines(lines);
         if (Setup.isPrintNoPageBreaksEnabled() &&
                 writer.getCurrentLineNumber() != 0 &&
@@ -111,7 +108,7 @@ public class TrainPrintManifest extends TrainCommon {
             writer.pageBreak();
         }
         // check for exact page break
-        if (writer.getLinesPerPage() - writer.getCurrentLineNumber() + 1 == lineSize) {
+        if (writer.getLinesPerPage() - writer.getCurrentLineNumber() == lineSize) {
             // eliminate blank line after page break
             String s = lines.get(lines.size() - 1);
             if (s.isBlank()) {
@@ -198,7 +195,7 @@ public class TrainPrintManifest extends TrainCommon {
     /*
      * Returns true if horizontal line was printed, or line length = 0
      */
-    private static boolean printHorizontialLineSeparator(HardcopyWriter writer, String line) {
+    private static boolean printHorizontialLineSeparator(CompatibleHardcopyWriter writer, String line) {
         boolean horizontialLineSeparatorFound = true;
         if (line.length() > 0) {
             for (int i = 0; i < line.length(); i++) {
@@ -208,21 +205,23 @@ public class TrainPrintManifest extends TrainCommon {
                 }
             }
             if (horizontialLineSeparatorFound) {
+                int endCol = writer.getCharactersPerLine() + 1;
                 writer.write(writer.getCurrentLineNumber(), 0, writer.getCurrentLineNumber(),
-                        line.length() + 1);
+                        endCol);
             }
         }
         return horizontialLineSeparatorFound;
     }
 
-    private static void printVerticalLineSeparator(HardcopyWriter writer, String line) {
+    private static void printVerticalLineSeparator(CompatibleHardcopyWriter writer, String line) {
         for (int i = 0; i < line.length(); i++) {
             if (line.charAt(i) == VERTICAL_LINE_CHAR) {
                 // make a frame (two column format)
                 if (Setup.isTabEnabled()) {
+                    int endCol = writer.getCharactersPerLine() + 1;
                     writer.write(writer.getCurrentLineNumber(), 0, writer.getCurrentLineNumber() + 1, 0);
-                    writer.write(writer.getCurrentLineNumber(), line.length() + 1,
-                            writer.getCurrentLineNumber() + 1, line.length() + 1);
+                    writer.write(writer.getCurrentLineNumber(), endCol,
+                            writer.getCurrentLineNumber() + 1, endCol);
                 }
                 writer.write(writer.getCurrentLineNumber(), i + 1, writer.getCurrentLineNumber() + 1,
                         i + 1);

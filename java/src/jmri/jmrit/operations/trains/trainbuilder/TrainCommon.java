@@ -25,6 +25,7 @@ import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
 import jmri.jmrit.operations.trains.*;
 import jmri.util.ColorUtil;
+import jmri.util.davidflanagan.HardcopyWriter;
 
 /**
  * Common routines for trains
@@ -1374,8 +1375,10 @@ public class TrainCommon {
                 if (checkStringLength(sb.toString() + word, isManifest)) {
                     sb.append(word + SPACE);
                 } else {
-                    sb.setLength(sb.length() - 1); // remove last space added to string
-                    addLine(file, sb.toString());
+                    if (sb.length() > 0) {
+                        sb.setLength(sb.length() - 1); // remove last space added to string
+                        addLine(file, sb.toString());
+                    }
                     sb = new StringBuffer(word + SPACE);
                 }
             }
@@ -2280,6 +2283,46 @@ public class TrainCommon {
     }
 
     private static int getLineLength(String orientation, String fontName, int fontStyle, int fontSize) {
+        Integer charsPerLine = InstanceManager.getDefault(TrainManager.class).getHardcopyWriterLineLength(fontName,
+                fontStyle, fontSize, getPageSize(orientation), orientation.equals(Setup.LANDSCAPE));
+        if (charsPerLine == null) {
+            // first try using hardcopywriter to get number of characters per line
+            charsPerLine = getCharsPerLineHardcopyWriter(orientation, fontName, fontStyle, fontSize);
+            if (charsPerLine == null) {
+                charsPerLine = getCharsPerLine(orientation, fontName, fontStyle, fontSize);
+            }
+            log.debug("Number of characters per line {}, fontName: {}, fontStyle {}, fontSize {}", charsPerLine, fontName,
+                    fontStyle, fontSize);
+            InstanceManager.getDefault(TrainManager.class).setHardcopyWriterLineLength(fontName,
+                    fontStyle, fontSize, getPageSize(orientation), orientation.equals(Setup.LANDSCAPE), charsPerLine);
+        }
+        return charsPerLine;
+    }
+    
+    private static Integer getCharsPerLineHardcopyWriter(String orientation, String fontName, int fontStyle, int fontSize) {
+        // obtain a HardcopyWriter to do this
+        Dimension pageSize = null;
+        if (orientation.equals(Setup.HANDHELD) || orientation.equals(Setup.HALFPAGE)) {
+            // add margins to page size
+            pageSize = new Dimension(getPageSize(orientation).width + PAPER_MARGINS.width,
+                    getPageSize(orientation).height + PAPER_MARGINS.height);
+        }
+        Integer charsPerLine = null;
+        try (HardcopyWriter writer = new HardcopyWriter(fontName, fontStyle, fontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, orientation.equals(Setup.LANDSCAPE),
+                pageSize)) {
+
+            charsPerLine = writer.getCharactersPerLine();
+
+        } catch (HardcopyWriter.PrintCanceledException ex) {
+            log.debug("Print canceled");
+        }
+        log.debug("orientation: {}, fontName: {}, fontStyle: {}, fontSize {}, chars/line: {}", orientation, fontName,
+                fontStyle, fontSize, charsPerLine);
+        return charsPerLine;
+    }
+
+    // backup method for determining characters per line
+    private static int getCharsPerLine(String orientation, String fontName, int fontStyle, int fontSize) {
         Font font = new Font(fontName, fontStyle, fontSize); // NOI18N
         JLabel label = new JLabel();
         FontMetrics metrics = label.getFontMetrics(font);
@@ -2289,11 +2332,8 @@ public class TrainCommon {
             charwidth = fontSize / 2; // create a reasonable character width
         }
         // compute lines and columns within margins
-        int charLength = getPageSize(orientation).width / charwidth;
-        if (charLength % 2 != 0) {
-            charLength--; // make it even
-        }
-        return charLength;
+        int charsPerLine = getPageSize(orientation).width / charwidth;
+        return charsPerLine;
     }
 
     private boolean checkStringLength(String string, boolean isManifest) {
@@ -2323,7 +2363,7 @@ public class TrainCommon {
 
     protected static final Dimension PAPER_MARGINS = new Dimension(84, 72);
 
-    protected static Dimension getPageSize(String orientation) {
+    public static Dimension getPageSize(String orientation) {
         // page size has been adjusted to account for margins of .5
         // Dimension(84, 72)
         Dimension pagesize = new Dimension(523, 720); // Portrait 8.5 x 11

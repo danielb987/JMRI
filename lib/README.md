@@ -153,7 +153,7 @@ which checks the dates of the control files to make sure they've been updated wh
 
 ##### openlcb.jar
  - 0.8.6 from https://repo.maven.apache.org/maven2/org/openlcb/openlcb/0.8.6/openlcb-0.8.6.jar
- - with PR 298 pre-release https://github.com/openlcb/OpenLCB_Java/pull/298
+ - with PRs through #300 pre-release https://github.com/openlcb/OpenLCB_Java/pull/300
  
 ##### jlfgr-1_0.jar
 - icons from see http://www.coderanch.com/t/341737/GUI/java/Expand-Collapse-Panels
@@ -220,10 +220,10 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
         lib/windows/x64/intelbth_x64.dll
         lib/windows/x86/intelbth.dll
 
-##### jython-standalone-2.7.2.jar
-- from http://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/
-- unlike jython-2.7.2.jar, includes embedded standard python libs
-- unlike jython-slim-2.7.2.jar, includes embedded Java dependencies
+##### jython-standalone-2.7.4.jar
+- from http://repo1.maven.org/maven2/org/python/jython-standalone/2.7.4/
+- unlike jython-2.7.4.jar, includes embedded standard python libs
+- unlike jython-slim-2.7.4.jar, includes embedded Java dependencies
 
 ##### jinput (including jinput-2.0.9.jar and unpacked jinput-2.0.9-natives-all.jar)
 - 2.0.9 from maven central
@@ -522,8 +522,8 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 - for ant builds
 - Downloaded from Maven Central 2025-09-25
 
-##### mockito-core mockito-junit-jupiter
-- version 5.20.0
+##### mockito-core
+- version 5.21.0
 
 ##### OpenIDE Utilities
 - org-openide-util-lookup-RELEASE150.jar
@@ -546,11 +546,6 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 
 ##### system-rules-1.16.0.jar
 - Handle rules for testing calls to java.System methods
-
-##### springframework-*
-- version 5.1.14
-- from https://search.maven.org/search?q=g:org.springframework%20v:5.1.14.RELEASE
-- Mocks Java Servlet requests and responses
 
 ##### jcip-annotations-1.0.jar
 - From Java Concurrency In Practice (http://jcip.net)
@@ -636,3 +631,9 @@ bluecove-gpl-2.1.1-SNAPSHOT.jar
 
 #### SpotBugs static analysis
 - used in pom.xml
+
+##### springframework-*
+- version 5.1.14
+- from https://search.maven.org/search?q=g:org.springframework%20v:5.1.14.RELEASE
+- Mocks Java Servlet requests and responses
+- No longer used as of JMRI 5.15.5

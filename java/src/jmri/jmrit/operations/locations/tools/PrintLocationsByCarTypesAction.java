@@ -49,9 +49,10 @@ public class PrintLocationsByCarTypesAction extends AbstractAction {
 
     private void print() {
         // obtain a HardcopyWriter
-        try ( HardcopyWriter writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleLocationsByType"),
-            Control.reportFontSize, .5, .5, .5, .5, isPreview); ) {
-            
+        try (HardcopyWriter writer = new HardcopyWriter(new Frame(), Bundle.getMessage("TitleLocationsByType"), null,
+                null, Control.reportFontSize, .5 * 72, .5 * 72, .5 * 72, .5 * 72, isPreview, "", false, true, null,
+                null)) {
+           
             // Loop through the car types showing which locations and tracks will
             // service that car type
             String carTypes[] = InstanceManager.getDefault(CarTypes.class).getNames();

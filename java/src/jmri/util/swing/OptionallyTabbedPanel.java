@@ -123,7 +123,8 @@ public class OptionallyTabbedPanel extends JPanel {
         }
         tabbedPane.removeAll();
         singlePane.removeAll();
-
+        tabbedPane.setVisible(false);
+        singlePane.setVisible(true);
     }
 
 }

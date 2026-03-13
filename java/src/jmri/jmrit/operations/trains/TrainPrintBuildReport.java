@@ -1,6 +1,5 @@
 package jmri.jmrit.operations.trains;
 
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -28,17 +27,14 @@ public class TrainPrintBuildReport extends TrainCommon {
      * @param isPreview true if preview
      */
     public static void printReport(File file, String name, boolean isPreview) {
-        // obtain a HardcopyWriter to do this
+        // obtain a OriginalHardcopyWriter to do this
 
         String printerName = "";
         int fontSize = Setup.getBuildReportFontSize();
         boolean isLandScape = false;
-        double margin = .5;
-        Dimension pagesize = null; // HardcopyWritter provides default page
-                                   // sizes for portrait and landscape
 
-        try (HardcopyWriter writer = new HardcopyWriter(new Frame(), name, fontSize, margin,
-                margin, .5, .5, isPreview, printerName, isLandScape, true, null, pagesize);
+        try (HardcopyWriter writer = new HardcopyWriter(new Frame(), name, null, null, fontSize, .5 * 72, .5 * 72,
+                .5 * 72, .5 * 72, isPreview, printerName, isLandScape, true, null, null);
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         new FileInputStream(file), StandardCharsets.UTF_8));) {
 

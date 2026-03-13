@@ -3822,6 +3822,10 @@ public class LocoNetMessageInterpret {
                 return Bundle.getMessage("LN_MSG_OPC_D7_TETHERLESS_REPORT_UR90X",
                         l.getElement(3) & 0x07);
             }
+            case 0x3: {
+                return Bundle.getMessage("LN_MSG_OPC_D7_TETHERLESS_REPORT_LNRP3",
+                        l.getElement(3) & 0x07);
+            }
            default: {
                 return "";
             }
@@ -4802,6 +4806,8 @@ public class LocoNetMessageInterpret {
                 return Bundle.getMessage("LN_MSG_IPL_DEVICE_HELPER_DIGITRAX_ALLDEVICES");
             case LnConstants.RE_IPL_DIGITRAX_HOST_LNRP:
                 return Bundle.getMessage("LN_MSG_IPL_DEVICE_HELPER_DIGITRAX_HOST_LNRP");
+            case LnConstants.RE_IPL_DIGITRAX_HOST_LNRP3:
+                return Bundle.getMessage("LN_MSG_IPL_DEVICE_HELPER_DIGITRAX_HOST_LNRP3");
             case LnConstants.RE_IPL_DIGITRAX_HOST_UT4:
                 return Bundle.getMessage("LN_MSG_IPL_DEVICE_HELPER_DIGITRAX_HOST_UT4");
             case LnConstants.RE_IPL_DIGITRAX_HOST_UT6:

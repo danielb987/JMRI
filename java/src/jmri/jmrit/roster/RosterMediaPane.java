@@ -290,6 +290,7 @@ public class RosterMediaPane extends JPanel {
 
         @Override
         public void resizeRowToText(int modelRow, int heightInLines) {
+            if (heightInLines < 1 ) heightInLines = 1;
             int height = heightInLines * (InstanceManager.getDefault(GuiLafPreferencesManager.class).getFontSize() + 4); // same line height as in RosterTable
             if (height != associatedTable.getRowHeight(modelRow)) {
                 associatedTable.setRowHeight(modelRow, height);

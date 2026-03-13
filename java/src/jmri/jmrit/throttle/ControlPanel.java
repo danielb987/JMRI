@@ -929,10 +929,7 @@ public class ControlPanel extends JInternalFrame implements java.beans.PropertyC
         });
 
         idleButton.addActionListener((ActionEvent e) -> {
-            speedSlider.setValue(0);
-            speedSpinner.setValue(0);
-            speedSliderContinuous.setValue(0);           
-            throttle.setSpeedSetting(0);
+            idle();
         });
 
         addComponentListener(
@@ -987,6 +984,18 @@ public class ControlPanel extends JInternalFrame implements java.beans.PropertyC
         speedSlider.setValue(0);
         speedSpinnerModel.setValue(0);
         speedSliderContinuous.setValue(0);        
+        internalAdjust = false;
+    }
+
+    private void idle() {
+        if (this.throttle == null) {
+            return;
+        }
+        internalAdjust = true;
+        throttle.setSpeedSetting(0);
+        speedSlider.setValue(0);
+        speedSpinner.setValue(0);
+        speedSliderContinuous.setValue(0);
         internalAdjust = false;
     }
 

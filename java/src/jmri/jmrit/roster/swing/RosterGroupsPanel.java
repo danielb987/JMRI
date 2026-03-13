@@ -505,9 +505,9 @@ public class RosterGroupsPanel extends JPanel implements RosterGroupSelector {
         public boolean canImport(JComponent c, DataFlavor[] transferFlavors) {
             for (DataFlavor flavor : transferFlavors) {
                 if (RosterEntrySelection.rosterEntryFlavor.equals(flavor)) {
-                    if (c instanceof JTree && ((JTree) c).getDropLocation() != null) {
+                    if (c instanceof JTree && ((JTree) c).getDropLocation() != null && ((JTree) c).getDropLocation().getPath() != null) {
                         var target = ((JTree) c).getDropLocation().getPath().getLastPathComponent().toString();
-                        if ("All Entries".equals(target) || "No Group".equals(target) ) {
+                        if (Roster.ALLENTRIES.equals(target) || Roster.NOGROUP.equals(target) ) {
                             return false;
                         } else {
                             return true;
