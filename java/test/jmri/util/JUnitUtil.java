@@ -805,12 +805,6 @@ public class JUnitUtil {
         InstanceManager.setDefault(UserPreferencesManager.class, new TestUserPreferencesManager());
     }
 
-
-    public static void initTimeProviderManager() {
-        // Ensure we have the time provider manager
-        InstanceManager.getDefault(jmri.time.TimeProviderManager.class).getCurrentTimeProvider();
-    }
-
     public static void disposeTimeProviderManager() {
         var list = InstanceManager.getList(jmri.time.TimeProviderManager.class);
         if (!list.isEmpty()) {
