@@ -26,7 +26,7 @@ public class DefaultTimebaseXml extends jmri.configurexml.AbstractXmlAdapter {
         e.setAttribute("startstopped", "no");
         e.setAttribute("startrunning", "yes");
         e.setAttribute("startsettime", "no");
-        e.setAttribute("clastartclockoption", "0");
+        e.setAttribute("startclockoption", "0");
         e.setAttribute("showbutton", "no");
         e.setAttribute("startsetrate", "yes");
         return e;
