@@ -43,7 +43,6 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
             clockMemory.setValue("--");
         } catch (IllegalArgumentException ex) {
             log.warn("Unable to create CURRENTTIME time memory variable");
-            jmri.implementation.DefaultClockControl a;
         }
 
         init();
