@@ -6,8 +6,7 @@ import java.util.*;
 
 import jmri.InstanceManager;
 import jmri.configurexml.JmriConfigureXmlException;
-import jmri.time.TimeProvider;
-import jmri.time.TimeProviderManager;
+import jmri.time.*;
 
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -42,6 +41,11 @@ public abstract class AbstractTimeProviderManagerConfigXML extends AbstractNamed
      */
     @Override
     public Element store(Object o) {
+        // Don't store TimeProvider if it's not enabled.
+        if (! InstanceManager.getDefault(TimeProviderPreferences.class).getEnableTimeProvider()) {
+            return null;
+        }
+
         Element timeProviders = new Element("timeProviders");
         setStoreElementClass(timeProviders);
         TimeProviderManager tm = (TimeProviderManager) o;
