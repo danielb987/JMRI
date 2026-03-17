@@ -130,6 +130,7 @@ This is the next release in the 5.15 cycle. It's intended to be created from the
     JMRI:
     * build.xml in the jmri.copyright.years property value
     * project.properties
+    * help/en/parts/Footer.shtml
     * xml/XSLT/build.xml
     * A flock of .xsl files in xml/XSLT/
     * scripts/WinInstallFiles/LaunchJMRI.nsi

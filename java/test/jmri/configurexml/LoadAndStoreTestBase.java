@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import jmri.ConfigureManager;
@@ -184,6 +187,43 @@ public class LoadAndStoreTestBase {
                     if (line1.startsWith(startsWithString) && line2.startsWith(startsWithString)) {
                         match = true;
                         break;
+                    }
+                }
+
+                // Check the <timebase> tag. When the time is stored in the xml file, it's
+                // stored in the current timezone, which differs from user to user.
+                // This check accept two times in different timezones, as long as the
+                // actual time is the same. For example, "Sun May 17 08:12:43 PDT 2020"
+                // is the same time as "Sun May 17 17:12:43 CEST 2020" but in different
+                // timezones.
+                if (line1.startsWith("  <timebase") && line2.startsWith("  <timebase")) {
+                    SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+                    int beginning = "  <timebase class=\"jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml\" ".length();
+                    // Remove the beginning and the last four characters   "/ >
+                    String t1s = line1.substring(beginning, line1.length()-4);
+                    String t2s = line2.substring(beginning, line2.length()-4);
+                    // Split the attributes. There might be spaces in the values so
+                    // split using one double quote and a space.
+                    String[] t1sa = t1s.split("\" ");
+                    String[] t2sa = t2s.split("\" ");
+                    if (t1sa.length == t2sa.length) {
+                        for (int i=0; i < t1sa.length; i++) {
+                            if (t1sa[i].startsWith("time=")) {
+                                // Check time independent of timezone
+                                String d1s = t1sa[i].substring("time=\"".length());
+                                String d2s = t2sa[i].substring("time=\"".length());
+                                Date d1 = format.parse(d1s);
+                                Date d2 = format.parse(d2s);
+                                if (d1.equals(d2)) {
+                                    match = true;
+                                    break;
+                                }
+                            } else if (t1sa[i].equals(t2sa[i])) {
+                                // Other attributes in <timebase>
+                                match = true;
+                                break;
+                            }
+                        }
                     }
                 }
 
