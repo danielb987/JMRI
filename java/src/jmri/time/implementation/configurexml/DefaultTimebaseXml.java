@@ -2,6 +2,11 @@ package jmri.time.implementation.configurexml;
 
 // import jmri.configurexml.JmriConfigureXmlException;
 
+import jmri.InstanceManager;
+import jmri.Timebase;
+import static jmri.Timebase.ClockInitialRunState.DO_START;
+import static jmri.Timebase.ClockInitialRunState.DO_STOP;
+
 import org.jdom2.Element;
 
 /**
@@ -13,23 +18,36 @@ public class DefaultTimebaseXml extends jmri.configurexml.AbstractXmlAdapter {
 
     @Override
     public Element store(Object o) {
-        Element e = new Element("timebase");
-        e.setAttribute("class", "jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml");
-        e.setAttribute("time", "Sun May 17 08:12:43 PDT 2020");
-        e.setAttribute("rate", "1.0");
-        e.setAttribute("startrate", "1.0");
-        e.setAttribute("run", "yes");
-        e.setAttribute("master", "yes");
-        e.setAttribute("sync", "no");
-        e.setAttribute("correct", "no");
-        e.setAttribute("display", "no");
-        e.setAttribute("startstopped", "no");
-        e.setAttribute("startrunning", "yes");
-        e.setAttribute("startsettime", "no");
-        e.setAttribute("startclockoption", "0");
-        e.setAttribute("showbutton", "no");
-        e.setAttribute("startsetrate", "yes");
-        return e;
+
+        Timebase clock = InstanceManager.getDefault(jmri.Timebase.class);
+
+        Element elem = new Element("timebase");
+        elem.setAttribute("class", this.getClass().getName());
+
+        var loadAndStorePreferences = InstanceManager.getDefault(jmri.configurexml.LoadAndStorePreferences.class);
+        if (! loadAndStorePreferences.isExcludeTimebase() ) {
+            elem.setAttribute("time", clock.getStartTime().toString());
+        }
+
+        elem.setAttribute("rate", "" + clock.userGetRate());
+        elem.setAttribute("startrate", "" + clock.getStartRate());
+        elem.setAttribute("run", (clock.getClockInitialRunState() == DO_START ? "yes" : "no"));
+        elem.setAttribute("master", (clock.getInternalMaster() ? "yes" : "no"));
+        if (!clock.getInternalMaster()) {
+            elem.setAttribute("mastername", clock.getMasterName());
+        }
+        elem.setAttribute("sync", (clock.getSynchronize() ? "yes" : "no"));
+        elem.setAttribute("correct", (clock.getCorrectHardware() ? "yes" : "no"));
+        elem.setAttribute("display", (clock.use12HourDisplay() ? "yes" : "no"));
+        elem.setAttribute("startstopped", (clock.getClockInitialRunState() == DO_STOP ? "yes" : "no"));
+        elem.setAttribute("startrunning", ((clock.getClockInitialRunState() == DO_START) ? "yes" : "no"));
+        elem.setAttribute("startsettime", (clock.getStartSetTime() ? "yes" : "no"));
+        elem.setAttribute("startclockoption", Integer.toString(
+                clock.getStartClockOption()));
+        elem.setAttribute("showbutton", (clock.getShowStopButton() ? "yes" : "no"));
+        elem.setAttribute("startsetrate", (clock.getSetRateAtStart() ? "yes" : "no"));
+
+        return elem;
     }
 /*
     @Override
