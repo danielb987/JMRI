@@ -23,8 +23,6 @@ import jmri.time.*;
  */
 public class DefaultTimebase extends AbstractTimebase {
 
-    private final SystemConnectionMemo memo;
-
     /**
      * InstanceManager.getDefault(jmri.Timebase.class) variables and options
      */
@@ -37,8 +35,6 @@ public class DefaultTimebase extends AbstractTimebase {
     private boolean haveStartupFactor = false; // true if startup factor was ever set.
     // startupFactor at startup.
 
-//    private Date startAtTime;
-//    private Date setTimeValue;
     private Date pauseTime; // null value indicates clock is running
     private Sensor clockSensor = null; // active when clock is running, inactive when stopped
     private Memory clockMemory = null; // contains current time on each tick
@@ -69,7 +65,6 @@ public class DefaultTimebase extends AbstractTimebase {
 
     public DefaultTimebase(InternalSystemConnectionMemo memo) {
         super("SIMPLECLOCK");
-        this.memo = memo;
         // initialize time-containing memory
         try {
             clockMemory = InstanceManager.memoryManagerInstance().provideMemory(memo.getSystemPrefix()+"MCURRENTTIME");
@@ -77,12 +72,6 @@ public class DefaultTimebase extends AbstractTimebase {
         } catch (IllegalArgumentException ex) {
             log.warn("Unable to create CURRENTTIME time memory variable");
         }
-
-        init();
-
-    }
-
-    private void init(){
 
         // set to start counting from now
         setTimeIfPossible(new Date());
