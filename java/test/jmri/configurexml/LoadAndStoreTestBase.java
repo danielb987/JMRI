@@ -198,7 +198,7 @@ public class LoadAndStoreTestBase {
                 // timezones.
                 if (line1.startsWith("  <timebase") && line2.startsWith("  <timebase")) {
                     SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
-                    int beginning = "  <timebase class=\"jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml\" ".length();
+                    int beginning = "  <timebase ".length();
                     // Remove the beginning and the last four characters   "/ >
                     String t1s = line1.substring(beginning, line1.length()-4);
                     String t2s = line2.substring(beginning, line2.length()-4);
@@ -207,6 +207,7 @@ public class LoadAndStoreTestBase {
                     String[] t1sa = t1s.split("\" ");
                     String[] t2sa = t2s.split("\" ");
                     if (t1sa.length == t2sa.length) {
+                        boolean success = true;
                         for (int i=0; i < t1sa.length; i++) {
                             if (t1sa[i].startsWith("time=")) {
                                 // Check time independent of timezone
@@ -214,15 +215,21 @@ public class LoadAndStoreTestBase {
                                 String d2s = t2sa[i].substring("time=\"".length());
                                 Date d1 = format.parse(d1s);
                                 Date d2 = format.parse(d2s);
-                                if (d1.equals(d2)) {
-                                    match = true;
-                                    break;
+                                if (!d1.equals(d2)) {
+                                    success = false;
                                 }
+                            } else if (t1sa[i].startsWith("class=") && t2sa[i].startsWith("class=")) {
+                                // Accept different classes. jmri.jmrit.simpleclock.configurexml.SimpleTimebaseXml and jmri.time.implementation.configurexml.DefaultTimebaseXml
                             } else if (t1sa[i].equals(t2sa[i])) {
                                 // Other attributes in <timebase>
-                                match = true;
-                                break;
+                            } else {
+                                // Attributes are not equal
+                                success = false;
                             }
+                        }
+
+                        if (success) {
+                            match = true;
                         }
                     }
                 }

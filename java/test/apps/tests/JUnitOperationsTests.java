@@ -24,7 +24,7 @@ import org.junit.runner.notification.RunListener;
  */
 @RunWith(JUnitPlatform.class)
 @SuiteDisplayName("OperationTests")
-@SelectPackages({"jmri.jmrit.operations", "jmri.server.json.operations", "jmri.web.servlet.operations"})
+@SelectPackages({"jmri.jmrit.operations", "jmri.server.json.operations", "jmri.web.servlet.operations", "jmri.jmris.simpleserver"})
 @ExcludeClassNamePatterns({"HeadLessTest","FileLineEndingsTest","ArchitectureTest"})
 public class JUnitOperationsTests {
 

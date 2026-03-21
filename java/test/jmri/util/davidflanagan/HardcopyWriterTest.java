@@ -14,6 +14,8 @@ import java.util.Vector;
 import jmri.util.junit.annotations.DisabledIfHeadless;
 import org.junit.jupiter.api.*;
 import jmri.util.JUnitUtil;
+import jmri.util.davidflanagan.HardcopyWriter.PrintCanceledException;
+
 import java.io.IOException;
 
 public class HardcopyWriterTest {
@@ -137,13 +139,11 @@ public class HardcopyWriterTest {
     }
 
     @Test
-    @DisabledIfHeadless
     public void testTabHandling() throws IOException, HardcopyWriter.ColumnException {
-        JFrame frame = new JFrame();
         HardcopyWriter hcw = null;
         try {
-            hcw = new HardcopyWriter(frame, "test", null, null, 10, .5 * 72, .5 * 72, .5 * 72, .5 * 72, false,
-                    "SkipDialog",
+            hcw = new HardcopyWriter(null, "test", null, null, 10, .5 * 72, .5 * 72, .5 * 72, .5 * 72, false,
+                    HardcopyWriter.NO_PRINTING_PRINTER,
                     null, false, null, new Dimension((int) (8.5 * 72), (int) (11.0 * 72)));
             Assertions.assertNotNull(hcw, "HardcopyWriter constructor");
 
@@ -259,7 +259,7 @@ public class HardcopyWriterTest {
             hcwPreview = new HardcopyWriter(frame, "test-preview", null, null, 10, .5 * 72, .5 * 72, .5 * 72, .5 * 72,
                     true, null, null, null, null, pagesize);
             hcwPrint = new HardcopyWriter(frame, "test-print", null, null, 10, .5 * 72, .5 * 72, .5 * 72, .5 * 72,
-                    false, "SkipDialog", null, null, null, pagesize);
+                    false, HardcopyWriter.NO_PRINTING_PRINTER, null, null, null, pagesize);
 
             String text = "Test line 1";
             hcwPreview.write(text + "\n");
@@ -320,7 +320,7 @@ public class HardcopyWriterTest {
 
             // 2. Print mode (bypass dialog)
             hcwPrint = new HardcopyWriter(frame, "test-compare", null, null, 10, .5 * 72, .5 * 72, .5 * 72, .5 * 72,
-                    false, "SkipDialog",
+                    false, HardcopyWriter.NO_PRINTING_PRINTER,
                     null, false, null, pagesize);
             performStandardDrawing(hcwPrint, width);
             hcwPrint.pageBreak();
@@ -355,6 +355,19 @@ public class HardcopyWriterTest {
                 hcwPreview.dispose();
             if (hcwPrint != null)
                 hcwPrint.dispose();
+        }
+    }
+
+    @Test
+    public void testMeasurement() throws PrintCanceledException {
+        HardcopyWriter hcw = new HardcopyWriter(null, null, 10, 36, 36,
+                36, 36, null, null);
+        try {
+            Rectangle2D bounds = hcw.measure("Hello World");
+            Assertions.assertTrue(bounds.getWidth() > 40, "measure width");
+            Assertions.assertTrue(bounds.getHeight() > 5, "measure height");
+        } finally {
+            hcw.dispose();
         }
     }
 

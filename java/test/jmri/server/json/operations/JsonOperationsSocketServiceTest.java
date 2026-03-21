@@ -22,7 +22,6 @@ import jmri.jmrit.operations.rollingstock.cars.*;
 import jmri.jmrit.operations.rollingstock.engines.EngineManager;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
-import jmri.jmrit.operations.trains.trainbuilder.TrainCommon;
 import jmri.server.json.*;
 import jmri.util.*;
 
@@ -542,8 +541,6 @@ public class JsonOperationsSocketServiceTest {
         JUnitUtil.initIdTagManager();
         JUnitOperationsUtil.setupOperationsTests();
         JUnitOperationsUtil.initOperationsData();
-        // default font chars per line, prevents headless exception when using HardcopyWriter
-        InstanceManager.getDefault(TrainManager.class).setHardcopyWriterLineLength("Monospaced", 0, 10, TrainCommon.getPageSize("Portrait"), false, 89);
         Kernel kernel = InstanceManager.getDefault(KernelManager.class).newKernel("test1");
         InstanceManager.getDefault(CarManager.class).getById("CP99").setKernel(kernel);
         mapper = new ObjectMapper();

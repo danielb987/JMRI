@@ -78,12 +78,10 @@ public class HardcopyWriter extends Writer implements Printable {
     protected ImageIcon previewIcon = new ImageIcon();
     protected JLabel previewLabel = new JLabel();
     protected JToolBar previewToolBar = new JToolBar();
-    protected Frame frame;
     protected JButton nextButton;
     protected JButton previousButton;
     protected JButton closeButton;
     protected JLabel pageCount = new JLabel();
-    protected boolean showPreview = true;
 
     protected Column[] columns = {new Column(0, Integer.MAX_VALUE, Align.LEFT_WRAP)};
     protected int columnIndex = 0;
@@ -97,6 +95,8 @@ public class HardcopyWriter extends Writer implements Printable {
     // save state between invocations of write()
     private boolean last_char_was_return = false;
 
+    public static String NO_PRINTING_PRINTER = "skipDialog";
+
     // Job and Page attributes
     PrintRequestAttributeSet attributes = new HashPrintRequestAttributeSet();
 
@@ -109,7 +109,8 @@ public class HardcopyWriter extends Writer implements Printable {
     /**
      * Constructor for HardcopyWriter
      * 
-     * @param frame         The AWT Frame
+     * @param frame         The AWT Frame (only required for preview mode) -- this is used
+     *                      to get the screen resolution.
      * @param jobname       The name to print in the title of the page
      * @param fontName      The name of the font to use (if null, default is
      *                      used)
@@ -144,20 +145,15 @@ public class HardcopyWriter extends Writer implements Printable {
         initalize(frame, jobname, fontName, fontStyle, fontsize, leftmargin, rightmargin, topmargin, bottommargin,
                 isPreview, printerName, isLandscape, isPrintHeader, sides, pagesize);
     }
-    
+
     // this constructor is only used to determine number of character per line
     public HardcopyWriter(String fontName, Integer fontStyle, Integer fontsize, double leftmargin, double rightmargin,
             double topmargin, double bottommargin, Boolean isLandscape, Dimension pagesize)
             throws HardcopyWriter.PrintCanceledException {
-        
-        // TODO this should be changed to only use the metrics for font and page size
-        showPreview = false;
-        
-        initalize(new Frame(), "", fontName, fontStyle, fontsize, leftmargin, rightmargin, topmargin, bottommargin,
-                true, null, isLandscape, false, null, pagesize);
-
+        initalize(null, "", fontName, fontStyle, fontsize, leftmargin, rightmargin, topmargin, bottommargin,
+                false, NO_PRINTING_PRINTER, isLandscape, false, null, pagesize);
     }
-        
+
     private void initalize(Frame frame, String jobname, String fontName, Integer fontStyle, Integer fontsize,
             double leftmargin, double rightmargin,
             double topmargin, double bottommargin, boolean isPreview, String printerName, Boolean isLandscape,
@@ -176,11 +172,14 @@ public class HardcopyWriter extends Writer implements Printable {
         }
 
         this.isPreview = isPreview;
-        this.frame = frame;
 
         // Get the screen resolution and cache it. This also allows us to override
         // the default resolution for testing purposes.
-        getScreenResolution();
+        if (frame == null) {
+            screenResolution = 1;
+        } else {
+            getScreenResolution();
+        }
 
         if (pagesize == null) {
             pagesizePixels = getPagesizePixels();
@@ -229,7 +228,7 @@ public class HardcopyWriter extends Writer implements Printable {
 
             printerJob.setPrintable(this, pageFormat);
 
-            if ("SkipDialog".equals(printerName) || printerJob.printDialog(attributes)) {
+            if (NO_PRINTING_PRINTER.equals(printerName) || printerJob.printDialog(attributes)) {
                 PageFormat updatedPf = printerJob.validatePage(pageFormat);
 
                 double widthPts = updatedPf.getPaper().getWidth();
@@ -248,6 +247,9 @@ public class HardcopyWriter extends Writer implements Printable {
                 pagesizePixels = new Dimension((int) (pagesizePoints.width * getScreenResolution() / 72.0),
                         (int) (pagesizePoints.height * getScreenResolution() / 72.0));
 
+                if (NO_PRINTING_PRINTER.equals(printerName)) {
+                    printerJob = null;
+                }
             } else {
                 throw new PrintCanceledException("User cancelled print request");
             }
@@ -285,7 +287,7 @@ public class HardcopyWriter extends Writer implements Printable {
 
         // header font info
         headerfont = new Font("SansSerif", Font.ITALIC, useFontSize);
-        headermetrics = frame.getFontMetrics(headerfont);
+        headermetrics = g.getFontMetrics(headerfont);
         headery = y0 - (int) (0.125 * 72) - headermetrics.getHeight() + headermetrics.getAscent();
         titleTop = headery - headermetrics.getAscent();
 
@@ -310,7 +312,7 @@ public class HardcopyWriter extends Writer implements Printable {
 
             previewFrame.setSize((int) (pagesizePixels.width / pixelScale) + 48,
                     (int) (pagesizePixels.height / pixelScale) + 100);
-            previewFrame.setVisible(showPreview);
+            previewFrame.setVisible(true);
         }
     }
 
@@ -405,36 +407,34 @@ public class HardcopyWriter extends Writer implements Printable {
      * Not part of the original HardcopyWriter class.
      */
     protected void displayPage() {
-        if (showPreview) {
-            // limit the pages to the actual range
-            if (pagenum > pageImages.size()) {
-                pagenum = pageImages.size();
-            }
-            if (pagenum < 1) {
-                pagenum = 1;
-            }
-            // enable/disable the previous/next buttons as appropriate
-            previousButton.setEnabled(true);
-            nextButton.setEnabled(true);
-            if (pagenum == pageImages.size()) {
-                nextButton.setEnabled(false);
-            }
-            if (pagenum == 1) {
-                previousButton.setEnabled(false);
-            }
-            previewImage = pageImages.elementAt(pagenum - 1);
-            previewFrame.setVisible(false);
-            // previewIcon.setImage(previewImage);
-            previewLabel.setIcon(new RetinaIcon(previewImage, pixelScale));
-            // put the label in the panel (already has a scroll pane)
-            previewPanel.add(previewLabel);
-            // set the page count info
-            pageCount.setText(Bundle.getMessage("HeaderPageNum", pagenum, pageImages.size()));
-            // repaint the frame but don't use pack() as we don't want resizing
-            previewFrame.invalidate();
-            previewFrame.revalidate();
-            previewFrame.setVisible(true);
+        // limit the pages to the actual range
+        if (pagenum > pageImages.size()) {
+            pagenum = pageImages.size();
         }
+        if (pagenum < 1) {
+            pagenum = 1;
+        }
+        // enable/disable the previous/next buttons as appropriate
+        previousButton.setEnabled(true);
+        nextButton.setEnabled(true);
+        if (pagenum == pageImages.size()) {
+            nextButton.setEnabled(false);
+        }
+        if (pagenum == 1) {
+            previousButton.setEnabled(false);
+        }
+        previewImage = pageImages.elementAt(pagenum - 1);
+        previewFrame.setVisible(false);
+        // previewIcon.setImage(previewImage);
+        previewLabel.setIcon(new RetinaIcon(previewImage, pixelScale));
+        // put the label in the panel (already has a scroll pane)
+        previewPanel.add(previewLabel);
+        // set the page count info
+        pageCount.setText(Bundle.getMessage("HeaderPageNum", pagenum, pageImages.size()));
+        // repaint the frame but don't use pack() as we don't want resizing
+        previewFrame.invalidate();
+        previewFrame.revalidate();
+        previewFrame.setVisible(true);
     }
 
     /**
@@ -832,13 +832,13 @@ public class HardcopyWriter extends Writer implements Printable {
      * @param g the graphics context
      */
     private void refreshMetrics(Graphics g) {
-        metrics = frame.getFontMetrics(font);
-        lineheight = metrics.getHeight();
-        lineascent = metrics.getAscent();
-
         if (g == null) {
             g = getGraphics();
         }
+
+        metrics = g.getFontMetrics(font);
+        lineheight = metrics.getHeight();
+        lineascent = metrics.getAscent();
 
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
@@ -1012,19 +1012,17 @@ public class HardcopyWriter extends Writer implements Printable {
         page = getGraphics();
 
         if (isPreview) {
-            if (showPreview) {
-                previewImage = previewPanel.createImage(pagesizePixels.width, pagesizePixels.height);
-                page = previewImage.getGraphics();
+            previewImage = previewPanel.createImage(pagesizePixels.width, pagesizePixels.height);
+            page = previewImage.getGraphics();
 
-                if (page instanceof Graphics2D) {
-                    setupGraphics(page, true);
-                }
-
-                page.setColor(Color.white);
-                page.fillRect(0, 0, (int) (pagesizePixels.width * 72.0 / getScreenResolution()),
-                        (int) (pagesizePixels.height * 72.0 / getScreenResolution()));
-                page.setColor(color);
+            if (page instanceof Graphics2D) {
+                setupGraphics(page, true);
             }
+
+            page.setColor(Color.white);
+            page.fillRect(0, 0, (int) (pagesizePixels.width * 72.0 / getScreenResolution()),
+                    (int) (pagesizePixels.height * 72.0 / getScreenResolution()));
+            page.setColor(color);
         } else {
             // We only need this is non-preview mode. 
             pageCommands.add(currentPageCommands);

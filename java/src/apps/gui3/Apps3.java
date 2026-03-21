@@ -107,6 +107,7 @@ public abstract class Apps3 extends AppsBase {
      */
     protected static void setButtonSpace() {
         _buttonSpace = new JPanel();
+        _buttonSpace.setOpaque(false);
         _buttonSpace.setLayout(new FlowLayout(FlowLayout.LEFT));
     }
 
