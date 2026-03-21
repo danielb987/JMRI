@@ -1,6 +1,6 @@
 package jmri.time.implementation.configurexml;
 
-// import jmri.configurexml.JmriConfigureXmlException;
+import jmri.configurexml.JmriConfigureXmlException;
 
 import jmri.InstanceManager;
 import jmri.Timebase;
@@ -49,10 +49,10 @@ public class DefaultTimebaseXml extends jmri.configurexml.AbstractXmlAdapter {
 
         return elem;
     }
-/*
+
     @Override
     public boolean load(Element shared, Element perNode) throws JmriConfigureXmlException {
         return true;
     }
-*/
+
 }
