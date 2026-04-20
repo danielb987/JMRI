@@ -198,6 +198,12 @@ public class LayoutEditorVerticalToolBarPanel extends LayoutEditorToolBarPanel {
         vTop20Panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, vTop20Panel.getPreferredSize().height));
         iconsBorderPanel.add(vTop20Panel);
 
+        JPanel vTop20tPanel = new JPanel(verticalContentLayout);
+        vTop20tPanel.add(turnoutButton);
+        vTop20tPanel.add(turnoutComboBox);
+        vTop20tPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, vTop20tPanel.getPreferredSize().height));
+        iconsBorderPanel.add(vTop20tPanel);
+
         JPanel vTop19Panel = new JPanel(verticalContentLayout);
         vTop19Panel.add(signalMastButton);
         vTop19Panel.add(signalMastComboBox);

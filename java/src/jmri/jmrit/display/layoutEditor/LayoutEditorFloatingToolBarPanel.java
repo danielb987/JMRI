@@ -179,6 +179,11 @@ public class LayoutEditorFloatingToolBarPanel extends LayoutEditorToolBarPanel {
         iconGroup2.add(sensorComboBox);
         floatEditIcon.add(iconGroup2);
 
+        JPanel iconGroup2t = new JPanel(floatContentLayout);
+        iconGroup2t.add(turnoutButton);
+        iconGroup2t.add(turnoutComboBox);
+        floatEditIcon.add(iconGroup2t);
+
         JPanel iconGroup3 = new JPanel(floatContentLayout);
         iconGroup3.add(signalMastButton);
         iconGroup3.add(signalMastComboBox);

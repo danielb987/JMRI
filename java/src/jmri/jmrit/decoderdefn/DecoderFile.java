@@ -359,6 +359,8 @@ public class DecoderFile extends XmlFile {
     public Showable getShowable() {
         if (_element.getAttribute("show") == null) {
             return Showable.YES; // default
+        } else if (_element.getAttributeValue("show").equals("yes")) {
+            return Showable.YES;
         } else if (_element.getAttributeValue("show").equals("no")) {
             return Showable.NO;
         } else if (_element.getAttributeValue("show").equals("maybe")) {

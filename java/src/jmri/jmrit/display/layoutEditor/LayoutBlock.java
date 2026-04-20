@@ -3149,7 +3149,8 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
      */
     List<Routes> getDestRoutes(Block dstBlock) {
         List<Routes> rtr = new ArrayList<>();
-        for (Routes route : routes) {
+        var tempRouteList = new ArrayList<>(routes);
+        for (Routes route : tempRouteList) {
             if (route.getDestBlock() == dstBlock) {
                 rtr.add(route);
             }

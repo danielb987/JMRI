@@ -122,7 +122,12 @@ public class CbusReporter extends AbstractRailComReporter implements CanListener
             if (m.getOpCode() == CbusConstants.CBUS_DDES && !getCbusReporterType().equals(CbusReporterManager.CBUS_REPORTER_TYPE_CLASSIC)  ) {
                 ddesReport(m);
             } else {
-                classicRFIDReport(m);
+                int least_significant_bit = m.getElement(3) & 1;
+                if ( least_significant_bit == 0 ) {
+                    classicRFIDReport(m);
+                } else {
+                    canRcomReport(m);
+                }
             }
         }
     }

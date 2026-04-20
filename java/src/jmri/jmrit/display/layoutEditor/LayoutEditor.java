@@ -211,6 +211,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     private List<PositionableLabel> backgroundImage = new ArrayList<>();    // background images
     private List<PositionableLabel> labelImage = new ArrayList<>();         // positionable label images
     private List<SensorIcon> sensorImage = new ArrayList<>();               // sensor images
+    private List<TurnoutIcon> turnoutImage = new ArrayList<>();             // turnout _images_
     private List<SignalHeadIcon> signalHeadImage = new ArrayList<>();       // signal head images
 
     // PositionableLabel's
@@ -220,6 +221,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     private List<MemoryInputIcon> memoryInputList = new ArrayList<>();          // Memory Input List
     private List<GlobalVariableIcon> globalVariableLabelList = new ArrayList<>(); // LogixNG Global Variable Label List
     private List<SensorIcon> sensorList = new ArrayList<>();                    // Sensor Icons
+    private List<TurnoutIcon> turnoutList = new ArrayList<>();                  // Turnout _Icons_
     private List<SignalHeadIcon> signalList = new ArrayList<>();                // Signal Head Icons
     private List<SignalMastIcon> signalMastList = new ArrayList<>();            // Signal Mast Icons
 
@@ -228,6 +230,11 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     @Nonnull
     public List<SensorIcon> getSensorList() {
         return sensorList;
+    }
+
+    @Nonnull
+    public List<TurnoutIcon> getTurnoutList() {
+        return turnoutList;
     }
 
     @Nonnull
@@ -2302,6 +2309,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         List<List<? extends Component>> listOfListsOfComponents = new ArrayList<>();
         listOfListsOfComponents.add(backgroundImage);
         listOfListsOfComponents.add(sensorImage);
+        listOfListsOfComponents.add(turnoutImage);
         listOfListsOfComponents.add(signalHeadImage);
         listOfListsOfComponents.add(markerImage);
         listOfListsOfComponents.add(labelImage);
@@ -2314,6 +2322,7 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         listOfListsOfComponents.add(blockContentsLabelList);
         listOfListsOfComponents.add(blockContentsInputList);
         listOfListsOfComponents.add(sensorList);
+        listOfListsOfComponents.add(turnoutList);
         listOfListsOfComponents.add(signalMastList);
         // combine their bounds
         for (List<? extends Component> listOfComponents : listOfListsOfComponents) {
@@ -2702,7 +2711,9 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         positionables.addAll(memoryInputList);
         positionables.addAll(globalVariableLabelList);
         positionables.addAll(sensorImage);
+        positionables.addAll(turnoutImage);
         positionables.addAll(sensorList);
+        positionables.addAll(turnoutList);
         positionables.addAll(signalHeadImage);
         positionables.addAll(signalList);
         positionables.addAll(signalMastList);
@@ -2771,7 +2782,9 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         positionables.addAll(memoryInputList);
         positionables.addAll(globalVariableLabelList);
         positionables.addAll(sensorImage);
+        positionables.addAll(turnoutImage);
         positionables.addAll(sensorList);
+        positionables.addAll(turnoutList);
         positionables.addAll(signalHeadImage);
         positionables.addAll(signalList);
         positionables.addAll(signalMastList);
@@ -3216,11 +3229,14 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                         // The next group are potential LAYOUT_POS_LABEL objects.
                         selectedObject = checkSensorIconPopUps(dLoc);
                         if (selectedObject == null) {
-                            selectedObject = checkSignalHeadIconPopUps(dLoc);
+                            selectedObject = checkTurnoutIconPopUps(dLoc);
                             if (selectedObject == null) {
-                                selectedObject = checkLabelImagePopUps(dLoc);
+                                selectedObject = checkSignalHeadIconPopUps(dLoc);
                                 if (selectedObject == null) {
-                                    selectedObject = checkSignalMastIconPopUps(dLoc);
+                                    selectedObject = checkLabelImagePopUps(dLoc);
+                                    if (selectedObject == null) {
+                                        selectedObject = checkSignalMastIconPopUps(dLoc);
+                                    }
                                 }
                             }
                         }
@@ -3570,6 +3586,21 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         return result;
     }
 
+    private TurnoutIcon checkTurnoutIconPopUps(@Nonnull Point2D loc) {
+        assert loc != null;
+
+        TurnoutIcon result = null;
+        // check turnout images, if any
+        for (int i = turnoutImage.size() - 1; i >= 0; i--) {
+            TurnoutIcon s = turnoutImage.get(i);
+            Rectangle2D r = s.getBounds();
+            if (r.contains(loc)) {
+                result = s;
+            }
+        }
+        return result;
+    }
+
     private SignalHeadIcon checkSignalHeadIconPopUps(@Nonnull Point2D loc) {
         assert loc != null;
 
@@ -3877,6 +3908,8 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                     startMultiSensor();
                 } else if (leToolBarPanel.sensorButton.isSelected()) {
                     addSensor();
+                } else if (leToolBarPanel.turnoutButton.isSelected()) {
+                    addTurnout();
                 } else if (leToolBarPanel.signalButton.isSelected()) {
                     addSignalHead();
                 } else if (leToolBarPanel.textLabelButton.isSelected()) {
@@ -4190,6 +4223,12 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                     break;
                 }
 
+                TurnoutIcon t = checkTurnoutIconPopUps(dLoc);
+                if (t != null) {
+                    showPopUp(t, event);
+                    break;
+                }
+
                 LocoIcon lo = checkMarkerPopUps(dLoc);
                 if (lo != null) {
                     showPopUp(lo, event);
@@ -4422,33 +4461,38 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                 if (s != null) {
                     amendSelectionGroup(s);
                 } else {
-                    PositionableLabel sh = checkSignalHeadIconPopUps(dLoc);
-                    if (sh != null) {
-                        amendSelectionGroup(sh);
+                    PositionableLabel t = checkTurnoutIconPopUps(dLoc);
+                    if (t != null) {
+                        amendSelectionGroup(t);
                     } else {
-                        PositionableLabel ms = checkMultiSensorPopUps(dLoc);
-                        if (ms != null) {
-                            amendSelectionGroup(ms);
+                        PositionableLabel sh = checkSignalHeadIconPopUps(dLoc);
+                        if (sh != null) {
+                            amendSelectionGroup(sh);
                         } else {
-                            PositionableLabel lb = checkLabelImagePopUps(dLoc);
-                            if (lb != null) {
-                                amendSelectionGroup(lb);
+                            PositionableLabel ms = checkMultiSensorPopUps(dLoc);
+                            if (ms != null) {
+                                amendSelectionGroup(ms);
                             } else {
-                                PositionableLabel b = checkBackgroundPopUps(dLoc);
-                                if (b != null) {
-                                    amendSelectionGroup(b);
+                                PositionableLabel lb = checkLabelImagePopUps(dLoc);
+                                if (lb != null) {
+                                    amendSelectionGroup(lb);
                                 } else {
-                                    PositionableLabel sm = checkSignalMastIconPopUps(dLoc);
-                                    if (sm != null) {
-                                        amendSelectionGroup(sm);
+                                    PositionableLabel b = checkBackgroundPopUps(dLoc);
+                                    if (b != null) {
+                                        amendSelectionGroup(b);
                                     } else {
-                                        LayoutShape ls = checkLayoutShapePopUps(dLoc);
-                                        if (ls != null) {
-                                            amendSelectionGroup(ls);
+                                        PositionableLabel sm = checkSignalMastIconPopUps(dLoc);
+                                        if (sm != null) {
+                                            amendSelectionGroup(sm);
                                         } else {
-                                            PositionableJPanel jp = checkJPanelPopUps(dLoc);
-                                            if (jp != null) {
-                                                amendSelectionGroup(jp);
+                                            LayoutShape ls = checkLayoutShapePopUps(dLoc);
+                                            if (ls != null) {
+                                                amendSelectionGroup(ls);
+                                            } else {
+                                                PositionableJPanel jp = checkJPanelPopUps(dLoc);
+                                                if (jp != null) {
+                                                    amendSelectionGroup(jp);
+                                                }
                                             }
                                         }
                                     }
@@ -6297,6 +6341,19 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
             }
         }
 
+        if (turnoutImage.contains(s) || turnoutList.contains(s)) {
+            Turnout turnout = ((TurnoutIcon) s).getTurnout();
+            if (turnout != null) {
+                if (removeAttachedBean((turnout))) {
+                    turnoutImage.remove(s);
+                    turnoutList.remove(s);
+                    found = true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
         if (signalHeadImage.contains(s) || signalList.contains(s)) {
             SignalHead head = ((SignalHeadIcon) s).getSignalHead();
             if (head != null) {
@@ -6360,6 +6417,8 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
             }
         } else if (bean instanceof Sensor) {
             beanKey = "BeanNameSensor";  // NOI18N
+        } else if (bean instanceof Turnout) {
+            beanKey = "BeanNameTurnout";  // NOI18N
         } else if (bean instanceof SignalHead) {
             beanKey = "BeanNameSignalHead";  // NOI18N
         }
@@ -7088,6 +7147,10 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                 break;
             }
             default: {
+                if (HitPointType.isTurntableRayHitType(type) ||
+                        HitPointType.isTraverserSlotHitType(type)) {
+                    break;
+                }
                 log.warn("Unhandled track type: {}", type);
                 break;
             }
@@ -7132,6 +7195,52 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
     public void putSensor(@Nonnull SensorIcon l) {
         l.updateSize();
         l.setDisplayLevel(Editor.SENSORS);
+        try {
+            putItem(l); // note: this calls unionToPanelBounds & setDirty()
+        } catch (Positionable.DuplicateIdException e) {
+            // This should never happen
+            log.error("Editor.putItem() with null id has thrown DuplicateIdException", e);
+        }
+    }
+
+    /**
+     * Add a turnout indicator to the Draw Panel
+     */
+    void addTurnout() {
+        String newName = leToolBarPanel.turnoutComboBox.getSelectedItemDisplayName();
+        if (newName == null) {
+            newName = "";
+        }
+
+        if (newName.isEmpty()) {
+            JmriJOptionPane.showMessageDialog(this, Bundle.getMessage("Error10"),
+                    Bundle.getMessage("ErrorTitle"), JmriJOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        TurnoutIcon l = new OutputIndicator(new NamedIcon("resources/icons/smallschematics/tracksegments/circuit-error.gif",
+                "resources/icons/smallschematics/tracksegments/circuit-error.gif"), this);
+
+        l.setTurnout(newName);
+
+        l.setIcon("TurnoutStateThrown", leToolBarPanel.turnoutIconEditor.getIcon(0));
+        l.setIcon("TurnoutStateClosed", leToolBarPanel.turnoutIconEditor.getIcon(1));
+        l.setIcon("BeanStateInconsistent", leToolBarPanel.turnoutIconEditor.getIcon(2));
+        l.setIcon("BeanStateUnknown", leToolBarPanel.turnoutIconEditor.getIcon(3));
+        l.setDisplayLevel(Editor.TURNOUTS);
+
+        leToolBarPanel.turnoutComboBox.setSelectedItem(l.getTurnout());
+        setNextLocation(l);
+        try {
+            putItem(l); // note: this calls unionToPanelBounds & setDirty()
+        } catch (Positionable.DuplicateIdException e) {
+            // This should never happen
+            log.error("Editor.putItem() with null id has thrown DuplicateIdException", e);
+        }
+    }
+
+    public void putTurnout(@Nonnull TurnoutIcon l) {
+        l.updateSize();
+        l.setDisplayLevel(Editor.TURNOUTS);
         try {
             putItem(l); // note: this calls unionToPanelBounds & setDirty()
         } catch (Positionable.DuplicateIdException e) {
@@ -7327,6 +7436,9 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
         if (l instanceof SensorIcon) {
             sensorImage.add((SensorIcon) l);
             sensorList.add((SensorIcon) l);
+        } else if (l instanceof TurnoutIcon) {
+            turnoutImage.add((TurnoutIcon) l);
+            turnoutList.add((TurnoutIcon) l);
         } else if (l instanceof LocoIcon) {
             markerImage.add((LocoIcon) l);
         } else if (l instanceof SignalHeadIcon) {
@@ -9199,6 +9311,8 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
 
         if (nb instanceof Sensor) {
             theList = sensorList;
+        } else if (nb instanceof Turnout) {
+            theList = turnoutList;
         } else if (nb instanceof SignalHead) {
             theList = signalList;
         } else if (nb instanceof SignalMast) {
@@ -9396,6 +9510,29 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                 }
             }
 
+            if (nb instanceof Turnout) {
+                int count = 0;
+
+                for (TurnoutIcon si : turnoutList) {
+                    if (nb.equals(si.getNamedBean())) {
+                        count++;
+                        found = true;
+                    }
+                }
+
+                if (count > 0) {
+                    message.append("<li>");
+                    message.append(String.format("As an Icon %s times", count));
+                    message.append("</li>");
+                }
+                String foundelsewhere = findBeanUsage(nb);
+
+                if (foundelsewhere != null) {
+                    message.append(foundelsewhere);
+                    found = true;
+                }
+            }
+
             if (nb instanceof Memory) {
                 for (MemoryIcon si : memoryLabelList) {
                     if (nb.equals(si.getMemory())) {
@@ -9515,6 +9652,22 @@ final public class LayoutEditor extends PanelEditor implements MouseWheelListene
                     SensorIcon i = icon.next();
 
                     if (nb.equals(i.getSensor())) {
+                        icon.remove();
+                        super.removeFromContents(i);
+                    }
+                }
+                setDirty();
+                redrawPanel();
+            }
+
+            if (nb instanceof Turnout) {
+                removeBeanRefs(nb);
+                Iterator<TurnoutIcon> icon = turnoutImage.iterator();
+
+                while (icon.hasNext()) {
+                    TurnoutIcon i = icon.next();
+
+                    if (nb.equals(i.getTurnout())) {
                         icon.remove();
                         super.removeFromContents(i);
                     }

@@ -182,6 +182,8 @@ public class LayoutEditorHorizontalToolBarPanel extends LayoutEditorToolBarPanel
         hTop6Left.add(changeIconsButton);
         hTop6Left.add(sensorButton);
         hTop6Left.add(sensorComboBox);
+        hTop6Left.add(turnoutButton);
+        hTop6Left.add(turnoutComboBox);
         hTop6Left.add(signalMastButton);
         hTop6Left.add(signalMastComboBox);
         hTop6Left.add(signalButton);

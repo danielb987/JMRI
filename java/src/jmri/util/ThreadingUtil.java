@@ -1,10 +1,9 @@
 package jmri.util;
 
-import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -95,13 +94,13 @@ public class ThreadingUtil {
      * }, 1000); 
      * }
      *
+     * If you need to cancel an operation, see jmri.util.TimerUtil.scheduleOnGUIThread
+     * 
      * @param ta    what to run, usually as a lambda expression
      * @param delay interval in milliseconds
-     * @return reference to timer object handling delay so you can cancel if desired; note that operation may have already taken place.
      */
-    @Nonnull 
-    static public Timer runOnLayoutDelayed(@Nonnull ThreadAction ta, int delay) {
-        return runOnGUIDelayed(ta, delay);
+    static public void runOnLayoutDelayed(@Nonnull ThreadAction ta, int delay) {
+        runOnGUIDelayed(ta, delay);
     }
 
     /**
@@ -279,19 +278,20 @@ public class ThreadingUtil {
      * }, 1000);
      * }
      *
+     * If you need to cancel an operation, see jmri.util.TimerUtil.scheduleOnGUIThread
+     *
      * @param ta    What to run, usually as a lambda expression
      * @param delay interval in milliseconds
-     * @return reference to timer object handling delay so you can cancel if desired; note that operation may have already taken place.
      */
-    @Nonnull 
-    static public Timer runOnGUIDelayed(@Nonnull ThreadAction ta, int delay) {
+    static public void runOnGUIDelayed(@Nonnull Runnable ta, int delay) {
         // dispatch to Swing via timer
-        Timer timer = new Timer(delay, (ActionEvent e) -> {
-            ta.run();
-        });
-        timer.setRepeats(false);
-        timer.start();
-        return timer;
+        var task = new TimerTask(){
+                @Override
+                public void run() {
+                    ThreadingUtil.runOnGUIEventually(() -> {ta.run();});
+                }
+        };
+        TimerUtil.scheduleOnGUIThread(task, delay);
     }
 
     /**

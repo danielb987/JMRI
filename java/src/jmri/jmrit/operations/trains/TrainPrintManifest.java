@@ -43,19 +43,12 @@ public class TrainPrintManifest extends TrainCommon {
     public static void printReport(File file, String name, boolean isPreview, String fontName, String logoURL,
             String printerName, String orientation, int fontSize, boolean isPrintHeader, Sides sides) {
         
-        // obtain a CompatibleHardcopyWriter to do this
         double margin = .5;
-        Dimension pagesize = null; // HardcopyWritter provides default page
-                                   // sizes for portrait and landscape
-
-        if (orientation.equals(Setup.HANDHELD) || orientation.equals(Setup.HALFPAGE)) {
-            isPrintHeader = false;
-            // add margins to page size
-            pagesize = new Dimension(getPageSize(orientation).width + PAPER_MARGINS.width,
-                    getPageSize(orientation).height + PAPER_MARGINS.height);
-        }
+        // get hand held or half page dimensions in DPI
+        Dimension pageSize = getFullPageSizeDPI(orientation);
+        
         try (CompatibleHardcopyWriter writer = new CompatibleHardcopyWriter(new Frame(), name, fontSize, margin,
-                margin, margin, margin, isPreview, printerName, orientation.equals(Setup.LANDSCAPE), isPrintHeader, sides, pagesize);
+                margin, margin, margin, isPreview, printerName, orientation.equals(Setup.LANDSCAPE), isPrintHeader, sides, pageSize);
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         new FileInputStream(file), StandardCharsets.UTF_8));) {
 

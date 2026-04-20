@@ -631,9 +631,9 @@ public class LayoutTraverser extends LayoutTrack {
 
         slotList.forEach((rt) -> {
             if (!rt.isDisabled()) {
-                log.info("Traverser '{}': trying to connect slot index {} to track '{}'", getName(), rt.getConnectionIndex(), rt.connectName);
+                log.debug("Traverser '{}': trying to connect slot index {} to track '{}'", getName(), rt.getConnectionIndex(), rt.connectName);
                 TrackSegment connectedTrack = p.getFinder().findTrackSegmentByName(rt.connectName);
-                log.info("connectedTrack {}", connectedTrack == null ? "null" : connectedTrack.getName());
+                log.debug("connectedTrack {}", connectedTrack == null ? "null" : connectedTrack.getName());
                 rt.setConnect(connectedTrack);
                 if (connectedTrack == null && rt.connectName != null && !rt.connectName.isEmpty()) {
                     log.warn("Traverser '{}': FAILED to find track segment for connection name '{}'", getName(), rt.connectName);
@@ -1255,7 +1255,7 @@ public class LayoutTraverser extends LayoutTrack {
     @Override
     public void checkForNonContiguousBlocks(
             @Nonnull HashMap<String, List<Set<String>>> blockNamesToTrackNameSetsMap) {
-        log.info("Traverser '{}': running checkForNonContiguousBlocks...", getName());
+        log.debug("Traverser '{}': running checkForNonContiguousBlocks...", getName());
         /*
         * For each (non-null) blocks of this track do:
         * #1) If it's got an entry in the blockNamesToTrackNameSetMap then
@@ -1275,7 +1275,7 @@ public class LayoutTraverser extends LayoutTrack {
         for (int k = 0; k < getNumberSlots(); k++) {
             TrackSegment ts = isSlotDisabled(k) ? null : getSlotConnectOrdered(k);
             if (ts != null) {
-                log.info("  - Found connection from slot {} to track '{}' in block '{}'", k, ts.getName(), ts.getBlockName());
+                log.debug("  - Found connection from slot {} to track '{}' in block '{}'", k, ts.getName(), ts.getBlockName());
                 String blockName = ts.getBlockName();
                 blocksAndTracksMap.put(ts, blockName);
             }
@@ -1286,7 +1286,7 @@ public class LayoutTraverser extends LayoutTrack {
         for (Map.Entry<LayoutTrack, String> entry : blocksAndTracksMap.entrySet()) {
             LayoutTrack theConnect = entry.getKey();
             String theBlockName = entry.getValue();
-            log.info("  Processing connection to block '{}'", theBlockName);
+            log.debug("  Processing connection to block '{}'", theBlockName);
 
             TrackNameSet = null;    // assume not found (pessimist!)
             TrackNameSets = blockNamesToTrackNameSetsMap.get(theBlockName);
@@ -1294,7 +1294,7 @@ public class LayoutTraverser extends LayoutTrack {
                 for (Set<String> checkTrackNameSet : TrackNameSets) {
                     if (checkTrackNameSet.add(getName())) {
                         log.debug("*    Add track '{}' to trackNameSet for block '{}'", getName(), theBlockName);
-                        log.info("    Added traverser '{}' to existing track set for block '{}'", getName(), theBlockName);
+                        log.debug("    Added traverser '{}' to existing track set for block '{}'", getName(), theBlockName);
                     }
                     if (checkTrackNameSet.contains(getName())) { // (#2)
                         TrackNameSet = checkTrackNameSet;
@@ -1302,7 +1302,7 @@ public class LayoutTraverser extends LayoutTrack {
                     }
                 }
             } else {    // (#3)
-                log.info("    Creating NEW track set for block '{}'", theBlockName);
+                log.debug("    Creating NEW track set for block '{}'", theBlockName);
                 TrackNameSets = new ArrayList<>();
                 blockNamesToTrackNameSetsMap.put(theBlockName, TrackNameSets);
             }
@@ -1311,9 +1311,9 @@ public class LayoutTraverser extends LayoutTrack {
                 TrackNameSets.add(TrackNameSet);
             }
             if (TrackNameSet.add(getName())) {
-                log.info("    Added traverser '{}' to new track set for block '{}'", getName(), theBlockName);
+                log.debug("    Added traverser '{}' to new track set for block '{}'", getName(), theBlockName);
             }
-            log.info("    Flooding from connection '{}'...", theConnect.getName());
+            log.warn("    Flooding from connection '{}'...", theConnect.getName());
             theConnect.collectContiguousTracksNamesInBlockNamed(theBlockName, TrackNameSet);
         }
     }
@@ -1325,7 +1325,7 @@ public class LayoutTraverser extends LayoutTrack {
     public void collectContiguousTracksNamesInBlockNamed(@Nonnull String blockName,
             @Nonnull Set<String> TrackNameSet) {
         if (!TrackNameSet.contains(getName())) {
-            log.info("Traverser '{}': running collectContiguousTracksNamesInBlockNamed for block '{}'", getName(), blockName);
+            log.debug("Traverser '{}': running collectContiguousTracksNamesInBlockNamed for block '{}'", getName(), blockName);
             // for all the slots with matching blocks in this turnout
             //  #1) if its track segment's block is in this block
             //  #2)     add traverser to TrackNameSet (if not already there)
@@ -1341,7 +1341,7 @@ public class LayoutTraverser extends LayoutTrack {
                     if ((!blk.isEmpty()) && (blk.equals(blockName))) { // (#1)
                         // if we are added to the TrackNameSet
                         if (TrackNameSet.add(getName())) {
-                            log.info("  Added traverser '{}' to track set for block '{}'", getName(), blockName);
+                            log.debug("  Added traverser '{}' to track set for block '{}'", getName(), blockName);
                         }
                         // it's time to play... flood your neighbours!
                         ts.collectContiguousTracksNamesInBlockNamed(blockName,

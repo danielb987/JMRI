@@ -190,9 +190,6 @@ public class LayoutTraverserEditor extends LayoutTrackEditor {
         // Add listeners
         editLayoutTraverserAddSlotButton.addActionListener(this::addTrackPairPressed);
         editLayoutTraverserSegmentEditBlockButton.addActionListener(this::editLayoutTraverserEditBlockPressed);
-        for (FocusListener fl : slotOffsetTextField.getFocusListeners()) {
-            slotOffsetTextField.removeFocusListener(fl);
-        }
         slotOffsetTextField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -207,19 +204,6 @@ public class LayoutTraverserEditor extends LayoutTrackEditor {
                 } catch (NumberFormatException ex) {
                     // ignore invalid input
                 }
-            }
-        });
-        slotOffsetTextField.addActionListener((ActionEvent e) -> {
-            try {
-                double offset = Double.parseDouble(slotOffsetTextField.getText());
-                if (!jmri.util.MathUtil.equals(layoutTraverser.getSlotOffset(), offset)) {
-                    layoutTraverser.setSlotOffset(offset);
-                    updateSlotPanel();
-                    layoutEditor.redrawPanel();
-                    layoutEditor.setDirty();
-                }
-            } catch (NumberFormatException ex) {
-                // ignore invalid input
             }
         });
         for (ActionListener al : orientationComboBox.getActionListeners()) {
@@ -707,7 +691,7 @@ public class LayoutTraverserEditor extends LayoutTrackEditor {
 
         private void delete() {
             int n = JmriJOptionPane.showConfirmDialog(null,
-                    Bundle.getMessage("Question7"),
+                    Bundle.getMessage("Question8s"),
                     Bundle.getMessage("WarningTitle"),
                     JmriJOptionPane.YES_NO_OPTION);
             if (n == JmriJOptionPane.YES_OPTION) {
