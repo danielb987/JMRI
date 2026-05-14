@@ -272,7 +272,7 @@ public class ExpressionTurnout extends AbstractDigitalExpression
             this._text = text;
         }
 
-        static public TurnoutState get(int id) {
+        public static TurnoutState get(int id) {
             switch (id) {
                 case Turnout.CLOSED:
                     return Closed;
@@ -303,6 +303,6 @@ public class ExpressionTurnout extends AbstractDigitalExpression
         _selectNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Expression);
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionTurnout.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionTurnout.class);
 
 }

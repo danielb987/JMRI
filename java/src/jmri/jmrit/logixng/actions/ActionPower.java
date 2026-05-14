@@ -122,7 +122,7 @@ public class ActionPower extends AbstractDigitalAction
             this._text = text;
         }
 
-        static public PowerState get(int id) {
+        public static PowerState get(int id) {
             switch (id) {
                 case PowerManager.OFF:
                     return Off;
@@ -152,6 +152,6 @@ public class ActionPower extends AbstractDigitalAction
         getConditionalNG().execute();
     }
 
-//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionPower.class);
+//    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionPower.class);
 
 }

@@ -200,19 +200,11 @@ public class Z21TrafficController extends jmri.jmrix.AbstractMRTrafficController
             host = java.net.InetAddress.getByName(((Z21Adapter) controller).getHostName());
             port = ((Z21Adapter) controller).getPort();
             ConnectionStatus.instance().setConnectionState(
-                    p.getSystemConnectionMemo().getUserName(),
-                    ((Z21Adapter) p).getHostName() + ":" + ((Z21Adapter) p).getPort(), ConnectionStatus.CONNECTION_UP);
+                    p.getSystemConnectionMemo(), ConnectionStatus.CONNECTION_UP);
         } catch (java.net.UnknownHostException uhe) {
             log.error("Unknown Host: {} ", ((Z21Adapter) controller).getHostName());
-            if (((Z21Adapter) p).getPort() != 0) {
-                ConnectionStatus.instance().setConnectionState(
-                        p.getSystemConnectionMemo().getUserName(),
-                        ((Z21Adapter) controller).getHostName() + ":" + ((Z21Adapter) p).getPort(), ConnectionStatus.CONNECTION_DOWN);
-            } else {
-                ConnectionStatus.instance().setConnectionState(
-                        p.getSystemConnectionMemo().getUserName(),
-                        ((Z21Adapter) controller).getHostName(), ConnectionStatus.CONNECTION_DOWN);
-            }
+            ConnectionStatus.instance().setConnectionState(
+                    p.getSystemConnectionMemo(), ConnectionStatus.CONNECTION_DOWN);
         }
         // and start threads
         xmtThread = new Thread(xmtRunnable = () -> {
@@ -488,5 +480,5 @@ public class Z21TrafficController extends jmri.jmrix.AbstractMRTrafficController
         sendMessage(m, reply);
     }
 
-    private final static Logger log = LoggerFactory.getLogger(Z21TrafficController.class);
+    private static final Logger log = LoggerFactory.getLogger(Z21TrafficController.class);
 }

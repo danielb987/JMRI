@@ -157,7 +157,7 @@ public class ExpressionSensor extends AbstractDigitalExpression
             this._text = text;
         }
 
-        static public SensorState get(int id) {
+        public static SensorState get(int id) {
             switch (id) {
                 case Sensor.INACTIVE:
                     return Inactive;
@@ -188,5 +188,5 @@ public class ExpressionSensor extends AbstractDigitalExpression
         _selectNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Expression);
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionSensor.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionSensor.class);
 }

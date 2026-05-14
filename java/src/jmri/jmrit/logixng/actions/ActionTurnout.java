@@ -115,7 +115,7 @@ public class ActionTurnout extends AbstractDigitalAction
             this._text = text;
         }
 
-        static public TurnoutState get(int id) {
+        public static TurnoutState get(int id) {
             switch (id) {
                 case Turnout.UNKNOWN:
                     return Unknown;
@@ -175,6 +175,6 @@ public class ActionTurnout extends AbstractDigitalAction
         getConditionalNG().execute();
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionTurnout.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionTurnout.class);
 
 }

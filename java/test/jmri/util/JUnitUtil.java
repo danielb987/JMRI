@@ -100,12 +100,12 @@ public class JUnitUtil {
      * <p>
      * Public in case modification is needed from a test or script.
      */
-    static final public int WAITFOR_DEFAULT_DELAY = 50;
+    public static final int WAITFOR_DEFAULT_DELAY = 50;
 
     /**
      * Default standard time step (in mSec) when looping in a waitFor operation.
      */
-    static final protected int DEFAULT_WAITFOR_DELAY_STEP = 5;
+    protected static final int DEFAULT_WAITFOR_DELAY_STEP = 5;
 
     /**
      * Standard time step (in mSec) when looping in a waitFor operation.
@@ -116,7 +116,7 @@ public class JUnitUtil {
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value = "MS_CANNOT_BE_FINAL",
         justification = "value reset during setUp() ")
-    static public int WAITFOR_DELAY_STEP = DEFAULT_WAITFOR_DELAY_STEP;
+    public static int WAITFOR_DELAY_STEP = DEFAULT_WAITFOR_DELAY_STEP;
 
     /**
      * Default maximum time to wait before failing a waitFor operation.
@@ -126,7 +126,7 @@ public class JUnitUtil {
      * are slow. But too long will cause CI jobs to time out before this logs
      * the error....
      */
-    static final protected int DEFAULT_WAITFOR_MAX_DELAY = 10000;
+    protected static final int DEFAULT_WAITFOR_MAX_DELAY = 10000;
 
     /**
      * Maximum time to wait before failing a waitFor operation.
@@ -136,7 +136,7 @@ public class JUnitUtil {
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings( value = "MS_CANNOT_BE_FINAL",
         justification = "value reset during setUp() ")
-    static public int WAITFOR_MAX_DELAY = DEFAULT_WAITFOR_MAX_DELAY;
+    public static int WAITFOR_MAX_DELAY = DEFAULT_WAITFOR_MAX_DELAY;
 
     /**
      * When true, prints each setUp method to help identify which tests include a failure.
@@ -203,18 +203,18 @@ public class JUnitUtil {
 
     static long    checkTestDurationStartTime = 0;  // working value
 
-    static private boolean didSetUp = false;    // If true, last saw setUp, waiting tearDown normally
-    static private boolean didTearDown = true;  // If true, last saw tearDown, waiting setUp normally
+    private static boolean didSetUp = false;    // If true, last saw setUp, waiting tearDown normally
+    private static boolean didTearDown = true;  // If true, last saw tearDown, waiting setUp normally
 
-    static private String lastSetUpClassName = "<unknown>";
-    static private String lastSetUpThreadName = "<unknown>";
-    static private StackTraceElement[] lastSetUpStackTrace = new StackTraceElement[0];
-    static private String lastTearDownClassName = "<unknown>";
-    static private String lastTearDownThreadName = "<unknown>";
-    static private StackTraceElement[] lastTearDownStackTrace = new StackTraceElement[0];
+    private static String lastSetUpClassName = "<unknown>";
+    private static String lastSetUpThreadName = "<unknown>";
+    private static StackTraceElement[] lastSetUpStackTrace = new StackTraceElement[0];
+    private static String lastTearDownClassName = "<unknown>";
+    private static String lastTearDownThreadName = "<unknown>";
+    private static StackTraceElement[] lastTearDownStackTrace = new StackTraceElement[0];
 
-    static private boolean isLoggingInitialized = false;
-    static private String initPrefsDir = null;
+    private static boolean isLoggingInitialized = false;
+    private static String initPrefsDir = null;
 
     /**
      * JMRI standard setUp for tests that mock the InstanceManager.
@@ -557,7 +557,7 @@ public class JUnitUtil {
      *         otherwise
      */
     @CheckReturnValue
-    static public boolean waitFor(ReleaseUntil condition) {
+    public static boolean waitFor(ReleaseUntil condition) {
         if (javax.swing.SwingUtilities.isEventDispatchThread()) {
             log.error("Cannot use waitFor on Swing thread", new Exception());
             return false;
@@ -595,7 +595,7 @@ public class JUnitUtil {
      *
      * @param msec Delay in milliseconds
      */
-    static public void waitFor(int msec) {
+    public static void waitFor(int msec) {
         if (javax.swing.SwingUtilities.isEventDispatchThread()) {
             log.error("Cannot use waitFor on Swing thread", new Exception());
             return;
@@ -633,7 +633,7 @@ public class JUnitUtil {
      *                  Assertions.fail if condition not true fast enough
      */
     @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-    static public void fasterWaitFor(ReleaseUntil condition, String name) {
+    public static void fasterWaitFor(ReleaseUntil condition, String name) {
         if (javax.swing.SwingUtilities.isEventDispatchThread()) {
             log.error("Cannot use waitFor on Swing thread", new Exception());
             return;
@@ -679,7 +679,7 @@ public class JUnitUtil {
      *         otherwise
      */
     @CheckReturnValue
-    static public boolean fasterWaitFor(ReleaseUntil condition) {
+    public static boolean fasterWaitFor(ReleaseUntil condition) {
         if (javax.swing.SwingUtilities.isEventDispatchThread()) {
             log.error("Cannot use waitFor on Swing thread", new Exception());
             return false;
@@ -720,7 +720,7 @@ public class JUnitUtil {
             ProfileManager.getDefault().getActiveProfile(), FileUtil.getPreferencesPath());
     }
 
-    static public interface ReleaseUntil {
+    public static interface ReleaseUntil {
 
         public boolean ready() throws Exception;
     }
@@ -736,7 +736,7 @@ public class JUnitUtil {
      * @param bean  the bean
      * @param state the desired state
      */
-    static public void setBeanState(NamedBean bean, int state) {
+    public static void setBeanState(NamedBean bean, int state) {
         try {
             javax.swing.SwingUtilities.invokeAndWait(
                     () -> {
@@ -765,7 +765,7 @@ public class JUnitUtil {
      * @param bean  the bean
      * @param state the desired state
      */
-    static public void setBeanStateAndWait(NamedBean bean, int state) {
+    public static void setBeanStateAndWait(NamedBean bean, int state) {
         setBeanState(bean, state);
         JUnitUtil.waitFor(() -> {
             return state == bean.getState();
@@ -1755,18 +1755,18 @@ public class JUnitUtil {
         return button;
     }
 
-    final private static Random random = new Random();
+    private static final Random random = new Random();
 
     public static Random getRandom(){
         return random;
     }
 
-    final private static Random randomConstantSeed = new Random(0);
+    private static final Random randomConstantSeed = new Random(0);
 
     public static Random getRandomConstantSeed(){
         return randomConstantSeed;
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JUnitUtil.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JUnitUtil.class);
 
 }

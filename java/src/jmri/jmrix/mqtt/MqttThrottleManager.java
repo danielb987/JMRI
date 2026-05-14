@@ -134,7 +134,7 @@ public class MqttThrottleManager extends AbstractThrottleManager {
      * Local method for deciding short/long address
      * (is it?)
      */
-    static protected boolean isLongAddress(int num) {
+    protected static boolean isLongAddress(int num) {
         return (num >= 128);
     }
 
@@ -189,6 +189,6 @@ public class MqttThrottleManager extends AbstractThrottleManager {
     }
 
 
-    private final static Logger log = LoggerFactory.getLogger(MqttThrottleManager.class);
+    private static final Logger log = LoggerFactory.getLogger(MqttThrottleManager.class);
 
 }

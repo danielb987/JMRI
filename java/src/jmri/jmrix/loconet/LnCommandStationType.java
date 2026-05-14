@@ -491,7 +491,7 @@ public enum LnCommandStationType {
         return supportsSlot250 == SupportsSlot250.SLOT250_AVAILABLE;
     }
 
-    static public LnCommandStationType getByName(String name) {
+    public static LnCommandStationType getByName(String name) {
         for (LnCommandStationType p : LnCommandStationType.values()) {
             if (p.name.equals(name)) {
                 return p;
@@ -651,5 +651,5 @@ public enum LnCommandStationType {
         SLOT250_UNAVAILABLE
     }
 
-    private final static Logger log = LoggerFactory.getLogger(LnCommandStationType.class);
+    private static final Logger log = LoggerFactory.getLogger(LnCommandStationType.class);
 }

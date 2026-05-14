@@ -95,7 +95,7 @@ public class Roster extends XmlFile implements RosterGroupSelector, PropertyChan
     // reflect to it.
     // Note that dispose() doesn't act on these.  It isn't clear whether it should...
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    static final public String schemaVersion = ""; // NOI18N
+    public static final String schemaVersion = ""; // NOI18N
     private String defaultRosterGroup = null;
     private final HashMap<String, RosterGroup> rosterGroups = new HashMap<>();
 
@@ -989,7 +989,7 @@ public class Roster extends XmlFile implements RosterGroupSelector, PropertyChan
      * @see RosterEntry#ensureFilenameExists()
      * @since 2.1.5
      */
-    static public String makeValidFilename(String entry) {
+    public static String makeValidFilename(String entry) {
         if (entry == null) {
             throw new IllegalArgumentException("makeValidFilename requires non-null argument");
         }
@@ -1649,5 +1649,5 @@ public class Roster extends XmlFile implements RosterGroupSelector, PropertyChan
         }
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Roster.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Roster.class);
 }

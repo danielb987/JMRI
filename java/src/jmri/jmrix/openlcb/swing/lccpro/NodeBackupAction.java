@@ -47,7 +47,7 @@ class NodeBackupAction {
 
     }
     
-    static public void showOpenDialog(Component here) {
+    public static void showOpenDialog(Component here) {
         var response = directoryChooser.showOpenDialog(here);
         
         if (response == JFileChooser.APPROVE_OPTION) {

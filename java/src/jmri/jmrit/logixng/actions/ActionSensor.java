@@ -149,7 +149,7 @@ public class ActionSensor extends AbstractDigitalAction
             this._text = text;
         }
 
-        static public SensorState get(int id) {
+        public static SensorState get(int id) {
             switch (id) {
                 case Sensor.UNKNOWN:
                     return Unknown;
@@ -194,5 +194,5 @@ public class ActionSensor extends AbstractDigitalAction
         getConditionalNG().execute();
     }
 
-//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionSensor.class);
+//    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionSensor.class);
 }

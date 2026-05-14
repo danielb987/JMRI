@@ -654,14 +654,14 @@ public class DecoderFile extends XmlFile {
         return titleString(getModel(), getFamily());
     }
 
-    static public String titleString(String model, String family) {
+    public static String titleString(String model, String family) {
         return model + " (" + family + ")";
     }
 
     @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL") // script access
-    static public String fileLocation = "decoders" + File.separator;
+    public static String fileLocation = "decoders" + File.separator;
 
     // initialize logging
-    private final static Logger log = LoggerFactory.getLogger(DecoderFile.class);
+    private static final Logger log = LoggerFactory.getLogger(DecoderFile.class);
 
 }

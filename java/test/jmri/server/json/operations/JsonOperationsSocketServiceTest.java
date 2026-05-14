@@ -558,7 +558,7 @@ public class JsonOperationsSocketServiceTest {
         JUnitUtil.tearDown();
     }
 
-    static protected class InvalidJsonOperationsSocketService extends JsonOperationsSocketService {
+    protected static class InvalidJsonOperationsSocketService extends JsonOperationsSocketService {
 
         protected final HashMap<String, BeanListener<Train>> invalidBeanListeners = new HashMap<>();
         protected final InvalidBeansListener invalidBeansListener = new InvalidBeansListener();

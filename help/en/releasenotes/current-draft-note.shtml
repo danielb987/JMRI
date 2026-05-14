@@ -36,7 +36,16 @@
 
         <h4>DCC++ and DCC-EX</h4>
             <ul>
-                <li></li>
+                <li>DCC-EX Traffic Monitor: controls now wrap onto additional rows when the
+                window is narrowed and the controls area grows upward to keep everything visible,
+                rather than clipping checkboxes off the bottom
+                (<a href="https://github.com/JMRI/JMRI/issues/15134">#15134</a>).
+                The window title and menu action label also now read &quot;DCC-EX&quot; rather
+                than &quot;DCC++&quot;.</li>
+                <li>DCC-EX Traffic Monitor: traffic lines now show an explicit &quot;TX:&quot; or
+                &quot;RX:&quot; direction marker regardless of whether the translated text or raw
+                form is displayed, and the raw form is wrapped in &lt;&hellip;&gt; rather than
+                [&hellip;] to match DCC-EX's native command syntax.</li>
             </ul>
 
         <h4>DCC4pc</h4>
@@ -126,9 +135,7 @@
 
         <h4><a href="http://openlcb.org">OpenLCB</a> / LCC</h4>
             <ul>
-                <li>(Internal) The load and store process for the Event Table
-                    now permits multiple "names" elements. This makes it easier
-                    to merge Event Table information from several profiles.</li>
+                <li></li>
             </ul>
 
         <h4>Powerline</h4>
@@ -136,43 +143,12 @@
                 <li></li>
             </ul>
 
-        <h4>Raspberry Pi</h4>
+        <h4>RFID</h4>
             <ul>
-                <li>The Pi4J library used for Raspberry Pi GPIO support has been updated
-                    from version 1.2 to version 2.8.0 (the current 2.x release).
-                    Pi4J 2.x uses a new API and a plugin-based architecture replacing
-                    the older <code>GpioFactory</code> / <code>GpioController</code> model.
-                </li>
-                <li><strong>Pin numbering has changed.</strong>
-                    Pi4J 1.x addressed GPIO pins using WiringPi numbers.
-                    Pi4J 2.x uses BCM (Broadcom) numbers directly.
-                    Existing panel files and scripts that reference Raspberry Pi sensors
-                    or turnouts will need their GPIO address numbers updated to use
-                    the corresponding BCM pin numbers.
-                    For example, WiringPi GPIO 0 (BCM 17) becomes address 17 in the
-                    new numbering scheme.
-                </li>
-                <li>Support has been added for the Pi4J GpioD plugin
-                    (<code>pi4j-plugin-gpiod</code>), which uses the modern Linux GPIO
-                    character-device interface (<code>/dev/gpiochip*</code>) introduced
-                    in kernel 5.10.
-                    This is the preferred GPIO interface on Raspberry Pi OS with kernel
-                    5.10 or later (including the 6.x kernels shipped with current
-                    Raspberry Pi OS releases).
-                    It requires the <code>libgpiod2</code> package:
-                    <code>sudo apt install libgpiod2</code>
-                    The plugin is discovered and activated automatically alongside the
-                    existing LinuxFS and PiGpio plugins via Java ServiceLoader; no
-                    configuration change is required.
-                </li>
-                <li>Hardware GPIO plugins (<code>pi4j-plugin-raspberrypi</code>,
-                    <code>pi4j-plugin-linuxfs</code>, <code>pi4j-plugin-gpiod</code>)
-                    are now loaded at runtime via Java ServiceLoader on Raspberry Pi
-                    hardware and are no longer bundled as compile-time dependencies.
-                </li>
+                <li></li>
             </ul>
 
-        <h4>RFID</h4>
+        <h4>Raspberry PI</h4>
             <ul>
                 <li></li>
             </ul>
@@ -473,8 +449,7 @@
    <h3>Dispatcher</h3>
         <a id="Dispatcher" name="Dispatcher"></a>
         <ul>
-             <li>Save dispatcher usestrict option correctly.</li>
-			 <li>Continue tracking blocks thru stopping at end.</li>
+             <li></li>
         </ul>
 
     <h3>Dispatcher System</h3>
@@ -492,13 +467,7 @@
     <h3>Layout Editor</h3>
         <a id="LE" name="LE"></a>
         <ul>
-            <li>Added a new "Make Layout Editor XML output more reproducible" option
-                to the Load and Store preference pane.  The default is off.  When
-                on, this option will result in positions of Layout Editor objects
-                being stored in a form that's more reproducible.  This will result
-                in fewer spurious changes if you're e.g. storing panel files in a
-                tracking system like Git.</li>
-            <li>Fixed a problem when storing and loading the new Output Indicator icons</li>
+            <li></li>
         </ul>
 
         <h4>NX - Entry/Exit Tool</h4>
@@ -509,8 +478,7 @@
     <h3>LccPro</h3>
         <a id="LccPro" name="LccPro"></a>
         <ul>
-            <li>Improved performance of Active display in lower right
-                on high-bandwidth links.</li>
+          <li></li>
         </ul>
 
     <h3>Logix</h3>
@@ -534,7 +502,7 @@
     <h3>OperationsPro</h3>
         <a id="Operations" name="Operations"></a>
         <ul>
-            <li></li>
+          <li>Added the ability to set the additional line tab size for Manifest and Switch Lists. Useful when using the smaller page widths. See "More Print Options" in the help.</li>
         </ul>
 
    <h3>Panel Editor</h3>
@@ -576,9 +544,7 @@
     <h3>Scripting</h3>
         <a id="Scripting" name="Scripting"></a>
         <ul>
-            <li>There's a new "WiThrottleMonitorTableSpeedRed.py" script that opens a window displaying
-                connected WiThrottle devices and locomotives (address, speed)
-                </li>
+            <li></li>
         </ul>
 
     <h3>Signals</h3>
@@ -696,6 +662,9 @@
     <h3>Miscellaneous</h3>
         <a id="Misc" name="Misc"></a>
         <ul>
+            <li>The class <a href="https://www.jmri.org/JavaDoc/doc/jmri/jmrix/ConnectionStatus.html">jmri.jmrix.ConnectionStatus</a>
+                has been refactorized to use <a href="https://www.jmri.org/JavaDoc/doc/jmri/SystemConnectionMemo.html">SystemConnectionMemo</a>
+                instead of <strong>systemName</strong> and <strong>portName</strong>.</li>
             <li></li>
         </ul>
 

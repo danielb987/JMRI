@@ -272,7 +272,7 @@ public class ExpressionLight extends AbstractDigitalExpression
             this._text = text;
         }
 
-        static public LightState get(int id) {
+        public static LightState get(int id) {
             switch (id) {
                 case Light.OFF:
                     return Off;
@@ -303,6 +303,6 @@ public class ExpressionLight extends AbstractDigitalExpression
         log.debug("getUsageReport :: ExpressionLight: bean = {}, report = {}", cdl, report);
         _selectNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Expression);
     }
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionLight.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionLight.class);
 
 }

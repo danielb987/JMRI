@@ -307,7 +307,7 @@ public class ActionLight extends AbstractDigitalAction
             this._text = text;
         }
 
-        static public LightState get(int id) {
+        public static LightState get(int id) {
             switch (id) {
                 case Light.UNKNOWN:
                     return Unknown;
@@ -352,6 +352,6 @@ public class ActionLight extends AbstractDigitalAction
         getConditionalNG().execute();
     }
 
-//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionLight.class);
+//    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionLight.class);
 
 }

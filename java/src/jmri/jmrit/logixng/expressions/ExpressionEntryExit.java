@@ -296,7 +296,7 @@ public class ExpressionEntryExit extends AbstractDigitalExpression
             this._text = text;
         }
 
-        static public EntryExitState get(int id) {
+        public static EntryExitState get(int id) {
             switch (id) {
                 case 0x04:
                     return Inactive;
@@ -327,6 +327,6 @@ public class ExpressionEntryExit extends AbstractDigitalExpression
         _selectNamedBean.getUsageDetail(level, bean, report, cdl, this, LogixNG_SelectNamedBean.Type.Expression);
     }
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionEntryExit.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExpressionEntryExit.class);
 
 }
