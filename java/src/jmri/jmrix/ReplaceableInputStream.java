@@ -87,14 +87,6 @@ public class ReplaceableInputStream extends InputStream {
 
     /** {@inheritDoc} */
     @Override
-    public synchronized void skipNBytes(long n) throws IOException {
-        if (_stream != null) {
-            _stream.skipNBytes(n);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public synchronized int available() throws IOException {
         if (_stream != null) {
             return _stream.available();
