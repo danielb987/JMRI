@@ -9,88 +9,142 @@ import java.io.*;
  */
 public class ReplaceableInputStream extends InputStream {
 
-    private volatile InputStream _stream;
+    private InputStream _stream;
 
-    public void replaceStream(InputStream stream) {
+    public synchronized void replaceStream(InputStream stream) {
         this._stream = stream;
     }
 
     /** {@inheritDoc} */
     @Override
-    public int read() throws IOException {
-        return _stream.read();
+    public synchronized int read() throws IOException {
+        if (_stream != null) {
+            return _stream.read();
+        } else {
+            return -1;
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public synchronized int read(byte[] b) throws IOException {
+        if (_stream != null) {
+            return _stream.read(b);
+        } else {
+            return -1;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public int read(byte b[]) throws IOException {
-        return _stream.read(b);
+    public synchronized int read(byte[] b, int off, int len) throws IOException {
+        if (_stream != null) {
+            return _stream.read(b, off, len);
+        } else {
+            return -1;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public int read(byte b[], int off, int len) throws IOException {
-        return _stream.read(b, off, len);
+    public synchronized byte[] readAllBytes() throws IOException {
+        if (_stream != null) {
+            return _stream.readAllBytes();
+        } else {
+            return new byte[0];
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public byte[] readAllBytes() throws IOException {
-        return _stream.readAllBytes();
+    public synchronized byte[] readNBytes(int len) throws IOException {
+        if (_stream != null) {
+            return _stream.readNBytes(len);
+        } else {
+            return new byte[0];
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public byte[] readNBytes(int len) throws IOException {
-        return _stream.readNBytes(len);
+    public synchronized int readNBytes(byte[] b, int off, int len) throws IOException {
+        if (_stream != null) {
+            return _stream.readNBytes(b, off, len);
+        } else {
+            return -1;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public int readNBytes(byte[] b, int off, int len) throws IOException {
-        return _stream.readNBytes(b, off, len);
+    public synchronized long skip(long n) throws IOException {
+        if (_stream != null) {
+            return _stream.skip(n);
+        } else {
+            return 0;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public long skip(long n) throws IOException {
-        return _stream.skip(n);
+    public synchronized void skipNBytes(long n) throws IOException {
+        if (_stream != null) {
+            _stream.skipNBytes(n);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public int available() throws IOException {
-        return _stream.available();
+    public synchronized int available() throws IOException {
+        if (_stream != null) {
+            return _stream.available();
+        } else {
+            return 0;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void close() throws IOException {
-        _stream.close();
+    public synchronized void close() throws IOException {
+        if (_stream != null) {
+            _stream.close();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public synchronized void mark(int readlimit) {
-        _stream.mark(readlimit);
+        if (_stream != null) {
+            _stream.mark(readlimit);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public synchronized void reset() throws IOException {
-        _stream.reset();
+        if (_stream != null) {
+            _stream.reset();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean markSupported() {
-        return _stream.markSupported();
+    public synchronized boolean markSupported() {
+        if (_stream != null) {
+            return _stream.markSupported();
+        } else {
+            return false;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public long transferTo(OutputStream out) throws IOException {
-        return _stream.transferTo(out);
+    public synchronized long transferTo(OutputStream out) throws IOException {
+        if (_stream != null) {
+            return _stream.transferTo(out);
+        } else {
+            return 0;
+        }
     }
 
 }

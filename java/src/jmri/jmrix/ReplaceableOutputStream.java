@@ -10,39 +10,49 @@ import java.io.OutputStream;
  */
 public class ReplaceableOutputStream extends OutputStream {
 
-    private volatile OutputStream _stream;
+    private OutputStream _stream;
 
-    public void replaceStream(OutputStream stream) {
+    public synchronized void replaceStream(OutputStream stream) {
         this._stream = stream;
     }
 
     @Override
-    public void write(int b) throws IOException {
-        _stream.write(b);
+    public synchronized void write(int b) throws IOException {
+        if (_stream != null) {
+            _stream.write(b);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void write(byte b[]) throws IOException {
-        _stream.write(b);
+    public synchronized void write(byte b[]) throws IOException {
+        if (_stream != null) {
+            _stream.write(b);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void write(byte b[], int off, int len) throws IOException {
-        _stream.write(b, off, len);
+    public synchronized void write(byte b[], int off, int len) throws IOException {
+        if (_stream != null) {
+            _stream.write(b, off, len);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void flush() throws IOException {
-        _stream.flush();
+    public synchronized void flush() throws IOException {
+        if (_stream != null) {
+            _stream.flush();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void close() throws IOException {
-        _stream.close();
+    public synchronized void close() throws IOException {
+        if (_stream != null) {
+            _stream.close();
+        }
     }
 
 }
