@@ -53,7 +53,8 @@ hs_err_pid*.log
 nohup.out
 
 # private / per-user configuration files
-/nbproject
+/nbproject/private
+# /nbproject/nbjdk.properties
 /web/app/nbproject/private
 /scripts/config-portable/nbproject/private
 /.idea/workspace.xml
