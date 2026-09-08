@@ -54,7 +54,7 @@ nohup.out
 
 # private / per-user configuration files
 /nbproject/private
-# /nbproject/nbjdk.properties
+/nbproject/nbjdk.properties
 /web/app/nbproject/private
 /scripts/config-portable/nbproject/private
 /.idea/workspace.xml
