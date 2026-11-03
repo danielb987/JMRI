@@ -135,7 +135,7 @@ public class SimpleTimebase extends jmri.implementation.AbstractNamedBean implem
         if (synchronizeWithHardware) {
             // send new time to all hardware clocks, including the hardware time source if there is one
             // Note if there are multiple hardware clocks, this should be a loop over all hardware clocks
-            InstanceManager.getDefault(jmri.ClockControl.class).setTime(d);
+            InstanceManager.getDefault(ClockControl.class).setTime(d);
         } else if (!internalMaster && (hardwareTimeSource != null)) {
             // if not synchronizing, send to the hardware time source if there is one
             hardwareTimeSource.setTime(d);
