@@ -125,18 +125,8 @@ public class SimpleTimebaseXml extends jmri.configurexml.AbstractXmlAdapter {
         } else if (shared.getAttribute("startrunning") != null){
             clock.setClockInitialRunState(DO_NOTHING);
         } else {
-            // legacy XML
-            if (shared.getAttribute("run") != null) {
-                val = shared.getAttributeValue("run");
-                if (val.equals("yes")) {
-                    clock.setRun(true);
-                    clock.setClockInitialRunState(DO_START);
-                }
-                if (val.equals("no")) {
-                    clock.setRun(false);
-                    clock.setClockInitialRunState(DO_STOP);
-                }
-            }
+            log.error("File contains legacy Timebase.");
+            return false;
         }
         if (shared.getAttribute("startsetrate") != null) {
             val = shared.getAttributeValue("startsetrate");
@@ -198,16 +188,8 @@ public class SimpleTimebaseXml extends jmri.configurexml.AbstractXmlAdapter {
                 }
             }
         } else if (shared.getAttribute("time") != null) {
-            // this only to preserve previous behavior for preexisting files
-            val2 = shared.getAttributeValue("time");
-            try {
-                clock.setStartSetTime(true, format.parse(val2));
-                clock.setTime(format.parse(val2));
-            } catch (ParseException e) {
-                // if non-invertable date format, just skip
-                log.warn("Cannot set date using value stored in file: {}", val2);
-                result = false;
-            }
+            log.error("File contains legacy Timebase.");
+            return false;
         }
         if (shared.getAttribute("startclockoption") != null) {
             int option = Integer.parseInt(shared.getAttribute(
