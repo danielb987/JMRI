@@ -1067,7 +1067,7 @@ public class Ds64TabbedPanel extends AbstractBoardProgPanel {
             case 42:
             case 46: {
                 // have read a value for Route n.  go to next value if necessary
-                indexToRead++;
+                ++indexToRead;
                 read = false;
                 setOpSwIndex(indexToRead);
                 return 25;
@@ -1081,7 +1081,7 @@ public class Ds64TabbedPanel extends AbstractBoardProgPanel {
             case 43:
             case 47: {
                 // have read last values for Route n.  No next value so stop.
-                indexToRead++;
+                ++indexToRead;
                 read = false;
                 setOpSwIndex(indexToRead);
                 return 0;
