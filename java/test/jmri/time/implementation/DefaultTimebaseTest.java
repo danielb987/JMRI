@@ -33,20 +33,6 @@ public class DefaultTimebaseTest extends TimebaseBehaviorTestBase {
 
     @Test
     @Override
-    @Disabled("TEMPORARY: DefaultTimebase doesn't update the rate memory yet")
-    public void testRateMemoryFollowsRate() throws TimebaseRateException {
-        super.testRateMemoryFollowsRate();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase doesn't update the time memory yet")
-    public void testTimeMemoryFollowsTime() {
-        super.testTimeMemoryFollowsTime();
-    }
-
-    @Test
-    @Override
     @Disabled("TEMPORARY: DefaultTimebase doesn't set the run sensor from setRun yet")
     public void testSetRunUpdatesSensor() {
         super.testSetRunUpdatesSensor();

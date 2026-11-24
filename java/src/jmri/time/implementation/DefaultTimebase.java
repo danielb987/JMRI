@@ -56,7 +56,7 @@ public class DefaultTimebase extends AbstractTimebase {
     private boolean notInitialized = true; // true before initialization received from start up
     private boolean showStopButton = false; // true indicates start up with start/stop button displayed
 
-//    private java.text.SimpleDateFormat timeStorageFormat = null;
+    private java.text.SimpleDateFormat timeStorageFormat = null;
 
     private final PropertyChangeListener timeProviderListener = this::timeProviderChanged;
     private int oldMinutes = -1;
@@ -451,6 +451,9 @@ public class DefaultTimebase extends AbstractTimebase {
                 minuteChanged();
                 break;
             case TimeProvider.PROPERTY_CHANGE_RATE:
+                if (factorMemory != null) {
+                    factorMemory.setValue(userGetRate());
+                }
                 firePropertyChange(PROPERTY_CHANGE_RATE, evt.getOldValue(), evt.getNewValue());
                 break;
             case TimeProvider.PROPERTY_CHANGE_RUN:
@@ -468,11 +471,31 @@ public class DefaultTimebase extends AbstractTimebase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int minutes = calendar.get(Calendar.MINUTE);
+        updateMemory(date);
         firePropertyChange(PROPERTY_CHANGE_MINUTES, Double.valueOf(oldMinutes), Double.valueOf(minutes));
         firePropertyChange(PROPERTY_CHANGE_TIME, oldDate != null ? new Date(oldDate.getTime()) : null,
                 new Date(date.getTime())); // to ensure not modified outside
         oldDate = date;
         oldMinutes = minutes;
+    }
+
+    private void updateMemory(Date date) {
+        if (clockMemory == null) {
+            return;
+        }
+        if (timeStorageFormat == null) {
+            String pattern = java.util.ResourceBundle.getBundle("jmri.jmrit.simpleclock.SimpleClockBundle")
+                .getString("TimeStorageFormat");
+            try {
+                timeStorageFormat = new java.text.SimpleDateFormat(pattern);
+            } catch (IllegalArgumentException e) {
+                log.info("Unable to parse date / time format: {}",pattern);
+                log.info("For supported formats see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
+                log.info("Dropping back to default time format (h:mm a) 4:56 PM, due to exception", e);
+                timeStorageFormat = new java.text.SimpleDateFormat("h:mm a");
+            }
+        }
+        clockMemory.setValue(timeStorageFormat.format(date));
     }
 
     /**
