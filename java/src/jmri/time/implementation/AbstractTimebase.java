@@ -110,7 +110,10 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     public void setRate(double factor) throws TimebaseRateException {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
-        if (tp instanceof CanSetRate) {
+        if (tp instanceof RateSetter && tp instanceof CanSetRate && ((CanSetRate)tp).canSetRate()) {
+            // the clock's own setRate fires the rate event; setting its Rate object directly doesn't
+            ((RateSetter)tp).setRate(factor);
+        } else if (tp instanceof CanSetRate) {
             if (tp.getRate() instanceof RateSetter) {
                 CanSetRate csr = (CanSetRate)tp;
                 RateSetter rs = (RateSetter)tp.getRate();
@@ -133,7 +136,10 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
     public void userSetRate(double factor) throws TimebaseRateException {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
-        if (tp instanceof CanSetRate) {
+        if (tp instanceof RateSetter && tp instanceof CanSetRate && ((CanSetRate)tp).canSetRate()) {
+            // the clock's own setRate fires the rate event; setting its Rate object directly doesn't
+            ((RateSetter)tp).setRate(factor);
+        } else if (tp instanceof CanSetRate) {
             if (tp.getRate() instanceof RateSetter) {
                 CanSetRate csr = (CanSetRate)tp;
                 RateSetter rs = (RateSetter)tp.getRate();

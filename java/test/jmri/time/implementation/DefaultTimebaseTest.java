@@ -26,6 +26,13 @@ public class DefaultTimebaseTest extends TimebaseBehaviorTestBase {
 
     @Test
     @Override
+    @Disabled("TEMPORARY: a new DefaultTimebase is stopped, so stopping it fires no run event")
+    public void testRunEvent() {
+        super.testRunEvent();
+    }
+
+    @Test
+    @Override
     @Disabled("TEMPORARY: DefaultTimebase doesn't update the rate memory yet")
     public void testRateMemoryFollowsRate() throws TimebaseRateException {
         super.testRateMemoryFollowsRate();
@@ -50,27 +57,6 @@ public class DefaultTimebaseTest extends TimebaseBehaviorTestBase {
     @Disabled("TEMPORARY: the run sensor can't restart DefaultTimebase yet, pauseTime is never set")
     public void testSensorRestartsClock() throws JmriException {
         super.testSensorRestartsClock();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase passes only minutes events to listeners yet")
-    public void testRateEvent() throws TimebaseRateException {
-        super.testRateEvent();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase passes only minutes events to listeners yet")
-    public void testRunEvent() {
-        super.testRunEvent();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase renames minutes events to time yet")
-    public void testMinutesEventOnSetTime() {
-        super.testMinutesEventOnSetTime();
     }
 
     @Test
