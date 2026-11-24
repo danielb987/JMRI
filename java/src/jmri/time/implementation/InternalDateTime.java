@@ -165,7 +165,8 @@ public class InternalDateTime extends AbstractTimeProvider
                 _time = ZonedDateTime.now();
                 resetLast();
                 _startTimeMillisec = System.currentTimeMillis();
-                TimerUtil.schedule(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
+                // tick on the GUI thread, as SimpleTimebase does, so listeners and panels update there
+                TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
                _isTimerTaskStarted = true;
             }
             _isRunning = true;

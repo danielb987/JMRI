@@ -20,6 +20,7 @@ public class SystemDateTime extends AbstractTimeProvider implements DateProvider
     private static final int _100_MILLISECONDS = 100;
 
     private final TimerTask _timerTask;
+    private TimerTask _scheduledTask = null;
     private ZonedDateTime _lastDateTime;
     private int _lastSec;
     private int _lastMin;
@@ -58,7 +59,8 @@ public class SystemDateTime extends AbstractTimeProvider implements DateProvider
         _lastDateTime = ZonedDateTime.now();
         _lastSec = _lastDateTime.getSecond();
         _lastMin = _lastDateTime.getMinute();
-        TimerUtil.schedule(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
+        // tick on the GUI thread, so listeners and panels update there
+        _scheduledTask = TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
         return this;
     }
 
@@ -108,7 +110,8 @@ public class SystemDateTime extends AbstractTimeProvider implements DateProvider
     @Override
     public void dispose() {
         super.dispose();
-        if (_timerTask != null) _timerTask.cancel();
+        // cancel the GUI wrapper; cancelling _timerTask alone wouldn't stop it
+        if (_scheduledTask != null) _scheduledTask.cancel();
     }
 
 }
