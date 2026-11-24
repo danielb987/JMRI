@@ -58,6 +58,7 @@ public class DefaultTimebase extends AbstractTimebase {
     private java.text.SimpleDateFormat timeStorageFormat = null;
 
     private final PropertyChangeListener timeProviderListener = this::timeProviderChanged;
+    private final MainTimeProviderHandler timeProviderHandler;
     private int oldMinutes = -1;
     private Date oldDate = null;
 
@@ -77,8 +78,10 @@ public class DefaultTimebase extends AbstractTimebase {
 
         init();
 
-        InstanceManager.getDefault(TimeProviderManager.class)
-                .getMainTimeProviderHandler().addPropertyChangeListener(timeProviderListener);
+        timeProviderHandler = InstanceManager.getDefault(TimeProviderManager.class).getMainTimeProviderHandler();
+        timeProviderHandler.addPropertyChangeListener(timeProviderListener);
+        // init() set the time before this listener was added, so fill in the memory now
+        updateMemory(getTime());
     }
 
     private void init(){
@@ -122,6 +125,15 @@ public class DefaultTimebase extends AbstractTimebase {
     }
 
     @Override
+    public void setTime(java.time.Instant i) {
+        super.setTime(i);
+        if (synchronizeWithHardware && InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+            // send new time to all hardware clocks, except the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setTime(Date.from(i));
+        }
+    }
+
+    @Override
     public void userSetTime(Date d) {
         // this call only results from user changing fast clock time in Setup Fast Clock
         super.setTime(d);
@@ -156,6 +168,11 @@ public class DefaultTimebase extends AbstractTimebase {
     @Override
     public void setRate(double factor) throws TimebaseRateException {
         super.setRate(factor);
+        // initializeHardwareClock() sends these, so keep them current as SimpleTimebase does
+        mFactor = factor;
+        if (internalMaster || notInitialized) {
+            hardwareFactor = factor;
+        }
         if (internalMaster || (synchronizeWithHardware && notInitialized)) {
             // send new rate to all hardware clocks, except the hardware time source if there is one
             if (InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
@@ -168,6 +185,8 @@ public class DefaultTimebase extends AbstractTimebase {
     public void userSetRate(double factor) throws TimebaseRateException {
         // this call is used when user changes fast clock rate either in Setup Fast Clock or via a ClockControl
         super.userSetRate(factor);
+        mFactor = factor;
+        hardwareFactor = factor;
         if (synchronizeWithHardware) {
             // send new rate to all hardware clocks, including the hardware time source if there is one
             InstanceManager.getDefault(ClockControl.class).setRate(factor);
@@ -449,7 +468,11 @@ public class DefaultTimebase extends AbstractTimebase {
 
     // pass the current time provider's events on under the old Timebase names
     private void timeProviderChanged(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
+        String name = evt.getPropertyName();
+        if (name == null) {
+            return;
+        }
+        switch (name) {
             case TimeProvider.PROPERTY_CHANGE_MINUTES:
                 minuteChanged();
                 break;
@@ -556,10 +579,7 @@ public class DefaultTimebase extends AbstractTimebase {
         if ( clockSensor != null ) {
             clockSensor.removePropertyChangeListener(this::clockSensorChanged);
         }
-        TimeProviderManager tpm = InstanceManager.getNullableDefault(TimeProviderManager.class);
-        if (tpm != null) {
-            tpm.getMainTimeProviderHandler().removePropertyChangeListener(timeProviderListener);
-        }
+        timeProviderHandler.removePropertyChangeListener(timeProviderListener);
         super.dispose(); // remove standard property change listeners
     }
 

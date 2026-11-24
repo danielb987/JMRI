@@ -158,8 +158,9 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public void start() throws UnsupportedOperationException {
+        boolean oldRunning;
         synchronized(_lock) {
-            boolean oldRunning = _isRunning;
+            oldRunning = _isRunning;
             if (!_isTimerTaskStarted && !_isLockedFromRunning) {
                 _time = ZonedDateTime.now();
                 resetLast();
@@ -168,17 +169,19 @@ public class InternalDateTime extends AbstractTimeProvider
                _isTimerTaskStarted = true;
             }
             _isRunning = true;
-            firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, true);
         }
+        // fire outside the lock, so a listener can't deadlock with a caller of isRunning()
+        firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, true);
     }
 
     @Override
     public void stop() throws UnsupportedOperationException {
+        boolean oldRunning;
         synchronized(_lock) {
-            boolean oldRunning = _isRunning;
+            oldRunning = _isRunning;
             _isRunning = false;
-            firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, false);
         }
+        firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, false);
     }
 
     @Override

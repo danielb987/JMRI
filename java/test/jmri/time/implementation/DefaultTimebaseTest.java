@@ -1,9 +1,7 @@
 package jmri.time.implementation;
 
-import jmri.JmriException;
 import jmri.Timebase;
 import jmri.TimebaseBehaviorTestBase;
-import jmri.TimebaseRateException;
 import jmri.jmrix.internal.InternalSystemConnectionMemo;
 
 import org.junit.jupiter.api.*;
