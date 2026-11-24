@@ -37,6 +37,13 @@ public class ProxyTimeProviderManager extends AbstractProxyManager<TimeProvider>
     }
 
     @Override
+    public void dispose() {
+        // stop the clocks' timers, which would otherwise keep running
+        getNamedBeanSet().forEach(TimeProvider::dispose);
+        super.dispose();
+    }
+
+    @Override
     protected TimeProviderManager makeInternalManager() {
         // It has been observed on GitHub CI tests that the internal manager
         // has been created twice. We want to prevent that.

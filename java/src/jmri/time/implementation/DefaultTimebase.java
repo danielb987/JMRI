@@ -95,7 +95,7 @@ public class DefaultTimebase extends AbstractTimebase {
             clockSensor.setKnownState(getRun() ? Sensor.ACTIVE : Sensor.INACTIVE);
             clockSensor.addPropertyChangeListener(this::clockSensorChanged);
         } catch (JmriException e) {
-            log.warn("Exception setting CLOCKRUNNING sensor ACTIVE", e);
+            log.warn("Exception setting CLOCKRUNNING sensor", e);
         }
         // initialize rate factor-containing memory
         if (InstanceManager.getNullableDefault(MemoryManager.class) != null) {
@@ -122,11 +122,8 @@ public class DefaultTimebase extends AbstractTimebase {
 
     @Override
     public void setTime(java.time.Instant i) {
-        super.setTime(i);
-        if (synchronizeWithHardware && InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
-            // send new time to all hardware clocks, except the hardware time source if there is one
-            InstanceManager.getDefault(ClockControl.class).setTime(Date.from(i));
-        }
+        // same as SimpleTimebase; the inherited version drops the date and treats the time as UTC
+        setTime(Date.from(i));
     }
 
     @Override

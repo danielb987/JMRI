@@ -33,6 +33,7 @@ public class InternalDateTime extends AbstractTimeProvider
     private long _startTimeMillisec;
     private final Object _lock = new Object();
     private boolean _isTimerTaskStarted;
+    private TimerTask _scheduledTask = null;
 
 
     private TimerTask getTimerTask() {
@@ -44,6 +45,12 @@ public class InternalDateTime extends AbstractTimeProvider
         return new TimerTask() {
             @Override
             public void run() {
+                int oldSec;
+                int newSec;
+                int oldMin;
+                int newMin;
+                ZonedDateTime oldDateTime;
+                ZonedDateTime newDateTime;
                 synchronized(_lock) {
                     if (!_isRunning || _isLockedFromRunning) return;
                     if (_rate.getRate() < 0.0001) return;   // We don't want to divide by zero later
@@ -52,18 +59,23 @@ public class InternalDateTime extends AbstractTimeProvider
                     long diff = Math.round(time * _rate.getRate());
                     _time = _lastDateTime.plus(diff, ChronoUnit.MILLIS);
                     int sec = _time.getSecond();
-                    if (sec != _lastSec) {
-                        int min = _time.getMinute();
-                        InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_SECONDS, _lastSec, sec);
-                        if (min != _lastMin) {
-                            InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_MINUTES, _lastMin, min);
-                        }
-                        InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_DATETIME, _lastUpdatedDateTime, _time);
-                        _lastSec = sec;
-                        _lastMin = min;
-                        _lastUpdatedDateTime = _time;
-                    }
+                    if (sec == _lastSec) return;
+                    oldSec = _lastSec;
+                    newSec = sec;
+                    oldMin = _lastMin;
+                    newMin = _time.getMinute();
+                    oldDateTime = _lastUpdatedDateTime;
+                    newDateTime = _time;
+                    _lastSec = newSec;
+                    _lastMin = newMin;
+                    _lastUpdatedDateTime = newDateTime;
                 }
+                // fire outside the lock, as start(), stop() and setRate() do
+                InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_SECONDS, oldSec, newSec);
+                if (newMin != oldMin) {
+                    InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_MINUTES, oldMin, newMin);
+                }
+                InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_DATETIME, oldDateTime, newDateTime);
             }
         };
     }
@@ -166,7 +178,7 @@ public class InternalDateTime extends AbstractTimeProvider
                 resetLast();
                 _startTimeMillisec = System.currentTimeMillis();
                 // tick on the GUI thread, as SimpleTimebase does, so listeners and panels update there
-                TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
+                _scheduledTask = TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
                _isTimerTaskStarted = true;
             }
             _isRunning = true;
@@ -192,22 +204,31 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public void setTime(LocalTime time) throws UnsupportedOperationException {
+        ZonedDateTime oldTime;
         synchronized(_lock) {
-            ZonedDateTime oldTime = this._time;
+            oldTime = this._time;
             _time = ZonedDateTime.of(_time.toLocalDate(), time, ZoneOffset.UTC);
             resetLast();
-            timeIsUpdated(oldTime);
         }
+        timeIsUpdated(oldTime);
     }
 
     @Override
     public void setDateTime(ZonedDateTime time) throws UnsupportedOperationException {
+        ZonedDateTime oldTime;
         synchronized(_lock) {
-            ZonedDateTime oldTime = this._time;
+            oldTime = this._time;
             this._time = time;
             resetLast();
-            timeIsUpdated(oldTime);
         }
+        timeIsUpdated(oldTime);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        // cancel the GUI wrapper; cancelling _timerTask alone wouldn't stop it
+        if (_scheduledTask != null) _scheduledTask.cancel();
     }
 
     @Override
