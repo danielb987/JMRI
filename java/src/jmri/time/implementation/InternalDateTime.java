@@ -222,11 +222,15 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public void setRate(double rate) {
+        double oldRate;
+        double newRate;
         synchronized(_lock) {
-            double oldRate = _rate.getRate();
+            oldRate = _rate.getRate();
             _rate.setRate(rate);
-            firePropertyChange(PROPERTY_CHANGE_RATE, oldRate, _rate.getRate());
+            newRate = _rate.getRate();
         }
+        // fire outside the lock, as start() and stop() do
+        firePropertyChange(PROPERTY_CHANGE_RATE, oldRate, newRate);
     }
 
 }
