@@ -19,34 +19,6 @@ public class DefaultTimebaseTest extends TimebaseBehaviorTestBase {
 
     @Test
     @Override
-    @Disabled("TEMPORARY: DefaultTimebase doesn't send changes to ClockControl yet")
-    public void testHardwareToldRate() throws TimebaseRateException {
-        super.testHardwareToldRate();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase doesn't send changes to ClockControl yet")
-    public void testHardwareToldTime() {
-        super.testHardwareToldTime();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase doesn't send changes to ClockControl yet")
-    public void testHardwareToldStop() {
-        super.testHardwareToldStop();
-    }
-
-    @Test
-    @Override
-    @Disabled("TEMPORARY: DefaultTimebase doesn't send changes to ClockControl yet")
-    public void testHardwareToldStart() {
-        super.testHardwareToldStart();
-    }
-
-    @Test
-    @Override
     @Disabled("TEMPORARY: DefaultTimebase doesn't update the rate memory yet")
     public void testRateMemoryFollowsRate() throws TimebaseRateException {
         super.testRateMemoryFollowsRate();

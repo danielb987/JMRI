@@ -110,6 +110,71 @@ public class DefaultTimebase extends AbstractTimebase {
     }
 
     @Override
+    public void setTime(Date d) {
+        super.setTime(d);
+        if (synchronizeWithHardware && InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+            // send new time to all hardware clocks, except the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setTime(d);
+        }
+    }
+
+    @Override
+    public void userSetTime(Date d) {
+        // this call only results from user changing fast clock time in Setup Fast Clock
+        super.setTime(d);
+        if (synchronizeWithHardware) {
+            // send new time to all hardware clocks, including the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setTime(d);
+        } else if (!internalMaster && (hardwareTimeSource != null)) {
+            // if not synchronizing, send to the hardware time source if there is one
+            hardwareTimeSource.setTime(d);
+        }
+    }
+
+    @Override
+    public void setRun(boolean run) {
+        boolean wasRunning = getRun();
+        super.setRun(run);
+        if (run && !wasRunning) {
+            if (synchronizeWithHardware) {
+                InstanceManager.getDefault(ClockControl.class).startHardwareClock(getTime());
+            } else if (!internalMaster && hardwareTimeSource != null) {
+                hardwareTimeSource.startHardwareClock(getTime());
+            }
+        } else if (!run && wasRunning) {
+            if (synchronizeWithHardware) {
+                InstanceManager.getDefault(ClockControl.class).stopHardwareClock();
+            } else if (!internalMaster && hardwareTimeSource != null) {
+                hardwareTimeSource.stopHardwareClock();
+            }
+        }
+    }
+
+    @Override
+    public void setRate(double factor) throws TimebaseRateException {
+        super.setRate(factor);
+        if (internalMaster || (synchronizeWithHardware && notInitialized)) {
+            // send new rate to all hardware clocks, except the hardware time source if there is one
+            if (InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+                InstanceManager.getDefault(ClockControl.class).setRate(factor);
+            }
+        }
+    }
+
+    @Override
+    public void userSetRate(double factor) throws TimebaseRateException {
+        // this call is used when user changes fast clock rate either in Setup Fast Clock or via a ClockControl
+        super.userSetRate(factor);
+        if (synchronizeWithHardware) {
+            // send new rate to all hardware clocks, including the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setRate(factor);
+        } else if (!internalMaster && (hardwareTimeSource != null)) {
+            // if not synchronizing, send to the hardware time source if there is one
+            hardwareTimeSource.setRate(factor);
+        }
+    }
+
+    @Override
     public void setState(int s) throws JmriException {
     }
 
