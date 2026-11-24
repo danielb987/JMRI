@@ -88,15 +88,11 @@ public class DefaultTimebase extends AbstractTimebase {
 
         // set to start counting from now
         setTimeIfPossible(new Date());
-        // a new clock runs, as SimpleTimebase does and as the run sensor below says
-        TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class).getCurrentTimeProvider();
-        if (tp instanceof StartStopTimeProvider && ((StartStopTimeProvider)tp).canStartAndStop()) {
-            ((StartStopTimeProvider)tp).start();
-        }
         // initialize start/stop sensor for time running
         try {
             clockSensor = InstanceManager.sensorManagerInstance().provideSensor(memo.getSystemPrefix()+"SCLOCKRUNNING");
-            clockSensor.setKnownState(Sensor.ACTIVE);
+            // match the clock, which the time provider manager starts and a panel file may stop
+            clockSensor.setKnownState(getRun() ? Sensor.ACTIVE : Sensor.INACTIVE);
             clockSensor.addPropertyChangeListener(this::clockSensorChanged);
         } catch (JmriException e) {
             log.warn("Exception setting CLOCKRUNNING sensor ACTIVE", e);

@@ -500,6 +500,8 @@ public class WebRequestTest extends AbstractDigitalActionTestBase {
         // Otherwise the WebRequest.xml will be changed on every run.
         Timebase clock = InstanceManager.getDefault(jmri.Timebase.class);
         clock.setStartSetTime(false, new java.util.Date(0));
+        // stop it too, so the stored file doesn't depend on whether a new clock runs
+        clock.setRun(false);
 
         // This test only updates the xml file in the LogixNG documentation
         storeXmlFile();
