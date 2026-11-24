@@ -37,7 +37,6 @@ public class DefaultTimebase extends AbstractTimebase {
 
 //    private Date startAtTime;
 //    private Date setTimeValue;
-    private Date pauseTime; // null value indicates clock is running
     private Sensor clockSensor = null; // active when clock is running, inactive when stopped
     private Memory clockMemory = null; // contains current time on each tick
     private Memory factorMemory = null; // contains the rate factor for the fast clock
@@ -86,7 +85,11 @@ public class DefaultTimebase extends AbstractTimebase {
 
         // set to start counting from now
         setTimeIfPossible(new Date());
-        pauseTime = null;
+        // a new clock runs, as SimpleTimebase does and as the run sensor below says
+        TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class).getCurrentTimeProvider();
+        if (tp instanceof StartStopTimeProvider && ((StartStopTimeProvider)tp).canStartAndStop()) {
+            ((StartStopTimeProvider)tp).start();
+        }
         // initialize start/stop sensor for time running
         try {
             clockSensor = InstanceManager.sensorManagerInstance().provideSensor(memo.getSystemPrefix()+"SCLOCKRUNNING");
@@ -457,6 +460,7 @@ public class DefaultTimebase extends AbstractTimebase {
                 firePropertyChange(PROPERTY_CHANGE_RATE, evt.getOldValue(), evt.getNewValue());
                 break;
             case TimeProvider.PROPERTY_CHANGE_RUN:
+                updateClockSensor();
                 firePropertyChange(PROPERTY_CHANGE_RUN, evt.getOldValue(), evt.getNewValue());
                 break;
             default:
@@ -498,19 +502,34 @@ public class DefaultTimebase extends AbstractTimebase {
         clockMemory.setValue(timeStorageFormat.format(date));
     }
 
+    // keep the clock running sensor in step with the clock
+    private void updateClockSensor() {
+        if (clockSensor == null) {
+            return;
+        }
+        int state = getRun() ? Sensor.ACTIVE : Sensor.INACTIVE;
+        if (clockSensor.getKnownState() != state) {
+            try {
+                clockSensor.setKnownState(state);
+            } catch (JmriException e) {
+                log.warn("Exception setting ISClockRunning sensor", e);
+            }
+        }
+    }
+
     /**
      * Handle a change in the clock running sensor
      */
     private void clockSensorChanged(java.beans.PropertyChangeEvent e) {
         if (clockSensor.getKnownState() == Sensor.ACTIVE) {
             // simply return if clock is already running
-            if (pauseTime == null) {
+            if (getRun()) {
                 return;
             }
             setRun(true);
         } else {
             // simply return if clock is already stopped
-            if (pauseTime != null) {
+            if (!getRun()) {
                 return;
             }
             setRun(false);
