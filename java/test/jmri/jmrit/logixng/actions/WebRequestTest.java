@@ -500,8 +500,6 @@ public class WebRequestTest extends AbstractDigitalActionTestBase {
         // Otherwise the WebRequest.xml will be changed on every run.
         Timebase clock = InstanceManager.getDefault(jmri.Timebase.class);
         clock.setStartSetTime(false, new java.util.Date(0));
-        // stop it too, so the stored file doesn't depend on whether a new clock runs
-        clock.setRun(false);
 
         // This test only updates the xml file in the LogixNG documentation
         storeXmlFile();
@@ -589,6 +587,11 @@ public class WebRequestTest extends AbstractDigitalActionTestBase {
         // Force the use of UTC time zone
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+        // stop the clock at a fixed time, before the LogixNGs that watch sensors exist, so the stored file doesn't vary
+        Timebase clock = InstanceManager.getDefault(jmri.Timebase.class);
+        clock.setRun(false);
+        clock.setTime(new java.util.Date(0));
 
         // Exclude dynamic content in the tables and panels file
         var loadAndStorePreferences = InstanceManager.getDefault(LoadAndStorePreferences.class);
