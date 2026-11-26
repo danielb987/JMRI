@@ -19,7 +19,7 @@ public interface TimeProvider extends NamedBean {
 
     /**
      * Property Change sent when the minute value changes.
-     * The values are minute of the hour.
+     * The values are the number of minutes since epoch.
      */
     String PROPERTY_CHANGE_MINUTES = "minutes";
 

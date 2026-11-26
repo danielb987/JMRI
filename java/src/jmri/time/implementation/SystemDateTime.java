@@ -22,8 +22,8 @@ public class SystemDateTime extends AbstractTimeProvider implements DateProvider
     private final TimerTask _timerTask;
     private TimerTask _scheduledTask = null;
     private ZonedDateTime _lastDateTime;
-    private int _lastSec;
-    private int _lastMin;
+    private long _lastSec;
+    private long _lastMin;
 
 
     /**
@@ -38,27 +38,38 @@ public class SystemDateTime extends AbstractTimeProvider implements DateProvider
         _timerTask = new TimerTask() {
             @Override
             public void run() {
-                var newDateTime = ZonedDateTime.now();
-                int sec = newDateTime.getSecond();
-                if (sec != _lastSec) {
-                    int min = newDateTime.getMinute();
-                    SystemDateTime.this.firePropertyChange(PROPERTY_CHANGE_SECONDS, _lastSec, sec);
-                    if (min != _lastMin) {
-                        SystemDateTime.this.firePropertyChange(PROPERTY_CHANGE_MINUTES, _lastMin, min);
-                    }
-                    SystemDateTime.this.firePropertyChange(PROPERTY_CHANGE_DATETIME, _lastDateTime, newDateTime);
-                    _lastDateTime = newDateTime;
-                    _lastSec = sec;
-                    _lastMin = min;
-                }
+                tick();
             }
         };
     }
 
+    // package-private so tests can drive the clock without waiting
+    void tick() {
+        var newDateTime = now();
+        // count from the epoch, as timeIsUpdated() does, so a tick exactly 60 s later still fires
+        long sec = newDateTime.toEpochSecond();
+        if (sec != _lastSec) {
+            long min = sec / 60;
+            firePropertyChange(PROPERTY_CHANGE_SECONDS, _lastSec, sec);
+            if (min != _lastMin) {
+                firePropertyChange(PROPERTY_CHANGE_MINUTES, _lastMin, min);
+            }
+            firePropertyChange(PROPERTY_CHANGE_DATETIME, _lastDateTime, newDateTime);
+            _lastDateTime = newDateTime;
+            _lastSec = sec;
+            _lastMin = min;
+        }
+    }
+
+    // the computer's time; tests override it
+    ZonedDateTime now() {
+        return ZonedDateTime.now();
+    }
+
     public SystemDateTime init() {
-        _lastDateTime = ZonedDateTime.now();
-        _lastSec = _lastDateTime.getSecond();
-        _lastMin = _lastDateTime.getMinute();
+        _lastDateTime = now();
+        _lastSec = _lastDateTime.toEpochSecond();
+        _lastMin = _lastSec / 60;
         // tick on the GUI thread, so listeners and panels update there
         _scheduledTask = TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
         return this;
@@ -67,7 +78,7 @@ public class SystemDateTime extends AbstractTimeProvider implements DateProvider
     /** {@inheritDoc} */
     @Override
     public ZonedDateTime getTime() {
-        return ZonedDateTime.now();
+        return now();
     }
 
     /** {@inheritDoc} */
