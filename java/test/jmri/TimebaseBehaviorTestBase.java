@@ -111,7 +111,7 @@ public abstract class TimebaseBehaviorTestBase {
 
     @Test
     public void testStopAndStart() {
-        clock.setRun(true); // a new DefaultTimebase is stopped, so start it first
+        clock.setRun(true); // make sure it's running, so the stop below is a real change
         clock.setRun(false);
         assertFalse(clock.getRun(), "stopped");
         clock.setRun(true);
@@ -146,6 +146,17 @@ public abstract class TimebaseBehaviorTestBase {
         clock.addPropertyChangeListener(Timebase.PROPERTY_CHANGE_RATE, recorder);
         clock.userSetRate(4.0);
         JUnitUtil.waitFor(() -> recorder.names.contains(Timebase.PROPERTY_CHANGE_RATE), "rate event");
+    }
+
+    @Test
+    public void testHardwareMasterRateUpdateFiresNoRateEvent() throws TimebaseRateException {
+        // connections such as NCE call setRate to follow a hardware master; SimpleTimebase keeps that quiet
+        clock.setInternalMaster(false, false);
+        EventRecorder recorder = new EventRecorder();
+        clock.addPropertyChangeListener(Timebase.PROPERTY_CHANGE_RATE, recorder);
+        clock.setRate(4.0);
+        assertFalse(recorder.names.contains(Timebase.PROPERTY_CHANGE_RATE), "no rate event");
+        assertEquals(1.0, memory("RATEFACTOR").getValue(), "rate memory unchanged");
     }
 
     @Test

@@ -60,6 +60,7 @@ public class DefaultTimebase extends AbstractTimebase {
     private final PropertyChangeListener timeProviderListener = this::timeProviderChanged;
     private final MainTimeProviderHandler timeProviderHandler;
     private int oldMinutes = -1;
+    private boolean settingRate = false; // the rate setters fire the rate event themselves, as SimpleTimebase does
     private Date oldDate = null;
 
     private javax.swing.Timer timer = null;
@@ -160,7 +161,13 @@ public class DefaultTimebase extends AbstractTimebase {
 
     @Override
     public void setRate(double factor) throws TimebaseRateException {
-        super.setRate(factor);
+        double oldFactor = mFactor;
+        settingRate = true;
+        try {
+            super.setRate(factor);
+        } finally {
+            settingRate = false;
+        }
         // initializeHardwareClock() sends these, so keep them current as SimpleTimebase does
         mFactor = factor;
         if (internalMaster || notInitialized) {
@@ -172,12 +179,22 @@ public class DefaultTimebase extends AbstractTimebase {
                 InstanceManager.getDefault(ClockControl.class).setRate(factor);
             }
         }
+        // like SimpleTimebase, fire only as internal master; with a hardware master, its rate updates don't fire
+        if (internalMaster) {
+            firePropertyChange(PROPERTY_CHANGE_RATE, oldFactor, factor);
+        }
     }
 
     @Override
     public void userSetRate(double factor) throws TimebaseRateException {
         // this call is used when user changes fast clock rate either in Setup Fast Clock or via a ClockControl
-        super.userSetRate(factor);
+        double oldFactor = hardwareFactor;
+        settingRate = true;
+        try {
+            super.userSetRate(factor);
+        } finally {
+            settingRate = false;
+        }
         mFactor = factor;
         hardwareFactor = factor;
         if (synchronizeWithHardware) {
@@ -187,6 +204,11 @@ public class DefaultTimebase extends AbstractTimebase {
             // if not synchronizing, send to the hardware time source if there is one
             hardwareTimeSource.setRate(factor);
         }
+        // a user's change always updates the memory and fires, as in SimpleTimebase
+        if (factorMemory != null) {
+            factorMemory.setValue(factor);
+        }
+        firePropertyChange(PROPERTY_CHANGE_RATE, oldFactor, factor);
     }
 
     @Override
@@ -470,6 +492,10 @@ public class DefaultTimebase extends AbstractTimebase {
                 minuteChanged();
                 break;
             case TimeProvider.PROPERTY_CHANGE_RATE:
+                if (settingRate) {
+                    // the setter fires it after the hardware is updated
+                    break;
+                }
                 if (factorMemory != null) {
                     factorMemory.setValue(userGetRate());
                 }
