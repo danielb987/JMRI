@@ -115,7 +115,16 @@ public class InternalDateTime extends AbstractTimeProvider
         }
     }
 
+    // the time the tick would show right now; call with _lock held
+    private ZonedDateTime currentTime() {
+        if (!_isRunning || _isLockedFromRunning || _rate.getRate() < 0.0001) return _time;
+        long diff = Math.round((System.currentTimeMillis() - _startTimeMillisec) * _rate.getRate());
+        return _lastDateTime.plus(diff, ChronoUnit.MILLIS);
+    }
+
     private void resetLast() {
+        // count from _time starting now, so setting the time, rate or run doesn't make the clock jump
+        _startTimeMillisec = System.currentTimeMillis();
         _lastDateTime = _time;
         _lastUpdatedDateTime = _time;
         _lastSec = _lastDateTime.getSecond();
@@ -176,10 +185,12 @@ public class InternalDateTime extends AbstractTimeProvider
             if (!_isTimerTaskStarted && !_isLockedFromRunning) {
                 _time = ZonedDateTime.now();
                 resetLast();
-                _startTimeMillisec = System.currentTimeMillis();
                 // tick on the GUI thread, as SimpleTimebase does, so listeners and panels update there
                 _scheduledTask = TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
                _isTimerTaskStarted = true;
+            } else if (!_isRunning) {
+                // resume from the time it stopped at
+                resetLast();
             }
             _isRunning = true;
         }
@@ -192,6 +203,9 @@ public class InternalDateTime extends AbstractTimeProvider
         boolean oldRunning;
         synchronized(_lock) {
             oldRunning = _isRunning;
+            // keep the time it had when stopped, not the last tick's
+            _time = currentTime();
+            resetLast();
             _isRunning = false;
         }
         firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, false);
@@ -247,6 +261,9 @@ public class InternalDateTime extends AbstractTimeProvider
         double newRate;
         synchronized(_lock) {
             oldRate = _rate.getRate();
+            // catch up at the old rate, then count at the new one from here
+            _time = currentTime();
+            resetLast();
             _rate.setRate(rate);
             newRate = _rate.getRate();
         }
