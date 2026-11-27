@@ -588,6 +588,11 @@ public class WebRequestTest extends AbstractDigitalActionTestBase {
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
+        // stop the clock at a fixed time, before the LogixNGs that watch sensors exist, so the stored file doesn't vary
+        Timebase clock = InstanceManager.getDefault(jmri.Timebase.class);
+        clock.setRun(false);
+        clock.setTime(new java.util.Date(0));
+
         // Exclude dynamic content in the tables and panels file
         var loadAndStorePreferences = InstanceManager.getDefault(LoadAndStorePreferences.class);
         loadAndStorePreferences.setExcludeMemoryIMCURRENTTIME(true);

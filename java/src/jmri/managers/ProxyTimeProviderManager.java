@@ -23,7 +23,9 @@ public class ProxyTimeProviderManager extends AbstractProxyManager<TimeProvider>
 
     @Override
     public void initialize() {
-        TimeProvider internalTimeProvider = new InternalDateTime(makeSystemName("InternalTimeProvider")).init();
+        InternalDateTime internalTimeProvider = new InternalDateTime(makeSystemName("InternalTimeProvider")).init();
+        // a new fast clock runs, as SimpleTimebase does; a panel file's isRunning is applied after this
+        internalTimeProvider.start();
         register(internalTimeProvider);
         TimeProvider systemClock = new SystemDateTime(makeSystemName("SystemClock")).init();
         register(systemClock);
@@ -32,6 +34,13 @@ public class ProxyTimeProviderManager extends AbstractProxyManager<TimeProvider>
         mtph.setSecondaryTimeProvider(systemClock);
         mtph.setUsePrimaryTimeProvider(true);
 //        mtph.setUsePrimaryTimeProvider(false);
+    }
+
+    @Override
+    public void dispose() {
+        // stop the clocks' timers, which would otherwise keep running
+        getNamedBeanSet().forEach(TimeProvider::dispose);
+        super.dispose();
     }
 
     @Override

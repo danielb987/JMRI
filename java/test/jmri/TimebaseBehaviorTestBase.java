@@ -111,7 +111,7 @@ public abstract class TimebaseBehaviorTestBase {
 
     @Test
     public void testStopAndStart() {
-        clock.setRun(true); // a new DefaultTimebase is stopped, so start it first
+        clock.setRun(true); // make sure it's running, so the stop below is a real change
         clock.setRun(false);
         assertFalse(clock.getRun(), "stopped");
         clock.setRun(true);
@@ -123,6 +123,40 @@ public abstract class TimebaseBehaviorTestBase {
         clock.setRun(false); // prevent clock ticking during test
         clock.setTime(at(6, 0));
         assertEquals(at(6, 0), clock.getTime(), "stopped clock keeps the time it was set to");
+    }
+
+    @Test
+    public void testSetTimeWhileRunningDoesNotJump() throws TimebaseRateException {
+        clock.setRun(true);
+        clock.userSetRate(60.0);
+        JUnitUtil.waitFor(2000); // without the fix, the next tick would add these 2 seconds times 60
+        clock.setTime(at(6, 0));
+        JUnitUtil.waitFor(() -> clock.getTime().after(at(6, 0)), "clock moved on");
+        assertTrue(clock.getTime().before(at(6, 1)), "no jump after setting the time: " + clock.getTime());
+    }
+
+    @Test
+    public void testRateChangeDoesNotJump() throws TimebaseRateException {
+        clock.setRun(true);
+        clock.setTime(at(6, 0));
+        JUnitUtil.waitFor(2000); // without the fix, the new rate would apply to these 2 seconds too
+        clock.userSetRate(60.0);
+        Date changed = clock.getTime();
+        // the clock is already past 6:00, so wait for a tick at the new rate
+        JUnitUtil.waitFor(() -> clock.getTime().after(changed), "clock moved on");
+        assertTrue(clock.getTime().before(at(6, 1)), "no jump after changing the rate: " + clock.getTime());
+    }
+
+    @Test
+    public void testRestartDoesNotJump() throws TimebaseRateException {
+        clock.setRun(true);
+        clock.userSetRate(60.0);
+        clock.setTime(at(6, 0));
+        clock.setRun(false);
+        JUnitUtil.waitFor(2000); // without the fix, the restart would count these 2 seconds times 60
+        clock.setRun(true);
+        JUnitUtil.waitFor(() -> clock.getTime().after(at(6, 0)), "clock moved on");
+        assertTrue(clock.getTime().before(at(6, 1)), "no jump after a restart: " + clock.getTime());
     }
 
     @Test
@@ -146,6 +180,25 @@ public abstract class TimebaseBehaviorTestBase {
         clock.addPropertyChangeListener(Timebase.PROPERTY_CHANGE_RATE, recorder);
         clock.userSetRate(4.0);
         JUnitUtil.waitFor(() -> recorder.names.contains(Timebase.PROPERTY_CHANGE_RATE), "rate event");
+    }
+
+    @Test
+    public void testUserSetRateFiresOneRateEvent() throws TimebaseRateException {
+        EventRecorder recorder = new EventRecorder();
+        clock.addPropertyChangeListener(Timebase.PROPERTY_CHANGE_RATE, recorder);
+        clock.userSetRate(4.0);
+        assertEquals(1, recorder.names.size(), "rate events: " + recorder.names);
+    }
+
+    @Test
+    public void testHardwareMasterRateUpdateFiresNoRateEvent() throws TimebaseRateException {
+        // connections such as NCE call setRate to follow a hardware master; SimpleTimebase keeps that quiet
+        clock.setInternalMaster(false, false);
+        EventRecorder recorder = new EventRecorder();
+        clock.addPropertyChangeListener(Timebase.PROPERTY_CHANGE_RATE, recorder);
+        clock.setRate(4.0);
+        assertFalse(recorder.names.contains(Timebase.PROPERTY_CHANGE_RATE), "no rate event");
+        assertEquals(1.0, memory("RATEFACTOR").getValue(), "rate memory unchanged");
     }
 
     @Test

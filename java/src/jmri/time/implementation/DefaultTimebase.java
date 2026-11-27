@@ -1,7 +1,5 @@
 package jmri.time.implementation;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -39,7 +37,6 @@ public class DefaultTimebase extends AbstractTimebase {
 
 //    private Date startAtTime;
 //    private Date setTimeValue;
-    private Date pauseTime; // null value indicates clock is running
     private Sensor clockSensor = null; // active when clock is running, inactive when stopped
     private Memory clockMemory = null; // contains current time on each tick
     private Memory factorMemory = null; // contains the rate factor for the fast clock
@@ -58,11 +55,12 @@ public class DefaultTimebase extends AbstractTimebase {
     private boolean notInitialized = true; // true before initialization received from start up
     private boolean showStopButton = false; // true indicates start up with start/stop button displayed
 
-//    private java.text.SimpleDateFormat timeStorageFormat = null;
+    private java.text.SimpleDateFormat timeStorageFormat = null;
 
-    private final Map<PropertyChangeListener, PropertyChangeListener> _pclMap = new HashMap<>();
-    private final Map<String, Map<PropertyChangeListener, PropertyChangeListener>> _pclNameMap = new HashMap<>();
-    private final Map<PropertyChangeListener, PropertyChangeListener> _minutePclMap = new HashMap<>();
+    private final PropertyChangeListener timeProviderListener = this::timeProviderChanged;
+    private final MainTimeProviderHandler timeProviderHandler;
+    private int oldMinutes = -1;
+    private Date oldDate = null;
 
     private javax.swing.Timer timer = null;
 
@@ -80,20 +78,24 @@ public class DefaultTimebase extends AbstractTimebase {
 
         init();
 
+        timeProviderHandler = InstanceManager.getDefault(TimeProviderManager.class).getMainTimeProviderHandler();
+        timeProviderHandler.addPropertyChangeListener(timeProviderListener);
+        // init() set the time before this listener was added, so fill in the memory now
+        updateMemory(getTime());
     }
 
     private void init(){
 
         // set to start counting from now
         setTimeIfPossible(new Date());
-        pauseTime = null;
         // initialize start/stop sensor for time running
         try {
             clockSensor = InstanceManager.sensorManagerInstance().provideSensor(memo.getSystemPrefix()+"SCLOCKRUNNING");
-            clockSensor.setKnownState(Sensor.ACTIVE);
+            // match the clock, which the time provider manager starts and a panel file may stop
+            clockSensor.setKnownState(getRun() ? Sensor.ACTIVE : Sensor.INACTIVE);
             clockSensor.addPropertyChangeListener(this::clockSensorChanged);
         } catch (JmriException e) {
-            log.warn("Exception setting CLOCKRUNNING sensor ACTIVE", e);
+            log.warn("Exception setting CLOCKRUNNING sensor", e);
         }
         // initialize rate factor-containing memory
         if (InstanceManager.getNullableDefault(MemoryManager.class) != null) {
@@ -107,6 +109,95 @@ public class DefaultTimebase extends AbstractTimebase {
             }
         }
 
+    }
+
+    @Override
+    public void setTime(Date d) {
+        super.setTime(d);
+        if (synchronizeWithHardware && InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+            // send new time to all hardware clocks, except the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setTime(d);
+        }
+    }
+
+    @Override
+    public void setTime(java.time.Instant i) {
+        // same as SimpleTimebase; the inherited version drops the date and treats the time as UTC
+        setTime(Date.from(i));
+    }
+
+    @Override
+    public void userSetTime(Date d) {
+        // this call only results from user changing fast clock time in Setup Fast Clock
+        super.setTime(d);
+        if (synchronizeWithHardware) {
+            // send new time to all hardware clocks, including the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setTime(d);
+        } else if (!internalMaster && (hardwareTimeSource != null)) {
+            // if not synchronizing, send to the hardware time source if there is one
+            hardwareTimeSource.setTime(d);
+        }
+    }
+
+    @Override
+    public void setRun(boolean run) {
+        boolean wasRunning = getRun();
+        super.setRun(run);
+        if (run && !wasRunning) {
+            if (synchronizeWithHardware) {
+                InstanceManager.getDefault(ClockControl.class).startHardwareClock(getTime());
+            } else if (!internalMaster && hardwareTimeSource != null) {
+                hardwareTimeSource.startHardwareClock(getTime());
+            }
+        } else if (!run && wasRunning) {
+            if (synchronizeWithHardware) {
+                InstanceManager.getDefault(ClockControl.class).stopHardwareClock();
+            } else if (!internalMaster && hardwareTimeSource != null) {
+                hardwareTimeSource.stopHardwareClock();
+            }
+        }
+    }
+
+    @Override
+    public void setRate(double factor) throws TimebaseRateException {
+        double oldFactor = mFactor;
+        super.setRate(factor);
+        // initializeHardwareClock() sends these, so keep them current as SimpleTimebase does
+        mFactor = factor;
+        if (internalMaster || notInitialized) {
+            hardwareFactor = factor;
+        }
+        if (internalMaster || (synchronizeWithHardware && notInitialized)) {
+            // send new rate to all hardware clocks, except the hardware time source if there is one
+            if (InstanceManager.getDefault(ClockControl.class) != hardwareTimeSource) {
+                InstanceManager.getDefault(ClockControl.class).setRate(factor);
+            }
+        }
+        // like SimpleTimebase, fire only as internal master; with a hardware master, its rate updates don't fire
+        if (internalMaster) {
+            firePropertyChange(PROPERTY_CHANGE_RATE, oldFactor, factor);
+        }
+    }
+
+    @Override
+    public void userSetRate(double factor) throws TimebaseRateException {
+        // this call is used when user changes fast clock rate either in Setup Fast Clock or via a ClockControl
+        double oldFactor = hardwareFactor;
+        super.userSetRate(factor);
+        mFactor = factor;
+        hardwareFactor = factor;
+        if (synchronizeWithHardware) {
+            // send new rate to all hardware clocks, including the hardware time source if there is one
+            InstanceManager.getDefault(ClockControl.class).setRate(factor);
+        } else if (!internalMaster && (hardwareTimeSource != null)) {
+            // if not synchronizing, send to the hardware time source if there is one
+            hardwareTimeSource.setRate(factor);
+        }
+        // a user's change always updates the memory and fires, as in SimpleTimebase
+        if (factorMemory != null) {
+            factorMemory.setValue(factor);
+        }
+        firePropertyChange(PROPERTY_CHANGE_RATE, oldFactor, factor);
     }
 
     @Override
@@ -365,79 +456,93 @@ public class DefaultTimebase extends AbstractTimebase {
     }
 
     @Override
-    @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
-            justification = "This class is an adapter of the main time provider")
-    public final void addPropertyChangeListener(PropertyChangeListener l) {
-        PropertyChangeListener adapter = new PropertyChangeListenerAdapter(l);
-        _pclMap.put(l, adapter);
-        InstanceManager.getDefault(TimeProviderManager.class)
-                .getMainTimeProviderHandler().addPropertyChangeListener(TimeProvider.PROPERTY_CHANGE_MINUTES, adapter);
-    }
-
-    @Override
-    @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
-            justification = "This class is an adapter of the main time provider")
-    public final void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
-        PropertyChangeListener adapter = new PropertyChangeListenerAdapter(l);
-        var map = _pclNameMap.computeIfAbsent(propertyName, (k) -> new HashMap<>());
-        map.put(l, adapter);
-        _pclNameMap.put(propertyName, map);
-        InstanceManager.getDefault(TimeProviderManager.class)
-                .getMainTimeProviderHandler().addPropertyChangeListener(TimeProvider.PROPERTY_CHANGE_MINUTES, adapter);
-    }
-
-    @Override
-    @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
-            justification = "This class is an adapter of the main time provider")
-    public final void removePropertyChangeListener(PropertyChangeListener l) {
-        PropertyChangeListener adapter = _pclMap.remove(l);
-        if (adapter != null) {
-            InstanceManager.getDefault(TimeProviderManager.class)
-                    .getMainTimeProviderHandler().removePropertyChangeListener(TimeProvider.PROPERTY_CHANGE_MINUTES, adapter);
-        }
-    }
-
-    @Override
-    @SuppressFBWarnings(value = "OVERRIDING_METHODS_MUST_INVOKE_SUPER",
-            justification = "This class is an adapter of the main time provider")
-    public final void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
-        PropertyChangeListener adapter = _pclNameMap.get(propertyName).remove(l);
-        if (adapter != null) {
-            InstanceManager.getDefault(TimeProviderManager.class)
-                        .getMainTimeProviderHandler().removePropertyChangeListener(TimeProvider.PROPERTY_CHANGE_MINUTES, adapter);
-        }
-    }
-
-    @Override
-    public final PropertyChangeListener[] getPropertyChangeListeners() {
-        return _pclMap.keySet().toArray(PropertyChangeListener[]::new);
-    }
-
-    @Override
-    public final PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
-        return _pclNameMap.get(propertyName).keySet().toArray(PropertyChangeListener[]::new);
-    }
-
-    @Override
     public void addMinuteChangeListener(PropertyChangeListener l) {
-        PropertyChangeListener adapter = new PropertyChangeListenerAdapter(l);
-        _minutePclMap.put(l, adapter);
-        InstanceManager.getDefault(TimeProviderManager.class)
-                .getMainTimeProviderHandler().addPropertyChangeListener(TimeProvider.PROPERTY_CHANGE_MINUTES, adapter);
+        addPropertyChangeListener(PROPERTY_CHANGE_MINUTES, l);
     }
 
     @Override
     public void removeMinuteChangeListener(PropertyChangeListener l) {
-        PropertyChangeListener adapter = _minutePclMap.remove(l);
-        if (adapter != null) {
-            InstanceManager.getDefault(TimeProviderManager.class)
-                    .getMainTimeProviderHandler().removePropertyChangeListener(TimeProvider.PROPERTY_CHANGE_MINUTES, adapter);
-        }
+        removePropertyChangeListener(PROPERTY_CHANGE_MINUTES, l);
     }
 
     @Override
     public PropertyChangeListener[] getMinuteChangeListeners() {
-        return _minutePclMap.keySet().toArray(PropertyChangeListener[]::new);
+        return getPropertyChangeListeners(PROPERTY_CHANGE_MINUTES);
+    }
+
+    // pass the current time provider's events on under the old Timebase names
+    private void timeProviderChanged(PropertyChangeEvent evt) {
+        String name = evt.getPropertyName();
+        if (name == null) {
+            return;
+        }
+        switch (name) {
+            case TimeProvider.PROPERTY_CHANGE_MINUTES:
+                minuteChanged();
+                break;
+            case TimeProvider.PROPERTY_CHANGE_RATE:
+                // only a change made on the clock itself; the rate setters here fire their own event
+                if (factorMemory != null) {
+                    factorMemory.setValue(userGetRate());
+                }
+                firePropertyChange(PROPERTY_CHANGE_RATE, evt.getOldValue(), evt.getNewValue());
+                break;
+            case TimeProvider.PROPERTY_CHANGE_RUN:
+                updateClockSensor();
+                firePropertyChange(PROPERTY_CHANGE_RUN, evt.getOldValue(), evt.getNewValue());
+                break;
+            default:
+                // the old Timebase has no seconds or datetime events
+                break;
+        }
+    }
+
+    // fire the minutes and time events the way SimpleTimebase does
+    private void minuteChanged() {
+        Date date = getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int minutes = calendar.get(Calendar.MINUTE);
+        updateMemory(date);
+        firePropertyChange(PROPERTY_CHANGE_MINUTES, Double.valueOf(oldMinutes), Double.valueOf(minutes));
+        firePropertyChange(PROPERTY_CHANGE_TIME, oldDate != null ? new Date(oldDate.getTime()) : null,
+                new Date(date.getTime())); // to ensure not modified outside
+        oldDate = date;
+        oldMinutes = minutes;
+    }
+
+    private void updateMemory(Date date) {
+        if (clockMemory == null) {
+            return;
+        }
+        if (timeStorageFormat == null) {
+            String pattern = java.util.ResourceBundle.getBundle("jmri.jmrit.simpleclock.SimpleClockBundle")
+                .getString("TimeStorageFormat");
+            try {
+                timeStorageFormat = new java.text.SimpleDateFormat(pattern);
+            } catch (IllegalArgumentException e) {
+                log.info("Unable to parse date / time format: {}",pattern);
+                log.info("For supported formats see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
+                log.info("Dropping back to default time format (h:mm a) 4:56 PM, due to exception", e);
+                timeStorageFormat = new java.text.SimpleDateFormat("h:mm a");
+            }
+        }
+        clockMemory.setValue(timeStorageFormat.format(date));
+    }
+
+    // keep the clock running sensor in step with the clock
+    private void updateClockSensor() {
+        if (clockSensor == null) {
+            return;
+        }
+        int state = getRun() ? Sensor.ACTIVE : Sensor.INACTIVE;
+        if (clockSensor.getKnownState() != state) {
+            try {
+                clockSensor.setKnownState(state);
+            } catch (JmriException e) {
+                log.warn("Exception setting ISClockRunning sensor", e);
+            }
+        }
     }
 
     /**
@@ -446,13 +551,13 @@ public class DefaultTimebase extends AbstractTimebase {
     private void clockSensorChanged(java.beans.PropertyChangeEvent e) {
         if (clockSensor.getKnownState() == Sensor.ACTIVE) {
             // simply return if clock is already running
-            if (pauseTime == null) {
+            if (getRun()) {
                 return;
             }
             setRun(true);
         } else {
             // simply return if clock is already stopped
-            if (pauseTime != null) {
+            if (!getRun()) {
                 return;
             }
             setRun(false);
@@ -479,28 +584,8 @@ public class DefaultTimebase extends AbstractTimebase {
         if ( clockSensor != null ) {
             clockSensor.removePropertyChangeListener(this::clockSensorChanged);
         }
+        timeProviderHandler.removePropertyChangeListener(timeProviderListener);
         super.dispose(); // remove standard property change listeners
-    }
-
-
-    private static class PropertyChangeListenerAdapter implements PropertyChangeListener {
-
-        private final PropertyChangeListener _pcl;
-
-        PropertyChangeListenerAdapter(PropertyChangeListener l) {
-            _pcl = l;
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if (TimeProvider.PROPERTY_CHANGE_MINUTES.equals(evt.getPropertyName())) {
-                _pcl.propertyChange(new PropertyChangeEvent(
-                        evt.getSource(), "time", evt.getOldValue(), evt.getNewValue()));
-            } else {
-                _pcl.propertyChange(evt);
-            }
-        }
-
     }
 
 

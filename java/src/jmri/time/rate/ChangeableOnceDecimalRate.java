@@ -1,21 +1,22 @@
 package jmri.time.rate;
 
-import jmri.time.RateSetter;
-
 /**
  * A rate of integer values.
  *
  * @author Daniel Bergqvist (C) 2025
  */
 public class ChangeableOnceDecimalRate extends OnceDecimalRate
-        implements RateSetter {
+        {
 
     public ChangeableOnceDecimalRate(int rateTimesTen) {
         super(rateTimesTen);
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Set the rate, rounded to one decimal.
+     * @param rate the rate
+     * @throws UnsupportedOperationException if the rate couldn't be set
+     */
     public void setRate(double rate) throws UnsupportedOperationException {
         this._rateTimesTen = (int) Math.round(rate * 10);
     }

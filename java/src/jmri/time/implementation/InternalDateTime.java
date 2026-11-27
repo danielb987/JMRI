@@ -14,7 +14,7 @@ import jmri.util.TimerUtil;
  * @author Daniel Bergqvist (C) 2025
  */
 public class InternalDateTime extends AbstractTimeProvider
-        implements TimeSetter, DateProvider, CanSetRate, StartStopTimeProvider, RateSetter {
+        implements TimeSetter, DateProvider, StartStopTimeProvider, RateSetter {
 
     private static final int _100_MILLISECONDS = 100;
 
@@ -28,11 +28,12 @@ public class InternalDateTime extends AbstractTimeProvider
     private final TimerTask _timerTask;
     private ZonedDateTime _lastDateTime;
     private ZonedDateTime _lastUpdatedDateTime;
-    private int _lastSec;
-    private int _lastMin;
+    private long _lastSec;
+    private long _lastMin;
     private long _startTimeMillisec;
     private final Object _lock = new Object();
     private boolean _isTimerTaskStarted;
+    private TimerTask _scheduledTask = null;
 
 
     private TimerTask getTimerTask() {
@@ -44,28 +45,50 @@ public class InternalDateTime extends AbstractTimeProvider
         return new TimerTask() {
             @Override
             public void run() {
-                synchronized(_lock) {
-                    if (!_isRunning || _isLockedFromRunning) return;
-                    if (_rate.getRate() < 0.0001) return;   // We don't want to divide by zero later
-
-                    long time = System.currentTimeMillis() - _startTimeMillisec;
-                    long diff = Math.round(time * _rate.getRate());
-                    _time = _lastDateTime.plus(diff, ChronoUnit.MILLIS);
-                    int sec = _time.getSecond();
-                    if (sec != _lastSec) {
-                        int min = _time.getMinute();
-                        InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_SECONDS, _lastSec, sec);
-                        if (min != _lastMin) {
-                            InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_MINUTES, _lastMin, min);
-                        }
-                        InternalDateTime.this.firePropertyChange(PROPERTY_CHANGE_DATETIME, _lastUpdatedDateTime, _time);
-                        _lastSec = sec;
-                        _lastMin = min;
-                        _lastUpdatedDateTime = _time;
-                    }
-                }
+                tick();
             }
         };
+    }
+
+    // package-private so tests can drive the clock without waiting
+    void tick() {
+        long oldSec;
+        long newSec;
+        long oldMin;
+        long newMin;
+        ZonedDateTime oldDateTime;
+        ZonedDateTime newDateTime;
+        synchronized(_lock) {
+            if (!_isRunning || _isLockedFromRunning) return;
+            if (_rate.getRate() < 0.0001) return;   // We don't want to divide by zero later
+
+            long time = now() - _startTimeMillisec;
+            long diff = Math.round(time * _rate.getRate());
+            _time = _lastDateTime.plus(diff, ChronoUnit.MILLIS);
+            // count from the epoch, as timeIsUpdated() does, so a tick exactly 60 s later still fires
+            long sec = _time.toEpochSecond();
+            if (sec == _lastSec) return;
+            oldSec = _lastSec;
+            newSec = sec;
+            oldMin = _lastMin;
+            newMin = sec / 60;
+            oldDateTime = _lastUpdatedDateTime;
+            newDateTime = _time;
+            _lastSec = newSec;
+            _lastMin = newMin;
+            _lastUpdatedDateTime = newDateTime;
+        }
+        // fire outside the lock, as start(), stop() and setRate() do
+        firePropertyChange(PROPERTY_CHANGE_SECONDS, oldSec, newSec);
+        if (newMin != oldMin) {
+            firePropertyChange(PROPERTY_CHANGE_MINUTES, oldMin, newMin);
+        }
+        firePropertyChange(PROPERTY_CHANGE_DATETIME, oldDateTime, newDateTime);
+    }
+
+    // the wall clock in milliseconds; tests override it
+    long now() {
+        return System.currentTimeMillis();
     }
 
     /**
@@ -103,11 +126,20 @@ public class InternalDateTime extends AbstractTimeProvider
         }
     }
 
+    // the time the tick would show right now; call with _lock held
+    private ZonedDateTime currentTime() {
+        if (!_isRunning || _isLockedFromRunning || _rate.getRate() < 0.0001) return _time;
+        long diff = Math.round((now() - _startTimeMillisec) * _rate.getRate());
+        return _lastDateTime.plus(diff, ChronoUnit.MILLIS);
+    }
+
     private void resetLast() {
+        // count from _time starting now, so setting the time, rate or run doesn't make the clock jump
+        _startTimeMillisec = now();
         _lastDateTime = _time;
         _lastUpdatedDateTime = _time;
-        _lastSec = _lastDateTime.getSecond();
-        _lastMin = _lastDateTime.getMinute();
+        _lastSec = _lastDateTime.toEpochSecond();
+        _lastMin = _lastSec / 60;
     }
 
     /** {@inheritDoc} */
@@ -158,23 +190,36 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public void start() throws UnsupportedOperationException {
+        boolean oldRunning;
         synchronized(_lock) {
+            oldRunning = _isRunning;
             if (!_isTimerTaskStarted && !_isLockedFromRunning) {
                 _time = ZonedDateTime.now();
                 resetLast();
-                _startTimeMillisec = System.currentTimeMillis();
-                TimerUtil.schedule(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
+                // tick on the GUI thread, as SimpleTimebase does, so listeners and panels update there
+                _scheduledTask = TimerUtil.scheduleOnGUIThread(_timerTask, _100_MILLISECONDS, _100_MILLISECONDS);
                _isTimerTaskStarted = true;
+            } else if (!_isRunning) {
+                // resume from the time it stopped at
+                resetLast();
             }
             _isRunning = true;
         }
+        // fire outside the lock, so a listener can't deadlock with a caller of isRunning()
+        firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, true);
     }
 
     @Override
     public void stop() throws UnsupportedOperationException {
+        boolean oldRunning;
         synchronized(_lock) {
+            oldRunning = _isRunning;
+            // keep the time it had when stopped, not the last tick's
+            _time = currentTime();
+            resetLast();
             _isRunning = false;
         }
+        firePropertyChange(PROPERTY_CHANGE_RUN, oldRunning, false);
     }
 
     @Override
@@ -184,22 +229,31 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public void setTime(LocalTime time) throws UnsupportedOperationException {
+        ZonedDateTime oldTime;
         synchronized(_lock) {
-            ZonedDateTime oldTime = this._time;
+            oldTime = this._time;
             _time = ZonedDateTime.of(_time.toLocalDate(), time, ZoneOffset.UTC);
             resetLast();
-            timeIsUpdated(oldTime);
         }
+        timeIsUpdated(oldTime);
     }
 
     @Override
     public void setDateTime(ZonedDateTime time) throws UnsupportedOperationException {
+        ZonedDateTime oldTime;
         synchronized(_lock) {
-            ZonedDateTime oldTime = this._time;
+            oldTime = this._time;
             this._time = time;
             resetLast();
-            timeIsUpdated(oldTime);
         }
+        timeIsUpdated(oldTime);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        // cancel the GUI wrapper; cancelling _timerTask alone wouldn't stop it
+        if (_scheduledTask != null) _scheduledTask.cancel();
     }
 
     @Override
@@ -214,10 +268,24 @@ public class InternalDateTime extends AbstractTimeProvider
 
     @Override
     public void setRate(double rate) {
+        double oldRate;
+        double newRate;
         synchronized(_lock) {
-            double oldRate = _rate.getRate();
+            oldRate = _rate.getRate();
+            setRateInternal(rate);
+            newRate = _rate.getRate();
+        }
+        // fire outside the lock, as start() and stop() do
+        firePropertyChange(PROPERTY_CHANGE_RATE, oldRate, newRate);
+    }
+
+    @Override
+    public void setRateInternal(double rate) {
+        synchronized(_lock) {
+            // catch up at the old rate, then count at the new one from here
+            _time = currentTime();
+            resetLast();
             _rate.setRate(rate);
-            firePropertyChange(PROPERTY_CHANGE_RATE, oldRate, _rate.getRate());
         }
     }
 
