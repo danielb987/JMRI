@@ -14,7 +14,7 @@ import jmri.util.TimerUtil;
  * @author Daniel Bergqvist (C) 2025
  */
 public class InternalDateTime extends AbstractTimeProvider
-        implements TimeSetter, DateProvider, CanSetRate, StartStopTimeProvider, RateSetter {
+        implements TimeSetter, DateProvider, StartStopTimeProvider, RateSetter {
 
     private static final int _100_MILLISECONDS = 100;
 
@@ -272,14 +272,21 @@ public class InternalDateTime extends AbstractTimeProvider
         double newRate;
         synchronized(_lock) {
             oldRate = _rate.getRate();
-            // catch up at the old rate, then count at the new one from here
-            _time = currentTime();
-            resetLast();
-            _rate.setRate(rate);
+            setRateInternal(rate);
             newRate = _rate.getRate();
         }
         // fire outside the lock, as start() and stop() do
         firePropertyChange(PROPERTY_CHANGE_RATE, oldRate, newRate);
+    }
+
+    @Override
+    public void setRateInternal(double rate) {
+        synchronized(_lock) {
+            // catch up at the old rate, then count at the new one from here
+            _time = currentTime();
+            resetLast();
+            _rate.setRate(rate);
+        }
     }
 
 }

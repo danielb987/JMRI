@@ -58,6 +58,24 @@ public class InternalDateTimeTest {
         clock.dispose();
     }
 
+    @Test
+    public void testSetRateInternalFiresNoEvent() {
+        List<String> events = new ArrayList<>();
+        idt.addPropertyChangeListener(evt -> events.add(evt.getPropertyName()));
+        idt.setRateInternal(4.0);
+        assertEquals(4.0, idt.getRate().getRate(), "rate");
+        assertTrue(events.isEmpty(), "events: " + events);
+    }
+
+    @Test
+    public void testSetRateFiresOneRateEvent() {
+        List<String> events = new ArrayList<>();
+        idt.addPropertyChangeListener(evt -> events.add(evt.getPropertyName()));
+        idt.setRate(4.0);
+        assertEquals(4.0, idt.getRate().getRate(), "rate");
+        assertEquals(List.of(TimeProvider.PROPERTY_CHANGE_RATE), events);
+    }
+
     @BeforeEach
     public void setUp() {
         JUnitUtil.setUp();

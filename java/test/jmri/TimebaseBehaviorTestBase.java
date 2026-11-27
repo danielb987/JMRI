@@ -183,6 +183,14 @@ public abstract class TimebaseBehaviorTestBase {
     }
 
     @Test
+    public void testUserSetRateFiresOneRateEvent() throws TimebaseRateException {
+        EventRecorder recorder = new EventRecorder();
+        clock.addPropertyChangeListener(Timebase.PROPERTY_CHANGE_RATE, recorder);
+        clock.userSetRate(4.0);
+        assertEquals(1, recorder.names.size(), "rate events: " + recorder.names);
+    }
+
+    @Test
     public void testHardwareMasterRateUpdateFiresNoRateEvent() throws TimebaseRateException {
         // connections such as NCE call setRate to follow a hardware master; SimpleTimebase keeps that quiet
         clock.setInternalMaster(false, false);

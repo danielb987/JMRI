@@ -108,52 +108,27 @@ public abstract class AbstractTimebase extends AbstractNamedBean implements Time
 
     @Override
     public void setRate(double factor) throws TimebaseRateException {
-        TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
-                .getCurrentTimeProvider();
-        if (tp instanceof RateSetter && tp instanceof CanSetRate && ((CanSetRate)tp).canSetRate()) {
-            // the clock's own setRate fires the rate event; setting its Rate object directly doesn't
-            ((RateSetter)tp).setRate(factor);
-        } else if (tp instanceof CanSetRate) {
-            if (tp.getRate() instanceof RateSetter) {
-                CanSetRate csr = (CanSetRate)tp;
-                RateSetter rs = (RateSetter)tp.getRate();
-                if (csr.canSetRate()) {
-                    rs.setRate(factor);
-                } else {
-                    throw new UnsupportedOperationException("The current TimeProvider can not start/stop time");
-                }
-            } else {
-                throw new UnsupportedOperationException("The current TimeProvider rate is not a RateSetter: "
-                        + (tp.getRate() != null ? tp.getRate().getClass().getName() : null));
-            }
-        } else {
-            throw new UnsupportedOperationException("The current TimeProvider is not a CanSetRate: "
-                    + (tp != null ? tp.getClass().getName() : null));
-        }
+        setRateOnClock(factor);
     }
 
     @Override
     public void userSetRate(double factor) throws TimebaseRateException {
+        setRateOnClock(factor);
+    }
+
+    // no rate event here; the Timebase fires its own after the hardware clocks are updated
+    private void setRateOnClock(double factor) {
         TimeProvider tp = InstanceManager.getDefault(TimeProviderManager.class)
                 .getCurrentTimeProvider();
-        if (tp instanceof RateSetter && tp instanceof CanSetRate && ((CanSetRate)tp).canSetRate()) {
-            // the clock's own setRate fires the rate event; setting its Rate object directly doesn't
-            ((RateSetter)tp).setRate(factor);
-        } else if (tp instanceof CanSetRate) {
-            if (tp.getRate() instanceof RateSetter) {
-                CanSetRate csr = (CanSetRate)tp;
-                RateSetter rs = (RateSetter)tp.getRate();
-                if (csr.canSetRate()) {
-                    rs.setRate(factor);
-                } else {
-                    throw new UnsupportedOperationException("The current TimeProvider can not start/stop time");
-                }
+        if (tp instanceof RateSetter) {
+            RateSetter rs = (RateSetter)tp;
+            if (rs.canSetRate()) {
+                rs.setRateInternal(factor);
             } else {
-                throw new UnsupportedOperationException("The current TimeProvider rate is not a RateSetter: "
-                        + (tp.getRate() != null ? tp.getRate().getClass().getName() : null));
+                throw new UnsupportedOperationException("The current TimeProvider can not start/stop time");
             }
         } else {
-            throw new UnsupportedOperationException("The current TimeProvider is not a CanSetRate: "
+            throw new UnsupportedOperationException("The current TimeProvider is not a RateSetter: "
                     + (tp != null ? tp.getClass().getName() : null));
         }
     }
